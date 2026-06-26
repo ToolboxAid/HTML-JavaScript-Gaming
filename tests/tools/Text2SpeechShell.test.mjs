@@ -172,3 +172,34 @@ test("Text2Speech runtime uses Local API profile contracts instead of browser-ow
   assert.equal(source.includes("getSessionCurrent"), true);
   assert.equal(source.includes("account/sign-in.html"), true);
 });
+
+test("Text2Speech emotion editor preview uses unsaved editor values before save", async () => {
+  const source = await readFile(new URL("../../assets/toolbox/text-to-speech/js/index.js", import.meta.url), "utf8");
+  const playButtonIndex = source.indexOf('createButton("Play", "ttsPlayEditingEmotion", key)');
+  const saveButtonIndex = source.indexOf('createButton("Save", "ttsCommitEmotion", key)');
+  const cancelButtonIndex = source.indexOf('createButton("Cancel", "ttsCancelEmotion", key)');
+  const editorRowEndIndex = source.indexOf("row.append(emotionCell, pitchCell, rateCell, volumeCell, usageCell, actionsCell);");
+  const previewFunctionIndex = source.indexOf("function playEditingEmotion(key)");
+  const commitFunctionIndex = source.indexOf("function commitEmotion(key)");
+  const editorActions = source.slice(
+    playButtonIndex,
+    editorRowEndIndex,
+  );
+  const playEditingEmotion = source.slice(
+    previewFunctionIndex,
+    commitFunctionIndex,
+  );
+
+  assert.notEqual(playButtonIndex, -1);
+  assert.notEqual(saveButtonIndex, -1);
+  assert.notEqual(cancelButtonIndex, -1);
+  assert.notEqual(editorRowEndIndex, -1);
+  assert.notEqual(previewFunctionIndex, -1);
+  assert.notEqual(commitFunctionIndex, -1);
+  assert.ok(editorActions.indexOf('createButton("Play", "ttsPlayEditingEmotion", key)') < editorActions.indexOf('createButton("Save", "ttsCommitEmotion", key)'));
+  assert.ok(editorActions.indexOf('createButton("Save", "ttsCommitEmotion", key)') < editorActions.indexOf('createButton("Cancel", "ttsCancelEmotion", key)'));
+  assert.equal(playEditingEmotion.includes("const emotion = emotionValues(key);"), true);
+  assert.equal(playEditingEmotion.includes("speakEmotion(profile, emotion);"), true);
+  assert.equal(playEditingEmotion.includes("saveProfileEmotionSettings"), false);
+  assert.equal(playEditingEmotion.includes("requireAuthenticatedWrite"), false);
+});

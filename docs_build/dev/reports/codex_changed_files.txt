@@ -1,6 +1,6 @@
 assets/toolbox/text-to-speech/js/index.js
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/PR_26177_BRAVO_009-force-delete-broken-tts-profiles.md
-src/dev-runtime/messages/messages-postgres-service.mjs
-tests/dev-runtime/MessagesPublishValidation.test.mjs
+docs_build/dev/reports/PR_26177_BRAVO_012-add-emotion-editor-preview.md
+tests/playwright/tools/TextToSpeechFunctional.spec.mjs
+tests/tools/Text2SpeechShell.test.mjs

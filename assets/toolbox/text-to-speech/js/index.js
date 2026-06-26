@@ -789,6 +789,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
     const usageCell = createCell(emotion ? String(emotion.usageCount || emotion.messagePartsUsageCount || 0) : "0");
     const actionsCell = document.createElement("td");
     actionsCell.append(createActionGroup(
+      createButton("Play", "ttsPlayEditingEmotion", key),
       createButton("Save", "ttsCommitEmotion", key),
       createButton("Cancel", "ttsCancelEmotion", key),
     ));
@@ -1022,6 +1023,15 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
     state.editingEmotionId = NEW_ROW_KEY;
     renderProfileRows();
     writeStatus("Ready to add an emotion.");
+  }
+
+  function playEditingEmotion(key) {
+    const profile = selectedProfile();
+    const emotion = emotionValues(key);
+    if (key !== NEW_ROW_KEY) {
+      state.selectedEmotionId = key;
+    }
+    speakEmotion(profile, emotion);
   }
 
   function commitEmotion(key) {
@@ -1262,6 +1272,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
       const commitEmotionButton = event.target.closest("[data-tts-commit-emotion]");
       const cancelEmotionButton = event.target.closest("[data-tts-cancel-emotion]");
       const deleteEmotionButton = event.target.closest("[data-tts-delete-emotion]");
+      const playEditingEmotionButton = event.target.closest("[data-tts-play-editing-emotion]");
       const playEmotionButton = event.target.closest("[data-tts-play-emotion]");
       const deleteProfileButton = event.target.closest("[data-tts-delete-profile]");
       const emotionRow = event.target.closest("[data-tts-emotion-row]");
@@ -1303,6 +1314,10 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
       }
       if (addEmotionButton) {
         addEmotion(addEmotionButton.dataset.ttsAddEmotion);
+        return;
+      }
+      if (playEditingEmotionButton) {
+        playEditingEmotion(playEditingEmotionButton.dataset.ttsPlayEditingEmotion);
         return;
       }
       if (commitEmotionButton) {

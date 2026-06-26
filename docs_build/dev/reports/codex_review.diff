@@ -1,329 +1,159 @@
 diff --git a/assets/toolbox/text-to-speech/js/index.js b/assets/toolbox/text-to-speech/js/index.js
-index 431362909..d07f5c61b 100644
+index d07f5c61b..15aa331e0 100644
 --- a/assets/toolbox/text-to-speech/js/index.js
 +++ b/assets/toolbox/text-to-speech/js/index.js
-@@ -80,6 +80,13 @@ const NEW_ROW_KEY = "__new__";
- const DEFAULT_TTS_PROFILE_ID = "tts-profile";
- const DEFAULT_TTS_EMOTION_ID = "calm";
- const SIGN_IN_ROUTE = "account/sign-in.html";
-+const RETIRED_TTS_PROFILE_PARENT_NAMES = Object.freeze([
-+  "Default Balanced Profile",
-+  "Hero",
-+  "Merchant",
-+  "Neutral",
-+  "Robot",
-+]);
+@@ -789,6 +789,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
+     const usageCell = createCell(emotion ? String(emotion.usageCount || emotion.messagePartsUsageCount || 0) : "0");
+     const actionsCell = document.createElement("td");
+     actionsCell.append(createActionGroup(
++      createButton("Play", "ttsPlayEditingEmotion", key),
+       createButton("Save", "ttsCommitEmotion", key),
+       createButton("Cancel", "ttsCancelEmotion", key),
+     ));
+@@ -1024,6 +1025,15 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
+     writeStatus("Ready to add an emotion.");
+   }
 
- const TTS_PROFILE_GENDER_OPTIONS = Object.freeze([
-   Object.freeze({ label: "Neutral", value: "neutral" }),
-@@ -170,6 +177,11 @@ function labelForOption(options, value, fallback = "") {
-   return options.find((option) => String(option.value) === String(value))?.label || fallback || String(value || "");
- }
-
-+function isRetiredTextToSpeechProfileName(value) {
-+  const normalized = String(value || "").trim().toLowerCase();
-+  return RETIRED_TTS_PROFILE_PARENT_NAMES.some((name) => name.toLowerCase() === normalized);
-+}
++  function playEditingEmotion(key) {
++    const profile = selectedProfile();
++    const emotion = emotionValues(key);
++    if (key !== NEW_ROW_KEY) {
++      state.selectedEmotionId = key;
++    }
++    speakEmotion(profile, emotion);
++  }
 +
- function createTextToSpeechProfileEmotion({
-   active = true,
-   displayOrder = 0,
-@@ -879,7 +891,9 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
-
-   function loadProfilesFromApi() {
-     const payload = listTtsProfiles();
--    state.profiles = (payload.ttsProfiles || []).map((profile) => createTextToSpeechProfileFromApi(profile));
-+    state.profiles = (payload.ttsProfiles || [])
-+      .filter((profile) => !isRetiredTextToSpeechProfileName(profile?.name))
-+      .map((profile) => createTextToSpeechProfileFromApi(profile));
-     if (state.selectedProfileId && !state.profiles.some((profile) => profile.id === state.selectedProfileId)) {
-       state.selectedProfileId = "";
-     }
-diff --git a/docs_build/dev/reports/PR_26177_BRAVO_009-force-delete-broken-tts-profiles.md b/docs_build/dev/reports/PR_26177_BRAVO_009-force-delete-broken-tts-profiles.md
-new file mode 100644
-index 000000000..f3ee0fed5
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_BRAVO_009-force-delete-broken-tts-profiles.md
-@@ -0,0 +1,77 @@
-+# PR_26177_BRAVO_009-force-delete-broken-tts-profiles
-+
-+## Branch Validation
-+- PASS: Initial branch was `bravo/26177-text-to-speech`.
-+- PASS: Work stayed on the active Bravo branch; main was not checked out.
-+- PASS: No `start_of_day` folders were modified.
-+
-+## Scope Summary
-+- Strengthened server-side setup cleanup for hard-deleted broken TTS parent profiles.
-+- Added a setup/API validation guard that fails if any retired parent profile name survives cleanup.
-+- Forced API profile reads to rerun retired-name cleanup before returning TTS Profiles.
-+- Rejected creator/API saves that attempt to recreate retired TTS Profile names.
-+- Added a TTS page display guard so retired profile names are filtered from UI rendering if a bad payload ever reaches the browser.
-+- Preserved guest save redirect behavior to `account/sign-in.html`.
-+
-+## Required Name Absence
-+- PASS: `Default Balanced Profile` is deleted from persisted TTS profiles and absent from API output after setup.
-+- PASS: `Hero` is deleted from persisted TTS profiles and absent from API output after setup.
-+- PASS: `Merchant` is deleted from persisted TTS profiles and absent from API output after setup.
-+- PASS: `Neutral` is deleted from persisted TTS profiles and absent from API output after setup.
-+- PASS: `Robot` is deleted from persisted TTS profiles and absent from API output after setup.
-+
-+## Requirement Checklist
-+- PASS: Existing Local DB TTS profile records are deleted by exact retired name during Messages service setup/read cleanup.
-+- PASS: Child TTS profile emotion settings for those parent profiles are deleted.
-+- PASS: Message, sentence, and event-action references pointing at those parent profiles are deleted with the broken profile data.
-+- PASS: API list responses cannot return those names; cleanup reruns before list output and validation throws if any remain.
-+- PASS: TTS UI filters those names before rendering profile rows.
-+- PASS: Validation fails if a retired name remains after setup cleanup.
-+- PASS: Tests assert the names are absent from API output and TTS page rendering.
-+- PASS: No fallback profiles or placeholder child rows were added.
-+- PASS: Guest save redirect behavior is unchanged.
-+- PASS: No governance changes or unrelated cleanup.
-+
-+## File Inventory
-+- `assets/toolbox/text-to-speech/js/index.js`
-+- `src/dev-runtime/messages/messages-postgres-service.mjs`
-+- `tests/dev-runtime/MessagesPublishValidation.test.mjs`
-+- `docs_build/dev/reports/PR_26177_BRAVO_009-force-delete-broken-tts-profiles.md`
-+- `docs_build/dev/reports/codex_changed_files.txt`
-+- `docs_build/dev/reports/codex_review.diff`
-+
-+## DB/API Inventory
-+- `messages_tts_profiles`: retired parent rows are force-deleted by name.
-+- `messages_tts_profile_emotion_settings`: child settings for retired parents and orphaned settings are deleted.
-+- `messages_records`, `messages_segments`, `messages_event_actions`: stale references to deleted retired profiles are deleted to avoid orphaned DB references.
-+- `GET /api/messages/tts-profiles`: reruns cleanup and validation before returning profile output.
-+- `POST/PATCH /api/messages/tts-profiles`: rejects retired profile names instead of recreating them.
-+
-+## Test Inventory
-+- Updated `Messages seed cleanup deletes retired parent TTS profiles and orphaned settings` to assert each retired name is absent from persisted records and API output.
-+- Added `Messages seed setup fails if retired TTS profile validation still finds broken names`.
-+- Updated empty-save coverage to assert retired names cannot be recreated through `createTtsProfile`.
-+- Existing TTS Playwright spec contains page-rendering absence assertions for the retired names.
-+
-+## Validation Lane Report
-+- PASS: Explicit search ran for `Default Balanced Profile|Hero|Merchant|Neutral|Robot`; remaining hits are cleanup constants, seed notes, negative assertions, and voice-gender terminology only.
-+- PASS: `node --check src/dev-runtime/messages/messages-postgres-service.mjs`
-+- PASS: `node --check assets/toolbox/text-to-speech/js/index.js`
-+- PASS: `node --check tests/dev-runtime/MessagesPublishValidation.test.mjs`
-+- PASS: `node --check tests/playwright/tools/TextToSpeechFunctional.spec.mjs`
-+- PASS: `node --test tests/dev-runtime/MessagesPublishValidation.test.mjs` (9/9)
-+- PASS: `node --test --test-name-pattern "Messages Local API seeds" tests/dev-runtime/DbSeedIntegrity.test.mjs` (1/1)
-+- PASS: `node --test tests/tools/Text2SpeechShell.test.mjs` (6/6)
-+- BLOCKED: `npx playwright test tests/playwright/tools/TextToSpeechFunctional.spec.mjs tests/playwright/tools/MessagesTool.spec.mjs tests/playwright/tools/EventsTool.spec.mjs --project=playwright`
-+  - Browser launch failed before page code ran because Chromium is missing at `C:\Users\davidq\AppData\Local\ms-playwright\chromium-1217\chrome-win64\chrome.exe`.
-+
-+## Manual Validation Notes
-+- Reviewed server setup/read cleanup paths and TTS page profile loading.
-+- Confirmed no fallback profile or placeholder child-emotion creation was added.
-+- Browser/manual UI validation remains blocked by the missing local Playwright Chromium install.
-+
-+## Known Issues
-+- Playwright browser validation cannot complete in this environment until the matching Chromium browser is installed.
-+
-+## Repo-Structured ZIP
-+- `tmp/PR_26177_BRAVO_009-force-delete-broken-tts-profiles_delta.zip`
+   function commitEmotion(key) {
+     if (!requireAuthenticatedWrite("saving Text To Speech emotion settings")) {
+       return;
+@@ -1262,6 +1272,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
+       const commitEmotionButton = event.target.closest("[data-tts-commit-emotion]");
+       const cancelEmotionButton = event.target.closest("[data-tts-cancel-emotion]");
+       const deleteEmotionButton = event.target.closest("[data-tts-delete-emotion]");
++      const playEditingEmotionButton = event.target.closest("[data-tts-play-editing-emotion]");
+       const playEmotionButton = event.target.closest("[data-tts-play-emotion]");
+       const deleteProfileButton = event.target.closest("[data-tts-delete-profile]");
+       const emotionRow = event.target.closest("[data-tts-emotion-row]");
+@@ -1305,6 +1316,10 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
+         addEmotion(addEmotionButton.dataset.ttsAddEmotion);
+         return;
+       }
++      if (playEditingEmotionButton) {
++        playEditingEmotion(playEditingEmotionButton.dataset.ttsPlayEditingEmotion);
++        return;
++      }
+       if (commitEmotionButton) {
+         commitEmotion(commitEmotionButton.dataset.ttsCommitEmotion);
+         return;
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 0331a8ea1..01d384cf5 100644
+index 01d384cf5..9bb1d6b6e 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,9 +1,6 @@
+@@ -1,6 +1,6 @@
  assets/toolbox/text-to-speech/js/index.js
--docs_build/database/seed/messages.json
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
--docs_build/dev/reports/PR_26177_BRAVO_008-delete-empty-tts-profile-parents.md
-+docs_build/dev/reports/PR_26177_BRAVO_009-force-delete-broken-tts-profiles.md
- src/dev-runtime/messages/messages-postgres-service.mjs
- tests/dev-runtime/MessagesPublishValidation.test.mjs
--tests/playwright/tools/MessagesTool.spec.mjs
--tests/playwright/tools/TextToSpeechFunctional.spec.mjs
-diff --git a/src/dev-runtime/messages/messages-postgres-service.mjs b/src/dev-runtime/messages/messages-postgres-service.mjs
-index a110341ee..b56023c2a 100644
---- a/src/dev-runtime/messages/messages-postgres-service.mjs
-+++ b/src/dev-runtime/messages/messages-postgres-service.mjs
-@@ -33,6 +33,9 @@ const RETIRED_TTS_PROFILE_PARENT_NAMES = Object.freeze([
-   "Neutral",
-   "Robot",
- ]);
-+const RETIRED_TTS_PROFILE_PARENT_NAMES_NORMALIZED = new Set(
-+  RETIRED_TTS_PROFILE_PARENT_NAMES.map((name) => name.toLowerCase()),
-+);
- const SUPPORTED_TTS_PROVIDER_KEYS = Object.freeze([
-   "browser-speech",
-   "elevenlabs",
-@@ -254,6 +257,10 @@ function normalizeTtsProviderKey(value) {
-   return providerKey;
- }
+-docs_build/dev/reports/PR_26177_BRAVO_009-force-delete-broken-tts-profiles.md
+-src/dev-runtime/messages/messages-postgres-service.mjs
+-tests/dev-runtime/MessagesPublishValidation.test.mjs
++docs_build/dev/reports/PR_26177_BRAVO_012-add-emotion-editor-preview.md
++tests/playwright/tools/TextToSpeechFunctional.spec.mjs
++tests/tools/Text2SpeechShell.test.mjs
+diff --git a/tests/playwright/tools/TextToSpeechFunctional.spec.mjs b/tests/playwright/tools/TextToSpeechFunctional.spec.mjs
+index 0568372b4..257cc4fdf 100644
+--- a/tests/playwright/tools/TextToSpeechFunctional.spec.mjs
++++ b/tests/playwright/tools/TextToSpeechFunctional.spec.mjs
+@@ -243,6 +243,40 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
+     const urgentEmotionRow = page.locator("[data-tts-emotion-row]").filter({ hasText: "Urgent" });
+     await expect(urgentEmotionRow).toContainText("0.7");
+     await expect(urgentEmotionRow.getByRole("button", { name: "Play" })).toBeVisible();
++    await page.locator("[data-tts-text-input]").fill("Launch the next wave.");
++    await expect(page.locator("[data-tts-text-count]")).toHaveText("21");
++    await urgentEmotionRow.getByRole("button", { name: "Edit Emotion" }).click();
++    const emotionEditor = page.locator("[data-tts-emotion-editor]");
++    await expect(emotionEditor.getByRole("button")).toHaveText(["Play", "Save", "Cancel"]);
++    await setRangeValue(emotionEditor.locator("[data-tts-emotion-pitch]"), "1.4");
++    await setRangeValue(emotionEditor.locator("[data-tts-emotion-rate]"), "0.9");
++    await setRangeValue(emotionEditor.locator("[data-tts-emotion-volume]"), "0.6");
++    await emotionEditor.getByRole("button", { name: "Play" }).click();
++    await expect(page.locator("[data-tts-status]")).toContainText("Speech queued");
++    let calls = await page.evaluate(() => window.__textToSpeechCalls);
++    expect(calls.at(-1)).toEqual(expect.objectContaining({
++      lang: "en-GB",
++      pitch: 1.4,
++      rate: 0.9,
++      text: "Launch the next wave.",
++      type: "speak",
++      voiceName: "Narrator Voice",
++      volume: 0.6,
++    }));
++    const profilesAfterEditorPreview = await jsonRequest(`${failures.server.baseUrl}/api/messages/tts-profiles`);
++    expect(profilesAfterEditorPreview.response.ok).toBe(true);
++    const apiProfileAfterEditorPreview = profilesAfterEditorPreview.payload.data.ttsProfiles
++      .find((profile) => profile.name === "Creature Profile Updated");
++    const apiUrgentAfterEditorPreview = apiProfileAfterEditorPreview.emotionSettings
++      .find((setting) => setting.emotionLabel === "Urgent");
++    expect(apiUrgentAfterEditorPreview).toEqual(expect.objectContaining({
++      pitch: 1.2,
++      rate: 1.1,
++      volume: 0.7,
++    }));
++    await emotionEditor.getByRole("button", { name: "Cancel" }).click();
++    await expect(urgentEmotionRow).toContainText("0.7");
++    await expect(urgentEmotionRow).not.toContainText("0.6");
 
-+function isRetiredTtsProfileParentName(value) {
-+  return RETIRED_TTS_PROFILE_PARENT_NAMES_NORMALIZED.has(normalizeText(value).trim().toLowerCase());
-+}
-+
- function normalizeSsmlLikePreset(value, fallback = "normal") {
-   const normalized = normalizeText(value || fallback).trim() || fallback;
-   if (!SUPPORTED_TTS_SSML_LIKE_PRESETS.includes(normalized)) {
-@@ -596,14 +603,14 @@ export class MessagesPostgresService {
-     }
-     await this.seedDefaultTtsProfileEmotionSettings();
-     await this.deleteEmptyTtsProfileParents();
-+    await this.assertNoRetiredTtsProfileParents();
-     await this.backfillDefaultVoiceProfileReferences();
-   }
+     await expect(page.locator("[data-tts-gender-select]")).toHaveCount(0);
+     await expect(page.locator("[data-tts-language-select]")).toHaveCount(0);
+@@ -259,12 +293,9 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
+     await expect(page.locator("[data-tts-profile-editor] [data-tts-profile-age]")).toBeVisible();
+     await page.locator("[data-tts-profile-editor] [data-tts-cancel-profile]").click();
 
-   async deleteRetiredTtsProfileParents() {
--    const retiredNames = new Set(RETIRED_TTS_PROFILE_PARENT_NAMES.map((name) => name.toLowerCase()));
-     const profiles = await this.tableRows("messages_tts_profiles");
-     for (const profile of profiles) {
--      if (!retiredNames.has(normalizeText(profile.name).trim().toLowerCase())) {
-+      if (!isRetiredTtsProfileParentName(profile.name)) {
-         continue;
-       }
-       await this.deleteTtsProfileParentData(profile.key);
-@@ -664,6 +671,16 @@ export class MessagesPostgresService {
-     }
-   }
-
-+  async assertNoRetiredTtsProfileParents() {
-+    const remainingNames = (await this.tableRows("messages_tts_profiles"))
-+      .map((profile) => normalizeText(profile.name).trim())
-+      .filter((name) => isRetiredTtsProfileParentName(name))
-+      .sort((left, right) => left.localeCompare(right, undefined, { sensitivity: "base" }));
-+    if (remainingNames.length) {
-+      throw httpError(`Retired TTS Profile cleanup failed: ${remainingNames.join(", ")} still exist.`, 500);
-+    }
-+  }
-+
-   async seedDefaultTtsProfileEmotionSettings() {
-     for (const profileSettings of SEED_TTS_PROFILE_EMOTION_SETTINGS) {
-       const ttsProfile = await this.findTtsProfileByNameRaw(profileSettings.ttsProfileName);
-@@ -1131,7 +1148,9 @@ export class MessagesPostgresService {
-
-   async listTtsProfiles() {
-     await this.ensureReady();
-+    await this.deleteRetiredTtsProfileParents();
-     await this.deleteEmptyTtsProfileParents();
-+    await this.assertNoRetiredTtsProfileParents();
-     const rows = (await this.tableRows("messages_tts_profiles")).sort(compareName);
-     return Promise.all(rows.map(async (row) => ttsProfileFromRow(
-       row,
-@@ -1142,7 +1161,9 @@ export class MessagesPostgresService {
-
-   async getTtsProfile(key) {
-     await this.ensureReady();
-+    await this.deleteRetiredTtsProfileParents();
-     await this.deleteEmptyTtsProfileParents();
-+    await this.assertNoRetiredTtsProfileParents();
-     const row = await this.rowByKey("messages_tts_profiles", key);
-     if (!row) {
-       throw httpError("TTS Profile was not found.", 404);
-@@ -1244,6 +1265,9 @@ export class MessagesPostgresService {
-
-   async createTtsProfile(input = {}, actorKey = "") {
-     const values = this.normalizeTtsProfileInput(input);
-+    if (isRetiredTtsProfileParentName(values.name)) {
-+      throw httpError("This TTS Profile name is retired and cannot be saved.");
-+    }
-     if (!Array.isArray(input.emotionSettings) || !input.emotionSettings.length) {
-       throw httpError("TTS Profile requires at least one emotion setting.");
-     }
-@@ -1265,6 +1289,9 @@ export class MessagesPostgresService {
-       throw httpError("TTS Profile was deleted because it has no emotion settings.", 410);
-     }
-     const values = this.normalizeTtsProfileInput(input, existing);
-+    if (isRetiredTtsProfileParentName(values.name)) {
-+      throw httpError("This TTS Profile name is retired and cannot be saved.");
-+    }
-     const duplicate = await this.findTtsProfileByName(values.name);
-     if (duplicate && duplicate.key !== key) {
-       throw httpError(`TTS Profile ${values.name} already exists.`);
-diff --git a/tests/dev-runtime/MessagesPublishValidation.test.mjs b/tests/dev-runtime/MessagesPublishValidation.test.mjs
-index 40e0cfb85..8055e4072 100644
---- a/tests/dev-runtime/MessagesPublishValidation.test.mjs
-+++ b/tests/dev-runtime/MessagesPublishValidation.test.mjs
-@@ -184,7 +184,8 @@ test("Messages seed cleanup deletes retired parent TTS profiles and orphaned set
-   await service.ensureReady();
-
-   const ttsProfiles = await postgresClient.requestTable("messages_tts_profiles");
--  assert.deepEqual(ttsProfiles.map((profile) => profile.name).filter((name) => retiredNames.includes(name)), []);
-+  const persistedProfileNames = ttsProfiles.map((profile) => profile.name);
-+  assert.deepEqual(persistedProfileNames.filter((name) => retiredNames.includes(name)), []);
-   assert.equal(ttsProfiles.some((profile) => profile.name === "Empty Parent Profile"), false);
-   const settings = await postgresClient.requestTable("messages_tts_profile_emotion_settings");
-   assert.equal(settings.some((setting) => String(setting.ttsProfileKey).startsWith("retired-profile-")), false);
-@@ -195,10 +196,46 @@ test("Messages seed cleanup deletes retired parent TTS profiles and orphaned set
-   assert.equal((await postgresClient.requestTable("messages_records")).some((message) => message.voiceProfileKey === "empty-profile"), false);
-   assert.equal((await postgresClient.requestTable("messages_segments")).some((segment) => segment.voiceProfileKey === "empty-profile"), false);
-   assert.equal((await postgresClient.requestTable("messages_event_actions")).some((action) => action.messageKey === "empty-message"), false);
-+  const apiResponse = await handleMessagesApiContract({
-+    method: "GET",
-+    parts: ["tts-profiles"],
-+    service,
-+  });
-+  const apiProfileNames = apiResponse.ttsProfiles.map((profile) => profile.name);
-+  for (const retiredName of retiredNames) {
-+    assert.equal(persistedProfileNames.includes(retiredName), false, `${retiredName} should be deleted from persisted TTS profiles`);
-+    assert.equal(apiProfileNames.includes(retiredName), false, `${retiredName} should be absent from API TTS profile output`);
-+  }
-   assert.deepEqual((await service.listTtsProfiles()).map((profile) => profile.name), []);
-   service.close();
+-    await page.locator("[data-tts-text-input]").fill("Launch the next wave.");
+-    await expect(page.locator("[data-tts-text-count]")).toHaveText("21");
+-
+     await urgentEmotionRow.getByRole("button", { name: "Play" }).click();
+     await expect(page.locator("[data-tts-status]")).toContainText("Speech queued");
+-    let calls = await page.evaluate(() => window.__textToSpeechCalls);
++    calls = await page.evaluate(() => window.__textToSpeechCalls);
+     expect(calls.at(-1)).toEqual(expect.objectContaining({
+       lang: "en-GB",
+       pitch: 1.2,
+diff --git a/tests/tools/Text2SpeechShell.test.mjs b/tests/tools/Text2SpeechShell.test.mjs
+index df46f66f0..3694d71e7 100644
+--- a/tests/tools/Text2SpeechShell.test.mjs
++++ b/tests/tools/Text2SpeechShell.test.mjs
+@@ -172,3 +172,34 @@ test("Text2Speech runtime uses Local API profile contracts instead of browser-ow
+   assert.equal(source.includes("getSessionCurrent"), true);
+   assert.equal(source.includes("account/sign-in.html"), true);
  });
-
-+test("Messages seed setup fails if retired TTS profile validation still finds broken names", async () => {
-+  const { postgresClient, service } = createServiceHarness();
-+  await postgresClient.requestTable("messages_tts_profiles", {
-+    body: datedRow({
-+      description: "Validation should fail if cleanup misses this row.",
-+      key: "missed-retired-profile",
-+      language: "en-US",
-+      name: "Hero",
-+      pitch: 1,
-+      providerKey: "browser-speech",
-+      rate: 1,
-+      voiceName: "Default browser voice",
-+      volume: 1,
-+    }),
-+    method: "POST",
-+  });
-+  service.deleteRetiredTtsProfileParents = async () => {};
-+  service.deleteEmptyTtsProfileParents = async () => {};
 +
-+  await assert.rejects(
-+    () => service.ensureReady(),
-+    /Retired TTS Profile cleanup failed: Hero still exist/,
++test("Text2Speech emotion editor preview uses unsaved editor values before save", async () => {
++  const source = await readFile(new URL("../../assets/toolbox/text-to-speech/js/index.js", import.meta.url), "utf8");
++  const playButtonIndex = source.indexOf('createButton("Play", "ttsPlayEditingEmotion", key)');
++  const saveButtonIndex = source.indexOf('createButton("Save", "ttsCommitEmotion", key)');
++  const cancelButtonIndex = source.indexOf('createButton("Cancel", "ttsCancelEmotion", key)');
++  const editorRowEndIndex = source.indexOf("row.append(emotionCell, pitchCell, rateCell, volumeCell, usageCell, actionsCell);");
++  const previewFunctionIndex = source.indexOf("function playEditingEmotion(key)");
++  const commitFunctionIndex = source.indexOf("function commitEmotion(key)");
++  const editorActions = source.slice(
++    playButtonIndex,
++    editorRowEndIndex,
 +  );
-+  service.close();
++  const playEditingEmotion = source.slice(
++    previewFunctionIndex,
++    commitFunctionIndex,
++  );
++
++  assert.notEqual(playButtonIndex, -1);
++  assert.notEqual(saveButtonIndex, -1);
++  assert.notEqual(cancelButtonIndex, -1);
++  assert.notEqual(editorRowEndIndex, -1);
++  assert.notEqual(previewFunctionIndex, -1);
++  assert.notEqual(commitFunctionIndex, -1);
++  assert.ok(editorActions.indexOf('createButton("Play", "ttsPlayEditingEmotion", key)') < editorActions.indexOf('createButton("Save", "ttsCommitEmotion", key)'));
++  assert.ok(editorActions.indexOf('createButton("Save", "ttsCommitEmotion", key)') < editorActions.indexOf('createButton("Cancel", "ttsCancelEmotion", key)'));
++  assert.equal(playEditingEmotion.includes("const emotion = emotionValues(key);"), true);
++  assert.equal(playEditingEmotion.includes("speakEmotion(profile, emotion);"), true);
++  assert.equal(playEditingEmotion.includes("saveProfileEmotionSettings"), false);
++  assert.equal(playEditingEmotion.includes("requireAuthenticatedWrite"), false);
 +});
-+
- test("Messages TTS profile saves reject empty parent profiles instead of creating fallback children", async () => {
-   const { service } = createServiceHarness();
-
-@@ -217,6 +254,29 @@ test("Messages TTS profile saves reject empty parent profiles instead of creatin
-     /requires at least one emotion setting/,
-   );
-
-+  for (const retiredName of ["Default Balanced Profile", "Hero", "Merchant", "Neutral", "Robot"]) {
-+    await assert.rejects(
-+      () => service.createTtsProfile({
-+        active: true,
-+        emotionSettings: [{
-+          emotion: "calm",
-+          emotionLabel: "Calm",
-+          pitch: 1,
-+          rate: 1,
-+          volume: 1,
-+        }],
-+        language: "en-US",
-+        name: retiredName,
-+        pitch: 1,
-+        providerKey: "browser-speech",
-+        rate: 1,
-+        voiceName: "Default browser voice",
-+        volume: 1,
-+      }),
-+      /retired and cannot be saved/,
-+    );
-+  }
-+
-   assert.deepEqual(await service.listTtsProfiles(), []);
-   service.close();
- });

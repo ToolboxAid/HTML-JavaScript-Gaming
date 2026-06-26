@@ -243,6 +243,40 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
     const urgentEmotionRow = page.locator("[data-tts-emotion-row]").filter({ hasText: "Urgent" });
     await expect(urgentEmotionRow).toContainText("0.7");
     await expect(urgentEmotionRow.getByRole("button", { name: "Play" })).toBeVisible();
+    await page.locator("[data-tts-text-input]").fill("Launch the next wave.");
+    await expect(page.locator("[data-tts-text-count]")).toHaveText("21");
+    await urgentEmotionRow.getByRole("button", { name: "Edit Emotion" }).click();
+    const emotionEditor = page.locator("[data-tts-emotion-editor]");
+    await expect(emotionEditor.getByRole("button")).toHaveText(["Play", "Save", "Cancel"]);
+    await setRangeValue(emotionEditor.locator("[data-tts-emotion-pitch]"), "1.4");
+    await setRangeValue(emotionEditor.locator("[data-tts-emotion-rate]"), "0.9");
+    await setRangeValue(emotionEditor.locator("[data-tts-emotion-volume]"), "0.6");
+    await emotionEditor.getByRole("button", { name: "Play" }).click();
+    await expect(page.locator("[data-tts-status]")).toContainText("Speech queued");
+    let calls = await page.evaluate(() => window.__textToSpeechCalls);
+    expect(calls.at(-1)).toEqual(expect.objectContaining({
+      lang: "en-GB",
+      pitch: 1.4,
+      rate: 0.9,
+      text: "Launch the next wave.",
+      type: "speak",
+      voiceName: "Narrator Voice",
+      volume: 0.6,
+    }));
+    const profilesAfterEditorPreview = await jsonRequest(`${failures.server.baseUrl}/api/messages/tts-profiles`);
+    expect(profilesAfterEditorPreview.response.ok).toBe(true);
+    const apiProfileAfterEditorPreview = profilesAfterEditorPreview.payload.data.ttsProfiles
+      .find((profile) => profile.name === "Creature Profile Updated");
+    const apiUrgentAfterEditorPreview = apiProfileAfterEditorPreview.emotionSettings
+      .find((setting) => setting.emotionLabel === "Urgent");
+    expect(apiUrgentAfterEditorPreview).toEqual(expect.objectContaining({
+      pitch: 1.2,
+      rate: 1.1,
+      volume: 0.7,
+    }));
+    await emotionEditor.getByRole("button", { name: "Cancel" }).click();
+    await expect(urgentEmotionRow).toContainText("0.7");
+    await expect(urgentEmotionRow).not.toContainText("0.6");
 
     await expect(page.locator("[data-tts-gender-select]")).toHaveCount(0);
     await expect(page.locator("[data-tts-language-select]")).toHaveCount(0);
@@ -259,12 +293,9 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
     await expect(page.locator("[data-tts-profile-editor] [data-tts-profile-age]")).toBeVisible();
     await page.locator("[data-tts-profile-editor] [data-tts-cancel-profile]").click();
 
-    await page.locator("[data-tts-text-input]").fill("Launch the next wave.");
-    await expect(page.locator("[data-tts-text-count]")).toHaveText("21");
-
     await urgentEmotionRow.getByRole("button", { name: "Play" }).click();
     await expect(page.locator("[data-tts-status]")).toContainText("Speech queued");
-    let calls = await page.evaluate(() => window.__textToSpeechCalls);
+    calls = await page.evaluate(() => window.__textToSpeechCalls);
     expect(calls.at(-1)).toEqual(expect.objectContaining({
       lang: "en-GB",
       pitch: 1.2,
