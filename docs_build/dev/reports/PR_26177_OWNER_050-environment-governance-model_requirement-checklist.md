@@ -35,6 +35,8 @@
 - [x] Resolve merge conflicts against `origin/main` only.
 - [x] Preserve OWNER_050 environment governance decisions after conflict resolution.
 - [x] Refresh repo-structured ZIP after conflict resolution.
+- [x] Recheck PR #202 against latest `origin/main`.
+- [x] Add no OWNER_051 scope.
 
 ## Result
 
