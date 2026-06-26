@@ -1,394 +1,465 @@
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md
-new file mode 100644
-index 000000000..c5ced6d1b
---- /dev/null
+index c5ced6d1b..53bc243c2 100644
+--- a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md
 +++ b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md
-@@ -0,0 +1,19 @@
-+# PR_26177_OWNER_057-game-journey-metrics-regression-recovery Branch Validation
-+
-+Status: PASS
-+
-+## Gate
-+
-+- PASS: Started on `main`.
-+- PASS: Fetched origin.
-+- PASS: Pulled `origin/main` with `--ff-only`.
-+- PASS: Verified worktree clean before branch creation.
-+- PASS: Verified `main...origin/main` was `0 0` before branch creation.
-+- PASS: Created `PR_26177_OWNER_057-game-journey-metrics-regression-recovery` from latest `main`.
-+
-+## Branch Scope
-+
-+- PASS: Runtime changes are limited to the Game Journey completion metrics store and toolbox accordion Creator-facing wording.
-+- PASS: Tests are limited to targeted Game Journey completion metrics regression coverage.
-+- PASS: Did not delete, move, overwrite, export, or migrate `tmp/local-api/game-journey-completion-metrics.sqlite`.
-+- PASS: Did not start Alfa Tags PRs.
+@@ -17,3 +17,4 @@ Status: PASS
+ - PASS: Tests are limited to targeted Game Journey completion metrics regression coverage.
+ - PASS: Did not delete, move, overwrite, export, or migrate `tmp/local-api/game-journey-completion-metrics.sqlite`.
+ - PASS: Did not start Alfa Tags PRs.
++- PASS: Final audit removed active runtime JS/MJS SQLite and `tmp/local-api` references outside the migration-only utility.
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md
-new file mode 100644
-index 000000000..9a952fb7b
---- /dev/null
+index 9a952fb7b..6dad6bb08 100644
+--- a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md
 +++ b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md
-@@ -0,0 +1,13 @@
-+# PR_26177_OWNER_057-game-journey-metrics-regression-recovery Manual Validation Notes
-+
-+Status: PASS
-+
-+## Notes
-+
-+- Confirmed the repo-local `tmp/local-api/game-journey-completion-metrics.sqlite` file exists before validation.
-+- Confirmed active `createGameJourneyCompletionMetricsStore({ postgresClient })` no longer resolves that retired path by default.
-+- Confirmed active metrics load 14 Postgres-backed completion buckets while the retired file remains untouched.
-+- Confirmed explicit `legacyDbPath` protection remains covered by the existing migration/regression test file.
-+- Confirmed the toolbox page renders neutral Creator-facing outage wording when active metrics are unavailable.
-+- Confirmed the toolbox page does not render the forbidden warning string, SQLite wording, `tmp/local-api`, or Postgres internals in the simulated outage lane.
-+- Confirmed no Alfa Tags PR work was started.
+@@ -5,9 +5,10 @@ Status: PASS
+ ## Notes
+
+ - Confirmed the repo-local `tmp/local-api/game-journey-completion-metrics.sqlite` file exists before validation.
+-- Confirmed active `createGameJourneyCompletionMetricsStore({ postgresClient })` no longer resolves that retired path by default.
+-- Confirmed active metrics load 14 Postgres-backed completion buckets while the retired file remains untouched.
+-- Confirmed explicit `legacyDbPath` protection remains covered by the existing migration/regression test file.
++- Confirmed active `createGameJourneyCompletionMetricsStore({ postgresClient })` exposes no `legacyDbPath`.
++- Confirmed active metrics snapshots expose no `legacySqlitePath`.
++- Confirmed active metrics load 14 DB-backed completion buckets while the retired file remains untouched.
++- Confirmed active runtime JS/MJS has no SQLite or `tmp/local-api` metrics references outside the migration-only utility.
+ - Confirmed the toolbox page renders neutral Creator-facing outage wording when active metrics are unavailable.
+ - Confirmed the toolbox page does not render the forbidden warning string, SQLite wording, `tmp/local-api`, or Postgres internals in the simulated outage lane.
+ - Confirmed no Alfa Tags PR work was started.
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md
-new file mode 100644
-index 000000000..1940890cf
---- /dev/null
+index 1940890cf..777642b00 100644
+--- a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md
 +++ b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md
-@@ -0,0 +1,45 @@
-+# PR_26177_OWNER_057-game-journey-metrics-regression-recovery Report
-+
-+Status: PASS
-+Branch: PR_26177_OWNER_057-game-journey-metrics-regression-recovery
-+Date: 2026-06-26
-+
-+## Scope
-+
-+Recover the Game Journey completion metrics path so active Alfa and Owner work no longer surfaces the retired legacy SQLite regression. Preserve Postgres-backed Game Journey completion metrics as the active path and prevent Creator-facing UI from rendering the forbidden `Game Journey completion metrics unavailable:` warning.
-+
-+## Implementation Summary
-+
-+- Removed active runtime defaulting to `tmp/local-api/game-journey-completion-metrics.sqlite` in `createGameJourneyCompletionMetricsStore`.
-+- Kept the explicit `legacyDbPath` guard intact for recovery/migration callers so legacy data is still protected from silent overwrite or deletion.
-+- Updated `toolbox/tools-page-accordions.js` to render neutral Creator-safe progress outage wording instead of backend diagnostics.
-+- Added a store-level regression test proving a retired default SQLite-shaped file does not block active Postgres-backed metrics.
-+- Added a focused Playwright test proving the toolbox page does not render the forbidden warning, SQLite wording, local filesystem path, or Postgres internals when metrics are unavailable.
-+
-+## Reference Comparison
-+
-+- Compared the relevant strings in Bravo, Charlie, and Delta reference branches against current main.
-+- Those branches contained the same legacy-default metrics store and forbidden toolbox warning strings.
-+- Their non-error behavior depended on the retired SQLite file not being present at the default path.
-+- This recovery fixes the active behavior directly so the current repo is not sensitive to that retired file.
-+
-+## Validation
-+
-+- PASS: `node --check` on modified source and test files.
-+- PASS: `node ./scripts/run-node-test-files.mjs tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs`.
-+- PASS: `npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --project=playwright --workers=1 --reporter=line -g "Game Journey Local API persists completion metrics to Postgres|Toolbox renders Creator-safe Game Journey progress outage copy"`.
-+- PASS: Direct proof against the actual existing `tmp/local-api/game-journey-completion-metrics.sqlite` file confirmed active Postgres metrics load 14 buckets and do not resolve a legacy path.
-+- PASS: Runtime source search found no `Game Journey completion metrics unavailable` string.
-+- PASS: Runtime source search found no active metrics-store default reference to `game-journey-completion-metrics.sqlite`, `GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH`, or `defaultLegacySqlitePath`.
-+- PASS: `git diff --check` reported no whitespace errors. Git emitted line-ending warnings only.
-+
-+## Files
-+
-+- `src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs`
-+- `tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs`
-+- `tests/playwright/tools/GameJourneyTool.spec.mjs`
-+- `toolbox/tools-page-accordions.js`
-+
-+## Artifact
-+
-+- `tmp/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_delta.zip`
+@@ -11,9 +11,10 @@ Recover the Game Journey completion metrics path so active Alfa and Owner work n
+ ## Implementation Summary
+
+ - Removed active runtime defaulting to `tmp/local-api/game-journey-completion-metrics.sqlite` in `createGameJourneyCompletionMetricsStore`.
+-- Kept the explicit `legacyDbPath` guard intact for recovery/migration callers so legacy data is still protected from silent overwrite or deletion.
++- Removed active runtime `legacyDbPath` guard plumbing from the Game Journey metrics store, repository, Local API router, and Playwright test server helper.
+ - Updated `toolbox/tools-page-accordions.js` to render neutral Creator-safe progress outage wording instead of backend diagnostics.
+-- Added a store-level regression test proving a retired default SQLite-shaped file does not block active Postgres-backed metrics.
++- Added a store-level regression test proving a retired default SQLite-shaped file does not block or get touched by active DB-backed metrics.
++- Added a targeted guardrail test proving active runtime JS/MJS under `src`, `assets`, and `toolbox` has no SQLite or `tmp/local-api` metrics references, excluding the migration-only utility.
+ - Added a focused Playwright test proving the toolbox page does not render the forbidden warning, SQLite wording, local filesystem path, or Postgres internals when metrics are unavailable.
+
+ ## Reference Comparison
+@@ -28,16 +29,20 @@ Recover the Game Journey completion metrics path so active Alfa and Owner work n
+ - PASS: `node --check` on modified source and test files.
+ - PASS: `node ./scripts/run-node-test-files.mjs tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs`.
+ - PASS: `npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --project=playwright --workers=1 --reporter=line -g "Game Journey Local API persists completion metrics to Postgres|Toolbox renders Creator-safe Game Journey progress outage copy"`.
+-- PASS: Direct proof against the actual existing `tmp/local-api/game-journey-completion-metrics.sqlite` file confirmed active Postgres metrics load 14 buckets and do not resolve a legacy path.
+-- PASS: Runtime source search found no `Game Journey completion metrics unavailable` string.
+-- PASS: Runtime source search found no active metrics-store default reference to `game-journey-completion-metrics.sqlite`, `GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH`, or `defaultLegacySqlitePath`.
++- PASS: Direct proof against the actual existing `tmp/local-api/game-journey-completion-metrics.sqlite` file confirmed active DB metrics load 14 buckets, expose no legacy path fields, and do not touch the retired file.
++- PASS: Active runtime JS/MJS search found no SQLite, `.sqlite`, `better-sqlite`, `game-journey-completion-metrics.sqlite`, or `tmp/local-api` references outside the migration-only utility.
++- PASS: Runtime source search found no `Game Journey completion metrics unavailable` Creator-facing string.
+ - PASS: `git diff --check` reported no whitespace errors. Git emitted line-ending warnings only.
+
+ ## Files
+
+ - `src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs`
++- `src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js`
++- `src/dev-runtime/server/local-api-router.mjs`
+ - `tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs`
++- `tests/helpers/playwrightRepoServer.mjs`
+ - `tests/playwright/tools/GameJourneyTool.spec.mjs`
++- `tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`
+ - `toolbox/tools-page-accordions.js`
+
+ ## Artifact
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_requirement-checklist.md b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_requirement-checklist.md
-new file mode 100644
-index 000000000..544b7057f
---- /dev/null
+index 544b7057f..65a654b6d 100644
+--- a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_requirement-checklist.md
 +++ b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_requirement-checklist.md
-@@ -0,0 +1,24 @@
-+# PR_26177_OWNER_057-game-journey-metrics-regression-recovery Requirement Checklist
-+
-+Status: PASS
-+
-+- PASS: Hard stop gate verified current branch was `main` before branch creation.
-+- PASS: Fetched origin.
-+- PASS: Pulled `origin/main` with `--ff-only`.
-+- PASS: Verified worktree clean and `main...origin/main` was `0 0`.
-+- PASS: Created `PR_26177_OWNER_057-game-journey-metrics-regression-recovery`.
-+- PASS: Compared Alfa/Owner behavior against Bravo/Charlie/Delta reference states.
-+- PASS: Fixed only the Game Journey completion metrics regression.
-+- PASS: Did not delete, move, overwrite, export, or migrate `tmp/local-api/game-journey-completion-metrics.sqlite`.
-+- PASS: Stopped active runtime from defaulting to `tmp/local-api/game-journey-completion-metrics.sqlite`.
-+- PASS: Preserved Postgres-backed Game Journey completion metrics as the active path.
-+- PASS: Ensured `toolbox/tools-page-accordions.js` cannot render `Game Journey completion metrics unavailable:`.
-+- PASS: Creator-facing UI does not expose SQLite, local filesystem paths, migration/export language, or Postgres internals.
-+- PASS: Did not introduce silent fallback behavior; metrics outage remains visible with neutral wording.
-+- PASS: Added targeted regression tests.
-+- PASS: Proved the existing legacy SQLite file does not block active metrics.
-+- PASS: Proved the forbidden warning string is not rendered.
-+- PASS: Proved Game Journey metrics still load through the active DB/API path.
-+- PASS: Used targeted validation only.
-+- PASS: Required reports were produced.
-+- PASS: Repo-structured ZIP was produced under `tmp/`.
+@@ -11,12 +11,14 @@ Status: PASS
+ - PASS: Fixed only the Game Journey completion metrics regression.
+ - PASS: Did not delete, move, overwrite, export, or migrate `tmp/local-api/game-journey-completion-metrics.sqlite`.
+ - PASS: Stopped active runtime from defaulting to `tmp/local-api/game-journey-completion-metrics.sqlite`.
++- PASS: Removed active runtime `legacyDbPath` SQLite guard plumbing.
+ - PASS: Preserved Postgres-backed Game Journey completion metrics as the active path.
+ - PASS: Ensured `toolbox/tools-page-accordions.js` cannot render `Game Journey completion metrics unavailable:`.
+ - PASS: Creator-facing UI does not expose SQLite, local filesystem paths, migration/export language, or Postgres internals.
+ - PASS: Did not introduce silent fallback behavior; metrics outage remains visible with neutral wording.
+ - PASS: Added targeted regression tests.
+ - PASS: Proved the existing legacy SQLite file does not block active metrics.
++- PASS: Proved active runtime JS/MJS has no SQLite or `tmp/local-api` metrics references outside the migration-only utility.
+ - PASS: Proved the forbidden warning string is not rendered.
+ - PASS: Proved Game Journey metrics still load through the active DB/API path.
+ - PASS: Used targeted validation only.
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_validation-lane.md b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_validation-lane.md
-new file mode 100644
-index 000000000..fe5ba4768
---- /dev/null
+index fe5ba4768..47530c453 100644
+--- a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_validation-lane.md
 +++ b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_validation-lane.md
-@@ -0,0 +1,45 @@
-+# PR_26177_OWNER_057-game-journey-metrics-regression-recovery Validation Lane
-+
-+Status: PASS
-+
-+## Commands
-+
-+```powershell
-+node --check src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs
-+node --check toolbox/tools-page-accordions.js
-+node --check tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
-+node --check tests/playwright/tools/GameJourneyTool.spec.mjs
-+```
-+
-+Result: PASS
-+
-+```powershell
-+node ./scripts/run-node-test-files.mjs tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs
-+```
-+
-+Result: PASS, 2 targeted node test files passed
-+
-+```powershell
-+npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --project=playwright --workers=1 --reporter=line -g "Game Journey Local API persists completion metrics to Postgres|Toolbox renders Creator-safe Game Journey progress outage copy"
-+```
-+
-+Result: PASS, 2 passed
-+
-+```powershell
-+node -e "import('node:fs').then(async fs=>{const [{createGameJourneyCompletionMetricsStore}, {createGameJourneyCompletionMetricsPostgresClientStub}] = await Promise.all([import('./src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs'), import('./tests/helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs')]); const legacy='tmp/local-api/game-journey-completion-metrics.sqlite'; if(!fs.existsSync(legacy)) throw new Error('Expected existing legacy SQLite file for regression proof'); const store=createGameJourneyCompletionMetricsStore({postgresClient:createGameJourneyCompletionMetricsPostgresClientStub()}); const metrics=await store.listMetrics(); if(store.legacyDbPath) throw new Error('Active store resolved a legacy path'); if(metrics.length!==14) throw new Error('Expected 14 active metrics'); console.log('PASS active Postgres metrics ignore existing retired legacy SQLite file');})"
-+```
-+
-+Result: PASS
-+
-+```powershell
-+rg -n "Game Journey completion metrics unavailable" src assets toolbox --glob "!**/*.map"
-+rg -n "game-journey-completion-metrics\.sqlite|GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH|defaultLegacySqlitePath" src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs toolbox/tools-page-accordions.js assets/toolbox/game-journey/js/index.js
-+```
-+
-+Result: PASS, no matches
-+
-+```powershell
-+git diff --check
-+```
-+
-+Result: PASS, line-ending warnings only
+@@ -6,9 +6,13 @@ Status: PASS
+
+ ```powershell
+ node --check src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs
++node --check src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
++node --check src/dev-runtime/server/local-api-router.mjs
+ node --check toolbox/tools-page-accordions.js
+ node --check tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
++node --check tests/helpers/playwrightRepoServer.mjs
+ node --check tests/playwright/tools/GameJourneyTool.spec.mjs
++node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+ ```
+
+ Result: PASS
+@@ -17,7 +21,7 @@ Result: PASS
+ node ./scripts/run-node-test-files.mjs tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs
+ ```
+
+-Result: PASS, 2 targeted node test files passed
++Result: PASS, 2 targeted node test files passed. Includes active runtime JS/MJS SQLite reference guardrail.
+
+ ```powershell
+ npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --project=playwright --workers=1 --reporter=line -g "Game Journey Local API persists completion metrics to Postgres|Toolbox renders Creator-safe Game Journey progress outage copy"
+@@ -26,14 +30,14 @@ npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --project=pl
+ Result: PASS, 2 passed
+
+ ```powershell
+-node -e "import('node:fs').then(async fs=>{const [{createGameJourneyCompletionMetricsStore}, {createGameJourneyCompletionMetricsPostgresClientStub}] = await Promise.all([import('./src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs'), import('./tests/helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs')]); const legacy='tmp/local-api/game-journey-completion-metrics.sqlite'; if(!fs.existsSync(legacy)) throw new Error('Expected existing legacy SQLite file for regression proof'); const store=createGameJourneyCompletionMetricsStore({postgresClient:createGameJourneyCompletionMetricsPostgresClientStub()}); const metrics=await store.listMetrics(); if(store.legacyDbPath) throw new Error('Active store resolved a legacy path'); if(metrics.length!==14) throw new Error('Expected 14 active metrics'); console.log('PASS active Postgres metrics ignore existing retired legacy SQLite file');})"
++node -e "import('node:fs').then(async fs=>{const [{createGameJourneyCompletionMetricsStore}, {createGameJourneyCompletionMetricsPostgresClientStub}] = await Promise.all([import('./src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs'), import('./tests/helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs')]); const legacy='tmp/local-api/game-journey-completion-metrics.sqlite'; if(!fs.existsSync(legacy)) throw new Error('Expected existing retired local file for regression proof'); const before=fs.statSync(legacy).mtimeMs; const store=createGameJourneyCompletionMetricsStore({postgresClient:createGameJourneyCompletionMetricsPostgresClientStub()}); const metrics=await store.listMetrics(); const snapshot=await store.snapshot(); const after=fs.statSync(legacy).mtimeMs; if(Object.hasOwn(store, 'legacyDbPath')) throw new Error('Store exposes legacyDbPath'); if(Object.hasOwn(snapshot, 'legacySqlitePath')) throw new Error('Snapshot exposes legacySqlitePath'); if(metrics.length!==14) throw new Error('Expected 14 active metrics'); if(before!==after) throw new Error('Retired local file was touched'); console.log('PASS active DB metrics ignore and do not inspect retired local file');})"
+ ```
+
+ Result: PASS
+
+ ```powershell
++rg -n -i "sqlite|better-sqlite|game-journey-completion-metrics\.sqlite|tmp/local-api" src assets toolbox -g "*.js" -g "*.mjs" --glob "!src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs"
+ rg -n "Game Journey completion metrics unavailable" src assets toolbox --glob "!**/*.map"
+-rg -n "game-journey-completion-metrics\.sqlite|GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH|defaultLegacySqlitePath" src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs toolbox/tools-page-accordions.js assets/toolbox/game-journey/js/index.js
+ ```
+
+ Result: PASS, no matches
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index ba3f7a58a..585a10850 100644
+index 585a10850..8e34972a1 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,12 +1,11 @@
--docs_build/dev/BUILD_PR.md
--docs_build/dev/PLAN_PR.md
--docs_build/dev/reports/PR_26177_006-shared-time-foundation.md
--docs_build/dev/reports/PR_26177_006-shared-time-foundation_branch-validation.md
--docs_build/dev/reports/PR_26177_006-shared-time-foundation_closeout.md
--docs_build/dev/reports/PR_26177_006-shared-time-foundation_manual-validation-notes.md
--docs_build/dev/reports/PR_26177_006-shared-time-foundation_requirement-checklist.md
--docs_build/dev/reports/PR_26177_006-shared-time-foundation_validation-lane.md
-+docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md
-+docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md
-+docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md
-+docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_requirement-checklist.md
-+docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_validation-lane.md
+@@ -6,6 +6,9 @@ docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recove
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
--src/shared/time/time.js
--tests/shared/TimeFoundation.test.mjs
-+src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs
-+tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
-+tests/playwright/tools/GameJourneyTool.spec.mjs
-+toolbox/tools-page-accordions.js
+ src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs
++src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
++src/dev-runtime/server/local-api-router.mjs
+ tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
++tests/helpers/playwrightRepoServer.mjs
+ tests/playwright/tools/GameJourneyTool.spec.mjs
+-toolbox/tools-page-accordions.js
++tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
 diff --git a/src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs b/src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs
-index 2795e534c..6c202c8a2 100644
+index 6c202c8a2..eea6294e7 100644
 --- a/src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs
 +++ b/src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs
-@@ -1,6 +1,5 @@
- import { existsSync } from "node:fs";
- import path from "node:path";
--import process from "node:process";
+@@ -1,5 +1,3 @@
+-import { existsSync } from "node:fs";
+-import path from "node:path";
  import { createPostgresConnectionClient } from "./postgres-connection-client.mjs";
  import { SEED_DB_KEYS, makeSeedUlid } from "../seed/seed-db-keys.mjs";
 
-@@ -60,25 +59,15 @@ function clone(value) {
+@@ -59,24 +57,6 @@ function clone(value) {
    return JSON.parse(JSON.stringify(value));
  }
 
--function defaultLegacySqlitePath(env = process.env) {
--  const configured = String(env.GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH || "").trim();
--  if (configured) {
--    return path.resolve(configured);
+-function resolveLegacySqlitePath(legacyDbPath) {
+-  if (legacyDbPath === null || legacyDbPath === undefined) {
+-    return "";
 -  }
--  return path.join(process.cwd(), "tmp", "local-api", "game-journey-completion-metrics.sqlite");
+-  const value = String(legacyDbPath || "").trim();
+-  if (!value) {
+-    return "";
+-  }
+-  return path.resolve(value);
 -}
 -
--function resolveLegacySqlitePath({ dbPath, env, legacyDbPath }) {
--  if (legacyDbPath === null) {
-+function resolveLegacySqlitePath(legacyDbPath) {
-+  if (legacyDbPath === null || legacyDbPath === undefined) {
-     return "";
-   }
--  if (legacyDbPath !== undefined) {
--    return path.resolve(legacyDbPath);
+-function assertNoUnmigratedLegacySqlite(legacyDbPath) {
+-  if (!legacyDbPath || !existsSync(legacyDbPath)) {
+-    return;
 -  }
--  if (dbPath) {
--    return path.resolve(dbPath);
-+  const value = String(legacyDbPath || "").trim();
-+  if (!value) {
-+    return "";
-   }
--  return defaultLegacySqlitePath(env);
-+  return path.resolve(value);
- }
-
- function assertNoUnmigratedLegacySqlite(legacyDbPath) {
-@@ -169,11 +158,7 @@ function bucketSeedRow(bucket, now) {
+-  throw new Error(`Legacy Game Journey completion metrics SQLite data exists at ${legacyDbPath}. No data was removed or overwritten. Export or migrate that data into Postgres, then move the legacy file before using the Postgres metrics store.`);
+-}
+-
+ function normalizeCount(value, fallback = 0) {
+   const parsed = Number(value);
+   if (!Number.isFinite(parsed)) {
+@@ -158,7 +138,6 @@ function bucketSeedRow(bucket, now) {
  export function createGameJourneyCompletionMetricsStore(options = {}) {
    const env = options.env || process.env;
    const bucketSeeds = Object.freeze((options.buckets || GAME_JOURNEY_COMPLETION_BUCKETS).map(clone));
--  const legacyDbPath = resolveLegacySqlitePath({
--    dbPath: options.dbPath,
--    env,
--    legacyDbPath: options.legacyDbPath,
--  });
-+  const legacyDbPath = resolveLegacySqlitePath(options.legacyDbPath);
+-  const legacyDbPath = resolveLegacySqlitePath(options.legacyDbPath);
    let postgresClient = options.postgresClient || null;
    let readyPromise = null;
 
-diff --git a/tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs b/tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
-new file mode 100644
-index 000000000..edbc0333e
---- /dev/null
-+++ b/tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
-@@ -0,0 +1,36 @@
-+import assert from "node:assert/strict";
-+import fs from "node:fs/promises";
-+import os from "node:os";
-+import path from "node:path";
-+import process from "node:process";
-+import test from "node:test";
-+import {
-+  GAME_JOURNEY_COMPLETION_METRICS_TABLE,
-+  createGameJourneyCompletionMetricsStore,
-+} from "../../src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs";
-+import { createGameJourneyCompletionMetricsPostgresClientStub } from "../helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs";
-+
-+test("active Game Journey metrics ignore the retired default legacy SQLite path", async () => {
-+  const originalCwd = process.cwd();
-+  const directory = await fs.mkdtemp(path.join(os.tmpdir(), "gfs-game-journey-metrics-store-"));
-+  const retiredLegacyPath = path.join(directory, "tmp", "local-api", "game-journey-completion-metrics.sqlite");
-+  const retiredLegacyContents = "retired legacy sqlite placeholder";
-+
-+  try {
-+    await fs.mkdir(path.dirname(retiredLegacyPath), { recursive: true });
-+    await fs.writeFile(retiredLegacyPath, retiredLegacyContents);
-+    process.chdir(directory);
-+
-+    const postgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
-+    const store = createGameJourneyCompletionMetricsStore({ postgresClient });
-+    const metrics = await store.listMetrics();
-+
-+    assert.equal(store.legacyDbPath, "");
-+    assert.equal(metrics.length, 14);
-+    assert.equal(postgresClient.dumpTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE).length, 14);
-+    assert.equal(await fs.readFile(retiredLegacyPath, "utf8"), retiredLegacyContents);
-+  } finally {
-+    process.chdir(originalCwd);
-+    await fs.rm(directory, { force: true, recursive: true });
-+  }
-+});
-diff --git a/tests/playwright/tools/GameJourneyTool.spec.mjs b/tests/playwright/tools/GameJourneyTool.spec.mjs
-index 38abd59c3..75a913d96 100644
---- a/tests/playwright/tools/GameJourneyTool.spec.mjs
-+++ b/tests/playwright/tools/GameJourneyTool.spec.mjs
-@@ -128,6 +128,21 @@ function restoreEnvValue(key, value) {
-   process.env[key] = value;
- }
+@@ -230,7 +209,6 @@ export function createGameJourneyCompletionMetricsStore(options = {}) {
+   async function ensureReady() {
+     if (!readyPromise) {
+       readyPromise = (async () => {
+-        assertNoUnmigratedLegacySqlite(legacyDbPath);
+         await client().query(GAME_JOURNEY_COMPLETION_METRICS_SCHEMA_SQL);
+         await seedDefaultBuckets();
+       })();
+@@ -298,7 +276,6 @@ export function createGameJourneyCompletionMetricsStore(options = {}) {
+       databaseConfigKey: "GAMEFOUNDRY_DATABASE_URL",
+       databaseEngine: "Postgres",
+       databasePath: "GAMEFOUNDRY_DATABASE_URL",
+-      legacySqlitePath: legacyDbPath,
+       serviceContract: "Web UI -> Local API/Service Contract -> Postgres",
+       source: GAME_JOURNEY_COMPLETION_METRICS_TABLE,
+       tableName: GAME_JOURNEY_COMPLETION_METRICS_TABLE,
+@@ -312,7 +289,6 @@ export function createGameJourneyCompletionMetricsStore(options = {}) {
+   }
 
-+function createFailingCompletionMetricsPostgresClient() {
-+  const failure = new Error("Active metrics store temporarily unavailable at tmp/local-api/game-journey-completion-metrics.sqlite.");
-+  return {
-+    dumpTable() {
-+      return [];
-+    },
-+    async query() {
-+      throw failure;
-+    },
-+    async requestTable() {
-+      throw failure;
-+    },
-+  };
+   return {
+-    legacyDbPath,
+     listMetrics,
+     snapshot,
+     updateMetric,
+diff --git a/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js b/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
+index 73b409c42..8e0ddc92b 100644
+--- a/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
++++ b/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
+@@ -627,7 +627,6 @@ export function createGameJourneyMockRepository(options = {}) {
+   const completionMetricsStore =
+     options.completionMetricsStore || createGameJourneyCompletionMetricsStore({
+       dbPath: options.completionMetricsDbPath,
+-      legacyDbPath: options.completionMetricsLegacyDbPath,
+       postgresClient: options.completionMetricsPostgresClient,
+     });
+   const tables = loadMockDbTables(GAME_JOURNEY_DB_OWNER, getSeedTables(), options).tables;
+diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
+index f2f927aff..2cb9a66f1 100644
+--- a/src/dev-runtime/server/local-api-router.mjs
++++ b/src/dev-runtime/server/local-api-router.mjs
+@@ -3304,14 +3304,12 @@ function productTablesFromSnapshot(snapshot) {
+
+ class ApiRuntimeDataSource {
+   constructor({
+-    gameJourneyCompletionMetricsLegacyDbPath = undefined,
+     gameJourneyCompletionMetricsPostgresClient = null,
+     messagesPostgresClient = null,
+     messagesService = null,
+     repoRoot = process.cwd(),
+   } = {}) {
+     this.messagesService = messagesService || createMessagesPostgresService({ postgresClient: messagesPostgresClient });
+-    this.gameJourneyCompletionMetricsLegacyDbPath = gameJourneyCompletionMetricsLegacyDbPath;
+     this.gameJourneyCompletionMetricsPostgresClient = gameJourneyCompletionMetricsPostgresClient;
+     this.repositoryCounter = 1;
+     this.repositoryById = new Map();
+@@ -3556,7 +3554,6 @@ class ApiRuntimeDataSource {
+       this.standaloneTables.invitations = [];
+     }
+     this.sharedOptions = {
+-      completionMetricsLegacyDbPath: this.gameJourneyCompletionMetricsLegacyDbPath,
+       completionMetricsPostgresClient: this.gameJourneyCompletionMetricsPostgresClient,
+       memoryDbTables: this.standaloneTables,
+       sessionMode: this.sessionModeId,
+@@ -6839,14 +6836,12 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
+  * The router itself serves the configured server API contract.
+  */
+ export function createLocalApiRouter({
+-  gameJourneyCompletionMetricsLegacyDbPath = undefined,
+   gameJourneyCompletionMetricsPostgresClient = null,
+   messagesPostgresClient = null,
+   messagesService = null,
+   repoRoot = process.cwd(),
+ } = {}) {
+   const dataSource = new ApiRuntimeDataSource({
+-    gameJourneyCompletionMetricsLegacyDbPath,
+     gameJourneyCompletionMetricsPostgresClient,
+     messagesPostgresClient,
+     messagesService,
+diff --git a/tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs b/tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
+index edbc0333e..1ca7de68e 100644
+--- a/tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
++++ b/tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
+@@ -10,6 +10,34 @@ import {
+ } from "../../src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs";
+ import { createGameJourneyCompletionMetricsPostgresClientStub } from "../helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs";
+
++const ACTIVE_RUNTIME_ROOTS = Object.freeze(["src", "assets", "toolbox"]);
++const ACTIVE_RUNTIME_ALLOWED_FILES = new Set([
++  path.normalize("src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs"),
++]);
++const RUNTIME_FORBIDDEN_PATTERNS = Object.freeze([
++  /sqlite/i,
++  /\.sqlite/i,
++  /better-sqlite/i,
++  /game-journey-completion-metrics\.sqlite/i,
++  /tmp\/local-api/i,
++]);
++
++async function activeRuntimeJavaScriptFiles(root) {
++  const entries = await fs.readdir(root, { withFileTypes: true });
++  const files = [];
++  for (const entry of entries) {
++    const child = path.join(root, entry.name);
++    if (entry.isDirectory()) {
++      files.push(...await activeRuntimeJavaScriptFiles(child));
++      continue;
++    }
++    if (entry.isFile() && /\.(?:mjs|js)$/i.test(entry.name)) {
++      files.push(child);
++    }
++  }
++  return files;
 +}
 +
- function expectStaticToolOwnershipAreas(areas) {
-   expect(areas.map((area) => area.sectionName)).toEqual([
-     "Idea",
-@@ -1575,6 +1590,31 @@ test("Toolbox registration exposes Game Journey navigation", async ({ page }) =>
+ test("active Game Journey metrics ignore the retired default legacy SQLite path", async () => {
+   const originalCwd = process.cwd();
+   const directory = await fs.mkdtemp(path.join(os.tmpdir(), "gfs-game-journey-metrics-store-"));
+@@ -24,8 +52,10 @@ test("active Game Journey metrics ignore the retired default legacy SQLite path"
+     const postgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
+     const store = createGameJourneyCompletionMetricsStore({ postgresClient });
+     const metrics = await store.listMetrics();
++    const snapshot = await store.snapshot();
+
+-    assert.equal(store.legacyDbPath, "");
++    assert.equal(Object.hasOwn(store, "legacyDbPath"), false);
++    assert.equal(Object.hasOwn(snapshot, "legacySqlitePath"), false);
+     assert.equal(metrics.length, 14);
+     assert.equal(postgresClient.dumpTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE).length, 14);
+     assert.equal(await fs.readFile(retiredLegacyPath, "utf8"), retiredLegacyContents);
+@@ -34,3 +64,26 @@ test("active Game Journey metrics ignore the retired default legacy SQLite path"
+     await fs.rm(directory, { force: true, recursive: true });
    }
  });
-
-+test("Toolbox renders Creator-safe Game Journey progress outage copy", async ({ page }) => {
-+  const server = await startRepoServer({
-+    gameJourneyCompletionMetricsPostgresClient: createFailingCompletionMetricsPostgresClient(),
-+  });
-+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
-+  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
-+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
-+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
 +
-+  try {
-+    await page.goto(`${server.baseUrl}/toolbox/index.html?view=group&group=create`, { waitUntil: "networkidle" });
-+    await expect(page.locator("[data-game-journey-completion-diagnostic]").first()).toHaveText(
-+      "Game Journey progress is temporarily unavailable. Continue building while progress refreshes.",
-+    );
-+    await expect(page.locator("body")).not.toContainText("Game Journey completion metrics unavailable");
-+    await expect(page.locator("body")).not.toContainText("SQLite");
-+    await expect(page.locator("body")).not.toContainText("tmp/local-api");
-+    await expect(page.locator("body")).not.toContainText("Postgres");
-+  } finally {
-+    await server.close();
-+    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
-+    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
++test("active runtime JS and MJS do not contain SQLite or tmp local metrics references", async () => {
++  const files = [];
++  for (const root of ACTIVE_RUNTIME_ROOTS) {
++    files.push(...await activeRuntimeJavaScriptFiles(root));
 +  }
-+});
 +
- test("Game Journey source stays separate from notes files and browser persistence", async () => {
-   const sourcePaths = [
-     "toolbox/game-journey/index.html",
-diff --git a/toolbox/tools-page-accordions.js b/toolbox/tools-page-accordions.js
-index f2b6641e1..15ff7d3c2 100644
---- a/toolbox/tools-page-accordions.js
-+++ b/toolbox/tools-page-accordions.js
-@@ -210,7 +210,7 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
-     const voteRowsByToolId = new Map();
-     let voteDiagnostic = "";
-     let gameJourneyCompletionSnapshot = null;
--    let gameJourneyCompletionDiagnostic = "";
-+    let gameJourneyCompletionUnavailable = false;
++  const findings = [];
++  for (const file of files) {
++    const normalized = path.normalize(file);
++    if (ACTIVE_RUNTIME_ALLOWED_FILES.has(normalized)) {
++      continue;
++    }
++    const contents = await fs.readFile(file, "utf8");
++    RUNTIME_FORBIDDEN_PATTERNS.forEach((pattern) => {
++      if (pattern.test(contents)) {
++        findings.push(`${file}: ${pattern}`);
++      }
++    });
++  }
++
++  assert.deepEqual(findings, []);
++});
+diff --git a/tests/helpers/playwrightRepoServer.mjs b/tests/helpers/playwrightRepoServer.mjs
+index 9bc8e8f07..71c7853aa 100644
+--- a/tests/helpers/playwrightRepoServer.mjs
++++ b/tests/helpers/playwrightRepoServer.mjs
+@@ -91,13 +91,11 @@ function resolveBrowserRoutePath(decodedPath) {
+ }
 
-     function applyToolboxVoteSnapshot(snapshot) {
-         voteRowsByToolId.clear();
-@@ -229,7 +229,7 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
-     try {
-         gameJourneyCompletionSnapshot = readGameJourneyCompletionMetrics();
-     } catch (error) {
--        gameJourneyCompletionDiagnostic = error instanceof Error ? error.message : String(error || "Game Journey completion metrics unavailable.");
-+        gameJourneyCompletionUnavailable = true;
-     }
+ export async function startRepoServer({
+-  gameJourneyCompletionMetricsLegacyDbPath = undefined,
+   gameJourneyCompletionMetricsPostgresClient = null,
+   messagesPostgresClient = null,
+ } = {}) {
+   await loadRuntimeEnv();
+   const handleLocalApiRequest = createLocalApiRouter({
+-    gameJourneyCompletionMetricsLegacyDbPath,
+     gameJourneyCompletionMetricsPostgresClient,
+     messagesPostgresClient,
+     repoRoot,
+diff --git a/tests/playwright/tools/GameJourneyTool.spec.mjs b/tests/playwright/tools/GameJourneyTool.spec.mjs
+index 75a913d96..cc47265cf 100644
+--- a/tests/playwright/tools/GameJourneyTool.spec.mjs
++++ b/tests/playwright/tools/GameJourneyTool.spec.mjs
+@@ -40,7 +40,6 @@ test.afterAll(async () => {
+ async function openRepoPage(page, pathName, options = {}) {
+   const gameJourneyCompletionMetricsPostgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
+   const server = await startRepoServer({
+-    gameJourneyCompletionMetricsLegacyDbPath: null,
+     gameJourneyCompletionMetricsPostgresClient,
+   });
+   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+@@ -238,7 +237,6 @@ test("Game Journey exposes static tool ownership areas without automatic counts"
 
-     const gameJourneyCompletionByGroup = new Map(
-@@ -1219,12 +1219,12 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
-         const body = document.createElement("div");
-         body.className = "accordion-body";
+   const gameJourneyCompletionMetricsPostgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
+   const server = await startRepoServer({
+-    gameJourneyCompletionMetricsLegacyDbPath: null,
+     gameJourneyCompletionMetricsPostgresClient,
+   });
+   try {
+@@ -262,7 +260,6 @@ test("Game Journey progress dashboard summarizes completion metrics", async ({ p
+   process.env.GAMEFOUNDRY_LOCAL_DB_PATH = localDbPath;
+   const gameJourneyCompletionMetricsPostgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
+   const server = await startRepoServer({
+-    gameJourneyCompletionMetricsLegacyDbPath: null,
+     gameJourneyCompletionMetricsPostgresClient,
+   });
+   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+@@ -1285,7 +1282,6 @@ test("Game Journey displays system template diagnostics", async ({ page }) => {
 
--        if (gameJourneyCompletionDiagnostic) {
-+        if (gameJourneyCompletionUnavailable) {
-             const diagnostic = document.createElement("p");
-             diagnostic.className = "status";
-             diagnostic.dataset.gameJourneyCompletionDiagnostic = group.title;
-             diagnostic.setAttribute("role", "status");
--            diagnostic.textContent = "Game Journey completion metrics unavailable: " + gameJourneyCompletionDiagnostic;
-+            diagnostic.textContent = "Game Journey progress is temporarily unavailable. Continue building while progress refreshes.";
-             body.append(diagnostic);
-         }
+ test("Game Journey mock data keeps system guidance template-owned", async () => {
+   const repository = createGameJourneyMockRepository({
+-    completionMetricsLegacyDbPath: null,
+     completionMetricsPostgresClient: createGameJourneyCompletionMetricsPostgresClientStub(),
+     memoryDbTables: standaloneSeedTables,
+     persist: false,
+@@ -1452,7 +1448,6 @@ test("Game Journey mock data keeps system guidance template-owned", async () =>
+ test("Game Journey Local API persists completion metrics to Postgres", async () => {
+   const gameJourneyCompletionMetricsPostgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
+   const server = await startRepoServer({
+-    gameJourneyCompletionMetricsLegacyDbPath: null,
+     gameJourneyCompletionMetricsPostgresClient,
+   });
+   try {
+@@ -1511,29 +1506,11 @@ test("Game Journey Local API persists completion metrics to Postgres", async ()
+ test("Game Journey completion metrics fail visibly when Postgres is not configured", async () => {
+   const store = createGameJourneyCompletionMetricsStore({
+     env: {},
+-    legacyDbPath: null,
+   });
+
+   await expect(store.listMetrics()).rejects.toThrow(/GAMEFOUNDRY_DATABASE_URL/);
+ });
+
+-test("Game Journey completion metrics protect legacy SQLite data from silent drop", async () => {
+-  const legacyDbPath = path.join(process.cwd(), "tmp", "local-api", `game-journey-legacy-guard-${process.pid}-${Date.now()}.sqlite`);
+-  await fs.mkdir(path.dirname(legacyDbPath), { recursive: true });
+-  await fs.writeFile(legacyDbPath, "legacy metrics placeholder");
+-
+-  const store = createGameJourneyCompletionMetricsStore({
+-    legacyDbPath,
+-    postgresClient: createGameJourneyCompletionMetricsPostgresClientStub(),
+-  });
+-
+-  try {
+-    await expect(store.listMetrics()).rejects.toThrow(/Legacy Game Journey completion metrics SQLite data exists/);
+-  } finally {
+-    await fs.rm(legacyDbPath, { force: true });
+-  }
+-});
+-
+ test("Game Journey requires an active game before editing", async ({ page }) => {
+   const failures = await openRepoPage(page, "/toolbox/game-journey/index.html?game=none");
+
+diff --git a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+index 6d626f03b..be8c88698 100644
+--- a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
++++ b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+@@ -115,7 +115,6 @@ async function expectNoNavigationFallbackUi(page) {
+
+ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
+   const server = await startRepoServer({
+-    gameJourneyCompletionMetricsLegacyDbPath: null,
+     gameJourneyCompletionMetricsPostgresClient: createGameJourneyCompletionMetricsPostgresClientStub(),
+   });
+   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+@@ -478,7 +477,6 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
+
+ test("Idea Board gates Create Project to Ready ideas and locks converted projects", async ({ page }) => {
+   const server = await startRepoServer({
+-    gameJourneyCompletionMetricsLegacyDbPath: null,
+     gameJourneyCompletionMetricsPostgresClient: createGameJourneyCompletionMetricsPostgresClientStub(),
+   });
+   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+@@ -595,7 +593,6 @@ test("Idea Board gates Create Project to Ready ideas and locks converted project
+
+ test("Idea Board guest write actions redirect to sign in before saving data", async ({ page }) => {
+   const server = await startRepoServer({
+-    gameJourneyCompletionMetricsLegacyDbPath: null,
+     gameJourneyCompletionMetricsPostgresClient: createGameJourneyCompletionMetricsPostgresClientStub(),
+   });
+   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;

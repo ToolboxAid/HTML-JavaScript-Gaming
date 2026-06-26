@@ -11,12 +11,14 @@ Status: PASS
 - PASS: Fixed only the Game Journey completion metrics regression.
 - PASS: Did not delete, move, overwrite, export, or migrate `tmp/local-api/game-journey-completion-metrics.sqlite`.
 - PASS: Stopped active runtime from defaulting to `tmp/local-api/game-journey-completion-metrics.sqlite`.
+- PASS: Removed active runtime `legacyDbPath` SQLite guard plumbing.
 - PASS: Preserved Postgres-backed Game Journey completion metrics as the active path.
 - PASS: Ensured `toolbox/tools-page-accordions.js` cannot render `Game Journey completion metrics unavailable:`.
 - PASS: Creator-facing UI does not expose SQLite, local filesystem paths, migration/export language, or Postgres internals.
 - PASS: Did not introduce silent fallback behavior; metrics outage remains visible with neutral wording.
 - PASS: Added targeted regression tests.
 - PASS: Proved the existing legacy SQLite file does not block active metrics.
+- PASS: Proved active runtime JS/MJS has no SQLite or `tmp/local-api` metrics references outside the migration-only utility.
 - PASS: Proved the forbidden warning string is not rendered.
 - PASS: Proved Game Journey metrics still load through the active DB/API path.
 - PASS: Used targeted validation only.

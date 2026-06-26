@@ -6,6 +6,9 @@ docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recove
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
 src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs
+src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
+src/dev-runtime/server/local-api-router.mjs
 tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
+tests/helpers/playwrightRepoServer.mjs
 tests/playwright/tools/GameJourneyTool.spec.mjs
-toolbox/tools-page-accordions.js
+tests/playwright/tools/IdeaBoardTableNotes.spec.mjs

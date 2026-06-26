@@ -3304,14 +3304,12 @@ function productTablesFromSnapshot(snapshot) {
 
 class ApiRuntimeDataSource {
   constructor({
-    gameJourneyCompletionMetricsLegacyDbPath = undefined,
     gameJourneyCompletionMetricsPostgresClient = null,
     messagesPostgresClient = null,
     messagesService = null,
     repoRoot = process.cwd(),
   } = {}) {
     this.messagesService = messagesService || createMessagesPostgresService({ postgresClient: messagesPostgresClient });
-    this.gameJourneyCompletionMetricsLegacyDbPath = gameJourneyCompletionMetricsLegacyDbPath;
     this.gameJourneyCompletionMetricsPostgresClient = gameJourneyCompletionMetricsPostgresClient;
     this.repositoryCounter = 1;
     this.repositoryById = new Map();
@@ -3556,7 +3554,6 @@ class ApiRuntimeDataSource {
       this.standaloneTables.invitations = [];
     }
     this.sharedOptions = {
-      completionMetricsLegacyDbPath: this.gameJourneyCompletionMetricsLegacyDbPath,
       completionMetricsPostgresClient: this.gameJourneyCompletionMetricsPostgresClient,
       memoryDbTables: this.standaloneTables,
       sessionMode: this.sessionModeId,
@@ -6839,14 +6836,12 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
  * The router itself serves the configured server API contract.
  */
 export function createLocalApiRouter({
-  gameJourneyCompletionMetricsLegacyDbPath = undefined,
   gameJourneyCompletionMetricsPostgresClient = null,
   messagesPostgresClient = null,
   messagesService = null,
   repoRoot = process.cwd(),
 } = {}) {
   const dataSource = new ApiRuntimeDataSource({
-    gameJourneyCompletionMetricsLegacyDbPath,
     gameJourneyCompletionMetricsPostgresClient,
     messagesPostgresClient,
     messagesService,

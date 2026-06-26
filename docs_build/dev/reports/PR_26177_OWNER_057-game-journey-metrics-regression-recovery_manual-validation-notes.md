@@ -5,9 +5,10 @@ Status: PASS
 ## Notes
 
 - Confirmed the repo-local `tmp/local-api/game-journey-completion-metrics.sqlite` file exists before validation.
-- Confirmed active `createGameJourneyCompletionMetricsStore({ postgresClient })` no longer resolves that retired path by default.
-- Confirmed active metrics load 14 Postgres-backed completion buckets while the retired file remains untouched.
-- Confirmed explicit `legacyDbPath` protection remains covered by the existing migration/regression test file.
+- Confirmed active `createGameJourneyCompletionMetricsStore({ postgresClient })` exposes no `legacyDbPath`.
+- Confirmed active metrics snapshots expose no `legacySqlitePath`.
+- Confirmed active metrics load 14 DB-backed completion buckets while the retired file remains untouched.
+- Confirmed active runtime JS/MJS has no SQLite or `tmp/local-api` metrics references outside the migration-only utility.
 - Confirmed the toolbox page renders neutral Creator-facing outage wording when active metrics are unavailable.
 - Confirmed the toolbox page does not render the forbidden warning string, SQLite wording, `tmp/local-api`, or Postgres internals in the simulated outage lane.
 - Confirmed no Alfa Tags PR work was started.

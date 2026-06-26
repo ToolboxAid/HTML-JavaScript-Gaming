@@ -1,5 +1,3 @@
-import { existsSync } from "node:fs";
-import path from "node:path";
 import { createPostgresConnectionClient } from "./postgres-connection-client.mjs";
 import { SEED_DB_KEYS, makeSeedUlid } from "../seed/seed-db-keys.mjs";
 
@@ -57,24 +55,6 @@ export const GAME_JOURNEY_COMPLETION_BUCKETS = Object.freeze([
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
-}
-
-function resolveLegacySqlitePath(legacyDbPath) {
-  if (legacyDbPath === null || legacyDbPath === undefined) {
-    return "";
-  }
-  const value = String(legacyDbPath || "").trim();
-  if (!value) {
-    return "";
-  }
-  return path.resolve(value);
-}
-
-function assertNoUnmigratedLegacySqlite(legacyDbPath) {
-  if (!legacyDbPath || !existsSync(legacyDbPath)) {
-    return;
-  }
-  throw new Error(`Legacy Game Journey completion metrics SQLite data exists at ${legacyDbPath}. No data was removed or overwritten. Export or migrate that data into Postgres, then move the legacy file before using the Postgres metrics store.`);
 }
 
 function normalizeCount(value, fallback = 0) {
@@ -158,7 +138,6 @@ function bucketSeedRow(bucket, now) {
 export function createGameJourneyCompletionMetricsStore(options = {}) {
   const env = options.env || process.env;
   const bucketSeeds = Object.freeze((options.buckets || GAME_JOURNEY_COMPLETION_BUCKETS).map(clone));
-  const legacyDbPath = resolveLegacySqlitePath(options.legacyDbPath);
   let postgresClient = options.postgresClient || null;
   let readyPromise = null;
 
@@ -230,7 +209,6 @@ export function createGameJourneyCompletionMetricsStore(options = {}) {
   async function ensureReady() {
     if (!readyPromise) {
       readyPromise = (async () => {
-        assertNoUnmigratedLegacySqlite(legacyDbPath);
         await client().query(GAME_JOURNEY_COMPLETION_METRICS_SCHEMA_SQL);
         await seedDefaultBuckets();
       })();
@@ -298,7 +276,6 @@ export function createGameJourneyCompletionMetricsStore(options = {}) {
       databaseConfigKey: "GAMEFOUNDRY_DATABASE_URL",
       databaseEngine: "Postgres",
       databasePath: "GAMEFOUNDRY_DATABASE_URL",
-      legacySqlitePath: legacyDbPath,
       serviceContract: "Web UI -> Local API/Service Contract -> Postgres",
       source: GAME_JOURNEY_COMPLETION_METRICS_TABLE,
       tableName: GAME_JOURNEY_COMPLETION_METRICS_TABLE,
@@ -312,7 +289,6 @@ export function createGameJourneyCompletionMetricsStore(options = {}) {
   }
 
   return {
-    legacyDbPath,
     listMetrics,
     snapshot,
     updateMetric,
