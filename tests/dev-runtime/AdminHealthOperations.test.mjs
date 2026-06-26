@@ -184,11 +184,18 @@ test("Admin can view operational health while Creator sessions are blocked", asy
           "Hosting model",
           "Site URL",
           "API URL",
+          "API URL source",
+          "Site URL source",
           "Database provider/type",
           "Storage provider/folder",
+          "Storage endpoint",
+          "Storage projects prefix",
           "Auth provider/status",
         ],
       );
+      assert.equal(health.configurationSummary.rows.find((row) => row.field === "API URL source")?.value, "GAMEFOUNDRY_API_URL");
+      assert.equal(health.configurationSummary.rows.find((row) => row.field === "Site URL source")?.value, "GAMEFOUNDRY_SITE_URL");
+      assert.equal(health.configurationSummary.rows.find((row) => row.field === "Storage projects prefix")?.value, "/local/projects/");
       assert.equal(JSON.stringify(health.configurationSummary).includes("site-user"), false);
       assert.equal(JSON.stringify(health.configurationSummary).includes("site-secret"), false);
       assert.equal(JSON.stringify(health.configurationSummary).includes("api-user"), false);
@@ -302,7 +309,12 @@ test("Admin can view operational health while Creator sessions are blocked", asy
       const startupRows = new Map(health.localApiStartup.rows.map((row) => [row.field, row]));
       assert.equal(startupRows.get("Environment variable order")?.value, "alphabetical");
       assert.equal(startupRows.get("Secret masking markers")?.value, "PASSWORD, SECRET, TOKEN, KEY, SERVICE_ROLE, JWT");
+      assert.equal(startupRows.get("Runtime configuration source")?.value, ".env + process environment");
+      assert.equal(startupRows.get("Local API URL source")?.value, "GAMEFOUNDRY_API_URL");
+      assert.equal(startupRows.get("Local site URL source")?.value, "GAMEFOUNDRY_SITE_URL");
+      assert.equal(startupRows.get("Storage/R2 projects prefix source")?.value, "/local/projects/");
       assert.equal(startupRows.get("Local API URL")?.status, "PASS");
+      assert.equal(startupRows.get("Configured API URL")?.status, "PASS");
       assert.equal(startupRows.get("Local site URL port")?.value, "5500");
       assert.ok(["Postgres", "not configured", "invalid database URL"].includes(startupRows.get("Database mode")?.value));
       assert.equal(startupRows.get("Storage status")?.value, "not configured");

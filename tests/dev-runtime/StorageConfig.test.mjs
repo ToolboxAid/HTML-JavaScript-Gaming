@@ -17,6 +17,7 @@ function validStorageEnv(projectsPrefix = "/dev/projects/") {
 }
 
 test("storage projects prefix normalizes slash variants", () => {
+  assert.equal(normalizeStorageProjectsPrefix("local/projects"), "/local/projects/");
   assert.equal(normalizeStorageProjectsPrefix("dev/projects"), "/dev/projects/");
   assert.equal(normalizeStorageProjectsPrefix("\\ist\\projects\\"), "/ist/projects/");
   assert.equal(normalizeStorageProjectsPrefix(" /uat/projects/ "), "/uat/projects/");
@@ -25,6 +26,7 @@ test("storage projects prefix normalizes slash variants", () => {
 
 test("storage config accepts only approved project storage prefixes", () => {
   assert.deepEqual(STORAGE_PROJECTS_ALLOWED_PREFIXES, [
+    "/local/projects/",
     "/dev/projects/",
     "/ist/projects/",
     "/uat/projects/",
@@ -44,6 +46,7 @@ test("storage config rejects unapproved project storage prefixes", () => {
     assert.equal(config.configured, false);
     assert.equal(config.safe.projectsPrefix, projectsPrefix);
     assert.match(config.validationError, /GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX must be one of/);
+    assert.equal(config.validationError.includes("/local/projects/"), true);
     assert.equal(config.validationError.includes("/prod/projects/"), true);
   });
 });
@@ -54,6 +57,26 @@ test("storage config reports missing project storage prefix", () => {
   assert.equal(config.configured, false);
   assert.deepEqual(config.missingKeys, ["GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX"]);
   assert.equal(config.safe.projectsPrefix, "");
+});
+
+test("storage config preserves safe partial values without exposing credentials", () => {
+  const config = loadStorageConfig({
+    GAMEFOUNDRY_STORAGE_BUCKET: "gamefoundry-test-assets",
+    GAMEFOUNDRY_STORAGE_ENDPOINT: "https://r2.example.invalid/path-ignored",
+    GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX: "/local/projects/",
+  });
+  assert.equal(config.configured, false);
+  assert.deepEqual(config.missingKeys, [
+    "GAMEFOUNDRY_STORAGE_ACCESS_KEY_ID",
+    "GAMEFOUNDRY_STORAGE_SECRET_ACCESS_KEY",
+  ]);
+  assert.deepEqual(config.safe, {
+    bucket: "gamefoundry-test-assets",
+    endpoint: "https://r2.example.invalid",
+    projectsPrefix: "/local/projects/",
+  });
+  assert.equal(JSON.stringify(config.safe).includes("ACCESS_KEY"), false);
+  assert.equal(JSON.stringify(config.safe).includes("SECRET"), false);
 });
 
 test("storage safe config does not expose credential values", () => {
