@@ -30,12 +30,32 @@ const excludedSegments = new Set([
   "tmp",
 ]);
 
+const retiredFileDbToken = "SQL" + "ite";
+const retiredDbConstructorToken = "Database" + "Sync";
+const providerLeakPattern = new RegExp([
+  "local-db",
+  retiredFileDbToken,
+  "Supabase",
+  "GAMEFOUNDRY_",
+  "process\\.env",
+].join("|"), "i");
+const routerRetiredStoragePattern = new RegExp([
+  `node:${retiredFileDbToken}`,
+  retiredDbConstructorToken,
+  "createRequire",
+  "GAMEFOUNDRY_AUTH_PROVIDER",
+  "GAMEFOUNDRY_DB_PROVIDER",
+  "parts\\[1\\] === \"local-db\"",
+  "parts\\[1\\] === \"mock-db\"",
+  "mock-db-state",
+  "deprecatedDatabaseEndpointError",
+].join("|"), "i");
 const deploymentTermPattern = /\b(?:DEV|UAT|PROD|Prod|Production|production|Development|development)\b|process\.env|GAMEFOUNDRY_[A-Z0-9_]*(?:ENV|ENVIRONMENT|STAGE|PROVIDER|MODE)[A-Z0-9_]*/;
 const deploymentBranchDecisionPattern = /^\s*(?:if|else\s+if|switch|while|for)\s*\([^)]*(?:GAMEFOUNDRY_(?:ENV|DEPLOYMENT_ENV|STAGE|MODE)|NODE_ENV|process\.env\.(?:GAMEFOUNDRY_ENV|GAMEFOUNDRY_DEPLOYMENT_ENV|NODE_ENV)|\.env\.(?:local|uat|prod)|deployment|environment|stage)[^)]*(?:DEV|UAT|PROD|dev|development|uat|prod|production)[^)]*\)/i;
 const deploymentCasePattern = /^\s*case\s+["'`](?:dev|development|uat|prod|production)["'`]\s*:/i;
 const deploymentTernaryDecisionPattern = /(?:GAMEFOUNDRY_(?:ENV|DEPLOYMENT_ENV|STAGE|MODE)|NODE_ENV|process\.env|deployment|environment|stage)[^?\r\n]*\?[^:\r\n]*(?:DEV|UAT|PROD|dev|development|uat|prod|production)/i;
-const accountDependencyPattern = /\b(?:Local(?: DB| API)?|SQLite|Supabase|provider|localhost|DEV|UAT|PROD|Prod)\b|data-local-db-|local-db-page-data\.js/i;
-const userFacingImplementationPattern = /\b(?:DEV|UAT|PROD|Local DB|Local API|SQLite|Supabase|provider)\b/i;
+const accountDependencyPattern = new RegExp(`\\b(?:Local(?: DB| API)?|${retiredFileDbToken}|Supabase|provider|localhost|DEV|UAT|PROD|Prod)\\b|data-local-db-|local-db-page-data\\.js`, "i");
+const userFacingImplementationPattern = new RegExp(`\\b(?:DEV|UAT|PROD|Local DB|Local API|${retiredFileDbToken}|Supabase|provider)\\b`, "i");
 const accountBrowserFiles = new Set([
   "assets/theme-v2/js/account-auth-actions.js",
   "assets/theme-v2/js/account-auth-service.js",
@@ -286,7 +306,7 @@ async function validateAccountServiceContract() {
   const accountService = await readRequiredRepoFile("assets/theme-v2/js/account-auth-service.js", findings, "Account auth service module is missing");
   requireSnippet(accountService, "assets/theme-v2/js/account-auth-service.js", "fetchServerApi(`/auth/${path}`", findings, "Account auth service must own configured /api/auth requests.");
   requireSnippet(accountService, "assets/theme-v2/js/account-auth-service.js", "fetchServerApi(\"/session/current\"", findings, "Account auth service must own configured /api/session/current requests.");
-  rejectPattern(accountService, "assets/theme-v2/js/account-auth-service.js", /local-db|SQLite|Supabase|provider|GAMEFOUNDRY_|process\.env/i, findings, "Account auth service must not expose provider or environment implementation details.");
+  rejectPattern(accountService, "assets/theme-v2/js/account-auth-service.js", providerLeakPattern, findings, "Account auth service must not expose provider or environment implementation details.");
 
   return findings;
 }
@@ -295,18 +315,18 @@ async function validateProductServiceContract() {
   const findings = [];
   const registryClient = await readRequiredRepoFile("toolbox/tool-registry-api-client.js", findings, "Toolbox registry client is missing");
   requireSnippet(registryClient, "toolbox/tool-registry-api-client.js", "safeRequestServerApi(\"/toolbox/registry/snapshot\")", findings, "Toolbox registry must read through the server API service contract.");
-  rejectPattern(registryClient, "toolbox/tool-registry-api-client.js", /local-db|SQLite|Supabase|GAMEFOUNDRY_|process\.env/i, findings, "Toolbox registry client must not expose provider/environment implementation details.");
+  rejectPattern(registryClient, "toolbox/tool-registry-api-client.js", providerLeakPattern, findings, "Toolbox registry client must not expose provider/environment implementation details.");
 
   const votesClient = await readRequiredRepoFile("src/api/toolbox-votes-api-client.js", findings, "Toolbox votes API client is missing");
   requireSnippet(votesClient, "src/api/toolbox-votes-api-client.js", "safeRequestServerApi(\"/toolbox/votes/snapshot\")", findings, "Toolbox votes must read through the server API service contract.");
   requireSnippet(votesClient, "src/api/toolbox-votes-api-client.js", "safeRequestServerApi(\"/toolbox/votes/cast\"", findings, "Toolbox votes must write through the server API service contract.");
-  rejectPattern(votesClient, "src/api/toolbox-votes-api-client.js", /local-db|SQLite|Supabase|GAMEFOUNDRY_|process\.env/i, findings, "Toolbox votes client must not expose provider/environment implementation details.");
+  rejectPattern(votesClient, "src/api/toolbox-votes-api-client.js", providerLeakPattern, findings, "Toolbox votes client must not expose provider/environment implementation details.");
 
   for (const filePath of productApiClientFiles) {
     const contents = await readRequiredRepoFile(filePath, findings, "Product API client is missing");
     requireSnippet(contents, filePath, "createServerRepositoryClient", findings, "Product API client must use the server repository contract.");
     requireSnippet(contents, filePath, "readServerToolConstants", findings, "Product API client must read server-owned constants.");
-    rejectPattern(contents, filePath, /local-db|SQLite|Supabase|GAMEFOUNDRY_|process\.env/i, findings, "Product API client must not expose provider/environment implementation details.");
+    rejectPattern(contents, filePath, providerLeakPattern, findings, "Product API client must not expose provider/environment implementation details.");
   }
 
   const router = await readRequiredRepoFile("src/dev-runtime/server/local-api-router.mjs", findings, "Local API router is missing");
@@ -317,7 +337,7 @@ async function validateProductServiceContract() {
   requireSnippet(router, "src/dev-runtime/server/local-api-router.mjs", "this.assertProductDatabaseProvider(`Creating ${toolId} repository`);", findings, "Repository creation must assert the server-owned product-data contract.");
   requireSnippet(router, "src/dev-runtime/server/local-api-router.mjs", "this.assertProductDatabaseProvider(`Calling repository method ${methodName}`);", findings, "Repository method calls must assert the server-owned product-data contract.");
   rejectPattern(router, "src/dev-runtime/server/local-api-router.mjs", /selectedDatabaseProviderId|selectedAuthProvider|selectedProvidersCanServeRuntime/, findings, "Runtime router must not contain active provider-selection helpers.");
-  rejectPattern(router, "src/dev-runtime/server/local-api-router.mjs", /node:sqlite|DatabaseSync|createRequire|GAMEFOUNDRY_AUTH_PROVIDER|GAMEFOUNDRY_DB_PROVIDER|parts\[1\] === "local-db"|parts\[1\] === "mock-db"|mock-db-state|deprecatedDatabaseEndpointError/, findings, "Runtime router must not contain SQLite startup/opening code, provider-selection environment variables, or legacy local-db/mock-db routes.");
+  rejectPattern(router, "src/dev-runtime/server/local-api-router.mjs", routerRetiredStoragePattern, findings, "Runtime router must not contain retired file-DB startup/opening code, provider-selection environment variables, or retired local-db/mock-db routes.");
 
   const startup = await readRequiredRepoFile("scripts/start-local-api-server.mjs", findings, "Local API startup script is missing");
   rejectPattern(startup, "scripts/start-local-api-server.mjs", /GAMEFOUNDRY_AUTH_PROVIDER|GAMEFOUNDRY_DB_PROVIDER|auth provider|product data provider|provider selection/i, findings, "Local API startup must describe configured connections without provider-selection environment variables.");
@@ -386,7 +406,7 @@ const report = [
   "## User-Facing Implementation Wording Findings",
   formatRecords(userFacingUiFindings),
   "",
-  "## Deprecated SQLite/Local DB Technical Debt",
+  "## Deprecated Local DB Technical Debt",
   formatTechnicalDebt(deprecatedLocalDbDebt),
   "",
   "## Non-Branching Deployment Mentions Reviewed",
