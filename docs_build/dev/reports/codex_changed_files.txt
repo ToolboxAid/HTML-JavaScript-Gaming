@@ -1,16 +1,19 @@
-﻿M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md
-M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md
-M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md
-M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_requirement-checklist.md
-M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_validation-lane.md
-M	docs_build/dev/reports/coverage_changed_js_guardrail.txt
-M	docs_build/dev/reports/playwright_v8_coverage_report.txt
-D	scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs
-M	scripts/validate-browser-env-agnostic.mjs
-D	src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs
-D	tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs
-M	tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
-M	tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-M	tests/playwright/tools/GameJourneyTool.spec.mjs
-M	docs_build/dev/reports/codex_changed_files.txt
-M	docs_build/dev/reports/codex_review.diff
+docs_build/database/ddl/sprites.sql
+docs_build/database/dml/DML_INDEX.md
+docs_build/database/dml/sprites.sql
+docs_build/database/seed/guest/sprites.json
+docs_build/database/seed/sprites.json
+docs_build/dev/reports/PR_26177_CHARLIE_010-sprites-api-db-foundation.md
+docs_build/dev/reports/PR_26177_CHARLIE_010-sprites-api-db-foundation_branch-validation.md
+docs_build/dev/reports/PR_26177_CHARLIE_010-sprites-api-db-foundation_manual-validation-notes.md
+docs_build/dev/reports/PR_26177_CHARLIE_010-sprites-api-db-foundation_requirements-checklist.md
+docs_build/dev/reports/PR_26177_CHARLIE_010-sprites-api-db-foundation_validation-lane.md
+docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/codex_review.diff
+src/dev-runtime/auth/provider-contract-stubs.mjs
+src/dev-runtime/persistence/mock-db-store.js
+src/dev-runtime/server/local-api-router.mjs
+src/dev-runtime/sprites/sprites-postgres-service.mjs
+tests/api/sprites/contract.test.mjs
+tests/dev-runtime/SpritesPostgresService.test.mjs
+tests/helpers/postgresClientStub.mjs

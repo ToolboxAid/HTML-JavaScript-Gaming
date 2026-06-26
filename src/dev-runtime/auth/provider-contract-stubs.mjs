@@ -104,6 +104,8 @@ export const SUPABASE_POSTGRES_PRODUCT_TABLES = Object.freeze([
   "asset_storage_objects",
   "asset_import_events",
   "asset_validation_items",
+  "sprite_records",
+  "sprite_usage_references",
   "toolbox_tool_metadata",
   "toolbox_tool_planning",
   "toolbox_votes",

@@ -129,6 +129,10 @@ import {
   handleMessagesApiContract,
 } from "../messages/messages-postgres-service.mjs";
 import {
+  createSpritesPostgresService,
+  handleSpritesApiContract,
+} from "../sprites/sprites-postgres-service.mjs";
+import {
   LegalDocumentError,
   readPublishedLegalDocument,
 } from "../legal/legal-document-service.mjs";
@@ -208,6 +212,7 @@ const DB_VIEWER_GROUP_ORDER = Object.freeze([
   Object.freeze({ id: "game-hub", label: "Game Hub", ownerId: "game-hub", type: "tool" }),
   Object.freeze({ id: "objects", label: "Objects", ownerId: "objects", type: "tool" }),
   Object.freeze({ id: "palette", label: "Palette", ownerId: "palette", type: "tool" }),
+  Object.freeze({ id: "sprites", label: "Sprites", ownerId: "sprites", type: "tool" }),
   Object.freeze({ id: "tags", label: "Tags", ownerId: "tags", type: "tool" }),
   Object.freeze({ id: "toolbox_tool_metadata", label: "Tool Metadata", tableNames: Object.freeze(["toolbox_tool_metadata"]), type: "table" }),
   Object.freeze({ id: "toolbox_tool_planning", label: "Tool Planning", tableNames: Object.freeze(["toolbox_tool_planning"]), type: "table" }),
@@ -3406,8 +3411,11 @@ class ApiRuntimeDataSource {
     messagesPostgresClient = null,
     messagesService = null,
     repoRoot = process.cwd(),
+    spritesPostgresClient = null,
+    spritesService = null,
   } = {}) {
     this.messagesService = messagesService || createMessagesPostgresService({ postgresClient: messagesPostgresClient });
+    this.spritesService = spritesService || createSpritesPostgresService({ postgresClient: spritesPostgresClient });
     this.gameJourneyCompletionMetricsPostgresClient = gameJourneyCompletionMetricsPostgresClient;
     this.repositoryCounter = 1;
     this.repositoryById = new Map();
@@ -6337,8 +6345,23 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
     });
   }
 
+  spritesActorKey() {
+    return this.sessionUserKey || "";
+  }
+
+  async spritesApiContract(method, parts, body) {
+    return handleSpritesApiContract({
+      actorKey: this.spritesActorKey(),
+      body,
+      method,
+      parts,
+      service: this.spritesService,
+    });
+  }
+
   close() {
     this.messagesService.close();
+    this.spritesService.close();
   }
 
   async supabaseToolboxToolMetadataRows() {
@@ -6938,12 +6961,16 @@ export function createLocalApiRouter({
   messagesPostgresClient = null,
   messagesService = null,
   repoRoot = process.cwd(),
+  spritesPostgresClient = null,
+  spritesService = null,
 } = {}) {
   const dataSource = new ApiRuntimeDataSource({
     gameJourneyCompletionMetricsPostgresClient,
     messagesPostgresClient,
     messagesService,
     repoRoot,
+    spritesPostgresClient,
+    spritesService,
   });
 
   async function handleApiRuntimeRequest(request, response, requestUrl) {
@@ -7179,6 +7206,12 @@ export function createLocalApiRouter({
       if (parts[1] === "messages") {
         const body = request.method === "POST" ? await readRequestJson(request) : {};
         ok(response, await dataSource.messagesApiContract(request.method, parts.slice(2), body));
+        return true;
+      }
+
+      if (parts[1] === "sprites") {
+        const body = request.method === "POST" ? await readRequestJson(request) : {};
+        ok(response, await dataSource.spritesApiContract(request.method, parts.slice(2), body));
         return true;
       }
 

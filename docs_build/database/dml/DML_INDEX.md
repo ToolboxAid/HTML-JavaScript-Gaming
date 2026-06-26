@@ -18,6 +18,7 @@ Direct SQL setup is intentionally narrow. Account DEV users now require server-s
 | Objects | `objects.sql` | Server-seed-owned | Server-side seed API |
 | Palette | `palette.sql` | Server-seed-owned | Server-side seed API |
 | Support Tickets | `support-tickets.sql` | Server-seed-owned | Admin Site Setup/server-side seed API |
+| Sprites | `sprites.sql` | Server-seed-owned | Sprites Local API/server-side Postgres service |
 | Tags | `tags.sql` | Server-seed-owned | Server-side seed API |
 | Tool Metadata | `tool-metadata.sql` | Server-seed-owned | Server-side seed API |
 | Tool Planning | `tool-planning.sql` | Server-seed-owned | Server-side seed API |

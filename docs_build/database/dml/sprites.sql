@@ -1,0 +1,13 @@
+-- Game Foundry Studio DEV database DML / seed review
+-- Group: Sprites
+-- Ownership: docs_build/database/dml/sprites.sql
+-- Runtime setup/seed operations for this group must run through server-side APIs.
+-- Browser pages must not directly seed authoritative DB records.
+-- Owned tables: sprite_records, sprite_usage_references
+
+-- DML status: Server-seed-owned.
+-- Setup is performed through the Admin-owned server-side seed API and Sprites Local API/server-side Postgres service.
+-- Browser pages must not seed authoritative records.
+-- The server/API layer generates all non-user keys.
+-- This SQL file intentionally has no direct INSERT statements because direct SQL would bypass key/audit ownership.
+-- Direct SQL setup for this group remains deferred until a later migration-runner PR explicitly owns it.
