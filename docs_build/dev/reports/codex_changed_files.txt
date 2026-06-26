@@ -1,7 +1,11 @@
-docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership.md
-docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_branch-validation.md
-docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_validation-checklist.md
+assets/toolbox/hitboxes/js/index.js
+docs_build/dev/admin-notes/tools/index.txt
+docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation.md
+docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation_branch-validation.md
+docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation_manual-validation-notes.md
+docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation_requirement-checklist.md
+docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation_validation-lane.md
+src/shared/toolbox/tool-metadata-inventory.js
+toolbox/hitboxes/index.html
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
