@@ -26,6 +26,37 @@ Define the standard pull request workflow for Game Foundry Studio.
 15. Pull latest main before starting the next PR.
 16. Verify Main Verified and Closed gates.
 
+## Branch Lifecycle Governance
+
+### START RULE
+
+- Every team starts on `main`.
+- `main` must be clean.
+- `main...origin/main` must be `0 0`.
+- `HEAD` SHA must match published EOD SHA.
+- Only then create or switch to the PR branch.
+- No commits are allowed on `main`.
+
+### WORK RULE
+
+- Codex must remain on the PR branch during implementation.
+- Codex commits only to the PR branch.
+- Codex pushes only the PR branch.
+- HARD STOP if branch changes unexpectedly.
+- HARD STOP before committing if current branch is `main`.
+
+### END RULE
+
+- After PR validation, push the PR branch.
+- Merge PR into `main` only when approved.
+- Checkout `main`.
+- Run `git fetch origin`.
+- Run `git pull --ff-only origin main`.
+- Confirm current branch is `main`.
+- Confirm worktree is clean.
+- Confirm `main...origin/main` is `0 0`.
+- Record `HEAD` SHA as new EOD baseline.
+
 ## PR Lifecycle States
 
 Required state order:

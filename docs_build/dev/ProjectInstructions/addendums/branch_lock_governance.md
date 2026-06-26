@@ -25,10 +25,43 @@ Keep active work attached to the correct assigned team, branch, and OWNER decisi
 - Pull latest `origin/main` before creating a work branch.
 - Do not create a PR branch unless current branch is `main`, worktree is clean, `main...origin/main` is `0 0`, and `HEAD` SHA matches the published EOD SHA.
 - Keep work on the active branch until the PR is merged, the branch is retired, or OWNER says to return to `main`.
-- Do not commit directly to `main` unless OWNER explicitly approves.
+- Do not commit directly to `main`.
+- HARD STOP before committing if current branch is `main`.
+- HARD STOP if the branch changes unexpectedly during implementation.
+- Commit only to the PR branch.
+- Push only the PR branch.
 - Do not merge stale historical branches directly unless they are current, clean, still needed, and OWNER-approved.
 - Retain source branches by default after merge and closeout.
 - Record branch disposition before Closed as `retained`.
+
+## START RULE
+
+- Every team starts on `main`.
+- `main` must be clean.
+- `main...origin/main` must be `0 0`.
+- `HEAD` SHA must match published EOD SHA.
+- Only then create or switch to the PR branch.
+- No commits are allowed on `main`.
+
+## WORK RULE
+
+- Codex must remain on the PR branch during implementation.
+- Codex commits only to the PR branch.
+- Codex pushes only the PR branch.
+- HARD STOP if branch changes unexpectedly.
+- HARD STOP before committing if current branch is `main`.
+
+## END RULE
+
+- After PR validation, push the PR branch.
+- Merge PR into `main` only when approved.
+- Checkout `main`.
+- Run `git fetch origin`.
+- Run `git pull --ff-only origin main`.
+- Confirm current branch is `main`.
+- Confirm worktree is clean.
+- Confirm `main...origin/main` is `0 0`.
+- Record `HEAD` SHA as new EOD baseline.
 
 ## OWNER Override
 

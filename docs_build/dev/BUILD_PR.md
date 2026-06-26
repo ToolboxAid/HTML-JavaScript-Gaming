@@ -14,7 +14,7 @@ This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth f
 - Establish `docs_build/dev/ProjectInstructions/` as the only active source.
 - Mark all other ProjectInstructions-style sources changed by this PR as deprecated references.
 - Update active team start/governance docs to reference only `docs_build/dev/ProjectInstructions/`.
-- Add EOD main lock and next-day reset governance.
+- Add EOD main lock, next-day reset governance, and explicit START / WORK / END branch lifecycle rules.
 - Add required reports under `docs_build/dev/reports/`.
 
 ## Exact Targets
@@ -46,7 +46,7 @@ Run:
 
 ```powershell
 rg -n 'project-instructions/addendums|docs_build/dev/PROJECT_INSTRUCTIONS.md.*source of truth|Codex must always read `docs_build/dev/PROJECT_INSTRUCTIONS.md`|Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`' docs_build/dev/ProjectInstructions docs_build/dev/PROJECT_INSTRUCTIONS.md project-instructions
-rg -n "End of Day:|Next Day Start:|HEAD.*published EOD SHA|only active Project Instructions source" docs_build/dev/ProjectInstructions
+rg -n "START RULE|WORK RULE|END RULE|HARD STOP before committing|Codex commits only to the PR branch|HEAD SHA recorded as new EOD baseline|End of Day:|Next Day Start:|HEAD.*published EOD SHA|only active Project Instructions source" docs_build/dev/ProjectInstructions
 git diff --name-only -- src assets toolbox games api serverside package.json package-lock.json docs_build/dev/start_of_day
 git diff --check
 ```
