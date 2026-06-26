@@ -11,9 +11,11 @@ import {
   TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS
 } from "../../../../src/engine/audio/TextToSpeechDefaults.js";
 import {
-  readSavedTextToSpeechProfiles,
-  writeSavedTextToSpeechProfiles,
-} from "../../../js/shared/tts-profile-store.js";
+  createTtsProfile,
+  deleteTtsProfile,
+  listTtsProfiles,
+  updateTtsProfile,
+} from "../../../../toolbox/messages/messages-api-client.js";
 
 const TTS_OWNERSHIP = Object.freeze({
   DESIGN: "Design",
@@ -54,7 +56,7 @@ const TTS_PROVIDER_ADAPTER_PLAN = Object.freeze([
     name: "ElevenLabs",
     status: "planned",
     boundary: "External provider adapter; no implementation in this PR.",
-    requiredCapabilities: ["text input", "voice profile mapping", "generated audio file response", "provider job metadata"]
+    requiredCapabilities: ["text input", "TTS Profile mapping", "generated audio file response", "provider job metadata"]
   },
   {
     key: "azure",
@@ -170,24 +172,37 @@ function labelForOption(options, value, fallback = "") {
 
 function createTextToSpeechProfileEmotion({
   active = true,
+  displayOrder = 0,
   emotion = "neutral",
+  emotionLabel = "",
   id = "",
+  messageUsageCount = 0,
   messagePartsUsageCount = 0,
   pitch = TEXT_TO_SPEECH_DEFAULTS.pitch,
+  references = [],
+  settingKey = "",
   rate = TEXT_TO_SPEECH_DEFAULTS.rate,
   ssmlLikePreset = TEXT_TO_SPEECH_DEFAULTS.ssmlLikePreset,
+  usageCount = 0,
   volume = TEXT_TO_SPEECH_DEFAULTS.volume
 } = {}) {
   const emotionKey = slugFromText(emotion, DEFAULT_TTS_EMOTION_ID);
+  const messageCount = Math.max(0, Number(messageUsageCount) || 0);
+  const sentenceCount = Math.max(0, Number(messagePartsUsageCount) || 0);
   return {
     active: active !== false,
+    displayOrder: Number(displayOrder || 0),
     emotion: emotionKey,
-    emotionLabel: labelForOption(TTS_PROFILE_EMOTION_OPTIONS, emotionKey, "Neutral"),
+    emotionLabel: String(emotionLabel || labelForOption(TTS_PROFILE_EMOTION_OPTIONS, emotionKey, emotionKey)),
     id: id || emotionKey,
-    messagePartsUsageCount: Math.max(0, Number(messagePartsUsageCount) || 0),
+    messagePartsUsageCount: sentenceCount,
+    messageUsageCount: messageCount,
     pitch: boundedNumber(pitch, TEXT_TO_SPEECH_RANGE_DEFAULTS.pitch),
     rate: boundedNumber(rate, TEXT_TO_SPEECH_RANGE_DEFAULTS.rate),
+    references: Array.isArray(references) ? references : [],
+    settingKey: String(settingKey || ""),
     ssmlLikePreset: TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS.some((option) => option.value === ssmlLikePreset) ? ssmlLikePreset : "normal",
+    usageCount: Math.max(0, Number(usageCount) || messageCount + sentenceCount),
     volume: boundedNumber(volume, TEXT_TO_SPEECH_RANGE_DEFAULTS.volume)
   };
 }
@@ -201,6 +216,9 @@ function createTextToSpeechProfile({
   language = TEXT_TO_SPEECH_DEFAULTS.language,
   messageStudioUsageCount = 0,
   name = "Default Balanced Profile",
+  references = [],
+  segmentUsageCount = 0,
+  usageCount = 0,
   voice = "",
   voiceName = ""
 } = {}) {
@@ -219,9 +237,54 @@ function createTextToSpeechProfile({
     name: profileName,
     owner: TTS_OWNERSHIP.AUDIO,
     providerKey: "browser-speech",
+    references: Array.isArray(references) ? references : [],
+    segmentUsageCount: Math.max(0, Number(segmentUsageCount) || 0),
+    usageCount: Math.max(0, Number(usageCount) || Number(messageStudioUsageCount) || 0),
     voice: String(voice || ""),
     voiceName: String(voiceName || voice || "Default browser voice")
   };
+}
+
+function createTextToSpeechProfileEmotionFromApi(setting = {}) {
+  return createTextToSpeechProfileEmotion({
+    active: setting.active !== false,
+    displayOrder: setting.displayOrder || 0,
+    emotion: setting.emotion || setting.emotionLabel || setting.name || "neutral",
+    emotionLabel: setting.emotionLabel || setting.name || setting.emotion || "",
+    id: setting.key || setting.emotionProfileKey || setting.emotion || "",
+    messagePartsUsageCount: setting.segmentUsageCount ?? setting.messagePartsUsageCount ?? 0,
+    messageUsageCount: setting.messageUsageCount || 0,
+    pitch: setting.pitch,
+    rate: setting.rate,
+    references: setting.references || [],
+    settingKey: setting.settingKey || "",
+    ssmlLikePreset: setting.ssmlLikePreset || "normal",
+    usageCount: setting.usageCount || 0,
+    volume: setting.volume,
+  });
+}
+
+function createTextToSpeechProfileFromApi(profile = {}) {
+  return createTextToSpeechProfile({
+    active: profile.active !== false,
+    age: profile.age || profile.ageFilter || TEXT_TO_SPEECH_DEFAULTS.voiceAge,
+    emotions: Array.isArray(profile.emotionSettings)
+      ? profile.emotionSettings
+        .slice()
+        .sort((left, right) => Number(left.displayOrder || 0) - Number(right.displayOrder || 0))
+        .map((setting) => createTextToSpeechProfileEmotionFromApi(setting))
+      : [],
+    gender: profile.gender || "neutral",
+    id: profile.key || profile.id || "",
+    language: profile.language || TEXT_TO_SPEECH_DEFAULTS.language,
+    messageStudioUsageCount: profile.usageCount ?? profile.messageUsageCount ?? 0,
+    name: profile.name,
+    references: profile.references || [],
+    segmentUsageCount: profile.segmentUsageCount || 0,
+    usageCount: profile.usageCount || 0,
+    voice: profile.voice || profile.voiceName || "",
+    voiceName: profile.voiceName || profile.voice || "Default browser voice",
+  });
 }
 
 function defaultVoiceForProfile(voiceOptions = [], preferredGender = "") {
@@ -402,11 +465,11 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
   }
 
   function profileInUseByMessageStudio(profile) {
-    return Number(profile?.messageStudioUsageCount || 0) > 0;
+    return Number(profile?.usageCount ?? profile?.messageStudioUsageCount ?? 0) > 0;
   }
 
   function emotionInUseByMessageParts(emotion) {
-    return Number(emotion?.messagePartsUsageCount || 0) > 0;
+    return Number(emotion?.usageCount ?? emotion?.messagePartsUsageCount ?? 0) > 0;
   }
 
   function createCell(text) {
@@ -562,6 +625,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
         createCell(profile.language),
         createCell(labelForOption(TEXT_TO_SPEECH_AGE_FILTER_OPTIONS, profile.age, "Any")),
         createCell(String(profile.emotions.length)),
+        createCell(String(profile.usageCount || profile.messageStudioUsageCount || 0)),
         createCell(profile.active ? "Active" : "Inactive"),
         (() => {
           const cell = document.createElement("td");
@@ -578,7 +642,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
     }
 
     if (!state.profiles.length && state.editingProfileId !== NEW_ROW_KEY) {
-      elements.profileTable.append(tableMessage(8, "No TTS profiles yet."));
+      elements.profileTable.append(tableMessage(9, "No TTS profiles yet."));
     }
     if (!state.editingProfileId) {
       elements.profileTable.append(createProfileAddControlRow());
@@ -587,7 +651,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
   }
 
   function createProfileAddControlRow() {
-    const row = tableActionRow(8, createButton("Add Profile", "ttsAddProfileRow", NEW_ROW_KEY));
+    const row = tableActionRow(9, createButton("Add Profile", "ttsAddProfileRow", NEW_ROW_KEY));
     row.dataset.ttsProfileAddControlRow = "";
     return row;
   }
@@ -608,6 +672,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
     const ageCell = document.createElement("td");
     ageCell.append(createEditorSelect(profile?.age || TEXT_TO_SPEECH_DEFAULTS.voiceAge, "ttsProfileAge", TEXT_TO_SPEECH_AGE_FILTER_OPTIONS));
     const emotionCountCell = createCell(profile ? String(profile.emotions.length) : "1");
+    const usageCell = createCell(profile ? String(profile.usageCount || profile.messageStudioUsageCount || 0) : "0");
     const statusCell = document.createElement("td");
     statusCell.append(createCheckbox(profile?.active !== false, "ttsProfileActive"));
     const actionsCell = document.createElement("td");
@@ -616,7 +681,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
       createButton("Cancel", "ttsCancelProfile", key),
     ));
 
-    row.append(nameCell, genderCell, voiceCell, languageCell, ageCell, emotionCountCell, statusCell, actionsCell);
+    row.append(nameCell, genderCell, voiceCell, languageCell, ageCell, emotionCountCell, usageCell, statusCell, actionsCell);
     return row;
   }
 
@@ -625,7 +690,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
     const hostRow = document.createElement("tr");
     hostRow.dataset.ttsEmotionHost = profileId;
     const cell = document.createElement("td");
-    cell.colSpan = 8;
+    cell.colSpan = 9;
     cell.append(createEmotionTable(profileId));
     hostRow.append(cell);
     elements.profileTable.append(hostRow);
@@ -643,7 +708,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
     table.setAttribute("aria-label", "TTS Profile Emotions");
     const thead = document.createElement("thead");
     const headerRow = document.createElement("tr");
-    ["Emotion", "Pitch", "Rate", "Volume", "Actions"].forEach((label) => {
+    ["Emotion", "Pitch", "Rate", "Volume", "Usage", "Actions"].forEach((label) => {
       const header = document.createElement("th");
       header.scope = "col";
       header.textContent = label;
@@ -654,7 +719,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
     tbody.dataset.ttsEmotionTable = profileId;
 
     if (!profile?.emotions.length && state.editingEmotionId !== NEW_ROW_KEY) {
-      tbody.append(tableMessage(5, "No emotions for this profile."));
+      tbody.append(tableMessage(6, "No emotions for this profile."));
     }
 
     profile?.emotions.forEach((emotion) => {
@@ -681,6 +746,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
         createCell(String(emotion.pitch)),
         createCell(String(emotion.rate)),
         createCell(String(emotion.volume)),
+        createCell(String(emotion.usageCount || emotion.messagePartsUsageCount || 0)),
         actionsCell,
       );
       tbody.append(row);
@@ -700,7 +766,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
   }
 
   function createEmotionAddControlRow(profileId) {
-    const row = tableActionRow(5, createButton("Add Emotion", "ttsAddEmotion", profileId));
+    const row = tableActionRow(6, createButton("Add Emotion", "ttsAddEmotion", profileId));
     row.dataset.ttsEmotionAddControlRow = profileId;
     return row;
   }
@@ -717,12 +783,13 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
     rateCell.append(createNumberInput(emotion?.rate ?? 1, "ttsEmotionRate", "rate"));
     const volumeCell = document.createElement("td");
     volumeCell.append(createNumberInput(emotion?.volume ?? 1, "ttsEmotionVolume", "volume"));
+    const usageCell = createCell(emotion ? String(emotion.usageCount || emotion.messagePartsUsageCount || 0) : "0");
     const actionsCell = document.createElement("td");
     actionsCell.append(createActionGroup(
       createButton("Save", "ttsCommitEmotion", key),
       createButton("Cancel", "ttsCancelEmotion", key),
     ));
-    row.append(emotionCell, pitchCell, rateCell, volumeCell, actionsCell);
+    row.append(emotionCell, pitchCell, rateCell, volumeCell, usageCell, actionsCell);
     return row;
   }
 
@@ -761,12 +828,63 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
     return errors;
   }
 
-  function persistProfilesForMessages() {
-    try {
-      writeSavedTextToSpeechProfiles(state.profiles);
-    } catch {
-      writeStatus("Text To Speech profiles were saved for this tool but could not be shared with Messages. Try again after refreshing the browser.", "FAIL");
+  function profileApiPayload(profile) {
+    return {
+      active: profile.active !== false,
+      description: `${profile.name} Text To Speech profile.`,
+      emotionSettings: profile.emotions.map((emotion, index) => ({
+        active: emotion.active !== false,
+        displayOrder: index + 1,
+        emotion: emotion.emotion,
+        emotionLabel: emotion.emotionLabel,
+        key: emotion.id,
+        pitch: emotion.pitch,
+        rate: emotion.rate,
+        ssmlLikePreset: emotion.ssmlLikePreset || "normal",
+        volume: emotion.volume,
+      })),
+      language: profile.language,
+      name: profile.name,
+      pitch: TEXT_TO_SPEECH_DEFAULTS.pitch,
+      providerKey: profile.providerKey || "browser-speech",
+      rate: TEXT_TO_SPEECH_DEFAULTS.rate,
+      voiceName: profile.voiceName || profile.voice || "Default browser voice",
+      volume: TEXT_TO_SPEECH_DEFAULTS.volume,
+    };
+  }
+
+  function loadProfilesFromApi() {
+    const payload = listTtsProfiles();
+    state.profiles = (payload.ttsProfiles || []).map((profile) => createTextToSpeechProfileFromApi(profile));
+    if (state.selectedProfileId && !state.profiles.some((profile) => profile.id === state.selectedProfileId)) {
+      state.selectedProfileId = "";
     }
+    if (state.selectedEmotionId && !selectedProfile()?.emotions.some((emotion) => emotion.id === state.selectedEmotionId)) {
+      state.selectedEmotionId = "";
+    }
+    renderProfileRows();
+    refreshActionState();
+    return payload;
+  }
+
+  function saveProfileToApi(key, profile) {
+    const payload = key === NEW_ROW_KEY
+      ? createTtsProfile(profileApiPayload(profile))
+      : updateTtsProfile(key, profileApiPayload(profile));
+    const saved = payload.ttsProfile || null;
+    if (!saved) {
+      throw new Error("TTS Profile could not be saved.");
+    }
+    return createTextToSpeechProfileFromApi(saved);
+  }
+
+  function saveProfileEmotionSettings(profile) {
+    const payload = updateTtsProfile(profile.id, profileApiPayload(profile));
+    const saved = payload.ttsProfile || null;
+    if (!saved) {
+      throw new Error("TTS Profile emotions could not be saved.");
+    }
+    return createTextToSpeechProfileFromApi(saved);
   }
 
   function emotionValues(key) {
@@ -812,24 +930,25 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
       writeStatus(`TTS Profile save blocked: ${errors.join(" ")}`, "FAIL");
       return;
     }
-    if (key === NEW_ROW_KEY) {
-      state.profiles.push(profile);
-    } else {
-      const index = state.profiles.findIndex((candidate) => candidate.id === key);
-      const existing = state.profiles[index];
-      state.profiles[index] = {
-        ...profile,
-        emotions: existing?.emotions || profile.emotions,
-        messageStudioUsageCount: existing?.messageStudioUsageCount || 0,
-      };
+    let savedProfile = null;
+    try {
+      savedProfile = saveProfileToApi(key, profile);
+    } catch (error) {
+      writeStatus(`TTS Profile save blocked: ${error.message}`, "FAIL");
+      return;
     }
-    state.selectedProfileId = profile.id;
-    state.selectedEmotionId = previewEmotion(profile)?.id || "";
+    const index = state.profiles.findIndex((candidate) => candidate.id === savedProfile.id);
+    if (index === -1) {
+      state.profiles.push(savedProfile);
+    } else {
+      state.profiles[index] = savedProfile;
+    }
+    state.selectedProfileId = savedProfile.id;
+    state.selectedEmotionId = previewEmotion(savedProfile)?.id || "";
     state.editingProfileId = "";
-    persistProfilesForMessages();
     renderProfileRows();
     refreshActionState();
-    writeStatus(`Saved TTS profile: ${profile.name}.`);
+    writeStatus(`Saved TTS profile: ${savedProfile.name}.`);
   }
 
   function deleteProfile(key) {
@@ -839,10 +958,15 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
       writeStatus(`Delete profile disabled: ${profile.name} is in use by Message Studio data.`, "FAIL");
       return;
     }
+    try {
+      deleteTtsProfile(key);
+    } catch (error) {
+      writeStatus(`Delete profile blocked: ${error.message}`, "FAIL");
+      return;
+    }
     state.profiles = state.profiles.filter((candidate) => candidate.id !== key);
     if (state.selectedProfileId === key) state.selectedProfileId = state.profiles[0]?.id || "";
     if (!state.selectedProfileId) state.selectedEmotionId = "";
-    persistProfilesForMessages();
     renderProfileRows();
     refreshActionState();
     writeStatus(`Deleted TTS profile: ${profile.name}.`);
@@ -875,12 +999,27 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
         messagePartsUsageCount: existing?.messagePartsUsageCount || 0,
       };
     }
+    let savedProfile = null;
+    try {
+      savedProfile = saveProfileEmotionSettings(profile);
+    } catch (error) {
+      writeStatus(`Emotion save blocked: ${error.message}`, "FAIL");
+      loadProfilesFromApi();
+      return;
+    }
+    const profileIndex = state.profiles.findIndex((candidate) => candidate.id === savedProfile.id);
+    if (profileIndex !== -1) {
+      state.profiles[profileIndex] = savedProfile;
+    }
+    const savedEmotion = savedProfile.emotions.find((candidate) => candidate.emotion === emotion.emotion)
+      || savedProfile.emotions.find((candidate) => candidate.id === emotion.id)
+      || emotion;
     state.editingEmotionId = "";
-    state.selectedEmotionId = emotion.id;
-    persistProfilesForMessages();
+    state.selectedProfileId = savedProfile.id;
+    state.selectedEmotionId = savedEmotion.id;
     renderProfileRows();
     refreshActionState();
-    writeStatus(`Saved emotion: ${emotion.emotionLabel}.`);
+    writeStatus(`Saved emotion: ${savedEmotion.emotionLabel}.`);
   }
 
   function deleteEmotion(key) {
@@ -891,9 +1030,23 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
       writeStatus(`Delete emotion disabled: ${emotion.emotionLabel} is in use by sentences.`, "FAIL");
       return;
     }
-    profile.emotions = profile.emotions.filter((candidate) => candidate.id !== key);
-    if (state.selectedEmotionId === key) state.selectedEmotionId = previewEmotion(profile)?.id || "";
-    persistProfilesForMessages();
+    const nextProfile = {
+      ...profile,
+      emotions: profile.emotions.filter((candidate) => candidate.id !== key),
+    };
+    let savedProfile = null;
+    try {
+      savedProfile = saveProfileEmotionSettings(nextProfile);
+    } catch (error) {
+      writeStatus(`Delete emotion blocked: ${error.message}`, "FAIL");
+      loadProfilesFromApi();
+      return;
+    }
+    const profileIndex = state.profiles.findIndex((candidate) => candidate.id === savedProfile.id);
+    if (profileIndex !== -1) {
+      state.profiles[profileIndex] = savedProfile;
+    }
+    if (state.selectedEmotionId === key) state.selectedEmotionId = previewEmotion(savedProfile)?.id || "";
     renderProfileRows();
     refreshActionState();
     writeStatus(`Deleted emotion: ${emotion.emotionLabel}.`);
@@ -922,29 +1075,17 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
     return state.voiceOptions;
   }
 
-  function ensureDefaultProfiles() {
-    if (state.profiles.length) {
-      return;
-    }
+  function loadServerProfiles() {
     try {
-      const savedProfiles = readSavedTextToSpeechProfiles();
-      if (savedProfiles.length) {
-        state.profiles = savedProfiles;
-        state.selectedProfileId = "";
-        state.selectedEmotionId = "";
-        renderProfileRows();
-        refreshActionState();
-        return;
-      }
-    } catch {
-      writeStatus("Saved Text To Speech profiles could not be loaded. Default profiles are available for this session.", "FAIL");
+      loadProfilesFromApi();
+    } catch (error) {
+      state.profiles = [];
+      state.selectedProfileId = "";
+      state.selectedEmotionId = "";
+      renderProfileRows();
+      refreshActionState();
+      writeStatus(`Text To Speech profiles could not be loaded from Local API: ${error.message}`, "FAIL");
     }
-    state.profiles = createDefaultTextToSpeechProfiles(state.voiceOptions);
-    state.selectedProfileId = "";
-    state.selectedEmotionId = "";
-    persistProfilesForMessages();
-    renderProfileRows();
-    refreshActionState();
   }
 
   function refreshActionState() {
@@ -1185,15 +1326,14 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
   async function start() {
     applyLaunchMode();
     mountEvents();
+    loadServerProfiles();
     if (!engine.isSupported()) {
-      ensureDefaultProfiles();
       markUnavailable();
       return;
     }
     setTextContent(root, "[data-tts-engine-label]", "Ready");
     setTextContent(root, "[data-tts-engine-status]", "Browser SpeechSynthesis is available for local preview.");
     refreshVoices();
-    ensureDefaultProfiles();
     engine.onVoicesChanged(() => {
       refreshVoices();
       renderProfileRows();

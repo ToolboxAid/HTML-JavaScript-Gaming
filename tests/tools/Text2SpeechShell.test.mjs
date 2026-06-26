@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 import {
@@ -14,12 +15,6 @@ import {
   createVoiceProfile,
   previewTtsMessage,
 } from "../../assets/toolbox/text-to-speech/js/index.js";
-import {
-  TEXT_TO_SPEECH_PROFILE_STORAGE_KEY,
-  readSavedTextToSpeechProfiles,
-  textToSpeechProfilesToMessageOptions,
-  writeSavedTextToSpeechProfiles,
-} from "../../assets/js/shared/tts-profile-store.js";
 
 test("Text2Speech message model separates Design and Audio ownership", () => {
   const message = createTtsMessage({ text: "Hello", metadata: { tags: ["intro"] } });
@@ -70,7 +65,7 @@ test("Text2Speech provider adapter plan keeps browser speech implemented and pai
   assert.ok(TTS_PROVIDER_ADAPTER_PLAN.slice(1).every((provider) => provider.status === "planned"));
 });
 
-test("Text2Speech saved profile store exposes active profiles for Messages", () => {
+test("Text2Speech profile helpers preserve creator-facing default emotion settings", () => {
   const voiceOptions = [{ language: "en-US", label: "Test Voice (en-US)", name: "Test Voice", value: "test-voice" }];
   const defaults = createDefaultTextToSpeechProfiles(voiceOptions);
   const custom = createTextToSpeechProfile({
@@ -88,49 +83,56 @@ test("Text2Speech saved profile store exposes active profiles for Messages", () 
     voice: "test-voice",
     voiceName: "Test Voice",
   });
-  const writes = new Map();
-  const storage = {
-    getItem(key) {
-      return writes.get(key) || "";
-    },
-    setItem(key, value) {
-      writes.set(key, value);
-    },
-  };
-
-  assert.equal(writeSavedTextToSpeechProfiles([custom], storage), true);
-  const savedProfiles = readSavedTextToSpeechProfiles(storage);
-  const options = textToSpeechProfilesToMessageOptions(savedProfiles);
 
   assert.equal(TTS_PROFILE_CONTRACT_VERSION, "tts-profile-emotion-v1");
-  assert.equal(writes.has(TEXT_TO_SPEECH_PROFILE_STORAGE_KEY), true);
   assert.equal(defaults[0].name, "Default Balanced Profile");
   assert.equal(defaults[0].messageStudioUsageCount, 1);
   assert.deepEqual(defaults[0].emotions.map((emotion) => emotion.emotionLabel), ["Neutral", "Happy", "Angry", "Scared"]);
   assert.deepEqual(defaults[1].emotions.map((emotion) => emotion.emotionLabel), ["Neutral", "Happy", "Angry", "Scared"]);
   assert.deepEqual(defaults[2].emotions.map((emotion) => emotion.emotionLabel), ["Neutral", "Happy", "Angry", "Scared"]);
   assert.equal(defaults[0].emotions.find((emotion) => emotion.emotion === "neutral").messagePartsUsageCount, 1);
-  assert.deepEqual(options, [{
+  assert.deepEqual(custom, {
     active: true,
     age: "any",
-    ageFilter: "any",
-    emotionSettings: [{
+    emotions: [{
       active: true,
       emotion: "urgent",
       emotionLabel: "Urgent",
-      key: "urgent",
+      displayOrder: 0,
+      id: "urgent",
+      messagePartsUsageCount: 0,
+      messageUsageCount: 0,
       pitch: 1.2,
       rate: 1.1,
+      references: [],
+      settingKey: "",
       ssmlLikePreset: "whisper-ish",
+      usageCount: 0,
       volume: 0.8,
     }],
     gender: "neutral",
-    key: "custom-profile",
+    id: "custom-profile",
     language: "en-US",
+    messageStudioUsageCount: 0,
     name: "Custom Profile",
+    owner: "Audio",
     providerKey: "browser-speech",
-    sourceProfileId: "custom-profile",
+    references: [],
+    segmentUsageCount: 0,
+    usageCount: 0,
     voice: "test-voice",
     voiceName: "Test Voice",
-  }]);
+  });
+});
+
+test("Text2Speech runtime uses Local API profile contracts instead of browser-owned profile storage", async () => {
+  const source = await readFile(new URL("../../assets/toolbox/text-to-speech/js/index.js", import.meta.url), "utf8");
+
+  assert.equal(source.includes("../../../js/shared/tts-profile-store.js"), false);
+  assert.equal(source.includes("readSavedTextToSpeechProfiles"), false);
+  assert.equal(source.includes("writeSavedTextToSpeechProfiles"), false);
+  assert.equal(source.includes("listTtsProfiles"), true);
+  assert.equal(source.includes("createTtsProfile"), true);
+  assert.equal(source.includes("updateTtsProfile"), true);
+  assert.equal(source.includes("deleteTtsProfile"), true);
 });

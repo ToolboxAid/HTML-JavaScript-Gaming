@@ -3,57 +3,8 @@ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { createMessagesPostgresClientStub } from "../../helpers/messagesPostgresClientStub.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
-import { TEXT_TO_SPEECH_PROFILE_STORAGE_KEY } from "../../../toolbox/text-to-speech/tts-profile-store.js";
 
 const ULID_PATTERN = /^[0-9A-HJKMNP-TV-Z]{26}$/;
-const SAVED_TTS_PROFILES_FIXTURE = Object.freeze([
-  Object.freeze({
-    active: true,
-    age: "any",
-    emotions: [
-      Object.freeze({ active: true, emotion: "calm", emotionLabel: "Calm", id: "calm", pitch: 1, rate: 1, volume: 1 }),
-      Object.freeze({ active: true, emotion: "urgent", emotionLabel: "Urgent", id: "urgent", pitch: 1.08, rate: 1.15, volume: 1 }),
-    ],
-    gender: "neutral",
-    id: "default-balanced-profile",
-    language: "en-US",
-    name: "Default Balanced Profile",
-    providerKey: "browser-speech",
-    voice: "Browser default",
-    voiceName: "Default browser voice",
-  }),
-  Object.freeze({
-    active: true,
-    age: "adult",
-    emotions: [
-      Object.freeze({ active: true, emotion: "neutral", emotionLabel: "Neutral", id: "neutral", pitch: 1, rate: 1, volume: 1 }),
-      Object.freeze({ active: true, emotion: "calm", emotionLabel: "Calm", id: "calm", pitch: 1, rate: 1, volume: 1 }),
-      Object.freeze({ active: true, emotion: "urgent", emotionLabel: "Urgent", id: "urgent", pitch: 1.08, rate: 1.15, volume: 1 }),
-    ],
-    gender: "male",
-    id: "man-profile-1",
-    language: "en-US",
-    name: "Man Profile 1",
-    providerKey: "browser-speech",
-    voice: "Browser default",
-    voiceName: "Default browser voice",
-  }),
-  Object.freeze({
-    active: true,
-    age: "adult",
-    emotions: [
-      Object.freeze({ active: true, emotion: "whisper", emotionLabel: "Whisper", id: "whisper", pitch: 0.95, rate: 0.9, volume: 0.55 }),
-      Object.freeze({ active: true, emotion: "robot", emotionLabel: "Robot", id: "robot", pitch: 0.82, rate: 0.92, volume: 0.9 }),
-    ],
-    gender: "female",
-    id: "woman-profile-2",
-    language: "en-US",
-    name: "Woman Profile 2",
-    providerKey: "browser-speech",
-    voice: "Browser default",
-    voiceName: "Default browser voice",
-  }),
-]);
 
 async function jsonRequest(url, options = {}) {
   const response = await fetch(url, {
@@ -160,18 +111,6 @@ async function openMessagesPage(page, options = {}) {
       },
     };
   });
-  if (options.seedSavedTtsProfiles !== false) {
-    await page.addInitScript(({ profiles, storageKey }) => {
-      window.localStorage?.setItem(storageKey, JSON.stringify({
-        profiles,
-        updatedAt: "2026-06-23T00:00:00.000Z",
-        version: "playwright-fixture",
-      }));
-    }, {
-      profiles: options.savedTtsProfiles || SAVED_TTS_PROFILES_FIXTURE,
-      storageKey: TEXT_TO_SPEECH_PROFILE_STORAGE_KEY,
-    });
-  }
   await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}/tools/messages/index.html`, { waitUntil: "networkidle" });
   return failures;
@@ -587,8 +526,8 @@ test("Message Studio uses the approved table-first Messages structure", async ({
   }
 });
 
-test("Message Studio consumes active saved Text To Speech profiles", async ({ page }) => {
-  const failures = await openMessagesPage(page, { seedSavedTtsProfiles: false });
+test("Message Studio consumes active Local API Text To Speech profiles", async ({ page }) => {
+  const failures = await openMessagesPage(page);
 
   try {
     await page.goto(`${failures.server.baseUrl}/tools/text-to-speech/index.html`, { waitUntil: "networkidle" });

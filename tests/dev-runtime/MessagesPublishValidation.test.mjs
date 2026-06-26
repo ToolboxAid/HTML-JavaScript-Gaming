@@ -130,3 +130,154 @@ test("Messages publish validation blocks invalid message and TTS references", as
   assert.equal(validation.issues.every((issue) => issue.message && !/postgres|sql|stack|econn/i.test(issue.message)), true);
   service.close();
 });
+
+test("Messages TTS profiles expose usage counts and block referenced profile deletion", async () => {
+  const { service } = createServiceHarness();
+
+  const emotion = (await service.listEmotionProfiles()).find((profile) => profile.name === "Calm");
+  const voice = (await service.listTtsProfiles()).find((profile) => profile.name === "Man Profile 1");
+  assert.ok(emotion);
+  assert.ok(voice);
+
+  const message = await service.createMessage({
+    emotionProfileKey: emotion.key,
+    messageText: "Usage tracked line.",
+    name: "Usage Count Message",
+    voiceProfileKey: voice.key,
+  });
+  await service.createMessageSegment({
+    displayOrder: 1,
+    emotionProfileKey: emotion.key,
+    messageKey: message.key,
+    segmentText: "Usage tracked sentence.",
+    voiceProfileKey: voice.key,
+  });
+
+  const usedProfile = await service.getTtsProfile(voice.key);
+  const calmSetting = usedProfile.emotionSettings.find((setting) => setting.key === emotion.key);
+
+  assert.equal(usedProfile.messageUsageCount, 1);
+  assert.equal(usedProfile.segmentUsageCount, 1);
+  assert.equal(usedProfile.usageCount, 2);
+  assert.equal(usedProfile.references.map((reference) => reference.type).join(","), "message,sentence");
+  assert.equal(calmSetting.messageUsageCount, 1);
+  assert.equal(calmSetting.messagePartsUsageCount, 1);
+  assert.equal(calmSetting.usageCount, 2);
+
+  await assert.rejects(
+    () => service.updateTtsProfile(voice.key, { active: false }),
+    /TTS Profile is referenced/,
+  );
+  await assert.rejects(
+    () => service.deleteTtsProfile(voice.key),
+    /TTS Profile is referenced/,
+  );
+  await assert.rejects(
+    () => service.deleteEmotionProfile(emotion.key),
+    /Emotion Profile is referenced/,
+  );
+  service.close();
+});
+
+test("Messages enforces profile-scoped Emotion Profiles for save and publish validation", async () => {
+  const { postgresClient, service } = createServiceHarness();
+
+  const profiles = await service.listTtsProfiles();
+  const man = profiles.find((profile) => profile.name === "Man Profile 1");
+  const woman = profiles.find((profile) => profile.name === "Woman Profile 2");
+  const urgent = (await service.listEmotionProfiles()).find((profile) => profile.name === "Urgent");
+  const whisper = (await service.listEmotionProfiles()).find((profile) => profile.name === "Whisper");
+  assert.ok(man);
+  assert.ok(woman);
+  assert.ok(urgent);
+  assert.ok(whisper);
+  assert.deepEqual(man.emotionSettings.map((setting) => setting.emotionLabel), ["Neutral", "Calm", "Urgent"]);
+  assert.deepEqual(woman.emotionSettings.map((setting) => setting.emotionLabel), ["Whisper", "Robot"]);
+
+  await assert.rejects(
+    () => service.createMessage({
+      emotionProfileKey: urgent.key,
+      messageText: "Wrong scoped emotion.",
+      name: "Wrong Scoped Emotion",
+      voiceProfileKey: woman.key,
+    }),
+    /Add this Emotion Profile to the selected TTS Profile/,
+  );
+
+  const categoryKey = await service.defaultMessageCategoryKey();
+  await postgresClient.requestTable("messages_records", {
+    body: datedRow({
+      categoryKey,
+      emotionProfileKey: whisper.key,
+      key: "message-profile-emotion-missing",
+      messageText: "Publish should catch missing profile emotion.",
+      name: "Missing Profile Emotion Setting",
+      notes: "",
+      voiceProfileKey: man.key,
+    }),
+    method: "POST",
+  });
+
+  const validation = await service.validateMessagePublishConfiguration();
+  assert.equal(validation.valid, false);
+  assert.ok(validation.issues.some((issue) => issue.code === "profile-emotion-missing"));
+  assert.ok(validation.issues.some((issue) => issue.message === "Add this Emotion Profile to the selected TTS Profile before publishing."));
+  service.close();
+});
+
+test("Messages TTS profile saves accept creator-facing Emotion labels and protect referenced settings", async () => {
+  const { service } = createServiceHarness();
+
+  const created = await service.createTtsProfile({
+    active: true,
+    emotionSettings: [{
+      emotion: "neutral",
+      emotionLabel: "Neutral",
+      pitch: 1,
+      rate: 1,
+      volume: 1,
+    }],
+    language: "en-US",
+    name: "Quest Profile",
+    pitch: 1,
+    providerKey: "browser-speech",
+    rate: 1,
+    voiceName: "Browser guide updated",
+    volume: 1,
+  });
+  assert.deepEqual(created.emotionSettings.map((setting) => setting.emotionLabel), ["Neutral"]);
+
+  const updated = await service.updateTtsProfile(created.key, {
+    ...created,
+    emotionSettings: [
+      ...created.emotionSettings,
+      {
+        emotion: "urgent",
+        emotionLabel: "Urgent",
+        pitch: 1.2,
+        rate: 1.1,
+        volume: 0.7,
+      },
+    ],
+  });
+  const urgent = updated.emotionSettings.find((setting) => setting.emotionLabel === "Urgent");
+  assert.ok(urgent);
+  assert.equal(urgent.pitch, 1.2);
+  assert.equal(urgent.rate, 1.1);
+  assert.equal(urgent.volume, 0.7);
+
+  await service.createMessage({
+    emotionProfileKey: urgent.key,
+    messageText: "Quest profile line.",
+    name: "Quest Profile Message",
+    voiceProfileKey: updated.key,
+  });
+  await assert.rejects(
+    () => service.updateTtsProfile(updated.key, {
+      ...updated,
+      emotionSettings: updated.emotionSettings.filter((setting) => setting.key !== urgent.key),
+    }),
+    /Emotion Profile Urgent is referenced/,
+  );
+  service.close();
+});

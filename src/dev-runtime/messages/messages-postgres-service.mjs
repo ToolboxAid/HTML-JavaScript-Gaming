@@ -15,10 +15,12 @@ const SEED_CATEGORY_NAMES = Object.freeze([
 ]);
 const SEED_EMOTION_PROFILES = Object.freeze([
   Object.freeze({ description: "Balanced spoken delivery for general narration or dialog.", name: "Neutral", pauseAfterMs: 150, pauseBeforeMs: 0, pitch: 1, rate: 1, volume: 1 }),
+  Object.freeze({ description: "Bright, positive delivery for friendly or successful moments.", name: "Happy", pauseAfterMs: 110, pauseBeforeMs: 0, pitch: 1.08, rate: 1.04, volume: 1 }),
   Object.freeze({ description: "Neutral spoken delivery for general narration or dialog.", name: "Calm", pauseAfterMs: 150, pauseBeforeMs: 0, pitch: 1, rate: 1, volume: 1 }),
   Object.freeze({ description: "Fast, alert delivery for warnings and immediate danger.", name: "Urgent", pauseAfterMs: 80, pauseBeforeMs: 0, pitch: 1.08, rate: 1.15, volume: 1 }),
   Object.freeze({ description: "Quiet delivery for secret, stealth, or intimate lines.", name: "Whisper", pauseAfterMs: 180, pauseBeforeMs: 80, pitch: 0.95, rate: 0.9, volume: 0.55 }),
   Object.freeze({ description: "Forceful delivery for conflict or frustration.", name: "Angry", pauseAfterMs: 90, pauseBeforeMs: 0, pitch: 0.98, rate: 1.1, volume: 1 }),
+  Object.freeze({ description: "Tense delivery for fear, panic, or discovery.", name: "Scared", pauseAfterMs: 120, pauseBeforeMs: 0, pitch: 1.12, rate: 1.12, volume: 0.9 }),
   Object.freeze({ description: "Bright delivery for reveals, wins, and high-energy moments.", name: "Excited", pauseAfterMs: 100, pauseBeforeMs: 0, pitch: 1.12, rate: 1.12, volume: 1 }),
   Object.freeze({ description: "Soft delivery for loss, regret, or reflective moments.", name: "Sad", pauseAfterMs: 220, pauseBeforeMs: 100, pitch: 0.9, rate: 0.85, volume: 0.8 }),
   Object.freeze({ description: "Measured delivery for suspense, hidden lore, or strange events.", name: "Mysterious", pauseAfterMs: 260, pauseBeforeMs: 120, pitch: 0.92, rate: 0.88, volume: 0.85 }),
@@ -29,12 +31,22 @@ const SEED_TTS_PROFILES = Object.freeze([
   Object.freeze({ description: "Starter Text To Speech browser profile.", language: "en-US", name: "Man Profile 1", pitch: 1, providerKey: "browser-speech", rate: 1, voiceName: "Default browser voice", volume: 1 }),
   Object.freeze({ description: "Starter Text To Speech browser profile.", language: "en-US", name: "Woman Profile 2", pitch: 1, providerKey: "browser-speech", rate: 1, voiceName: "Default browser voice", volume: 1 }),
 ]);
+const SEED_TTS_PROFILE_EMOTION_SETTINGS = Object.freeze([
+  Object.freeze({ emotions: ["Neutral", "Calm", "Urgent"], ttsProfileName: "Default Balanced Profile" }),
+  Object.freeze({ emotions: ["Neutral", "Calm", "Urgent"], ttsProfileName: "Man Profile 1" }),
+  Object.freeze({ emotions: ["Whisper", "Robot"], ttsProfileName: "Woman Profile 2" }),
+]);
 const SUPPORTED_TTS_PROVIDER_KEYS = Object.freeze([
   "browser-speech",
   "elevenlabs",
   "openai",
   "azure",
   "polly",
+]);
+const SUPPORTED_TTS_SSML_LIKE_PRESETS = Object.freeze([
+  "normal",
+  "slow",
+  "whisper-ish",
 ]);
 const ACTIVE_PUBLISH_TTS_PROVIDER_KEYS = Object.freeze([
   "browser-speech",
@@ -87,6 +99,23 @@ CREATE TABLE IF NOT EXISTS messages_tts_profiles (
   "updatedAt" timestamptz NOT NULL DEFAULT now(),
   "createdBy" text NOT NULL REFERENCES users(key),
   "updatedBy" text NOT NULL REFERENCES users(key)
+);
+
+CREATE TABLE IF NOT EXISTS messages_tts_profile_emotion_settings (
+  key text PRIMARY KEY,
+  "ttsProfileKey" text NOT NULL REFERENCES messages_tts_profiles(key),
+  "emotionProfileKey" text NOT NULL REFERENCES messages_emotion_profiles(key),
+  "volume" numeric NOT NULL DEFAULT 1,
+  "pitch" numeric NOT NULL DEFAULT 1,
+  "rate" numeric NOT NULL DEFAULT 1,
+  "displayOrder" integer NOT NULL DEFAULT 0,
+  "ssmlLikePreset" text NOT NULL DEFAULT 'normal',
+  "active" boolean NOT NULL DEFAULT true,
+  "createdAt" timestamptz NOT NULL DEFAULT now(),
+  "updatedAt" timestamptz NOT NULL DEFAULT now(),
+  "createdBy" text NOT NULL REFERENCES users(key),
+  "updatedBy" text NOT NULL REFERENCES users(key),
+  UNIQUE ("ttsProfileKey", "emotionProfileKey")
 );
 
 CREATE TABLE IF NOT EXISTS messages_records (
@@ -151,6 +180,11 @@ CREATE INDEX IF NOT EXISTS idx_messages_event_actions_updatedby ON messages_even
 CREATE INDEX IF NOT EXISTS idx_messages_tts_profiles_providerkey ON messages_tts_profiles ("providerKey");
 CREATE INDEX IF NOT EXISTS idx_messages_tts_profiles_createdby ON messages_tts_profiles ("createdBy");
 CREATE INDEX IF NOT EXISTS idx_messages_tts_profiles_updatedby ON messages_tts_profiles ("updatedBy");
+CREATE INDEX IF NOT EXISTS idx_messages_tts_profile_emotion_settings_ttsprofilekey ON messages_tts_profile_emotion_settings ("ttsProfileKey");
+CREATE INDEX IF NOT EXISTS idx_messages_tts_profile_emotion_settings_emotionprofilekey ON messages_tts_profile_emotion_settings ("emotionProfileKey");
+CREATE INDEX IF NOT EXISTS idx_messages_tts_profile_emotion_settings_order ON messages_tts_profile_emotion_settings ("ttsProfileKey", "displayOrder");
+CREATE INDEX IF NOT EXISTS idx_messages_tts_profile_emotion_settings_createdby ON messages_tts_profile_emotion_settings ("createdBy");
+CREATE INDEX IF NOT EXISTS idx_messages_tts_profile_emotion_settings_updatedby ON messages_tts_profile_emotion_settings ("updatedBy");
 `;
 
 function encodeUlidPart(value, length) {
@@ -216,11 +250,19 @@ function normalizeEditableNumber(value, fallback, label) {
 }
 
 function normalizeTtsProviderKey(value) {
-  const providerKey = normalizeName(value, "Voice profile provider");
+  const providerKey = normalizeName(value, "TTS Profile provider");
   if (!SUPPORTED_TTS_PROVIDER_KEYS.includes(providerKey)) {
-    throw httpError("Voice profile provider is not supported.");
+    throw httpError("TTS Profile provider is not supported.");
   }
   return providerKey;
+}
+
+function normalizeSsmlLikePreset(value, fallback = "normal") {
+  const normalized = normalizeText(value || fallback).trim() || fallback;
+  if (!SUPPORTED_TTS_SSML_LIKE_PRESETS.includes(normalized)) {
+    throw httpError("Emotion preset is not supported.");
+  }
+  return normalized;
 }
 
 function eventActionTypeDefinition(actionType) {
@@ -270,6 +312,10 @@ function compareName(left, right) {
 
 function queryForKey(key) {
   return `select=*&key=eq.${encodeURIComponent(key)}`;
+}
+
+function queryForEqual(field, value) {
+  return `select=*&${encodeURIComponent(field)}=eq.${encodeURIComponent(value)}`;
 }
 
 function messageRecordFromRow(row, { categoryName = "", emotionProfileName = "", voiceProfileName = "" } = {}) {
@@ -330,27 +376,30 @@ function emotionProfileFromRow(row, usage = {}) {
   };
 }
 
-function ttsEmotionSettingFromEmotionProfile(profile) {
+function ttsEmotionSettingFromRow(row, profile, usage = {}) {
+  const messageUsageCount = Number(usage.messageUsageCount || 0);
+  const segmentUsageCount = Number(usage.segmentUsageCount || 0);
   return {
-    active: profile.active !== false,
+    active: activeFromDatabase(row.active) && profile.active !== false,
+    displayOrder: Number(row.displayOrder || 0),
     emotion: emotionSettingKey(profile.name),
     emotionLabel: profile.name,
     key: profile.key,
-    pitch: Number(profile.pitch),
-    rate: Number(profile.rate),
-    ssmlLikePreset: "normal",
-    volume: Number(profile.volume),
+    messagePartsUsageCount: segmentUsageCount,
+    messageUsageCount,
+    pitch: Number(row.pitch),
+    rate: Number(row.rate),
+    references: Array.isArray(usage.references) ? usage.references : [],
+    settingKey: row.key,
+    ssmlLikePreset: row.ssmlLikePreset || "normal",
+    usageCount: messageUsageCount + segmentUsageCount,
+    volume: Number(row.volume),
   };
 }
 
-function emotionSettingsForTtsProfileRow(_row, emotionRows = []) {
-  return emotionRows
-    .map((profileRow) => emotionProfileFromRow(profileRow))
-    .filter((profile) => profile.active !== false)
-    .map((profile) => ttsEmotionSettingFromEmotionProfile(profile));
-}
-
-function ttsProfileFromRow(row, emotionSettings = []) {
+function ttsProfileFromRow(row, emotionSettings = [], usage = {}) {
+  const messageUsageCount = Number(usage.messageUsageCount || 0);
+  const segmentUsageCount = Number(usage.segmentUsageCount || 0);
   return {
     active: activeFromDatabase(row.active),
     age: "",
@@ -362,13 +411,17 @@ function ttsProfileFromRow(row, emotionSettings = []) {
     gender: "",
     key: row.key,
     language: row.language,
+    messageUsageCount,
     name: row.name,
     pitch: Number(row.pitch),
     providerKey: row.providerKey,
     rate: Number(row.rate),
+    references: Array.isArray(usage.references) ? usage.references : [],
+    segmentUsageCount,
     status: activeFromDatabase(row.active) ? "Active" : "Inactive",
     updatedAt: row.updatedAt,
     updatedBy: row.updatedBy,
+    usageCount: messageUsageCount + segmentUsageCount,
     voice: row.voiceName || "",
     voiceName: row.voiceName || "",
     volume: Number(row.volume),
@@ -500,6 +553,13 @@ export class MessagesPostgresService {
     return cloneRows(rows)[0] || null;
   }
 
+  async rowsByField(tableName, field, value) {
+    return cloneRows(await this.client().requestTable(tableName, {
+      method: "GET",
+      query: queryForEqual(field, value),
+    }));
+  }
+
   async seedDefaults() {
     for (const name of SEED_CATEGORY_NAMES) {
       const existing = await this.findCategoryByNameRaw(name);
@@ -531,7 +591,38 @@ export class MessagesPostgresService {
         }, { skipEnsure: true });
       }
     }
+    await this.seedDefaultTtsProfileEmotionSettings();
     await this.backfillDefaultVoiceProfileReferences();
+  }
+
+  async seedDefaultTtsProfileEmotionSettings() {
+    for (const profileSettings of SEED_TTS_PROFILE_EMOTION_SETTINGS) {
+      const ttsProfile = await this.findTtsProfileByNameRaw(profileSettings.ttsProfileName);
+      if (!ttsProfile) {
+        continue;
+      }
+      for (const [displayIndex, emotionName] of profileSettings.emotions.entries()) {
+        const emotionProfile = await this.findEmotionProfileByNameRaw(emotionName);
+        if (!emotionProfile) {
+          continue;
+        }
+        const existing = await this.findTtsEmotionSettingRaw(ttsProfile.key, emotionProfile.key);
+        if (existing) {
+          continue;
+        }
+        await this.insertTtsEmotionSetting({
+          active: true,
+          actorKey: SEED_DB_KEYS.users.forgeBot,
+          displayOrder: displayIndex + 1,
+          emotionProfileKey: emotionProfile.key,
+          pitch: Number(emotionProfile.pitch),
+          rate: Number(emotionProfile.rate),
+          ssmlLikePreset: "normal",
+          ttsProfileKey: ttsProfile.key,
+          volume: Number(emotionProfile.volume),
+        }, { skipEnsure: true });
+      }
+    }
   }
 
   persistenceSummary() {
@@ -752,22 +843,244 @@ export class MessagesPostgresService {
     return this.getEmotionProfile(key);
   }
 
+  async deleteEmotionProfile(key) {
+    const existing = await this.getEmotionProfile(key);
+    if (existing.usageCount > 0) {
+      throw httpError("Emotion Profile is referenced by messages or sentences. Reassign those references before deleting this Emotion Profile.", 409);
+    }
+    const settings = await this.rowsByField("messages_tts_profile_emotion_settings", "emotionProfileKey", key);
+    if (settings.length > 0) {
+      throw httpError("Emotion Profile belongs to one or more TTS Profiles. Remove it from those TTS Profiles before deleting this Emotion Profile.", 409);
+    }
+    await this.deleteRow("messages_emotion_profiles", key);
+    return existing;
+  }
+
+  async findTtsEmotionSettingRaw(ttsProfileKey, emotionProfileKey) {
+    const ttsKey = normalizeText(ttsProfileKey).trim();
+    const emotionKey = normalizeText(emotionProfileKey).trim();
+    if (!ttsKey || !emotionKey) {
+      return null;
+    }
+    return (await this.tableRows("messages_tts_profile_emotion_settings"))
+      .find((row) => row.ttsProfileKey === ttsKey && row.emotionProfileKey === emotionKey) || null;
+  }
+
+  async ttsEmotionSettingUsage(ttsProfileKey, emotionProfileKey) {
+    const messages = await this.tableRows("messages_records");
+    const segments = await this.tableRows("messages_segments");
+    const messageNames = new Map(messages.map((message) => [message.key, message.name]));
+    const messageReferences = messages
+      .filter((message) => message.voiceProfileKey === ttsProfileKey && message.emotionProfileKey === emotionProfileKey)
+      .sort(compareName)
+      .map((row) => ({
+        key: row.key,
+        label: row.name,
+        type: "message",
+      }));
+    const segmentReferences = segments
+      .filter((segment) => segment.voiceProfileKey === ttsProfileKey && segment.emotionProfileKey === emotionProfileKey)
+      .sort((left, right) => {
+        const leftName = messageNames.get(left.messageKey) || "";
+        const rightName = messageNames.get(right.messageKey) || "";
+        return leftName.localeCompare(rightName, undefined, { sensitivity: "base" })
+          || Number(left.displayOrder) - Number(right.displayOrder)
+          || String(left.key).localeCompare(String(right.key));
+      })
+      .map((row) => ({
+        displayOrder: Number(row.displayOrder),
+        key: row.key,
+        label: `${messageNames.get(row.messageKey) || "Unknown Message"} sentence ${row.displayOrder}`,
+        messageKey: row.messageKey,
+        preview: normalizeText(row.segmentText).slice(0, 80),
+        type: "sentence",
+      }));
+    return {
+      messageUsageCount: messageReferences.length,
+      references: [
+        ...messageReferences,
+        ...segmentReferences,
+      ],
+      segmentUsageCount: segmentReferences.length,
+    };
+  }
+
+  async emotionSettingsForTtsProfileRow(row) {
+    const emotionRows = new Map((await this.tableRows("messages_emotion_profiles")).map((emotionRow) => [emotionRow.key, emotionRow]));
+    const settingRows = (await this.rowsByField("messages_tts_profile_emotion_settings", "ttsProfileKey", row.key))
+      .sort((left, right) => Number(left.displayOrder || 0) - Number(right.displayOrder || 0)
+        || String(left.createdAt || "").localeCompare(String(right.createdAt || ""))
+        || String(left.key).localeCompare(String(right.key)));
+    const settings = [];
+    for (const settingRow of settingRows) {
+      const emotionRow = emotionRows.get(settingRow.emotionProfileKey);
+      if (!emotionRow) {
+        continue;
+      }
+      const usage = await this.ttsEmotionSettingUsage(row.key, emotionRow.key);
+      settings.push(ttsEmotionSettingFromRow(settingRow, emotionProfileFromRow(emotionRow), usage));
+    }
+    return settings;
+  }
+
+  async ttsProfileUsage(key) {
+    const messages = await this.tableRows("messages_records");
+    const segments = await this.tableRows("messages_segments");
+    const messageNames = new Map(messages.map((message) => [message.key, message.name]));
+    const messageReferences = messages
+      .filter((message) => message.voiceProfileKey === key)
+      .sort(compareName)
+      .map((row) => ({
+        key: row.key,
+        label: row.name,
+        type: "message",
+      }));
+    const segmentReferences = segments
+      .filter((segment) => segment.voiceProfileKey === key)
+      .sort((left, right) => {
+        const leftName = messageNames.get(left.messageKey) || "";
+        const rightName = messageNames.get(right.messageKey) || "";
+        return leftName.localeCompare(rightName, undefined, { sensitivity: "base" })
+          || Number(left.displayOrder) - Number(right.displayOrder)
+          || String(left.key).localeCompare(String(right.key));
+      })
+      .map((row) => ({
+        displayOrder: Number(row.displayOrder),
+        key: row.key,
+        label: `${messageNames.get(row.messageKey) || "Unknown Message"} sentence ${row.displayOrder}`,
+        messageKey: row.messageKey,
+        preview: normalizeText(row.segmentText).slice(0, 80),
+        type: "sentence",
+      }));
+    return {
+      messageUsageCount: messageReferences.length,
+      references: [
+        ...messageReferences,
+        ...segmentReferences,
+      ],
+      segmentUsageCount: segmentReferences.length,
+    };
+  }
+
+  async insertTtsEmotionSetting(input = {}, { skipEnsure = false } = {}) {
+    if (!skipEnsure) {
+      await this.ensureReady();
+    }
+    const ttsProfileKey = normalizeName(input.ttsProfileKey, "TTS Profile");
+    const emotionProfileKey = normalizeName(input.emotionProfileKey, "Emotion Profile");
+    const existing = await this.findTtsEmotionSettingRaw(ttsProfileKey, emotionProfileKey);
+    if (existing) {
+      throw httpError("Emotion Profile already belongs to this TTS Profile.");
+    }
+    const key = createUlid();
+    const now = timestamp();
+    const actor = normalizeActorKey(input.actorKey);
+    await this.upsertRow("messages_tts_profile_emotion_settings", {
+      active: normalizeActive(input.active, true),
+      createdAt: now,
+      createdBy: actor,
+      displayOrder: normalizeInteger(input.displayOrder, 0),
+      emotionProfileKey,
+      key,
+      pitch: normalizeEditableNumber(input.pitch, 1, "Emotion profile pitch"),
+      rate: normalizeEditableNumber(input.rate, 1, "Emotion profile rate"),
+      ssmlLikePreset: normalizeSsmlLikePreset(input.ssmlLikePreset, "normal"),
+      ttsProfileKey,
+      updatedAt: now,
+      updatedBy: actor,
+      volume: normalizeEditableNumber(input.volume, 1, "Emotion profile volume"),
+    });
+    return this.rowByKey("messages_tts_profile_emotion_settings", key);
+  }
+
+  async replaceTtsEmotionSettings(ttsProfileKey, inputSettings = [], actorKey = "") {
+    if (!Array.isArray(inputSettings)) {
+      return;
+    }
+    const actor = normalizeActorKey(actorKey);
+    const now = timestamp();
+    const nextSettings = new Map();
+    const emotionProfiles = await this.tableRows("messages_emotion_profiles");
+    const emotionByName = new Map(emotionProfiles.map((profile) => [normalizeText(profile.name).trim().toLowerCase(), profile]));
+    for (const [displayIndex, setting] of inputSettings.entries()) {
+      const rawEmotionKey = normalizeText(setting?.key || setting?.emotionProfileKey).trim();
+      let emotionRow = rawEmotionKey ? await this.rowByKey("messages_emotion_profiles", rawEmotionKey) : null;
+      if (!emotionRow) {
+        emotionRow = emotionByName.get(normalizeText(setting?.emotionLabel || setting?.name || setting?.emotion).trim().toLowerCase()) || null;
+      }
+      if (!emotionRow) {
+        throw httpError("Choose an existing Emotion Profile before saving this TTS Profile.");
+      }
+      const key = emotionRow.key;
+      if (nextSettings.has(key)) {
+        throw httpError("Emotion Profile must be unique within the selected TTS Profile.");
+      }
+      nextSettings.set(key, {
+        active: normalizeActive(setting.active, true),
+        displayOrder: normalizeInteger(setting.displayOrder, displayIndex + 1),
+        emotionProfileKey: key,
+        pitch: normalizeEditableNumber(setting.pitch, Number(emotionRow.pitch), "Emotion profile pitch"),
+        rate: normalizeEditableNumber(setting.rate, Number(emotionRow.rate), "Emotion profile rate"),
+        ssmlLikePreset: normalizeSsmlLikePreset(setting.ssmlLikePreset, "normal"),
+        volume: normalizeEditableNumber(setting.volume, Number(emotionRow.volume), "Emotion profile volume"),
+      });
+    }
+    const existingSettings = await this.rowsByField("messages_tts_profile_emotion_settings", "ttsProfileKey", ttsProfileKey);
+    for (const existing of existingSettings) {
+      if (nextSettings.has(existing.emotionProfileKey)) {
+        continue;
+      }
+      const usage = await this.ttsEmotionSettingUsage(ttsProfileKey, existing.emotionProfileKey);
+      if ((usage.messageUsageCount + usage.segmentUsageCount) > 0) {
+        const emotionRow = await this.rowByKey("messages_emotion_profiles", existing.emotionProfileKey);
+        throw httpError(`Emotion Profile ${emotionRow?.name || existing.emotionProfileKey} is referenced by messages or sentences. Reassign those references before removing it from this TTS Profile.`, 409);
+      }
+      await this.deleteRow("messages_tts_profile_emotion_settings", existing.key);
+    }
+    for (const setting of nextSettings.values()) {
+      const existing = existingSettings.find((candidate) => candidate.emotionProfileKey === setting.emotionProfileKey) || null;
+      if (existing) {
+        await this.patchRow("messages_tts_profile_emotion_settings", existing.key, {
+          active: setting.active,
+          displayOrder: setting.displayOrder,
+          pitch: setting.pitch,
+          rate: setting.rate,
+          ssmlLikePreset: setting.ssmlLikePreset,
+          updatedAt: now,
+          updatedBy: actor,
+          volume: setting.volume,
+        });
+        continue;
+      }
+      await this.insertTtsEmotionSetting({
+        ...setting,
+        actorKey: actor,
+        ttsProfileKey,
+      });
+    }
+  }
+
   async listTtsProfiles() {
     await this.ensureReady();
-    const emotionRows = await this.tableRows("messages_emotion_profiles");
-    return (await this.tableRows("messages_tts_profiles"))
-      .sort(compareName)
-      .map((row) => ttsProfileFromRow(row, emotionSettingsForTtsProfileRow(row, emotionRows)));
+    const rows = (await this.tableRows("messages_tts_profiles")).sort(compareName);
+    return Promise.all(rows.map(async (row) => ttsProfileFromRow(
+      row,
+      await this.emotionSettingsForTtsProfileRow(row),
+      await this.ttsProfileUsage(row.key),
+    )));
   }
 
   async getTtsProfile(key) {
     await this.ensureReady();
     const row = await this.rowByKey("messages_tts_profiles", key);
     if (!row) {
-      throw httpError("Voice profile was not found.", 404);
+      throw httpError("TTS Profile was not found.", 404);
     }
-    const emotionRows = await this.tableRows("messages_emotion_profiles");
-    return ttsProfileFromRow(row, emotionSettingsForTtsProfileRow(row, emotionRows));
+    return ttsProfileFromRow(
+      row,
+      await this.emotionSettingsForTtsProfileRow(row),
+      await this.ttsProfileUsage(row.key),
+    );
   }
 
   async findTtsProfileByNameRaw(name) {
@@ -781,7 +1094,7 @@ export class MessagesPostgresService {
   async findTtsProfileByName(name) {
     await this.ensureReady();
     const row = await this.findTtsProfileByNameRaw(name);
-    return row ? ttsProfileFromRow(row) : null;
+    return row ? this.getTtsProfile(row.key) : null;
   }
 
   async defaultVoiceProfileKeyRaw() {
@@ -791,7 +1104,7 @@ export class MessagesPostgresService {
     }
     const fallback = (await this.tableRows("messages_tts_profiles")).sort(compareName)[0];
     if (!fallback) {
-      throw httpError("Voice profile seed is unavailable. Restart the Local API runtime.");
+      throw httpError("TTS Profile seed is unavailable. Restart the Local API runtime.");
     }
     return fallback.key;
   }
@@ -814,16 +1127,16 @@ export class MessagesPostgresService {
   }
 
   normalizeTtsProfileInput(input = {}, existing = null) {
-    const name = input.name === undefined && existing ? existing.name : normalizeName(input.name, "Voice profile name");
+    const name = input.name === undefined && existing ? existing.name : normalizeName(input.name, "TTS Profile name");
     return {
       active: normalizeActive(input.active, existing ? existing.active : true),
       description: input.description === undefined && existing ? existing.description : normalizeText(input.description),
-      language: input.language === undefined && existing ? existing.language : normalizeName(input.language, "Voice profile language"),
+      language: input.language === undefined && existing ? existing.language : normalizeName(input.language, "TTS Profile language"),
       name,
       pitch: normalizeNumber(input.pitch, existing ? existing.pitch : 1),
       providerKey: input.providerKey === undefined && existing ? existing.providerKey : normalizeTtsProviderKey(input.providerKey),
       rate: normalizeNumber(input.rate, existing ? existing.rate : 1),
-      voiceName: input.voiceName === undefined && existing ? existing.voiceName : normalizeName(input.voiceName, "Voice profile voice name"),
+      voiceName: input.voiceName === undefined && existing ? existing.voiceName : normalizeName(input.voiceName, "TTS Profile voice name"),
       volume: normalizeNumber(input.volume, existing ? existing.volume : 1),
     };
   }
@@ -852,20 +1165,27 @@ export class MessagesPostgresService {
       voiceName: values.voiceName,
       volume: values.volume,
     });
+    if (Array.isArray(input.emotionSettings)) {
+      await this.replaceTtsEmotionSettings(key, input.emotionSettings, actor);
+    }
     const row = await this.rowByKey("messages_tts_profiles", key);
-    const emotionRows = await this.tableRows("messages_emotion_profiles");
-    return ttsProfileFromRow(row, emotionSettingsForTtsProfileRow(row, emotionRows));
+    return ttsProfileFromRow(
+      row,
+      await this.emotionSettingsForTtsProfileRow(row),
+      await this.ttsProfileUsage(key),
+    );
   }
 
   async createTtsProfile(input = {}, actorKey = "") {
     const values = this.normalizeTtsProfileInput(input);
     const existing = await this.findTtsProfileByName(values.name);
     if (existing) {
-      throw httpError(`Voice profile ${values.name} already exists.`);
+      throw httpError(`TTS Profile ${values.name} already exists.`);
     }
     return this.insertTtsProfile({
       ...values,
       actorKey,
+      emotionSettings: input.emotionSettings,
     });
   }
 
@@ -874,7 +1194,10 @@ export class MessagesPostgresService {
     const values = this.normalizeTtsProfileInput(input, existing);
     const duplicate = await this.findTtsProfileByName(values.name);
     if (duplicate && duplicate.key !== key) {
-      throw httpError(`Voice profile ${values.name} already exists.`);
+      throw httpError(`TTS Profile ${values.name} already exists.`);
+    }
+    if (existing.active && !values.active && existing.usageCount > 0) {
+      throw httpError("TTS Profile is referenced by messages or sentences. Reassign those references before deactivating this TTS Profile.", 409);
     }
     await this.patchRow("messages_tts_profiles", key, {
       active: values.active,
@@ -889,7 +1212,23 @@ export class MessagesPostgresService {
       voiceName: values.voiceName,
       volume: values.volume,
     });
+    if (Array.isArray(input.emotionSettings)) {
+      await this.replaceTtsEmotionSettings(key, input.emotionSettings, actorKey);
+    }
     return this.getTtsProfile(key);
+  }
+
+  async deleteTtsProfile(key) {
+    const existing = await this.getTtsProfile(key);
+    if (existing.usageCount > 0) {
+      throw httpError("TTS Profile is referenced by messages or sentences. Reassign those references before deleting this TTS Profile.", 409);
+    }
+    const settings = await this.rowsByField("messages_tts_profile_emotion_settings", "ttsProfileKey", key);
+    for (const setting of settings) {
+      await this.deleteRow("messages_tts_profile_emotion_settings", setting.key);
+    }
+    await this.deleteRow("messages_tts_profiles", key);
+    return existing;
   }
 
   async listMessages() {
@@ -950,9 +1289,21 @@ export class MessagesPostgresService {
   async assertActiveVoiceProfile(key) {
     const profile = await this.getTtsProfile(key);
     if (!profile.active) {
-      throw httpError("Voice profile is inactive. Choose an active voice profile before saving a message.");
+      throw httpError("TTS Profile is inactive. Choose an active TTS Profile before saving a message.");
     }
     return profile;
+  }
+
+  async assertProfileEmotionSetting(voiceProfileKey, emotionProfileKey) {
+    const setting = await this.findTtsEmotionSettingRaw(voiceProfileKey, emotionProfileKey);
+    if (!setting || !activeFromDatabase(setting.active)) {
+      throw httpError("Add this Emotion Profile to the selected TTS Profile before saving.");
+    }
+    const emotion = await this.getEmotionProfile(emotionProfileKey);
+    if (!emotion.active) {
+      throw httpError("Emotion profile is inactive. Choose an active emotion profile before saving.");
+    }
+    return setting;
   }
 
   async normalizeMessageInput(input = {}, existing = null) {
@@ -966,7 +1317,7 @@ export class MessagesPostgresService {
       throw httpError("Emotion profile is required.");
     }
     if (!voiceProfileKey) {
-      throw httpError("Voice profile is required.");
+      throw httpError("TTS Profile is required.");
     }
     if (!messageText.trim()) {
       throw httpError("Message text is required.");
@@ -974,6 +1325,7 @@ export class MessagesPostgresService {
     await this.assertActiveCategory(categoryKey);
     await this.assertActiveEmotionProfile(emotionProfileKey);
     await this.assertActiveVoiceProfile(voiceProfileKey);
+    await this.assertProfileEmotionSetting(voiceProfileKey, emotionProfileKey);
     return {
       active: normalizeActive(input.active, existing ? existing.active : true),
       categoryKey,
@@ -1085,7 +1437,7 @@ export class MessagesPostgresService {
       throw httpError("Emotion profile is required.");
     }
     if (!voiceProfileKey) {
-      throw httpError("Voice profile is required.");
+      throw httpError("TTS Profile is required.");
     }
     if (!segmentText.trim()) {
       throw httpError("Segment text is required.");
@@ -1093,6 +1445,7 @@ export class MessagesPostgresService {
     await this.getMessage(messageKey);
     await this.assertActiveEmotionProfile(emotionProfileKey);
     await this.assertActiveVoiceProfile(voiceProfileKey);
+    await this.assertProfileEmotionSetting(voiceProfileKey, emotionProfileKey);
     return {
       active: normalizeActive(input.active, existing ? existing.active : true),
       displayOrder,
@@ -1232,6 +1585,7 @@ export class MessagesPostgresService {
     const segments = await this.tableRows("messages_segments");
     const emotions = new Map((await this.tableRows("messages_emotion_profiles")).map((row) => [row.key, row]));
     const voices = new Map((await this.tableRows("messages_tts_profiles")).map((row) => [row.key, row]));
+    const ttsEmotionSettings = await this.tableRows("messages_tts_profile_emotion_settings");
     const eventActions = await this.tableRows("messages_event_actions");
     const messagesByKey = new Map(messages.map((row) => [row.key, row]));
     const issues = [];
@@ -1251,9 +1605,10 @@ export class MessagesPostgresService {
           targetName,
           targetType,
         });
-        return;
+        return false;
       }
-      if (!emotions.has(emotionProfileKey)) {
+      const emotionProfile = emotions.get(emotionProfileKey);
+      if (!emotionProfile) {
         addIssue({
           code: "broken-reference",
           field: "emotionProfileKey",
@@ -1262,7 +1617,20 @@ export class MessagesPostgresService {
           targetName,
           targetType,
         });
+        return false;
       }
+      if (!activeFromDatabase(emotionProfile.active)) {
+        addIssue({
+          code: "inactive-reference",
+          field: "emotionProfileKey",
+          message: "Choose an active Emotion Profile before publishing.",
+          targetKey: row.key,
+          targetName,
+          targetType,
+        });
+        return false;
+      }
+      return true;
     };
 
     const validateVoiceReference = (row, targetType, targetName) => {
@@ -1271,24 +1639,35 @@ export class MessagesPostgresService {
         addIssue({
           code: "missing-voice-profile",
           field: "voiceProfileKey",
-          message: "Choose a Voice Profile before publishing.",
+          message: "Choose a TTS Profile before publishing.",
           targetKey: row.key,
           targetName,
           targetType,
         });
-        return;
+        return false;
       }
       const voiceProfile = voices.get(voiceProfileKey);
       if (!voiceProfile) {
         addIssue({
           code: "broken-reference",
           field: "voiceProfileKey",
-          message: "Choose an existing Voice Profile before publishing.",
+          message: "Choose an existing TTS Profile before publishing.",
           targetKey: row.key,
           targetName,
           targetType,
         });
-        return;
+        return false;
+      }
+      if (!activeFromDatabase(voiceProfile.active)) {
+        addIssue({
+          code: "inactive-reference",
+          field: "voiceProfileKey",
+          message: "Choose an active TTS Profile before publishing.",
+          targetKey: row.key,
+          targetName,
+          targetType,
+        });
+        return false;
       }
       const providerKey = normalizeText(voiceProfile.providerKey).trim();
       if (!SUPPORTED_TTS_PROVIDER_KEYS.includes(providerKey) || !ACTIVE_PUBLISH_TTS_PROVIDER_KEYS.includes(providerKey)) {
@@ -1296,6 +1675,27 @@ export class MessagesPostgresService {
           code: "invalid-provider-assignment",
           field: "providerKey",
           message: "Use Browser Speech API for publish-ready message voice playback.",
+          targetKey: row.key,
+          targetName,
+          targetType,
+        });
+      }
+      return true;
+    };
+
+    const validateProfileEmotionSetting = (row, targetType, targetName) => {
+      const emotionProfileKey = normalizeText(row.emotionProfileKey).trim();
+      const voiceProfileKey = normalizeText(row.voiceProfileKey).trim();
+      if (!emotionProfileKey || !voiceProfileKey || !emotions.has(emotionProfileKey) || !voices.has(voiceProfileKey)) {
+        return;
+      }
+      const setting = ttsEmotionSettings.find((candidate) => candidate.ttsProfileKey === voiceProfileKey
+        && candidate.emotionProfileKey === emotionProfileKey);
+      if (!setting || !activeFromDatabase(setting.active)) {
+        addIssue({
+          code: "profile-emotion-missing",
+          field: "emotionProfileKey",
+          message: "Add this Emotion Profile to the selected TTS Profile before publishing.",
           targetKey: row.key,
           targetName,
           targetType,
@@ -1315,8 +1715,11 @@ export class MessagesPostgresService {
           targetType: "message",
         });
       }
-      validateEmotionReference(message, "message", targetName);
-      validateVoiceReference(message, "message", targetName);
+      const validEmotion = validateEmotionReference(message, "message", targetName);
+      const validVoice = validateVoiceReference(message, "message", targetName);
+      if (validEmotion && validVoice) {
+        validateProfileEmotionSetting(message, "message", targetName);
+      }
     });
 
     segments.forEach((segment) => {
@@ -1342,8 +1745,11 @@ export class MessagesPostgresService {
           targetType: "message-part",
         });
       }
-      validateEmotionReference(segment, "message-part", targetName);
-      validateVoiceReference(segment, "message-part", targetName);
+      const validEmotion = validateEmotionReference(segment, "message-part", targetName);
+      const validVoice = validateVoiceReference(segment, "message-part", targetName);
+      if (validEmotion && validVoice) {
+        validateProfileEmotionSetting(segment, "message-part", targetName);
+      }
     });
 
     eventActions.forEach((eventAction) => {
@@ -1484,6 +1890,12 @@ export async function handleMessagesApiContract({
         persistence: service.persistenceSummary(),
       };
     }
+    if (normalizedMethod === "POST" && key && action === "delete") {
+      return {
+        emotionProfile: await service.deleteEmotionProfile(key),
+        persistence: service.persistenceSummary(),
+      };
+    }
     if (normalizedMethod === "POST" && key) {
       return {
         emotionProfile: await service.updateEmotionProfile(key, body, actorKey),
@@ -1530,6 +1942,12 @@ export async function handleMessagesApiContract({
       return {
         persistence: service.persistenceSummary(),
         ttsProfile: await service.createTtsProfile(body, actorKey),
+      };
+    }
+    if (normalizedMethod === "POST" && key && action === "delete") {
+      return {
+        persistence: service.persistenceSummary(),
+        ttsProfile: await service.deleteTtsProfile(key),
       };
     }
     if (normalizedMethod === "POST" && key) {

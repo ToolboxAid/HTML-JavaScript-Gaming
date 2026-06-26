@@ -1,12 +1,6 @@
 import {
-  readSavedTextToSpeechProfiles,
-  textToSpeechProfilesToMessageOptions,
-} from "../../assets/js/shared/tts-profile-store.js";
-import {
-  createEmotionProfile,
   createMessage,
   createMessageSegment,
-  createTtsProfile,
   deleteMessage,
   deleteMessageSegment,
   listEmotionProfiles,
@@ -194,105 +188,6 @@ function showCreatorSafeFailure(message) {
   const safeMessage = message || "Message Studio could not finish that action. Check the Local API connection and try again.";
   showValidation([safeMessage]);
   setText(elements.log, safeMessage);
-}
-
-function normalizedLookupKey(value) {
-  return String(value || "").trim().toLowerCase();
-}
-
-function apiTtsProfileByName(apiProfiles = []) {
-  return new Map(apiProfiles.map((profile) => [normalizedLookupKey(profile.name), profile]));
-}
-
-function apiEmotionProfileByName(apiProfiles = []) {
-  return new Map(apiProfiles.map((profile) => [normalizedLookupKey(profile.name), profile]));
-}
-
-function ensureApiTtsProfileForSavedProfile(profile, apiByName) {
-  const name = profileValue(profile?.name, "");
-  if (!name) {
-    return null;
-  }
-  const existing = apiByName.get(normalizedLookupKey(name)) || null;
-  if (existing) {
-    return existing;
-  }
-  const result = createTtsProfile({
-    active: true,
-    description: `${name} from Text To Speech profile ownership.`,
-    language: profileValue(profile.language, "en-US"),
-    name,
-    pitch: 1,
-    providerKey: profileValue(profile.providerKey, "browser-speech"),
-    rate: 1,
-    voiceName: profileValue(profile.voiceName || profile.voice, "Default browser voice"),
-    volume: 1,
-  });
-  const created = result.ttsProfile || null;
-  if (!created) {
-    throw new Error("Text To Speech profile could not be synced.");
-  }
-  apiByName.set(normalizedLookupKey(created.name), created);
-  return created;
-}
-
-function ensureApiEmotionProfileForSavedEmotion(setting, apiByName) {
-  const name = profileValue(setting?.emotionLabel || setting?.name || setting?.emotion, "");
-  if (!name) {
-    return null;
-  }
-  const existing = apiByName.get(normalizedLookupKey(name)) || null;
-  if (existing) {
-    return existing;
-  }
-  const result = createEmotionProfile({
-    active: true,
-    description: `${name} from Text To Speech profile ownership.`,
-    name,
-    pauseAfterMs: 0,
-    pauseBeforeMs: 0,
-    pitch: Number(setting.pitch) || 1,
-    rate: Number(setting.rate) || 1,
-    volume: Number.isFinite(Number(setting.volume)) ? Number(setting.volume) : 1,
-  });
-  const created = result.emotionProfile || null;
-  if (!created) {
-    throw new Error("Text To Speech emotion could not be synced.");
-  }
-  apiByName.set(normalizedLookupKey(created.name), created);
-  state.emotionProfiles.push(created);
-  return created;
-}
-
-function activeTextToSpeechProfilesForMessages(apiProfiles = []) {
-  const savedProfiles = readSavedTextToSpeechProfiles();
-  const savedOptions = textToSpeechProfilesToMessageOptions(savedProfiles);
-  const ttsProfilesByName = apiTtsProfileByName(apiProfiles);
-  const emotionProfilesByName = apiEmotionProfileByName(state.emotionProfiles);
-  return savedOptions.map((savedProfile) => {
-    const apiProfile = ensureApiTtsProfileForSavedProfile(savedProfile, ttsProfilesByName);
-    if (!apiProfile) {
-      return null;
-    }
-    return {
-      ...savedProfile,
-      active: apiProfile.active !== false && savedProfile.active !== false,
-      key: apiProfile.key,
-      emotionSettings: savedProfile.emotionSettings
-        .map((setting) => {
-          const emotionProfile = ensureApiEmotionProfileForSavedEmotion(setting, emotionProfilesByName);
-          if (!emotionProfile) {
-            return null;
-          }
-          return {
-            ...setting,
-            active: emotionProfile.active !== false && setting.active !== false,
-            key: emotionProfile.key,
-          };
-        })
-        .filter((setting) => setting?.key && setting.active !== false),
-    };
-  }).filter((profile) => profile?.key);
 }
 
 function activeVoiceProfiles() {
@@ -564,10 +459,10 @@ function browserVoiceForProfile(synthesis, voiceProfile) {
 function runtimeProviderForProfile(voiceProfile) {
   const provider = TTS_PROVIDER_REGISTRY[voiceProfile?.providerKey || ""];
   if (!provider) {
-    throw new Error("Voice profile provider is not supported.");
+    throw new Error("TTS Profile provider is not supported.");
   }
   if (!provider.activeRuntime || provider.requiresConfig) {
-    throw new Error("Voice profile provider is not active for browser playback.");
+    throw new Error("TTS Profile provider is not active for browser playback.");
   }
   return provider;
 }
@@ -1077,12 +972,7 @@ async function loadAll() {
   state.emotionProfiles = emotionPayload.emotionProfiles || [];
   state.messages = messagesPayload.messages || [];
   state.segments = segmentsPayload.segments || [];
-  try {
-    state.voiceProfiles = activeTextToSpeechProfilesForMessages(voicePayload.ttsProfiles || []);
-  } catch {
-    state.voiceProfiles = [];
-    showCreatorSafeFailure("Text To Speech profiles could not be loaded. Save a TTS Profile in Text To Speech, then reload Messages.");
-  }
+  state.voiceProfiles = voicePayload.ttsProfiles || [];
   if (state.selectedMessageKey && !state.messages.some((message) => message.key === state.selectedMessageKey)) {
     state.selectedMessageKey = "";
   }
@@ -1091,7 +981,7 @@ async function loadAll() {
   }
   render(messagesPayload.persistence || emotionPayload.persistence || segmentsPayload.persistence || voicePayload.persistence);
   if (!state.voiceProfiles.length) {
-    setText(elements.log, "Message Studio loaded. Save a TTS Profile in Text To Speech before adding playback.");
+    setText(elements.log, "Message Studio loaded. Add a TTS Profile in Text To Speech before adding playback.");
     return;
   }
   setText(elements.log, "Message Studio loaded.");

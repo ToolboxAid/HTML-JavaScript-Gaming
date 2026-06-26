@@ -22,12 +22,14 @@ test("Messages wires profile dropdowns through the Text To Speech profile contra
 
   assert.equal(source.includes("../text-to-speech/text2speech.js"), false);
   assert.equal(source.includes("../text-to-speech/tts-profile-store.js"), false);
-  assert.equal(source.includes("../../assets/js/shared/tts-profile-store.js"), true);
+  assert.equal(source.includes("../../assets/js/shared/tts-profile-store.js"), false);
+  assert.equal(source.includes("readSavedTextToSpeechProfiles"), false);
+  assert.equal(source.includes("textToSpeechProfilesToMessageOptions"), false);
   assert.equal(source.includes("createMessageStudioDefaultTtsProfiles"), false);
   assert.equal(source.includes("createMessageStudioTtsProfileOptions"), false);
-  assert.equal(source.includes("state.voiceProfiles = voicePayload.ttsProfiles || []"), false);
+  assert.equal(source.includes("state.voiceProfiles = voicePayload.ttsProfiles || []"), true);
   assert.equal(source.includes("messageStudioTtsProfilesFromContract(voicePayload.ttsProfiles || [])"), false);
-  assert.equal(source.includes("activeTextToSpeechProfilesForMessages(voicePayload.ttsProfiles || [])"), true);
+  assert.equal(source.includes("activeTextToSpeechProfilesForMessages(voicePayload.ttsProfiles || [])"), false);
 });
 
 test("Messages dev runtime does not import browser Text To Speech UI modules", async () => {
