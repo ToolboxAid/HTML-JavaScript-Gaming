@@ -1,22 +1,22 @@
-# PLAN_PR: PR_26177_005-shared-text-foundation
+# PLAN_PR: PR_26177_006-shared-time-foundation
 
 ## Purpose
 
-Add a small shared text foundation.
+Add a small shared time foundation.
 
 ## Scope
 
-- Add `src/shared/text/` foundation.
-- Include safe string helpers for whitespace normalization, slug/casing, truncation, and HTML escaping.
+- Add `src/shared/time/` foundation.
+- Include duration formatting, timestamp helpers, sleep, debounce, and throttle helpers.
 - Add targeted tests.
-- No copy rewrites outside tests/docs.
+- No scheduler/runtime behavior changes.
 - No browser-owned product data.
 - No runtime UI changes.
 - No unrelated cleanup.
 
 ## Implementation Plan
 
-1. Add `src/shared/text/text.js`.
-2. Add `tests/shared/TextFoundation.test.mjs`.
-3. Validate safe string helpers.
+1. Add `src/shared/time/time.js`.
+2. Add `tests/shared/TimeFoundation.test.mjs`.
+3. Validate duration, timestamp, sleep, debounce, and throttle helpers.
 4. Produce required Codex reports and repo-structured ZIP.
