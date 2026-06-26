@@ -45,9 +45,3 @@ D	docs_build/dev/restart_notes_11_121.md
 D	docs_build/dev/restart_notes_11_122.md
 D	docs_build/dev/restart_notes_11_123.md
 A	project-instructions/README.md
-M	project-instructions/addendums/assistant-execution-modes.md
-M	project-instructions/addendums/canonical-repository-structure.md
-M	project-instructions/addendums/codex-artifact-and-reporting-standard.md
-M	project-instructions/addendums/codex-project-instructions-startup.md
-M	project-instructions/addendums/legacy-migration-policy.md
-M	project-instructions/addendums/test-structure-standardization.md

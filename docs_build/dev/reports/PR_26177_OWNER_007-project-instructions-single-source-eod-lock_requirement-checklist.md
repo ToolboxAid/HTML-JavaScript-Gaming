@@ -6,6 +6,9 @@ Status: PASS
 - PASS: Active source is docs_build/dev/ProjectInstructions/.
 - PASS: Duplicate active instruction files in docs_build/dev root were deleted.
 - PASS: Stale PR/restart one-off files listed in OWNER review were deleted or removed from local disk when untracked.
+- PASS: project-instructions/** changes were removed from this PR except for a tiny deprecated pointer README.
+- PASS: Ambiguous old docs were reviewed before cleanup; project-instructions/addendums/** remains unchanged in the PR.
+- PASS: Unique current governance content exists under docs_build/dev/ProjectInstructions/ before old reference material is ignored as inactive.
 - PASS: docs_build/dev/ProjectInstructions/** was not deleted.
 - PASS: docs_build/dev/reports/** and current PR reports were preserved/regenerated.
 - PASS: Active validation/audit docs were not deleted without migration.

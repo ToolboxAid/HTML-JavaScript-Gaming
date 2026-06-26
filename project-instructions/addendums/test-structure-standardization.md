@@ -1,7 +1,5 @@
 # Test Structure Standardization
 
-> Deprecated reference notice: this file is preserved for history only. The active copy is `docs_build/dev/ProjectInstructions/addendums/test_structure_standardization.md`.
-
 ## Purpose
 
 Standardize testing locations and ensure independent tool validation.

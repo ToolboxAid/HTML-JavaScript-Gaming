@@ -15,6 +15,8 @@ Status: PASS
 - Added mandatory hard stops for main-before-commit, dirty branch creation, non-synced main, baseline mismatch, unvalidated merge, and starting new PR work before synchronized main return.
 - Deleted duplicate active instruction files from docs_build/dev root.
 - Deleted stale one-off PR/restart files listed by OWNER review from docs_build/dev root.
+- Corrected project-instructions/** scope so the PR only adds a tiny deprecated pointer README there.
+- Preserved project-instructions/addendums/** unchanged in the PR; unique current governance content is carried by docs_build/dev/ProjectInstructions/addendums/.
 - Updated active governance docs so the only active Project Instructions source is docs_build/dev/ProjectInstructions/.
 - Preserved docs_build/dev/ProjectInstructions/**, docs_build/dev/reports/**, current PR reports, and active validation/audit docs.
 - No product/runtime, start_of_day, feature, or legacy SQLite file changes were made.
@@ -45,10 +47,18 @@ Deleted stale one-off root files:
 - docs_build/dev/restart_notes_11_122.md
 - docs_build/dev/restart_notes_11_123.md
 
+## Ambiguous Old Docs Handling
+
+- Reviewed old project-instructions addendum files before changing them.
+- Moved/currentized active governance into docs_build/dev/ProjectInstructions/addendums/ during this PR.
+- Removed project-instructions/addendums/** edits from the PR so old files remain historical reference, not a second active source.
+- Added only project-instructions/README.md as a tiny deprecated pointer to docs_build/dev/ProjectInstructions/.
+
 ## Validation
 
 - PASS: current branch is PR_26177_OWNER_007-project-instructions-single-source-eod-lock.
 - PASS: targeted path checks confirm duplicate root instruction files and listed stale one-off files are absent.
+- PASS: project-instructions/** PR diff is limited to project-instructions/README.md.
 - PASS: targeted grep found no active duplicate ProjectInstructions source-of-truth claim outside the active source.
 - PASS: targeted grep confirmed canonical lifecycle language appears in active governance docs.
 - PASS: product/runtime and start_of_day changed-file check returned no files.

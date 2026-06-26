@@ -1,7 +1,5 @@
 # Codex Artifact and Reporting Standard
 
-> Deprecated reference notice: this file is preserved for history only. The active copy is `docs_build/dev/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md`.
-
 ## Purpose
 
 Standardize Codex deliverables, completion reporting, and artifact generation.

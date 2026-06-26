@@ -1,7 +1,5 @@
 # Codex Project Instructions Startup
 
-> Deprecated reference notice: this file is preserved for history only. The active copy is `docs_build/dev/ProjectInstructions/addendums/codex_project_instructions_startup.md`.
-
 ## Purpose
 
 Ensure Codex uses the current approved governance before making repository changes.

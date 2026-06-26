@@ -15,6 +15,7 @@ This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth f
 - Remove duplicate active instruction files from `docs_build/dev/` root.
 - Remove stale one-off PR/restart files from `docs_build/dev/` root.
 - Keep preserved historical ProjectInstructions material reference-only.
+- Keep `project-instructions/` out of this PR except for a tiny deprecated pointer.
 - Update active team start/governance docs to reference only `docs_build/dev/ProjectInstructions/`.
 - Add EOD main lock, next-day reset governance, and canonical START / WORK / END branch lifecycle rules.
 - Add required reports under `docs_build/dev/reports/`.
@@ -28,8 +29,7 @@ This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth f
 - `docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md`
 - `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md`
 - `docs_build/dev/ProjectInstructions/addendums/*.md`
-- `project-instructions/README.md`
-- `project-instructions/addendums/*.md`
+- `project-instructions/README.md` (tiny deprecated pointer only)
 - `docs_build/dev/PROJECT_INSTRUCTIONS.md` (delete)
 - `docs_build/dev/PROJECT_MULTI_PC.txt` (delete)
 - `docs_build/dev/BUILD_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT.md` (delete)
@@ -70,6 +70,7 @@ Test-Path docs_build/dev/PROJECT_INSTRUCTIONS.md
 Test-Path docs_build/dev/PROJECT_MULTI_PC.txt
 rg -n 'only active Project Instructions source|docs_build/dev/ProjectInstructions/' docs_build/dev/ProjectInstructions
 rg -n 'docs_build/dev/PROJECT_INSTRUCTIONS.md.*source of truth|Codex must always read `docs_build/dev/PROJECT_INSTRUCTIONS.md`|Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`' docs_build/dev/ProjectInstructions project-instructions
+git diff --name-status $(git merge-base HEAD origin/main) -- project-instructions
 rg -n "Branch Lifecycle \\(Canonical\\)|Every PR follows exactly three phases|^START$|^WORK$|^END$|Mandatory Hard Stops|tomorrow's official baseline|No commits on main|Never checkout main|Only after ALL four pass" docs_build/dev/ProjectInstructions
 git diff --name-only -- src assets toolbox games api serverside package.json package-lock.json docs_build/dev/start_of_day
 git diff --check

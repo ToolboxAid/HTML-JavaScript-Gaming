@@ -1,5 +1,5 @@
 ﻿diff --git a/docs_build/dev/BUILD_PR.md b/docs_build/dev/BUILD_PR.md
-index 30700e9cd..9852d7780 100644
+index 30700e9cd..b6c87c77d 100644
 --- a/docs_build/dev/BUILD_PR.md
 +++ b/docs_build/dev/BUILD_PR.md
 @@ -1 +1 @@
@@ -15,7 +15,7 @@ index 30700e9cd..9852d7780 100644
 -
 -- Base branch: `PR_26177_005-shared-text-foundation`
 +This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth for `PR_26177_OWNER_007-project-instructions-single-source-eod-lock`.
-@@ -17,6 +13,8 @@ This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth f
+@@ -17,6 +13,9 @@ This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth f
 -- Add `src/shared/time/` foundation.
 -- Include duration formatting, timestamp helpers, debounce/throttle/sleep helpers where safe for shared runtime.
 -- Add targeted tests for the shared time area.
@@ -27,10 +27,11 @@ index 30700e9cd..9852d7780 100644
 +- Remove duplicate active instruction files from `docs_build/dev/` root.
 +- Remove stale one-off PR/restart files from `docs_build/dev/` root.
 +- Keep preserved historical ProjectInstructions material reference-only.
++- Keep `project-instructions/` out of this PR except for a tiny deprecated pointer.
 +- Update active team start/governance docs to reference only `docs_build/dev/ProjectInstructions/`.
 +- Add EOD main lock, next-day reset governance, and canonical START / WORK / END branch lifecycle rules.
 +- Add required reports under `docs_build/dev/reports/`.
-@@ -28,7 +26,28 @@ This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth f
+@@ -28,7 +27,27 @@ This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth f
 -- `src/shared/time/time.js`
 -- `tests/shared/TimeFoundation.test.mjs`
 -- `docs_build/dev/reports/PR_26177_006-shared-time-foundation.md`
@@ -43,8 +44,7 @@ index 30700e9cd..9852d7780 100644
 +- `docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md`
 +- `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md`
 +- `docs_build/dev/ProjectInstructions/addendums/*.md`
-+- `project-instructions/README.md`
-+- `project-instructions/addendums/*.md`
++- `project-instructions/README.md` (tiny deprecated pointer only)
 +- `docs_build/dev/PROJECT_INSTRUCTIONS.md` (delete)
 +- `docs_build/dev/PROJECT_MULTI_PC.txt` (delete)
 +- `docs_build/dev/BUILD_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT.md` (delete)
@@ -82,7 +82,7 @@ index 30700e9cd..9852d7780 100644
 @@ -51 +66 @@ This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth f
 -Run exactly:
 +Run:
-@@ -54,3 +69,6 @@ Run exactly:
+@@ -54,3 +69,7 @@ Run exactly:
 -node ./scripts/run-node-test-files.mjs tests/shared/TimeFoundation.test.mjs
 -node --check src/shared/time/time.js
 -node --check tests/shared/TimeFoundation.test.mjs
@@ -90,9 +90,10 @@ index 30700e9cd..9852d7780 100644
 +Test-Path docs_build/dev/PROJECT_MULTI_PC.txt
 +rg -n 'only active Project Instructions source|docs_build/dev/ProjectInstructions/' docs_build/dev/ProjectInstructions
 +rg -n 'docs_build/dev/PROJECT_INSTRUCTIONS.md.*source of truth|Codex must always read `docs_build/dev/PROJECT_INSTRUCTIONS.md`|Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`' docs_build/dev/ProjectInstructions project-instructions
++git diff --name-status $(git merge-base HEAD origin/main) -- project-instructions
 +rg -n "Branch Lifecycle \\(Canonical\\)|Every PR follows exactly three phases|^START$|^WORK$|^END$|Mandatory Hard Stops|tomorrow's official baseline|No commits on main|Never checkout main|Only after ALL four pass" docs_build/dev/ProjectInstructions
 +git diff --name-only -- src assets toolbox games api serverside package.json package-lock.json docs_build/dev/start_of_day
-@@ -59,8 +76,0 @@ git diff --check
+@@ -59,8 +77,0 @@ git diff --check
 -
 -## Artifact
 -
@@ -245,7 +246,7 @@ index e44fe0fc4..000000000
 -docs_build/dev/codex_commands.md
 -```
 diff --git a/docs_build/dev/PLAN_PR.md b/docs_build/dev/PLAN_PR.md
-index 907936aee..56df3b956 100644
+index 907936aee..257739f3d 100644
 --- a/docs_build/dev/PLAN_PR.md
 +++ b/docs_build/dev/PLAN_PR.md
 @@ -1 +1 @@
@@ -254,7 +255,7 @@ index 907936aee..56df3b956 100644
 @@ -5 +5 @@
 -Add a small shared time foundation.
 +Make `docs_build/dev/ProjectInstructions/` the only active Project Instructions source and add EOD main lock plus next-day reset governance.
-@@ -9,7 +9,8 @@ Add a small shared time foundation.
+@@ -9,7 +9,9 @@ Add a small shared time foundation.
 -- Add `src/shared/time/` foundation.
 -- Include duration formatting, timestamp helpers, sleep, debounce, and throttle helpers.
 -- Add targeted tests.
@@ -266,14 +267,15 @@ index 907936aee..56df3b956 100644
 +- Delete duplicate active instruction files from `docs_build/dev/` root.
 +- Delete stale one-off PR/restart files from `docs_build/dev/` root.
 +- Preserve historical ProjectInstructions-style sources only as deprecated reference material.
++- Keep `project-instructions/` out of the PR except for a tiny deprecated pointer.
 +- Move active legacy addendums into `docs_build/dev/ProjectInstructions/addendums/`.
 +- Update active team start and governance docs to reference only `docs_build/dev/ProjectInstructions/`.
 +- Add EOD main lock, next-day reset, team PR branch creation gate, and canonical START / WORK / END branch lifecycle rules.
 +- Add required Codex reports under `docs_build/dev/reports/`.
-@@ -17 +18 @@ Add a small shared time foundation.
+@@ -17 +19 @@ Add a small shared time foundation.
 -## Implementation Plan
 +## Out Of Scope
-@@ -19,4 +20,12 @@ Add a small shared time foundation.
+@@ -19,4 +21,13 @@ Add a small shared time foundation.
 -1. Add `src/shared/time/time.js`.
 -2. Add `tests/shared/TimeFoundation.test.mjs`.
 -3. Validate duration, timestamp, sleep, debounce, and throttle helpers.
@@ -287,9 +289,10 @@ index 907936aee..56df3b956 100644
 +
 +1. Run targeted grep/search proving no active duplicate ProjectInstructions source remains.
 +2. Confirm duplicate active root instruction files and stale one-off root files are absent.
-+3. Confirm EOD/Next Day and canonical START / WORK / END branch lifecycle rules appear in active governance docs.
-+4. Confirm no product/runtime files changed.
-+5. Run `git diff --check`.
++3. Confirm `project-instructions/**` has no PR changes except the tiny deprecated pointer.
++4. Confirm EOD/Next Day and canonical START / WORK / END branch lifecycle rules appear in active governance docs.
++5. Confirm no product/runtime files changed.
++6. Run `git diff --check`.
 diff --git a/docs_build/dev/PLAN_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT.md b/docs_build/dev/PLAN_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT.md
 deleted file mode 100644
 index f4a0ebc2c..000000000
@@ -4437,10 +4440,10 @@ index a8cd06794..000000000
 -- update targeted Playwright coverage and reports
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock.md b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock.md
 new file mode 100644
-index 000000000..2e1bf6194
+index 000000000..7abd6fe1f
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock.md
-@@ -0,0 +1,60 @@
+@@ -0,0 +1,70 @@
 +﻿# PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 +
 +Date: 2026-06-26
@@ -4458,6 +4461,8 @@ index 000000000..2e1bf6194
 +- Added mandatory hard stops for main-before-commit, dirty branch creation, non-synced main, baseline mismatch, unvalidated merge, and starting new PR work before synchronized main return.
 +- Deleted duplicate active instruction files from docs_build/dev root.
 +- Deleted stale one-off PR/restart files listed by OWNER review from docs_build/dev root.
++- Corrected project-instructions/** scope so the PR only adds a tiny deprecated pointer README there.
++- Preserved project-instructions/addendums/** unchanged in the PR; unique current governance content is carried by docs_build/dev/ProjectInstructions/addendums/.
 +- Updated active governance docs so the only active Project Instructions source is docs_build/dev/ProjectInstructions/.
 +- Preserved docs_build/dev/ProjectInstructions/**, docs_build/dev/reports/**, current PR reports, and active validation/audit docs.
 +- No product/runtime, start_of_day, feature, or legacy SQLite file changes were made.
@@ -4488,10 +4493,18 @@ index 000000000..2e1bf6194
 +- docs_build/dev/restart_notes_11_122.md
 +- docs_build/dev/restart_notes_11_123.md
 +
++## Ambiguous Old Docs Handling
++
++- Reviewed old project-instructions addendum files before changing them.
++- Moved/currentized active governance into docs_build/dev/ProjectInstructions/addendums/ during this PR.
++- Removed project-instructions/addendums/** edits from the PR so old files remain historical reference, not a second active source.
++- Added only project-instructions/README.md as a tiny deprecated pointer to docs_build/dev/ProjectInstructions/.
++
 +## Validation
 +
 +- PASS: current branch is PR_26177_OWNER_007-project-instructions-single-source-eod-lock.
 +- PASS: targeted path checks confirm duplicate root instruction files and listed stale one-off files are absent.
++- PASS: project-instructions/** PR diff is limited to project-instructions/README.md.
 +- PASS: targeted grep found no active duplicate ProjectInstructions source-of-truth claim outside the active source.
 +- PASS: targeted grep confirmed canonical lifecycle language appears in active governance docs.
 +- PASS: product/runtime and start_of_day changed-file check returned no files.
@@ -4503,10 +4516,10 @@ index 000000000..2e1bf6194
 +- tmp/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_delta.zip
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_branch-validation.md b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_branch-validation.md
 new file mode 100644
-index 000000000..69ddd7104
+index 000000000..ca364fa88
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_branch-validation.md
-@@ -0,0 +1,10 @@
+@@ -0,0 +1,11 @@
 +﻿# Branch Validation - PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 +
 +Status: PASS
@@ -4514,15 +4527,16 @@ index 000000000..69ddd7104
 +- PASS: Current branch is PR_26177_OWNER_007-project-instructions-single-source-eod-lock.
 +- PASS: Branch is not main during WORK.
 +- PASS: Worktree changes are scoped to governance/docs cleanup, reports, and the required delta artifact.
++- PASS: project-instructions/** is limited to a tiny deprecated pointer README in the PR diff.
 +- PASS: No product/runtime files changed.
 +- PASS: No start_of_day files changed.
 +- PASS: docs_build/dev/ProjectInstructions/ remains present and active.
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_manual-validation-notes.md
 new file mode 100644
-index 000000000..ad1ba28f5
+index 000000000..9db3adfcb
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_manual-validation-notes.md
-@@ -0,0 +1,12 @@
+@@ -0,0 +1,14 @@
 +﻿# Manual Validation Notes - PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 +
 +Status: PASS
@@ -4530,6 +4544,8 @@ index 000000000..ad1ba28f5
 +- Reviewed cleanup scope against OWNER-provided file list.
 +- Removed only duplicate active instruction files and stale one-off root docs from docs_build/dev root.
 +- Removed docs_build/dev/next_command.txt only as an exact untracked/ignored stale file; it is not included in the git commit.
++- Reviewed ambiguous old project-instructions addendum files and left them unchanged in this PR.
++- Confirmed active/current governance content is under docs_build/dev/ProjectInstructions/.
 +- Confirmed docs_build/dev/ProjectInstructions/** was preserved.
 +- Confirmed docs_build/dev/reports/** and current PR reports were preserved/regenerated.
 +- Confirmed no product/runtime files changed.
@@ -4537,10 +4553,10 @@ index 000000000..ad1ba28f5
 +- Playwright was not run; documentation/governance-only change.
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_requirement-checklist.md b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_requirement-checklist.md
 new file mode 100644
-index 000000000..7382b576b
+index 000000000..aa2deded4
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_requirement-checklist.md
-@@ -0,0 +1,19 @@
+@@ -0,0 +1,22 @@
 +﻿# Requirement Checklist - PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 +
 +Status: PASS
@@ -4549,6 +4565,9 @@ index 000000000..7382b576b
 +- PASS: Active source is docs_build/dev/ProjectInstructions/.
 +- PASS: Duplicate active instruction files in docs_build/dev root were deleted.
 +- PASS: Stale PR/restart one-off files listed in OWNER review were deleted or removed from local disk when untracked.
++- PASS: project-instructions/** changes were removed from this PR except for a tiny deprecated pointer README.
++- PASS: Ambiguous old docs were reviewed before cleanup; project-instructions/addendums/** remains unchanged in the PR.
++- PASS: Unique current governance content exists under docs_build/dev/ProjectInstructions/ before old reference material is ignored as inactive.
 +- PASS: docs_build/dev/ProjectInstructions/** was not deleted.
 +- PASS: docs_build/dev/reports/** and current PR reports were preserved/regenerated.
 +- PASS: Active validation/audit docs were not deleted without migration.
@@ -4562,10 +4581,10 @@ index 000000000..7382b576b
 +- PASS: No start_of_day files changed.
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_validation-lane.md b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_validation-lane.md
 new file mode 100644
-index 000000000..d85e9fc46
+index 000000000..43cba6fce
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_validation-lane.md
-@@ -0,0 +1,26 @@
+@@ -0,0 +1,28 @@
 +﻿# Validation Lane - PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 +
 +Status: PASS
@@ -4577,6 +4596,7 @@ index 000000000..d85e9fc46
 +git status --short --branch --untracked-files=all
 +Test-Path docs_build/dev/PROJECT_INSTRUCTIONS.md
 +Test-Path docs_build/dev/PROJECT_MULTI_PC.txt
++git diff --name-status $(git merge-base HEAD origin/main) -- project-instructions
 +rg -n 'docs_build/dev/PROJECT_INSTRUCTIONS.md.*source of truth|Codex must always read docs_build/dev/PROJECT_INSTRUCTIONS.md|Read docs_build/dev/PROJECT_INSTRUCTIONS.md' docs_build/dev/ProjectInstructions project-instructions
 +rg -n 'only active Project Instructions source|docs_build/dev/ProjectInstructions/' docs_build/dev/ProjectInstructions
 +rg -n "Branch Lifecycle \\(Canonical\\)|Every PR follows exactly three phases|^START$|^WORK$|^END$|Mandatory Hard Stops|tomorrow's official baseline|No commits on main|Never checkout main|Only after ALL four pass" docs_build/dev/ProjectInstructions
@@ -4587,16 +4607,17 @@ index 000000000..d85e9fc46
 +Results:
 +- PASS: Branch is PR_26177_OWNER_007-project-instructions-single-source-eod-lock.
 +- PASS: Duplicate/stale root file path checks returned absent for every listed cleanup file.
++- PASS: project-instructions/** diff returned only A project-instructions/README.md.
 +- PASS: Active-source grep did not find old root instruction source-of-truth wording.
 +- PASS: Positive grep found active ProjectInstructions and branch lifecycle governance language.
 +- PASS: Product/runtime/start_of_day changed-file check returned no files.
 +- PASS: git diff --check returned no whitespace errors.
 +- PASS: Playwright not impacted because no runtime files changed.
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 8e34972a1..8eccce655 100644
+index 8e34972a1..2293660d7 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,14 +1,53 @@
+@@ -1,14 +1,47 @@
 -docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md
 -docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md
 -docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md
@@ -4658,12 +4679,6 @@ index 8e34972a1..8eccce655 100644
 +D	docs_build/dev/restart_notes_11_122.md
 +D	docs_build/dev/restart_notes_11_123.md
 +A	project-instructions/README.md
-+M	project-instructions/addendums/assistant-execution-modes.md
-+M	project-instructions/addendums/canonical-repository-structure.md
-+M	project-instructions/addendums/codex-artifact-and-reporting-standard.md
-+M	project-instructions/addendums/codex-project-instructions-startup.md
-+M	project-instructions/addendums/legacy-migration-policy.md
-+M	project-instructions/addendums/test-structure-standardization.md
 diff --git a/docs_build/dev/restart_notes_11_105.md b/docs_build/dev/restart_notes_11_105.md
 deleted file mode 100644
 index 561c0ee1e..000000000
@@ -4847,60 +4862,16 @@ index 6fff27148..000000000
 -- Workspace Manager routes exact referenced payload to tool, no conversion.
 diff --git a/project-instructions/README.md b/project-instructions/README.md
 new file mode 100644
-index 000000000..af401852e
+index 000000000..db8aaf4cd
 --- /dev/null
 +++ b/project-instructions/README.md
-@@ -0,0 +1,11 @@
+@@ -0,0 +1,9 @@
 +# Deprecated Project Instructions Reference
 +
-+This folder is preserved as historical reference only.
-+
-+The only active Project Instructions source is:
++This folder is historical reference only.
 +
 +```text
 +docs_build/dev/ProjectInstructions/
 +```
 +
-+Do not use files under `project-instructions/` as active governance. If a file here conflicts with `docs_build/dev/ProjectInstructions/`, the active folder wins unless OWNER explicitly approves a newer governance change.
-diff --git a/project-instructions/addendums/assistant-execution-modes.md b/project-instructions/addendums/assistant-execution-modes.md
-index 6d7928669..4c5637d0d 100644
---- a/project-instructions/addendums/assistant-execution-modes.md
-+++ b/project-instructions/addendums/assistant-execution-modes.md
-@@ -2,0 +3,2 @@
-+> Deprecated reference notice: this file is preserved for history only. The active copy is `docs_build/dev/ProjectInstructions/addendums/assistant_execution_modes.md`.
-+
-diff --git a/project-instructions/addendums/canonical-repository-structure.md b/project-instructions/addendums/canonical-repository-structure.md
-index e26939469..6b9dcb242 100644
---- a/project-instructions/addendums/canonical-repository-structure.md
-+++ b/project-instructions/addendums/canonical-repository-structure.md
-@@ -2,0 +3,2 @@
-+> Deprecated reference notice: this file is preserved for history only. The active copy is `docs_build/dev/ProjectInstructions/addendums/canonical_repository_structure.md`.
-+
-diff --git a/project-instructions/addendums/codex-artifact-and-reporting-standard.md b/project-instructions/addendums/codex-artifact-and-reporting-standard.md
-index 3f16a3641..8d1327886 100644
---- a/project-instructions/addendums/codex-artifact-and-reporting-standard.md
-+++ b/project-instructions/addendums/codex-artifact-and-reporting-standard.md
-@@ -2,0 +3,2 @@
-+> Deprecated reference notice: this file is preserved for history only. The active copy is `docs_build/dev/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md`.
-+
-diff --git a/project-instructions/addendums/codex-project-instructions-startup.md b/project-instructions/addendums/codex-project-instructions-startup.md
-index 94744f06e..135498b42 100644
---- a/project-instructions/addendums/codex-project-instructions-startup.md
-+++ b/project-instructions/addendums/codex-project-instructions-startup.md
-@@ -2,0 +3,2 @@
-+> Deprecated reference notice: this file is preserved for history only. The active copy is `docs_build/dev/ProjectInstructions/addendums/codex_project_instructions_startup.md`.
-+
-diff --git a/project-instructions/addendums/legacy-migration-policy.md b/project-instructions/addendums/legacy-migration-policy.md
-index 5e43679f4..5515a1728 100644
---- a/project-instructions/addendums/legacy-migration-policy.md
-+++ b/project-instructions/addendums/legacy-migration-policy.md
-@@ -2,0 +3,2 @@
-+> Deprecated reference notice: this file is preserved for history only. The active copy is `docs_build/dev/ProjectInstructions/addendums/legacy_migration_policy.md`.
-+
-diff --git a/project-instructions/addendums/test-structure-standardization.md b/project-instructions/addendums/test-structure-standardization.md
-index 997b16730..eeb62d561 100644
---- a/project-instructions/addendums/test-structure-standardization.md
-+++ b/project-instructions/addendums/test-structure-standardization.md
-@@ -2,0 +3,2 @@
-+> Deprecated reference notice: this file is preserved for history only. The active copy is `docs_build/dev/ProjectInstructions/addendums/test_structure_standardization.md`.
-+
++Use the path above as the only active Project Instructions source.

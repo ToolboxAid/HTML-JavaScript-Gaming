@@ -1,7 +1,5 @@
 # Legacy Migration Policy
 
-> Deprecated reference notice: this file is preserved for history only. The active copy is `docs_build/dev/ProjectInstructions/addendums/legacy_migration_policy.md`.
-
 ## Purpose
 
 Reduce technical debt incrementally during normal development.
