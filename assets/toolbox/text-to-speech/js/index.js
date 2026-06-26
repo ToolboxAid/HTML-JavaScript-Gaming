@@ -813,6 +813,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
     const errors = [];
     if (!profile.name.trim()) errors.push("Profile Name is required.");
     if (!profile.language.trim()) errors.push("Language is required.");
+    if (!profile.emotions.length) errors.push("At least one Emotion is required.");
     if (state.profiles.some((candidate) => candidate.id !== profile.id && candidate.name.toLowerCase() === profile.name.toLowerCase())) {
       errors.push("Profile Name must be unique.");
     }

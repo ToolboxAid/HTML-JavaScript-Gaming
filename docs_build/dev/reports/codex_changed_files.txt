@@ -1,6 +1,9 @@
+assets/toolbox/text-to-speech/js/index.js
 docs_build/database/seed/messages.json
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/PR_26177_BRAVO_007-delete-broken-tts-profile-parents.md
+docs_build/dev/reports/PR_26177_BRAVO_008-delete-empty-tts-profile-parents.md
 src/dev-runtime/messages/messages-postgres-service.mjs
 tests/dev-runtime/MessagesPublishValidation.test.mjs
+tests/playwright/tools/MessagesTool.spec.mjs
+tests/playwright/tools/TextToSpeechFunctional.spec.mjs

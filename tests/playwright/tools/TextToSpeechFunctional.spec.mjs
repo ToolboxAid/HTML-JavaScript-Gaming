@@ -19,6 +19,31 @@ async function jsonRequest(url, options = {}) {
   return { payload, response };
 }
 
+async function createPreviewTtsProfile(server, { name = "Creature Profile" } = {}) {
+  const result = await jsonRequest(`${server.baseUrl}/api/messages/tts-profiles`, {
+    body: JSON.stringify({
+      emotionSettings: [{
+        emotion: "urgent",
+        emotionLabel: "Urgent",
+        pitch: 1.2,
+        rate: 1.1,
+        volume: 0.8,
+      }],
+      language: "en-GB",
+      name,
+      pitch: 1,
+      providerKey: "browser-speech",
+      rate: 1,
+      voiceName: "narrator-voice-uri",
+      volume: 1,
+    }),
+    method: "POST",
+  });
+  expect(result.response.ok).toBe(true);
+  expect(result.payload.ok).toBe(true);
+  return result.payload.data.ttsProfile;
+}
+
 async function openTextToSpeechPage(page, { authenticated = true, speechAvailable = true } = {}) {
   const server = await startRepoServer();
   const failures = {
@@ -184,10 +209,18 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
     await expect(newProfileVoiceSelect).toContainText("Narrator Voice (en-GB)");
     await newProfileVoiceSelect.selectOption("narrator-voice-uri");
     await page.locator("[data-tts-commit-profile='__new__']").click();
-    await expect(page.locator("[data-tts-status]")).toHaveText("Saved TTS profile: Creature Profile.");
+    await expect(page.locator("[data-tts-status]")).toHaveText("TTS Profile save blocked: At least one Emotion is required.");
+    await expect(page.locator("[data-tts-profile-row]").filter({ hasText: "Creature Profile" })).toHaveCount(0);
+    await page.locator("[data-tts-cancel-profile='__new__']").click();
+
+    await createPreviewTtsProfile(failures.server);
+    await page.reload({ waitUntil: "networkidle" });
+    await expect(page.locator("[data-tts-profile-count]")).toHaveText("1");
+    await expect(page.locator("[data-tts-emotion-count]")).toHaveText("1");
     await expect(page.locator("[data-tts-profile-table]")).toContainText("Creature Profile");
     await expect(page.locator("[data-tts-profile-row]").filter({ hasText: "Creature Profile" })).toContainText("Narrator Voice");
-    await expect(page.locator("[data-tts-emotion-row]")).toHaveCount(0);
+    await page.locator("[data-tts-profile-row]").filter({ hasText: "Creature Profile" }).locator("[data-tts-profile-name-cell]").click();
+    await expect(page.locator("[data-tts-emotion-row]")).toHaveCount(1);
     await expect(page.getByLabel("TTS Profile Emotions").getByRole("columnheader")).toHaveText([
       "Emotion",
       "Pitch",
@@ -202,18 +235,6 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
     await page.locator("[data-tts-profile-editor] [data-tts-commit-profile]").click();
     await expect(page.locator("[data-tts-status]")).toHaveText("Saved TTS profile: Creature Profile Updated.");
     await expect(page.locator("[data-tts-profile-row]").filter({ hasText: "Creature Profile Updated" })).toContainText("Narrator Voice");
-    await expect(page.locator("[data-tts-emotion-add-control-row]").getByRole("button", { name: "Add Emotion" })).toBeVisible();
-    await page.locator("[data-tts-emotion-add-control-row]").getByRole("button", { name: "Add Emotion" }).click();
-    await expect(page.locator("[data-tts-emotion-add-control-row]")).toHaveCount(0);
-    await page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-name]").selectOption("urgent");
-    await expect(page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-pitch]")).toHaveAttribute("type", "range");
-    await expect(page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-rate]")).toHaveAttribute("type", "range");
-    await expect(page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-volume]")).toHaveAttribute("type", "range");
-    await setRangeValue(page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-pitch]"), "1.2");
-    await setRangeValue(page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-rate]"), "1.1");
-    await setRangeValue(page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-volume]"), "0.8");
-    await page.locator("[data-tts-commit-emotion='__new__']").click();
-    await expect(page.locator("[data-tts-status]")).toHaveText("Saved emotion: Urgent.");
     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Urgent" })).toContainText("1.2");
     await page.locator("[data-tts-emotion-row]").filter({ hasText: "Urgent" }).getByRole("button", { name: "Edit Emotion" }).click();
     await setRangeValue(page.locator("[data-tts-emotion-editor] [data-tts-emotion-volume]"), "0.7");

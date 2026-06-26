@@ -595,6 +595,7 @@ export class MessagesPostgresService {
       }
     }
     await this.seedDefaultTtsProfileEmotionSettings();
+    await this.deleteEmptyTtsProfileParents();
     await this.backfillDefaultVoiceProfileReferences();
   }
 
@@ -605,17 +606,21 @@ export class MessagesPostgresService {
       if (!retiredNames.has(normalizeText(profile.name).trim().toLowerCase())) {
         continue;
       }
-      await this.deleteRetiredTtsProfileReferences(profile.key);
-      const settings = await this.rowsByField("messages_tts_profile_emotion_settings", "ttsProfileKey", profile.key);
-      for (const setting of settings) {
-        await this.deleteRow("messages_tts_profile_emotion_settings", setting.key);
-      }
-      await this.deleteRow("messages_tts_profiles", profile.key);
+      await this.deleteTtsProfileParentData(profile.key);
     }
     await this.deleteOrphanedTtsProfileEmotionSettings();
   }
 
-  async deleteRetiredTtsProfileReferences(ttsProfileKey) {
+  async deleteTtsProfileParentData(ttsProfileKey) {
+    await this.deleteTtsProfileReferences(ttsProfileKey);
+    const settings = await this.rowsByField("messages_tts_profile_emotion_settings", "ttsProfileKey", ttsProfileKey);
+    for (const setting of settings) {
+      await this.deleteRow("messages_tts_profile_emotion_settings", setting.key);
+    }
+    await this.deleteRow("messages_tts_profiles", ttsProfileKey);
+  }
+
+  async deleteTtsProfileReferences(ttsProfileKey) {
     const directSegments = await this.rowsByField("messages_segments", "voiceProfileKey", ttsProfileKey);
     for (const segment of directSegments) {
       await this.deleteRow("messages_segments", segment.key);
@@ -631,6 +636,19 @@ export class MessagesPostgresService {
         await this.deleteRow("messages_event_actions", eventAction.key);
       }
       await this.deleteRow("messages_records", message.key);
+    }
+  }
+
+  async deleteEmptyTtsProfileParents() {
+    await this.deleteOrphanedTtsProfileEmotionSettings();
+    const settings = await this.tableRows("messages_tts_profile_emotion_settings");
+    const ttsProfileKeysWithSettings = new Set(settings.map((setting) => setting.ttsProfileKey));
+    const profiles = await this.tableRows("messages_tts_profiles");
+    for (const profile of profiles) {
+      if (ttsProfileKeysWithSettings.has(profile.key)) {
+        continue;
+      }
+      await this.deleteTtsProfileParentData(profile.key);
     }
   }
 
@@ -1113,6 +1131,7 @@ export class MessagesPostgresService {
 
   async listTtsProfiles() {
     await this.ensureReady();
+    await this.deleteEmptyTtsProfileParents();
     const rows = (await this.tableRows("messages_tts_profiles")).sort(compareName);
     return Promise.all(rows.map(async (row) => ttsProfileFromRow(
       row,
@@ -1123,6 +1142,7 @@ export class MessagesPostgresService {
 
   async getTtsProfile(key) {
     await this.ensureReady();
+    await this.deleteEmptyTtsProfileParents();
     const row = await this.rowByKey("messages_tts_profiles", key);
     if (!row) {
       throw httpError("TTS Profile was not found.", 404);
@@ -1224,6 +1244,9 @@ export class MessagesPostgresService {
 
   async createTtsProfile(input = {}, actorKey = "") {
     const values = this.normalizeTtsProfileInput(input);
+    if (!Array.isArray(input.emotionSettings) || !input.emotionSettings.length) {
+      throw httpError("TTS Profile requires at least one emotion setting.");
+    }
     const existing = await this.findTtsProfileByName(values.name);
     if (existing) {
       throw httpError(`TTS Profile ${values.name} already exists.`);
@@ -1237,6 +1260,10 @@ export class MessagesPostgresService {
 
   async updateTtsProfile(key, input = {}, actorKey = "") {
     const existing = await this.getTtsProfile(key);
+    if (Array.isArray(input.emotionSettings) && !input.emotionSettings.length) {
+      await this.deleteTtsProfileParentData(key);
+      throw httpError("TTS Profile was deleted because it has no emotion settings.", 410);
+    }
     const values = this.normalizeTtsProfileInput(input, existing);
     const duplicate = await this.findTtsProfileByName(values.name);
     if (duplicate && duplicate.key !== key) {

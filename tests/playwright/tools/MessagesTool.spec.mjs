@@ -580,29 +580,27 @@ test("Message Studio consumes active Local API Text To Speech profiles", async (
     });
     expect(session.payload.ok).toBe(true);
 
-    await page.goto(`${failures.server.baseUrl}/tools/text-to-speech/index.html`, { waitUntil: "networkidle" });
-    await expect(page.getByRole("heading", { level: 1, name: "Text To Speech" })).toBeVisible();
-
-    await page.locator("[data-tts-profile-add-control-row]").getByRole("button", { name: "Add Profile" }).click();
-    await page.locator("[data-tts-profile-editor='__new__'] [data-tts-profile-name]").fill("Quest Profile Draft");
-    await page.locator("[data-tts-profile-editor='__new__'] [data-tts-profile-gender]").selectOption("male");
-    await page.locator("[data-tts-profile-editor='__new__'] [data-tts-profile-age]").selectOption("adult");
-    await page.locator("[data-tts-profile-editor='__new__'] [data-tts-profile-voice]").selectOption("Browser guide updated");
-    await page.locator("[data-tts-commit-profile='__new__']").click();
-    await expect(page.locator("[data-tts-status]")).toHaveText("Saved TTS profile: Quest Profile Draft.");
-
-    await page.locator("[data-tts-profile-row]").filter({ hasText: "Quest Profile Draft" }).getByRole("button", { name: "Edit Profile" }).click();
-    await page.locator("[data-tts-profile-editor] [data-tts-profile-name]").fill("Quest Profile Active");
-    await page.locator("[data-tts-profile-editor] [data-tts-commit-profile]").click();
-    await expect(page.locator("[data-tts-status]")).toHaveText("Saved TTS profile: Quest Profile Active.");
-
-    await page.locator("[data-tts-emotion-add-control-row]").getByRole("button", { name: "Add Emotion" }).click();
-    await page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-name]").selectOption("urgent");
-    await setRangeValue(page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-pitch]"), "1.2");
-    await setRangeValue(page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-rate]"), "1.1");
-    await setRangeValue(page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-volume]"), "0.7");
-    await page.locator("[data-tts-commit-emotion='__new__']").click();
-    await expect(page.locator("[data-tts-status]")).toHaveText("Saved emotion: Urgent.");
+    const profileResult = await jsonRequest(`${failures.server.baseUrl}/api/messages/tts-profiles`, {
+      body: JSON.stringify({
+        emotionSettings: [{
+          emotion: "urgent",
+          emotionLabel: "Urgent",
+          pitch: 1.2,
+          rate: 1.1,
+          volume: 0.7,
+        }],
+        language: "en-US",
+        name: "Quest Profile Active",
+        pitch: 1,
+        providerKey: "browser-speech",
+        rate: 1,
+        voiceName: "Browser guide updated",
+        volume: 1,
+      }),
+      method: "POST",
+    });
+    expect(profileResult.response.ok).toBe(true);
+    expect(profileResult.payload.ok).toBe(true);
 
     await page.goto(`${failures.server.baseUrl}/tools/messages/index.html`, { waitUntil: "networkidle" });
     await page.getByRole("button", { name: "Add Message" }).click();

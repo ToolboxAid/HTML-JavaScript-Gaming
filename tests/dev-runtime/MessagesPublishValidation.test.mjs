@@ -134,18 +134,90 @@ test("Messages seed cleanup deletes retired parent TTS profiles and orphaned set
     }),
     method: "POST",
   });
+  await postgresClient.requestTable("messages_tts_profiles", {
+    body: datedRow({
+      description: "Empty parent should be deleted.",
+      key: "empty-profile",
+      language: "en-US",
+      name: "Empty Parent Profile",
+      pitch: 1,
+      providerKey: "browser-speech",
+      rate: 1,
+      voiceName: "Default browser voice",
+      volume: 1,
+    }),
+    method: "POST",
+  });
+  await postgresClient.requestTable("messages_records", {
+    body: datedRow({
+      categoryKey: "empty-category",
+      emotionProfileKey: "empty-emotion",
+      key: "empty-message",
+      messageText: "Empty parent message reference.",
+      name: "Empty Parent Message",
+      notes: "",
+      voiceProfileKey: "empty-profile",
+    }),
+    method: "POST",
+  });
+  await postgresClient.requestTable("messages_segments", {
+    body: datedRow({
+      displayOrder: 1,
+      emotionProfileKey: "empty-emotion",
+      key: "empty-segment",
+      messageKey: "empty-message",
+      segmentText: "Empty parent sentence reference.",
+      voiceProfileKey: "empty-profile",
+    }),
+    method: "POST",
+  });
+  await postgresClient.requestTable("messages_event_actions", {
+    body: datedRow({
+      actionType: "speak-message",
+      key: "empty-event-action",
+      messageKey: "empty-message",
+      name: "Empty parent event action",
+    }),
+    method: "POST",
+  });
 
   await service.ensureReady();
 
   const ttsProfiles = await postgresClient.requestTable("messages_tts_profiles");
   assert.deepEqual(ttsProfiles.map((profile) => profile.name).filter((name) => retiredNames.includes(name)), []);
+  assert.equal(ttsProfiles.some((profile) => profile.name === "Empty Parent Profile"), false);
   const settings = await postgresClient.requestTable("messages_tts_profile_emotion_settings");
   assert.equal(settings.some((setting) => String(setting.ttsProfileKey).startsWith("retired-profile-")), false);
   assert.equal(settings.some((setting) => setting.key === "orphan-setting"), false);
   assert.equal((await postgresClient.requestTable("messages_records")).some((message) => message.voiceProfileKey === "retired-profile-0"), false);
   assert.equal((await postgresClient.requestTable("messages_segments")).some((segment) => segment.voiceProfileKey === "retired-profile-0"), false);
   assert.equal((await postgresClient.requestTable("messages_event_actions")).some((action) => action.messageKey === "retired-message"), false);
+  assert.equal((await postgresClient.requestTable("messages_records")).some((message) => message.voiceProfileKey === "empty-profile"), false);
+  assert.equal((await postgresClient.requestTable("messages_segments")).some((segment) => segment.voiceProfileKey === "empty-profile"), false);
+  assert.equal((await postgresClient.requestTable("messages_event_actions")).some((action) => action.messageKey === "empty-message"), false);
   assert.deepEqual((await service.listTtsProfiles()).map((profile) => profile.name), []);
+  service.close();
+});
+
+test("Messages TTS profile saves reject empty parent profiles instead of creating fallback children", async () => {
+  const { service } = createServiceHarness();
+
+  await assert.rejects(
+    () => service.createTtsProfile({
+      active: true,
+      emotionSettings: [],
+      language: "en-US",
+      name: "Empty Save Profile",
+      pitch: 1,
+      providerKey: "browser-speech",
+      rate: 1,
+      voiceName: "Default browser voice",
+      volume: 1,
+    }),
+    /requires at least one emotion setting/,
+  );
+
+  assert.deepEqual(await service.listTtsProfiles(), []);
   service.close();
 });
 
