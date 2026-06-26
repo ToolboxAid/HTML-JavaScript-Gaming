@@ -347,7 +347,29 @@ function createDefaultTextToSpeechProfiles(voiceOptions = []) {
   ];
 }
 
+function isDefaultBrowserVoice(value) {
+  return ["browser default", "default", "default browser voice"].includes(String(value || "").trim().toLowerCase());
+}
+
+function previewVoiceForProfile({ language = "", voice = "", voiceOptions = [] } = {}) {
+  const normalizedVoice = String(voice || "").trim();
+  const selectedVoice = voiceOptions.find((option) => String(option.value) === normalizedVoice
+    || String(option.name) === normalizedVoice
+    || String(option.label) === normalizedVoice);
+  if (selectedVoice) {
+    return { defaultBrowserVoice: false, voice: selectedVoice };
+  }
+  if (!isDefaultBrowserVoice(normalizedVoice)) {
+    return { defaultBrowserVoice: false, voice: null };
+  }
+  const selectedDefault = voiceOptions.find((option) => !language || option.language === language)
+    || voiceOptions[0]
+    || null;
+  return { defaultBrowserVoice: true, voice: selectedDefault };
+}
+
 function createSpeechPreviewRequest({
+  language = TEXT_TO_SPEECH_DEFAULTS.language,
   pitch = TEXT_TO_SPEECH_DEFAULTS.pitch,
   rate = TEXT_TO_SPEECH_DEFAULTS.rate,
   text = "",
@@ -360,13 +382,14 @@ function createSpeechPreviewRequest({
     return { ok: false, message: "Speech text is required before preview." };
   }
 
-  const selectedVoice = voiceOptions.find((option) => String(option.value) === String(voice)) || null;
+  const previewVoice = previewVoiceForProfile({ language, voice, voiceOptions });
+  const selectedVoice = previewVoice.voice;
   if (!selectedVoice) {
     return { ok: false, message: "Select an available browser voice before preview." };
   }
 
   return {
-    language: selectedVoice.language || TEXT_TO_SPEECH_DEFAULTS.language,
+    language: language || selectedVoice.language || TEXT_TO_SPEECH_DEFAULTS.language,
     ok: true,
     pitch: boundedNumber(pitch, TEXT_TO_SPEECH_RANGE_DEFAULTS.pitch),
     rate: boundedNumber(rate, TEXT_TO_SPEECH_RANGE_DEFAULTS.rate),
@@ -374,7 +397,7 @@ function createSpeechPreviewRequest({
     speechItemName: "Browser Preview",
     text: normalizedText,
     voice: selectedVoice.value,
-    voiceName: selectedVoice.name || selectedVoice.label || "selected voice",
+    voiceName: previewVoice.defaultBrowserVoice ? "Default browser voice" : selectedVoice.name || selectedVoice.label || "selected voice",
     volume: boundedNumber(volume, TEXT_TO_SPEECH_RANGE_DEFAULTS.volume)
   };
 }
@@ -1150,6 +1173,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
       return;
     }
     const result = engine.speak({
+      gender: profile.gender,
       language: request.language,
       pitch: request.pitch,
       rate: request.rate,

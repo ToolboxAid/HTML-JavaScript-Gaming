@@ -56,6 +56,34 @@ test("Text2Speech browser preview builds a Web Speech request without provider b
   assert.equal(createSpeechPreviewRequest({ text: "Hi", voice: "test-voice", voiceOptions, rate: 9, pitch: 0, volume: 2 }).volume, 1);
 });
 
+test("Text2Speech emotion preview accepts parent profile default browser voice", () => {
+  const voiceOptions = [
+    { language: "en-GB", label: "Narrator Voice (en-GB)", name: "Narrator Voice", value: "narrator-voice-uri" },
+    { language: "en-US", label: "Arcade Voice (en-US)", name: "Arcade Voice", value: "arcade-voice-uri" },
+  ];
+
+  assert.deepEqual(createSpeechPreviewRequest({
+    language: "en-US",
+    pitch: 1.2,
+    rate: 1.1,
+    text: "Launch the next wave.",
+    voice: "Default browser voice",
+    voiceOptions,
+    volume: 0.7,
+  }), {
+    language: "en-US",
+    ok: true,
+    pitch: 1.2,
+    rate: 1.1,
+    speechItemId: "browser-preview",
+    speechItemName: "Browser Preview",
+    text: "Launch the next wave.",
+    voice: "arcade-voice-uri",
+    voiceName: "Default browser voice",
+    volume: 0.7,
+  });
+});
+
 test("Text2Speech provider adapter plan keeps browser speech implemented and paid providers planned", () => {
   assert.deepEqual(
     TTS_PROVIDER_ADAPTER_PLAN.map((provider) => provider.key),
