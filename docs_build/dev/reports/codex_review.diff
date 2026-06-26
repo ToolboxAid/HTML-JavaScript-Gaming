@@ -1,219 +1,212 @@
 diff --git a/docs_build/dev/BUILD_PR.md b/docs_build/dev/BUILD_PR.md
-index 2c940b3d8..2f3f00812 100644
+index 2f3f00812..edc9a0b75 100644
 --- a/docs_build/dev/BUILD_PR.md
 +++ b/docs_build/dev/BUILD_PR.md
-@@ -1,43 +1,39 @@
--# PR_26177_DELTA_054-random-utility
-+# PR_26177_DELTA_055-random-seed-enhancements
+@@ -1,39 +1,40 @@
+-# PR_26177_DELTA_055-random-seed-enhancements
++# PR_26177_DELTA_056-shared-validation-assertions
 
  ## Purpose
 
--Add a nondeterministic `Random` utility with the same public convenience API shape as `RandomSeed`.
-+Enhance `RandomSeed` with matching procedural convenience methods.
+-Enhance `RandomSeed` with matching procedural convenience methods.
++Move generic validation/assertion helpers out of random helper code into a shared validation module.
 
  ## Source Of Truth
 
--This `BUILD_PR.md`, `PLAN_PR.md`, the user request, and `docs_build/dev/ProjectInstructions.zip` are the source of truth for `PR_26177_DELTA_054-random-utility`.
-+This `BUILD_PR.md`, `PLAN_PR.md`, the user request, and `docs_build/dev/ProjectInstructions.zip` are the source of truth for `PR_26177_DELTA_055-random-seed-enhancements`.
+-This `BUILD_PR.md`, `PLAN_PR.md`, the user request, and `docs_build/dev/ProjectInstructions.zip` are the source of truth for `PR_26177_DELTA_055-random-seed-enhancements`.
++This `BUILD_PR.md`, `PLAN_PR.md`, the user request, and `docs_build/dev/ProjectInstructions.zip` are the source of truth for `PR_26177_DELTA_056-shared-validation-assertions`.
 
  ## OWNER Override And Team Assignment
 
--OWNER override approved: Continue Team Delta random utility stack with `PR_26177_DELTA_054-random-utility`.
-+OWNER override approved: Continue Team Delta random utility stack with `PR_26177_DELTA_055-random-seed-enhancements`.
+-OWNER override approved: Continue Team Delta random utility stack with `PR_26177_DELTA_055-random-seed-enhancements`.
++OWNER override approved: Continue Team Delta random utility stack with `PR_26177_DELTA_056-shared-validation-assertions`.
 
  Team Delta owns Shared JS, runtime utilities, technical debt remediation, and runtime test coverage.
 
  ## Stack
 
--- Base branch: `PR_26177_DELTA_053-random-shared-helpers`
--- This PR depends on the internal random helper module from PR_053.
-+- Base branch: `PR_26177_DELTA_054-random-utility`
-+- This PR depends on the shared helper module from PR_053 and the stack context from PR_054.
+-- Base branch: `PR_26177_DELTA_054-random-utility`
+-- This PR depends on the shared helper module from PR_053 and the stack context from PR_054.
++- Base branch: `PR_26177_DELTA_055-random-seed-enhancements`
++- This PR depends on the random helper module from PR_053, `Random` from PR_054, and `RandomSeed` enhancements from PR_055.
 
  ## Exact Scope
 
--- Add `Random` utility.
--- Include:
--  - `Random.next()`
--  - `Random.nextInt(min, max)`
--  - `Random.nextFloat(min, max)`
--  - `Random.pick(array)`
--  - `Random.shuffle(array)`
--  - `Random.chance(percent)`
--  - `Random.weightedPick(weightedItems)`
--  - `Random.uuid()`
--- Prefer `crypto.getRandomValues()` when available.
--- Use `Math.random()` only as compatibility fallback.
--- No deterministic seed support in `Random`.
--- No browser storage.
-+- Update `RandomSeed` to use shared helper logic where appropriate.
-+- Add:
-+  - `shuffle(array)`
-+  - `chance(percent)`
-+  - `weightedPick(weightedItems)`
-+  - `saveState()`
-+  - `restoreState(state)`
-+- Preserve existing `RandomSeed` sequence compatibility.
-+- Same seed must still reproduce same sequence.
-+- Reseeding must still reproduce same sequence.
-+- Add targeted unit tests for new methods.
-+- No adoption changes in existing game logic.
+-- Update `RandomSeed` to use shared helper logic where appropriate.
+-- Add:
+-  - `shuffle(array)`
+-  - `chance(percent)`
+-  - `weightedPick(weightedItems)`
+-  - `saveState()`
+-  - `restoreState(state)`
+-- Preserve existing `RandomSeed` sequence compatibility.
+-- Same seed must still reproduce same sequence.
+-- Reseeding must still reproduce same sequence.
+-- Add targeted unit tests for new methods.
+-- No adoption changes in existing game logic.
++- Create `src/shared/validation/assert.js`.
++- Move generic assertion helpers from random helper code into `assert.js`.
++- Include only generic reusable validation functions needed by current random helpers:
++  - `assertArray`
++  - `assertFiniteNumber`
++  - `assertOrderedRange`
++- Update random helper code to import from `src/shared/validation/assert.js`.
++- Preserve existing `Random` and `RandomSeed` behavior.
++- Do not change public API.
++- Do not expand into unrelated validation functions yet.
++- Add/update targeted unit tests if needed.
  - No UI changes.
--- Add JSDoc.
--- Add targeted unit tests.
++- No API/database changes.
++- No unrelated cleanup.
  - Create required Codex reports under `docs_build/dev/reports/`.
  - Create repo-structured delta ZIP under `tmp/`.
 
-@@ -47,22 +43,21 @@ Team Delta owns Shared JS, runtime utilities, technical debt remediation, and ru
+@@ -43,20 +44,21 @@ Team Delta owns Shared JS, runtime utilities, technical debt remediation, and ru
  - `docs_build/dev/BUILD_PR.md`
  - `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md`
  - `docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md`
--- `src/shared/math/Random.js`
--- `tests/shared/Random.test.mjs`
--- `docs_build/dev/reports/PR_26177_DELTA_054-random-utility.md`
--- `docs_build/dev/reports/PR_26177_DELTA_054-random-utility_branch-validation.md`
--- `docs_build/dev/reports/PR_26177_DELTA_054-random-utility_requirement-checklist.md`
--- `docs_build/dev/reports/PR_26177_DELTA_054-random-utility_validation-lane.md`
--- `docs_build/dev/reports/PR_26177_DELTA_054-random-utility_manual-validation-notes.md`
--- `docs_build/dev/reports/PR_26177_DELTA_054-random-utility_instruction-compliance-checklist.md`
-+- `src/shared/math/RandomSeed.js`
-+- `tests/shared/RandomSeed.test.mjs`
-+- `docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements.md`
-+- `docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_branch-validation.md`
-+- `docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_requirement-checklist.md`
-+- `docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_validation-lane.md`
-+- `docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_manual-validation-notes.md`
-+- `docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_instruction-compliance-checklist.md`
+-- `src/shared/math/RandomSeed.js`
+-- `tests/shared/RandomSeed.test.mjs`
+-- `docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements.md`
+-- `docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_branch-validation.md`
+-- `docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_requirement-checklist.md`
+-- `docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_validation-lane.md`
+-- `docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_manual-validation-notes.md`
+-- `docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_instruction-compliance-checklist.md`
++- `src/shared/validation/assert.js`
++- `src/shared/math/randomHelpers.js`
++- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions.md`
++- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_branch-validation.md`
++- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_requirement-checklist.md`
++- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_validation-lane.md`
++- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_manual-validation-notes.md`
++- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_instruction-compliance-checklist.md`
  - `docs_build/dev/reports/codex_review.diff`
  - `docs_build/dev/reports/codex_changed_files.txt`
 
  ## Out Of Scope
 
--- No deterministic seed support in `Random`.
-+- No seeded `next()` algorithm changes.
+-- No seeded `next()` algorithm changes.
++- No public API changes.
++- No new unrelated validation helpers.
  - No existing game logic adoption changes.
--- No existing `Math.random()` call-site replacements.
  - No UI changes.
  - No browser storage changes.
- - No API changes.
-@@ -75,9 +70,9 @@ Team Delta owns Shared JS, runtime utilities, technical debt remediation, and ru
+@@ -70,9 +72,9 @@ Team Delta owns Shared JS, runtime utilities, technical debt remediation, and ru
  Run exactly:
 
  ```powershell
--node ./scripts/run-node-test-files.mjs tests/shared/Random.test.mjs tests/shared/RandomHelpers.test.mjs
--node --check src/shared/math/Random.js
--node --check tests/shared/Random.test.mjs
-+node ./scripts/run-node-test-files.mjs tests/shared/RandomSeed.test.mjs tests/shared/RandomHelpers.test.mjs
-+node --check src/shared/math/RandomSeed.js
-+node --check tests/shared/RandomSeed.test.mjs
+-node ./scripts/run-node-test-files.mjs tests/shared/RandomSeed.test.mjs tests/shared/RandomHelpers.test.mjs
+-node --check src/shared/math/RandomSeed.js
+-node --check tests/shared/RandomSeed.test.mjs
++node ./scripts/run-node-test-files.mjs tests/shared/RandomHelpers.test.mjs tests/shared/Random.test.mjs tests/shared/RandomSeed.test.mjs
++node --check src/shared/validation/assert.js
++node --check src/shared/math/randomHelpers.js
  git diff --check
  ```
 
-@@ -88,5 +83,5 @@ Playwright is not required because this PR does not change UI or browser runtime
+@@ -83,5 +85,5 @@ Playwright is not required because this PR does not change UI or browser runtime
  Create repo-structured delta ZIP:
 
  ```text
--tmp/PR_26177_DELTA_054-random-utility_delta.zip
-+tmp/PR_26177_DELTA_055-random-seed-enhancements_delta.zip
+-tmp/PR_26177_DELTA_055-random-seed-enhancements_delta.zip
++tmp/PR_26177_DELTA_056-shared-validation-assertions_delta.zip
  ```
 diff --git a/docs_build/dev/PLAN_PR.md b/docs_build/dev/PLAN_PR.md
-index c2b19c33e..87120e264 100644
+index 87120e264..de53f9020 100644
 --- a/docs_build/dev/PLAN_PR.md
 +++ b/docs_build/dev/PLAN_PR.md
-@@ -1,46 +1,42 @@
--# PLAN_PR: PR_26177_DELTA_054-random-utility
-+# PLAN_PR: PR_26177_DELTA_055-random-seed-enhancements
+@@ -1,42 +1,43 @@
+-# PLAN_PR: PR_26177_DELTA_055-random-seed-enhancements
++# PLAN_PR: PR_26177_DELTA_056-shared-validation-assertions
 
  ## Purpose
 
--Add a nondeterministic `Random` utility with the same public convenience API shape as `RandomSeed`.
-+Enhance `RandomSeed` with matching procedural convenience methods.
+-Enhance `RandomSeed` with matching procedural convenience methods.
++Move generic validation/assertion helpers out of random helper code into a shared validation module.
 
  ## Owner And Assignment
 
  - Team: Delta
--- OWNER override approved: Continue Team Delta random utility stack with `PR_26177_DELTA_054-random-utility`.
--- Stack base: `PR_26177_DELTA_053-random-shared-helpers`.
-+- OWNER override approved: Continue Team Delta random utility stack with `PR_26177_DELTA_055-random-seed-enhancements`.
-+- Stack base: `PR_26177_DELTA_054-random-utility`.
+-- OWNER override approved: Continue Team Delta random utility stack with `PR_26177_DELTA_055-random-seed-enhancements`.
+-- Stack base: `PR_26177_DELTA_054-random-utility`.
++- OWNER override approved: Continue Team Delta random utility stack with `PR_26177_DELTA_056-shared-validation-assertions`.
++- Stack base: `PR_26177_DELTA_055-random-seed-enhancements`.
 
  ## Scope
 
--- Add `Random` utility.
--- Include:
--  - `Random.next()`
--  - `Random.nextInt(min, max)`
--  - `Random.nextFloat(min, max)`
--  - `Random.pick(array)`
--  - `Random.shuffle(array)`
--  - `Random.chance(percent)`
--  - `Random.weightedPick(weightedItems)`
--  - `Random.uuid()`
--- Prefer `crypto.getRandomValues()` when available.
--- Use `Math.random()` only as compatibility fallback.
--- No deterministic seed support in `Random`.
--- No browser storage.
-+- Update `RandomSeed` to use shared helper logic where appropriate.
-+- Add:
-+  - `shuffle(array)`
-+  - `chance(percent)`
-+  - `weightedPick(weightedItems)`
-+  - `saveState()`
-+  - `restoreState(state)`
-+- Preserve existing `RandomSeed` sequence compatibility.
-+- Same seed must still reproduce same sequence.
-+- Reseeding must still reproduce same sequence.
-+- Add targeted unit tests for new methods.
-+- No adoption changes in existing game logic.
+-- Update `RandomSeed` to use shared helper logic where appropriate.
+-- Add:
+-  - `shuffle(array)`
+-  - `chance(percent)`
+-  - `weightedPick(weightedItems)`
+-  - `saveState()`
+-  - `restoreState(state)`
+-- Preserve existing `RandomSeed` sequence compatibility.
+-- Same seed must still reproduce same sequence.
+-- Reseeding must still reproduce same sequence.
+-- Add targeted unit tests for new methods.
+-- No adoption changes in existing game logic.
++- Create `src/shared/validation/assert.js`.
++- Move generic assertion helpers from random helper code into `assert.js`.
++- Include only generic reusable validation functions needed by current random helpers:
++  - `assertArray`
++  - `assertFiniteNumber`
++  - `assertOrderedRange`
++- Update random helper code to import from `src/shared/validation/assert.js`.
++- Preserve existing `Random` and `RandomSeed` behavior.
++- Do not change public API.
++- Do not expand into unrelated validation functions yet.
++- Add/update targeted unit tests if needed.
  - No UI changes.
--- Add JSDoc.
--- Add targeted unit tests.
++- No API/database changes.
++- No unrelated cleanup.
 
  ## Implementation Plan
 
--1. Add `src/shared/math/Random.js`.
--2. Reuse internal helper functions from `src/shared/math/randomHelpers.js`.
--3. Add `tests/shared/Random.test.mjs`.
--4. Validate crypto preference, Math fallback, utility methods, UUID shape, and absence of seed API.
-+1. Update `src/shared/math/RandomSeed.js` to reuse `randomHelpers.js` for procedural helper methods.
-+2. Keep the existing seeded `next()` algorithm unchanged.
-+3. Add state save/restore methods.
-+4. Extend `tests/shared/RandomSeed.test.mjs` with sequence compatibility, new method, and state tests.
+-1. Update `src/shared/math/RandomSeed.js` to reuse `randomHelpers.js` for procedural helper methods.
+-2. Keep the existing seeded `next()` algorithm unchanged.
+-3. Add state save/restore methods.
+-4. Extend `tests/shared/RandomSeed.test.mjs` with sequence compatibility, new method, and state tests.
++1. Add `src/shared/validation/assert.js` with only the required generic assertion helpers.
++2. Remove duplicated generic assertions from `src/shared/math/randomHelpers.js`.
++3. Import the shared assertions from `randomHelpers.js`.
++4. Run targeted random helper, `Random`, and `RandomSeed` tests.
  5. Produce required PR reports and repo-structured ZIP.
 
  ## Acceptance Criteria
 
--- `Random` exposes the required static convenience methods.
--- `Random` does not expose deterministic seed support.
--- `Random` uses `crypto.getRandomValues()` when available.
--- `Math.random()` is used only when crypto random values are unavailable.
-+- Existing seeded sequence values remain compatible.
-+- Same seed and reseeding behavior remain deterministic.
-+- New procedural methods use the same seeded random stream.
-+- State save/restore resumes the sequence from the saved point.
+-- Existing seeded sequence values remain compatible.
+-- Same seed and reseeding behavior remain deterministic.
+-- New procedural methods use the same seeded random stream.
+-- State save/restore resumes the sequence from the saved point.
++- Existing random helper behavior is preserved.
++- Existing `Random` and `RandomSeed` behavior is preserved.
++- Public random APIs are unchanged.
++- Shared assertion module stays limited to the current reusable validation helpers.
 diff --git a/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md b/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
-index a546aa1d5..9dcd7244d 100644
+index 9dcd7244d..6341fdf34 100644
 --- a/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
 +++ b/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
 @@ -31,7 +31,7 @@ If a team has no assignment, no active branch, and no active PR, it is inactive
  | Team Alfa | none | none | none | Available | Active ownership lane |
  | Team Bravo | none | none | none | Available | Active ownership lane |
  | Team Charlie | none | none | none | Available | Active ownership lane |
--| Team Delta | PR_26177_DELTA_054-random-utility | PR_26177_DELTA_054-random-utility | PR_26177_DELTA_054-random-utility | Active | OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_054-random-utility |
-+| Team Delta | PR_26177_DELTA_055-random-seed-enhancements | PR_26177_DELTA_055-random-seed-enhancements | PR_26177_DELTA_055-random-seed-enhancements | Active | OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_055-random-seed-enhancements |
+-| Team Delta | PR_26177_DELTA_055-random-seed-enhancements | PR_26177_DELTA_055-random-seed-enhancements | PR_26177_DELTA_055-random-seed-enhancements | Active | OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_055-random-seed-enhancements |
++| Team Delta | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | Active | OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_056-shared-validation-assertions |
  | Team Golf | none | none | none | Available | Replacement active ownership lane for retired Team Gamma |
  | Team OWNER | none | none | none | Available | Governance Phase 1 complete |
 
 diff --git a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
-index ed14e49b5..3b49412c4 100644
+index 3b49412c4..9735b4bd4 100644
 --- a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
 +++ b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
 @@ -7,7 +7,7 @@
  | Team Alfa | none | none | none | Available |
  | Team Bravo | none | none | none | Available |
  | Team Charlie | none | none | none | Available |
--| Team Delta | PR_26177_DELTA_054-random-utility | PR_26177_DELTA_054-random-utility | PR_26177_DELTA_054-random-utility | Active |
-+| Team Delta | PR_26177_DELTA_055-random-seed-enhancements | PR_26177_DELTA_055-random-seed-enhancements | PR_26177_DELTA_055-random-seed-enhancements | Active |
+-| Team Delta | PR_26177_DELTA_055-random-seed-enhancements | PR_26177_DELTA_055-random-seed-enhancements | PR_26177_DELTA_055-random-seed-enhancements | Active |
++| Team Delta | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | Active |
  | Team Golf | none | none | none | Available |
  | Team OWNER | none | none | none | Available |
 
@@ -221,39 +214,32 @@ index ed14e49b5..3b49412c4 100644
 
  Status: Active
 
--Active assignment: PR_26177_DELTA_054-random-utility.
-+Active assignment: PR_26177_DELTA_055-random-seed-enhancements.
+-Active assignment: PR_26177_DELTA_055-random-seed-enhancements.
++Active assignment: PR_26177_DELTA_056-shared-validation-assertions.
 
--Active branch: PR_26177_DELTA_054-random-utility.
-+Active branch: PR_26177_DELTA_055-random-seed-enhancements.
+-Active branch: PR_26177_DELTA_055-random-seed-enhancements.
++Active branch: PR_26177_DELTA_056-shared-validation-assertions.
 
--Active PR: PR_26177_DELTA_054-random-utility.
-+Active PR: PR_26177_DELTA_055-random-seed-enhancements.
+-Active PR: PR_26177_DELTA_055-random-seed-enhancements.
++Active PR: PR_26177_DELTA_056-shared-validation-assertions.
 
--OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_054-random-utility.
-+OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_055-random-seed-enhancements.
+-OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_055-random-seed-enhancements.
++OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_056-shared-validation-assertions.
 
  ## Team Bravo
 
-diff --git a/src/shared/math/RandomSeed.js b/src/shared/math/RandomSeed.js
-index 19d948644..606bc0738 100644
---- a/src/shared/math/RandomSeed.js
-+++ b/src/shared/math/RandomSeed.js
-@@ -1,3 +1,12 @@
-+import {
-+  chance as randomChance,
-+  nextFloat as randomNextFloat,
-+  nextInt as randomNextInt,
-+  pick as randomPick,
-+  shuffle as randomShuffle,
-+  weightedPick as randomWeightedPick,
-+} from "./randomHelpers.js";
+diff --git a/src/shared/math/randomHelpers.js b/src/shared/math/randomHelpers.js
+index 5df891668..103ae7db5 100644
+--- a/src/shared/math/randomHelpers.js
++++ b/src/shared/math/randomHelpers.js
+@@ -1,3 +1,5 @@
++import { assertArray, assertFiniteNumber, assertOrderedRange } from "../validation/assert.js";
 +
- const UINT32_RANGE = 0x100000000;
- const FNV_OFFSET_BASIS = 0x811c9dc5;
- const FNV_PRIME = 0x01000193;
-@@ -14,21 +23,6 @@ function normalizeSeedValue(value) {
-   return hash >>> 0;
+ function assertRandomNext(randomNext) {
+   if (typeof randomNext !== "function") {
+     throw new TypeError("randomNext must be a function.");
+@@ -15,27 +17,6 @@ function readRandomValue(randomNext) {
+   return value;
  }
 
 -function assertFiniteNumber(value, name) {
@@ -271,200 +257,42 @@ index 19d948644..606bc0738 100644
 -  }
 -}
 -
- /**
-  * Deterministic seeded pseudo-random number generator for repeatable game and
-  * tool workflows. `RandomSeed` is intentionally opt-in and does not replace
-@@ -76,15 +70,7 @@ export class RandomSeed {
-    * @returns {number} A deterministic integer inside the requested range.
-    */
-   nextInt(min, max) {
--    assertOrderedRange(min, max);
--    const lower = Math.ceil(min);
--    const upper = Math.floor(max);
+-function assertArray(value, name) {
+-  if (!Array.isArray(value)) {
+-    throw new TypeError(`${name} must be an array.`);
+-  }
+-}
 -
--    if (upper < lower) {
--      throw new RangeError("integer range must include at least one integer.");
--    }
--
--    return Math.floor(this.next() * (upper - lower + 1)) + lower;
-+    return randomNextInt(() => this.next(), min, max);
-   }
-
-   /**
-@@ -95,8 +81,7 @@ export class RandomSeed {
-    * @returns {number} A deterministic floating-point number inside the range.
-    */
-   nextFloat(min, max) {
--    assertOrderedRange(min, max);
--    return min + this.next() * (max - min);
-+    return randomNextFloat(() => this.next(), min, max);
-   }
-
-   /**
-@@ -107,15 +92,65 @@ export class RandomSeed {
-    * @returns {T} The selected array item.
-    */
-   pick(array) {
--    if (!Array.isArray(array)) {
--      throw new TypeError("array must be an array.");
--    }
-+    return randomPick(() => this.next(), array);
-+  }
-+
-+  /**
-+   * Returns a deterministically shuffled copy of an array.
-+   *
-+   * @template T
-+   * @param {T[]} array Source array to shuffle.
-+   * @returns {T[]} Shuffled copy.
-+   */
-+  shuffle(array) {
-+    return randomShuffle(() => this.next(), array);
-+  }
-
--    if (array.length === 0) {
--      throw new RangeError("array must contain at least one item.");
-+  /**
-+   * Returns true when the deterministic roll falls within the percent chance.
-+   *
-+   * @param {number} percent Percent chance from 0 through 100.
-+   * @returns {boolean} Whether the chance roll succeeds.
-+   */
-+  chance(percent) {
-+    return randomChance(() => this.next(), percent);
-+  }
-+
-+  /**
-+   * Selects one deterministic weighted item.
-+   *
-+   * @template T
-+   * @param {{item?: T, value?: T, weight: number}[]} weightedItems Weighted item entries.
-+   * @returns {T} Selected item.
-+   */
-+  weightedPick(weightedItems) {
-+    return randomWeightedPick(() => this.next(), weightedItems);
-+  }
-+
-+  /**
-+   * Captures the current generator state for later restoration.
-+   *
-+   * @returns {{state: number}} Serializable generator state.
-+   */
-+  saveState() {
-+    return { state: this._state >>> 0 };
-+  }
-+
-+  /**
-+   * Restores a generator state previously returned by `saveState()`.
-+   *
-+   * @param {{state: number}} state Saved generator state.
-+   * @returns {RandomSeed} This generator instance for chaining.
-+   */
-+  restoreState(state) {
-+    const stateValue = Number(state?.state);
-+
-+    if (!Number.isInteger(stateValue) || stateValue < 0 || stateValue > 0xffffffff) {
-+      throw new RangeError("state.state must be an unsigned 32-bit integer.");
-     }
-
--    return array[this.nextInt(0, array.length - 1)];
-+    this._state = stateValue >>> 0;
-+    return this;
-   }
- }
-
-diff --git a/tests/shared/RandomSeed.test.mjs b/tests/shared/RandomSeed.test.mjs
-index b61a44157..23b5f6459 100644
---- a/tests/shared/RandomSeed.test.mjs
-+++ b/tests/shared/RandomSeed.test.mjs
-@@ -16,6 +16,15 @@ export function run() {
-   const second = new RandomSeed("level-1");
-   assert.deepEqual(takeSequence(first, 5), takeSequence(second, 5));
-
-+  assert.deepEqual(takeSequence(new RandomSeed(42), 6), [
-+    0.3077305785845965,
-+    0.3676118436269462,
-+    0.23133554426021874,
-+    0.01758907549083233,
-+    0.009130497695878148,
-+    0.2082449474837631,
-+  ]);
-+
-   first.seed("level-1");
-   second.seed("different-level");
-   assert.notDeepEqual(takeSequence(first, 5), takeSequence(second, 5));
-@@ -46,10 +55,44 @@ export function run() {
-     Array.from({ length: 8 }, () => pickerB.pick(pickSource))
-   );
-
-+  const shuffleSource = ["a", "b", "c", "d"];
-+  const shuffleA = new RandomSeed("shuffle-seed");
-+  const shuffleB = new RandomSeed("shuffle-seed");
-+  assert.deepEqual(shuffleA.shuffle(shuffleSource), shuffleB.shuffle(shuffleSource));
-+  assert.deepEqual(shuffleSource, ["a", "b", "c", "d"]);
-+
-+  const chanceA = new RandomSeed("chance-seed");
-+  const chanceB = new RandomSeed("chance-seed");
-+  assert.deepEqual(
-+    Array.from({ length: 8 }, () => chanceA.chance(35)),
-+    Array.from({ length: 8 }, () => chanceB.chance(35))
-+  );
-+
-+  const weightedItems = [
-+    { item: "common", weight: 7 },
-+    { item: "rare", weight: 3 },
-+  ];
-+  const weightedA = new RandomSeed("weighted-seed");
-+  const weightedB = new RandomSeed("weighted-seed");
-+  assert.deepEqual(
-+    Array.from({ length: 8 }, () => weightedA.weightedPick(weightedItems)),
-+    Array.from({ length: 8 }, () => weightedB.weightedPick(weightedItems))
-+  );
-+
-+  const stateSeed = new RandomSeed("state-seed");
-+  stateSeed.next();
-+  const savedState = stateSeed.saveState();
-+  const expectedAfterState = takeSequence(stateSeed, 4);
-+  assert.equal(stateSeed.restoreState(savedState), stateSeed);
-+  assert.deepEqual(takeSequence(stateSeed, 4), expectedAfterState);
-+
-   assert.throws(() => new RandomSeed("empty").pick([]), RangeError);
-   assert.throws(() => new RandomSeed("bad-array").pick("not-array"), TypeError);
-   assert.throws(() => new RandomSeed("bad-int").nextInt(5, 2), RangeError);
-   assert.throws(() => new RandomSeed("bad-float").nextFloat(0, Number.POSITIVE_INFINITY), TypeError);
-+  assert.throws(() => new RandomSeed("bad-chance").chance(101), RangeError);
-+  assert.throws(() => new RandomSeed("bad-weight").weightedPick([{ item: "none", weight: 0 }]), RangeError);
-+  assert.throws(() => new RandomSeed("bad-state").restoreState({ state: -1 }), RangeError);
- }
-
- if (import.meta.url === `file://${process.argv[1]}`) {
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements.md b/docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements.md
+ function readWeightedItem(entry) {
+   if (!entry || typeof entry !== "object") {
+     throw new TypeError("weightedItems entries must be objects.");
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions.md b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions.md
 new file mode 100644
-index 000000000..06cb0f4d3
+index 000000000..726310533
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements.md
++++ b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions.md
 @@ -0,0 +1,50 @@
-+# PR_26177_DELTA_055-random-seed-enhancements
++# PR_26177_DELTA_056-shared-validation-assertions
 +
 +Date: 2026-06-26
 +Team: Delta
-+Scope: RandomSeed procedural enhancements and targeted unit tests
++Scope: Shared validation assertions extracted from random helper code
 +Status: PASS
 +
 +## Summary
 +
-+- Updated `RandomSeed` to use shared helper logic for `nextInt`, `nextFloat`, and `pick`.
-+- Added seeded procedural methods: `shuffle`, `chance`, and `weightedPick`.
-+- Added `saveState()` and `restoreState(state)` for deterministic sequence checkpointing.
-+- Preserved the existing `RandomSeed.next()` algorithm.
-+- Added a hardcoded compatibility check for the existing `RandomSeed(42)` sequence.
-+- Verified same-seed and reseeding reproducibility still pass.
-+- Added targeted tests for the new methods and state restore behavior.
-+- No existing game logic adoption changes or UI changes were made.
++- Added `src/shared/validation/assert.js`.
++- Moved generic reusable assertion helpers out of `src/shared/math/randomHelpers.js`.
++- Included only the current generic assertion helpers needed by random helpers: `assertArray`, `assertFiniteNumber`, and `assertOrderedRange`.
++- Updated `randomHelpers.js` to import those assertions from the shared validation module.
++- Preserved existing `Random`, `RandomSeed`, and random helper behavior.
++- Did not change public API.
++- Did not add unrelated validation helpers.
++- No UI, API, database, or unrelated cleanup changes were made.
 +
 +## Branch Validation
 +
-+PASS. Branch `PR_26177_DELTA_055-random-seed-enhancements` was created from `PR_26177_DELTA_054-random-utility`.
++PASS. Branch `PR_26177_DELTA_056-shared-validation-assertions` was created from clean `PR_26177_DELTA_055-random-seed-enhancements`.
 +
 +## Changed Files
 +
@@ -472,132 +300,159 @@ index 000000000..06cb0f4d3
 +- `docs_build/dev/BUILD_PR.md`
 +- `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md`
 +- `docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md`
-+- `src/shared/math/RandomSeed.js`
-+- `tests/shared/RandomSeed.test.mjs`
-+- `docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements.md`
-+- `docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_branch-validation.md`
-+- `docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_requirement-checklist.md`
-+- `docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_validation-lane.md`
-+- `docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_manual-validation-notes.md`
-+- `docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_instruction-compliance-checklist.md`
++- `src/shared/validation/assert.js`
++- `src/shared/math/randomHelpers.js`
++- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions.md`
++- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_branch-validation.md`
++- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_requirement-checklist.md`
++- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_validation-lane.md`
++- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_manual-validation-notes.md`
++- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_instruction-compliance-checklist.md`
 +- `docs_build/dev/reports/codex_changed_files.txt`
 +- `docs_build/dev/reports/codex_review.diff`
 +
 +## Validation
 +
-+- PASS: `node ./scripts/run-node-test-files.mjs tests/shared/RandomSeed.test.mjs tests/shared/RandomHelpers.test.mjs`
-+- PASS: `node --check src/shared/math/RandomSeed.js`
-+- PASS: `node --check tests/shared/RandomSeed.test.mjs`
++- PASS: `node ./scripts/run-node-test-files.mjs tests/shared/RandomHelpers.test.mjs tests/shared/Random.test.mjs tests/shared/RandomSeed.test.mjs`
++- PASS: `node --check src/shared/validation/assert.js`
++- PASS: `node --check src/shared/math/randomHelpers.js`
 +- PASS: `git diff --check`
 +- SKIP: Playwright was not run because this PR does not change UI or browser runtime flows.
 +
 +## Artifact
 +
-+- `tmp/PR_26177_DELTA_055-random-seed-enhancements_delta.zip`
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_branch-validation.md b/docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_branch-validation.md
++- `tmp/PR_26177_DELTA_056-shared-validation-assertions_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_branch-validation.md b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_branch-validation.md
 new file mode 100644
-index 000000000..76dc5c9ae
+index 000000000..f41b57b1d
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_branch-validation.md
++++ b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_branch-validation.md
 @@ -0,0 +1,15 @@
-+# PR_26177_DELTA_055-random-seed-enhancements Branch Validation
++# PR_26177_DELTA_056-shared-validation-assertions Branch Validation
 +
 +Status: PASS
 +
 +## Start Gates
 +
-+- PASS: PR_055 branch was created from `PR_26177_DELTA_054-random-utility`.
-+- PASS: Stack base was clean before branch creation.
-+- PASS: Branch name is `PR_26177_DELTA_055-random-seed-enhancements`.
++- PASS: Current branch was `PR_26177_DELTA_055-random-seed-enhancements`.
++- PASS: Worktree was clean before creating PR_056.
++- PASS: Branch `PR_26177_DELTA_056-shared-validation-assertions` was created from PR_055.
 +
 +## Scope Confirmation
 +
 +- PASS: Work is assigned to Team Delta.
-+- PASS: Work is limited to `RandomSeed` procedural enhancements, targeted tests, PR docs, reports, and ZIP packaging.
-+- PASS: No existing game logic adoption changes, UI changes, API changes, database changes, or unrelated cleanup were made.
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_instruction-compliance-checklist.md
++- PASS: Work is limited to extracting generic assertions used by random helpers.
++- PASS: No public API, UI, browser storage, API, database, or unrelated cleanup changes were made.
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_instruction-compliance-checklist.md
 new file mode 100644
-index 000000000..b5eb1a3c5
+index 000000000..a34dbd5f3
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_instruction-compliance-checklist.md
++++ b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_instruction-compliance-checklist.md
 @@ -0,0 +1,11 @@
-+# PR_26177_DELTA_055-random-seed-enhancements Instruction Compliance Checklist
++# PR_26177_DELTA_056-shared-validation-assertions Instruction Compliance Checklist
 +
 +| Instruction | Status | Notes |
 +|---|---:|---|
-+| Continue stacked Random PR sequence | PASS | Branch was created from PR_054. |
-+| Keep one PR purpose only | PASS | Scope is RandomSeed enhancements. |
-+| Preserve sequence compatibility | PASS | Existing `RandomSeed(42)` sequence is asserted in tests. |
-+| No adoption changes in existing game logic | PASS | No call sites were changed. |
-+| No UI changes | PASS | No UI files changed. |
++| Read `ProjectInstructions.zip` and `README.txt` first | PASS | Read `ProjectInstructions/README.txt` before work. |
++| Create PR_056 as stacked PR on current branch | PASS | Branch was created from `PR_26177_DELTA_055-random-seed-enhancements`. |
++| Hard stop if branch/worktree gates fail | PASS | Branch and clean worktree gates passed. |
++| Keep one PR purpose only | PASS | Scope is shared validation assertion extraction. |
++| Do not change public API | PASS | No public API changes were made. |
 +| Produce required reports | PASS | Reports were added under `docs_build/dev/reports/`. |
-+| Produce repo-structured ZIP under `tmp/` | PASS | ZIP path is `tmp/PR_26177_DELTA_055-random-seed-enhancements_delta.zip`. |
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_manual-validation-notes.md
++| Produce repo-structured ZIP under `tmp/` | PASS | ZIP path is `tmp/PR_26177_DELTA_056-shared-validation-assertions_delta.zip`. |
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_manual-validation-notes.md
 new file mode 100644
-index 000000000..441a079e9
+index 000000000..1d5548e3b
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_manual-validation-notes.md
++++ b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_manual-validation-notes.md
 @@ -0,0 +1,11 @@
-+# PR_26177_DELTA_055-random-seed-enhancements Manual Validation Notes
++# PR_26177_DELTA_056-shared-validation-assertions Manual Validation Notes
 +
 +Status: PASS
 +
 +Manual review confirmed:
 +
-+- `RandomSeed.next()` was not changed.
-+- The hardcoded `RandomSeed(42)` sequence remains compatible with PR_052 behavior.
-+- New procedural methods consume the same seeded stream through shared helpers.
-+- `saveState()` and `restoreState(state)` are in-memory and serializable; no browser storage was added.
-+- No UI, API, database, or existing game logic adoption files changed.
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_requirement-checklist.md b/docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_requirement-checklist.md
++- The extracted assertions are generic and reusable.
++- `assert.js` intentionally contains only `assertArray`, `assertFiniteNumber`, and `assertOrderedRange`.
++- Random helper behavior is preserved through imports from the shared validation module.
++- `Random` and `RandomSeed` public APIs are unchanged.
++- No UI, browser storage, API, database, or unrelated files changed.
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_requirement-checklist.md b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_requirement-checklist.md
 new file mode 100644
-index 000000000..a65ee9a91
+index 000000000..00d322ad0
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_requirement-checklist.md
++++ b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_requirement-checklist.md
 @@ -0,0 +1,16 @@
-+# PR_26177_DELTA_055-random-seed-enhancements Requirement Checklist
++# PR_26177_DELTA_056-shared-validation-assertions Requirement Checklist
 +
 +| Requirement | Status | Notes |
 +|---|---:|---|
-+| Update `RandomSeed` to use shared helper logic where appropriate | PASS | `nextInt`, `nextFloat`, `pick`, and new methods use `randomHelpers.js`. |
-+| Add `shuffle(array)` | PASS | Added seeded shuffle method. |
-+| Add `chance(percent)` | PASS | Added seeded chance method. |
-+| Add `weightedPick(weightedItems)` | PASS | Added seeded weighted pick method. |
-+| Add `saveState()` | PASS | Added serializable state capture. |
-+| Add `restoreState(state)` | PASS | Added state restore with validation. |
-+| Preserve existing `RandomSeed` sequence compatibility | PASS | Hardcoded `RandomSeed(42)` sequence check passes. |
-+| Same seed still reproduces same sequence | PASS | Existing targeted test still passes. |
-+| Reseeding still reproduces same sequence | PASS | Existing targeted test still passes. |
-+| Add targeted unit tests for new methods | PASS | Extended `tests/shared/RandomSeed.test.mjs`. |
-+| No adoption changes in existing game logic | PASS | No game logic call sites changed. |
++| Create `src/shared/validation/assert.js` | PASS | New shared validation module added. |
++| Move generic assertion helpers from random helper code into `assert.js` | PASS | `assertArray`, `assertFiniteNumber`, and `assertOrderedRange` were extracted. |
++| Include only generic reusable validation functions needed by current random helpers | PASS | No unrelated validation helpers were added. |
++| Update random helper code to import from `src/shared/validation/assert.js` | PASS | `randomHelpers.js` now imports from shared validation. |
++| Preserve existing `Random` behavior | PASS | Targeted `Random` tests pass. |
++| Preserve existing `RandomSeed` behavior | PASS | Targeted `RandomSeed` tests pass. |
++| Do not change public API | PASS | No public API methods or call sites changed. |
++| Do not expand into unrelated validation functions yet | PASS | Module includes only the requested assertions. |
++| Add/update targeted unit tests if needed | PASS | Existing targeted random tests cover behavior after extraction. |
 +| No UI changes | PASS | No UI files changed. |
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_validation-lane.md b/docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_validation-lane.md
++| No API/database changes | PASS | No API or database files changed. |
++| No unrelated cleanup | PASS | Changes stayed scoped to assertion extraction and reports. |
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_validation-lane.md b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_validation-lane.md
 new file mode 100644
-index 000000000..d2203f234
+index 000000000..01500c267
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_validation-lane.md
-@@ -0,0 +1,24 @@
-+# PR_26177_DELTA_055-random-seed-enhancements Validation Lane
++++ b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_validation-lane.md
+@@ -0,0 +1,25 @@
++# PR_26177_DELTA_056-shared-validation-assertions Validation Lane
 +
 +Status: PASS
 +
 +## Commands
 +
 +```powershell
-+node ./scripts/run-node-test-files.mjs tests/shared/RandomSeed.test.mjs tests/shared/RandomHelpers.test.mjs
-+node --check src/shared/math/RandomSeed.js
-+node --check tests/shared/RandomSeed.test.mjs
++node ./scripts/run-node-test-files.mjs tests/shared/RandomHelpers.test.mjs tests/shared/Random.test.mjs tests/shared/RandomSeed.test.mjs
++node --check src/shared/validation/assert.js
++node --check src/shared/math/randomHelpers.js
 +git diff --check
 +```
 +
 +## Results
 +
-+- PASS: `tests/shared/RandomSeed.test.mjs`
 +- PASS: `tests/shared/RandomHelpers.test.mjs`
-+- PASS: `src/shared/math/RandomSeed.js` syntax check
-+- PASS: `tests/shared/RandomSeed.test.mjs` syntax check
++- PASS: `tests/shared/Random.test.mjs`
++- PASS: `tests/shared/RandomSeed.test.mjs`
++- PASS: `src/shared/validation/assert.js` syntax check
++- PASS: `src/shared/math/randomHelpers.js` syntax check
 +- PASS: `git diff --check`
 +
 +## Playwright
 +
 +SKIP. Playwright was not run because this PR does not change UI or browser runtime flows.
+diff --git a/src/shared/validation/assert.js b/src/shared/validation/assert.js
+new file mode 100644
+index 000000000..ee8974cbc
+--- /dev/null
++++ b/src/shared/validation/assert.js
+@@ -0,0 +1,20 @@
++export function assertArray(value, name) {
++  if (!Array.isArray(value)) {
++    throw new TypeError(`${name} must be an array.`);
++  }
++}
++
++export function assertFiniteNumber(value, name) {
++  if (!Number.isFinite(value)) {
++    throw new TypeError(`${name} must be a finite number.`);
++  }
++}
++
++export function assertOrderedRange(min, max) {
++  assertFiniteNumber(min, "min");
++  assertFiniteNumber(max, "max");
++
++  if (max < min) {
++    throw new RangeError("max must be greater than or equal to min.");
++  }
++}
