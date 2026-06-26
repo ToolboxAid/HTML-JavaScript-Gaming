@@ -22,6 +22,8 @@ This `docs_build/dev/pr/BUILD_PR.md`, `docs_build/dev/pr/PLAN_PR.md`, and the us
 - Update PR planning/template and report requirements for tool MVP PRs.
 - Add No Mock Repository Runtime Source governance under `docs_build/dev/ProjectInstructions/`.
 - Update Creator-testable stacked MVP standard to reject mock/page-array/JSON/browser-storage/tmp completion states.
+- Move verified old/superseded DoD and roadmap docs to the existing root `archive/` tree.
+- Use the existing root `archive/` tree instead of creating `docs_build/dev/archive/` or new `docs_build/dev/ProjectInstructions/archive/` paths.
 - Keep preserved historical ProjectInstructions material reference-only.
 - Keep `project-instructions/` out of this PR except for a tiny deprecated pointer.
 - Update active team start/governance docs to reference only `docs_build/dev/ProjectInstructions/`.
@@ -40,7 +42,10 @@ This `docs_build/dev/pr/BUILD_PR.md`, `docs_build/dev/pr/PLAN_PR.md`, and the us
 - `docs_build/dev/ProjectInstructions/addendums/*.md`
 - `docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md`
 - `docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md`
+- `docs_build/dev/ProjectInstructions/addendums/preservation.md`
 - `docs_build/dev/reports/audits/*.md`
+- `archive/docs_build/dev/dod/*.md`
+- `archive/docs_build/dev/roadmaps/*.md`
 - `project-instructions/README.md` (tiny deprecated pointer only)
 - `docs_build/dev/PROJECT_INSTRUCTIONS.md` (delete)
 - `docs_build/dev/PROJECT_MULTI_PC.txt` (delete)
@@ -64,6 +69,18 @@ This `docs_build/dev/pr/BUILD_PR.md`, `docs_build/dev/pr/PLAN_PR.md`, and the us
 - `docs_build/dev/restart_notes_11_123.md` (delete)
 - `docs_build/dev/bundle_readme.md` (delete)
 - `docs_build/dev/validation_checklist.txt` (delete)
+- `docs_build/dev/dod/tool_ui_readiness_dod.md` (move to root archive)
+- `docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md` (move to root archive)
+- `docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_APPEND.md` (move to root archive)
+- `docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE.md` (move to root archive)
+- `docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE_8_19.md` (move to root archive)
+- `docs_build/dev/roadmaps/MASTER_ROADMAP_RECOVERY.md` (move to root archive)
+- `docs_build/dev/roadmaps/MASTER_ROADMAP_SAMPLES2TOOLS.md` (move to root archive)
+- `docs_build/dev/roadmaps/MASTER_ROADMAP_TOOLS.md` (move to root archive)
+- `docs_build/dev/roadmaps/MIDI_STUDIO_V2_ROADMAP.md` (move to root archive)
+- `docs_build/dev/roadmaps/phases.txt` (move to root archive)
+- `docs_build/dev/roadmaps/README.md` (move to root archive)
+- `docs_build/dev/reports/legacy-docs-archive-report.md`
 - `docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock*.md`
 - `docs_build/dev/reports/codex_review.diff`
 - `docs_build/dev/reports/codex_changed_files.txt`
@@ -94,6 +111,11 @@ Test-Path docs_build/dev/validation_checklist.txt
 rg -n 'only active Project Instructions source|docs_build/dev/ProjectInstructions/' docs_build/dev/ProjectInstructions
 rg -n 'Tool MVP Stacked PR Standard|Creator-testable outcome|What can Mr\\. Q test after applying this ZIP|What Playwright tests|What Mr\\. Q should manually test|Previous PR dependency|Next PR dependency' docs_build/dev/ProjectInstructions
 rg -n 'No Mock Repository Runtime Source|Browser → API → Database|Mock repositories are 100% technical debt|Game Configuration mock repository ready|Seeded demo data is fine only when it is stored in the database and read back through the API' docs_build/dev/ProjectInstructions
+rg -n 'archive/docs_build/dev/ProjectInstructions/history|archive/docs_build/dev/dod|archive/docs_build/dev/roadmaps' docs_build/dev/ProjectInstructions docs_build/dev/reports/legacy-docs-archive-report.md
+Test-Path docs_build/dev/archive
+Test-Path docs_build/dev/dod
+Test-Path docs_build/dev/dod/tool_ui_readiness_dod.md
+Test-Path docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md
 rg -n 'docs_build/dev/PROJECT_INSTRUCTIONS.md.*source of truth|Codex must always read `docs_build/dev/PROJECT_INSTRUCTIONS.md`|Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`' docs_build/dev/ProjectInstructions project-instructions
 git diff --name-status $(git merge-base HEAD origin/main) -- project-instructions
 git diff --name-status $(git merge-base HEAD origin/main) -- docs_build/dev/pr docs_build/dev/ProjectInstructions/addendums docs_build/dev/reports/audits

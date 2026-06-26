@@ -35,8 +35,8 @@ Existing Project Instructions outside `docs_build/dev/ProjectInstructions/` rema
 - `backlog/` contains the central backlog file, `BACKLOG_MASTER.md`.
 - `team_assignments/` contains current team assignment records.
 - `deprecation/` contains deprecation workflow documentation.
-- `archive/` contains retained reference material.
-- `archive/history/` contains timestamped history snapshots.
+- Retained reference material belongs under the repository root `archive/` tree, not under `docs_build/dev/`.
+- History snapshots belong under `archive/docs_build/dev/ProjectInstructions/history/`.
 
 ## Recognized Project Reference Files
 

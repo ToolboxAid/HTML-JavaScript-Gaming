@@ -2,23 +2,16 @@
 
 Status: PASS
 
-- Reviewed cleanup scope against OWNER-provided file list.
-- Removed only duplicate active instruction files and stale one-off root docs from docs_build/dev root.
-- Removed docs_build/dev/next_command.txt only as an exact untracked/ignored stale file; it is not included in the git commit.
-- Reviewed ambiguous loose root docs before action.
-- Moved active contract/governance docs into docs_build/dev/ProjectInstructions/addendums/.
-- Moved PR-specific docs into docs_build/dev/pr/.
-- Moved audit outputs into docs_build/dev/reports/audits/.
-- Deleted stale bundle metadata from docs_build/dev root.
-- Added Tool MVP Stacked PR Standard as active ProjectInstructions governance.
-- Added No Mock Repository Runtime Source as active ProjectInstructions governance.
-- Updated Creator-testable stacked MVP PR standard to reject mock repository, page array, JSON source file, browser storage, and /tmp completion states.
-- Updated PR workflow/template and reporting governance for tool MVP PRs.
-- Reviewed ambiguous old project-instructions addendum files and left them unchanged in this PR.
-- Confirmed active/current governance content is under docs_build/dev/ProjectInstructions/.
-- Confirmed docs_build/dev/ProjectInstructions/** was preserved.
-- Confirmed docs_build/dev/reports/** and current PR reports were preserved/regenerated.
-- Confirmed docs_build/dev root has no loose files after cleanup.
+- Reviewed requested DoD and roadmap files before moving them.
+- Verified listed files are legacy/superseded by current active governance in docs_build/dev/ProjectInstructions/.
+- Used the existing root archive tree under archive/docs_build/dev/.
+- Moved the listed DoD file to archive/docs_build/dev/dod/.
+- Moved the listed roadmap files to archive/docs_build/dev/roadmaps/.
+- Removed docs_build/dev/dod/ after it became empty.
+- Left docs_build/dev/roadmaps/ in place because unlisted roadmap files remain there.
+- Added docs_build/dev/reports/legacy-docs-archive-report.md.
+- Updated active preservation guidance away from docs_build/dev/ProjectInstructions/archive/ and toward root archive history.
+- Confirmed active governance remains only under docs_build/dev/ProjectInstructions/.
 - Confirmed no product/runtime files changed.
 - Confirmed no start_of_day files changed.
 - Playwright was not run; documentation/governance-only change.

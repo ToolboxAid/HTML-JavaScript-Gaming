@@ -1,4 +1,48 @@
-﻿diff --git a/docs_build/dev/BUILD_PR.md b/docs_build/dev/BUILD_PR.md
+﻿diff --git a/docs_build/dev/dod/tool_ui_readiness_dod.md b/archive/docs_build/dev/dod/tool_ui_readiness_dod.md
+similarity index 100%
+rename from docs_build/dev/dod/tool_ui_readiness_dod.md
+rename to archive/docs_build/dev/dod/tool_ui_readiness_dod.md
+diff --git a/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md b/archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md
+similarity index 100%
+rename from docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md
+rename to archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md
+diff --git a/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_APPEND.md b/archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_APPEND.md
+similarity index 100%
+rename from docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_APPEND.md
+rename to archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_APPEND.md
+diff --git a/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE.md b/archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE.md
+similarity index 100%
+rename from docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE.md
+rename to archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE.md
+diff --git a/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE_8_19.md b/archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE_8_19.md
+similarity index 100%
+rename from docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE_8_19.md
+rename to archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE_8_19.md
+diff --git a/docs_build/dev/roadmaps/MASTER_ROADMAP_RECOVERY.md b/archive/docs_build/dev/roadmaps/MASTER_ROADMAP_RECOVERY.md
+similarity index 100%
+rename from docs_build/dev/roadmaps/MASTER_ROADMAP_RECOVERY.md
+rename to archive/docs_build/dev/roadmaps/MASTER_ROADMAP_RECOVERY.md
+diff --git a/docs_build/dev/roadmaps/MASTER_ROADMAP_SAMPLES2TOOLS.md b/archive/docs_build/dev/roadmaps/MASTER_ROADMAP_SAMPLES2TOOLS.md
+similarity index 100%
+rename from docs_build/dev/roadmaps/MASTER_ROADMAP_SAMPLES2TOOLS.md
+rename to archive/docs_build/dev/roadmaps/MASTER_ROADMAP_SAMPLES2TOOLS.md
+diff --git a/docs_build/dev/roadmaps/MASTER_ROADMAP_TOOLS.md b/archive/docs_build/dev/roadmaps/MASTER_ROADMAP_TOOLS.md
+similarity index 100%
+rename from docs_build/dev/roadmaps/MASTER_ROADMAP_TOOLS.md
+rename to archive/docs_build/dev/roadmaps/MASTER_ROADMAP_TOOLS.md
+diff --git a/docs_build/dev/roadmaps/MIDI_STUDIO_V2_ROADMAP.md b/archive/docs_build/dev/roadmaps/MIDI_STUDIO_V2_ROADMAP.md
+similarity index 100%
+rename from docs_build/dev/roadmaps/MIDI_STUDIO_V2_ROADMAP.md
+rename to archive/docs_build/dev/roadmaps/MIDI_STUDIO_V2_ROADMAP.md
+diff --git a/docs_build/dev/roadmaps/README.md b/archive/docs_build/dev/roadmaps/README.md
+similarity index 100%
+rename from docs_build/dev/roadmaps/README.md
+rename to archive/docs_build/dev/roadmaps/README.md
+diff --git a/docs_build/dev/roadmaps/phases.txt b/archive/docs_build/dev/roadmaps/phases.txt
+similarity index 100%
+rename from docs_build/dev/roadmaps/phases.txt
+rename to archive/docs_build/dev/roadmaps/phases.txt
+diff --git a/docs_build/dev/BUILD_PR.md b/docs_build/dev/BUILD_PR.md
 deleted file mode 100644
 index 30700e9cd..000000000
 --- a/docs_build/dev/BUILD_PR.md
@@ -3317,7 +3361,7 @@ index 4127fd8ae..000000000
 -- If the PR crosses multiple team ownership areas, stop and require OWNER to split or assign the work.
 -- If the requested implementation path conflicts with the active owner path, stop before changes.
 diff --git a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-index d2a84ecbe..82082e67c 100644
+index d2a84ecbe..c52753b84 100644
 --- a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 +++ b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 @@ -6,0 +7,6 @@ This file is the root index for the append-first Project Instructions operating
@@ -3332,6 +3376,11 @@ index d2a84ecbe..82082e67c 100644
 @@ -23 +30 @@ The Project Instructions operating system provides additive governance for:
 -Existing Project Instructions remain preserved in their current locations. This operating system adds structure without deleting or rewriting existing documentation.
 +Existing Project Instructions outside `docs_build/dev/ProjectInstructions/` remain preserved only as deprecated reference material. When guidance conflicts, active files under `docs_build/dev/ProjectInstructions/` win unless OWNER explicitly approves a newer governance change.
+@@ -31,2 +38,2 @@ Existing Project Instructions remain preserved in their current locations. This
+-- `archive/` contains retained reference material.
+-- `archive/history/` contains timestamped history snapshots.
++- Retained reference material belongs under the repository root `archive/` tree, not under `docs_build/dev/`.
++- History snapshots belong under `archive/docs_build/dev/ProjectInstructions/history/`.
 @@ -43,0 +51,16 @@ Existing Project Instructions remain preserved in their current locations. This
 +## Tool And Contract Governance
 +
@@ -3350,7 +3399,7 @@ index d2a84ecbe..82082e67c 100644
 +`docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md` defines the single active Project Instructions source, canonical START / WORK / END branch lifecycle, EOD main lock, next-day reset, team branch creation gate, daily synchronization baseline, and mandatory hard stops.
 +
 diff --git a/docs_build/dev/ProjectInstructions/README.txt b/docs_build/dev/ProjectInstructions/README.txt
-index a48becf05..73709e00f 100644
+index a48becf05..9831123d3 100644
 --- a/docs_build/dev/ProjectInstructions/README.txt
 +++ b/docs_build/dev/ProjectInstructions/README.txt
 @@ -4 +4 @@ Folder purpose:
@@ -3365,6 +3414,9 @@ index a48becf05..73709e00f 100644
 +
 +Branch lifecycle:
 +Every PR follows exactly three phases: START, WORK, END. The canonical lifecycle is `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`.
+@@ -25 +28 @@ History snapshot rule:
+-When a governance or instruction state needs a history snapshot, add a new file under archive/history/ using:
++When a governance or instruction state needs a history snapshot, add a new file under `archive/docs_build/dev/ProjectInstructions/history/` using:
 @@ -32,3 +35,3 @@ READ THIS FIRST
 -1. Read Project Instructions before making changes.
 -2. Project Instructions are append-only.
@@ -3933,6 +3985,61 @@ index d8acc7b0e..7ba2cae8d 100644
 @@ -78 +80 @@ At end of day:
 -- After merge, return to main and pull latest main.
 +- After merge, execute the canonical END phase, return to synchronized main, and publish branch, HEAD SHA, and date/time.
+diff --git a/docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md b/docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md
+new file mode 100644
+index 000000000..2df16f830
+--- /dev/null
++++ b/docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md
+@@ -0,0 +1,49 @@
++# No Mock Repository Runtime Source
++
++Status: Approved
++Owner: OWNER
++
++## Required Product-Data Flow
++
++```text
++Browser → API → Database
++```
++
++Runtime product data must flow through the API/service contract backed by the database.
++
++## Rules
++
++- Mock repositories are 100% technical debt.
++- "Mock repository ready" is not a valid Creator-testable completion state.
++- Page arrays are not product-data sources of truth.
++- JSON source files are not product-data sources of truth.
++- `/tmp` files are not product-data sources of truth.
++- Browser storage is not product-data source of truth.
++- Runtime tool data must come from the API/service contract backed by the database.
++- Seed data is allowed only if it seeds the database.
++- Seed execution must be owned by server/API/setup flow.
++- Browser pages must not seed authoritative records directly.
++
++## Temporary Mock Repository Exception
++
++If a temporary mock repository exists for transition, it must be documented as technical debt with:
++
++- why it exists
++- affected files
++- removal PR
++- replacement API/DB path
++- Creator-testable limitation
++
++Temporary mock repositories do not make a feature complete. They may only document a transition state.
++
++## Game Configuration Example
++
++"Game Configuration mock repository ready" does not count as complete.
++
++Completion requires Game Configuration data to load through:
++
++```text
++Browser → API → Database
++```
++
++The Creator-testable completion state must prove that browser-visible Game Configuration data was read back through the API/service contract backed by the database.
 diff --git a/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md b/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
 index f8a4acb6e..278717326 100644
 --- a/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
@@ -4027,6 +4134,13 @@ index f8a4acb6e..278717326 100644
 +- Worktree: clean
 +- `main...origin/main`: `0 0`
 +- `HEAD` SHA matches published EOD SHA
+diff --git a/docs_build/dev/ProjectInstructions/addendums/preservation.md b/docs_build/dev/ProjectInstructions/addendums/preservation.md
+index 9344992c0..79a647050 100644
+--- a/docs_build/dev/ProjectInstructions/addendums/preservation.md
++++ b/docs_build/dev/ProjectInstructions/addendums/preservation.md
+@@ -40 +40 @@ History snapshots go to:
+-`docs_build/dev/ProjectInstructions/archive/history/CCYYMMDD_HHMMSS.md`
++`archive/docs_build/dev/ProjectInstructions/history/CCYYMMDD_HHMMSS.md`
 diff --git a/docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md b/docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
 new file mode 100644
 index 000000000..ff606135a
@@ -4575,10 +4689,10 @@ index a8cd06794..000000000
 -- update targeted Playwright coverage and reports
 diff --git a/docs_build/dev/pr/BUILD_PR.md b/docs_build/dev/pr/BUILD_PR.md
 new file mode 100644
-index 000000000..4a32b70d6
+index 000000000..a29680456
 --- /dev/null
 +++ b/docs_build/dev/pr/BUILD_PR.md
-@@ -0,0 +1,103 @@
+@@ -0,0 +1,125 @@
 +# PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 +
 +## Purpose
@@ -4603,6 +4717,8 @@ index 000000000..4a32b70d6
 +- Update PR planning/template and report requirements for tool MVP PRs.
 +- Add No Mock Repository Runtime Source governance under `docs_build/dev/ProjectInstructions/`.
 +- Update Creator-testable stacked MVP standard to reject mock/page-array/JSON/browser-storage/tmp completion states.
++- Move verified old/superseded DoD and roadmap docs to the existing root `archive/` tree.
++- Use the existing root `archive/` tree instead of creating `docs_build/dev/archive/` or new `docs_build/dev/ProjectInstructions/archive/` paths.
 +- Keep preserved historical ProjectInstructions material reference-only.
 +- Keep `project-instructions/` out of this PR except for a tiny deprecated pointer.
 +- Update active team start/governance docs to reference only `docs_build/dev/ProjectInstructions/`.
@@ -4621,7 +4737,10 @@ index 000000000..4a32b70d6
 +- `docs_build/dev/ProjectInstructions/addendums/*.md`
 +- `docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md`
 +- `docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md`
++- `docs_build/dev/ProjectInstructions/addendums/preservation.md`
 +- `docs_build/dev/reports/audits/*.md`
++- `archive/docs_build/dev/dod/*.md`
++- `archive/docs_build/dev/roadmaps/*.md`
 +- `project-instructions/README.md` (tiny deprecated pointer only)
 +- `docs_build/dev/PROJECT_INSTRUCTIONS.md` (delete)
 +- `docs_build/dev/PROJECT_MULTI_PC.txt` (delete)
@@ -4645,6 +4764,18 @@ index 000000000..4a32b70d6
 +- `docs_build/dev/restart_notes_11_123.md` (delete)
 +- `docs_build/dev/bundle_readme.md` (delete)
 +- `docs_build/dev/validation_checklist.txt` (delete)
++- `docs_build/dev/dod/tool_ui_readiness_dod.md` (move to root archive)
++- `docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md` (move to root archive)
++- `docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_APPEND.md` (move to root archive)
++- `docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE.md` (move to root archive)
++- `docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE_8_19.md` (move to root archive)
++- `docs_build/dev/roadmaps/MASTER_ROADMAP_RECOVERY.md` (move to root archive)
++- `docs_build/dev/roadmaps/MASTER_ROADMAP_SAMPLES2TOOLS.md` (move to root archive)
++- `docs_build/dev/roadmaps/MASTER_ROADMAP_TOOLS.md` (move to root archive)
++- `docs_build/dev/roadmaps/MIDI_STUDIO_V2_ROADMAP.md` (move to root archive)
++- `docs_build/dev/roadmaps/phases.txt` (move to root archive)
++- `docs_build/dev/roadmaps/README.md` (move to root archive)
++- `docs_build/dev/reports/legacy-docs-archive-report.md`
 +- `docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock*.md`
 +- `docs_build/dev/reports/codex_review.diff`
 +- `docs_build/dev/reports/codex_changed_files.txt`
@@ -4675,6 +4806,11 @@ index 000000000..4a32b70d6
 +rg -n 'only active Project Instructions source|docs_build/dev/ProjectInstructions/' docs_build/dev/ProjectInstructions
 +rg -n 'Tool MVP Stacked PR Standard|Creator-testable outcome|What can Mr\\. Q test after applying this ZIP|What Playwright tests|What Mr\\. Q should manually test|Previous PR dependency|Next PR dependency' docs_build/dev/ProjectInstructions
 +rg -n 'No Mock Repository Runtime Source|Browser → API → Database|Mock repositories are 100% technical debt|Game Configuration mock repository ready|Seeded demo data is fine only when it is stored in the database and read back through the API' docs_build/dev/ProjectInstructions
++rg -n 'archive/docs_build/dev/ProjectInstructions/history|archive/docs_build/dev/dod|archive/docs_build/dev/roadmaps' docs_build/dev/ProjectInstructions docs_build/dev/reports/legacy-docs-archive-report.md
++Test-Path docs_build/dev/archive
++Test-Path docs_build/dev/dod
++Test-Path docs_build/dev/dod/tool_ui_readiness_dod.md
++Test-Path docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md
 +rg -n 'docs_build/dev/PROJECT_INSTRUCTIONS.md.*source of truth|Codex must always read `docs_build/dev/PROJECT_INSTRUCTIONS.md`|Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`' docs_build/dev/ProjectInstructions project-instructions
 +git diff --name-status $(git merge-base HEAD origin/main) -- project-instructions
 +git diff --name-status $(git merge-base HEAD origin/main) -- docs_build/dev/pr docs_build/dev/ProjectInstructions/addendums docs_build/dev/reports/audits
@@ -4684,10 +4820,10 @@ index 000000000..4a32b70d6
 +```
 diff --git a/docs_build/dev/pr/PLAN_PR.md b/docs_build/dev/pr/PLAN_PR.md
 new file mode 100644
-index 000000000..3b9706288
+index 000000000..4dd6228a4
 --- /dev/null
 +++ b/docs_build/dev/pr/PLAN_PR.md
-@@ -0,0 +1,48 @@
+@@ -0,0 +1,53 @@
 +# PLAN_PR: PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 +
 +## Purpose
@@ -4707,6 +4843,8 @@ index 000000000..3b9706288
 +- Update PR planning/template and report requirements for tool MVP PRs.
 +- Add No Mock Repository Runtime Source governance under `docs_build/dev/ProjectInstructions/`.
 +- Update Creator-testable stacked MVP standard to reject mock/page-array/JSON/browser-storage/tmp completion states.
++- Move verified old/superseded DoD and roadmap docs to the existing root `archive/` tree.
++- Use the existing root `archive/` tree instead of creating `docs_build/dev/archive/` or new `docs_build/dev/ProjectInstructions/archive/` paths.
 +- Preserve historical ProjectInstructions-style sources only as deprecated reference material.
 +- Keep `project-instructions/` out of the PR except for a tiny deprecated pointer.
 +- Move active legacy addendums into `docs_build/dev/ProjectInstructions/addendums/`.
@@ -4733,9 +4871,12 @@ index 000000000..3b9706288
 +8. Confirm tool MVP PR template/report requirements include Creator-testable outcome, Playwright tests, Mr. Q manual test, stack membership, and previous/next dependency.
 +9. Confirm No Mock Repository Runtime Source governance appears in active ProjectInstructions.
 +10. Confirm Creator-testable stacked MVP standard rejects mock/page-array/JSON/browser-storage/tmp completion states.
-+11. Confirm EOD/Next Day and canonical START / WORK / END branch lifecycle rules appear in active governance docs.
-+12. Confirm no product/runtime files changed.
-+13. Run `git diff --check`.
++11. Confirm listed old/superseded DoD and roadmap docs moved to `archive/docs_build/dev/dod/` and `archive/docs_build/dev/roadmaps/`.
++12. Confirm `docs_build/dev/dod/` was removed if empty and `docs_build/dev/roadmaps/` was not removed if unlisted files remain.
++13. Confirm active preservation guidance points to root `archive/`.
++14. Confirm EOD/Next Day and canonical START / WORK / END branch lifecycle rules appear in active governance docs.
++15. Confirm no product/runtime files changed.
++16. Run `git diff --check`.
 diff --git a/docs_build/dev/plan_pr_tool_workspace_manifest_boundaries.md b/docs_build/dev/pr/plan_pr_tool_workspace_manifest_boundaries.md
 similarity index 100%
 rename from docs_build/dev/plan_pr_tool_workspace_manifest_boundaries.md
@@ -4807,15 +4948,15 @@ rename from docs_build/dev/pr_tool_uat_fixes.md
 rename to docs_build/dev/pr/pr_tool_uat_fixes.md
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock.md b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock.md
 new file mode 100644
-index 000000000..9f126802e
+index 000000000..5acd2eb69
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock.md
-@@ -0,0 +1,124 @@
+@@ -0,0 +1,86 @@
 +﻿# PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 +
 +Date: 2026-06-26
 +Branch: PR_26177_OWNER_007-project-instructions-single-source-eod-lock
-+Scope: Project Instructions single-source governance, EOD main lock, branch lifecycle governance, docs_build/dev root cleanup, Tool MVP stacked PR governance, and no-mock runtime source governance
++Scope: Project Instructions single-source governance, EOD main lock, branch lifecycle governance, docs_build/dev root cleanup, Tool MVP stacked PR governance, no-mock runtime source governance, and legacy docs archiving
 +Status: PASS
 +
 +## Summary
@@ -4832,12 +4973,35 @@ index 000000000..9f126802e
 +- Added docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md.
 +- Added docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md.
 +- Updated Creator-testable stacked MVP governance so PR outcomes cannot be complete when visible data comes from mock repositories, page arrays, JSON source files, browser storage, or /tmp.
-+- Updated PR workflow governance so tool MVP PR plans/templates include Creator-testable outcome, Playwright test scope, Mr. Q manual test scope, stacked MVP sequence membership, and previous/next PR dependencies.
-+- Updated Codex artifact/reporting governance so every tool MVP PR report includes those same fields and answers what Mr. Q can test after applying the ZIP.
++- Moved verified old/superseded DoD and roadmap docs to the existing root archive tree under archive/docs_build/dev/.
++- Updated active preservation guidance so future archive/history material uses the root archive tree.
++- Added docs_build/dev/reports/legacy-docs-archive-report.md.
++- Confirmed no docs_build/dev/archive/ folder was created.
++- Confirmed no new docs_build/dev/ProjectInstructions/archive/ path was created.
 +- Corrected project-instructions/** scope so the PR only adds a tiny deprecated pointer README there.
 +- Preserved project-instructions/addendums/** unchanged in the PR; unique current governance content is carried by docs_build/dev/ProjectInstructions/addendums/.
-+- Confirmed docs_build/dev root no longer contains active loose instruction, audit, contract, or PR files.
 +- No product/runtime, start_of_day, feature, or legacy SQLite file changes were made.
++
++## Legacy Docs Archived
++
++Moved verified old/superseded DoD material:
++- docs_build/dev/dod/tool_ui_readiness_dod.md -> archive/docs_build/dev/dod/tool_ui_readiness_dod.md
++
++Moved verified old/superseded roadmap material:
++- docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md -> archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md
++- docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_APPEND.md -> archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_APPEND.md
++- docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE.md -> archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE.md
++- docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE_8_19.md -> archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE_8_19.md
++- docs_build/dev/roadmaps/MASTER_ROADMAP_RECOVERY.md -> archive/docs_build/dev/roadmaps/MASTER_ROADMAP_RECOVERY.md
++- docs_build/dev/roadmaps/MASTER_ROADMAP_SAMPLES2TOOLS.md -> archive/docs_build/dev/roadmaps/MASTER_ROADMAP_SAMPLES2TOOLS.md
++- docs_build/dev/roadmaps/MASTER_ROADMAP_TOOLS.md -> archive/docs_build/dev/roadmaps/MASTER_ROADMAP_TOOLS.md
++- docs_build/dev/roadmaps/MIDI_STUDIO_V2_ROADMAP.md -> archive/docs_build/dev/roadmaps/MIDI_STUDIO_V2_ROADMAP.md
++- docs_build/dev/roadmaps/phases.txt -> archive/docs_build/dev/roadmaps/phases.txt
++- docs_build/dev/roadmaps/README.md -> archive/docs_build/dev/roadmaps/README.md
++
++Folders:
++- docs_build/dev/dod/ removed because it was empty after the move.
++- docs_build/dev/roadmaps/ retained because unlisted roadmap files remain there.
 +
 +## No Mock Repository Runtime Source
 +
@@ -4853,81 +5017,20 @@ index 000000000..9f126802e
 +- Temporary mock repositories must document why they exist, affected files, removal PR, replacement API/DB path, and Creator-testable limitation.
 +- "Game Configuration mock repository ready" does not count as complete; completion requires Game Configuration data to load through Browser → API → Database.
 +
-+## Tool MVP Stacked PR Standard
-+
-+Added governance:
-+- One large Codex command -> multiple focused stacked PRs -> each PR has a testable Creator outcome.
-+- No one giant PR.
-+- No stopping after every small PR unless blocked.
-+- Each PR is independently scoped and Creator-testable.
-+- Each PR answers: What can Mr. Q test after applying this ZIP?
-+- Codex continues through the stack unless blocked by branch state, failed validation, missing source files, Project Instructions conflict, or unresolved prior-PR dependency.
-+- Visible acceptance for tool MVP planning is Creator-facing first.
-+- A PR outcome cannot be complete if visible data comes from mock repositories, page arrays, JSON source files, browser storage, or /tmp.
-+- Seeded demo data is fine only when it is stored in the database and read back through the API.
-+- Hitboxes MVP example stack is included.
-+
-+## Moved To ProjectInstructions SSoT
-+
-+- docs_build/dev/workspace_v2_playwright_gate.md -> docs_build/dev/ProjectInstructions/addendums/workspace_v2_playwright_gate.md
-+- docs_build/dev/samples2tools_adapter_guidance.md -> docs_build/dev/ProjectInstructions/addendums/samples2tools_adapter_guidance.md
-+- docs_build/dev/koti_layout_contract.md -> docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md
-+
-+## Moved To PR Folder
-+
-+- docs_build/dev/PLAN_PR.md -> docs_build/dev/pr/PLAN_PR.md
-+- docs_build/dev/BUILD_PR.md -> docs_build/dev/pr/BUILD_PR.md
-+- docs_build/dev/plan_pr_tool_workspace_manifest_boundaries.md -> docs_build/dev/pr/plan_pr_tool_workspace_manifest_boundaries.md
-+- docs_build/dev/pr_*.md -> docs_build/dev/pr/pr_*.md
-+
-+## Moved To Audit Reports
-+
-+- docs_build/dev/security-audit.md -> docs_build/dev/reports/audits/security-audit.md
-+- docs_build/dev/component-audit.md -> docs_build/dev/reports/audits/component-audit.md
-+- docs_build/dev/css-audit.md -> docs_build/dev/reports/audits/css-audit.md
-+
-+## Deleted Root Files
-+
-+Deleted duplicate active instruction files:
-+- docs_build/dev/PROJECT_INSTRUCTIONS.md
-+- docs_build/dev/PROJECT_MULTI_PC.txt
-+
-+Deleted stale one-off root files:
-+- docs_build/dev/BUILD_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT.md
-+- docs_build/dev/PLAN_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT.md
-+- docs_build/dev/codex_commands.md
-+- docs_build/dev/codex_rules.md
-+- docs_build/dev/commit_comment.txt
-+- docs_build/dev/next_command.txt (local untracked/ignored stale file, removed from disk)
-+- docs_build/dev/NEXT_RESTART.md
-+- docs_build/dev/restart_notes_11_105.md
-+- docs_build/dev/restart_notes_11_110.md
-+- docs_build/dev/restart_notes_11_111.md
-+- docs_build/dev/restart_notes_11_112.md
-+- docs_build/dev/restart_notes_11_116.md
-+- docs_build/dev/restart_notes_11_118.md
-+- docs_build/dev/restart_notes_11_119.md
-+- docs_build/dev/restart_notes_11_120.md
-+- docs_build/dev/restart_notes_11_121.md
-+- docs_build/dev/restart_notes_11_122.md
-+- docs_build/dev/restart_notes_11_123.md
-+- docs_build/dev/bundle_readme.md
-+- docs_build/dev/validation_checklist.txt
-+
 +## Validation
 +
 +- PASS: current branch is PR_26177_OWNER_007-project-instructions-single-source-eod-lock.
-+- PASS: docs_build/dev root file list is empty after cleanup.
-+- PASS: targeted path checks confirm duplicate root instruction files, moved root files, and listed stale one-off files are absent.
++- PASS: targeted path checks confirm requested legacy docs moved to archive/docs_build/dev/dod/ and archive/docs_build/dev/roadmaps/.
++- PASS: docs_build/dev/dod/ removed after becoming empty.
++- PASS: docs_build/dev/roadmaps/ retained because unlisted roadmap files remain.
++- PASS: docs_build/dev/archive/ was not created.
++- PASS: no new docs_build/dev/ProjectInstructions/archive/ path was created in this PR.
++- PASS: active preservation guidance points to archive/docs_build/dev/ProjectInstructions/history/.
++- PASS: legacy-docs-archive-report.md exists and confirms active governance remains only in docs_build/dev/ProjectInstructions/.
 +- PASS: project-instructions/** PR diff is limited to project-instructions/README.md.
-+- PASS: active moved governance/contract docs are indexed in docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md and README.txt.
 +- PASS: Tool MVP Stacked PR Standard exists and includes required governance text.
 +- PASS: No Mock Repository Runtime Source exists and includes required governance text.
-+- PASS: Tool MVP standard rejects mock/page-array/JSON/browser-storage/tmp completion states and allows seeded demo data only when stored in DB and read through API.
-+- PASS: PR workflow/template requirements include Creator-testable outcome, Playwright tests, Mr. Q manual test, stack membership, and previous/next dependency.
-+- PASS: Codex report requirements include Creator-testable outcome, Playwright tests, Mr. Q manual test, stack membership, and previous/next dependency.
 +- PASS: targeted grep found no active duplicate ProjectInstructions source-of-truth claim outside the active source.
-+- PASS: targeted grep confirmed canonical lifecycle language appears in active governance docs.
 +- PASS: product/runtime and start_of_day changed-file check returned no files.
 +- PASS: git diff --check.
 +- PASS: Playwright not run because this PR changes documentation/governance only.
@@ -4937,64 +5040,68 @@ index 000000000..9f126802e
 +- tmp/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_delta.zip
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_branch-validation.md b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_branch-validation.md
 new file mode 100644
-index 000000000..694c0151f
+index 000000000..56f292997
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_branch-validation.md
-@@ -0,0 +1,14 @@
+@@ -0,0 +1,13 @@
 +﻿# Branch Validation - PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 +
 +Status: PASS
 +
 +- PASS: Current branch is PR_26177_OWNER_007-project-instructions-single-source-eod-lock.
 +- PASS: Branch is not main during WORK.
-+- PASS: Worktree changes are scoped to governance/docs cleanup, reports, and the required delta artifact.
-+- PASS: docs_build/dev root contains no loose files after moving PR docs, active addendums, and audit outputs.
-+- PASS: Tool MVP Stacked PR Standard was added under docs_build/dev/ProjectInstructions/addendums/.
-+- PASS: No Mock Repository Runtime Source was added under docs_build/dev/ProjectInstructions/addendums/.
-+- PASS: project-instructions/** is limited to a tiny deprecated pointer README in the PR diff.
++- PASS: Worktree changes are scoped to governance/docs cleanup, legacy docs archiving, reports, and the required delta artifact.
++- PASS: Existing root archive tree is used for legacy docs.
++- PASS: docs_build/dev/archive/ was not created.
++- PASS: No new docs_build/dev/ProjectInstructions/archive/ path was created in this PR.
 +- PASS: No product/runtime files changed.
 +- PASS: No start_of_day files changed.
-+- PASS: docs_build/dev/ProjectInstructions/ remains present and active.
++- PASS: docs_build/dev/ProjectInstructions/ remains the only active governance source.
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_manual-validation-notes.md
 new file mode 100644
-index 000000000..dbb60e956
+index 000000000..2a740f24b
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_manual-validation-notes.md
-@@ -0,0 +1,24 @@
+@@ -0,0 +1,17 @@
 +﻿# Manual Validation Notes - PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 +
 +Status: PASS
 +
-+- Reviewed cleanup scope against OWNER-provided file list.
-+- Removed only duplicate active instruction files and stale one-off root docs from docs_build/dev root.
-+- Removed docs_build/dev/next_command.txt only as an exact untracked/ignored stale file; it is not included in the git commit.
-+- Reviewed ambiguous loose root docs before action.
-+- Moved active contract/governance docs into docs_build/dev/ProjectInstructions/addendums/.
-+- Moved PR-specific docs into docs_build/dev/pr/.
-+- Moved audit outputs into docs_build/dev/reports/audits/.
-+- Deleted stale bundle metadata from docs_build/dev root.
-+- Added Tool MVP Stacked PR Standard as active ProjectInstructions governance.
-+- Added No Mock Repository Runtime Source as active ProjectInstructions governance.
-+- Updated Creator-testable stacked MVP PR standard to reject mock repository, page array, JSON source file, browser storage, and /tmp completion states.
-+- Updated PR workflow/template and reporting governance for tool MVP PRs.
-+- Reviewed ambiguous old project-instructions addendum files and left them unchanged in this PR.
-+- Confirmed active/current governance content is under docs_build/dev/ProjectInstructions/.
-+- Confirmed docs_build/dev/ProjectInstructions/** was preserved.
-+- Confirmed docs_build/dev/reports/** and current PR reports were preserved/regenerated.
-+- Confirmed docs_build/dev root has no loose files after cleanup.
++- Reviewed requested DoD and roadmap files before moving them.
++- Verified listed files are legacy/superseded by current active governance in docs_build/dev/ProjectInstructions/.
++- Used the existing root archive tree under archive/docs_build/dev/.
++- Moved the listed DoD file to archive/docs_build/dev/dod/.
++- Moved the listed roadmap files to archive/docs_build/dev/roadmaps/.
++- Removed docs_build/dev/dod/ after it became empty.
++- Left docs_build/dev/roadmaps/ in place because unlisted roadmap files remain there.
++- Added docs_build/dev/reports/legacy-docs-archive-report.md.
++- Updated active preservation guidance away from docs_build/dev/ProjectInstructions/archive/ and toward root archive history.
++- Confirmed active governance remains only under docs_build/dev/ProjectInstructions/.
 +- Confirmed no product/runtime files changed.
 +- Confirmed no start_of_day files changed.
 +- Playwright was not run; documentation/governance-only change.
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_requirement-checklist.md b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_requirement-checklist.md
 new file mode 100644
-index 000000000..e38393898
+index 000000000..d9691504c
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_requirement-checklist.md
-@@ -0,0 +1,51 @@
+@@ -0,0 +1,33 @@
 +﻿# Requirement Checklist - PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 +
 +Status: PASS
 +
++- PASS: Root-level archive folder exists and was used.
++- PASS: Did not create docs_build/dev/archive/.
++- PASS: Did not create a new docs_build/dev/ProjectInstructions/archive/ path.
++- PASS: Moved docs_build/dev/dod/tool_ui_readiness_dod.md to archive/docs_build/dev/dod/.
++- PASS: Moved listed old/superseded roadmap files to archive/docs_build/dev/roadmaps/.
++- PASS: Removed docs_build/dev/dod/ because it was empty after moving the listed file.
++- PASS: Did not remove docs_build/dev/roadmaps/ because unlisted roadmap files remain there.
++- PASS: Added docs_build/dev/reports/legacy-docs-archive-report.md.
++- PASS: legacy-docs-archive-report.md lists files moved.
++- PASS: legacy-docs-archive-report.md lists folders removed/retained.
++- PASS: legacy-docs-archive-report.md confirms active governance remains only in docs_build/dev/ProjectInstructions/.
++- PASS: Updated active preservation guidance to use archive/docs_build/dev/ProjectInstructions/history/.
 +- PASS: Audit repo for ProjectInstructions / project instructions duplicates.
 +- PASS: Active source is docs_build/dev/ProjectInstructions/.
 +- PASS: Duplicate active instruction files in docs_build/dev root were deleted.
@@ -5002,52 +5109,22 @@ index 000000000..e38393898
 +- PASS: Created docs_build/dev/pr/.
 +- PASS: Moved docs_build/dev/PLAN_PR.md to docs_build/dev/pr/PLAN_PR.md.
 +- PASS: Moved docs_build/dev/BUILD_PR.md to docs_build/dev/pr/BUILD_PR.md.
-+- PASS: Moved workspace_v2_playwright_gate.md into ProjectInstructions addendums.
-+- PASS: Moved samples2tools_adapter_guidance.md into ProjectInstructions addendums.
-+- PASS: Moved KOTI layout contract into ProjectInstructions addendums after reviewing unique contract content.
-+- PASS: Moved security, component, and CSS audit outputs into docs_build/dev/reports/audits/.
-+- PASS: Deleted bundle_readme.md and validation_checklist.txt.
-+- PASS: Updated active references to moved paths.
-+- PASS: docs_build/dev root no longer contains active loose instruction, audit, contract, or PR files.
++- PASS: Moved active contract/governance docs into docs_build/dev/ProjectInstructions/addendums/.
++- PASS: Moved audit outputs into docs_build/dev/reports/audits/.
 +- PASS: Added Tool MVP Stacked PR Standard under docs_build/dev/ProjectInstructions/.
 +- PASS: Added No Mock Repository Runtime Source governance under docs_build/dev/ProjectInstructions/.
-+- PASS: Documented Browser → API → Database as the required product-data flow.
-+- PASS: Documented mock repositories as 100% technical debt.
-+- PASS: Documented "Mock repository ready" as not Creator-testable completion.
-+- PASS: Documented page arrays, JSON source files, /tmp files, and browser storage as not product-data sources of truth.
-+- PASS: Documented runtime tool data must come from API/service contract backed by database.
-+- PASS: Documented seed data is allowed only when it seeds the database and is owned by server/API/setup flow.
-+- PASS: Documented browser pages must not seed authoritative records directly.
-+- PASS: Documented temporary mock repository debt metadata requirements.
-+- PASS: Documented Game Configuration mock repository ready does not count as complete.
-+- PASS: Updated Tool MVP standard to reject mock/page-array/JSON/browser-storage/tmp completion states.
-+- PASS: Updated Tool MVP standard to allow seeded demo data only when stored in DB and read through API.
-+- PASS: Documented one large Codex command -> multiple focused stacked PRs -> each PR has a testable Creator outcome.
-+- PASS: Documented no giant PR and no stopping after every small PR unless blocked.
-+- PASS: Documented independently scoped Creator-testable PRs.
-+- PASS: Documented required question: What can Mr. Q test after applying this ZIP?
-+- PASS: Documented stack continuation blockers.
-+- PASS: Documented Creator-facing visible acceptance first for tool MVP PR planning.
-+- PASS: Documented Hitboxes MVP example stack.
-+- PASS: Updated PR planning/template requirements for tool MVP PRs.
-+- PASS: Updated report requirements for tool MVP PRs.
 +- PASS: project-instructions/** changes were removed from this PR except for a tiny deprecated pointer README.
-+- PASS: Ambiguous old docs were reviewed before cleanup; unique current governance content exists under docs_build/dev/ProjectInstructions/.
 +- PASS: docs_build/dev/ProjectInstructions/** was not deleted.
 +- PASS: docs_build/dev/reports/** and current PR reports were preserved/regenerated.
-+- PASS: Active validation/audit docs were moved rather than deleted.
-+- PASS: EOD main lock governance is documented.
-+- PASS: Next-day reset governance is documented.
-+- PASS: Canonical START / WORK / END branch lifecycle is documented.
 +- PASS: No feature work started.
 +- PASS: No product/runtime files changed.
 +- PASS: No start_of_day files changed.
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_validation-lane.md b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_validation-lane.md
 new file mode 100644
-index 000000000..f35b6cf2b
+index 000000000..3a433e437
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_validation-lane.md
-@@ -0,0 +1,44 @@
+@@ -0,0 +1,32 @@
 +﻿# Validation Lane - PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 +
 +Status: PASS
@@ -5057,38 +5134,26 @@ index 000000000..f35b6cf2b
 +```powershell
 +git branch --show-current
 +git status --short --branch --untracked-files=all
-+Get-ChildItem -File docs_build/dev
-+Test-Path docs_build/dev/PROJECT_INSTRUCTIONS.md
-+Test-Path docs_build/dev/PROJECT_MULTI_PC.txt
-+Test-Path docs_build/dev/BUILD_PR.md
-+Test-Path docs_build/dev/PLAN_PR.md
-+Test-Path docs_build/dev/workspace_v2_playwright_gate.md
-+Test-Path docs_build/dev/samples2tools_adapter_guidance.md
-+Test-Path docs_build/dev/security-audit.md
-+Test-Path docs_build/dev/component-audit.md
-+Test-Path docs_build/dev/css-audit.md
-+Test-Path docs_build/dev/bundle_readme.md
-+Test-Path docs_build/dev/validation_checklist.txt
-+git diff --name-status $(git merge-base HEAD origin/main) -- project-instructions
-+rg -n 'Tool MVP Stacked PR Standard|One large Codex command|Creator-testable outcome|What can Mr\. Q test after applying this ZIP|What Playwright tests|What Mr\. Q should manually test|stacked MVP sequence|Previous PR dependency|Next PR dependency|Hitboxes MVP' docs_build/dev/ProjectInstructions
-+rg -n 'No Mock Repository Runtime Source|Browser → API → Database|Mock repositories are 100% technical debt|Mock repository ready|Page arrays are not product-data sources of truth|JSON source files are not product-data sources of truth|/tmp.*not product-data|Browser storage is not product-data|Runtime tool data must come from the API/service contract backed by the database|Seed data is allowed only if it seeds the database|Seed execution must be owned by server/API/setup flow|Browser pages must not seed authoritative records directly|Game Configuration mock repository ready' docs_build/dev/ProjectInstructions
-+rg -n 'A PR outcome must not be described as complete|mock repositories|page arrays|JSON source files|browser storage|/tmp|Seeded demo data is fine only when it is stored in the database and read back through the API|no_mock_repository_runtime_source' docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md
-+rg -n 'docs_build/dev/PROJECT_INSTRUCTIONS.md.*source of truth|Codex must always read `docs_build/dev/PROJECT_INSTRUCTIONS.md`|Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`' docs_build/dev/ProjectInstructions project-instructions
-+rg -n 'workspace_v2_playwright_gate|samples2tools_adapter_guidance|koti_layout_contract|tool_mvp_stacked_pr_standard|no_mock_repository_runtime_source' docs_build/dev/ProjectInstructions
++Test-Path docs_build/dev/archive
++Test-Path docs_build/dev/dod
++Test-Path docs_build/dev/roadmaps
++Test-Path archive/docs_build/dev/dod/tool_ui_readiness_dod.md
++Test-Path archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md
++Test-Path archive/docs_build/dev/roadmaps/README.md
++rg -n 'ProjectInstructions/archive|docs_build/dev/archive|docs_build/dev/dod/tool_ui_readiness_dod|docs_build/dev/roadmaps/(MASTER_ROADMAP_ENGINE|MASTER_ROADMAP_RECOVERY|MASTER_ROADMAP_SAMPLES2TOOLS|MASTER_ROADMAP_TOOLS|MIDI_STUDIO_V2_ROADMAP|README\.md|phases\.txt)' docs_build/dev/ProjectInstructions docs_build/dev/pr docs_build/dev/reports/legacy-docs-archive-report.md project-instructions --glob '!docs_build/dev/ProjectInstructions/archive/**'
++rg -n 'archive/docs_build/dev/ProjectInstructions/history|archive/docs_build/dev/dod|archive/docs_build/dev/roadmaps|active governance remains only in docs_build/dev/ProjectInstructions' docs_build/dev/ProjectInstructions docs_build/dev/reports/legacy-docs-archive-report.md
 +git diff --name-only -- src assets toolbox games api serverside package.json package-lock.json docs_build/dev/start_of_day
 +git diff --check
 +```
 +
 +Results:
 +- PASS: Branch is PR_26177_OWNER_007-project-instructions-single-source-eod-lock.
-+- PASS: docs_build/dev root file listing returned no files.
-+- PASS: Duplicate/stale/moved root path checks returned absent for every listed cleanup file.
-+- PASS: project-instructions/** diff returned only A project-instructions/README.md.
-+- PASS: Tool MVP Stacked PR Standard and required report/template fields appear in active ProjectInstructions docs.
-+- PASS: No Mock Repository Runtime Source and required product-data flow rules appear in active ProjectInstructions docs.
-+- PASS: Tool MVP standard rejects mock/page-array/JSON/browser-storage/tmp completion states.
-+- PASS: Active-source grep did not find old root instruction source-of-truth wording.
-+- PASS: Moved governance/contract addendum paths appear in active ProjectInstructions docs.
++- PASS: docs_build/dev/archive/ does not exist.
++- PASS: docs_build/dev/dod/ was removed.
++- PASS: docs_build/dev/roadmaps/ remains because unlisted files remain.
++- PASS: requested DoD and roadmap files exist under archive/docs_build/dev/.
++- PASS: active preservation guidance uses root archive history path.
++- PASS: legacy docs archive report exists and confirms active governance remains only in docs_build/dev/ProjectInstructions/.
 +- PASS: Product/runtime/start_of_day changed-file check returned no files.
 +- PASS: git diff --check returned no whitespace errors.
 +- PASS: Playwright not impacted because no runtime files changed.
@@ -5105,10 +5170,10 @@ similarity index 100%
 rename from docs_build/dev/security-audit.md
 rename to docs_build/dev/reports/audits/security-audit.md
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 8e34972a1..bed8ea54f 100644
+index 8e34972a1..59beeffb0 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,14 +1,72 @@
+@@ -1,14 +1,73 @@
 -docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md
 -docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md
 -docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md
@@ -5149,6 +5214,7 @@ index 8e34972a1..bed8ea54f 100644
 +M	docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
 +M	docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
 +A	docs_build/dev/ProjectInstructions/addendums/test_structure_standardization.md
++A	docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md
 +R100	docs_build/dev/workspace_v2_playwright_gate.md	docs_build/dev/ProjectInstructions/addendums/workspace_v2_playwright_gate.md
 +M	docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
 +D	docs_build/dev/bundle_readme.md

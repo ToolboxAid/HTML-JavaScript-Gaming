@@ -17,6 +17,8 @@ Make `docs_build/dev/ProjectInstructions/` the only active Project Instructions 
 - Update PR planning/template and report requirements for tool MVP PRs.
 - Add No Mock Repository Runtime Source governance under `docs_build/dev/ProjectInstructions/`.
 - Update Creator-testable stacked MVP standard to reject mock/page-array/JSON/browser-storage/tmp completion states.
+- Move verified old/superseded DoD and roadmap docs to the existing root `archive/` tree.
+- Use the existing root `archive/` tree instead of creating `docs_build/dev/archive/` or new `docs_build/dev/ProjectInstructions/archive/` paths.
 - Preserve historical ProjectInstructions-style sources only as deprecated reference material.
 - Keep `project-instructions/` out of the PR except for a tiny deprecated pointer.
 - Move active legacy addendums into `docs_build/dev/ProjectInstructions/addendums/`.
@@ -43,6 +45,9 @@ Make `docs_build/dev/ProjectInstructions/` the only active Project Instructions 
 8. Confirm tool MVP PR template/report requirements include Creator-testable outcome, Playwright tests, Mr. Q manual test, stack membership, and previous/next dependency.
 9. Confirm No Mock Repository Runtime Source governance appears in active ProjectInstructions.
 10. Confirm Creator-testable stacked MVP standard rejects mock/page-array/JSON/browser-storage/tmp completion states.
-11. Confirm EOD/Next Day and canonical START / WORK / END branch lifecycle rules appear in active governance docs.
-12. Confirm no product/runtime files changed.
-13. Run `git diff --check`.
+11. Confirm listed old/superseded DoD and roadmap docs moved to `archive/docs_build/dev/dod/` and `archive/docs_build/dev/roadmaps/`.
+12. Confirm `docs_build/dev/dod/` was removed if empty and `docs_build/dev/roadmaps/` was not removed if unlisted files remain.
+13. Confirm active preservation guidance points to root `archive/`.
+14. Confirm EOD/Next Day and canonical START / WORK / END branch lifecycle rules appear in active governance docs.
+15. Confirm no product/runtime files changed.
+16. Run `git diff --check`.

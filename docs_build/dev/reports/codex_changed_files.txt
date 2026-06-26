@@ -1,4 +1,15 @@
-﻿D	docs_build/dev/BUILD_PR.md
+﻿R100	docs_build/dev/dod/tool_ui_readiness_dod.md	archive/docs_build/dev/dod/tool_ui_readiness_dod.md
+R100	docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md
+R100	docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_APPEND.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_APPEND.md
+R100	docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE.md
+R100	docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE_8_19.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE_8_19.md
+R100	docs_build/dev/roadmaps/MASTER_ROADMAP_RECOVERY.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_RECOVERY.md
+R100	docs_build/dev/roadmaps/MASTER_ROADMAP_SAMPLES2TOOLS.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_SAMPLES2TOOLS.md
+R100	docs_build/dev/roadmaps/MASTER_ROADMAP_TOOLS.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_TOOLS.md
+R100	docs_build/dev/roadmaps/MIDI_STUDIO_V2_ROADMAP.md	archive/docs_build/dev/roadmaps/MIDI_STUDIO_V2_ROADMAP.md
+R100	docs_build/dev/roadmaps/README.md	archive/docs_build/dev/roadmaps/README.md
+R100	docs_build/dev/roadmaps/phases.txt	archive/docs_build/dev/roadmaps/phases.txt
+D	docs_build/dev/BUILD_PR.md
 D	docs_build/dev/BUILD_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT.md
 D	docs_build/dev/NEXT_RESTART.md
 D	docs_build/dev/PLAN_PR.md
@@ -17,7 +28,9 @@ A	docs_build/dev/ProjectInstructions/addendums/codex_project_instructions_startu
 R100	docs_build/dev/koti_layout_contract.md	docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md
 A	docs_build/dev/ProjectInstructions/addendums/legacy_migration_policy.md
 M	docs_build/dev/ProjectInstructions/addendums/multi_team.md
+A	docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md
 M	docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
+M	docs_build/dev/ProjectInstructions/addendums/preservation.md
 A	docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
 M	docs_build/dev/ProjectInstructions/addendums/release_gate.md
 R100	docs_build/dev/samples2tools_adapter_guidance.md	docs_build/dev/ProjectInstructions/addendums/samples2tools_adapter_guidance.md

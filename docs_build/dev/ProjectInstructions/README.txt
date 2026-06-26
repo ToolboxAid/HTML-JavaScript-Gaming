@@ -25,7 +25,7 @@ OWNER override approved: <reason>
 The override must explain why normal team, branch, assignment, or backlog routing is being changed.
 
 History snapshot rule:
-When a governance or instruction state needs a history snapshot, add a new file under archive/history/ using:
+When a governance or instruction state needs a history snapshot, add a new file under `archive/docs_build/dev/ProjectInstructions/history/` using:
 CCYYMMDD_HHMMSS.md
 
 Do not rewrite history snapshots after creation unless the owner explicitly approves.

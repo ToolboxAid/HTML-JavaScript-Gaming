@@ -2,6 +2,18 @@
 
 Status: PASS
 
+- PASS: Root-level archive folder exists and was used.
+- PASS: Did not create docs_build/dev/archive/.
+- PASS: Did not create a new docs_build/dev/ProjectInstructions/archive/ path.
+- PASS: Moved docs_build/dev/dod/tool_ui_readiness_dod.md to archive/docs_build/dev/dod/.
+- PASS: Moved listed old/superseded roadmap files to archive/docs_build/dev/roadmaps/.
+- PASS: Removed docs_build/dev/dod/ because it was empty after moving the listed file.
+- PASS: Did not remove docs_build/dev/roadmaps/ because unlisted roadmap files remain there.
+- PASS: Added docs_build/dev/reports/legacy-docs-archive-report.md.
+- PASS: legacy-docs-archive-report.md lists files moved.
+- PASS: legacy-docs-archive-report.md lists folders removed/retained.
+- PASS: legacy-docs-archive-report.md confirms active governance remains only in docs_build/dev/ProjectInstructions/.
+- PASS: Updated active preservation guidance to use archive/docs_build/dev/ProjectInstructions/history/.
 - PASS: Audit repo for ProjectInstructions / project instructions duplicates.
 - PASS: Active source is docs_build/dev/ProjectInstructions/.
 - PASS: Duplicate active instruction files in docs_build/dev root were deleted.
@@ -9,43 +21,13 @@ Status: PASS
 - PASS: Created docs_build/dev/pr/.
 - PASS: Moved docs_build/dev/PLAN_PR.md to docs_build/dev/pr/PLAN_PR.md.
 - PASS: Moved docs_build/dev/BUILD_PR.md to docs_build/dev/pr/BUILD_PR.md.
-- PASS: Moved workspace_v2_playwright_gate.md into ProjectInstructions addendums.
-- PASS: Moved samples2tools_adapter_guidance.md into ProjectInstructions addendums.
-- PASS: Moved KOTI layout contract into ProjectInstructions addendums after reviewing unique contract content.
-- PASS: Moved security, component, and CSS audit outputs into docs_build/dev/reports/audits/.
-- PASS: Deleted bundle_readme.md and validation_checklist.txt.
-- PASS: Updated active references to moved paths.
-- PASS: docs_build/dev root no longer contains active loose instruction, audit, contract, or PR files.
+- PASS: Moved active contract/governance docs into docs_build/dev/ProjectInstructions/addendums/.
+- PASS: Moved audit outputs into docs_build/dev/reports/audits/.
 - PASS: Added Tool MVP Stacked PR Standard under docs_build/dev/ProjectInstructions/.
 - PASS: Added No Mock Repository Runtime Source governance under docs_build/dev/ProjectInstructions/.
-- PASS: Documented Browser → API → Database as the required product-data flow.
-- PASS: Documented mock repositories as 100% technical debt.
-- PASS: Documented "Mock repository ready" as not Creator-testable completion.
-- PASS: Documented page arrays, JSON source files, /tmp files, and browser storage as not product-data sources of truth.
-- PASS: Documented runtime tool data must come from API/service contract backed by database.
-- PASS: Documented seed data is allowed only when it seeds the database and is owned by server/API/setup flow.
-- PASS: Documented browser pages must not seed authoritative records directly.
-- PASS: Documented temporary mock repository debt metadata requirements.
-- PASS: Documented Game Configuration mock repository ready does not count as complete.
-- PASS: Updated Tool MVP standard to reject mock/page-array/JSON/browser-storage/tmp completion states.
-- PASS: Updated Tool MVP standard to allow seeded demo data only when stored in DB and read through API.
-- PASS: Documented one large Codex command -> multiple focused stacked PRs -> each PR has a testable Creator outcome.
-- PASS: Documented no giant PR and no stopping after every small PR unless blocked.
-- PASS: Documented independently scoped Creator-testable PRs.
-- PASS: Documented required question: What can Mr. Q test after applying this ZIP?
-- PASS: Documented stack continuation blockers.
-- PASS: Documented Creator-facing visible acceptance first for tool MVP PR planning.
-- PASS: Documented Hitboxes MVP example stack.
-- PASS: Updated PR planning/template requirements for tool MVP PRs.
-- PASS: Updated report requirements for tool MVP PRs.
 - PASS: project-instructions/** changes were removed from this PR except for a tiny deprecated pointer README.
-- PASS: Ambiguous old docs were reviewed before cleanup; unique current governance content exists under docs_build/dev/ProjectInstructions/.
 - PASS: docs_build/dev/ProjectInstructions/** was not deleted.
 - PASS: docs_build/dev/reports/** and current PR reports were preserved/regenerated.
-- PASS: Active validation/audit docs were moved rather than deleted.
-- PASS: EOD main lock governance is documented.
-- PASS: Next-day reset governance is documented.
-- PASS: Canonical START / WORK / END branch lifecycle is documented.
 - PASS: No feature work started.
 - PASS: No product/runtime files changed.
 - PASS: No start_of_day files changed.
