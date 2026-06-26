@@ -1,0 +1,28 @@
+{
+  "group": "Game Crew",
+  "groupKey": "game-crew",
+  "owner": "docs_build/database/seed/guest",
+  "readOnly": true,
+  "writableByGuest": false,
+  "signInRedirect": "account/sign-in.html",
+  "tables": {
+    "project_members": []
+  },
+  "samplePackages": [
+    {
+      "key": "guest-game-crew-starter",
+      "audience": "guest",
+      "createdBy": "01K2GFSJ0Y0000000000000054",
+      "groupKey": "game-crew",
+      "label": "Guest Game Crew starter",
+      "loadablePath": "toolbox/game-crew/index.html",
+      "readOnly": true,
+      "sampleKind": "toolSeed",
+      "signInRedirect": "account/sign-in.html",
+      "source": "docs_build/database/seed/guest/game-crew.json",
+      "toolKey": "game-crew",
+      "toolName": "Game Crew",
+      "writableByGuest": false
+    }
+  ]
+}

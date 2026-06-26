@@ -1,0 +1,7 @@
+{
+  "group": "Game Crew",
+  "delegates": {
+    "seed": "../seed/game-crew.json",
+    "guestSeed": "../seed/guest/game-crew.json"
+  }
+}

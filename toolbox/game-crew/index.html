@@ -6,7 +6,7 @@
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Game Crew - GameFoundryStudio</title>
-    <meta name="description" content="Game Crew Toolbox wireframe. Plan game-level crew assignments for the active game.">
+    <meta name="description" content="Game Crew toolbox for project owner and member planning.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -18,7 +18,7 @@
             <div class="container">
                 <div class="kicker">Toolbox / Game Crew</div>
                 <h1>Game Crew</h1>
-                <p class="lede">Plan game-level crew assignments for the active game. Static wireframe only; no database, persistence, save, load, or runtime behavior is implemented.</p>
+                <p class="lede">Review the active project crew and prepare collaboration membership.</p>
             </div>
         </section>
         <section class="section">
@@ -31,13 +31,51 @@
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
                                 <summary>Setup</summary>
-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
+                                <div class="accordion-body content-stack">
+                                    <p>Project crew starts with the owner and active members for the selected game.</p>
+                                    <p>Invitations and permission changes are planned after this foundation.</p>
+                                </div>
                             </details>
                         </div>
                     </aside>
-                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="users" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
-                    <section class="tool-center-panel"><h2>Workspace</h2>
-                        <p>Plan game-level crew assignments. Studio Team remains the account-level roster and is not implemented in this Game Crew wireframe.</p>
+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="users" data-tool-icon-src="assets/theme-v2/images/badges/users.png" data-tool-character-src="assets/theme-v2/images/tools/users.png"></div>
+                    <section class="tool-center-panel">
+                        <h2>Project Crew</h2>
+                        <p>Use the API-backed crew list to understand who owns and supports the selected project.</p>
+                        <div class="grid cols-3" aria-label="Game Crew summary">
+                            <article class="mini-stat"><strong data-game-crew-status>Loading</strong>Status</article>
+                            <article class="mini-stat"><strong data-game-crew-owner>Unknown</strong>Owner</article>
+                            <article class="mini-stat"><strong data-game-crew-count>0</strong>Members</article>
+                        </div>
+                        <article class="card">
+                            <div class="card-body content-stack">
+                                <div>
+                                    <div class="kicker">Active Project</div>
+                                    <h3 data-game-crew-project-name>No project selected</h3>
+                                </div>
+                                <p data-game-crew-guidance>Loading project crew guidance.</p>
+                                <div class="table-wrapper">
+                                    <table class="data-table" aria-label="Project crew members">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Member</th>
+                                                <th scope="col">Role</th>
+                                                <th scope="col">Status</th>
+                                                <th scope="col">Joined</th>
+                                                <th scope="col">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody data-game-crew-table>
+                                            <tr><td colspan="5">Loading crew.</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="action-group">
+                                    <button class="btn" type="button" data-game-crew-add>Add Member</button>
+                                    <button class="btn btn--secondary" type="button" data-game-crew-refresh>Refresh Crew</button>
+                                </div>
+                            </div>
+                        </article>
                     </section>
                     <aside class="tool-column tool-group-game-create">
                         <div class="tool-column-header">
@@ -46,7 +84,32 @@
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
                                 <summary>Output</summary>
-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
+                                <div class="accordion-body content-stack">
+                                    <p>Status: <span data-game-crew-output-status>Loading</span></p>
+                                    <p>Selected Member: <span data-game-crew-selected>None</span></p>
+                                    <p>Action: <span data-game-crew-action>None</span></p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Repository Tables</summary>
+                                <div class="accordion-body">
+                                    <div class="table-wrapper">
+                                        <table class="data-table" aria-label="Game Crew repository table counts">
+                                            <thead>
+                                                <tr><th scope="col">Table</th><th scope="col">Rows</th></tr>
+                                            </thead>
+                                            <tbody data-game-crew-table-counts>
+                                                <tr><td>project_members</td><td>0</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Status Log</summary>
+                                <div class="accordion-body">
+                                    <div class="status" role="status" data-game-crew-log>Game Crew loading.</div>
+                                </div>
                             </details>
                         </div>
                     </aside>
@@ -57,6 +120,7 @@
     <div data-partial="footer"></div>
     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+    <script type="module" src="assets/toolbox/game-crew/js/index.js"></script>
 </body>
 
 </html>

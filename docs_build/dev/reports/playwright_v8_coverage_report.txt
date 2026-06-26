@@ -14,29 +14,36 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
 Exercised tool entry points detected:
 (76%) Toolbox Index - exercised 1 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
-(72%) Theme V2 Shared JS - exercised 4 runtime JS files
+(71%) Theme V2 Shared JS - exercised 6 runtime JS files
 
 Changed runtime JS files covered:
-(100%) none changed - no changed runtime JS files
+(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/persistence/tool-repositories/game-crew-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 
 Files with executed line/function counts where available:
+(25%) src/api/session-api-client.js - executed lines 67/67; executed functions 3/12
 (36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2041/2041; executed functions 12/33
+(50%) src/api/public-config-client.js - executed lines 209/209; executed functions 13/26
 (53%) src/api/server-api-client.js - executed lines 168/168; executed functions 10/19
-(64%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 63/98
-(65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
+(57%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 55/97
 (67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
-(73%) assets/toolbox/game-journey/js/index.js - executed lines 1662/1662; executed functions 108/148
+(70%) assets/theme-v2/js/login-session.js - executed lines 113/113; executed functions 7/10
 (76%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 22/29
 (77%) assets/theme-v2/js/tool-display-mode.js - executed lines 304/304; executed functions 23/30
 (80%) assets/theme-v2/js/theme-icons.js - executed lines 69/69; executed functions 4/5
-(89%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 32/36
-(100%) assets/js/shared/game-journey-api-client.js - executed lines 19/19; executed functions 2/2
+(94%) assets/toolbox/game-crew/js/index.js - executed lines 161/161; executed functions 16/17
+(97%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 35/36
+(100%) assets/theme-v2/js/account-auth-service.js - executed lines 64/64; executed functions 7/7
 
 Uncovered or low-coverage changed JS files:
-(100%) none changed - no changed runtime JS files
+(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/dev-runtime/persistence/tool-repositories/game-crew-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
-(0%) scripts/validate-browser-env-agnostic.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/GameJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/persistence/tool-repositories/game-crew-mock-repository.js - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/GameCrewFoundation.spec.mjs - changed JS file not collected as browser runtime coverage
+(94%) assets/toolbox/game-crew/js/index.js - changed JS file with browser V8 coverage

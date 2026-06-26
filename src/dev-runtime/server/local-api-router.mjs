@@ -84,6 +84,11 @@ import {
   createGameWorkspaceMockRepository,
 } from "../persistence/tool-repositories/game-workspace-mock-repository.js";
 import {
+  GAME_CREW_MEMBER_ROLES,
+  GAME_CREW_TABLES,
+  createGameCrewMockRepository,
+} from "../persistence/tool-repositories/game-crew-mock-repository.js";
+import {
   createMockDbAuditFields,
   getMockDbTableSchemas,
   getMockDbToolGroups,
@@ -3300,6 +3305,10 @@ async function gameJourneyTables(repository) {
   return normalizeOwnedTables("game-journey", await repository.getTables());
 }
 
+function gameCrewTables(repository) {
+  return normalizeOwnedTables("game-crew", repository.getTables());
+}
+
 function paletteTables(repository) {
   return normalizeOwnedTables("palette", {
     ...repository.getTables(),
@@ -3691,6 +3700,10 @@ class ApiRuntimeDataSource {
     this.inputMappingRepository = createInputMappingToolMockRepository({
       gameWorkspaceRepository: this.gameWorkspaceRepository,
       ...this.sharedOptions,
+      sessionUserKey: () => this.sessionUserKey,
+    });
+    this.gameCrewRepository = createGameCrewMockRepository({
+      gameWorkspaceRepository: this.gameWorkspaceRepository,
       sessionUserKey: () => this.sessionUserKey,
     });
     this.assetReadyInitialized = false;
@@ -6630,6 +6643,7 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
     this.assertProductDatabaseProvider(`Opening ${toolId} repository`);
     if (toolId === "workspace") return this.gameWorkspaceRepository;
     if (isGameHubToolId(toolId)) return this.gameWorkspaceRepository;
+    if (toolId === "game-crew") return this.gameCrewRepository;
     if (toolId === "game-design") return this.gameDesignRepository;
     if (toolId === "game-configuration") return this.gameConfigurationRepository;
     if (toolId === "objects") return this.objectsRepository;
@@ -6649,6 +6663,12 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
         GAME_WORKSPACE_MEMBER_ROLES,
         GAME_WORKSPACE_GAME_PURPOSES,
         GAME_WORKSPACE_GAME_STATUSES,
+      };
+    }
+    if (toolId === "game-crew") {
+      return {
+        GAME_CREW_MEMBER_ROLES,
+        GAME_CREW_TABLES,
       };
     }
     if (toolId === "game-design") {
@@ -6847,6 +6867,7 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
       ...gameWorkspaceTables(this.gameWorkspaceRepository),
       ...gameDesignTables(this.gameDesignRepository),
       ...gameConfigurationTables(this.gameConfigurationRepository),
+      ...gameCrewTables(this.gameCrewRepository),
       ...objectsTables(this.objectsRepository),
       ...controlsTables(this.inputMappingRepository),
       ...(await gameJourneyTables(this.gameJourneyRepository)),
