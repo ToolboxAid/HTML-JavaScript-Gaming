@@ -12,15 +12,25 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(0%) Toolbox Index - not exercised by this Playwright run
+(76%) Toolbox Index - exercised 1 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
-(0%) Theme V2 Shared JS - not exercised by this Playwright run
+(72%) Theme V2 Shared JS - exercised 4 runtime JS files
 
 Changed runtime JS files covered:
 (100%) none changed - no changed runtime JS files
 
 Files with executed line/function counts where available:
-(100%) none - no covered runtime files
+(36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2041/2041; executed functions 12/33
+(53%) src/api/server-api-client.js - executed lines 168/168; executed functions 10/19
+(64%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 63/98
+(65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
+(67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
+(73%) assets/toolbox/game-journey/js/index.js - executed lines 1662/1662; executed functions 108/148
+(76%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 22/29
+(77%) assets/theme-v2/js/tool-display-mode.js - executed lines 304/304; executed functions 23/30
+(80%) assets/theme-v2/js/theme-icons.js - executed lines 69/69; executed functions 4/5
+(89%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 32/36
+(100%) assets/js/shared/game-journey-api-client.js - executed lines 19/19; executed functions 2/2
 
 Uncovered or low-coverage changed JS files:
 (100%) none changed - no changed runtime JS files

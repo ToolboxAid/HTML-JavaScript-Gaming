@@ -20,5 +20,7 @@ Status: PASS
 - PASS: Remaining matches are historical docs/reports only under `docs_build/**`.
 - PASS: Targeted node validation passed.
 - PASS: Impacted Playwright validation passed.
+- PASS: EOD pre-merge targeted validation passed.
+- PASS: EOD pre-merge impacted Playwright tests passed.
 - PASS: Required reports were updated.
 - PASS: Repo-structured ZIP was produced under `tmp/`.

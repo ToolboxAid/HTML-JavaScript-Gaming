@@ -5,10 +5,23 @@ Status: PASS
 ## Static Checks
 
 ```powershell
+Test-Path scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs
+Test-Path src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs
+Test-Path tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs
+rg -n -i "sqlite|better-sqlite|game-journey-completion-metrics\.sqlite|tmp/local-api" -g "*.js" -g "*.mjs"
+rg -n -i "sqlite|better-sqlite|game-journey-completion-metrics\.sqlite|tmp/local-api" --glob "!docs_build/**" --glob "!tmp/**" --glob "!.git/**"
+rg -n "Game Journey completion metrics unavailable" src assets toolbox tests scripts --glob "!**/*.map"
+rg -n "tmp/|tmp\\|os\.tmpdir" src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs src/dev-runtime/server/local-api-router.mjs src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js toolbox/tools-page-accordions.js assets/toolbox/game-journey/js/index.js src/api/game-journey-completion-api-client.js
+```
+
+Result: PASS. Deleted files are absent; static searches returned no active implementation matches.
+
+```powershell
 node --check scripts/validate-browser-env-agnostic.mjs
 node --check tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
 node --check tests/playwright/tools/GameJourneyTool.spec.mjs
 node --check tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+git diff --check
 ```
 
 Result: PASS

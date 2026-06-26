@@ -12,4 +12,5 @@ Status: PASS
 - Confirmed the toolbox page renders neutral Creator-facing outage wording when active metrics are unavailable.
 - Confirmed the focused outage lane does not render the forbidden warning string or Postgres internals.
 - Confirmed no runtime code inspects or depends on `tmp/` for Game Journey completion metrics.
+- Confirmed EOD validation rerun passed before merging PR057 to `main`.
 - Confirmed no Alfa Tags PR work was started.
