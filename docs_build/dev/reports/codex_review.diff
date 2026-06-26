@@ -1,186 +1,27 @@
-diff --git a/package.json b/package.json
-index 7bfd5d4b7..2f1acac10 100644
---- a/package.json
-+++ b/package.json
-@@ -21,7 +21,7 @@
-     "test:lane:game-hub": "node ./scripts/run-targeted-test-lanes.mjs --lane game-hub",
-     "test:lane:tool-runtime": "node ./scripts/run-targeted-test-lanes.mjs --lane tool-runtime",
-     "test:lane:game-runtime": "node ./scripts/run-targeted-test-lanes.mjs --lane game-runtime",
--    "test:service:runtime": "node ./scripts/run-node-test-files.mjs tests/engine/RuntimeTickLoop.test.mjs tests/engine/RuntimeConditionSystem.test.mjs tests/engine/RuntimeCollisionProcessing.test.mjs tests/engine/RuntimeMovementProcessing.test.mjs tests/engine/RuntimeCooldownProcessing.test.mjs tests/engine/RuntimeDamageProcessing.test.mjs tests/engine/RuntimeHealthModel.test.mjs tests/engine/RuntimeLivesAndRespawn.test.mjs tests/engine/RuntimeSpawnDespawnProcessing.test.mjs tests/engine/RuntimeScoringAndStateProcessing.test.mjs tests/engine/RuntimeOutcomeProcessing.test.mjs tests/engine/RuntimeInputPipeline.test.mjs tests/engine/RuntimeObjectInstantiation.test.mjs tests/engine/RuntimeObjectRecordFactory.test.mjs tests/engine/RuntimeBehaviorComposition.test.mjs tests/replay/ReplaySystem.test.mjs tests/dev-runtime/ServerApiClientStandardization.test.mjs tests/engine/RuntimeEventSystem.test.mjs tests/engine/RuntimeTriggerProcessing.test.mjs tests/engine/RuntimeActionSystem.test.mjs tests/final/FinalSystems.test.mjs",
-+    "test:service:runtime": "node ./scripts/run-node-test-files.mjs tests/engine/RuntimeTickLoop.test.mjs tests/engine/RuntimeConditionSystem.test.mjs tests/engine/RuntimeCollisionProcessing.test.mjs tests/engine/RuntimeMovementProcessing.test.mjs tests/engine/RuntimeCooldownProcessing.test.mjs tests/engine/RuntimeDamageProcessing.test.mjs tests/engine/RuntimeHealthModel.test.mjs tests/engine/RuntimeLivesAndRespawn.test.mjs tests/engine/RuntimeSpawnDespawnProcessing.test.mjs tests/engine/RuntimeScoringAndStateProcessing.test.mjs tests/engine/RuntimeOutcomeProcessing.test.mjs tests/engine/RuntimeInputPipeline.test.mjs tests/engine/RuntimeObjectInstantiation.test.mjs tests/engine/RuntimeObjectRecordFactory.test.mjs tests/engine/RuntimeBehaviorComposition.test.mjs tests/replay/ReplaySystem.test.mjs tests/replay/ReplayTimeline.test.mjs tests/events/EventBus.test.mjs tests/dev-runtime/ServerApiClientStandardization.test.mjs tests/engine/RuntimeEventSystem.test.mjs tests/engine/RuntimeTriggerProcessing.test.mjs tests/engine/RuntimeActionSystem.test.mjs tests/final/FinalSystems.test.mjs",
-     "test:lane:integration": "node ./scripts/run-targeted-test-lanes.mjs --lane integration",
-     "test:lane:engine-src": "node ./scripts/run-targeted-test-lanes.mjs --lane engine-src",
-     "test:lane:samples": "node ./scripts/run-targeted-test-lanes.mjs --lane samples --include-samples",
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage.md b/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage.md
-new file mode 100644
-index 000000000..4b4dcd5de
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage.md
-@@ -0,0 +1,70 @@
-+# PR_26175_DELTA_009-replay-event-service-coverage
-+
-+## Summary
-+
-+Team Delta expanded replay and runtime event service coverage through the existing page/service-level runtime lane.
-+
-+This PR does not add a new npm command, does not add a new runner, and does not create any team-specific test command. It keeps `npm test` as the site-wide/all-tests command and expands `npm run test:service:runtime` from 21 targeted Node test files to 23 targeted Node test files.
-+
-+## Scope
-+
-+- Team: Delta
-+- Branch: `PR_26175_DELTA_009-replay-event-service-coverage`
-+- Changed file: `package.json`
-+- Runtime code changed: none
-+- UI changed: none
-+- New test runner: none
-+- Team-named command: none
-+
-+## Coverage Added
-+
-+The existing `test:service:runtime` lane now also covers:
-+
-+- `tests/replay/ReplayTimeline.test.mjs`
-+- `tests/events/EventBus.test.mjs`
-+
-+These additions extend service-level coverage for replay timeline snapshot behavior and engine event bus subscription/emit behavior without duplicating existing tests.
-+
-+## Runtime Impact
-+
-+PASS - No runtime implementation files changed. This is a service-lane coverage expansion only.
-+
-+## Requirement Checklist
-+
-+| Requirement | Status | Notes |
-+|---|---|---|
-+| One PR purpose only | PASS | Replay and event service coverage expansion only. |
-+| Team Delta ownership only | PASS | Replay, runtime, shared JS, API clients, event systems, and runtime test coverage are Delta-owned. |
-+| Branch from updated main | PASS | Branch created after PR_006, PR_007, and PR_008 were merged and main sync passed. |
-+| Expand replay and runtime event service coverage | PASS | Added replay timeline and event bus tests to `test:service:runtime`. |
-+| Reuse existing service-level testing | PASS | Existing `test:service:runtime` lane expanded. |
-+| Do not add new npm commands unless strictly necessary | PASS | No npm command added. |
-+| Do not add a new runner | PASS | Reuses `scripts/run-node-test-files.mjs`. |
-+| Do not create team-specific commands | PASS | No Delta-named npm command added. |
-+| Do not duplicate existing tests | PASS | Existing test files are included once in the service lane. |
-+| Keep `npm test` site-wide/all-tests | PASS | Existing `npm test` remains unchanged. |
-+| No unrelated cleanup | PASS | Only `package.json` and required reports/artifacts changed. |
-+| No UI changes | PASS | No UI files changed. |
-+| No browser-owned product data | PASS | No browser persistence or project/runtime JSON contracts changed. |
-+| No silent fallbacks or hidden defaults | PASS | No runtime behavior changed. |
-+
-+## Validation Lane Report
-+
-+| Command | Status | Notes |
-+|---|---|---|
-+| `npm run test:service:runtime` | PASS | 23/23 targeted Node test files passed. |
-+| Governance guard | PASS | `npm test` unchanged; no `test:delta-runtime`; no Delta harness script; no Delta-named test command matches. |
-+| `git diff --check` | PASS | No whitespace errors. |
-+
-+## Manual Validation Notes
-+
-+- Confirmed `npm test` still points to `node ./scripts/run-node-tests.mjs`.
-+- Confirmed no `test:service:api` changes were made, so API validation was not required for this PR.
-+- Confirmed no runtime implementation, UI, status bar, browser storage, or project/runtime JSON files were modified.
-+- Confirmed `tests/events/EventBusNaming.test.mjs` was not added to the runtime service lane because it currently references missing historical `src/engine/events/index.js`; adding that broken historical test would make the lane fail and exceed this PR's coverage-only scope.
-+
-+## ZIP
-+
-+Repo-structured delta ZIP:
-+
-+`tmp/PR_26175_DELTA_009-replay-event-service-coverage_delta.zip`
 diff --git a/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_branch-validation.md b/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_branch-validation.md
-new file mode 100644
-index 000000000..42eaf7fcc
---- /dev/null
+index 42eaf7fcc..d309d3b8f 100644
+--- a/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_branch-validation.md
 +++ b/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_branch-validation.md
-@@ -0,0 +1,15 @@
-+# PR_26175_DELTA_009 Branch Validation
-+
-+| Check | Status | Notes |
-+|---|---|---|
-+| Started from main | PASS | Checked out `main` before EOD merge sequence. |
-+| Pulled latest main | PASS | `git pull --ff-only` completed before merge work. |
-+| Start branch was main | PASS | Current branch was `main` at the start gate. |
-+| Start worktree clean | PASS | `git status --short` returned clean. |
-+| Start main/origin sync | PASS | `main...origin/main` returned `0 0`. |
-+| PR_006 merged before PR_009 | PASS | PR #189 was already merged. |
-+| PR_007 merged before PR_009 | PASS | PR #199 was already merged. |
-+| PR_008 merged before PR_009 | PASS | PR #200 was marked ready, merged, and main was pulled. |
-+| Main clean/synced after PR_008 | PASS | Worktree clean and `main...origin/main` returned `0 0`. |
-+| PR_009 branch created from updated main | PASS | Branch `PR_26175_DELTA_009-replay-event-service-coverage` created from `1dcfc080a`. |
-+
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_manual-validation-notes.md b/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_manual-validation-notes.md
-new file mode 100644
-index 000000000..561a68802
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_manual-validation-notes.md
-@@ -0,0 +1,9 @@
-+# PR_26175_DELTA_009 Manual Validation Notes
-+
-+- Confirmed this PR only expands `test:service:runtime`.
-+- Confirmed `tests/replay/ReplayTimeline.test.mjs` and `tests/events/EventBus.test.mjs` pass under the existing shared Node test-file runner.
-+- Confirmed no API files were touched, so `npm run test:service:api` was not required.
-+- Confirmed no new npm command or runner was added.
-+- Confirmed no `test:delta-runtime` command exists.
-+- Confirmed `scripts/run-delta-runtime-validation.mjs` does not exist.
-+- Confirmed no source runtime, UI, browser storage, project JSON, runtime workspace JSON, or status bar files were modified.
+@@ -12,4 +12,3 @@
+ | PR_008 merged before PR_009 | PASS | PR #200 was marked ready, merged, and main was pulled. |
+ | Main clean/synced after PR_008 | PASS | Worktree clean and `main...origin/main` returned `0 0`. |
+ | PR_009 branch created from updated main | PASS | Branch `PR_26175_DELTA_009-replay-event-service-coverage` created from `1dcfc080a`. |
+-
 diff --git a/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_requirements-checklist.md b/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_requirements-checklist.md
-new file mode 100644
-index 000000000..0d1f1c45b
---- /dev/null
+index 0d1f1c45b..31f1f33d9 100644
+--- a/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_requirements-checklist.md
 +++ b/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_requirements-checklist.md
-@@ -0,0 +1,19 @@
-+# PR_26175_DELTA_009 Requirements Checklist
-+
-+| Requirement | Status | Notes |
-+|---|---|---|
-+| Expand replay and runtime event service coverage | PASS | Runtime service lane now includes replay timeline and event bus tests. |
-+| Reuse existing service-level testing | PASS | Existing `test:service:runtime` command expanded. |
-+| Do not add new npm commands unless strictly necessary | PASS | No new npm command added. |
-+| Do not add a new runner | PASS | Existing `scripts/run-node-test-files.mjs` reused. |
-+| Do not create team-specific test commands | PASS | No Delta-named command added. |
-+| Do not duplicate existing tests | PASS | Existing files are included once in the service lane. |
-+| Keep `npm test` site-wide | PASS | `npm test` unchanged. |
-+| No unrelated cleanup | PASS | Only `package.json` and required reports/artifacts changed. |
-+| No UI changes | PASS | No UI files changed. |
-+| No browser-owned product data | PASS | No persisted browser data changed. |
-+| No silent fallbacks | PASS | No runtime behavior changed. |
-+| No hidden defaults | PASS | No runtime behavior changed. |
-+| Required reports | PASS | Report packet and Codex artifacts created. |
-+| Repo-structured ZIP | PASS | `tmp/PR_26175_DELTA_009-replay-event-service-coverage_delta.zip`. |
-+
+@@ -16,4 +16,3 @@
+ | No hidden defaults | PASS | No runtime behavior changed. |
+ | Required reports | PASS | Report packet and Codex artifacts created. |
+ | Repo-structured ZIP | PASS | `tmp/PR_26175_DELTA_009-replay-event-service-coverage_delta.zip`. |
+-
 diff --git a/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_validation-lane.md b/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_validation-lane.md
-new file mode 100644
-index 000000000..f1e320520
---- /dev/null
+index f1e320520..afbadc7a9 100644
+--- a/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_validation-lane.md
 +++ b/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_validation-lane.md
-@@ -0,0 +1,30 @@
-+# PR_26175_DELTA_009 Validation Lane
-+
-+## Commands
-+
-+```powershell
-+npm run test:service:runtime
-+$pkg = Get-Content -Raw package.json | ConvertFrom-Json; if ($pkg.scripts.PSObject.Properties.Name -contains 'test:delta-runtime') { throw 'test:delta-runtime exists' }; if ($pkg.scripts.test -ne 'node ./scripts/run-node-tests.mjs') { throw 'npm test changed unexpectedly' }
-+if (Test-Path scripts/run-delta-runtime-validation.mjs) { throw 'unexpected delta runtime script' }
-+rg -n "delta-runtime|run-delta-runtime|test:delta" package.json scripts tests src
-+git diff --check
-+```
-+
-+## Results
-+
-+| Command | Status |
-+|---|---|
-+| `npm run test:service:runtime` | PASS |
-+| Package command assertion | PASS |
-+| Delta harness absence check | PASS |
-+| Delta command grep | PASS - no matches |
-+| `git diff --check` | PASS |
-+
-+## Runtime Service Files
-+
-+`npm run test:service:runtime` passed 23 targeted Node test files.
-+
-+## Browser / Playwright
-+
-+SKIP - No browser UI files changed.
-+
+@@ -27,4 +27,3 @@ git diff --check
+ ## Browser / Playwright
+
+ SKIP - No browser UI files changed.
+-

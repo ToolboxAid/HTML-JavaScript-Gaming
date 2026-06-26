@@ -27,4 +27,3 @@ git diff --check
 ## Browser / Playwright
 
 SKIP - No browser UI files changed.
-

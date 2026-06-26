@@ -16,4 +16,3 @@
 | No hidden defaults | PASS | No runtime behavior changed. |
 | Required reports | PASS | Report packet and Codex artifacts created. |
 | Repo-structured ZIP | PASS | `tmp/PR_26175_DELTA_009-replay-event-service-coverage_delta.zip`. |
-
