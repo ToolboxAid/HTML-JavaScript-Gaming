@@ -17,9 +17,7 @@ Exercised tool entry points detected:
 (81%) Theme V2 Shared JS - exercised 5 runtime JS files
 
 Changed runtime JS files covered:
-(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2043/2043; executed functions 12/33
+(100%) none changed - no changed runtime JS files
 
 Files with executed line/function counts where available:
 (25%) assets/toolbox/assets/js/index.js - executed lines 1602/1602; executed functions 29/116
@@ -47,15 +45,7 @@ Files with executed line/function counts where available:
 (100%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 37/37
 
 Uncovered or low-coverage changed JS files:
-(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
-(36%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: advisory low coverage; executed lines 2043/2043
+(100%) none changed - no changed runtime JS files
 
 Changed JS files considered:
-(0%) assets/toolbox/sprites/js/index.js - changed JS file not collected as browser runtime coverage
-(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - changed JS file not collected as browser runtime coverage
-(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/dev-runtime/SpritesAssetRepository.test.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/SpritesToolMvp.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
-(36%) src/shared/toolbox/tool-metadata-inventory.js - changed JS file with browser V8 coverage
+(100%) none - no changed JS files

@@ -1,21 +1,11 @@
 # git status --short
-M docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion.md
- M docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_branch-validation.md
- M docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_manual-validation-notes.md
- M docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_requirements-checklist.md
- M docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_validation-lane.md
+M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M toolbox/sprites/index.html
 
 # git ls-files --others --exclude-standard
 (no output)
 
 # git diff --stat
-..._CHARLIE_018-sprites-testable-mvp-completion.md | 11 ++--------
- ...es-testable-mvp-completion_branch-validation.md |  6 ++++--
- ...table-mvp-completion_manual-validation-notes.md |  2 +-
- ...stable-mvp-completion_requirements-checklist.md |  1 +
- ...ites-testable-mvp-completion_validation-lane.md | 20 +++--------------
- .../dev/reports/playwright_v8_coverage_report.txt  | 25 ++++++++++++++++------
- toolbox/sprites/index.html                         |  2 +-
- 7 files changed, 30 insertions(+), 37 deletions(-)
+docs_build/dev/reports/coverage_changed_js_guardrail.txt |  8 ++------
+ docs_build/dev/reports/playwright_v8_coverage_report.txt | 16 +++-------------
+ 2 files changed, 5 insertions(+), 19 deletions(-)

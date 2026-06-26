@@ -1,169 +1,51 @@
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion.md b/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion.md
-index 4b7076c57..fd2e7ba7d 100644
---- a/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion.md
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion.md
-@@ -11,6 +11,7 @@ Completed the Sprites MVP to a manually testable state without splitting additio
- Implemented:
- - Toolbox Sprites entry is active/clickable through the source-controlled registry.
- - `/toolbox/sprites/index.html` loads a Theme V2 Sprites workspace.
-+- Removed placeholder-era visible wording including `Not implemented yet.`, `Setup`, `Plan sprite creation`, `future rebuild work`, and placeholder Workspace/Inspector/Output sections.
- - Sprites uses Web UI -> API/service contract -> asset repository.
- - Sprite list/create/edit/archive flows are API-backed through `/api/toolbox/sprites`.
- - Guest save attempts redirect to `account/sign-in.html`.
-@@ -38,15 +39,7 @@ PASS `node ./scripts/run-node-test-files.mjs tests/dev-runtime/SpritesAssetRepos
+diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+index e9067da4f..7b1c51f19 100644
+--- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+@@ -6,11 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
+ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
- PASS `npx playwright test tests/playwright/tools/SpritesToolMvp.spec.mjs --workers=1 --reporter=list`
+ Changed runtime JS files considered:
+-(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2043/2043; executed functions 12/33
++(100%) none changed - no changed runtime JS files
 
--PASS `npx playwright test tests/playwright/tools/ToolNavigationPrevNext.spec.mjs -g "Toolbox card names link" --workers=1 --reporter=list`
--
--PASS `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs -g "toolbox index shows wireframe and beta tools|toolbox status kickers" --workers=1 --reporter=list`
--
--Note: one combined Toolbox status run hit a Playwright artifact timeout after the index test passed; the exact status test was rerun independently and passed.
--
--PASS `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs -g "toolbox status kickers, filters, card order, and voting controls work from registry metadata" --workers=1 --reporter=list --timeout=180000`
--
--PASS `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs -g "toolbox Build Path status filters" --workers=1 --reporter=list --timeout=180000`
-+PASS `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --workers=1 --reporter=list`
-
- PASS `git diff --check`
-
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_branch-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_branch-validation.md
-index e08b920bb..4bdbdd480 100644
---- a/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_branch-validation.md
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_branch-validation.md
-@@ -23,6 +23,8 @@ Status: PASS
-
- PASS: changed files are Sprites UI/API contract, affected Toolbox metadata/tests, required reports, and generated validation coverage reports.
-
--## Final Branch State Before Commit
-+## Final Branch State
-
--Pending commit/push at report generation time.
-+- Branch tracks `origin/PR_26177_CHARLIE_018-sprites-testable-mvp-completion`.
-+- Branch is updated from synced `main` and remains the active PR018 branch for this validation refresh.
-+- Commit/push will be refreshed after report and ZIP regeneration.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_manual-validation-notes.md
-index 47d30d91c..c48a02736 100644
---- a/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_manual-validation-notes.md
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_manual-validation-notes.md
-@@ -10,7 +10,7 @@ Status: PASS
- 2. Open `/toolbox/index.html`.
- 3. Confirm the Sprites card is visible without enabling Planned tools.
- 4. Click Sprites and confirm navigation to `/toolbox/sprites/index.html`.
--5. Confirm the Sprites table, summary cards, filters, preview, metadata, references, and validation panels render.
-+5. Confirm the Sprites table, summary cards, filters, preview, metadata, references, validation panels, and `Sprite Details` side panel render.
- 6. Click `Add Sprite`.
- 7. Enter `Hero Sprite`.
- 8. Select category `Character`.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_requirements-checklist.md b/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_requirements-checklist.md
-index f628d22e6..1c583c7ee 100644
---- a/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_requirements-checklist.md
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_requirements-checklist.md
-@@ -6,6 +6,7 @@ Status: PASS
-
- - PASS Ensure `/toolbox/index.html` Sprites is active/clickable.
- - PASS Ensure `/toolbox/sprites/index.html` loads.
-+- PASS `/toolbox/sprites/index.html` no longer shows `Not implemented yet.`, `Setup`, `Plan sprite creation`, `future rebuild work`, or placeholder Workspace/Inspector/Output sections.
- - PASS Ensure Sprites tool has working table/list surface.
- - PASS Ensure API-backed list/create/edit/archive works.
- - PASS Ensure guest save redirects to `account/sign-in.html`.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_validation-lane.md b/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_validation-lane.md
-index 974390325..2db6cdd6f 100644
---- a/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_validation-lane.md
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_validation-lane.md
-@@ -18,23 +18,8 @@ npx playwright test tests/playwright/tools/SpritesToolMvp.spec.mjs --workers=1 -
- ```
-
- ```text
--npx playwright test tests/playwright/tools/ToolNavigationPrevNext.spec.mjs -g "Toolbox card names link" --workers=1 --reporter=list
--1 passed
--```
--
--```text
--npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs -g "toolbox index shows wireframe and beta tools|toolbox status kickers" --workers=1 --reporter=list
--1 passed, 1 Playwright artifact timeout
--```
--
--```text
--npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs -g "toolbox status kickers, filters, card order, and voting controls work from registry metadata" --workers=1 --reporter=list --timeout=180000
--1 passed
--```
--
--```text
--npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs -g "toolbox Build Path status filters" --workers=1 --reporter=list --timeout=180000
--1 passed
-+npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --workers=1 --reporter=list
-+11 passed
- ```
-
- ```text
-@@ -46,5 +31,6 @@ PASS
-
- - PASS Sprites HTML/JS has no inline style/script/event handler matches.
- - PASS Sprites HTML/JS has no browser storage product-data SSoT matches.
-+- PASS `toolbox/sprites/index.html` no longer contains the blocked placeholder wording.
- - PASS No `start_of_day` changed files.
- - NOTE Broad scan over all changed files finds pre-existing hex literals in `tests/playwright/tools/ToolboxRoutePages.spec.mjs`; Sprites implementation does not introduce reusable color definitions.
+ Guardrail warnings:
+-(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+-(36%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: advisory low coverage below 50%; executed lines 2043/2043; executed functions 12/33
++(100%) none changed - no changed runtime JS files
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index cf9e81bf9..a298305f3 100644
+index a298305f3..2f012df4d 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,9 +12,9 @@ Note: entry percentages use function coverage when available, otherwise line cov
- Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
-
- Exercised tool entry points detected:
--(82%) Toolbox Index - exercised 3 runtime JS files
-+(92%) Toolbox Index - exercised 3 runtime JS files
- (0%) Tool Template V2 - not exercised by this Playwright run
--(73%) Theme V2 Shared JS - exercised 3 runtime JS files
-+(81%) Theme V2 Shared JS - exercised 5 runtime JS files
+@@ -17,9 +17,7 @@ Exercised tool entry points detected:
+ (81%) Theme V2 Shared JS - exercised 5 runtime JS files
 
  Changed runtime JS files covered:
- (0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-@@ -22,17 +22,28 @@ Changed runtime JS files covered:
- (36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2043/2043; executed functions 12/33
+-(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2043/2043; executed functions 12/33
++(100%) none changed - no changed runtime JS files
 
  Files with executed line/function counts where available:
-+(25%) assets/toolbox/assets/js/index.js - executed lines 1602/1602; executed functions 29/116
- (25%) src/api/session-api-client.js - executed lines 67/67; executed functions 3/12
--(33%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
- (36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2043/2043; executed functions 12/33
--(48%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 11/23
-+(42%) assets/toolbox/tags/js/index.js - executed lines 251/251; executed functions 8/19
- (50%) toolbox/game-hub/game-hub-api-client.js - executed lines 26/26; executed functions 2/4
--(53%) src/api/server-api-client.js - executed lines 168/168; executed functions 10/19
--(62%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 61/98
-+(57%) assets/toolbox/game-journey/js/index.js - executed lines 1662/1662; executed functions 82/144
-+(58%) src/api/server-api-client.js - executed lines 168/168; executed functions 11/19
-+(59%) assets/toolbox/colors/js/index.js - executed lines 1859/1859; executed functions 122/207
- (65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
-+(67%) assets/js/shared/assets-api-client.js - executed lines 19/19; executed functions 2/3
- (67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
-+(68%) assets/toolbox/idea-board/js/index.js - executed lines 764/764; executed functions 40/59
-+(74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 75/102
-+(77%) assets/theme-v2/js/tool-display-mode.js - executed lines 304/304; executed functions 23/30
- (80%) assets/theme-v2/js/theme-icons.js - executed lines 69/69; executed functions 4/5
--(89%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 106/119
-+(80%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 4/5
-+(83%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 5/6
-+(90%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 26/29
-+(91%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 10/11
-+(93%) admin/tool-votes.js - executed lines 406/406; executed functions 53/57
-+(94%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 112/119
-+(100%) assets/js/shared/game-journey-api-client.js - executed lines 19/19; executed functions 2/2
+ (25%) assets/toolbox/assets/js/index.js - executed lines 1602/1602; executed functions 29/116
+@@ -47,15 +45,7 @@ Files with executed line/function counts where available:
  (100%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 37/37
 
  Uncovered or low-coverage changed JS files:
-diff --git a/toolbox/sprites/index.html b/toolbox/sprites/index.html
-index fc236f32f..4c47fdd27 100644
---- a/toolbox/sprites/index.html
-+++ b/toolbox/sprites/index.html
-@@ -83,7 +83,7 @@
-                     </section>
-                     <aside class="tool-column tool-group-design">
-                         <div class="tool-column-header">
--                            <h2>Inspector</h2>
-+                            <h2>Sprite Details</h2>
-                         </div>
-                         <div class="accordion-stack">
-                             <details class="vertical-accordion" open>
+-(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+-(36%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: advisory low coverage; executed lines 2043/2043
++(100%) none changed - no changed runtime JS files
+
+ Changed JS files considered:
+-(0%) assets/toolbox/sprites/js/index.js - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/dev-runtime/SpritesAssetRepository.test.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/SpritesToolMvp.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
+-(36%) src/shared/toolbox/tool-metadata-inventory.js - changed JS file with browser V8 coverage
++(100%) none - no changed JS files
