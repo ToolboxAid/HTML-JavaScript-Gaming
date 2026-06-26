@@ -51,8 +51,9 @@
                         </div>
                     </aside>
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="game-configuration" data-tool-icon-src="assets/theme-v2/images/badges/index.png" data-tool-character-src="assets/theme-v2/images/characters/index.png"></div>
-                    <section class="tool-center-panel"><h2>Configuration</h2>
-                        <p>Game Configuration saves editable settings for the active Game Hub game through the API.</p>
+                    <section class="tool-center-panel">
+                        <h2>Configuration</h2>
+                        <p>Game Configuration saves Creator-facing game setup details through the API.</p>
                         <div class="grid cols-3" aria-label="Game Configuration readiness summary">
                             <article class="mini-stat"><strong data-game-configuration-status>Needs Input</strong>Readiness status</article>
                             <article class="mini-stat"><strong data-game-configuration-recommended-tool>Game Configuration</strong>Next tool</article>
@@ -68,6 +69,50 @@
                                     <div class="table-wrapper">
                                         <table class="data-table tool-form-table" aria-label="Playable Setup fields" data-game-configuration-playable-setup-table>
                                             <tbody>
+                                                <tr>
+                                                    <th scope="row">Game Name</th>
+                                                    <td><span class="status" data-game-configuration-game-name>From Game Hub</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Game Type</th>
+                                                    <td><span class="status" data-game-configuration-game-type>From Game Hub</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="gameConfigurationDetails">Game Details</label></th>
+                                                    <td><textarea id="gameConfigurationDetails" rows="4" data-game-configuration-game-details placeholder="Describe the game for creators, collaborators, and publishing review."></textarea></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="gameConfigurationVersion">Version</label></th>
+                                                    <td><input id="gameConfigurationVersion" type="text" data-game-configuration-version placeholder="0.1.0"></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="gameConfigurationResolution">Resolution</label></th>
+                                                    <td>
+                                                        <select id="gameConfigurationResolution" data-game-configuration-resolution>
+                                                            <option value="1280x720">1280x720</option>
+                                                            <option value="1366x768">1366x768</option>
+                                                            <option value="1920x1080">1920x1080</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="gameConfigurationPlatforms">Platforms</label></th>
+                                                    <td><input id="gameConfigurationPlatforms" type="text" data-game-configuration-platforms placeholder="Web, Desktop, Mobile"></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="gameConfigurationVisibility">Visibility</label></th>
+                                                    <td>
+                                                        <select id="gameConfigurationVisibility" data-game-configuration-visibility>
+                                                            <option value="Private">Private</option>
+                                                            <option value="Unlisted">Unlisted</option>
+                                                            <option value="Public">Public</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="gameConfigurationStartup">Startup Settings</label></th>
+                                                    <td><textarea id="gameConfigurationStartup" rows="4" data-game-configuration-startup-settings placeholder="Describe the first screen, start action, and initial player state."></textarea></td>
+                                                </tr>
                                                 <tr>
                                                     <th scope="row"><label for="gameConfigurationBasics">Game Basics</label></th>
                                                     <td><textarea id="gameConfigurationBasics" rows="4" data-game-configuration-game-basics placeholder="Summarize the game setup players should understand first."></textarea></td>
@@ -112,6 +157,14 @@
                             <details class="vertical-accordion" open>
                                 <summary>Output</summary>
                                 <div class="accordion-body content-stack" data-game-configuration-output>
+                                    <p>Game Name: <span data-game-configuration-output-name>No game name saved yet.</span></p>
+                                    <p>Game Type: <span data-game-configuration-output-game-type>No game type inherited yet.</span></p>
+                                    <p>Game Details: <span data-game-configuration-output-details>No game details saved yet.</span></p>
+                                    <p>Version: <span data-game-configuration-output-version>No version saved yet.</span></p>
+                                    <p>Resolution: <span data-game-configuration-output-resolution>No resolution saved yet.</span></p>
+                                    <p>Platforms: <span data-game-configuration-output-platforms>No platforms saved yet.</span></p>
+                                    <p>Visibility: <span data-game-configuration-output-visibility>No visibility saved yet.</span></p>
+                                    <p>Startup Settings: <span data-game-configuration-output-startup>No startup settings saved yet.</span></p>
                                     <p>Configuration Summary: <span data-game-configuration-output-summary>No configuration summary saved yet.</span></p>
                                     <p>Player Mode: <span data-game-configuration-output-player-mode>1 Player</span></p>
                                     <p>Readiness Status: <span data-game-configuration-output-readiness>Needs Input</span></p>

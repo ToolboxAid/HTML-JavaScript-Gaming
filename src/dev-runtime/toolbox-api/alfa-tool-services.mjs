@@ -68,6 +68,9 @@ export const GAME_DESIGN_PLAYER_MODES = Object.freeze([
 ]);
 
 export const GAME_CONFIGURATION_SECTIONS = Object.freeze([
+  "gameDetails",
+  "platforms",
+  "startupSettings",
   "gameBasics",
   "gameRules",
   "playerSetup",
@@ -112,6 +115,9 @@ const STARTER_TAGS = Object.freeze([
 ]);
 
 const SECTION_LABELS = Object.freeze({
+  gameDetails: "Game Details",
+  platforms: "Platforms",
+  startupSettings: "Startup Settings",
   gameBasics: "Game Basics",
   gameRules: "Game Rules",
   playerSetup: "Player Setup",
@@ -120,6 +126,29 @@ const SECTION_LABELS = Object.freeze({
   audioSetup: "Audio Setup",
   testReadiness: "Test Readiness",
 });
+
+const STARTER_CONFIGURATION_INPUT = Object.freeze({
+  audioSetup: "Simple pickup, hazard, and completion sounds.",
+  gameDetails: "A friendly puzzle game prepared for sharing and discovery.",
+  gameBasics: "Seeded playable setup for the current Game Hub game.",
+  gameRules: "Collect every key, avoid hazards, and reach the exit.",
+  objectSetup: "Keys, doors, hazards, exit marker, and tutorial prompt.",
+  platforms: "Web",
+  playerSetup: "One player starts near the first key with keyboard controls.",
+  resolution: "1280x720",
+  startupSettings: "Open on the title screen and start in the first room.",
+  testReadiness: "Confirm start, collect, fail, retry, and win paths before Build Game.",
+  version: "0.1.0",
+  visibility: "Private",
+  worldSetup: "One compact room with a locked exit and visible goal path.",
+});
+
+function starterConfigurationInput(existing = null) {
+  return Object.fromEntries(Object.entries(STARTER_CONFIGURATION_INPUT).map(([key, value]) => [
+    key,
+    normalizeText(existing?.[key]) || value,
+  ]));
+}
 
 const DESIGN_REQUIRED_FIELDS = Object.freeze([
   { field: "gameType", label: "Game Type", action: "Select a game type before configuration handoff." },
@@ -995,6 +1024,7 @@ export function createGameDesignApiService(options = {}) {
   }
 
   return {
+    authenticationRequiredMessage: "Sign in required to save Game Design through the API.",
     clearGameContext,
     clearProjectContext: clearGameContext,
     getActiveDesign: async () => activeDesignFromTables(await readTables(false)),
@@ -1018,7 +1048,7 @@ export function createGameDesignApiService(options = {}) {
 }
 
 function requiredConfigurationSections(handoff) {
-  const sections = ["gameBasics", "gameRules", "playerSetup", "worldSetup", "objectSetup", "testReadiness"];
+  const sections = ["gameDetails", "platforms", "startupSettings", "gameBasics", "gameRules", "playerSetup", "worldSetup", "objectSetup", "testReadiness"];
   if (handoff.activeProject?.purpose !== "Capability Demo" && handoff.activeDesign?.gameType !== "Capability Demo") {
     sections.splice(5, 0, "audioSetup");
   }
@@ -1056,6 +1086,12 @@ function createConfigurationRow(project, handoff, input = {}, adapter, userKey, 
       playStyle: handoff.activeDesign?.playStyle || "",
       playerMode: normalizePlayerMode(handoff.activeDesign?.playerMode),
       status: validation.findings.length ? "Under Construction" : "Ready",
+      gameDetails: normalizeText(input.gameDetails),
+      version: normalizeText(input.version) || "0.1.0",
+      resolution: normalizeText(input.resolution) || "1280x720",
+      platforms: normalizeText(input.platforms),
+      visibility: normalizeText(input.visibility) || "Private",
+      startupSettings: normalizeText(input.startupSettings),
       summary: normalizeText(input.gameBasics),
       gameBasics: normalizeText(input.gameBasics),
       gameRules: normalizeText(input.gameRules),
@@ -1101,13 +1137,7 @@ export function createGameConfigurationApiService(options = {}) {
       : null;
     if (seed && handoff.ready && handoff.activeProject && !existingConfiguration) {
       await updateConfiguration(handoff.activeProject.id, {
-        audioSetup: "Simple pickup, hazard, and completion sounds.",
-        gameBasics: "A playable puzzle configuration ready for asset planning.",
-        gameRules: "Collect every key, avoid hazards, and reach the exit.",
-        objectSetup: "Keys, doors, hazards, exit marker, and tutorial prompt.",
-        playerSetup: "One player starts near the first key with keyboard controls.",
-        testReadiness: "Confirm start, collect, fail, retry, and win paths before Build Game.",
-        worldSetup: "One compact room with a locked exit and visible goal path.",
+        ...STARTER_CONFIGURATION_INPUT,
       });
       records = await adapter.requestTable("game_configuration_records");
       validationItems = await adapter.requestTable("game_configuration_validation_items");
@@ -1248,7 +1278,12 @@ export function createGameConfigurationApiService(options = {}) {
       playerMode: "1 Player",
       playStyle: "Single Player",
     });
-    return getSnapshot();
+    const snapshot = await getSnapshot();
+    if (snapshot.handoff.ready && snapshot.handoff.activeProject && (!snapshot.configuration || snapshot.validation.findings.length > 0)) {
+      await updateConfiguration(snapshot.handoff.activeProject.id, starterConfigurationInput(snapshot.configuration));
+      return getSnapshot();
+    }
+    return snapshot;
   }
 
   async function resetConfiguration() {
@@ -1260,6 +1295,7 @@ export function createGameConfigurationApiService(options = {}) {
   }
 
   return {
+    authenticationRequiredMessage: "Sign in required to save Game Configuration through the API.",
     createConfiguration: updateConfiguration,
     getConfiguration,
     getGameDesignHandoff,

@@ -2799,8 +2799,11 @@ const GAME_WORKSPACE_SAVE_METHODS = new Set([
   "updateGameStatus",
 ]);
 
-const GAME_DESIGN_SAVE_METHODS = new Set([
-  "saveDesign",
+const GAME_CONFIGURATION_SAVE_METHODS = new Set([
+  "createConfiguration",
+  "resetAll",
+  "resetConfiguration",
+  "updateConfiguration",
 ]);
 
 const GAME_JOURNEY_TOOL_STORE_METHODS = new Set([
@@ -3555,8 +3558,21 @@ function gameConfigurationTables(repository) {
     game_configuration_records: (tables.game_configuration_records || []).map((record, index) => ({
       ...snapshotAuditFields(index + 180, SEED_DB_KEYS.users.user1),
       key: record.key,
-      gameKey: gameWorkspaceGameKey(record.gameKey || record.gameId),
+      gameKey: gameWorkspaceGameKey(record.gameKey || record.gameId || record.projectKey || record.projectId),
+      gameDetails: record.gameDetails || "",
+      version: record.version || "",
+      resolution: record.resolution || "",
+      platforms: record.platforms || "",
+      visibility: record.visibility || "",
+      startupSettings: record.startupSettings || "",
       playerMode: record.playerMode || "1 Player",
+      gameBasics: record.gameBasics || "",
+      gameRules: record.gameRules || "",
+      playerSetup: record.playerSetup || "",
+      worldSetup: record.worldSetup || "",
+      objectSetup: record.objectSetup || "",
+      audioSetup: record.audioSetup || "",
+      testReadiness: record.testReadiness || "",
       status: record.status || record.readinessStatus || "Ready",
       summary: record.summary || record.gameBasics || "",
       createdAt: record.createdAt,
@@ -3567,7 +3583,8 @@ function gameConfigurationTables(repository) {
     game_configuration_validation_items: (tables.game_configuration_validation_items || []).map((record, index) => ({
       ...snapshotAuditFields(index + 220, SEED_DB_KEYS.users.user1),
       key: record.key,
-      gameKey: gameWorkspaceGameKey(record.gameKey || record.gameId),
+      gameKey: gameWorkspaceGameKey(record.gameKey || record.gameId || record.projectKey || record.projectId),
+      section: record.section,
       label: record.label,
       status: record.status,
       action: record.action,
@@ -4036,66 +4053,12 @@ class ApiRuntimeDataSource {
     return this.persistSupabaseProductSnapshot(action);
   }
 
-  async persistGameDesignProviderState(action) {
+  async persistGameConfigurationProviderState(action) {
     const adapter = this.supabaseDatabaseAdapter(action);
-    const workspaceTables = gameWorkspaceTables(this.gameWorkspaceRepository);
-    const designTables = gameDesignTables(this.gameDesignRepository);
-    const activeGame = this.gameWorkspaceRepository.getActiveGame?.();
-    const activeGameKey = gameWorkspaceGameKey(activeGame?.key || activeGame?.id);
-    const written = {
-      game_design_capability_demos: 0,
-      game_design_documents: 0,
-      game_design_sections: 0,
-      game_design_validation_items: 0,
-      game_workspace_games: 0,
-      game_workspace_progress: 0,
-    };
-    if (activeGameKey) {
-      await adapter.requestTable("game_design_capability_demos", {
-        method: "DELETE",
-        prefer: "return=minimal",
-        query: `gameKey=eq.${encodeURIComponent(activeGameKey)}`,
-      });
-      await adapter.requestTable("game_design_sections", {
-        method: "DELETE",
-        prefer: "return=minimal",
-        query: `gameKey=eq.${encodeURIComponent(activeGameKey)}`,
-      });
-      await adapter.requestTable("game_design_validation_items", {
-        method: "DELETE",
-        prefer: "return=minimal",
-        query: `gameKey=eq.${encodeURIComponent(activeGameKey)}`,
-      });
-    }
-    if (workspaceTables.game_workspace_games?.length) {
-      const rows = await adapter.upsertProductTable("game_workspace_games", workspaceTables.game_workspace_games);
-      written.game_workspace_games = Array.isArray(rows) ? rows.length : workspaceTables.game_workspace_games.length;
-    }
-    if (workspaceTables.game_workspace_progress?.length) {
-      const rows = await adapter.upsertProductTable("game_workspace_progress", workspaceTables.game_workspace_progress);
-      written.game_workspace_progress = Array.isArray(rows) ? rows.length : workspaceTables.game_workspace_progress.length;
-    }
-    if (designTables.game_design_documents?.length) {
-      const rows = await adapter.upsertProductTable("game_design_documents", designTables.game_design_documents);
-      written.game_design_documents = Array.isArray(rows) ? rows.length : designTables.game_design_documents.length;
-    }
-    if (designTables.game_design_validation_items?.length) {
-      const rows = await adapter.upsertProductTable("game_design_validation_items", designTables.game_design_validation_items);
-      written.game_design_validation_items = Array.isArray(rows) ? rows.length : designTables.game_design_validation_items.length;
-    }
-    if (designTables.game_design_sections?.length) {
-      const rows = await adapter.upsertProductTable("game_design_sections", designTables.game_design_sections);
-      written.game_design_sections = Array.isArray(rows) ? rows.length : designTables.game_design_sections.length;
-    }
-    if (designTables.game_design_capability_demos?.length) {
-      const rows = await adapter.upsertProductTable("game_design_capability_demos", designTables.game_design_capability_demos);
-      written.game_design_capability_demos = Array.isArray(rows) ? rows.length : designTables.game_design_capability_demos.length;
-    }
-    return {
-      providerId: SUPABASE_POSTGRES_PROVIDER_ID,
-      serverApiOwnsKeyGeneration: true,
-      written,
-    };
+    return adapter.upsertProductTables({
+      ...gameWorkspaceTables(this.gameWorkspaceRepository),
+      ...gameConfigurationTables(this.gameConfigurationRepository),
+    });
   }
 
   async persistGameWorkspaceProviderState(action) {
@@ -7172,10 +7135,8 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
     if (repository === this.gameWorkspaceRepository && GAME_WORKSPACE_SAVE_METHODS.has(methodName) && !this.sessionUserKey) {
       throw new Error("Sign in required to save Game Hub project records through Local API.");
     }
-    if (repository === this.gameDesignRepository && GAME_DESIGN_SAVE_METHODS.has(methodName) && !this.sessionUserKey) {
-      const error = new Error("Sign in required to save Game Design through the API.");
-      error.statusCode = 401;
-      throw error;
+    if (repository === this.gameConfigurationRepository && GAME_CONFIGURATION_SAVE_METHODS.has(methodName) && !this.sessionUserKey) {
+      throw httpError("Sign in required to save Game Configuration through the API.", 401);
     }
     const serviceWriteMethods = repository?.writeMethods instanceof Set ? repository.writeMethods : null;
     const requiresAuthenticatedWrite = repository?.requiresAuthenticatedWrites === true
@@ -7212,8 +7173,8 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
     if (repositoryMethodRequiresPersistence(methodName) && repository?.usesDatabasePersistence !== true && !methodPersistsThroughToolStore) {
       if (repository === this.gameWorkspaceRepository) {
         await this.persistGameWorkspaceProviderState(`Persisting ${methodName} result`);
-      } else if (repository === this.gameDesignRepository) {
-        await this.persistGameDesignProviderState(`Persisting ${methodName} result`);
+      } else if (repository === this.gameConfigurationRepository) {
+        await this.persistGameConfigurationProviderState(`Persisting ${methodName} result`);
       } else if (repository === this.assetRepository) {
         await this.persistAssetProviderState(`Persisting ${methodName} result`);
       } else {

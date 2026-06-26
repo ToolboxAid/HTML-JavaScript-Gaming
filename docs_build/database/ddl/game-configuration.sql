@@ -8,14 +8,43 @@
 CREATE TABLE IF NOT EXISTS game_configuration_records (
     key text PRIMARY KEY,
     "gameKey" text REFERENCES game_workspace_games(key),
+    "gameDetails" text,
+    "version" text,
+    "resolution" text,
+    "platforms" text,
+    "visibility" text,
+    "startupSettings" text,
     "status" text,
     "summary" text,
     "playerMode" text,
+    "gameBasics" text,
+    "gameRules" text,
+    "playerSetup" text,
+    "worldSetup" text,
+    "objectSetup" text,
+    "audioSetup" text,
+    "testReadiness" text,
     "createdAt" timestamptz NOT NULL DEFAULT now(),
     "updatedAt" timestamptz NOT NULL DEFAULT now(),
     "createdBy" text NOT NULL REFERENCES users(key),
     "updatedBy" text NOT NULL REFERENCES users(key)
 );
+
+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "gameDetails" text;
+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "version" text;
+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "resolution" text;
+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "platforms" text;
+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "visibility" text;
+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "startupSettings" text;
+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "summary" text;
+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "playerMode" text;
+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "gameBasics" text;
+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "gameRules" text;
+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "playerSetup" text;
+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "worldSetup" text;
+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "objectSetup" text;
+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "audioSetup" text;
+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "testReadiness" text;
 
 CREATE INDEX IF NOT EXISTS idx_game_configuration_records_gamekey ON game_configuration_records ("gameKey");
 CREATE INDEX IF NOT EXISTS idx_game_configuration_records_createdby ON game_configuration_records ("createdBy");
@@ -36,6 +65,7 @@ ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "testReadiness" 
 CREATE TABLE IF NOT EXISTS game_configuration_validation_items (
     key text PRIMARY KEY,
     "gameKey" text REFERENCES game_workspace_games(key),
+    "section" text,
     "label" text,
     "status" text,
     "action" text,
@@ -44,6 +74,8 @@ CREATE TABLE IF NOT EXISTS game_configuration_validation_items (
     "createdBy" text NOT NULL REFERENCES users(key),
     "updatedBy" text NOT NULL REFERENCES users(key)
 );
+
+ALTER TABLE game_configuration_validation_items ADD COLUMN IF NOT EXISTS "section" text;
 
 CREATE INDEX IF NOT EXISTS idx_game_configuration_validation_items_gamekey ON game_configuration_validation_items ("gameKey");
 CREATE INDEX IF NOT EXISTS idx_game_configuration_validation_items_createdby ON game_configuration_validation_items ("createdBy");

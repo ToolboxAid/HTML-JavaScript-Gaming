@@ -55,7 +55,7 @@ Changed JS files considered:
 (0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/dev-runtime/DevRuntimeBoundary.test.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/AssetToolMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/GameConfigurationApiDb.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/GameDesignApiBehavior.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/TagsTool.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs - changed JS file not collected as browser runtime coverage

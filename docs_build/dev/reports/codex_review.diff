@@ -1,190 +1,906 @@
-diff --git a/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_branch-validation.md b/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_branch-validation.md
-index 30872c614..de37d184e 100644
---- a/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_branch-validation.md
-+++ b/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_branch-validation.md
-@@ -1,6 +1,6 @@
- # PR_26177_ALFA_060-game-design-foundation Branch Validation
+diff --git a/assets/toolbox/game-configuration/js/index.js b/assets/toolbox/game-configuration/js/index.js
+index 89e359d23..08328dc52 100644
+--- a/assets/toolbox/game-configuration/js/index.js
++++ b/assets/toolbox/game-configuration/js/index.js
+@@ -1,9 +1,9 @@
++import { getSessionCurrent } from "../../../../src/api/session-api-client.js";
+ import {
+   createServerRepositoryClient,
+   readServerToolConstants,
+   requireServerConstant,
+ } from "../../../../src/api/server-api-client.js";
+-import { getSessionCurrent } from "../../../../src/api/session-api-client.js";
 
--Generated: 2026-06-26 20:12:17 UTC
-+Generated: 2026-06-26 20:59:30 UTC
+ const constants = readServerToolConstants("game-configuration");
 
- - Branch check: PASS - current branch is `PR_26177_ALFA_060-game-design-foundation`.
- - Scope check: PASS - runtime changes are limited to shared Alfa API/database services and affected Tags/Game Design/Game Configuration tool surfaces carried by the stack.
-diff --git a/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_manual-validation-notes.md
-index 167db4b15..9788fc22c 100644
---- a/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_manual-validation-notes.md
-+++ b/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_manual-validation-notes.md
-@@ -1,6 +1,6 @@
- # PR_26177_ALFA_060-game-design-foundation Manual Validation Notes
+@@ -82,6 +82,23 @@ function setText(element, value) {
+   }
+ }
 
--Generated: 2026-06-26 20:12:17 UTC
-+Generated: 2026-06-26 20:59:30 UTC
++function currentSession() {
++  try {
++    return getSessionCurrent();
++  } catch {
++    return { authenticated: false };
++  }
++}
++
++function redirectGuestWriteAction() {
++  if (currentSession()?.authenticated === true) {
++    return false;
++  }
++  setText(elements.statusLog, "Sign in before saving Game Configuration.");
++  window.location.href = new URL("/account/sign-in.html", window.location.href).href;
++  return true;
++}
++
+ function createListItem(text) {
+   const item = document.createElement("li");
+   item.textContent = text;
+@@ -113,6 +130,15 @@ function clearForm() {
+       input.value = "";
+     }
+   });
++  if (elements.version) {
++    elements.version.value = "";
++  }
++  if (elements.resolution) {
++    elements.resolution.value = "1280x720";
++  }
++  if (elements.visibility) {
++    elements.visibility.value = "Private";
++  }
+ }
 
- - Loaded `/toolbox/game-design/index.html` and confirmed the selected Game Hub game context renders for Demo Game.
- - Confirmed the page is an editable tool surface, not a landing page.
-@@ -10,4 +10,4 @@ Generated: 2026-06-26 20:12:17 UTC
- - Opened Gravity Demo context and confirmed capability demo data remains game-owned.
- - Confirmed guest browser save redirects to `account/sign-in.html`.
- - Confirmed direct guest API save returns 401 and does not write product data.
--- Confirmed invalid Game Design handoff remains invalid for Game Configuration instead of reseeding itself to ready.
-+- Confirmed retired Alfa mock repositories are absent and the guardrail test passes.
-diff --git a/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_report.md b/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_report.md
-index e1a9eefe2..798cb3cf9 100644
---- a/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_report.md
-+++ b/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_report.md
-@@ -1,6 +1,6 @@
- # PR_26177_ALFA_060-game-design-foundation Report
+ function applyConfigurationToForm(configuration) {
+@@ -127,23 +153,15 @@ function applyConfigurationToForm(configuration) {
+       input.value = configuration[section] || "";
+     }
+   });
+-}
+-
+-function currentSession() {
+-  try {
+-    return getSessionCurrent();
+-  } catch {
+-    return { authenticated: false };
++  if (elements.version) {
++    elements.version.value = configuration.version || "";
+   }
+-}
+-
+-function redirectGuestSaveAction() {
+-  if (currentSession()?.authenticated === true) {
+-    return false;
++  if (elements.resolution) {
++    elements.resolution.value = configuration.resolution || "1280x720";
++  }
++  if (elements.visibility) {
++    elements.visibility.value = configuration.visibility || "Private";
+   }
+-  setText(elements.statusLog, "Sign in before saving Game Configuration.");
+-  window.location.href = new URL("/account/sign-in.html", window.location.href).href;
+-  return true;
+ }
 
--Generated: 2026-06-26 20:12:17 UTC
-+Generated: 2026-06-26 20:59:30 UTC
- Branch: `PR_26177_ALFA_060-game-design-foundation`
+ function renderValidation(validation) {
+@@ -250,6 +268,9 @@ elements.form?.addEventListener("change", renderFormValidation);
+
+ elements.form?.addEventListener("submit", (event) => {
+   event.preventDefault();
++  if (redirectGuestWriteAction()) {
++    return;
++  }
+   const snapshot = repository.getSnapshot();
+   const projectId = snapshot.handoff.activeProject?.id || "";
+
+@@ -259,10 +280,6 @@ elements.form?.addEventListener("submit", (event) => {
+     return;
+   }
+
+-  if (redirectGuestSaveAction()) {
+-    return;
+-  }
+-
+   const configuration = repository.updateConfiguration(projectId, readForm());
+   const nextSnapshot = repository.getSnapshot();
+   const message = configuration?.status === "Ready" || nextSnapshot.progressHandoff.readinessStatus === "Ready"
+diff --git a/assets/toolbox/game-design/js/index.js b/assets/toolbox/game-design/js/index.js
+index af61960cd..120a3a168 100644
+--- a/assets/toolbox/game-design/js/index.js
++++ b/assets/toolbox/game-design/js/index.js
+@@ -1,3 +1,4 @@
++import { getSessionCurrent } from "../../../../src/api/session-api-client.js";
+ import {
+   createServerRepositoryClient,
+   readServerToolConstants,
+@@ -30,7 +31,9 @@ const elements = {
+   capabilityDemoNotes: document.querySelector("[data-game-design-capability-notes]"),
+   capabilityDemoPanel: document.querySelector("[data-game-design-capability-panel]"),
+   configurationLink: document.querySelector("[data-game-design-configuration-link]"),
++  coreLoop: document.querySelector("[data-game-design-core-loop]"),
+   designSummary: document.querySelector("[data-game-design-summary]"),
++  designNotes: document.querySelector("[data-game-design-notes]"),
+   designStatus: document.querySelector("[data-game-design-status]"),
+   form: document.querySelector("[data-game-design-form]"),
+   gameType: document.querySelector("[data-game-design-type]"),
+@@ -40,20 +43,30 @@ const elements = {
+   handoffProgress: document.querySelector("[data-game-design-game-progress]"),
+   handoffPublishing: document.querySelector("[data-game-design-publishing-progress]"),
+   handoffRecommended: document.querySelector("[data-game-design-recommended-tool]"),
++  loseCondition: document.querySelector("[data-game-design-lose-condition]"),
++  outputAudience: document.querySelector("[data-game-design-output-audience]"),
+   outputCapability: document.querySelector("[data-game-design-output-capability]"),
++  outputCoreLoop: document.querySelector("[data-game-design-output-core-loop]"),
++  outputLose: document.querySelector("[data-game-design-output-lose]"),
+   outputMissing: document.querySelector("[data-game-design-output-missing]"),
+   outputNextStep: document.querySelector("[data-game-design-output-next-step]"),
++  outputNotes: document.querySelector("[data-game-design-output-notes]"),
+   outputPlayerMode: document.querySelector("[data-game-design-output-player-mode]"),
++  outputStory: document.querySelector("[data-game-design-output-story]"),
+   outputSummary: document.querySelector("[data-game-design-output-summary]"),
+   outputValidation: document.querySelector("[data-game-design-output-validation]"),
++  outputWin: document.querySelector("[data-game-design-output-win]"),
+   playerMode: document.querySelector("[data-game-design-player-mode]"),
+   playStyle: document.querySelector("[data-game-design-play-style]"),
++  story: document.querySelector("[data-game-design-story]"),
++  targetAudience: document.querySelector("[data-game-design-target-audience]"),
+   gameContext: document.querySelector("[data-game-design-game-context]"),
+   gameOverlay: document.querySelector("[data-game-design-game-overlay]"),
+   statusLog: document.querySelector("[data-game-design-log]"),
+   tableCounts: document.querySelector("[data-game-design-table-counts]"),
+   validationList: document.querySelector("[data-game-design-validation-list]"),
+-  validationOverlay: document.querySelector("[data-game-design-validation-overlay]")
++  validationOverlay: document.querySelector("[data-game-design-validation-overlay]"),
++  winCondition: document.querySelector("[data-game-design-win-condition]")
+ };
+
+ function setText(element, value) {
+@@ -62,6 +75,23 @@ function setText(element, value) {
+   }
+ }
+
++function currentSession() {
++  try {
++    return getSessionCurrent();
++  } catch {
++    return { authenticated: false };
++  }
++}
++
++function redirectGuestWriteAction() {
++  if (currentSession()?.authenticated === true) {
++    return false;
++  }
++  setText(elements.statusLog, "Sign in before saving Game Design.");
++  window.location.href = new URL("/account/sign-in.html", window.location.href).href;
++  return true;
++}
++
+ function populateSelect(select, values, placeholder) {
+   if (!select) {
+     return;
+@@ -92,11 +122,18 @@ function readForm() {
+   return {
+     capabilityDemoAuthoring: repository.getActiveGame()?.purpose === "Capability Demo",
+     capabilityDemoNotes: elements.capabilityDemoNotes?.value,
++    coreLoop: elements.coreLoop?.value,
++    designNotes: elements.designNotes?.value,
+     designSummary: elements.designSummary?.value,
+     gameType: elements.gameType?.value,
+     genre: elements.genre?.value,
++    loseCondition: elements.loseCondition?.value,
+     playerMode: elements.playerMode?.value,
+-    playStyle: elements.playStyle?.value
++    playStyle: elements.playStyle?.value,
++    story: elements.story?.value,
++    summary: elements.designSummary?.value,
++    targetAudience: elements.targetAudience?.value,
++    winCondition: elements.winCondition?.value
+   };
+ }
+
+@@ -116,6 +153,24 @@ function clearForm() {
+   if (elements.designSummary) {
+     elements.designSummary.value = "";
+   }
++  if (elements.story) {
++    elements.story.value = "";
++  }
++  if (elements.coreLoop) {
++    elements.coreLoop.value = "";
++  }
++  if (elements.winCondition) {
++    elements.winCondition.value = "";
++  }
++  if (elements.loseCondition) {
++    elements.loseCondition.value = "";
++  }
++  if (elements.targetAudience) {
++    elements.targetAudience.value = "";
++  }
++  if (elements.designNotes) {
++    elements.designNotes.value = "";
++  }
+   if (elements.capabilityDemoNotes) {
+     elements.capabilityDemoNotes.value = "";
+   }
+@@ -140,7 +195,25 @@ function applyDesignToForm(design) {
+     elements.playerMode.value = design.playerMode || "1 Player";
+   }
+   if (elements.designSummary) {
+-    elements.designSummary.value = design.designSummary;
++    elements.designSummary.value = design.summary || design.designSummary;
++  }
++  if (elements.story) {
++    elements.story.value = design.story;
++  }
++  if (elements.coreLoop) {
++    elements.coreLoop.value = design.coreLoop;
++  }
++  if (elements.winCondition) {
++    elements.winCondition.value = design.winCondition;
++  }
++  if (elements.loseCondition) {
++    elements.loseCondition.value = design.loseCondition;
++  }
++  if (elements.targetAudience) {
++    elements.targetAudience.value = design.targetAudience;
++  }
++  if (elements.designNotes) {
++    elements.designNotes.value = design.designNotes;
+   }
+   if (elements.capabilityDemoNotes) {
+     elements.capabilityDemoNotes.value = design.capabilityDemoNotes;
+@@ -225,7 +298,13 @@ function renderOutput(snapshot, validation) {
+   const activeGame = snapshot.activeGame || snapshot.activeProject;
+   const missingRequirements = validation.findings.map((finding) => finding.label).join(", ");
+
+-  setText(elements.outputSummary, activeDesign?.designSummary || "No design summary saved yet.");
++  setText(elements.outputSummary, activeDesign?.summary || activeDesign?.designSummary || "No design summary saved yet.");
++  setText(elements.outputStory, activeDesign?.story || "No story saved yet.");
++  setText(elements.outputCoreLoop, activeDesign?.coreLoop || "No core loop saved yet.");
++  setText(elements.outputWin, activeDesign?.winCondition || "No win condition saved yet.");
++  setText(elements.outputLose, activeDesign?.loseCondition || "No lose condition saved yet.");
++  setText(elements.outputAudience, activeDesign?.targetAudience || "No audience saved yet.");
++  setText(elements.outputNotes, activeDesign?.designNotes || "No notes saved yet.");
+   setText(elements.outputPlayerMode, activeDesign?.playerMode || "1 Player");
+   setText(elements.outputValidation, validation.status);
+   setText(elements.outputNextStep, snapshot.progressHandoff.recommendedNextTool);
+@@ -291,6 +370,9 @@ elements.form?.addEventListener("input", renderFormValidation);
+
+ elements.form?.addEventListener("submit", (event) => {
+   event.preventDefault();
++  if (redirectGuestWriteAction()) {
++    return;
++  }
+   const result = repository.saveDesign(readForm());
+   setText(elements.statusLog, result.message);
+   render();
+diff --git a/assets/toolbox/tags/js/index.js b/assets/toolbox/tags/js/index.js
+index 118923da9..9ac5305c0 100644
+--- a/assets/toolbox/tags/js/index.js
++++ b/assets/toolbox/tags/js/index.js
+@@ -1,3 +1,4 @@
++import { getSessionCurrent } from "../../../../src/api/session-api-client.js";
+ import {
+   createServerRepositoryClient,
+   readServerToolConstants,
+@@ -16,14 +17,17 @@ const repository = createTagsToolApiRepository();
+
+ const elements = {
+   add: document.querySelector("[data-tags-add]"),
++  activeProject: document.querySelector("[data-tags-active-project]"),
++  assignedCount: document.querySelector("[data-tags-assigned-count]"),
++  assignedLabels: document.querySelector("[data-tags-assigned-labels]"),
+   count: document.querySelector("[data-tags-count]"),
+   log: document.querySelector("[data-tags-log]"),
+   outputStatus: document.querySelector("[data-tags-output-status]"),
++  refresh: document.querySelector("[data-tags-refresh]"),
+   selected: document.querySelector("[data-tags-selected]"),
+   status: document.querySelector("[data-tags-status]"),
+   table: document.querySelector("[data-tags-table]"),
+   tableCounts: document.querySelector("[data-tags-table-counts]"),
+-  usageCount: document.querySelector("[data-tags-usage-count]"),
+ };
+
+ let editingTagId = "";
+@@ -63,20 +67,42 @@ function createInput(value, label, datasetName) {
+ function editingValues(row) {
+   return {
+     description: row.querySelector("[data-tags-description-input]")?.value || "",
+-    name: row.querySelector("[data-tags-name-input]")?.value || "",
++    label: row.querySelector("[data-tags-name-input]")?.value || "",
+   };
+ }
+
++function currentSession() {
++  try {
++    return getSessionCurrent();
++  } catch {
++    return { authenticated: false };
++  }
++}
++
++function redirectGuestWriteAction() {
++  if (currentSession()?.authenticated === true) {
++    return false;
++  }
++  setText(elements.log, "Sign in before saving project tags.");
++  window.location.href = new URL("/account/sign-in.html", window.location.href).href;
++  return true;
++}
++
++function tagLabel(tag) {
++  return tag?.label || tag?.name || "";
++}
++
+ function createEditRow(tag = null) {
+   const row = document.createElement("tr");
+   row.dataset.tagsEditingRow = tag?.id || "__new__";
+
+   const nameCell = document.createElement("td");
+-  nameCell.append(createInput(tag?.name || "", "Tag Name", "tagsNameInput"));
++  nameCell.append(createInput(tagLabel(tag), "Tag Label", "tagsNameInput"));
+
+   const descriptionCell = document.createElement("td");
+   descriptionCell.append(createInput(tag?.description || "", "Description", "tagsDescriptionInput"));
+
++  const assignedCell = createCell(tag?.assigned ? "Yes" : "No");
+   const usageCell = createCell(tag ? String(tag.usageCount || 0) : "0");
+
+   const actionsCell = document.createElement("td");
+@@ -88,7 +114,7 @@ function createEditRow(tag = null) {
+   );
+   actionsCell.append(actions);
+
+-  row.append(nameCell, descriptionCell, usageCell, actionsCell);
++  row.append(nameCell, descriptionCell, assignedCell, usageCell, actionsCell);
+   return row;
+ }
+
+@@ -96,7 +122,7 @@ function createUsageCountButton(tag) {
+   const cell = document.createElement("td");
+   const button = createButton(String(tag.usageCount || 0), "tagsToggleUsage", tag.id);
+   button.setAttribute("aria-expanded", String(expandedTagId === tag.id));
+-  button.setAttribute("aria-label", `Show usage for ${tag.name}`);
++  button.setAttribute("aria-label", `Show usage for ${tagLabel(tag)}`);
+   cell.append(button);
+   return cell;
+ }
+@@ -113,14 +139,18 @@ function createTagRow(tag) {
+   const actions = document.createElement("div");
+   actions.className = "action-group action-group--tight";
+   actions.append(
++    tag.assigned
++      ? createButton("Remove", "tagsRemove", tag.id)
++      : createButton("Assign", "tagsAssign", tag.id),
+     createButton("Edit", "tagsEdit", tag.id),
+     createButton("Trash", "tagsDelete", tag.id)
+   );
+   actionsCell.append(actions);
+
+   row.append(
+-    createCell(tag.name),
++    createCell(tagLabel(tag)),
+     createCell(tag.description || "No description"),
++    createCell(tag.assigned ? "Yes" : "No"),
+     createUsageCountButton(tag),
+     actionsCell
+   );
+@@ -132,14 +162,14 @@ function createUsageRow(tag) {
+   row.dataset.tagsUsageRow = tag.id;
+
+   const cell = document.createElement("td");
+-  cell.colSpan = 4;
++  cell.colSpan = 5;
+
+   const wrapper = document.createElement("div");
+   wrapper.className = "table-wrapper";
+
+   const table = document.createElement("table");
+   table.className = "data-table";
+-  table.setAttribute("aria-label", `${tag.name} usage`);
++  table.setAttribute("aria-label", `${tagLabel(tag)} usage`);
+
+   const head = document.createElement("thead");
+   const headRow = document.createElement("tr");
+@@ -151,7 +181,9 @@ function createUsageRow(tag) {
+     const emptyRow = document.createElement("tr");
+     const emptyCell = document.createElement("td");
+     emptyCell.colSpan = 2;
+-    emptyCell.textContent = "No usage yet.";
++    emptyCell.textContent = tag.assigned
++      ? "Assigned to the active project."
++      : "No usage yet.";
+     emptyRow.append(emptyCell);
+     body.append(emptyRow);
+   } else {
+@@ -182,7 +214,7 @@ function renderTable(snapshot) {
+   if (!snapshot.tags.length && editingTagId !== "__new__") {
+     const row = document.createElement("tr");
+     const cell = document.createElement("td");
+-    cell.colSpan = 4;
++    cell.colSpan = 5;
+     cell.textContent = "No tags added yet.";
+     row.append(cell);
+     elements.table.append(row);
+@@ -212,11 +244,13 @@ function renderTableCounts(snapshot) {
+
+ function render() {
+   const snapshot = repository.getSnapshot();
+-  const usageCount = snapshot.tags.reduce((total, tag) => total + tag.usageCount, 0);
++  const assignedLabels = snapshot.assignedTags.map(tagLabel).join(", ") || "None";
+   setText(elements.status, snapshot.status);
+   setText(elements.outputStatus, snapshot.status);
++  setText(elements.activeProject, snapshot.activeProject?.name || "No active project");
++  setText(elements.assignedCount, String(snapshot.assignedTags.length));
++  setText(elements.assignedLabels, assignedLabels);
+   setText(elements.count, String(snapshot.tags.length));
+-  setText(elements.usageCount, String(usageCount));
+   setText(elements.selected, selectedTagName);
+   if (elements.add) {
+     elements.add.disabled = editingTagId === "__new__";
+@@ -229,15 +263,22 @@ elements.add?.addEventListener("click", () => {
+   editingTagId = "__new__";
+   expandedTagId = "";
+   selectedTagName = "New tag";
+-  setText(elements.log, "Adding a workspace tag.");
++  setText(elements.log, "Adding a project tag.");
++  render();
++});
++
++elements.refresh?.addEventListener("click", () => {
++  setText(elements.log, "Project tags refreshed from the API.");
+   render();
+ });
+
+ elements.table?.addEventListener("click", (event) => {
++  const assign = event.target.closest("[data-tags-assign]");
+   const edit = event.target.closest("[data-tags-edit]");
+   const save = event.target.closest("[data-tags-save]");
+   const cancel = event.target.closest("[data-tags-cancel]");
+   const deleteButton = event.target.closest("[data-tags-delete]");
++  const remove = event.target.closest("[data-tags-remove]");
+   const toggleUsage = event.target.closest("[data-tags-toggle-usage]");
+
+   if (toggleUsage) {
+@@ -248,6 +289,28 @@ elements.table?.addEventListener("click", (event) => {
+     return;
+   }
+
++  if (assign) {
++    if (redirectGuestWriteAction()) {
++      return;
++    }
++    const result = repository.assignTagToProject(assign.dataset.tagsAssign);
++    selectedTagName = tagLabel(result.tag) || selectedTagName;
++    setText(elements.log, result.message);
++    render();
++    return;
++  }
++
++  if (remove) {
++    if (redirectGuestWriteAction()) {
++      return;
++    }
++    const result = repository.removeTagFromProject(remove.dataset.tagsRemove);
++    selectedTagName = tagLabel(result.tag) || selectedTagName;
++    setText(elements.log, result.message);
++    render();
++    return;
++  }
++
+   if (edit) {
+     editingTagId = edit.dataset.tagsEdit;
+     expandedTagId = "";
+@@ -266,6 +329,9 @@ elements.table?.addEventListener("click", (event) => {
+   }
+
+   if (save) {
++    if (redirectGuestWriteAction()) {
++      return;
++    }
+     const row = save.closest("[data-tags-editing-row]");
+     const values = editingValues(row);
+     const result = save.dataset.tagsSave === "__new__"
+@@ -273,7 +339,7 @@ elements.table?.addEventListener("click", (event) => {
+       : repository.updateTag(save.dataset.tagsSave, values);
+     if (result.added || result.updated) {
+       editingTagId = "";
+-      selectedTagName = result.tag?.name || "None";
++      selectedTagName = tagLabel(result.tag) || "None";
+     }
+     setText(elements.log, result.message);
+     render();
+@@ -281,6 +347,9 @@ elements.table?.addEventListener("click", (event) => {
+   }
+
+   if (deleteButton) {
++    if (redirectGuestWriteAction()) {
++      return;
++    }
+     const result = repository.deleteTag(deleteButton.dataset.tagsDelete);
+     if (result.deleted) {
+       editingTagId = "";
+diff --git a/docs_build/database/ddl/game-configuration.sql b/docs_build/database/ddl/game-configuration.sql
+index 6da90ddc5..222fa8d6f 100644
+--- a/docs_build/database/ddl/game-configuration.sql
++++ b/docs_build/database/ddl/game-configuration.sql
+@@ -49,6 +49,18 @@ ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "testReadiness"
+ CREATE INDEX IF NOT EXISTS idx_game_configuration_records_gamekey ON game_configuration_records ("gameKey");
+ CREATE INDEX IF NOT EXISTS idx_game_configuration_records_createdby ON game_configuration_records ("createdBy");
+ CREATE INDEX IF NOT EXISTS idx_game_configuration_records_updatedby ON game_configuration_records ("updatedBy");
++ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "gameName" text;
++ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "gamePurpose" text;
++ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "gameType" text;
++ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "genre" text;
++ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "playStyle" text;
++ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "gameBasics" text;
++ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "gameRules" text;
++ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "playerSetup" text;
++ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "worldSetup" text;
++ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "objectSetup" text;
++ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "audioSetup" text;
++ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "testReadiness" text;
+
+ CREATE TABLE IF NOT EXISTS game_configuration_validation_items (
+     key text PRIMARY KEY,
+@@ -68,3 +80,4 @@ ALTER TABLE game_configuration_validation_items ADD COLUMN IF NOT EXISTS "sectio
+ CREATE INDEX IF NOT EXISTS idx_game_configuration_validation_items_gamekey ON game_configuration_validation_items ("gameKey");
+ CREATE INDEX IF NOT EXISTS idx_game_configuration_validation_items_createdby ON game_configuration_validation_items ("createdBy");
+ CREATE INDEX IF NOT EXISTS idx_game_configuration_validation_items_updatedby ON game_configuration_validation_items ("updatedBy");
++ALTER TABLE game_configuration_validation_items ADD COLUMN IF NOT EXISTS "section" text;
+diff --git a/docs_build/database/ddl/game-design.sql b/docs_build/database/ddl/game-design.sql
+index 26870d412..3677a9681 100644
+--- a/docs_build/database/ddl/game-design.sql
++++ b/docs_build/database/ddl/game-design.sql
+@@ -20,6 +20,15 @@ CREATE INDEX IF NOT EXISTS idx_game_design_documents_gamekey ON game_design_docu
+ CREATE INDEX IF NOT EXISTS idx_game_design_documents_createdby ON game_design_documents ("createdBy");
+ CREATE INDEX IF NOT EXISTS idx_game_design_documents_updatedby ON game_design_documents ("updatedBy");
+
++ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "gamePurpose" text;
++ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "gameType" text;
++ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "genre" text;
++ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "playStyle" text;
++ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "playerMode" text;
++ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "designSummary" text;
++ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "capabilityDemoAuthoring" boolean NOT NULL DEFAULT false;
++ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "capabilityDemoNotes" text;
++
+ CREATE TABLE IF NOT EXISTS game_design_validation_items (
+     key text PRIMARY KEY,
+     "gameKey" text REFERENCES game_workspace_games(key),
+diff --git a/docs_build/database/ddl/tags.sql b/docs_build/database/ddl/tags.sql
+index d73007fa3..4eb7df0dd 100644
+--- a/docs_build/database/ddl/tags.sql
++++ b/docs_build/database/ddl/tags.sql
+@@ -2,21 +2,41 @@
+ -- Group: Tags
+ -- Ownership: docs_build/database/ddl/tags.sql
+ -- Target DEV database: gamefoundry_dev
+--- Scope: executable grouped table DDL for active Supabase/server API migration.
++-- Scope: executable grouped table DDL for active server API migration.
++-- Architecture: Browser -> API -> Database.
++-- Flat tags only: no category table, category UI, grouped category filtering, or category-owned seed data.
+ -- Authoritative key values are generated by the server/API layer unless a later DEV-only seed exception explicitly applies.
+--- Owned tables: workspace_tag_records
+-CREATE TABLE IF NOT EXISTS workspace_tag_records (
++-- Owned tables: project_tags, project_tag_assignments
++CREATE TABLE IF NOT EXISTS project_tags (
+     key text PRIMARY KEY,
+-    "id" text,
+-    "gameId" text REFERENCES game_workspace_games(key),
+-    "name" text,
++    "slug" text NOT NULL,
++    "label" text NOT NULL,
+     "description" text,
++    "active" boolean NOT NULL DEFAULT true,
+     "createdAt" timestamptz NOT NULL DEFAULT now(),
+     "updatedAt" timestamptz NOT NULL DEFAULT now(),
+     "createdBy" text NOT NULL REFERENCES users(key),
+     "updatedBy" text NOT NULL REFERENCES users(key)
+ );
+
+-CREATE INDEX IF NOT EXISTS idx_workspace_tag_records_gameid ON workspace_tag_records ("gameId");
+-CREATE INDEX IF NOT EXISTS idx_workspace_tag_records_createdby ON workspace_tag_records ("createdBy");
+-CREATE INDEX IF NOT EXISTS idx_workspace_tag_records_updatedby ON workspace_tag_records ("updatedBy");
++CREATE UNIQUE INDEX IF NOT EXISTS idx_project_tags_slug_unique ON project_tags (lower("slug"));
++CREATE INDEX IF NOT EXISTS idx_project_tags_active ON project_tags ("active");
++CREATE INDEX IF NOT EXISTS idx_project_tags_createdby ON project_tags ("createdBy");
++CREATE INDEX IF NOT EXISTS idx_project_tags_updatedby ON project_tags ("updatedBy");
++
++CREATE TABLE IF NOT EXISTS project_tag_assignments (
++    key text PRIMARY KEY,
++    "projectKey" text NOT NULL REFERENCES game_workspace_games(key),
++    "tagKey" text NOT NULL REFERENCES project_tags(key),
++    "createdAt" timestamptz NOT NULL DEFAULT now(),
++    "updatedAt" timestamptz NOT NULL DEFAULT now(),
++    "createdBy" text NOT NULL REFERENCES users(key),
++    "updatedBy" text NOT NULL REFERENCES users(key)
++);
++
++CREATE UNIQUE INDEX IF NOT EXISTS idx_project_tag_assignments_project_tag_unique
++    ON project_tag_assignments ("projectKey", "tagKey");
++CREATE INDEX IF NOT EXISTS idx_project_tag_assignments_projectkey ON project_tag_assignments ("projectKey");
++CREATE INDEX IF NOT EXISTS idx_project_tag_assignments_tagkey ON project_tag_assignments ("tagKey");
++CREATE INDEX IF NOT EXISTS idx_project_tag_assignments_createdby ON project_tag_assignments ("createdBy");
++CREATE INDEX IF NOT EXISTS idx_project_tag_assignments_updatedby ON project_tag_assignments ("updatedBy");
+diff --git a/docs_build/database/dml/tags.sql b/docs_build/database/dml/tags.sql
+index 5044083d5..f9ac0c787 100644
+--- a/docs_build/database/dml/tags.sql
++++ b/docs_build/database/dml/tags.sql
+@@ -2,13 +2,29 @@
+ -- Group: Tags
+ -- Ownership: docs_build/database/dml/tags.sql
+ -- Runtime setup/seed operations for this group must run through server-side APIs.
+--- Temporary scope: DEV/review artifact only until Admin Site Setup/server seed APIs fully own grouped setup.
++-- Architecture: Browser -> API -> Database.
+ -- Browser pages must not directly seed authoritative DB records.
+--- Owned tables: workspace_tag_records
++-- Owned tables: project_tags, project_tag_assignments
++-- Flat tags only: no category table, category UI, grouped category filtering, or category-owned seed data.
+
+--- DML status: Server-seed-owned.
+--- Setup is performed through the Admin-owned server-side seed API.
+--- Browser pages must not seed authoritative records.
+--- The server/API layer generates all non-user keys.
+--- This SQL file intentionally has no direct INSERT statements because direct SQL would bypass key/audit ownership.
+--- Direct SQL setup for this group remains deferred until a later migration-runner PR explicitly owns it.
++-- Starter flat tag seed labels for server/API seeding.
++-- These rows use stable DEV seed ULIDs and users.key ownership so database reviewers can inspect the desired baseline.
++-- Product runtime create/update/delete still flows through the API.
++INSERT INTO project_tags (key, "slug", "label", "description", "active", "createdBy", "updatedBy")
++VALUES
++  ('01K2GFSJ0Y0000000000007201', 'platformer', 'platformer', 'Platforming, jumping, and movement-focused projects.', true, '01K2GFSJ0Y0000000000000054', '01K2GFSJ0Y0000000000000054'),
++  ('01K2GFSJ0Y0000000000007202', 'fantasy', 'fantasy', 'Magic, legends, and fantasy world themes.', true, '01K2GFSJ0Y0000000000000054', '01K2GFSJ0Y0000000000000054'),
++  ('01K2GFSJ0Y0000000000007203', 'medium', 'medium', 'Medium-sized project scope.', true, '01K2GFSJ0Y0000000000000054', '01K2GFSJ0Y0000000000000054'),
++  ('01K2GFSJ0Y0000000000007204', 'pixel-art', 'pixel-art', 'Pixel art visual direction.', true, '01K2GFSJ0Y0000000000000054', '01K2GFSJ0Y0000000000000054'),
++  ('01K2GFSJ0Y0000000000007205', 'kids', 'kids', 'Designed for younger players.', true, '01K2GFSJ0Y0000000000000054', '01K2GFSJ0Y0000000000000054'),
++  ('01K2GFSJ0Y0000000000007206', 'boss-fight', 'boss-fight', 'Includes a climactic boss encounter.', true, '01K2GFSJ0Y0000000000000054', '01K2GFSJ0Y0000000000000054')
++ON CONFLICT (key) DO UPDATE SET
++  "slug" = EXCLUDED."slug",
++  "label" = EXCLUDED."label",
++  "description" = EXCLUDED."description",
++  "active" = EXCLUDED."active",
++  "updatedAt" = now(),
++  "updatedBy" = EXCLUDED."updatedBy";
++
++-- Project tag assignment seed rows are intentionally empty.
++-- Assignments are user/project-specific and must be created through the API.
+diff --git a/docs_build/database/seed/guest/tags.json b/docs_build/database/seed/guest/tags.json
+index a9efeb02d..21b672280 100644
+--- a/docs_build/database/seed/guest/tags.json
++++ b/docs_build/database/seed/guest/tags.json
+@@ -6,7 +6,8 @@
+   "writableByGuest": false,
+   "signInRedirect": "account/sign-in.html",
+   "tables": {
+-    "workspace_tag_records": []
++    "project_tags": [],
++    "project_tag_assignments": []
+   },
+   "samplePackages": [
+     {
+diff --git a/docs_build/database/seed/tags.json b/docs_build/database/seed/tags.json
+index 1f7018488..996291098 100644
+--- a/docs_build/database/seed/tags.json
++++ b/docs_build/database/seed/tags.json
+@@ -5,7 +5,8 @@
+   "serverSideSeedRequired": true,
+   "browserAuthoritativeKeyGenerationAllowed": false,
+   "tables": {
+-    "workspace_tag_records": []
++    "project_tags": [],
++    "project_tag_assignments": []
+   },
+   "note": "Seed records for this group are intentionally empty until an Admin-owned server API seeds them."
+ }
+diff --git a/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_branch-validation.md b/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_branch-validation.md
+index 7835478c5..4ed1bde0d 100644
+--- a/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_branch-validation.md
++++ b/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_branch-validation.md
+@@ -1,9 +1,10 @@
+ # PR_26177_ALFA_061-game-configuration-foundation Branch Validation
+
+-Generated: 2026-06-26 18:51:30 UTC
++Generated: 2026-06-26 20:51:40 UTC
+
+ - Branch check: PASS - current branch is `PR_26177_ALFA_061-game-configuration-foundation`.
+-- Scope check: PASS - changes are limited to Game Configuration seeded data behavior, targeted tests, reports, and package artifacts.
+-- Architecture check: PASS - targeted validation proves Browser -> API -> Database persistence.
+-- Current game check: PASS - status bar and Game Configuration handoff both show Demo Game.
++- Scope check: PASS - runtime changes are limited to the stacked Alfa API service/tool pages/tests needed for Tags, Game Design, and Game Configuration DB-backed behavior.
++- No-mock check: PASS - `tags-mock-repository.js`, `game-design-mock-repository.js`, and `game-configuration-mock-repository.js` are absent, and the guardrail test fails if they return or are imported.
++- Router check: PASS - `local-api-router.mjs` routes Tags, Game Design, and Game Configuration through database-backed API services, not retired mock repositories.
++- Architecture check: PASS - targeted tests exercise Browser -> API -> Database persistence and guest write rejection/redirect behavior.
+ - Validation result: PASS.
+diff --git a/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_manual-validation-notes.md
+index c507e43e9..c722beaff 100644
+--- a/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_manual-validation-notes.md
++++ b/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_manual-validation-notes.md
+@@ -1,11 +1,11 @@
+ # PR_26177_ALFA_061-game-configuration-foundation Manual Validation Notes
+
+-Generated: 2026-06-26 18:51:30 UTC
++Generated: 2026-06-26 20:51:40 UTC
+
+-- Loaded /toolbox/game-configuration/index.html and confirmed the status bar selected game is Demo Game.
+-- Confirmed Game Name and Game Type render as read-only text, not editable inputs.
+-- Confirmed seeded current-game configuration fields load before editing.
+-- Edited configuration settings, saved through the API, and verified game_configuration_records rows.
+-- Reloaded and confirmed Game Details and Game Basics persisted.
+-- Cleared required fields to verify validation still reports missing sections.
+-- Verified guest browser save redirects and direct guest API save returns 401.
++- Loaded `/toolbox/game-configuration/index.html` with the default valid current-game handoff and confirmed the selected game status shows Demo Game.
++- Confirmed Game Name and Game Type render as inherited read-only text, with no editable inputs for those values.
++- Confirmed seeded Game Details, Platforms, Startup Settings, Game Basics, Game Rules, and setup fields load for the current game.
++- Edited configuration fields, saved through the API, verified `game_configuration_records` rows, reloaded, and confirmed persisted values return.
++- Cleared required fields, saved, and confirmed the validation overlay reports missing sections without generic snapshot seeding hiding the invalid state.
++- Verified guest browser save redirects to `account/sign-in.html`.
++- Verified Tags and Game Design focused lanes still pass after the shared Alfa API service changes.
+diff --git a/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_report.md b/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_report.md
+index d6cba80eb..60a2bd7c0 100644
+--- a/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_report.md
++++ b/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_report.md
+@@ -1,24 +1,31 @@
+ # PR_26177_ALFA_061-game-configuration-foundation Report
+
+-Generated: 2026-06-26 18:51:30 UTC
++Generated: 2026-06-26 20:51:40 UTC
+ Branch: `PR_26177_ALFA_061-game-configuration-foundation`
+-Base: `main`
+-Current HEAD before packaging: `72f8f181c`
++Base: stacked on `PR_26177_ALFA_060-game-design-foundation`
++Current HEAD before packaging: `d0ce8ebda`
 
  ## Summary
-@@ -18,13 +18,11 @@ PR060 reworks Game Design as a human-testable API/DB-backed tool while carrying
- - PASS - `node --check src/dev-runtime/toolbox-api/alfa-tool-services.mjs`
- - PASS - `node --check src/dev-runtime/server/local-api-router.mjs`
- - PASS - `node --check assets/toolbox/game-design/js/index.js`
--- PASS - `node --check assets/toolbox/game-configuration/js/index.js`
- - PASS - `node --test tests/dev-runtime/DevRuntimeBoundary.test.mjs`
--- PASS - `npx playwright test tests/playwright/tools/GameDesignApiBehavior.spec.mjs --project=playwright --workers=1` (6 passed)
--- PASS - `npx playwright test tests/playwright/tools/GameConfigurationApiDb.spec.mjs --project=playwright --workers=1` (4 passed after fixing invalid handoff reseeding)
--- PASS - `npx playwright test tests/playwright/tools/TagsTool.spec.mjs --project=playwright --workers=1` (4 passed)
+-PR061 makes Game Configuration a human-testable API/DB-backed tool with seeded current-game configuration data. Project identity stays read-only from Game Hub/Game Design handoff, editable configuration settings can be saved, database rows are asserted, and refresh/reload preserves saved values.
++PR061 completes the Game Configuration foundation as a human-testable Browser -> API -> Database tool. Game Name and Game Type are inherited from the current Game Hub/Game Design context and remain read-only, while configuration-owned fields save through the API, reload from database persistence, and surface Creator-safe readiness guidance.
+
+ ## Implementation Notes
+-- `makeValidGameDesign()` seeds a current-game configuration only when the selected game has no existing configuration record.
+-- Game Name and Game Type remain non-input status text.
+-- Tests assert the shared status bar selected game and seeded Demo Game configuration values before editing.
+-- Validation coverage clears fields explicitly to prove missing-section behavior despite the seeded ready state.
+-- No SQLite, tmp runtime dependency, JSON source of truth, mock-db-store expansion, or new mock repository file was added.
++- Game Configuration uses the shared Alfa API service in `src/dev-runtime/toolbox-api/alfa-tool-services.mjs`; the deleted Game Configuration mock repository is not routed or imported.
++- The normal valid-handoff bootstrap prepares a ready starter configuration only when the current game has no complete usable configuration. Explicit invalid saves remain visible and are not silently repaired by later snapshots.
++- `local-api-router.mjs` routes Tags, Game Design, and Game Configuration to the shared database-backed service instead of retired mock repositories.
++- Provider contract stubs include the Game Design section/demo tables required by the shared service contract.
++- No scoped Tags, Game Crew, Game Design, or Game Configuration mock repository source of truth is present in this branch.
+
+ ## Validation
+-- PASS - node --check assets/toolbox/game-configuration/js/index.js
+-- PASS - node --check src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js
+-- PASS - node --check src/dev-runtime/server/local-api-router.mjs
+-- PASS - node --check tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs
+-- PASS - git diff --check (line-ending notices only)
+-- PASS - npx playwright test tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs --workers=1 --reporter=line (6 passed)
++- PASS - `node --check src/dev-runtime/toolbox-api/alfa-tool-services.mjs`
++- PASS - `node --check src/dev-runtime/server/local-api-router.mjs`
++- PASS - `node --check assets/toolbox/tags/js/index.js`
++- PASS - `node --check assets/toolbox/game-design/js/index.js`
++- PASS - `node --check assets/toolbox/game-configuration/js/index.js`
++- PASS - `node --test tests/dev-runtime/DevRuntimeBoundary.test.mjs` (5 passed)
++- PASS - `npx playwright test tests/playwright/tools/TagsTool.spec.mjs --project=playwright --workers=1 --reporter=line` (4 passed)
 +- PASS - `npx playwright test tests/playwright/tools/GameDesignApiBehavior.spec.mjs --project=playwright --workers=1 --reporter=line` (6 passed)
++- PASS - `npx playwright test tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs --project=playwright --workers=1 --reporter=line` (6 passed)
++- PASS - `git diff --check` (line-ending notices only)
++
++## Packaging
++- Repo-structured ZIP: `tmp/PR_26177_ALFA_061-game-configuration-foundation_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_requirement-checklist.md b/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_requirement-checklist.md
+index ad792010f..c8a77527f 100644
+--- a/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_requirement-checklist.md
++++ b/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_requirement-checklist.md
+@@ -1,15 +1,16 @@
+ # PR_26177_ALFA_061-game-configuration-foundation Requirement Checklist
 
- ## Notes
- - No SQLite or tmp runtime dependency was introduced.
- - No JSON source of truth or browser-owned product data was introduced.
- - No new `*-mock-repository.js` file was added for Tags, Game Crew, Game Design, or Game Configuration.
-+- No `mock-db-store.js` or Admin DB viewer expansion is present in this PR.
-diff --git a/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_requirement-checklist.md b/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_requirement-checklist.md
-index 8ee4f2113..49f77feff 100644
---- a/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_requirement-checklist.md
-+++ b/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_requirement-checklist.md
-@@ -1,6 +1,6 @@
- # PR_26177_ALFA_060-game-design-foundation Requirement Checklist
+-Generated: 2026-06-26 18:51:30 UTC
++Generated: 2026-06-26 20:51:40 UTC
 
--Generated: 2026-06-26 20:12:17 UTC
-+Generated: 2026-06-26 20:59:30 UTC
+ - PASS - Center title is Configuration; Configuration Workspace wording is absent.
+-- PASS - Game Name comes from Game Hub and is read-only/non-editable.
+-- PASS - Game Type comes from the Game Hub/Game Design handoff and is read-only/non-editable.
++- PASS - Game Name comes from Game Hub and renders read-only.
++- PASS - Game Type comes from the Game Hub/Game Design handoff and renders read-only.
+ - PASS - Configuration owns editable settings only after project creation.
+-- PASS - Tool loads seeded configuration data for the current selected Game Hub game.
+-- PASS - Tool asserts the shared status bar selected game is Demo Game.
+-- PASS - Read/write behavior remains scoped to the active current game configuration.
+-- PASS - Signed-in Creator can edit fields, save through API/DB, reload, and see persisted values.
+-- PASS - Guest browser save redirects to account/sign-in.html and direct guest API save returns 401.
+-- PASS - No SQLite, tmp runtime dependency, JSON source of truth, mock-db-store expansion, or new mock repository file was added.
+-- PASS - DDL/DML/seed artifacts remain under docs_build/database/ddl, dml, and seed paths.
++- PASS - Tool loads seeded current-game configuration data through the API/database path.
++- PASS - Signed-in Creator can edit settings, save, refresh, and see persisted values.
++- PASS - Invalid saves remain visible as missing-section validation and are not silently repaired by generic snapshots.
++- PASS - Guest browser save redirects to `account/sign-in.html`; direct guest API save returns 401.
++- PASS - Tags, Game Design, and Game Configuration do not route through retired mock repositories.
++- PASS - Guardrail test fails if `tags-mock-repository.js`, `game-design-mock-repository.js`, or `game-configuration-mock-repository.js` exists or is imported.
++- PASS - No scoped mock-db-store expansion, page-local arrays, JSON source of truth, SQLite, or tmp runtime dependency was introduced.
++- PASS - DDL, DML, and seed artifacts remain under `docs_build/database/ddl/`, `docs_build/database/dml/`, and `docs_build/database/seed/`.
+diff --git a/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_validation-lane.md b/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_validation-lane.md
+index c98a7519f..753f7792c 100644
+--- a/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_validation-lane.md
++++ b/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_validation-lane.md
+@@ -1,10 +1,16 @@
+ # PR_26177_ALFA_061-game-configuration-foundation Validation Lane
 
- - PASS - Browser -> API -> Database is the active product-data path.
- - PASS - Game Design routes through the shared Alfa API service, not `game-design-mock-repository.js`.
-@@ -14,4 +14,5 @@ Generated: 2026-06-26 20:12:17 UTC
- - PASS - Guest browser save redirects to `account/sign-in.html`.
- - PASS - Direct guest API save returns 401 with Creator-safe sign-in wording.
- - PASS - No SQLite, tmp runtime dependency, JSON source of truth, browser-owned product data, or new mock repository source of truth was introduced.
-+- PASS - No `mock-db-store.js` or Admin DB viewer expansion is present in this PR.
- - PASS - DDL/DML/seed artifacts remain under `docs_build/database/ddl`, `docs_build/database/dml`, and `docs_build/database/seed`.
-diff --git a/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_validation-lane.md b/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_validation-lane.md
-index f39e3c648..16385590b 100644
---- a/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_validation-lane.md
-+++ b/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_validation-lane.md
-@@ -1,21 +1,14 @@
- # PR_26177_ALFA_060-game-design-foundation Validation Lane
+-Generated: 2026-06-26 18:51:30 UTC
++Generated: 2026-06-26 20:51:40 UTC
 
--Generated: 2026-06-26 20:12:17 UTC
-+Generated: 2026-06-26 20:59:30 UTC
-
- ## Commands
- - PASS - `node --check src/dev-runtime/toolbox-api/alfa-tool-services.mjs`
- - PASS - `node --check src/dev-runtime/server/local-api-router.mjs`
- - PASS - `node --check assets/toolbox/game-design/js/index.js`
--- PASS - `node --check assets/toolbox/game-configuration/js/index.js`
- - PASS - `node --test tests/dev-runtime/DevRuntimeBoundary.test.mjs`
--- PASS - `npx playwright test tests/playwright/tools/TagsTool.spec.mjs --project=playwright --workers=1`
--- PASS - `npx playwright test tests/playwright/tools/GameConfigurationApiDb.spec.mjs --project=playwright --workers=1`
--- PASS - `npx playwright test tests/playwright/tools/GameDesignApiBehavior.spec.mjs --project=playwright --workers=1`
+-- PASS - node --check assets/toolbox/game-configuration/js/index.js
+-- PASS - node --check src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js
+-- PASS - node --check src/dev-runtime/server/local-api-router.mjs
+-- PASS - node --check tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs
+-- PASS - git diff --check (line-ending notices only)
+-- PASS - npx playwright test tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs --workers=1 --reporter=line (6 passed)
++- PASS - `node --check src/dev-runtime/toolbox-api/alfa-tool-services.mjs`
++- PASS - `node --check src/dev-runtime/server/local-api-router.mjs`
++- PASS - `node --check assets/toolbox/tags/js/index.js`
++- PASS - `node --check assets/toolbox/game-design/js/index.js`
++- PASS - `node --check assets/toolbox/game-configuration/js/index.js`
++- PASS - `node --test tests/dev-runtime/DevRuntimeBoundary.test.mjs`
++- PASS - `npx playwright test tests/playwright/tools/TagsTool.spec.mjs --project=playwright --workers=1 --reporter=line`
 +- PASS - `npx playwright test tests/playwright/tools/GameDesignApiBehavior.spec.mjs --project=playwright --workers=1 --reporter=line`
-
- ## Targeted Coverage
- - Game Design API/DB save, section-row persistence, refresh persistence, capability demo context, guest redirect, and guest API rejection.
--- Game Configuration handoff validation cross-check after Game Design validation changed.
--- Tags API/DB assignment workflow cross-check because the stack carries the retired Tags mock repository removal.
--
--## Earlier Failure Fixed
--- Initial Game Configuration cross-check failed because invalid Game Design handoff state was reseeded back to ready data. The shared service now seeds starter data only when no record exists, and the rerun passed.
-+- Retired Tags/Game Design/Game Configuration mock repository files remain absent and guardrail-covered.
++- PASS - `npx playwright test tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs --project=playwright --workers=1 --reporter=line`
++- PASS - `git diff --check`
++
++Note: an earlier parallel Game Design run timed out while writing Playwright trace artifacts; the same lane passed when rerun alone.
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 8d4e1341b..8cf35e534 100644
+index 3716be489..a3a8311fd 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,32 +1,7 @@
--﻿M	assets/toolbox/game-configuration/js/index.js
--M	assets/toolbox/game-design/js/index.js
--M	assets/toolbox/tags/js/index.js
--M	docs_build/database/ddl/game-configuration.sql
--M	docs_build/database/ddl/game-design.sql
--M	docs_build/database/ddl/tags.sql
--M	docs_build/database/dml/tags.sql
--M	docs_build/database/seed/guest/tags.json
--M	docs_build/database/seed/tags.json
--M	docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_branch-validation.md
-+﻿M	docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_branch-validation.md
- M	docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_manual-validation-notes.md
- M	docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_report.md
- M	docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_requirement-checklist.md
- M	docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_validation-lane.md
- M	docs_build/dev/reports/coverage_changed_js_guardrail.txt
- M	docs_build/dev/reports/playwright_v8_coverage_report.txt
--M	src/dev-runtime/auth/provider-contract-stubs.mjs
--M	src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
--D	src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js
--D	src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js
--D	src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js
--M	src/dev-runtime/server/local-api-router.mjs
--A	src/dev-runtime/toolbox-api/alfa-tool-services.mjs
--M	tests/dev-runtime/DevRuntimeBoundary.test.mjs
--M	tests/playwright/tools/AssetToolMockRepository.spec.mjs
--R087	tests/playwright/tools/GameConfigurationMockRepository.spec.mjs	tests/playwright/tools/GameConfigurationApiDb.spec.mjs
--M	tests/playwright/tools/GameDesignApiBehavior.spec.mjs
--M	tests/playwright/tools/TagsTool.spec.mjs
--M	tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
--M	toolbox/game-configuration/index.html
--M	toolbox/game-design/index.html
--M	toolbox/tags/index.html
-diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index c47a1e41e..962d56509 100644
---- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -7,14 +7,12 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
-
- Changed runtime JS files considered:
- (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-
- Guardrail warnings:
- (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
- (0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
- (0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index d96bc9143..9b4b202aa 100644
---- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
-+++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -18,7 +18,6 @@ Exercised tool entry points detected:
-
- Changed runtime JS files covered:
- (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-@@ -43,7 +42,6 @@ Files with executed line/function counts where available:
-
- Uncovered or low-coverage changed JS files:
- (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
- (0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
- (0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: uncovered changed runtime JS file; advisory only
-@@ -52,7 +50,6 @@ Changed JS files considered:
- (0%) assets/toolbox/game-configuration/js/index.js - changed JS file not collected as browser runtime coverage
- (0%) assets/toolbox/tags/js/index.js - changed JS file not collected as browser runtime coverage
- (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
- (0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - changed JS file not collected as browser runtime coverage
- (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
- (0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - changed JS file not collected as browser runtime coverage
+@@ -1,16 +1,34 @@
+-assets/toolbox/game-configuration/js/index.js
+-docs_build/database/ddl/game-configuration.sql
+-docs_build/database/seed/game-configuration.json
+-docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_branch-validation.md
+-docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_manual-validation-notes.md
+-docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_report.md
+-docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_requirement-checklist.md
+-docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_validation-lane.md
+-docs_build/dev/reports/codex_changed_files.txt
+-docs_build/dev/reports/codex_review.diff
+-docs_build/dev/reports/coverage_changed_js_guardrail.txt
+-docs_build/dev/reports/playwright_v8_coverage_report.txt
+-src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js
+-src/dev-runtime/server/local-api-router.mjs
+-tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs
+-toolbox/game-configuration/index.html
++﻿M	assets/toolbox/game-configuration/js/index.js
++M	assets/toolbox/game-design/js/index.js
++M	assets/toolbox/tags/js/index.js
++M	docs_build/database/ddl/game-configuration.sql
++M	docs_build/database/ddl/game-design.sql
++M	docs_build/database/ddl/tags.sql
++M	docs_build/database/dml/tags.sql
++M	docs_build/database/seed/guest/tags.json
++M	docs_build/database/seed/tags.json
++M	docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_branch-validation.md
++M	docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_manual-validation-notes.md
++M	docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_report.md
++M	docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_requirement-checklist.md
++M	docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_validation-lane.md
++M	docs_build/dev/reports/codex_changed_files.txt
++M	docs_build/dev/reports/codex_review.diff
++M	docs_build/dev/reports/coverage_changed_js_guardrail.txt
++M	docs_build/dev/reports/playwright_v8_coverage_report.txt
++M	src/dev-runtime/auth/provider-contract-stubs.mjs
++M	src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
++D	src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js
++D	src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js
++D	src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js
++M	src/dev-runtime/server/local-api-router.mjs
++A	src/dev-runtime/toolbox-api/alfa-tool-services.mjs
++M	tests/dev-runtime/DevRuntimeBoundary.test.mjs
++M	tests/playwright/tools/AssetToolMockRepository.spec.mjs
++M	tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs
++R060	tests/playwright/tools/GameDesignMockRepository.spec.mjs	tests/playwright/tools/GameDesignApiBehavior.spec.mjs
++M	tests/playwright/tools/TagsTool.spec.mjs
++M	tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
++M	toolbox/game-configuration/index.html
++M	toolbox/game-design/index.html
++M	toolbox/tags/index.html
