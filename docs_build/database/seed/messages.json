@@ -16,7 +16,6 @@
       "Notification"
     ],
     "messages_emotion_profiles": [
-      "Neutral",
       "Calm",
       "Urgent",
       "Whisper",
@@ -25,9 +24,7 @@
       "Sad",
       "Mysterious"
     ],
-    "messages_tts_profiles": [
-      "Default Balanced Profile"
-    ],
+    "messages_tts_profiles": [],
     "messages_records": [],
     "messages_segments": []
   },

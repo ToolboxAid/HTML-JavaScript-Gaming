@@ -93,9 +93,16 @@ test("Text2Speech provider adapter plan keeps browser speech implemented and pai
   assert.ok(TTS_PROVIDER_ADAPTER_PLAN.slice(1).every((provider) => provider.status === "planned"));
 });
 
-test("Text2Speech profile helpers preserve creator-facing default emotion settings", () => {
+test("Text2Speech profile helpers do not expose broken seed profiles or hidden emotions", () => {
   const voiceOptions = [{ language: "en-US", label: "Test Voice (en-US)", name: "Test Voice", value: "test-voice" }];
   const defaults = createDefaultTextToSpeechProfiles(voiceOptions);
+  const emptyProfile = createTextToSpeechProfile({
+    id: "empty-profile",
+    name: "Empty Profile",
+    voice: "test-voice",
+    voiceName: "Test Voice",
+  });
+  const defaultEmotion = createTextToSpeechProfileEmotion();
   const custom = createTextToSpeechProfile({
     emotions: [
       createTextToSpeechProfileEmotion({
@@ -113,11 +120,11 @@ test("Text2Speech profile helpers preserve creator-facing default emotion settin
   });
 
   assert.equal(TTS_PROFILE_CONTRACT_VERSION, "tts-profile-emotion-v1");
-  assert.equal(defaults[0].name, "Default Balanced Profile");
-  assert.equal(defaults[0].messageStudioUsageCount, 1);
-  assert.equal(defaults.length, 1);
-  assert.deepEqual(defaults[0].emotions.map((emotion) => emotion.emotionLabel), ["Neutral", "Calm", "Urgent"]);
-  assert.equal(defaults[0].emotions.find((emotion) => emotion.emotion === "neutral").messagePartsUsageCount, 1);
+  assert.deepEqual(defaults, []);
+  assert.deepEqual(emptyProfile.emotions, []);
+  assert.equal(createEmotionProfile().name, "Calm");
+  assert.equal(defaultEmotion.emotion, "calm");
+  assert.equal(defaultEmotion.emotionLabel, "Calm");
   assert.deepEqual(custom, {
     active: true,
     age: "any",

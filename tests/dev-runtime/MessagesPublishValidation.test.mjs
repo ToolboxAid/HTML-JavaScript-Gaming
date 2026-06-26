@@ -25,11 +25,40 @@ function datedRow(row) {
   };
 }
 
+async function createWorkingTtsProfile(service, {
+  emotionNames = ["Calm"],
+  name = "Test Browser Profile",
+} = {}) {
+  const emotionProfiles = await service.listEmotionProfiles();
+  const emotionSettings = emotionNames.map((emotionName) => {
+    const emotion = emotionProfiles.find((profile) => profile.name === emotionName);
+    assert.ok(emotion, `Expected ${emotionName} emotion profile`);
+    return {
+      emotion: emotion.name,
+      emotionLabel: emotion.name,
+      pitch: emotion.pitch,
+      rate: emotion.rate,
+      volume: emotion.volume,
+    };
+  });
+  return service.createTtsProfile({
+    active: true,
+    emotionSettings,
+    language: "en-US",
+    name,
+    pitch: 1,
+    providerKey: "browser-speech",
+    rate: 1,
+    voiceName: "Default browser voice",
+    volume: 1,
+  });
+}
+
 test("Messages publish validation passes publish-ready message configuration", async () => {
   const { service } = createServiceHarness();
 
   const emotion = (await service.listEmotionProfiles()).find((profile) => profile.name === "Calm");
-  const voice = (await service.listTtsProfiles()).find((profile) => profile.name === "Default Balanced Profile");
+  const voice = await createWorkingTtsProfile(service, { name: "Publish Test Profile" });
   assert.ok(emotion);
   assert.ok(voice);
 
@@ -135,7 +164,7 @@ test("Messages TTS profiles expose usage counts and block referenced profile del
   const { service } = createServiceHarness();
 
   const emotion = (await service.listEmotionProfiles()).find((profile) => profile.name === "Calm");
-  const voice = (await service.listTtsProfiles()).find((profile) => profile.name === "Default Balanced Profile");
+  const voice = await createWorkingTtsProfile(service, { name: "Usage Test Profile" });
   assert.ok(emotion);
   assert.ok(voice);
 
@@ -182,14 +211,16 @@ test("Messages TTS profiles expose usage counts and block referenced profile del
 test("Messages enforces profile-scoped Emotion Profiles for save and publish validation", async () => {
   const { postgresClient, service } = createServiceHarness();
 
-  const profiles = await service.listTtsProfiles();
-  const defaultProfile = profiles.find((profile) => profile.name === "Default Balanced Profile");
+  const defaultProfile = await createWorkingTtsProfile(service, {
+    emotionNames: ["Calm", "Urgent"],
+    name: "Scoped Test Profile",
+  });
   const urgent = (await service.listEmotionProfiles()).find((profile) => profile.name === "Urgent");
   const whisper = (await service.listEmotionProfiles()).find((profile) => profile.name === "Whisper");
   assert.ok(defaultProfile);
   assert.ok(urgent);
   assert.ok(whisper);
-  assert.deepEqual(defaultProfile.emotionSettings.map((setting) => setting.emotionLabel), ["Neutral", "Calm", "Urgent"]);
+  assert.deepEqual(defaultProfile.emotionSettings.map((setting) => setting.emotionLabel), ["Calm", "Urgent"]);
 
   const whisperProfile = await service.createTtsProfile({
     active: true,
@@ -246,8 +277,8 @@ test("Messages TTS profile saves accept creator-facing Emotion labels and protec
   const created = await service.createTtsProfile({
     active: true,
     emotionSettings: [{
-      emotion: "neutral",
-      emotionLabel: "Neutral",
+      emotion: "calm",
+      emotionLabel: "Calm",
       pitch: 1,
       rate: 1,
       volume: 1,
@@ -260,7 +291,7 @@ test("Messages TTS profile saves accept creator-facing Emotion labels and protec
     voiceName: "Browser guide updated",
     volume: 1,
   });
-  assert.deepEqual(created.emotionSettings.map((setting) => setting.emotionLabel), ["Neutral"]);
+  assert.deepEqual(created.emotionSettings.map((setting) => setting.emotionLabel), ["Calm"]);
 
   const updated = await service.updateTtsProfile(created.key, {
     ...created,
@@ -333,8 +364,8 @@ test("Messages API requires sign-in for Text To Speech profile and emotion write
     actorKey: "test-author",
     body: {
       emotionSettings: [{
-        emotion: "neutral",
-        emotionLabel: "Neutral",
+        emotion: "calm",
+        emotionLabel: "Calm",
         pitch: 1,
         rate: 1,
         volume: 1,

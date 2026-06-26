@@ -77,8 +77,8 @@ const TTS_PROVIDER_ADAPTER_PLAN = Object.freeze([
 
 const TTS_PROFILE_CONTRACT_VERSION = "tts-profile-emotion-v1";
 const NEW_ROW_KEY = "__new__";
-const DEFAULT_TTS_PROFILE_ID = "default-balanced-profile";
-const DEFAULT_TTS_EMOTION_ID = "neutral";
+const DEFAULT_TTS_PROFILE_ID = "tts-profile";
+const DEFAULT_TTS_EMOTION_ID = "calm";
 const SIGN_IN_ROUTE = "account/sign-in.html";
 
 const TTS_PROFILE_GENDER_OPTIONS = Object.freeze([
@@ -89,7 +89,6 @@ const TTS_PROFILE_GENDER_OPTIONS = Object.freeze([
 ]);
 
 const TTS_PROFILE_EMOTION_OPTIONS = Object.freeze([
-  Object.freeze({ label: "Neutral", value: "neutral" }),
   Object.freeze({ label: "Happy", value: "happy" }),
   Object.freeze({ label: "Angry", value: "angry" }),
   Object.freeze({ label: "Scared", value: "scared" }),
@@ -115,7 +114,7 @@ function createTtsMessage({
   id,
   name,
   text,
-  emotionKey = "neutral",
+  emotionKey = DEFAULT_TTS_EMOTION_ID,
   voiceProfileKey = "browser-speech",
   languageCode = "en-US",
   status = "draft",
@@ -125,7 +124,7 @@ function createTtsMessage({
     id: String(id || "tts-message-draft"),
     name: String(name || "Untitled TTS Message"),
     text: String(text || ""),
-    emotionKey: String(emotionKey || "neutral"),
+    emotionKey: String(emotionKey || DEFAULT_TTS_EMOTION_ID),
     voiceProfileKey: String(voiceProfileKey || "browser-speech"),
     languageCode: String(languageCode || "en-US"),
     status: TTS_MESSAGE_STATUSES.includes(status) ? status : "draft",
@@ -141,7 +140,7 @@ function createTtsMessage({
   };
 }
 
-function createEmotionProfile({ key = "neutral", name = "Neutral", intensity = 0.5 } = {}) {
+function createEmotionProfile({ key = DEFAULT_TTS_EMOTION_ID, name = "Calm", intensity = 0.5 } = {}) {
   const numericIntensity = Number(intensity);
   const safeIntensity = Number.isNaN(numericIntensity) ? 0.5 : Math.min(1, Math.max(0, numericIntensity));
   return { key: String(key), name: String(name), intensity: safeIntensity, owner: TTS_OWNERSHIP.AUDIO };
@@ -174,7 +173,7 @@ function labelForOption(options, value, fallback = "") {
 function createTextToSpeechProfileEmotion({
   active = true,
   displayOrder = 0,
-  emotion = "neutral",
+  emotion = DEFAULT_TTS_EMOTION_ID,
   emotionLabel = "",
   id = "",
   messageUsageCount = 0,
@@ -216,17 +215,17 @@ function createTextToSpeechProfile({
   id = "",
   language = TEXT_TO_SPEECH_DEFAULTS.language,
   messageStudioUsageCount = 0,
-  name = "Default Balanced Profile",
+  name = "Untitled TTS Profile",
   references = [],
   segmentUsageCount = 0,
   usageCount = 0,
   voice = "",
   voiceName = ""
 } = {}) {
-  const profileName = String(name || "Default Balanced Profile").trim() || "Default Balanced Profile";
-  const emotionRows = Array.isArray(emotions) && emotions.length
+  const profileName = String(name || "Untitled TTS Profile").trim() || "Untitled TTS Profile";
+  const emotionRows = Array.isArray(emotions)
     ? emotions.map((emotion) => createTextToSpeechProfileEmotion(emotion))
-    : [createTextToSpeechProfileEmotion()];
+    : [];
   return {
     active: active !== false,
     age: String(age || TEXT_TO_SPEECH_DEFAULTS.voiceAge),
@@ -250,7 +249,7 @@ function createTextToSpeechProfileEmotionFromApi(setting = {}) {
   return createTextToSpeechProfileEmotion({
     active: setting.active !== false,
     displayOrder: setting.displayOrder || 0,
-    emotion: setting.emotion || setting.emotionLabel || setting.name || "neutral",
+    emotion: setting.emotion || setting.emotionLabel || setting.name || DEFAULT_TTS_EMOTION_ID,
     emotionLabel: setting.emotionLabel || setting.name || setting.emotion || "",
     id: setting.key || setting.emotionProfileKey || setting.emotion || "",
     messagePartsUsageCount: setting.segmentUsageCount ?? setting.messagePartsUsageCount ?? 0,
@@ -301,30 +300,12 @@ function defaultVoiceForProfile(voiceOptions = [], preferredGender = "") {
   return preferred || voiceOptions[0];
 }
 
-function createDefaultEmotionSettings({ markNeutralInUse = false } = {}) {
-  return [
-    createTextToSpeechProfileEmotion({
-      emotion: "neutral",
-      messagePartsUsageCount: markNeutralInUse ? 1 : 0,
-    }),
-    createTextToSpeechProfileEmotion({ emotion: "calm" }),
-    createTextToSpeechProfileEmotion({ emotion: "urgent", pitch: 1.08, rate: 1.15, volume: 1 }),
-  ];
+function createDefaultEmotionSettings() {
+  return [];
 }
 
-function createDefaultTextToSpeechProfiles(voiceOptions = []) {
-  const balancedVoice = defaultVoiceForProfile(voiceOptions);
-  return [
-    createTextToSpeechProfile({
-      emotions: createDefaultEmotionSettings({ markNeutralInUse: true }),
-      id: DEFAULT_TTS_PROFILE_ID,
-      language: balancedVoice?.language || TEXT_TO_SPEECH_DEFAULTS.language,
-      messageStudioUsageCount: 1,
-      name: "Default Balanced Profile",
-      voice: balancedVoice?.value || "",
-      voiceName: balancedVoice?.name || balancedVoice?.label || "Default browser voice"
-    }),
-  ];
+function createDefaultTextToSpeechProfiles() {
+  return [];
 }
 
 function signInUrl() {
@@ -681,7 +662,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
     languageCell.append(createEditorSelect(profile?.language || TEXT_TO_SPEECH_DEFAULTS.language, "ttsProfileLanguage", languageSelectOptions()));
     const ageCell = document.createElement("td");
     ageCell.append(createEditorSelect(profile?.age || TEXT_TO_SPEECH_DEFAULTS.voiceAge, "ttsProfileAge", TEXT_TO_SPEECH_AGE_FILTER_OPTIONS));
-    const emotionCountCell = createCell(profile ? String(profile.emotions.length) : "1");
+    const emotionCountCell = createCell(profile ? String(profile.emotions.length) : "0");
     const usageCell = createCell(profile ? String(profile.usageCount || profile.messageStudioUsageCount || 0) : "0");
     const statusCell = document.createElement("td");
     statusCell.append(createCheckbox(profile?.active !== false, "ttsProfileActive"));
@@ -818,7 +799,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
     return createTextToSpeechProfile({
       active: editorChecked(row, "[data-tts-profile-active]"),
       age: editorValue(row, "[data-tts-profile-age]"),
-      emotions: key === NEW_ROW_KEY ? [createTextToSpeechProfileEmotion()] : state.profiles.find((profile) => profile.id === key)?.emotions || [],
+      emotions: key === NEW_ROW_KEY ? [] : state.profiles.find((profile) => profile.id === key)?.emotions || [],
       gender: editorValue(row, "[data-tts-profile-gender]"),
       id: key === NEW_ROW_KEY ? "" : key,
       language: editorValue(row, "[data-tts-profile-language]"),

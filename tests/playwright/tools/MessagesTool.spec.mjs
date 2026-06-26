@@ -6,6 +6,7 @@ import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageRe
 import { SEED_DB_KEYS } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
 
 const ULID_PATTERN = /^[0-9A-HJKMNP-TV-Z]{26}$/;
+const TEST_TTS_PROFILE_NAME = "Message Test Profile";
 
 async function jsonRequest(url, options = {}) {
   const response = await fetch(url, {
@@ -20,6 +21,48 @@ async function jsonRequest(url, options = {}) {
     payload,
     response,
   };
+}
+
+async function signInServer(server) {
+  const session = await jsonRequest(`${server.baseUrl}/api/session/user`, {
+    body: JSON.stringify({ userKey: SEED_DB_KEYS.users.user1 }),
+    method: "POST",
+  });
+  expect(session.response.ok).toBe(true);
+  expect(session.payload.ok).toBe(true);
+}
+
+async function ensureMessageTestTtsProfile(server, {
+  emotionSettings = [
+    { emotion: "calm", emotionLabel: "Calm", pitch: 1, rate: 1, volume: 1 },
+    { emotion: "urgent", emotionLabel: "Urgent", pitch: 1.08, rate: 1.15, volume: 1 },
+  ],
+  name = TEST_TTS_PROFILE_NAME,
+} = {}) {
+  await signInServer(server);
+  const existing = await jsonRequest(`${server.baseUrl}/api/messages/tts-profiles`);
+  expect(existing.response.ok).toBe(true);
+  expect(existing.payload.ok).toBe(true);
+  const found = existing.payload.data.ttsProfiles.find((profile) => profile.name === name);
+  if (found) {
+    return found;
+  }
+  const created = await jsonRequest(`${server.baseUrl}/api/messages/tts-profiles`, {
+    body: JSON.stringify({
+      emotionSettings,
+      language: "en-US",
+      name,
+      pitch: 1,
+      providerKey: "browser-speech",
+      rate: 1,
+      voiceName: "Default browser voice",
+      volume: 1,
+    }),
+    method: "POST",
+  });
+  expect(created.response.ok).toBe(true);
+  expect(created.payload.ok).toBe(true);
+  return created.payload.data.ttsProfile;
 }
 
 test.beforeEach(async ({ page }) => {
@@ -112,6 +155,9 @@ async function openMessagesPage(page, options = {}) {
       },
     };
   });
+  if (options.seedMessageTtsProfile !== false) {
+    await ensureMessageTestTtsProfile(server);
+  }
   await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}/tools/messages/index.html`, { waitUntil: "networkidle" });
   return failures;
@@ -205,7 +251,7 @@ async function voiceProfiles(server) {
   return profilesResult.payload.data.ttsProfiles;
 }
 
-async function createReferencedSentence(server, message, emotionName = "Urgent", voiceName = "Default Balanced Profile") {
+async function createReferencedSentence(server, message, emotionName = "Urgent", voiceName = TEST_TTS_PROFILE_NAME) {
   const emotion = await emotionProfile(server, emotionName);
   const voice = await voiceProfile(server, voiceName);
   expect(emotion).toBeTruthy();
@@ -264,7 +310,7 @@ test("Message Studio uses the approved table-first Messages structure", async ({
     await expect(page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile]")).toBeVisible();
     await expect(page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile] option")).toHaveText([
       "Select TTS profile",
-      "Default Balanced Profile",
+      TEST_TTS_PROFILE_NAME,
     ]);
     await expect(page.locator("[data-messages-row-editor='__new__']").getByRole("button", { name: "Save" })).toBeVisible();
     await expect(page.locator("[data-messages-row-editor='__new__']").getByRole("button", { name: "Cancel" })).toBeVisible();
@@ -277,11 +323,11 @@ test("Message Studio uses the approved table-first Messages structure", async ({
 
     await addMessage(page, {
       name: "Bat Encounter",
-      ttsProfile: "Default Balanced Profile",
+      ttsProfile: TEST_TTS_PROFILE_NAME,
     });
     await expect(page.locator("[data-messages-log]")).toHaveText("Saved message Bat Encounter.");
     const messageRow = page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" });
-    await expect(messageRow).toContainText("Default Balanced Profile");
+    await expect(messageRow).toContainText(TEST_TTS_PROFILE_NAME);
     await expect(messageRow.getByRole("button", { name: "Sentences" })).toBeVisible();
     await expect(messageRow.getByRole("button", { name: "Edit" })).toBeVisible();
     await expect(messageRow.getByRole("button", { name: "Archive" })).toBeVisible();
@@ -299,7 +345,6 @@ test("Message Studio uses the approved table-first Messages structure", async ({
     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-voice]")).toHaveCount(0);
     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion] option")).toHaveText([
       "Select emotion",
-      "Neutral",
       "Calm",
       "Urgent",
     ]);
@@ -346,7 +391,7 @@ test("Message Studio uses the approved table-first Messages structure", async ({
     await expect(page.locator("[data-messages-log]")).not.toContainText(/before preview/i);
     await expectPlaybackDiagnostics(page, {
       gender: "Any",
-      profile: "Default Balanced Profile",
+      profile: TEST_TTS_PROFILE_NAME,
       voice: "Default browser voice",
     });
 
@@ -380,7 +425,7 @@ test("Message Studio uses the approved table-first Messages structure", async ({
     await expect(page.locator("[data-messages-log]")).not.toContainText(/before preview/i);
     await expectPlaybackDiagnostics(page, {
       gender: "Any",
-      profile: "Default Balanced Profile",
+      profile: TEST_TTS_PROFILE_NAME,
       voice: "Default browser voice",
     });
 
@@ -421,7 +466,7 @@ test("Message Studio uses the approved table-first Messages structure", async ({
     await expect(page.locator("[data-messages-log]")).not.toContainText(/before preview/i);
     await expectPlaybackDiagnostics(page, {
       gender: "Any",
-      profile: "Default Balanced Profile",
+      profile: TEST_TTS_PROFILE_NAME,
       voice: "Default browser voice",
     });
     await page.getByRole("button", { name: "Stop Speech" }).click();
@@ -492,20 +537,20 @@ test("Message Studio uses the approved table-first Messages structure", async ({
     await page.locator("[data-messages-row-editor] [data-message-name]").fill("Bat Encounter Updated");
     await page.locator("[data-messages-row-editor] [data-messages-commit]").click();
     await expect(page.locator("[data-messages-log]")).toHaveText("Saved message Bat Encounter Updated.");
-    await expect(page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter Updated" })).toContainText("Default Balanced Profile");
+    await expect(page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter Updated" })).toContainText(TEST_TTS_PROFILE_NAME);
 
     const updatedMessage = await createdMessage(failures.server, "Bat Encounter Updated");
     expect(updatedMessage).toEqual(expect.objectContaining({
       active: true,
       categoryName: "Dialog",
-      voiceProfileName: "Default Balanced Profile",
+      voiceProfileName: TEST_TTS_PROFILE_NAME,
     }));
     expect(updatedMessage.key).toMatch(ULID_PATTERN);
     expect(updatedMessage).not.toHaveProperty("rate");
     expect(updatedMessage).not.toHaveProperty("pitch");
     expect(updatedMessage).not.toHaveProperty("volume");
 
-    const defaultProfile = (await voiceProfiles(failures.server)).find((profile) => profile.name === "Default Balanced Profile");
+    const defaultProfile = (await voiceProfiles(failures.server)).find((profile) => profile.name === TEST_TTS_PROFILE_NAME);
     expect(defaultProfile).toEqual(expect.objectContaining({
       language: "en-US",
       providerKey: "browser-speech",
@@ -571,7 +616,6 @@ test("Message Studio consumes active Local API Text To Speech profiles", async (
     await page.getByRole("button", { name: "Add Sentence" }).click();
     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion] option")).toHaveText([
       "Select emotion",
-      "Neutral",
       "Urgent",
     ]);
     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]")).not.toContainText("Happy");
@@ -626,10 +670,10 @@ test("Message Studio loads Text To Speech profiles and filters sentence emotions
     const profileOptions = page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile] option");
     await expect(profileOptions).toHaveText([
       "Select TTS profile",
-      "Default Balanced Profile",
+      TEST_TTS_PROFILE_NAME,
     ]);
     await page.locator("[data-messages-row-editor='__new__'] [data-message-name]").fill("Profile Filter Test");
-    await page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile]").selectOption({ label: "Default Balanced Profile" });
+    await page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile]").selectOption({ label: TEST_TTS_PROFILE_NAME });
     await page.locator("[data-messages-commit='__new__']").click();
     await expect(page.locator("[data-messages-log]")).toHaveText("Saved message Profile Filter Test.");
 
@@ -637,7 +681,6 @@ test("Message Studio loads Text To Speech profiles and filters sentence emotions
     await page.getByRole("button", { name: "Add Sentence" }).click();
     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion] option")).toHaveText([
       "Select emotion",
-      "Neutral",
       "Calm",
       "Urgent",
     ]);
@@ -665,7 +708,7 @@ test("Message Studio loads Text To Speech profiles and filters sentence emotions
     })]);
     await expectPlaybackDiagnostics(page, {
       gender: "Any",
-      profile: "Default Balanced Profile",
+      profile: TEST_TTS_PROFILE_NAME,
       voice: "Default browser voice",
     });
     await expect(page.locator("[data-messages-validation-errors]")).not.toContainText(/before preview/i);
@@ -680,7 +723,7 @@ test("Message Studio loads Text To Speech profiles and filters sentence emotions
     expect(spokenMessage.map((utterance) => utterance.text)).toEqual(["Urgent voice check."]);
     await expectPlaybackDiagnostics(page, {
       gender: "Any",
-      profile: "Default Balanced Profile",
+      profile: TEST_TTS_PROFILE_NAME,
       voice: "Default browser voice",
     });
 
@@ -698,7 +741,7 @@ test("Message Studio disables Delete when a message is referenced", async ({ pag
   try {
     await addMessage(page, {
       name: "Referenced Encounter",
-      ttsProfile: "Default Balanced Profile",
+      ttsProfile: TEST_TTS_PROFILE_NAME,
     });
     const message = await createdMessage(failures.server, "Referenced Encounter");
     const segment = await createReferencedSentence(failures.server, message);

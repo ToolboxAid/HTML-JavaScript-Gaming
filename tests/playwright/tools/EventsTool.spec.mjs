@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { createMessagesPostgresClientStub } from "../../helpers/messagesPostgresClientStub.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
+import { SEED_DB_KEYS } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
 
 async function jsonRequest(url, options = {}) {
   const response = await fetch(url, {
@@ -27,12 +28,38 @@ test.afterEach(async ({ page }) => {
 });
 
 async function createMessage(server) {
+  const session = await jsonRequest(`${server.baseUrl}/api/session/user`, {
+    body: JSON.stringify({ userKey: SEED_DB_KEYS.users.user1 }),
+    method: "POST",
+  });
+  expect(session.response.ok).toBe(true);
+  expect(session.payload.ok).toBe(true);
+
   const emotionResult = await jsonRequest(`${server.baseUrl}/api/messages/emotion-profiles`);
-  const voiceResult = await jsonRequest(`${server.baseUrl}/api/messages/tts-profiles`);
   const urgent = emotionResult.payload.data.emotionProfiles.find((profile) => profile.name === "Urgent");
-  const ttsProfile = voiceResult.payload.data.ttsProfiles.find((profile) => profile.name === "Default Balanced Profile");
   expect(urgent).toBeTruthy();
-  expect(ttsProfile).toBeTruthy();
+  const profileResult = await jsonRequest(`${server.baseUrl}/api/messages/tts-profiles`, {
+    body: JSON.stringify({
+      emotionSettings: [{
+        emotion: "urgent",
+        emotionLabel: "Urgent",
+        pitch: 1.08,
+        rate: 1.15,
+        volume: 1,
+      }],
+      language: "en-US",
+      name: "Events Test Profile",
+      pitch: 1,
+      providerKey: "browser-speech",
+      rate: 1,
+      voiceName: "Default browser voice",
+      volume: 1,
+    }),
+    method: "POST",
+  });
+  expect(profileResult.response.ok).toBe(true);
+  expect(profileResult.payload.ok).toBe(true);
+  const ttsProfile = profileResult.payload.data.ttsProfile;
   const messageResult = await jsonRequest(`${server.baseUrl}/api/messages/messages`, {
     body: JSON.stringify({
       emotionProfileKey: urgent.key,

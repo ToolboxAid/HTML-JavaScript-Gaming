@@ -93,20 +93,44 @@ test("Messages Local API seeds through the Postgres service and preserves respon
     const emotionProfiles = await apiJson(server.baseUrl, "/api/messages/emotion-profiles");
     const urgent = emotionProfiles.emotionProfiles.find((profile) => profile.name === "Urgent");
     assert.ok(urgent, "Messages emotion profiles should include Urgent");
+    assert.equal(emotionProfiles.emotionProfiles.some((profile) => profile.name === "Neutral"), false);
+    assert.equal(emotionProfiles.emotionProfiles.some((profile) => profile.name === "Robot"), false);
 
     const ttsProfiles = await apiJson(server.baseUrl, "/api/messages/tts-profiles");
-    const defaultProfile = ttsProfiles.ttsProfiles.find((profile) => profile.name === "Default Balanced Profile");
-    assert.deepEqual(ttsProfiles.ttsProfiles.map((profile) => profile.name), ["Default Balanced Profile"]);
-    assert.ok(defaultProfile, "Messages TTS profiles should include the default-safe Text To Speech profile");
-    assert.deepEqual(defaultProfile.emotionSettings.map((setting) => setting.emotionLabel), ["Neutral", "Calm", "Urgent"]);
-    assert.equal(defaultProfile.gender, "");
+    assert.deepEqual(ttsProfiles.ttsProfiles.map((profile) => profile.name), []);
+
+    await apiJson(server.baseUrl, "/api/session/user", {
+      body: JSON.stringify({ userKey: MOCK_DB_KEYS.users.user1 }),
+      method: "POST",
+    });
+    const createdProfile = await apiJson(server.baseUrl, "/api/messages/tts-profiles", {
+      body: JSON.stringify({
+        emotionSettings: [{
+          emotion: "urgent",
+          emotionLabel: "Urgent",
+          pitch: 1.08,
+          rate: 1.15,
+          volume: 1,
+        }],
+        language: "en-US",
+        name: "Seed Integrity Test Profile",
+        pitch: 1,
+        providerKey: "browser-speech",
+        rate: 1,
+        voiceName: "Default browser voice",
+        volume: 1,
+      }),
+      method: "POST",
+    });
+    assert.equal(createdProfile.ttsProfile.name, "Seed Integrity Test Profile");
+    assert.deepEqual(createdProfile.ttsProfile.emotionSettings.map((setting) => setting.emotionLabel), ["Urgent"]);
 
     const created = await apiJson(server.baseUrl, "/api/messages/messages", {
       body: JSON.stringify({
         emotionProfileKey: urgent.key,
         messageText: "Postgres-backed message text.",
         name: "Postgres Cutover Message",
-        voiceProfileKey: defaultProfile.key,
+        voiceProfileKey: createdProfile.ttsProfile.key,
       }),
       method: "POST",
     });
@@ -114,7 +138,7 @@ test("Messages Local API seeds through the Postgres service and preserves respon
     assert.equal(created.message.categoryName, "Dialog");
     assert.equal(created.message.emotionProfileName, "Urgent");
     assert.equal(created.message.messageText, "Postgres-backed message text.");
-    assert.equal(created.message.voiceProfileName, "Default Balanced Profile");
+    assert.equal(created.message.voiceProfileName, "Seed Integrity Test Profile");
 
     const segment = await apiJson(server.baseUrl, "/api/messages/segments", {
       body: JSON.stringify({
@@ -122,13 +146,13 @@ test("Messages Local API seeds through the Postgres service and preserves respon
         emotionProfileKey: urgent.key,
         messageKey: created.message.key,
         segmentText: "Postgres-backed message part.",
-        voiceProfileKey: defaultProfile.key,
+        voiceProfileKey: createdProfile.ttsProfile.key,
       }),
       method: "POST",
     });
     assert.equal(segment.segment.messageName, "Postgres Cutover Message");
     assert.equal(segment.segment.emotionProfileName, "Urgent");
-    assert.equal(segment.segment.voiceProfileName, "Default Balanced Profile");
+    assert.equal(segment.segment.voiceProfileName, "Seed Integrity Test Profile");
 
     const list = await apiJson(server.baseUrl, "/api/messages/messages");
     const listed = list.messages.find((message) => message.key === created.message.key);

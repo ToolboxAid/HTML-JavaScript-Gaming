@@ -14,7 +14,6 @@ const SEED_CATEGORY_NAMES = Object.freeze([
   "Notification",
 ]);
 const SEED_EMOTION_PROFILES = Object.freeze([
-  Object.freeze({ description: "Balanced spoken delivery for general narration or dialog.", name: "Neutral", pauseAfterMs: 150, pauseBeforeMs: 0, pitch: 1, rate: 1, volume: 1 }),
   Object.freeze({ description: "Bright, positive delivery for friendly or successful moments.", name: "Happy", pauseAfterMs: 110, pauseBeforeMs: 0, pitch: 1.08, rate: 1.04, volume: 1 }),
   Object.freeze({ description: "Neutral spoken delivery for general narration or dialog.", name: "Calm", pauseAfterMs: 150, pauseBeforeMs: 0, pitch: 1, rate: 1, volume: 1 }),
   Object.freeze({ description: "Fast, alert delivery for warnings and immediate danger.", name: "Urgent", pauseAfterMs: 80, pauseBeforeMs: 0, pitch: 1.08, rate: 1.15, volume: 1 }),
@@ -25,12 +24,8 @@ const SEED_EMOTION_PROFILES = Object.freeze([
   Object.freeze({ description: "Soft delivery for loss, regret, or reflective moments.", name: "Sad", pauseAfterMs: 220, pauseBeforeMs: 100, pitch: 0.9, rate: 0.85, volume: 0.8 }),
   Object.freeze({ description: "Measured delivery for suspense, hidden lore, or strange events.", name: "Mysterious", pauseAfterMs: 260, pauseBeforeMs: 120, pitch: 0.92, rate: 0.88, volume: 0.85 }),
 ]);
-const SEED_TTS_PROFILES = Object.freeze([
-  Object.freeze({ description: "Default Text To Speech browser profile.", language: "en-US", name: "Default Balanced Profile", pitch: 1, providerKey: "browser-speech", rate: 1, voiceName: "Default browser voice", volume: 1 }),
-]);
-const SEED_TTS_PROFILE_EMOTION_SETTINGS = Object.freeze([
-  Object.freeze({ emotions: ["Neutral", "Calm", "Urgent"], ttsProfileName: "Default Balanced Profile" }),
-]);
+const SEED_TTS_PROFILES = Object.freeze([]);
+const SEED_TTS_PROFILE_EMOTION_SETTINGS = Object.freeze([]);
 const SUPPORTED_TTS_PROVIDER_KEYS = Object.freeze([
   "browser-speech",
   "elevenlabs",
@@ -1098,19 +1093,14 @@ export class MessagesPostgresService {
   }
 
   async defaultVoiceProfileKeyRaw() {
-    const defaultProfile = await this.findTtsProfileByNameRaw("Default Balanced Profile");
-    if (defaultProfile) {
-      return defaultProfile.key;
-    }
-    const fallback = (await this.tableRows("messages_tts_profiles")).sort(compareName)[0];
-    if (!fallback) {
-      throw httpError("TTS Profile seed is unavailable. Restart the Local API runtime.");
-    }
-    return fallback.key;
+    return "";
   }
 
   async backfillDefaultVoiceProfileReferences() {
     const voiceProfileKey = await this.defaultVoiceProfileKeyRaw();
+    if (!voiceProfileKey) {
+      return;
+    }
     for (const tableName of ["messages_records", "messages_segments"]) {
       const rows = await this.tableRows(tableName);
       for (const row of rows) {
