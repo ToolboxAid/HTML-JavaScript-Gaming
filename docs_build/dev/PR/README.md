@@ -1,11 +1,11 @@
 # PR Documentation Area
 
-This folder owns reusable PR workflow material and historical PR examples.
+This folder owns reusable PR workflow material and historical PR reference documents.
 
 ## Ownership
 
 - `templates/` contains reusable PR planning and build templates.
-- `examples/` contains historical or example PR documents.
+- `reference/` contains historical or reference PR documents.
 
 Reusable PR templates must not live outside `docs_build/dev/PR/templates/`.
 Generated PR reports must live under `docs_build/dev/reports/`.

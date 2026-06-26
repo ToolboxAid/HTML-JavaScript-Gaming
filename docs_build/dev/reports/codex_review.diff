@@ -1,12 +1,84 @@
-﻿diff --git a/archive/docs_build/dev/ProjectInstructions/archive/README.md b/archive/docs_build/dev/ProjectInstructions/archive/README.md
+diff --git a/docs_build/dev/ProjectInstructions/archive/history/.gitkeep b/archive/docs_build/dev/ProjectInstructions/history/.gitkeep
+similarity index 100%
+rename from docs_build/dev/ProjectInstructions/archive/history/.gitkeep
+rename to archive/docs_build/dev/ProjectInstructions/history/.gitkeep
+diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260621_144555.md b/archive/docs_build/dev/ProjectInstructions/history/20260621_144555.md
+similarity index 100%
+rename from docs_build/dev/ProjectInstructions/archive/history/20260621_144555.md
+rename to archive/docs_build/dev/ProjectInstructions/history/20260621_144555.md
+diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260621_153126.md b/archive/docs_build/dev/ProjectInstructions/history/20260621_153126.md
+similarity index 100%
+rename from docs_build/dev/ProjectInstructions/archive/history/20260621_153126.md
+rename to archive/docs_build/dev/ProjectInstructions/history/20260621_153126.md
+diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260621_153759.md b/archive/docs_build/dev/ProjectInstructions/history/20260621_153759.md
+similarity index 100%
+rename from docs_build/dev/ProjectInstructions/archive/history/20260621_153759.md
+rename to archive/docs_build/dev/ProjectInstructions/history/20260621_153759.md
+diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260621_154153.md b/archive/docs_build/dev/ProjectInstructions/history/20260621_154153.md
+similarity index 100%
+rename from docs_build/dev/ProjectInstructions/archive/history/20260621_154153.md
+rename to archive/docs_build/dev/ProjectInstructions/history/20260621_154153.md
+diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260621_154830.md b/archive/docs_build/dev/ProjectInstructions/history/20260621_154830.md
+similarity index 100%
+rename from docs_build/dev/ProjectInstructions/archive/history/20260621_154830.md
+rename to archive/docs_build/dev/ProjectInstructions/history/20260621_154830.md
+diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260621_155907.md b/archive/docs_build/dev/ProjectInstructions/history/20260621_155907.md
+similarity index 100%
+rename from docs_build/dev/ProjectInstructions/archive/history/20260621_155907.md
+rename to archive/docs_build/dev/ProjectInstructions/history/20260621_155907.md
+diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260621_161414.md b/archive/docs_build/dev/ProjectInstructions/history/20260621_161414.md
+similarity index 100%
+rename from docs_build/dev/ProjectInstructions/archive/history/20260621_161414.md
+rename to archive/docs_build/dev/ProjectInstructions/history/20260621_161414.md
+diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260621_161520.md b/archive/docs_build/dev/ProjectInstructions/history/20260621_161520.md
+similarity index 100%
+rename from docs_build/dev/ProjectInstructions/archive/history/20260621_161520.md
+rename to archive/docs_build/dev/ProjectInstructions/history/20260621_161520.md
+diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260621_161703.md b/archive/docs_build/dev/ProjectInstructions/history/20260621_161703.md
+similarity index 100%
+rename from docs_build/dev/ProjectInstructions/archive/history/20260621_161703.md
+rename to archive/docs_build/dev/ProjectInstructions/history/20260621_161703.md
+diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260621_163009.md b/archive/docs_build/dev/ProjectInstructions/history/20260621_163009.md
+similarity index 100%
+rename from docs_build/dev/ProjectInstructions/archive/history/20260621_163009.md
+rename to archive/docs_build/dev/ProjectInstructions/history/20260621_163009.md
+diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260621_231154.md b/archive/docs_build/dev/ProjectInstructions/history/20260621_231154.md
+similarity index 100%
+rename from docs_build/dev/ProjectInstructions/archive/history/20260621_231154.md
+rename to archive/docs_build/dev/ProjectInstructions/history/20260621_231154.md
+diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260621_231757.md b/archive/docs_build/dev/ProjectInstructions/history/20260621_231757.md
+similarity index 100%
+rename from docs_build/dev/ProjectInstructions/archive/history/20260621_231757.md
+rename to archive/docs_build/dev/ProjectInstructions/history/20260621_231757.md
+diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260621_233733.md b/archive/docs_build/dev/ProjectInstructions/history/20260621_233733.md
+similarity index 100%
+rename from docs_build/dev/ProjectInstructions/archive/history/20260621_233733.md
+rename to archive/docs_build/dev/ProjectInstructions/history/20260621_233733.md
+diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260621_235757.md b/archive/docs_build/dev/ProjectInstructions/history/20260621_235757.md
+similarity index 100%
+rename from docs_build/dev/ProjectInstructions/archive/history/20260621_235757.md
+rename to archive/docs_build/dev/ProjectInstructions/history/20260621_235757.md
+diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260621_235932.md b/archive/docs_build/dev/ProjectInstructions/history/20260621_235932.md
+similarity index 100%
+rename from docs_build/dev/ProjectInstructions/archive/history/20260621_235932.md
+rename to archive/docs_build/dev/ProjectInstructions/history/20260621_235932.md
+diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260622_000449.md b/archive/docs_build/dev/ProjectInstructions/history/20260622_000449.md
+similarity index 100%
+rename from docs_build/dev/ProjectInstructions/archive/history/20260622_000449.md
+rename to archive/docs_build/dev/ProjectInstructions/history/20260622_000449.md
+diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260622_002424.md b/archive/docs_build/dev/ProjectInstructions/history/20260622_002424.md
+similarity index 100%
+rename from docs_build/dev/ProjectInstructions/archive/history/20260622_002424.md
+rename to archive/docs_build/dev/ProjectInstructions/history/20260622_002424.md
+diff --git a/archive/docs_build/dev/ProjectInstructions/history/README.md b/archive/docs_build/dev/ProjectInstructions/history/README.md
 new file mode 100644
-index 000000000..13376c7a6
+index 000000000..4b2d2fa42
 --- /dev/null
-+++ b/archive/docs_build/dev/ProjectInstructions/archive/README.md
++++ b/archive/docs_build/dev/ProjectInstructions/history/README.md
 @@ -0,0 +1,12 @@
-+# Project Instructions Archive Reference
++# Project Instructions History Reference
 +
-+This root archive path retains Project Instructions reference material that is no longer active but must remain traceable.
++This root archive path retains Project Instructions history snapshots that are no longer active but must remain traceable.
 +
 +## Rules
 +
@@ -16,78 +88,6 @@ index 000000000..13376c7a6
 +- Do not rewrite archive entries unless the owner explicitly approves.
 +- Use `archive/docs_build/dev/ProjectInstructions/history/CCYYMMDD_HHMMSS.md` for active-governance history snapshots.
 +- If archive placement is unclear, stop and request owner approval.
-diff --git a/docs_build/dev/ProjectInstructions/archive/history/.gitkeep b/archive/docs_build/dev/ProjectInstructions/archive/history/.gitkeep
-similarity index 100%
-rename from docs_build/dev/ProjectInstructions/archive/history/.gitkeep
-rename to archive/docs_build/dev/ProjectInstructions/archive/history/.gitkeep
-diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260621_144555.md b/archive/docs_build/dev/ProjectInstructions/archive/history/20260621_144555.md
-similarity index 100%
-rename from docs_build/dev/ProjectInstructions/archive/history/20260621_144555.md
-rename to archive/docs_build/dev/ProjectInstructions/archive/history/20260621_144555.md
-diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260621_153126.md b/archive/docs_build/dev/ProjectInstructions/archive/history/20260621_153126.md
-similarity index 100%
-rename from docs_build/dev/ProjectInstructions/archive/history/20260621_153126.md
-rename to archive/docs_build/dev/ProjectInstructions/archive/history/20260621_153126.md
-diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260621_153759.md b/archive/docs_build/dev/ProjectInstructions/archive/history/20260621_153759.md
-similarity index 100%
-rename from docs_build/dev/ProjectInstructions/archive/history/20260621_153759.md
-rename to archive/docs_build/dev/ProjectInstructions/archive/history/20260621_153759.md
-diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260621_154153.md b/archive/docs_build/dev/ProjectInstructions/archive/history/20260621_154153.md
-similarity index 100%
-rename from docs_build/dev/ProjectInstructions/archive/history/20260621_154153.md
-rename to archive/docs_build/dev/ProjectInstructions/archive/history/20260621_154153.md
-diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260621_154830.md b/archive/docs_build/dev/ProjectInstructions/archive/history/20260621_154830.md
-similarity index 100%
-rename from docs_build/dev/ProjectInstructions/archive/history/20260621_154830.md
-rename to archive/docs_build/dev/ProjectInstructions/archive/history/20260621_154830.md
-diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260621_155907.md b/archive/docs_build/dev/ProjectInstructions/archive/history/20260621_155907.md
-similarity index 100%
-rename from docs_build/dev/ProjectInstructions/archive/history/20260621_155907.md
-rename to archive/docs_build/dev/ProjectInstructions/archive/history/20260621_155907.md
-diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260621_161414.md b/archive/docs_build/dev/ProjectInstructions/archive/history/20260621_161414.md
-similarity index 100%
-rename from docs_build/dev/ProjectInstructions/archive/history/20260621_161414.md
-rename to archive/docs_build/dev/ProjectInstructions/archive/history/20260621_161414.md
-diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260621_161520.md b/archive/docs_build/dev/ProjectInstructions/archive/history/20260621_161520.md
-similarity index 100%
-rename from docs_build/dev/ProjectInstructions/archive/history/20260621_161520.md
-rename to archive/docs_build/dev/ProjectInstructions/archive/history/20260621_161520.md
-diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260621_161703.md b/archive/docs_build/dev/ProjectInstructions/archive/history/20260621_161703.md
-similarity index 100%
-rename from docs_build/dev/ProjectInstructions/archive/history/20260621_161703.md
-rename to archive/docs_build/dev/ProjectInstructions/archive/history/20260621_161703.md
-diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260621_163009.md b/archive/docs_build/dev/ProjectInstructions/archive/history/20260621_163009.md
-similarity index 100%
-rename from docs_build/dev/ProjectInstructions/archive/history/20260621_163009.md
-rename to archive/docs_build/dev/ProjectInstructions/archive/history/20260621_163009.md
-diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260621_231154.md b/archive/docs_build/dev/ProjectInstructions/archive/history/20260621_231154.md
-similarity index 100%
-rename from docs_build/dev/ProjectInstructions/archive/history/20260621_231154.md
-rename to archive/docs_build/dev/ProjectInstructions/archive/history/20260621_231154.md
-diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260621_231757.md b/archive/docs_build/dev/ProjectInstructions/archive/history/20260621_231757.md
-similarity index 100%
-rename from docs_build/dev/ProjectInstructions/archive/history/20260621_231757.md
-rename to archive/docs_build/dev/ProjectInstructions/archive/history/20260621_231757.md
-diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260621_233733.md b/archive/docs_build/dev/ProjectInstructions/archive/history/20260621_233733.md
-similarity index 100%
-rename from docs_build/dev/ProjectInstructions/archive/history/20260621_233733.md
-rename to archive/docs_build/dev/ProjectInstructions/archive/history/20260621_233733.md
-diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260621_235757.md b/archive/docs_build/dev/ProjectInstructions/archive/history/20260621_235757.md
-similarity index 100%
-rename from docs_build/dev/ProjectInstructions/archive/history/20260621_235757.md
-rename to archive/docs_build/dev/ProjectInstructions/archive/history/20260621_235757.md
-diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260621_235932.md b/archive/docs_build/dev/ProjectInstructions/archive/history/20260621_235932.md
-similarity index 100%
-rename from docs_build/dev/ProjectInstructions/archive/history/20260621_235932.md
-rename to archive/docs_build/dev/ProjectInstructions/archive/history/20260621_235932.md
-diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260622_000449.md b/archive/docs_build/dev/ProjectInstructions/archive/history/20260622_000449.md
-similarity index 100%
-rename from docs_build/dev/ProjectInstructions/archive/history/20260622_000449.md
-rename to archive/docs_build/dev/ProjectInstructions/archive/history/20260622_000449.md
-diff --git a/docs_build/dev/ProjectInstructions/archive/history/20260622_002424.md b/archive/docs_build/dev/ProjectInstructions/archive/history/20260622_002424.md
-similarity index 100%
-rename from docs_build/dev/ProjectInstructions/archive/history/20260622_002424.md
-rename to archive/docs_build/dev/ProjectInstructions/archive/history/20260622_002424.md
 diff --git a/docs_build/dev/admin-notes/BusinessPlan.txt b/archive/docs_build/dev/admin-notes/BusinessPlan.txt
 similarity index 100%
 rename from docs_build/dev/admin-notes/BusinessPlan.txt
@@ -234,18 +234,18 @@ rename from docs_build/dev/roadmaps/POST_MIGRATION_PLATFORM_ROADMAP.md
 rename to archive/docs_build/dev/roadmaps/POST_MIGRATION_PLATFORM_ROADMAP.md
 diff --git a/docs_build/dev/PR/README.md b/docs_build/dev/PR/README.md
 new file mode 100644
-index 000000000..128e7b56b
+index 000000000..4c375fe9b
 --- /dev/null
 +++ b/docs_build/dev/PR/README.md
 @@ -0,0 +1,18 @@
 +# PR Documentation Area
 +
-+This folder owns reusable PR workflow material and historical PR examples.
++This folder owns reusable PR workflow material and historical PR reference documents.
 +
 +## Ownership
 +
 +- `templates/` contains reusable PR planning and build templates.
-+- `examples/` contains historical or example PR documents.
++- `reference/` contains historical or reference PR documents.
 +
 +Reusable PR templates must not live outside `docs_build/dev/PR/templates/`.
 +Generated PR reports must live under `docs_build/dev/reports/`.
@@ -256,87 +256,87 @@ index 000000000..128e7b56b
 +- Do not put active Project Instructions in this folder.
 +- Do not put generated reports in this folder.
 +- Do not use lower-case `docs_build/dev/pr/`; this folder is the canonical PR documentation area.
-diff --git a/docs_build/dev/pr/BUILD_PR.md b/docs_build/dev/PR/examples/OWNER_007_BUILD_PR.md
+diff --git a/docs_build/dev/pr/BUILD_PR.md b/docs_build/dev/PR/reference/OWNER_007_BUILD_PR.md
 similarity index 100%
 rename from docs_build/dev/pr/BUILD_PR.md
-rename to docs_build/dev/PR/examples/OWNER_007_BUILD_PR.md
-diff --git a/docs_build/dev/pr/PLAN_PR.md b/docs_build/dev/PR/examples/OWNER_007_PLAN_PR.md
+rename to docs_build/dev/PR/reference/OWNER_007_BUILD_PR.md
+diff --git a/docs_build/dev/pr/PLAN_PR.md b/docs_build/dev/PR/reference/OWNER_007_PLAN_PR.md
 similarity index 100%
 rename from docs_build/dev/pr/PLAN_PR.md
-rename to docs_build/dev/PR/examples/OWNER_007_PLAN_PR.md
-diff --git a/docs_build/dev/PR/examples/README.md b/docs_build/dev/PR/examples/README.md
+rename to docs_build/dev/PR/reference/OWNER_007_PLAN_PR.md
+diff --git a/docs_build/dev/PR/reference/README.md b/docs_build/dev/PR/reference/README.md
 new file mode 100644
-index 000000000..4766162dd
+index 000000000..3823a372c
 --- /dev/null
-+++ b/docs_build/dev/PR/examples/README.md
++++ b/docs_build/dev/PR/reference/README.md
 @@ -0,0 +1,7 @@
-+# PR Examples
++# PR Reference
 +
-+This folder contains historical or example PR planning documents.
++This folder contains historical or reference PR planning documents.
 +
-+Files here are examples only. They are not active Project Instructions, not reusable templates, and not generated reports.
++Files here are reference only. They are not active Project Instructions, not reusable templates, and not generated reports.
 +
 +Use reusable templates from `docs_build/dev/PR/templates/`.
-diff --git a/docs_build/dev/pr/plan_pr_tool_workspace_manifest_boundaries.md b/docs_build/dev/PR/examples/plan_pr_tool_workspace_manifest_boundaries.md
+diff --git a/docs_build/dev/pr/plan_pr_tool_workspace_manifest_boundaries.md b/docs_build/dev/PR/reference/plan_pr_tool_workspace_manifest_boundaries.md
 similarity index 100%
 rename from docs_build/dev/pr/plan_pr_tool_workspace_manifest_boundaries.md
-rename to docs_build/dev/PR/examples/plan_pr_tool_workspace_manifest_boundaries.md
-diff --git a/docs_build/dev/pr/pr_koti_layout_contract.md b/docs_build/dev/PR/examples/pr_koti_layout_contract.md
+rename to docs_build/dev/PR/reference/plan_pr_tool_workspace_manifest_boundaries.md
+diff --git a/docs_build/dev/pr/pr_koti_layout_contract.md b/docs_build/dev/PR/reference/pr_koti_layout_contract.md
 similarity index 100%
 rename from docs_build/dev/pr/pr_koti_layout_contract.md
-rename to docs_build/dev/PR/examples/pr_koti_layout_contract.md
-diff --git a/docs_build/dev/pr/pr_tool_fix_asset_browser_1505.md b/docs_build/dev/PR/examples/pr_tool_fix_asset_browser_1505.md
+rename to docs_build/dev/PR/reference/pr_koti_layout_contract.md
+diff --git a/docs_build/dev/pr/pr_tool_fix_asset_browser_1505.md b/docs_build/dev/PR/reference/pr_tool_fix_asset_browser_1505.md
 similarity index 100%
 rename from docs_build/dev/pr/pr_tool_fix_asset_browser_1505.md
-rename to docs_build/dev/PR/examples/pr_tool_fix_asset_browser_1505.md
-diff --git a/docs_build/dev/pr/pr_tool_fix_fullscreen_exit_state.md b/docs_build/dev/PR/examples/pr_tool_fix_fullscreen_exit_state.md
+rename to docs_build/dev/PR/reference/pr_tool_fix_asset_browser_1505.md
+diff --git a/docs_build/dev/pr/pr_tool_fix_fullscreen_exit_state.md b/docs_build/dev/PR/reference/pr_tool_fix_fullscreen_exit_state.md
 similarity index 100%
 rename from docs_build/dev/pr/pr_tool_fix_fullscreen_exit_state.md
-rename to docs_build/dev/PR/examples/pr_tool_fix_fullscreen_exit_state.md
-diff --git a/docs_build/dev/pr/pr_tool_fix_parallax_header_metadata.md b/docs_build/dev/PR/examples/pr_tool_fix_parallax_header_metadata.md
+rename to docs_build/dev/PR/reference/pr_tool_fix_fullscreen_exit_state.md
+diff --git a/docs_build/dev/pr/pr_tool_fix_parallax_header_metadata.md b/docs_build/dev/PR/reference/pr_tool_fix_parallax_header_metadata.md
 similarity index 100%
 rename from docs_build/dev/pr/pr_tool_fix_parallax_header_metadata.md
-rename to docs_build/dev/PR/examples/pr_tool_fix_parallax_header_metadata.md
-diff --git a/docs_build/dev/pr/pr_tool_header_singleline.md b/docs_build/dev/PR/examples/pr_tool_header_singleline.md
+rename to docs_build/dev/PR/reference/pr_tool_fix_parallax_header_metadata.md
+diff --git a/docs_build/dev/pr/pr_tool_header_singleline.md b/docs_build/dev/PR/reference/pr_tool_header_singleline.md
 similarity index 100%
 rename from docs_build/dev/pr/pr_tool_header_singleline.md
-rename to docs_build/dev/PR/examples/pr_tool_header_singleline.md
-diff --git a/docs_build/dev/pr/pr_tool_interactive_uat.md b/docs_build/dev/PR/examples/pr_tool_interactive_uat.md
+rename to docs_build/dev/PR/reference/pr_tool_header_singleline.md
+diff --git a/docs_build/dev/pr/pr_tool_interactive_uat.md b/docs_build/dev/PR/reference/pr_tool_interactive_uat.md
 similarity index 100%
 rename from docs_build/dev/pr/pr_tool_interactive_uat.md
-rename to docs_build/dev/PR/examples/pr_tool_interactive_uat.md
-diff --git a/docs_build/dev/pr/pr_tool_layout_workflow_baseline.md b/docs_build/dev/PR/examples/pr_tool_layout_workflow_baseline.md
+rename to docs_build/dev/PR/reference/pr_tool_interactive_uat.md
+diff --git a/docs_build/dev/pr/pr_tool_layout_workflow_baseline.md b/docs_build/dev/PR/reference/pr_tool_layout_workflow_baseline.md
 similarity index 100%
 rename from docs_build/dev/pr/pr_tool_layout_workflow_baseline.md
-rename to docs_build/dev/PR/examples/pr_tool_layout_workflow_baseline.md
-diff --git a/docs_build/dev/pr/pr_tool_remove_future_import_hints.md b/docs_build/dev/PR/examples/pr_tool_remove_future_import_hints.md
+rename to docs_build/dev/PR/reference/pr_tool_layout_workflow_baseline.md
+diff --git a/docs_build/dev/pr/pr_tool_remove_future_import_hints.md b/docs_build/dev/PR/reference/pr_tool_remove_future_import_hints.md
 similarity index 100%
 rename from docs_build/dev/pr/pr_tool_remove_future_import_hints.md
-rename to docs_build/dev/PR/examples/pr_tool_remove_future_import_hints.md
-diff --git a/docs_build/dev/pr/pr_tool_remove_static_header_intro.md b/docs_build/dev/PR/examples/pr_tool_remove_static_header_intro.md
+rename to docs_build/dev/PR/reference/pr_tool_remove_future_import_hints.md
+diff --git a/docs_build/dev/pr/pr_tool_remove_static_header_intro.md b/docs_build/dev/PR/reference/pr_tool_remove_static_header_intro.md
 similarity index 100%
 rename from docs_build/dev/pr/pr_tool_remove_static_header_intro.md
-rename to docs_build/dev/PR/examples/pr_tool_remove_static_header_intro.md
-diff --git a/docs_build/dev/pr/pr_tool_stabilization.md b/docs_build/dev/PR/examples/pr_tool_stabilization.md
+rename to docs_build/dev/PR/reference/pr_tool_remove_static_header_intro.md
+diff --git a/docs_build/dev/pr/pr_tool_stabilization.md b/docs_build/dev/PR/reference/pr_tool_stabilization.md
 similarity index 100%
 rename from docs_build/dev/pr/pr_tool_stabilization.md
-rename to docs_build/dev/PR/examples/pr_tool_stabilization.md
-diff --git a/docs_build/dev/pr/pr_tool_uat_closeout.md b/docs_build/dev/PR/examples/pr_tool_uat_closeout.md
+rename to docs_build/dev/PR/reference/pr_tool_stabilization.md
+diff --git a/docs_build/dev/pr/pr_tool_uat_closeout.md b/docs_build/dev/PR/reference/pr_tool_uat_closeout.md
 similarity index 100%
 rename from docs_build/dev/pr/pr_tool_uat_closeout.md
-rename to docs_build/dev/PR/examples/pr_tool_uat_closeout.md
-diff --git a/docs_build/dev/pr/pr_tool_uat_fix_fullscreen_header_wiring.md b/docs_build/dev/PR/examples/pr_tool_uat_fix_fullscreen_header_wiring.md
+rename to docs_build/dev/PR/reference/pr_tool_uat_closeout.md
+diff --git a/docs_build/dev/pr/pr_tool_uat_fix_fullscreen_header_wiring.md b/docs_build/dev/PR/reference/pr_tool_uat_fix_fullscreen_header_wiring.md
 similarity index 100%
 rename from docs_build/dev/pr/pr_tool_uat_fix_fullscreen_header_wiring.md
-rename to docs_build/dev/PR/examples/pr_tool_uat_fix_fullscreen_header_wiring.md
-diff --git a/docs_build/dev/pr/pr_tool_uat_fix_header_asset_browser.md b/docs_build/dev/PR/examples/pr_tool_uat_fix_header_asset_browser.md
+rename to docs_build/dev/PR/reference/pr_tool_uat_fix_fullscreen_header_wiring.md
+diff --git a/docs_build/dev/pr/pr_tool_uat_fix_header_asset_browser.md b/docs_build/dev/PR/reference/pr_tool_uat_fix_header_asset_browser.md
 similarity index 100%
 rename from docs_build/dev/pr/pr_tool_uat_fix_header_asset_browser.md
-rename to docs_build/dev/PR/examples/pr_tool_uat_fix_header_asset_browser.md
-diff --git a/docs_build/dev/pr/pr_tool_uat_fixes.md b/docs_build/dev/PR/examples/pr_tool_uat_fixes.md
+rename to docs_build/dev/PR/reference/pr_tool_uat_fix_header_asset_browser.md
+diff --git a/docs_build/dev/pr/pr_tool_uat_fixes.md b/docs_build/dev/PR/reference/pr_tool_uat_fixes.md
 similarity index 100%
 rename from docs_build/dev/pr/pr_tool_uat_fixes.md
-rename to docs_build/dev/PR/examples/pr_tool_uat_fixes.md
+rename to docs_build/dev/PR/reference/pr_tool_uat_fixes.md
 diff --git a/docs_build/dev/PR/templates/BUILD_PR.md b/docs_build/dev/PR/templates/BUILD_PR.md
 new file mode 100644
 index 000000000..a5c2c186e
@@ -470,7 +470,7 @@ index c52753b84..d9efb1741 100644
 
 @@ -60,6 +72,12 @@ Existing Project Instructions outside `docs_build/dev/ProjectInstructions/` rema
 
- `docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md` defines the Browser → API → Database product-data rule and mock repository technical debt boundary.
+ `docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md` defines the Browser â†’ API â†’ Database product-data rule and mock repository technical debt boundary.
 
 +## Standards
 +
@@ -482,7 +482,7 @@ index c52753b84..d9efb1741 100644
 
  `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md` defines the single active Project Instructions source, canonical START / WORK / END branch lifecycle, EOD main lock, next-day reset, team branch creation gate, daily synchronization baseline, and mandatory hard stops.
 diff --git a/docs_build/dev/ProjectInstructions/README.txt b/docs_build/dev/ProjectInstructions/README.txt
-index 9831123d3..3493bce57 100644
+index 9831123d3..3a2830219 100644
 --- a/docs_build/dev/ProjectInstructions/README.txt
 +++ b/docs_build/dev/ProjectInstructions/README.txt
 @@ -1,10 +1,10 @@
@@ -516,7 +516,7 @@ index 9831123d3..3493bce57 100644
 +
 +PR documentation:
 +- Reusable PR templates: docs_build/dev/PR/templates/
-+- Historical/example PR documents: docs_build/dev/PR/examples/
++- Historical/reference PR documents: docs_build/dev/PR/reference/
 diff --git a/docs_build/dev/ProjectInstructions/addendums/codex_project_instructions_startup.md b/docs_build/dev/ProjectInstructions/addendums/codex_project_instructions_startup.md
 index ee11393b4..c6d8f192c 100644
 --- a/docs_build/dev/ProjectInstructions/addendums/codex_project_instructions_startup.md
@@ -538,7 +538,7 @@ index ee11393b4..c6d8f192c 100644
  ## Conflict Handling
 diff --git a/docs_build/dev/ProjectInstructions/addendums/documentation_ownership.md b/docs_build/dev/ProjectInstructions/addendums/documentation_ownership.md
 new file mode 100644
-index 000000000..1258e917f
+index 000000000..e0f650ced
 --- /dev/null
 +++ b/docs_build/dev/ProjectInstructions/addendums/documentation_ownership.md
 @@ -0,0 +1,54 @@
@@ -562,7 +562,7 @@ index 000000000..1258e917f
 +`docs_build/dev/PR/` owns:
 +- PR workflow documentation
 +- reusable PR templates
-+- historical or example PR documents
++- historical or reference PR documents
 +
 +`docs_build/dev/reports/` owns:
 +- generated reports
@@ -585,7 +585,7 @@ index 000000000..1258e917f
 +
 +- `docs_build/dev/ProjectInstructions/standards/` contains active contract, model, and platform standards.
 +- `docs_build/dev/PR/templates/` contains reusable PR templates.
-+- `docs_build/dev/PR/examples/` contains historical or example PR documents.
++- `docs_build/dev/PR/reference/` contains historical or reference PR documents.
 +- `docs_build/dev/reports/audits/` contains audit report outputs.
 +
 +## Validation
@@ -847,84 +847,172 @@ rename from docs_build/dev/specs/VERSION_COMPATIBILITY_CONTRACT.md
 rename to docs_build/dev/ProjectInstructions/standards/VERSION_COMPATIBILITY_CONTRACT.md
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup.md b/docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup.md
 new file mode 100644
-index 000000000..b8212fe30
+index 000000000..3040be0a7
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup.md
-@@ -0,0 +1 @@
-+﻿# PR_26177_OWNER_008-dev-documentation-ownership-cleanup  Date: 2026-06-26 Branch: PR_26177_OWNER_008-dev-documentation-ownership-cleanup Scope: Documentation ownership cleanup after ProjectInstructions consolidation Status: PASS  ## Summary  - Enforced docs_build/dev/ProjectInstructions/ as the active governance, team instruction, standards, and addendum owner. - Renamed the lower-case PR documentation area into canonical docs_build/dev/PR/. - Added docs_build/dev/PR/README.md, reusable templates/, and historical examples/. - Moved reusable PR checklist material into docs_build/dev/PR/templates/. - Moved historical/example PR documents into docs_build/dev/PR/examples/. - Moved contract/model/platform specs into docs_build/dev/ProjectInstructions/standards/. - Moved historical roadmaps, admin notes, and ProjectInstructions archive snapshots into root archive/. - Removed duplicate root project-instructions/addendums/ files; retained only the deprecated pointer README. - Added docs_build/dev/reports/documentation-ownership-report.md. - No runtime/product/API/database files changed.  ## Validation  - PASS: branch validation. - PASS: ownership folder checks. - PASS: no active duplicate ProjectInstructions tracked outside active source, except protected/deprecated pointers noted in reports. - PASS: no reusable PR templates outside docs_build/dev/PR/templates/. - PASS: no generated reports outside docs_build/dev/reports/. - PASS: no runtime/product/API/database files changed. - PASS: git diff --check. - PASS: Playwright not impacted.  ## Artifact  - tmp/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_delta.zip
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_branch-validation.md b/docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_branch-validation.md
-new file mode 100644
-index 000000000..11471a1ae
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_branch-validation.md
-@@ -0,0 +1 @@
-+﻿# Branch Validation - PR_26177_OWNER_008-dev-documentation-ownership-cleanup  Status: PASS  - PASS: Current branch is PR_26177_OWNER_008-dev-documentation-ownership-cleanup. - PASS: Branch was created from synchronized main at published EOD SHA c8c2cc2c3ab5cf4f5c9ba62efaa686d8b750eb06. - PASS: Work remained on the PR branch during implementation. - PASS: No commits were made on main. - PASS: Scope is documentation/governance ownership cleanup only.
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_manual-validation-notes.md
-new file mode 100644
-index 000000000..397d31965
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_manual-validation-notes.md
-@@ -0,0 +1 @@
-+﻿# Manual Validation Notes - PR_26177_OWNER_008-dev-documentation-ownership-cleanup  Status: PASS  - Reviewed current docs_build/dev ownership surfaces before moving files. - Confirmed docs_build/dev/pr/PLAN_PR.md and BUILD_PR.md were OWNER_007 examples, not reusable blank templates. - Created generic reusable PR templates under docs_build/dev/PR/templates/. - Moved historical PR docs into docs_build/dev/PR/examples/. - Moved specs into active ProjectInstructions standards. - Moved admin notes, roadmaps, and ProjectInstructions archive snapshots to root archive as reference material. - Left docs_build/dev/start_of_day/ untouched as protected legacy handoff material. - Confirmed no runtime/product/API/database files were changed.
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_requirement-checklist.md b/docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_requirement-checklist.md
-new file mode 100644
-index 000000000..7e6fbea88
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_requirement-checklist.md
-@@ -0,0 +1 @@
-+﻿# Requirement Checklist - PR_26177_OWNER_008-dev-documentation-ownership-cleanup  Status: PASS  - PASS: Current branch, clean worktree, main sync, and EOD SHA were validated before branch creation. - PASS: docs_build/dev/pr/ was renamed into canonical docs_build/dev/PR/ ownership area. - PASS: docs_build/dev/PR/README.md exists. - PASS: docs_build/dev/PR/templates/PLAN_PR.md exists. - PASS: docs_build/dev/PR/templates/BUILD_PR.md exists. - PASS: docs_build/dev/PR/examples/ exists. - PASS: Reusable PR checklist moved into docs_build/dev/PR/templates/. - PASS: Historical/example PR documents moved into docs_build/dev/PR/examples/. - PASS: Active standards moved into docs_build/dev/ProjectInstructions/standards/. - PASS: Documentation ownership governance added to ProjectInstructions. - PASS: Generated reports remain under docs_build/dev/reports/. - PASS: Historical reference material moved to root archive/. - PASS: No runtime changes. - PASS: No product changes. - PASS: No API changes. - PASS: No database changes.
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_validation-lane.md b/docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_validation-lane.md
-new file mode 100644
-index 000000000..85013591e
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_validation-lane.md
-@@ -0,0 +1 @@
-+﻿# Validation Lane - PR_26177_OWNER_008-dev-documentation-ownership-cleanup  Status: PASS  Commands run:  - git branch --show-current - git status --short --branch --untracked-files=all - git rev-list --left-right --count main...origin/main - git rev-parse HEAD - rg --files docs_build/dev/PR/templates - rg --files docs_build/dev/ProjectInstructions/standards - python docs ownership path checks - git diff --name-only origin/main -- src assets toolbox games api serverside package.json package-lock.json db database supabase migrations tests scripts - git diff --check  Results: - PASS: Current branch is PR_26177_OWNER_008-dev-documentation-ownership-cleanup. - PASS: docs_build/dev/PR/templates/ contains reusable PR templates. - PASS: docs_build/dev/ProjectInstructions/standards/ contains active standards. - PASS: old tracked lower-case/loose owner paths have zero tracked files. - PASS: runtime/product/API/database changed-file check returned no files. - PASS: git diff --check returned no whitespace errors. - PASS: Playwright not run because no runtime/product files changed.
-diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 3e5771b9e..dbf14a3e4 100644
-Binary files a/docs_build/dev/reports/codex_changed_files.txt and b/docs_build/dev/reports/codex_changed_files.txt differ
-diff --git a/docs_build/dev/reports/documentation-ownership-report.md b/docs_build/dev/reports/documentation-ownership-report.md
-new file mode 100644
-index 000000000..64ef3e6d5
---- /dev/null
-+++ b/docs_build/dev/reports/documentation-ownership-report.md
-@@ -0,0 +1,147 @@
-+﻿# Documentation Ownership Report
+@@ -0,0 +1,35 @@
++# PR_26177_OWNER_008-dev-documentation-ownership-cleanup
 +
-+Date: 2026-06-26
++Date: 2026-06-26 16:20:09 local
 +Branch: PR_26177_OWNER_008-dev-documentation-ownership-cleanup
++HEAD: 782bcebe39f5469248f2767d8334e4b011059e17
++Scope: Documentation ownership cleanup after ProjectInstructions consolidation
 +Status: PASS
 +
 +## Summary
 +
-+- Created canonical docs_build/dev/PR/ ownership area.
-+- Added reusable PR templates under docs_build/dev/PR/templates/.
-+- Moved historical/example PR documents under docs_build/dev/PR/examples/.
-+- Added active documentation ownership governance under docs_build/dev/ProjectInstructions/addendums/documentation_ownership.md.
-+- Moved active contract/model/platform standards from docs_build/dev/specs/ into docs_build/dev/ProjectInstructions/standards/.
-+- Moved historical roadmaps, admin notes, and ProjectInstructions archive snapshots into the root archive/ tree.
-+- Removed deprecated duplicate root project-instructions/addendums/ files; only the deprecated pointer README remains.
++- Enforced docs_build/dev/ProjectInstructions/ as the only active governance SSoT.
++- Kept reusable PR workflow material under docs_build/dev/PR/templates/.
++- Renamed historical PR examples area to docs_build/dev/PR/reference/.
++- Flattened ProjectInstructions history snapshots to archive/docs_build/dev/ProjectInstructions/history/.
++- Kept generated reports under docs_build/dev/reports/.
++- Confirmed no runtime/product/API/database files changed.
++
++## Final Corrections
++
++- PASS: No archive/docs_build/dev/ProjectInstructions/archive/ path remains.
++- PASS: docs_build/dev/PR/examples/ was renamed to docs_build/dev/PR/reference/.
++- PASS: ProjectInstructions remains the only active governance SSoT.
++
++## Validation
++
++- PASS: Current branch is PR_26177_OWNER_008-dev-documentation-ownership-cleanup.
++- PASS: Changed path count is 132 and all changed paths are docs/archive/report scoped.
++- PASS: Runtime/product/API/database changed path count is 0.
++- PASS: Loose active docs outside approved docs_build/dev ownership folders: 0.
++- PASS: git diff --check origin/main -- .
++- PASS: Playwright not impacted; no runtime/product files changed.
++
++## Artifact
++
++- tmp/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_delta.zip
+diff --git a/docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_branch-validation.md b/docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_branch-validation.md
+new file mode 100644
+index 000000000..615f3f34c
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_branch-validation.md
+@@ -0,0 +1,9 @@
++# Branch Validation - PR_26177_OWNER_008-dev-documentation-ownership-cleanup
++
++Status: PASS
++
++- PASS: Current branch is PR_26177_OWNER_008-dev-documentation-ownership-cleanup.
++- PASS: Branch is not main during implementation and commit preparation.
++- PASS: Worktree changes are limited to approved documentation ownership scope.
++- PASS: No runtime/product/API/database files are in the changed path set.
++- PASS: Final EOD will return to main after merge.
+diff --git a/docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_manual-validation-notes.md
+new file mode 100644
+index 000000000..aaa1df107
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_manual-validation-notes.md
+@@ -0,0 +1,10 @@
++# Manual Validation Notes - PR_26177_OWNER_008-dev-documentation-ownership-cleanup
++
++Status: PASS
++
++- Reviewed current docs_build/dev ownership surfaces before closeout.
++- Confirmed ProjectInstructions is the only active governance SSoT.
++- Confirmed docs_build/dev/PR/reference/ replaces the former examples folder.
++- Confirmed ProjectInstructions history snapshots use root archive history, not a nested archive folder.
++- Confirmed docs_build/dev/start_of_day/ remains untouched.
++- Confirmed no runtime/product/API/database files were changed.
+diff --git a/docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_requirement-checklist.md b/docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_requirement-checklist.md
+new file mode 100644
+index 000000000..44870bb97
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_requirement-checklist.md
+@@ -0,0 +1,20 @@
++# Requirement Checklist - PR_26177_OWNER_008-dev-documentation-ownership-cleanup
++
++Status: PASS
++
++- PASS: Renamed docs_build/dev/pr/ into canonical docs_build/dev/PR/ ownership area.
++- PASS: docs_build/dev/PR/README.md exists.
++- PASS: docs_build/dev/PR/templates/PLAN_PR.md exists.
++- PASS: docs_build/dev/PR/templates/BUILD_PR.md exists.
++- PASS: docs_build/dev/PR/reference/ exists.
++- PASS: Reusable PR workflow files live under docs_build/dev/PR/templates/.
++- PASS: Historical/reference PR documents live under docs_build/dev/PR/reference/.
++- PASS: Active standards live under docs_build/dev/ProjectInstructions/standards/.
++- PASS: Documentation ownership governance lives under docs_build/dev/ProjectInstructions/.
++- PASS: Generated reports remain under docs_build/dev/reports/.
++- PASS: ProjectInstructions history snapshots live under archive/docs_build/dev/ProjectInstructions/history/.
++- PASS: archive/docs_build/dev/ProjectInstructions/archive/ does not exist.
++- PASS: No runtime changes.
++- PASS: No product changes.
++- PASS: No API changes.
++- PASS: No database changes.
+diff --git a/docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_validation-lane.md b/docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_validation-lane.md
+new file mode 100644
+index 000000000..d8fa51e3e
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_validation-lane.md
+@@ -0,0 +1,21 @@
++# Validation Lane - PR_26177_OWNER_008-dev-documentation-ownership-cleanup
++
++Status: PASS
++
++## Commands
++
++- git branch --show-current
++- git status --short --branch --untracked-files=all
++- git diff --name-status origin/main --
++- git diff --check origin/main -- .
++- Python ownership scan for loose docs_build/dev documentation outside ProjectInstructions, PR, reports, and start_of_day.
++- Python changed-path scope scan for runtime/product/API/database paths.
++
++## Results
++
++- Branch: PR_26177_OWNER_008-dev-documentation-ownership-cleanup
++- Changed paths: 132
++- Runtime/product/API/database changed paths: 0
++- Loose active docs outside approved docs_build/dev ownership folders: 0
++- git diff --check: PASS
++- Playwright: not run, not impacted by documentation/archive/report-only changes.
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index 3e5771b9e..c2d85c031 100644
+Binary files a/docs_build/dev/reports/codex_changed_files.txt and b/docs_build/dev/reports/codex_changed_files.txt differ
+diff --git a/docs_build/dev/reports/documentation-ownership-report.md b/docs_build/dev/reports/documentation-ownership-report.md
+new file mode 100644
+index 000000000..4242d73ef
+--- /dev/null
++++ b/docs_build/dev/reports/documentation-ownership-report.md
+@@ -0,0 +1,145 @@
++# Documentation Ownership Report
++
++Date: 2026-06-26 16:20:09 local
++Branch: PR_26177_OWNER_008-dev-documentation-ownership-cleanup
++Status: PASS
++
++## Folder Ownership
++
++- docs_build/dev/ProjectInstructions/: permanent governance, team instructions, standards, addendums.
++- docs_build/dev/PR/templates/: reusable PR templates.
++- docs_build/dev/PR/reference/: historical/reference PR documents.
++- docs_build/dev/reports/: generated reports and audits.
++- archive/: historical reference only.
 +
 +## Files Moved
 +
-+- R100	docs_build/dev/ProjectInstructions/archive/history/.gitkeep	archive/docs_build/dev/ProjectInstructions/archive/history/.gitkeep
-+- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_144555.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_144555.md
-+- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_153126.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_153126.md
-+- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_153759.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_153759.md
-+- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_154153.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_154153.md
-+- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_154830.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_154830.md
-+- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_155907.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_155907.md
-+- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_161414.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_161414.md
-+- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_161520.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_161520.md
-+- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_161703.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_161703.md
-+- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_163009.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_163009.md
-+- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_231154.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_231154.md
-+- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_231757.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_231757.md
-+- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_233733.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_233733.md
-+- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_235757.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_235757.md
-+- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_235932.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_235932.md
-+- R100	docs_build/dev/ProjectInstructions/archive/history/20260622_000449.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260622_000449.md
-+- R100	docs_build/dev/ProjectInstructions/archive/history/20260622_002424.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260622_002424.md
++- R100	docs_build/dev/ProjectInstructions/archive/history/.gitkeep	archive/docs_build/dev/ProjectInstructions/history/.gitkeep
++- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_144555.md	archive/docs_build/dev/ProjectInstructions/history/20260621_144555.md
++- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_153126.md	archive/docs_build/dev/ProjectInstructions/history/20260621_153126.md
++- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_153759.md	archive/docs_build/dev/ProjectInstructions/history/20260621_153759.md
++- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_154153.md	archive/docs_build/dev/ProjectInstructions/history/20260621_154153.md
++- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_154830.md	archive/docs_build/dev/ProjectInstructions/history/20260621_154830.md
++- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_155907.md	archive/docs_build/dev/ProjectInstructions/history/20260621_155907.md
++- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_161414.md	archive/docs_build/dev/ProjectInstructions/history/20260621_161414.md
++- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_161520.md	archive/docs_build/dev/ProjectInstructions/history/20260621_161520.md
++- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_161703.md	archive/docs_build/dev/ProjectInstructions/history/20260621_161703.md
++- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_163009.md	archive/docs_build/dev/ProjectInstructions/history/20260621_163009.md
++- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_231154.md	archive/docs_build/dev/ProjectInstructions/history/20260621_231154.md
++- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_231757.md	archive/docs_build/dev/ProjectInstructions/history/20260621_231757.md
++- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_233733.md	archive/docs_build/dev/ProjectInstructions/history/20260621_233733.md
++- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_235757.md	archive/docs_build/dev/ProjectInstructions/history/20260621_235757.md
++- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_235932.md	archive/docs_build/dev/ProjectInstructions/history/20260621_235932.md
++- R100	docs_build/dev/ProjectInstructions/archive/history/20260622_000449.md	archive/docs_build/dev/ProjectInstructions/history/20260622_000449.md
++- R100	docs_build/dev/ProjectInstructions/archive/history/20260622_002424.md	archive/docs_build/dev/ProjectInstructions/history/20260622_002424.md
 +- R100	docs_build/dev/admin-notes/BusinessPlan.txt	archive/docs_build/dev/admin-notes/BusinessPlan.txt
 +- R100	docs_build/dev/admin-notes/GFS-AI-Credits-Reseller-Strategy.pdf	archive/docs_build/dev/admin-notes/GFS-AI-Credits-Reseller-Strategy.pdf
 +- R100	docs_build/dev/admin-notes/GFS-Connected-Play-Second-Screen-Turn-Based-Design-26170-001.pdf	archive/docs_build/dev/admin-notes/GFS-Connected-Play-Second-Screen-Turn-Based-Design-26170-001.pdf
@@ -961,23 +1049,23 @@ index 000000000..64ef3e6d5
 +- R100	docs_build/dev/roadmaps/MASTER_ROADMAP_FEATURES.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_FEATURES.md
 +- R100	docs_build/dev/roadmaps/MASTER_ROADMAP_STYLE.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_STYLE.md
 +- R100	docs_build/dev/roadmaps/POST_MIGRATION_PLATFORM_ROADMAP.md	archive/docs_build/dev/roadmaps/POST_MIGRATION_PLATFORM_ROADMAP.md
-+- R100	docs_build/dev/pr/BUILD_PR.md	docs_build/dev/PR/examples/OWNER_007_BUILD_PR.md
-+- R100	docs_build/dev/pr/PLAN_PR.md	docs_build/dev/PR/examples/OWNER_007_PLAN_PR.md
-+- R100	docs_build/dev/pr/plan_pr_tool_workspace_manifest_boundaries.md	docs_build/dev/PR/examples/plan_pr_tool_workspace_manifest_boundaries.md
-+- R100	docs_build/dev/pr/pr_koti_layout_contract.md	docs_build/dev/PR/examples/pr_koti_layout_contract.md
-+- R100	docs_build/dev/pr/pr_tool_fix_asset_browser_1505.md	docs_build/dev/PR/examples/pr_tool_fix_asset_browser_1505.md
-+- R100	docs_build/dev/pr/pr_tool_fix_fullscreen_exit_state.md	docs_build/dev/PR/examples/pr_tool_fix_fullscreen_exit_state.md
-+- R100	docs_build/dev/pr/pr_tool_fix_parallax_header_metadata.md	docs_build/dev/PR/examples/pr_tool_fix_parallax_header_metadata.md
-+- R100	docs_build/dev/pr/pr_tool_header_singleline.md	docs_build/dev/PR/examples/pr_tool_header_singleline.md
-+- R100	docs_build/dev/pr/pr_tool_interactive_uat.md	docs_build/dev/PR/examples/pr_tool_interactive_uat.md
-+- R100	docs_build/dev/pr/pr_tool_layout_workflow_baseline.md	docs_build/dev/PR/examples/pr_tool_layout_workflow_baseline.md
-+- R100	docs_build/dev/pr/pr_tool_remove_future_import_hints.md	docs_build/dev/PR/examples/pr_tool_remove_future_import_hints.md
-+- R100	docs_build/dev/pr/pr_tool_remove_static_header_intro.md	docs_build/dev/PR/examples/pr_tool_remove_static_header_intro.md
-+- R100	docs_build/dev/pr/pr_tool_stabilization.md	docs_build/dev/PR/examples/pr_tool_stabilization.md
-+- R100	docs_build/dev/pr/pr_tool_uat_closeout.md	docs_build/dev/PR/examples/pr_tool_uat_closeout.md
-+- R100	docs_build/dev/pr/pr_tool_uat_fix_fullscreen_header_wiring.md	docs_build/dev/PR/examples/pr_tool_uat_fix_fullscreen_header_wiring.md
-+- R100	docs_build/dev/pr/pr_tool_uat_fix_header_asset_browser.md	docs_build/dev/PR/examples/pr_tool_uat_fix_header_asset_browser.md
-+- R100	docs_build/dev/pr/pr_tool_uat_fixes.md	docs_build/dev/PR/examples/pr_tool_uat_fixes.md
++- R100	docs_build/dev/pr/BUILD_PR.md	docs_build/dev/PR/reference/OWNER_007_BUILD_PR.md
++- R100	docs_build/dev/pr/PLAN_PR.md	docs_build/dev/PR/reference/OWNER_007_PLAN_PR.md
++- R100	docs_build/dev/pr/plan_pr_tool_workspace_manifest_boundaries.md	docs_build/dev/PR/reference/plan_pr_tool_workspace_manifest_boundaries.md
++- R100	docs_build/dev/pr/pr_koti_layout_contract.md	docs_build/dev/PR/reference/pr_koti_layout_contract.md
++- R100	docs_build/dev/pr/pr_tool_fix_asset_browser_1505.md	docs_build/dev/PR/reference/pr_tool_fix_asset_browser_1505.md
++- R100	docs_build/dev/pr/pr_tool_fix_fullscreen_exit_state.md	docs_build/dev/PR/reference/pr_tool_fix_fullscreen_exit_state.md
++- R100	docs_build/dev/pr/pr_tool_fix_parallax_header_metadata.md	docs_build/dev/PR/reference/pr_tool_fix_parallax_header_metadata.md
++- R100	docs_build/dev/pr/pr_tool_header_singleline.md	docs_build/dev/PR/reference/pr_tool_header_singleline.md
++- R100	docs_build/dev/pr/pr_tool_interactive_uat.md	docs_build/dev/PR/reference/pr_tool_interactive_uat.md
++- R100	docs_build/dev/pr/pr_tool_layout_workflow_baseline.md	docs_build/dev/PR/reference/pr_tool_layout_workflow_baseline.md
++- R100	docs_build/dev/pr/pr_tool_remove_future_import_hints.md	docs_build/dev/PR/reference/pr_tool_remove_future_import_hints.md
++- R100	docs_build/dev/pr/pr_tool_remove_static_header_intro.md	docs_build/dev/PR/reference/pr_tool_remove_static_header_intro.md
++- R100	docs_build/dev/pr/pr_tool_stabilization.md	docs_build/dev/PR/reference/pr_tool_stabilization.md
++- R100	docs_build/dev/pr/pr_tool_uat_closeout.md	docs_build/dev/PR/reference/pr_tool_uat_closeout.md
++- R100	docs_build/dev/pr/pr_tool_uat_fix_fullscreen_header_wiring.md	docs_build/dev/PR/reference/pr_tool_uat_fix_fullscreen_header_wiring.md
++- R100	docs_build/dev/pr/pr_tool_uat_fix_header_asset_browser.md	docs_build/dev/PR/reference/pr_tool_uat_fix_header_asset_browser.md
++- R100	docs_build/dev/pr/pr_tool_uat_fixes.md	docs_build/dev/PR/reference/pr_tool_uat_fixes.md
 +- R100	docs_build/dev/templates/pr_capability_bundle_checklist.md	docs_build/dev/PR/templates/pr_capability_bundle_checklist.md
 +- R100	docs_build/dev/specs/AUDIT_EVENT_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/AUDIT_EVENT_CONTRACT.md
 +- R100	docs_build/dev/specs/BACKUP_SNAPSHOT_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/BACKUP_SNAPSHOT_CONTRACT.md
@@ -1013,29 +1101,29 @@ index 000000000..64ef3e6d5
 +- R100	docs_build/dev/specs/UPDATE_CHANNEL_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/UPDATE_CHANNEL_CONTRACT.md
 +- R100	docs_build/dev/specs/VERSION_COMPATIBILITY_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/VERSION_COMPATIBILITY_CONTRACT.md
 +
-+## Folder Ownership
-+
-+- docs_build/dev/ProjectInstructions/: permanent governance, team instructions, standards, addendums.
-+- docs_build/dev/PR/templates/: reusable PR templates.
-+- docs_build/dev/PR/examples/: historical/example PR documents.
-+- docs_build/dev/reports/: generated reports, generated validation artifacts, audits.
-+- archive/: historical reference material only.
-+
 +## Validation Results
 +
-+- PASS: Branch is PR_26177_OWNER_008-dev-documentation-ownership-cleanup.
-+- PASS: docs_build/dev/pr/, docs_build/dev/templates/, docs_build/dev/specs/, docs_build/dev/roadmaps/, docs_build/dev/admin-notes/, and docs_build/dev/ProjectInstructions/archive/ have no tracked files remaining.
-+- PASS: Reusable PR templates are under docs_build/dev/PR/templates/.
-+- PASS: Active standards are under docs_build/dev/ProjectInstructions/standards/.
-+- PASS: Generated reports remain under docs_build/dev/reports/.
-+- PASS: Runtime/product/API/database changed-file check returned no files.
-+- PASS: git diff --check completed without whitespace errors.
-+- PASS: Playwright not run because no runtime/product files changed.
++- PASS: Loose active docs outside approved docs_build/dev ownership folders: 0.
++- PASS: Runtime/product/API/database changed path count: 0.
++- PASS: docs_build/dev/ProjectInstructions/ exists: true.
++- PASS: docs_build/dev/PR/templates/ exists: true.
++- PASS: docs_build/dev/PR/reference/ exists: true.
++- PASS: docs_build/dev/reports/ exists: true.
++- PASS: archive/docs_build/dev/ProjectInstructions/history/ exists: true.
++- PASS: docs_build/dev/PR/examples/ exists: false.
++- PASS: archive/docs_build/dev/ProjectInstructions/archive/ exists: false.
++- FAIL: docs_build/dev/pr/ still exists.
++- PASS: docs_build/dev/templates/ exists: false.
++- PASS: docs_build/dev/specs/ exists: false.
++- PASS: docs_build/dev/roadmaps/ exists: false.
++- PASS: docs_build/dev/admin-notes/ exists: false.
++- PASS: ProjectInstructions remains the only active governance SSoT.
++- PASS: No reusable PR templates outside docs_build/dev/PR/templates/.
++- PASS: No generated reports outside docs_build/dev/reports/.
 +
 +## Remaining Technical Debt
 +
-+- docs_build/dev/start_of_day/ remains a protected legacy handoff area and was not modified by this PR. It must not be treated as an active Project Instructions source.
-+- docs_build/dev/toolbox/ remains dev tooling code. Its loose README was moved into ProjectInstructions standards; no remaining markdown/txt/pdf/docx files are outside owner areas except protected start_of_day/.
++- None for active documentation ownership. Historical archives and deprecated pointers remain reference-only by design.
 diff --git a/project-instructions/addendums/assistant-execution-modes.md b/project-instructions/addendums/assistant-execution-modes.md
 deleted file mode 100644
 index 6d7928669..000000000
@@ -1256,15 +1344,15 @@ index 3f16a3641..000000000
 -Report format:
 -
 -```text
--{relative path} — {added|updated|deleted}
+-{relative path} â€” {added|updated|deleted}
 -```
 -
 -Examples:
 -
 -```text
--toolbox/text-to-speech/index.html — updated
--assets/toolbox/text-to-speech/js/index.js — added
--tests/toolbox/text-to-speech/functional.spec.mjs — updated
+-toolbox/text-to-speech/index.html â€” updated
+-assets/toolbox/text-to-speech/js/index.js â€” added
+-tests/toolbox/text-to-speech/functional.spec.mjs â€” updated
 -```
 -
 -Do not report:

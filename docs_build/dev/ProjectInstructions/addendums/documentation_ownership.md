@@ -18,7 +18,7 @@ Define the ownership model for documentation under `docs_build/dev/` after Proje
 `docs_build/dev/PR/` owns:
 - PR workflow documentation
 - reusable PR templates
-- historical or example PR documents
+- historical or reference PR documents
 
 `docs_build/dev/reports/` owns:
 - generated reports
@@ -41,7 +41,7 @@ The repository root `archive/` owns:
 
 - `docs_build/dev/ProjectInstructions/standards/` contains active contract, model, and platform standards.
 - `docs_build/dev/PR/templates/` contains reusable PR templates.
-- `docs_build/dev/PR/examples/` contains historical or example PR documents.
+- `docs_build/dev/PR/reference/` contains historical or reference PR documents.
 - `docs_build/dev/reports/audits/` contains audit report outputs.
 
 ## Validation

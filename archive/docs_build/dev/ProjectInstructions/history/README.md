@@ -1,6 +1,6 @@
-# Project Instructions Archive Reference
+# Project Instructions History Reference
 
-This root archive path retains Project Instructions reference material that is no longer active but must remain traceable.
+This root archive path retains Project Instructions history snapshots that are no longer active but must remain traceable.
 
 ## Rules
 

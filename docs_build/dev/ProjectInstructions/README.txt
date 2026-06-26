@@ -68,4 +68,4 @@ Standards index:
 
 PR documentation:
 - Reusable PR templates: docs_build/dev/PR/templates/
-- Historical/example PR documents: docs_build/dev/PR/examples/
+- Historical/reference PR documents: docs_build/dev/PR/reference/

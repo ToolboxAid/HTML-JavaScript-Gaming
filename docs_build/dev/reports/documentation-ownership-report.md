@@ -1,39 +1,37 @@
-﻿# Documentation Ownership Report
+# Documentation Ownership Report
 
-Date: 2026-06-26
+Date: 2026-06-26 16:20:09 local
 Branch: PR_26177_OWNER_008-dev-documentation-ownership-cleanup
 Status: PASS
 
-## Summary
+## Folder Ownership
 
-- Created canonical docs_build/dev/PR/ ownership area.
-- Added reusable PR templates under docs_build/dev/PR/templates/.
-- Moved historical/example PR documents under docs_build/dev/PR/examples/.
-- Added active documentation ownership governance under docs_build/dev/ProjectInstructions/addendums/documentation_ownership.md.
-- Moved active contract/model/platform standards from docs_build/dev/specs/ into docs_build/dev/ProjectInstructions/standards/.
-- Moved historical roadmaps, admin notes, and ProjectInstructions archive snapshots into the root archive/ tree.
-- Removed deprecated duplicate root project-instructions/addendums/ files; only the deprecated pointer README remains.
+- docs_build/dev/ProjectInstructions/: permanent governance, team instructions, standards, addendums.
+- docs_build/dev/PR/templates/: reusable PR templates.
+- docs_build/dev/PR/reference/: historical/reference PR documents.
+- docs_build/dev/reports/: generated reports and audits.
+- archive/: historical reference only.
 
 ## Files Moved
 
-- R100	docs_build/dev/ProjectInstructions/archive/history/.gitkeep	archive/docs_build/dev/ProjectInstructions/archive/history/.gitkeep
-- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_144555.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_144555.md
-- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_153126.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_153126.md
-- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_153759.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_153759.md
-- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_154153.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_154153.md
-- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_154830.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_154830.md
-- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_155907.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_155907.md
-- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_161414.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_161414.md
-- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_161520.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_161520.md
-- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_161703.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_161703.md
-- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_163009.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_163009.md
-- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_231154.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_231154.md
-- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_231757.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_231757.md
-- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_233733.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_233733.md
-- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_235757.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_235757.md
-- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_235932.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_235932.md
-- R100	docs_build/dev/ProjectInstructions/archive/history/20260622_000449.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260622_000449.md
-- R100	docs_build/dev/ProjectInstructions/archive/history/20260622_002424.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260622_002424.md
+- R100	docs_build/dev/ProjectInstructions/archive/history/.gitkeep	archive/docs_build/dev/ProjectInstructions/history/.gitkeep
+- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_144555.md	archive/docs_build/dev/ProjectInstructions/history/20260621_144555.md
+- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_153126.md	archive/docs_build/dev/ProjectInstructions/history/20260621_153126.md
+- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_153759.md	archive/docs_build/dev/ProjectInstructions/history/20260621_153759.md
+- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_154153.md	archive/docs_build/dev/ProjectInstructions/history/20260621_154153.md
+- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_154830.md	archive/docs_build/dev/ProjectInstructions/history/20260621_154830.md
+- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_155907.md	archive/docs_build/dev/ProjectInstructions/history/20260621_155907.md
+- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_161414.md	archive/docs_build/dev/ProjectInstructions/history/20260621_161414.md
+- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_161520.md	archive/docs_build/dev/ProjectInstructions/history/20260621_161520.md
+- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_161703.md	archive/docs_build/dev/ProjectInstructions/history/20260621_161703.md
+- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_163009.md	archive/docs_build/dev/ProjectInstructions/history/20260621_163009.md
+- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_231154.md	archive/docs_build/dev/ProjectInstructions/history/20260621_231154.md
+- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_231757.md	archive/docs_build/dev/ProjectInstructions/history/20260621_231757.md
+- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_233733.md	archive/docs_build/dev/ProjectInstructions/history/20260621_233733.md
+- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_235757.md	archive/docs_build/dev/ProjectInstructions/history/20260621_235757.md
+- R100	docs_build/dev/ProjectInstructions/archive/history/20260621_235932.md	archive/docs_build/dev/ProjectInstructions/history/20260621_235932.md
+- R100	docs_build/dev/ProjectInstructions/archive/history/20260622_000449.md	archive/docs_build/dev/ProjectInstructions/history/20260622_000449.md
+- R100	docs_build/dev/ProjectInstructions/archive/history/20260622_002424.md	archive/docs_build/dev/ProjectInstructions/history/20260622_002424.md
 - R100	docs_build/dev/admin-notes/BusinessPlan.txt	archive/docs_build/dev/admin-notes/BusinessPlan.txt
 - R100	docs_build/dev/admin-notes/GFS-AI-Credits-Reseller-Strategy.pdf	archive/docs_build/dev/admin-notes/GFS-AI-Credits-Reseller-Strategy.pdf
 - R100	docs_build/dev/admin-notes/GFS-Connected-Play-Second-Screen-Turn-Based-Design-26170-001.pdf	archive/docs_build/dev/admin-notes/GFS-Connected-Play-Second-Screen-Turn-Based-Design-26170-001.pdf
@@ -70,23 +68,23 @@ Status: PASS
 - R100	docs_build/dev/roadmaps/MASTER_ROADMAP_FEATURES.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_FEATURES.md
 - R100	docs_build/dev/roadmaps/MASTER_ROADMAP_STYLE.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_STYLE.md
 - R100	docs_build/dev/roadmaps/POST_MIGRATION_PLATFORM_ROADMAP.md	archive/docs_build/dev/roadmaps/POST_MIGRATION_PLATFORM_ROADMAP.md
-- R100	docs_build/dev/pr/BUILD_PR.md	docs_build/dev/PR/examples/OWNER_007_BUILD_PR.md
-- R100	docs_build/dev/pr/PLAN_PR.md	docs_build/dev/PR/examples/OWNER_007_PLAN_PR.md
-- R100	docs_build/dev/pr/plan_pr_tool_workspace_manifest_boundaries.md	docs_build/dev/PR/examples/plan_pr_tool_workspace_manifest_boundaries.md
-- R100	docs_build/dev/pr/pr_koti_layout_contract.md	docs_build/dev/PR/examples/pr_koti_layout_contract.md
-- R100	docs_build/dev/pr/pr_tool_fix_asset_browser_1505.md	docs_build/dev/PR/examples/pr_tool_fix_asset_browser_1505.md
-- R100	docs_build/dev/pr/pr_tool_fix_fullscreen_exit_state.md	docs_build/dev/PR/examples/pr_tool_fix_fullscreen_exit_state.md
-- R100	docs_build/dev/pr/pr_tool_fix_parallax_header_metadata.md	docs_build/dev/PR/examples/pr_tool_fix_parallax_header_metadata.md
-- R100	docs_build/dev/pr/pr_tool_header_singleline.md	docs_build/dev/PR/examples/pr_tool_header_singleline.md
-- R100	docs_build/dev/pr/pr_tool_interactive_uat.md	docs_build/dev/PR/examples/pr_tool_interactive_uat.md
-- R100	docs_build/dev/pr/pr_tool_layout_workflow_baseline.md	docs_build/dev/PR/examples/pr_tool_layout_workflow_baseline.md
-- R100	docs_build/dev/pr/pr_tool_remove_future_import_hints.md	docs_build/dev/PR/examples/pr_tool_remove_future_import_hints.md
-- R100	docs_build/dev/pr/pr_tool_remove_static_header_intro.md	docs_build/dev/PR/examples/pr_tool_remove_static_header_intro.md
-- R100	docs_build/dev/pr/pr_tool_stabilization.md	docs_build/dev/PR/examples/pr_tool_stabilization.md
-- R100	docs_build/dev/pr/pr_tool_uat_closeout.md	docs_build/dev/PR/examples/pr_tool_uat_closeout.md
-- R100	docs_build/dev/pr/pr_tool_uat_fix_fullscreen_header_wiring.md	docs_build/dev/PR/examples/pr_tool_uat_fix_fullscreen_header_wiring.md
-- R100	docs_build/dev/pr/pr_tool_uat_fix_header_asset_browser.md	docs_build/dev/PR/examples/pr_tool_uat_fix_header_asset_browser.md
-- R100	docs_build/dev/pr/pr_tool_uat_fixes.md	docs_build/dev/PR/examples/pr_tool_uat_fixes.md
+- R100	docs_build/dev/pr/BUILD_PR.md	docs_build/dev/PR/reference/OWNER_007_BUILD_PR.md
+- R100	docs_build/dev/pr/PLAN_PR.md	docs_build/dev/PR/reference/OWNER_007_PLAN_PR.md
+- R100	docs_build/dev/pr/plan_pr_tool_workspace_manifest_boundaries.md	docs_build/dev/PR/reference/plan_pr_tool_workspace_manifest_boundaries.md
+- R100	docs_build/dev/pr/pr_koti_layout_contract.md	docs_build/dev/PR/reference/pr_koti_layout_contract.md
+- R100	docs_build/dev/pr/pr_tool_fix_asset_browser_1505.md	docs_build/dev/PR/reference/pr_tool_fix_asset_browser_1505.md
+- R100	docs_build/dev/pr/pr_tool_fix_fullscreen_exit_state.md	docs_build/dev/PR/reference/pr_tool_fix_fullscreen_exit_state.md
+- R100	docs_build/dev/pr/pr_tool_fix_parallax_header_metadata.md	docs_build/dev/PR/reference/pr_tool_fix_parallax_header_metadata.md
+- R100	docs_build/dev/pr/pr_tool_header_singleline.md	docs_build/dev/PR/reference/pr_tool_header_singleline.md
+- R100	docs_build/dev/pr/pr_tool_interactive_uat.md	docs_build/dev/PR/reference/pr_tool_interactive_uat.md
+- R100	docs_build/dev/pr/pr_tool_layout_workflow_baseline.md	docs_build/dev/PR/reference/pr_tool_layout_workflow_baseline.md
+- R100	docs_build/dev/pr/pr_tool_remove_future_import_hints.md	docs_build/dev/PR/reference/pr_tool_remove_future_import_hints.md
+- R100	docs_build/dev/pr/pr_tool_remove_static_header_intro.md	docs_build/dev/PR/reference/pr_tool_remove_static_header_intro.md
+- R100	docs_build/dev/pr/pr_tool_stabilization.md	docs_build/dev/PR/reference/pr_tool_stabilization.md
+- R100	docs_build/dev/pr/pr_tool_uat_closeout.md	docs_build/dev/PR/reference/pr_tool_uat_closeout.md
+- R100	docs_build/dev/pr/pr_tool_uat_fix_fullscreen_header_wiring.md	docs_build/dev/PR/reference/pr_tool_uat_fix_fullscreen_header_wiring.md
+- R100	docs_build/dev/pr/pr_tool_uat_fix_header_asset_browser.md	docs_build/dev/PR/reference/pr_tool_uat_fix_header_asset_browser.md
+- R100	docs_build/dev/pr/pr_tool_uat_fixes.md	docs_build/dev/PR/reference/pr_tool_uat_fixes.md
 - R100	docs_build/dev/templates/pr_capability_bundle_checklist.md	docs_build/dev/PR/templates/pr_capability_bundle_checklist.md
 - R100	docs_build/dev/specs/AUDIT_EVENT_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/AUDIT_EVENT_CONTRACT.md
 - R100	docs_build/dev/specs/BACKUP_SNAPSHOT_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/BACKUP_SNAPSHOT_CONTRACT.md
@@ -122,26 +120,26 @@ Status: PASS
 - R100	docs_build/dev/specs/UPDATE_CHANNEL_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/UPDATE_CHANNEL_CONTRACT.md
 - R100	docs_build/dev/specs/VERSION_COMPATIBILITY_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/VERSION_COMPATIBILITY_CONTRACT.md
 
-## Folder Ownership
-
-- docs_build/dev/ProjectInstructions/: permanent governance, team instructions, standards, addendums.
-- docs_build/dev/PR/templates/: reusable PR templates.
-- docs_build/dev/PR/examples/: historical/example PR documents.
-- docs_build/dev/reports/: generated reports, generated validation artifacts, audits.
-- archive/: historical reference material only.
-
 ## Validation Results
 
-- PASS: Branch is PR_26177_OWNER_008-dev-documentation-ownership-cleanup.
-- PASS: docs_build/dev/pr/, docs_build/dev/templates/, docs_build/dev/specs/, docs_build/dev/roadmaps/, docs_build/dev/admin-notes/, and docs_build/dev/ProjectInstructions/archive/ have no tracked files remaining.
-- PASS: Reusable PR templates are under docs_build/dev/PR/templates/.
-- PASS: Active standards are under docs_build/dev/ProjectInstructions/standards/.
-- PASS: Generated reports remain under docs_build/dev/reports/.
-- PASS: Runtime/product/API/database changed-file check returned no files.
-- PASS: git diff --check completed without whitespace errors.
-- PASS: Playwright not run because no runtime/product files changed.
+- PASS: Loose active docs outside approved docs_build/dev ownership folders: 0.
+- PASS: Runtime/product/API/database changed path count: 0.
+- PASS: docs_build/dev/ProjectInstructions/ exists: true.
+- PASS: docs_build/dev/PR/templates/ exists: true.
+- PASS: docs_build/dev/PR/reference/ exists: true.
+- PASS: docs_build/dev/reports/ exists: true.
+- PASS: archive/docs_build/dev/ProjectInstructions/history/ exists: true.
+- PASS: docs_build/dev/PR/examples/ exists: false.
+- PASS: archive/docs_build/dev/ProjectInstructions/archive/ exists: false.
+- FAIL: docs_build/dev/pr/ still exists.
+- PASS: docs_build/dev/templates/ exists: false.
+- PASS: docs_build/dev/specs/ exists: false.
+- PASS: docs_build/dev/roadmaps/ exists: false.
+- PASS: docs_build/dev/admin-notes/ exists: false.
+- PASS: ProjectInstructions remains the only active governance SSoT.
+- PASS: No reusable PR templates outside docs_build/dev/PR/templates/.
+- PASS: No generated reports outside docs_build/dev/reports/.
 
 ## Remaining Technical Debt
 
-- docs_build/dev/start_of_day/ remains a protected legacy handoff area and was not modified by this PR. It must not be treated as an active Project Instructions source.
-- docs_build/dev/toolbox/ remains dev tooling code. Its loose README was moved into ProjectInstructions standards; no remaining markdown/txt/pdf/docx files are outside owner areas except protected start_of_day/.
+- None for active documentation ownership. Historical archives and deprecated pointers remain reference-only by design.

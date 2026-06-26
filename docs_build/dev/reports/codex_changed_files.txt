@@ -1,22 +1,22 @@
-﻿A	archive/docs_build/dev/ProjectInstructions/archive/README.md
-R100	docs_build/dev/ProjectInstructions/archive/history/.gitkeep	archive/docs_build/dev/ProjectInstructions/archive/history/.gitkeep
-R100	docs_build/dev/ProjectInstructions/archive/history/20260621_144555.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_144555.md
-R100	docs_build/dev/ProjectInstructions/archive/history/20260621_153126.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_153126.md
-R100	docs_build/dev/ProjectInstructions/archive/history/20260621_153759.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_153759.md
-R100	docs_build/dev/ProjectInstructions/archive/history/20260621_154153.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_154153.md
-R100	docs_build/dev/ProjectInstructions/archive/history/20260621_154830.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_154830.md
-R100	docs_build/dev/ProjectInstructions/archive/history/20260621_155907.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_155907.md
-R100	docs_build/dev/ProjectInstructions/archive/history/20260621_161414.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_161414.md
-R100	docs_build/dev/ProjectInstructions/archive/history/20260621_161520.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_161520.md
-R100	docs_build/dev/ProjectInstructions/archive/history/20260621_161703.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_161703.md
-R100	docs_build/dev/ProjectInstructions/archive/history/20260621_163009.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_163009.md
-R100	docs_build/dev/ProjectInstructions/archive/history/20260621_231154.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_231154.md
-R100	docs_build/dev/ProjectInstructions/archive/history/20260621_231757.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_231757.md
-R100	docs_build/dev/ProjectInstructions/archive/history/20260621_233733.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_233733.md
-R100	docs_build/dev/ProjectInstructions/archive/history/20260621_235757.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_235757.md
-R100	docs_build/dev/ProjectInstructions/archive/history/20260621_235932.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_235932.md
-R100	docs_build/dev/ProjectInstructions/archive/history/20260622_000449.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260622_000449.md
-R100	docs_build/dev/ProjectInstructions/archive/history/20260622_002424.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260622_002424.md
+R100	docs_build/dev/ProjectInstructions/archive/history/.gitkeep	archive/docs_build/dev/ProjectInstructions/history/.gitkeep
+R100	docs_build/dev/ProjectInstructions/archive/history/20260621_144555.md	archive/docs_build/dev/ProjectInstructions/history/20260621_144555.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260621_153126.md	archive/docs_build/dev/ProjectInstructions/history/20260621_153126.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260621_153759.md	archive/docs_build/dev/ProjectInstructions/history/20260621_153759.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260621_154153.md	archive/docs_build/dev/ProjectInstructions/history/20260621_154153.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260621_154830.md	archive/docs_build/dev/ProjectInstructions/history/20260621_154830.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260621_155907.md	archive/docs_build/dev/ProjectInstructions/history/20260621_155907.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260621_161414.md	archive/docs_build/dev/ProjectInstructions/history/20260621_161414.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260621_161520.md	archive/docs_build/dev/ProjectInstructions/history/20260621_161520.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260621_161703.md	archive/docs_build/dev/ProjectInstructions/history/20260621_161703.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260621_163009.md	archive/docs_build/dev/ProjectInstructions/history/20260621_163009.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260621_231154.md	archive/docs_build/dev/ProjectInstructions/history/20260621_231154.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260621_231757.md	archive/docs_build/dev/ProjectInstructions/history/20260621_231757.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260621_233733.md	archive/docs_build/dev/ProjectInstructions/history/20260621_233733.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260621_235757.md	archive/docs_build/dev/ProjectInstructions/history/20260621_235757.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260621_235932.md	archive/docs_build/dev/ProjectInstructions/history/20260621_235932.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260622_000449.md	archive/docs_build/dev/ProjectInstructions/history/20260622_000449.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260622_002424.md	archive/docs_build/dev/ProjectInstructions/history/20260622_002424.md
+A	archive/docs_build/dev/ProjectInstructions/history/README.md
 R100	docs_build/dev/admin-notes/BusinessPlan.txt	archive/docs_build/dev/admin-notes/BusinessPlan.txt
 R100	docs_build/dev/admin-notes/GFS-AI-Credits-Reseller-Strategy.pdf	archive/docs_build/dev/admin-notes/GFS-AI-Credits-Reseller-Strategy.pdf
 R100	docs_build/dev/admin-notes/GFS-Connected-Play-Second-Screen-Turn-Based-Design-26170-001.pdf	archive/docs_build/dev/admin-notes/GFS-Connected-Play-Second-Screen-Turn-Based-Design-26170-001.pdf
@@ -54,24 +54,24 @@ R100	docs_build/dev/roadmaps/MASTER_ROADMAP_FEATURES.md	archive/docs_build/dev/r
 R100	docs_build/dev/roadmaps/MASTER_ROADMAP_STYLE.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_STYLE.md
 R100	docs_build/dev/roadmaps/POST_MIGRATION_PLATFORM_ROADMAP.md	archive/docs_build/dev/roadmaps/POST_MIGRATION_PLATFORM_ROADMAP.md
 A	docs_build/dev/PR/README.md
-R100	docs_build/dev/pr/BUILD_PR.md	docs_build/dev/PR/examples/OWNER_007_BUILD_PR.md
-R100	docs_build/dev/pr/PLAN_PR.md	docs_build/dev/PR/examples/OWNER_007_PLAN_PR.md
-A	docs_build/dev/PR/examples/README.md
-R100	docs_build/dev/pr/plan_pr_tool_workspace_manifest_boundaries.md	docs_build/dev/PR/examples/plan_pr_tool_workspace_manifest_boundaries.md
-R100	docs_build/dev/pr/pr_koti_layout_contract.md	docs_build/dev/PR/examples/pr_koti_layout_contract.md
-R100	docs_build/dev/pr/pr_tool_fix_asset_browser_1505.md	docs_build/dev/PR/examples/pr_tool_fix_asset_browser_1505.md
-R100	docs_build/dev/pr/pr_tool_fix_fullscreen_exit_state.md	docs_build/dev/PR/examples/pr_tool_fix_fullscreen_exit_state.md
-R100	docs_build/dev/pr/pr_tool_fix_parallax_header_metadata.md	docs_build/dev/PR/examples/pr_tool_fix_parallax_header_metadata.md
-R100	docs_build/dev/pr/pr_tool_header_singleline.md	docs_build/dev/PR/examples/pr_tool_header_singleline.md
-R100	docs_build/dev/pr/pr_tool_interactive_uat.md	docs_build/dev/PR/examples/pr_tool_interactive_uat.md
-R100	docs_build/dev/pr/pr_tool_layout_workflow_baseline.md	docs_build/dev/PR/examples/pr_tool_layout_workflow_baseline.md
-R100	docs_build/dev/pr/pr_tool_remove_future_import_hints.md	docs_build/dev/PR/examples/pr_tool_remove_future_import_hints.md
-R100	docs_build/dev/pr/pr_tool_remove_static_header_intro.md	docs_build/dev/PR/examples/pr_tool_remove_static_header_intro.md
-R100	docs_build/dev/pr/pr_tool_stabilization.md	docs_build/dev/PR/examples/pr_tool_stabilization.md
-R100	docs_build/dev/pr/pr_tool_uat_closeout.md	docs_build/dev/PR/examples/pr_tool_uat_closeout.md
-R100	docs_build/dev/pr/pr_tool_uat_fix_fullscreen_header_wiring.md	docs_build/dev/PR/examples/pr_tool_uat_fix_fullscreen_header_wiring.md
-R100	docs_build/dev/pr/pr_tool_uat_fix_header_asset_browser.md	docs_build/dev/PR/examples/pr_tool_uat_fix_header_asset_browser.md
-R100	docs_build/dev/pr/pr_tool_uat_fixes.md	docs_build/dev/PR/examples/pr_tool_uat_fixes.md
+R100	docs_build/dev/pr/BUILD_PR.md	docs_build/dev/PR/reference/OWNER_007_BUILD_PR.md
+R100	docs_build/dev/pr/PLAN_PR.md	docs_build/dev/PR/reference/OWNER_007_PLAN_PR.md
+A	docs_build/dev/PR/reference/README.md
+R100	docs_build/dev/pr/plan_pr_tool_workspace_manifest_boundaries.md	docs_build/dev/PR/reference/plan_pr_tool_workspace_manifest_boundaries.md
+R100	docs_build/dev/pr/pr_koti_layout_contract.md	docs_build/dev/PR/reference/pr_koti_layout_contract.md
+R100	docs_build/dev/pr/pr_tool_fix_asset_browser_1505.md	docs_build/dev/PR/reference/pr_tool_fix_asset_browser_1505.md
+R100	docs_build/dev/pr/pr_tool_fix_fullscreen_exit_state.md	docs_build/dev/PR/reference/pr_tool_fix_fullscreen_exit_state.md
+R100	docs_build/dev/pr/pr_tool_fix_parallax_header_metadata.md	docs_build/dev/PR/reference/pr_tool_fix_parallax_header_metadata.md
+R100	docs_build/dev/pr/pr_tool_header_singleline.md	docs_build/dev/PR/reference/pr_tool_header_singleline.md
+R100	docs_build/dev/pr/pr_tool_interactive_uat.md	docs_build/dev/PR/reference/pr_tool_interactive_uat.md
+R100	docs_build/dev/pr/pr_tool_layout_workflow_baseline.md	docs_build/dev/PR/reference/pr_tool_layout_workflow_baseline.md
+R100	docs_build/dev/pr/pr_tool_remove_future_import_hints.md	docs_build/dev/PR/reference/pr_tool_remove_future_import_hints.md
+R100	docs_build/dev/pr/pr_tool_remove_static_header_intro.md	docs_build/dev/PR/reference/pr_tool_remove_static_header_intro.md
+R100	docs_build/dev/pr/pr_tool_stabilization.md	docs_build/dev/PR/reference/pr_tool_stabilization.md
+R100	docs_build/dev/pr/pr_tool_uat_closeout.md	docs_build/dev/PR/reference/pr_tool_uat_closeout.md
+R100	docs_build/dev/pr/pr_tool_uat_fix_fullscreen_header_wiring.md	docs_build/dev/PR/reference/pr_tool_uat_fix_fullscreen_header_wiring.md
+R100	docs_build/dev/pr/pr_tool_uat_fix_header_asset_browser.md	docs_build/dev/PR/reference/pr_tool_uat_fix_header_asset_browser.md
+R100	docs_build/dev/pr/pr_tool_uat_fixes.md	docs_build/dev/PR/reference/pr_tool_uat_fixes.md
 A	docs_build/dev/PR/templates/BUILD_PR.md
 A	docs_build/dev/PR/templates/PLAN_PR.md
 R100	docs_build/dev/templates/pr_capability_bundle_checklist.md	docs_build/dev/PR/templates/pr_capability_bundle_checklist.md
