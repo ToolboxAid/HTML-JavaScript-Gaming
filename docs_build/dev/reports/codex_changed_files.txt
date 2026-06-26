@@ -1,36 +1,21 @@
 # git status --short
-M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+M docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion.md
+ M docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_branch-validation.md
+ M docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_manual-validation-notes.md
+ M docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_requirements-checklist.md
+ M docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_validation-lane.md
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
- M src/dev-runtime/server/local-api-router.mjs
- M src/shared/toolbox/tool-metadata-inventory.js
- M tests/playwright/tools/ToolboxRoutePages.spec.mjs
  M toolbox/sprites/index.html
-?? assets/toolbox/sprites/
-?? docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_branch-validation.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_manual-validation-notes.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_requirements-checklist.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_validation-lane.md
-?? tests/dev-runtime/SpritesAssetRepository.test.mjs
-?? tests/playwright/tools/SpritesToolMvp.spec.mjs
 
 # git ls-files --others --exclude-standard
-assets/toolbox/sprites/js/index.js
-docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion.md
-docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_branch-validation.md
-docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_manual-validation-notes.md
-docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_requirements-checklist.md
-docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_validation-lane.md
-tests/dev-runtime/SpritesAssetRepository.test.mjs
-tests/playwright/tools/SpritesToolMvp.spec.mjs
+(no output)
 
 # git diff --stat
-.../dev/reports/coverage_changed_js_guardrail.txt  |   8 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |  38 ++-
- .../tool-repositories/assets-mock-repository.js    | 332 +++++++++++++++++++++
- src/dev-runtime/server/local-api-router.mjs        |   5 +-
- src/shared/toolbox/tool-metadata-inventory.js      |   6 +-
- tests/playwright/tools/ToolboxRoutePages.spec.mjs  |  20 +-
- toolbox/sprites/index.html                         |  87 +++++-
- 7 files changed, 455 insertions(+), 41 deletions(-)
+..._CHARLIE_018-sprites-testable-mvp-completion.md | 11 ++--------
+ ...es-testable-mvp-completion_branch-validation.md |  6 ++++--
+ ...table-mvp-completion_manual-validation-notes.md |  2 +-
+ ...stable-mvp-completion_requirements-checklist.md |  1 +
+ ...ites-testable-mvp-completion_validation-lane.md | 20 +++--------------
+ .../dev/reports/playwright_v8_coverage_report.txt  | 25 ++++++++++++++++------
+ toolbox/sprites/index.html                         |  2 +-
+ 7 files changed, 30 insertions(+), 37 deletions(-)

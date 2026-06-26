@@ -10,7 +10,7 @@ Status: PASS
 2. Open `/toolbox/index.html`.
 3. Confirm the Sprites card is visible without enabling Planned tools.
 4. Click Sprites and confirm navigation to `/toolbox/sprites/index.html`.
-5. Confirm the Sprites table, summary cards, filters, preview, metadata, references, and validation panels render.
+5. Confirm the Sprites table, summary cards, filters, preview, metadata, references, validation panels, and `Sprite Details` side panel render.
 6. Click `Add Sprite`.
 7. Enter `Hero Sprite`.
 8. Select category `Character`.

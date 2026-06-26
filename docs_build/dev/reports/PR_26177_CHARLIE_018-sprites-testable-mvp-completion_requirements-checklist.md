@@ -6,6 +6,7 @@ Status: PASS
 
 - PASS Ensure `/toolbox/index.html` Sprites is active/clickable.
 - PASS Ensure `/toolbox/sprites/index.html` loads.
+- PASS `/toolbox/sprites/index.html` no longer shows `Not implemented yet.`, `Setup`, `Plan sprite creation`, `future rebuild work`, or placeholder Workspace/Inspector/Output sections.
 - PASS Ensure Sprites tool has working table/list surface.
 - PASS Ensure API-backed list/create/edit/archive works.
 - PASS Ensure guest save redirects to `account/sign-in.html`.

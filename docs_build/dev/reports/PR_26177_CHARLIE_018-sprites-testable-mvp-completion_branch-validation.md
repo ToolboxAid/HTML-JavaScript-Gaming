@@ -23,6 +23,8 @@ Status: PASS
 
 PASS: changed files are Sprites UI/API contract, affected Toolbox metadata/tests, required reports, and generated validation coverage reports.
 
-## Final Branch State Before Commit
+## Final Branch State
 
-Pending commit/push at report generation time.
+- Branch tracks `origin/PR_26177_CHARLIE_018-sprites-testable-mvp-completion`.
+- Branch is updated from synced `main` and remains the active PR018 branch for this validation refresh.
+- Commit/push will be refreshed after report and ZIP regeneration.

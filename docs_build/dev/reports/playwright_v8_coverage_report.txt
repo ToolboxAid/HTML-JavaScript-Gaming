@@ -12,9 +12,9 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(82%) Toolbox Index - exercised 3 runtime JS files
+(92%) Toolbox Index - exercised 3 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
-(73%) Theme V2 Shared JS - exercised 3 runtime JS files
+(81%) Theme V2 Shared JS - exercised 5 runtime JS files
 
 Changed runtime JS files covered:
 (0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
@@ -22,17 +22,28 @@ Changed runtime JS files covered:
 (36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2043/2043; executed functions 12/33
 
 Files with executed line/function counts where available:
+(25%) assets/toolbox/assets/js/index.js - executed lines 1602/1602; executed functions 29/116
 (25%) src/api/session-api-client.js - executed lines 67/67; executed functions 3/12
-(33%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
 (36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2043/2043; executed functions 12/33
-(48%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 11/23
+(42%) assets/toolbox/tags/js/index.js - executed lines 251/251; executed functions 8/19
 (50%) toolbox/game-hub/game-hub-api-client.js - executed lines 26/26; executed functions 2/4
-(53%) src/api/server-api-client.js - executed lines 168/168; executed functions 10/19
-(62%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 61/98
+(57%) assets/toolbox/game-journey/js/index.js - executed lines 1662/1662; executed functions 82/144
+(58%) src/api/server-api-client.js - executed lines 168/168; executed functions 11/19
+(59%) assets/toolbox/colors/js/index.js - executed lines 1859/1859; executed functions 122/207
 (65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
+(67%) assets/js/shared/assets-api-client.js - executed lines 19/19; executed functions 2/3
 (67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
+(68%) assets/toolbox/idea-board/js/index.js - executed lines 764/764; executed functions 40/59
+(74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 75/102
+(77%) assets/theme-v2/js/tool-display-mode.js - executed lines 304/304; executed functions 23/30
 (80%) assets/theme-v2/js/theme-icons.js - executed lines 69/69; executed functions 4/5
-(89%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 106/119
+(80%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 4/5
+(83%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 5/6
+(90%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 26/29
+(91%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 10/11
+(93%) admin/tool-votes.js - executed lines 406/406; executed functions 53/57
+(94%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 112/119
+(100%) assets/js/shared/game-journey-api-client.js - executed lines 19/19; executed functions 2/2
 (100%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 37/37
 
 Uncovered or low-coverage changed JS files:

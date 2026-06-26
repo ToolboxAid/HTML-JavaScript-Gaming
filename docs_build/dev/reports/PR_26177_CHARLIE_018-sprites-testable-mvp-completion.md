@@ -11,6 +11,7 @@ Completed the Sprites MVP to a manually testable state without splitting additio
 Implemented:
 - Toolbox Sprites entry is active/clickable through the source-controlled registry.
 - `/toolbox/sprites/index.html` loads a Theme V2 Sprites workspace.
+- Removed placeholder-era visible wording including `Not implemented yet.`, `Setup`, `Plan sprite creation`, `future rebuild work`, and placeholder Workspace/Inspector/Output sections.
 - Sprites uses Web UI -> API/service contract -> asset repository.
 - Sprite list/create/edit/archive flows are API-backed through `/api/toolbox/sprites`.
 - Guest save attempts redirect to `account/sign-in.html`.
@@ -38,15 +39,7 @@ PASS `node ./scripts/run-node-test-files.mjs tests/dev-runtime/SpritesAssetRepos
 
 PASS `npx playwright test tests/playwright/tools/SpritesToolMvp.spec.mjs --workers=1 --reporter=list`
 
-PASS `npx playwright test tests/playwright/tools/ToolNavigationPrevNext.spec.mjs -g "Toolbox card names link" --workers=1 --reporter=list`
-
-PASS `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs -g "toolbox index shows wireframe and beta tools|toolbox status kickers" --workers=1 --reporter=list`
-
-Note: one combined Toolbox status run hit a Playwright artifact timeout after the index test passed; the exact status test was rerun independently and passed.
-
-PASS `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs -g "toolbox status kickers, filters, card order, and voting controls work from registry metadata" --workers=1 --reporter=list --timeout=180000`
-
-PASS `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs -g "toolbox Build Path status filters" --workers=1 --reporter=list --timeout=180000`
+PASS `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --workers=1 --reporter=list`
 
 PASS `git diff --check`
 
