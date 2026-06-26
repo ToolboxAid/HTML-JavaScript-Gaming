@@ -1,43 +1,28 @@
-# PLAN_PR: PR_26177_DELTA_056-shared-validation-assertions
+# PLAN_PR: PR_26177_001-shared-hash-foundation
 
 ## Purpose
 
-Move generic validation/assertion helpers out of random helper code into a shared validation module.
-
-## Owner And Assignment
-
-- Team: Delta
-- OWNER override approved: Continue Team Delta random utility stack with `PR_26177_DELTA_056-shared-validation-assertions`.
-- Stack base: `PR_26177_DELTA_055-random-seed-enhancements`.
+Add a small shared non-cryptographic hash foundation.
 
 ## Scope
 
-- Create `src/shared/validation/assert.js`.
-- Move generic assertion helpers from random helper code into `assert.js`.
-- Include only generic reusable validation functions needed by current random helpers:
-  - `assertArray`
-  - `assertFiniteNumber`
-  - `assertOrderedRange`
-- Update random helper code to import from `src/shared/validation/assert.js`.
-- Preserve existing `Random` and `RandomSeed` behavior.
-- Do not change public API.
-- Do not expand into unrelated validation functions yet.
-- Add/update targeted unit tests if needed.
-- No UI changes.
-- No API/database changes.
+- Add `src/shared/hash/` foundation.
+- Include deterministic non-crypto hash helpers.
+- Add targeted unit tests.
+- No browser-owned product data.
+- No runtime UI changes.
 - No unrelated cleanup.
 
 ## Implementation Plan
 
-1. Add `src/shared/validation/assert.js` with only the required generic assertion helpers.
-2. Remove duplicated generic assertions from `src/shared/math/randomHelpers.js`.
-3. Import the shared assertions from `randomHelpers.js`.
-4. Run targeted random helper, `Random`, and `RandomSeed` tests.
-5. Produce required PR reports and repo-structured ZIP.
+1. Add `src/shared/hash/hash.js` with deterministic stable string and FNV-1a based helpers.
+2. Add `tests/shared/HashFoundation.test.mjs`.
+3. Validate determinism, object key ordering, seed variation, combination, and normalized hash output.
+4. Produce required Codex reports and repo-structured ZIP.
 
 ## Acceptance Criteria
 
-- Existing random helper behavior is preserved.
-- Existing `Random` and `RandomSeed` behavior is preserved.
-- Public random APIs are unchanged.
-- Shared assertion module stays limited to the current reusable validation helpers.
+- Hash helpers are deterministic for identical values.
+- Object hashing is stable regardless of property insertion order.
+- Helpers are documented as non-cryptographic.
+- No browser storage, UI, API, database, or sample smoke changes are introduced.
