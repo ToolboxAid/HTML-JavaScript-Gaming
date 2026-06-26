@@ -50,6 +50,10 @@ export const MOCK_DB_TOOL_GROUPS = Object.freeze({
     label: "Objects",
     tableNames: Object.freeze(["object_definition_records"]),
   }),
+  hitboxes: Object.freeze({
+    label: "Hitboxes",
+    tableNames: Object.freeze(["hitbox_definition_records"]),
+  }),
   controls: Object.freeze({
     label: "Controls",
     tableNames: Object.freeze(["game_input_mappings", "player_controller_profiles", "player_input_device_selections", "input_custom_action_records"]),
@@ -119,6 +123,7 @@ const MOCK_DB_TABLE_SCHEMAS = Object.freeze({
   game_configuration_records: Object.freeze(["key", "gameKey", "status", "summary", "playerMode", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   game_configuration_validation_items: Object.freeze(["key", "gameKey", "label", "status", "action", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   object_definition_records: Object.freeze(["key", "id", "gameId", "name", "type", "state", "modelType", "renderType", "renderAssetKey", "renderPreviewPath", "capabilities", "behavior", "interaction", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  hitbox_definition_records: Object.freeze(["key", "gameId", "objectKey", "name", "role", "enabled", "visible", "x", "y", "width", "height", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   game_input_mappings: Object.freeze(["key", "id", "gameId", "objectKey", "objectName", "gameAction", "gameActionLabel", "usageLabel", "normalizedInput", "inputFamily", "eventD", "eventH", "eventU", "eventDC", "eventDrag", "eventAxis", "enabled", "state", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   player_controller_profiles: Object.freeze(["key", "id", "playerId", "deviceType", "controllerName", "controllerId", "profileName", "inputs", "inputMappings", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   player_input_device_selections: Object.freeze(["key", "id", "playerId", "selectionKey", "selectionType", "deviceType", "controllerId", "profileId", "label", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
