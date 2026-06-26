@@ -1,12 +1,28 @@
-docs_build/dev/BUILD_PR.md
-docs_build/dev/PLAN_PR.md
-docs_build/dev/reports/PR_26177_006-shared-time-foundation.md
-docs_build/dev/reports/PR_26177_006-shared-time-foundation_branch-validation.md
-docs_build/dev/reports/PR_26177_006-shared-time-foundation_closeout.md
-docs_build/dev/reports/PR_26177_006-shared-time-foundation_manual-validation-notes.md
-docs_build/dev/reports/PR_26177_006-shared-time-foundation_requirement-checklist.md
-docs_build/dev/reports/PR_26177_006-shared-time-foundation_validation-lane.md
-docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/codex_review.diff
-src/shared/time/time.js
-tests/shared/TimeFoundation.test.mjs
+# git status --short
+M admin/system-health.html
+ M docs_build/dev/reports/codex_changed_files.txt
+ M docs_build/dev/reports/codex_review.diff
+ M src/dev-runtime/server/local-api-router.mjs
+ M tests/dev-runtime/AdminHealthOperations.test.mjs
+ M tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+?? docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_branch-validation.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_manual-validation-notes.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_requirements-checklist.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_validation-lane.md
+
+# git ls-files --others --exclude-standard
+docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete.md
+docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_branch-validation.md
+docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_manual-validation-notes.md
+docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_requirements-checklist.md
+docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_validation-lane.md
+
+# git diff --stat
+admin/system-health.html                           |  40 +-
+ docs_build/dev/reports/codex_changed_files.txt     |  42 +-
+ docs_build/dev/reports/codex_review.diff           | 765 +++++++++------------
+ src/dev-runtime/server/local-api-router.mjs        |  10 +-
+ tests/dev-runtime/AdminHealthOperations.test.mjs   |   3 +-
+ .../tools/AdminHealthOperationsPage.spec.mjs       |   4 +-
+ 6 files changed, 393 insertions(+), 471 deletions(-)

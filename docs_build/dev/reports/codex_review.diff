@@ -1,1204 +1,1140 @@
-diff --git a/docs_build/dev/BUILD_PR.md b/docs_build/dev/BUILD_PR.md
-index d47106b59..30700e9cd 100644
---- a/docs_build/dev/BUILD_PR.md
-+++ b/docs_build/dev/BUILD_PR.md
-@@ -1,23 +1,23 @@
--# PR_26177_005-shared-text-foundation
-+# PR_26177_006-shared-time-foundation
-
- ## Purpose
-
--Add a small shared text foundation.
-+Add a small shared time foundation.
-
- ## Source Of Truth
-
--This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth for `PR_26177_005-shared-text-foundation`.
-+This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth for `PR_26177_006-shared-time-foundation`.
-
- ## Stack
-
--- Base branch: `PR_26177_004-shared-color-foundation`
-+- Base branch: `PR_26177_005-shared-text-foundation`
-
- ## Exact Scope
-
--- Add `src/shared/text/` foundation.
--- Include safe string helpers such as slugify, casing, truncate, escapeHtml, and normalizeWhitespace.
--- Add targeted tests for the shared text area.
--- No copy rewrites outside tests/docs.
-+- Add `src/shared/time/` foundation.
-+- Include duration formatting, timestamp helpers, debounce/throttle/sleep helpers where safe for shared runtime.
-+- Add targeted tests for the shared time area.
-+- No scheduler/runtime behavior changes.
- - Create required Codex reports under `docs_build/dev/reports/`.
- - Create repo-structured delta ZIP under `tmp/`.
-
-@@ -25,19 +25,19 @@ This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth f
-
- - `docs_build/dev/PLAN_PR.md`
- - `docs_build/dev/BUILD_PR.md`
--- `src/shared/text/text.js`
--- `tests/shared/TextFoundation.test.mjs`
--- `docs_build/dev/reports/PR_26177_005-shared-text-foundation.md`
--- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_branch-validation.md`
--- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_requirement-checklist.md`
--- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_validation-lane.md`
--- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_manual-validation-notes.md`
-+- `src/shared/time/time.js`
-+- `tests/shared/TimeFoundation.test.mjs`
-+- `docs_build/dev/reports/PR_26177_006-shared-time-foundation.md`
-+- `docs_build/dev/reports/PR_26177_006-shared-time-foundation_branch-validation.md`
-+- `docs_build/dev/reports/PR_26177_006-shared-time-foundation_requirement-checklist.md`
-+- `docs_build/dev/reports/PR_26177_006-shared-time-foundation_validation-lane.md`
-+- `docs_build/dev/reports/PR_26177_006-shared-time-foundation_manual-validation-notes.md`
- - `docs_build/dev/reports/codex_review.diff`
- - `docs_build/dev/reports/codex_changed_files.txt`
-
- ## Out Of Scope
-
--- No copy rewrites outside tests/docs.
-+- No scheduler/runtime behavior changes.
- - No browser-owned product data.
- - No runtime UI changes.
- - No browser storage changes.
-@@ -51,9 +51,9 @@ This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth f
- Run exactly:
-
- ```powershell
--node ./scripts/run-node-test-files.mjs tests/shared/TextFoundation.test.mjs
--node --check src/shared/text/text.js
--node --check tests/shared/TextFoundation.test.mjs
-+node ./scripts/run-node-test-files.mjs tests/shared/TimeFoundation.test.mjs
-+node --check src/shared/time/time.js
-+node --check tests/shared/TimeFoundation.test.mjs
- git diff --check
- ```
-
-@@ -62,5 +62,5 @@ git diff --check
- Create repo-structured delta ZIP:
-
- ```text
--tmp/PR_26177_005-shared-text-foundation_delta.zip
-+tmp/PR_26177_006-shared-time-foundation_delta.zip
- ```
-diff --git a/docs_build/dev/PLAN_PR.md b/docs_build/dev/PLAN_PR.md
-index 0682bd3cf..907936aee 100644
---- a/docs_build/dev/PLAN_PR.md
-+++ b/docs_build/dev/PLAN_PR.md
-@@ -1,22 +1,22 @@
--# PLAN_PR: PR_26177_005-shared-text-foundation
-+# PLAN_PR: PR_26177_006-shared-time-foundation
-
- ## Purpose
-
--Add a small shared text foundation.
-+Add a small shared time foundation.
-
- ## Scope
-
--- Add `src/shared/text/` foundation.
--- Include safe string helpers for whitespace normalization, slug/casing, truncation, and HTML escaping.
-+- Add `src/shared/time/` foundation.
-+- Include duration formatting, timestamp helpers, sleep, debounce, and throttle helpers.
- - Add targeted tests.
--- No copy rewrites outside tests/docs.
-+- No scheduler/runtime behavior changes.
- - No browser-owned product data.
- - No runtime UI changes.
- - No unrelated cleanup.
-
- ## Implementation Plan
-
--1. Add `src/shared/text/text.js`.
--2. Add `tests/shared/TextFoundation.test.mjs`.
--3. Validate safe string helpers.
-+1. Add `src/shared/time/time.js`.
-+2. Add `tests/shared/TimeFoundation.test.mjs`.
-+3. Validate duration, timestamp, sleep, debounce, and throttle helpers.
- 4. Produce required Codex reports and repo-structured ZIP.
-diff --git a/docs_build/dev/reports/PR_26177_006-shared-time-foundation.md b/docs_build/dev/reports/PR_26177_006-shared-time-foundation.md
-new file mode 100644
-index 000000000..84039ff0f
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_006-shared-time-foundation.md
-@@ -0,0 +1,24 @@
-+# PR_26177_006-shared-time-foundation
-+
-+Date: 2026-06-26
-+Scope: Shared time foundation
-+Status: PASS
-+
-+## Summary
-+
-+- Added `src/shared/time/time.js`.
-+- Added duration formatting, timestamp, sleep, debounce, and throttle helpers.
-+- Added targeted tests in `tests/shared/TimeFoundation.test.mjs`.
-+- No scheduler/runtime behavior, runtime UI, browser product-data ownership, API/database, legacy SQLite file, `start_of_day`, or unrelated cleanup changes were made.
-+
-+## Validation
-+
-+- PASS: `node ./scripts/run-node-test-files.mjs tests/shared/HashFoundation.test.mjs tests/shared/NoiseFoundation.test.mjs tests/shared/GeometryFoundation.test.mjs tests/shared/ColorFoundation.test.mjs tests/shared/TextFoundation.test.mjs tests/shared/TimeFoundation.test.mjs`.
-+- PASS: `node --check src/shared/time/time.js`.
-+- PASS: `node --check tests/shared/TimeFoundation.test.mjs`.
-+- PASS: `git diff --check -- . ':!.vscode/settings.json'`.
-+- PASS: Normal targeted validation output did not include the Game Journey legacy SQLite metrics warning.
-+
-+## Artifact
-+
-+- `tmp/PR_26177_006-shared-time-foundation_delta.zip`
-diff --git a/docs_build/dev/reports/PR_26177_006-shared-time-foundation_branch-validation.md b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_branch-validation.md
-new file mode 100644
-index 000000000..5727d2b29
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_branch-validation.md
-@@ -0,0 +1,6 @@
-+# PR_26177_006-shared-time-foundation Branch Validation
-+
-+- PASS: Current branch is `PR_26177_006-shared-time-foundation`.
-+- PASS: Current branch is the final shared-time stacked branch containing PR_26177_001 through PR_26177_006 work.
-+- PASS: Branch is tracking `origin/PR_26177_006-shared-time-foundation`.
-+- PASS: Only unrelated local change is `.vscode/settings.json`, containing developer-local Live Server configuration; it was not staged.
-diff --git a/docs_build/dev/reports/PR_26177_006-shared-time-foundation_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_manual-validation-notes.md
-new file mode 100644
-index 000000000..20a21f838
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_manual-validation-notes.md
-@@ -0,0 +1,8 @@
-+# PR_26177_006-shared-time-foundation Manual Validation Notes
-+
-+- Reviewed `git status` before continuing.
-+- Reviewed `.vscode/settings.json` diff and confirmed it only adds developer-local `liveServer.settings.port` configuration.
-+- Left `.vscode/settings.json` untouched and excluded from staging.
-+- Confirmed no `start_of_day` files were modified.
-+- Confirmed no legacy SQLite metrics files were removed, moved, or overwritten.
-+- Confirmed ZIP artifact path: `tmp/PR_26177_006-shared-time-foundation_delta.zip`.
-diff --git a/docs_build/dev/reports/PR_26177_006-shared-time-foundation_requirement-checklist.md b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_requirement-checklist.md
-new file mode 100644
-index 000000000..d82ee557d
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_requirement-checklist.md
-@@ -0,0 +1,18 @@
-+# PR_26177_006-shared-time-foundation Requirement Checklist
-+
-+- PASS: One PR purpose only.
-+- PASS: Smallest valid scoped change.
-+- PASS: No unrelated cleanup staged or committed.
-+- PASS: Did not modify `start_of_day` folders.
-+- PASS: Did not add browser product-data ownership.
-+- PASS: Used ES modules consistent with repo style.
-+- PASS: Added `src/shared/time/` foundation.
-+- PASS: Included duration formatting helpers.
-+- PASS: Included timestamp helpers.
-+- PASS: Included sleep/debounce/throttle helpers safe for opt-in shared runtime use.
-+- PASS: No scheduler/runtime behavior changes.
-+- PASS: Added targeted tests for the shared time area.
-+- PASS: Targeted shared foundation tests for Hash, Noise, Geometry, Color, Text, and Time passed.
-+- PASS: Normal validation did not show the Game Journey legacy SQLite metrics warning.
-+- PASS: Did not remove, move, or overwrite legacy SQLite metrics files.
-+- PASS: Did not run full samples smoke by default.
-diff --git a/docs_build/dev/reports/PR_26177_006-shared-time-foundation_validation-lane.md b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_validation-lane.md
-new file mode 100644
-index 000000000..b327bb6b0
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_validation-lane.md
-@@ -0,0 +1,9 @@
-+# PR_26177_006-shared-time-foundation Validation Lane
-+
-+- PASS: `node ./scripts/run-node-test-files.mjs tests/shared/HashFoundation.test.mjs tests/shared/NoiseFoundation.test.mjs tests/shared/GeometryFoundation.test.mjs tests/shared/ColorFoundation.test.mjs tests/shared/TextFoundation.test.mjs tests/shared/TimeFoundation.test.mjs`.
-+- PASS: `node --check src/shared/time/time.js`.
-+- PASS: `node --check tests/shared/TimeFoundation.test.mjs`.
-+- PASS: `git diff --check -- . ':!.vscode/settings.json'`.
-+- PASS: Normal targeted validation output did not include the Game Journey legacy SQLite metrics warning.
-+
-+Full samples smoke was intentionally not run because this closeout validates the shared foundation stack with targeted tests only.
+﻿diff --git a/admin/system-health.html b/admin/system-health.html
+index 5294d7d6e..0810945e9 100644
+--- a/admin/system-health.html
++++ b/admin/system-health.html
+@@ -6,7 +6,7 @@
+     <base href="/">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+     <title>System Health - Game Foundry Studio LLC</title>
+-    <meta name="description" content="Admin system health foundation for environment, Postgres, R2, runtime, limits, and diagnostics planning.">
++    <meta name="description" content="Admin system health dashboard for environment, Postgres, R2, runtime, limits, and diagnostics.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+ </head>
+@@ -18,7 +18,7 @@
+             <div class="container">
+                 <div class="kicker">Admin</div>
+                 <h1>System Health</h1>
+-                <p class="lede">Review the foundation view for environment, Postgres, Cloudflare R2, runtime configuration, capacity, and diagnostics.</p>
++                <p class="lede">Review current deployment health for environment, Postgres, Cloudflare R2, runtime configuration, capacity, and diagnostics.</p>
+             </div>
+         </section>
+         <section class="section">
+@@ -67,7 +67,7 @@
+                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="admin-system-health" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
+                     <section class="tool-center-panel content-stack" aria-labelledby="admin-system-health-title">
+                         <div>
+-                            <div class="kicker">Foundation</div>
++                            <div class="kicker">Current Deployment</div>
+                             <h2 id="admin-system-health-title">System Health Tables</h2>
+                         </div>
+                         <div class="table-wrapper">
+@@ -400,7 +400,7 @@
+                                 </thead>
+                                 <tbody data-admin-system-health-runtime-rows>
+                                     <tr><td>CLOUDFLARE_R2_ACCESS_KEY_ID</td><td>********</td><td data-health-status="PASS">PASS</td></tr>
+-                                    <tr><td>CLOUDFLARE_R2_BUCKET</td><td>Configured bucket placeholder</td><td data-health-status="PENDING" title="Reason: R2 bucket value reader is intentionally not wired in this foundation PR." aria-label="PENDING: R2 bucket value reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
++                                    <tr><td>CLOUDFLARE_R2_BUCKET</td><td>Loading</td><td data-health-status="PENDING" title="Reason: Runtime environment diagnostics have not loaded the safe R2 bucket status yet." aria-label="PENDING: Runtime environment diagnostics have not loaded the safe R2 bucket status yet.">PENDING</td></tr>
+                                     <tr><td>CLOUDFLARE_R2_SECRET_ACCESS_KEY</td><td>********</td><td data-health-status="PASS">PASS</td></tr>
+                                     <tr><td>DATABASE_URL</td><td>********</td><td data-health-status="PASS">PASS</td></tr>
+                                     <tr><td>GAMEFOUNDRY_ENVIRONMENT</td><td>DEV / IST / UAT / PRD</td><td data-health-status="PASS">PASS</td></tr>
+@@ -419,11 +419,11 @@
+                                     </tr>
+                                 </thead>
+                                 <tbody>
+-                                    <tr><td>DB Size</td><td>Pending metric</td><td>Threshold not connected</td><td data-health-status="PENDING" title="Reason: DB size metric is intentionally not wired in this foundation PR." aria-label="PENDING: DB size metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
+-                                    <tr><td>Connections</td><td>Pending metric</td><td>Pool usage not connected</td><td data-health-status="PENDING" title="Reason: connection pool metric is intentionally not wired in this foundation PR." aria-label="PENDING: connection pool metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
+-                                    <tr><td>Storage</td><td>Pending metric</td><td>Bucket usage not connected</td><td data-health-status="PENDING" title="Reason: R2 storage usage metric is intentionally not wired in this foundation PR." aria-label="PENDING: R2 storage usage metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
+-                                    <tr><td>Class A Ops</td><td>Pending metric</td><td>R2 write/list budget not connected</td><td data-health-status="PENDING" title="Reason: R2 Class A operation metric is intentionally not wired in this foundation PR." aria-label="PENDING: R2 Class A operation metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
+-                                    <tr><td>Class B Ops</td><td>Pending metric</td><td>R2 read budget not connected</td><td data-health-status="PENDING" title="Reason: R2 Class B operation metric is intentionally not wired in this foundation PR." aria-label="PENDING: R2 Class B operation metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
++                                    <tr><td>DB Size</td><td>Unavailable</td><td>Provider telemetry not configured</td><td data-health-status="PENDING" title="Reason: DB size is unavailable until safe Postgres provider telemetry is configured." aria-label="PENDING: DB size is unavailable until safe Postgres provider telemetry is configured.">PENDING</td></tr>
++                                    <tr><td>Connections</td><td>Unavailable</td><td>Pool telemetry not configured</td><td data-health-status="PENDING" title="Reason: Connection pool usage is unavailable until safe Postgres provider telemetry is configured." aria-label="PENDING: Connection pool usage is unavailable until safe Postgres provider telemetry is configured.">PENDING</td></tr>
++                                    <tr><td>Storage</td><td>Unavailable</td><td>Bucket usage telemetry not configured</td><td data-health-status="PENDING" title="Reason: R2 storage usage is unavailable until safe provider telemetry is configured." aria-label="PENDING: R2 storage usage is unavailable until safe provider telemetry is configured.">PENDING</td></tr>
++                                    <tr><td>Class A Ops</td><td>Unavailable</td><td>R2 write/list telemetry not configured</td><td data-health-status="PENDING" title="Reason: R2 Class A operation usage is unavailable until safe provider telemetry is configured." aria-label="PENDING: R2 Class A operation usage is unavailable until safe provider telemetry is configured.">PENDING</td></tr>
++                                    <tr><td>Class B Ops</td><td>Unavailable</td><td>R2 read telemetry not configured</td><td data-health-status="PENDING" title="Reason: R2 Class B operation usage is unavailable until safe provider telemetry is configured." aria-label="PENDING: R2 Class B operation usage is unavailable until safe provider telemetry is configured.">PENDING</td></tr>
+                                 </tbody>
+                             </table>
+                         </div>
+@@ -439,15 +439,15 @@
+                                     </tr>
+                                 </thead>
+                                 <tbody>
+-                                    <tr><td>Postgres Connection</td><td>Connection success, latency, and actionable failure detail</td><td>Server-owned Postgres health reader</td><td data-health-status="PENDING" title="Reason: live Postgres connection diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: live Postgres connection diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
+-                                    <tr><td>Postgres Migration Reader</td><td>Current migration version and pending migration signal</td><td>Server-owned Postgres migration reader</td><td data-health-status="PENDING" title="Reason: Postgres migration diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: Postgres migration diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
+-                                    <tr><td>R2 Bucket Configured</td><td>Configured bucket name presence without exposing secrets</td><td>Server-owned Cloudflare R2 configuration reader</td><td data-health-status="PENDING" title="Reason: R2 bucket configuration diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 bucket configuration diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
+-                                    <tr><td>R2 List</td><td>List operation availability and scoped prefix result</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 list diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 list diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
+-                                    <tr><td>R2 Read</td><td>Health object read availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 read diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 read diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
+-                                    <tr><td>R2 Write</td><td>Health object write availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 write diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 write diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
+-                                    <tr><td>R2 Delete</td><td>Health object cleanup availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 delete diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 delete diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
+-                                    <tr><td>Runtime Environment Masking</td><td>Masked display verification for secret-bearing variables</td><td>Server-owned runtime environment diagnostic</td><td data-health-status="PENDING" title="Reason: automated runtime masking diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: automated runtime masking diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
+-                                    <tr><td>Limits/Capacity Metrics</td><td>DB size, connections, storage usage, and R2 Class A/Class B operation signals</td><td>Server-owned metrics diagnostic</td><td data-health-status="PENDING" title="Reason: limits and capacity diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: limits and capacity diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
++                                    <tr><td>Postgres Connection</td><td>Connection success, latency, and actionable failure detail</td><td>Server-owned Postgres health reader</td><td data-health-status="PENDING" title="Reason: Postgres connection diagnostics load through the safe Admin System Health API." aria-label="PENDING: Postgres connection diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
++                                    <tr><td>Postgres Migration Reader</td><td>Current migration version and migration signal</td><td>Server-owned Postgres migration reader</td><td data-health-status="PENDING" title="Reason: Postgres migration diagnostics load through the safe Admin System Health API." aria-label="PENDING: Postgres migration diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
++                                    <tr><td>R2 Bucket Configured</td><td>Configured bucket name presence without exposing secrets</td><td>Server-owned Cloudflare R2 configuration reader</td><td data-health-status="PENDING" title="Reason: R2 bucket configuration diagnostics load through the safe Admin System Health API." aria-label="PENDING: R2 bucket configuration diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
++                                    <tr><td>R2 List</td><td>List operation availability and scoped prefix result</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 list diagnostics load through the safe Admin System Health API." aria-label="PENDING: R2 list diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
++                                    <tr><td>R2 Read</td><td>Diagnostic object read availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 read diagnostics load through the safe Admin System Health API." aria-label="PENDING: R2 read diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
++                                    <tr><td>R2 Write</td><td>Diagnostic object write availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 write diagnostics load through the safe Admin System Health API." aria-label="PENDING: R2 write diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
++                                    <tr><td>R2 Delete</td><td>Diagnostic object cleanup availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 delete diagnostics load through the safe Admin System Health API." aria-label="PENDING: R2 delete diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
++                                    <tr><td>Runtime Environment Masking</td><td>Masked display verification for secret-bearing variables</td><td>Server-owned runtime environment diagnostic</td><td data-health-status="PENDING" title="Reason: Runtime masking diagnostics load through the safe Admin System Health API." aria-label="PENDING: Runtime masking diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
++                                    <tr><td>Limits/Capacity Metrics</td><td>DB size, connections, storage usage, and R2 Class A/Class B operation signals</td><td>Server-owned metrics diagnostic</td><td data-health-status="PENDING" title="Reason: Limits and capacity diagnostics are unavailable until safe provider telemetry is configured." aria-label="PENDING: Limits and capacity diagnostics are unavailable until safe provider telemetry is configured.">PENDING</td></tr>
+                                 </tbody>
+                             </table>
+                         </div>
+@@ -472,8 +472,8 @@
+                                             </thead>
+                                             <tbody>
+                                                 <tr><td data-health-status="PASS">PASS</td><td>Database Health</td><td>Postgres is the only planned database provider.</td></tr>
+-                                                <tr><td data-health-status="PASS">PASS</td><td>Runtime Environment</td><td>Secret values are masked in the foundation view.</td></tr>
+-                                                <tr><td data-health-status="PENDING" title="Reason: live diagnostics log wiring is intentionally not active in this foundation PR." aria-label="PENDING: live diagnostics log wiring is intentionally not active in this foundation PR.">PENDING</td><td>Diagnostics</td><td>Live diagnostics log wiring is intentionally deferred.</td></tr>
++                                                <tr><td data-health-status="PASS">PASS</td><td>Runtime Environment</td><td>Secret values are masked in System Health.</td></tr>
++                                                <tr><td data-health-status="PENDING" title="Reason: expanded diagnostics streaming is not configured for this deployment." aria-label="PENDING: expanded diagnostics streaming is not configured for this deployment.">PENDING</td><td>Diagnostics</td><td>Expanded diagnostics streaming is not configured.</td></tr>
+                                             </tbody>
+                                         </table>
+                                     </div>
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index b115685ce..ba3f7a58a 100644
+index 48675b782..713a4c0d7 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,11 +1,12 @@
- docs_build/dev/BUILD_PR.md
- docs_build/dev/PLAN_PR.md
--docs_build/dev/reports/PR_26177_005-shared-text-foundation.md
--docs_build/dev/reports/PR_26177_005-shared-text-foundation_branch-validation.md
--docs_build/dev/reports/PR_26177_005-shared-text-foundation_manual-validation-notes.md
--docs_build/dev/reports/PR_26177_005-shared-text-foundation_requirement-checklist.md
--docs_build/dev/reports/PR_26177_005-shared-text-foundation_validation-lane.md
-+docs_build/dev/reports/PR_26177_006-shared-time-foundation.md
-+docs_build/dev/reports/PR_26177_006-shared-time-foundation_branch-validation.md
-+docs_build/dev/reports/PR_26177_006-shared-time-foundation_closeout.md
-+docs_build/dev/reports/PR_26177_006-shared-time-foundation_manual-validation-notes.md
-+docs_build/dev/reports/PR_26177_006-shared-time-foundation_requirement-checklist.md
-+docs_build/dev/reports/PR_26177_006-shared-time-foundation_validation-lane.md
- docs_build/dev/reports/codex_changed_files.txt
- docs_build/dev/reports/codex_review.diff
--src/shared/text/text.js
--tests/shared/TextFoundation.test.mjs
-+src/shared/time/time.js
-+tests/shared/TimeFoundation.test.mjs
+@@ -1,14 +1,28 @@
+-docs_build/dev/BUILD_PR.md
+-docs_build/dev/PLAN_PR.md
+-docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
+-docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
+-docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions.md
+-docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_branch-validation.md
+-docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_instruction-compliance-checklist.md
+-docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_manual-validation-notes.md
+-docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_requirement-checklist.md
+-docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_validation-lane.md
+-docs_build/dev/reports/codex_changed_files.txt
+-docs_build/dev/reports/codex_review.diff
+-src/shared/math/randomHelpers.js
+-src/shared/validation/assert.js
++# git status --short
++M admin/system-health.html
++ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
++ M docs_build/dev/reports/playwright_v8_coverage_report.txt
++ M src/dev-runtime/server/local-api-router.mjs
++ M tests/dev-runtime/AdminHealthOperations.test.mjs
++ M tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
++?? docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete.md
++?? docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_branch-validation.md
++?? docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_manual-validation-notes.md
++?? docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_requirements-checklist.md
++?? docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_validation-lane.md
++
++# git ls-files --others --exclude-standard
++docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete.md
++docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_branch-validation.md
++docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_manual-validation-notes.md
++docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_requirements-checklist.md
++docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_validation-lane.md
++
++# git diff --stat
++admin/system-health.html                           | 40 +++++++++++-----------
++ .../dev/reports/coverage_changed_js_guardrail.txt  |  6 ++--
++ .../dev/reports/playwright_v8_coverage_report.txt  | 33 ++++++++----------
++ src/dev-runtime/server/local-api-router.mjs        | 10 +++---
++ tests/dev-runtime/AdminHealthOperations.test.mjs   |  3 +-
++ .../tools/AdminHealthOperationsPage.spec.mjs       |  4 ++-
++ 6 files changed, 47 insertions(+), 49 deletions(-)
+\ No newline at end of file
 diff --git a/docs_build/dev/reports/codex_review.diff b/docs_build/dev/reports/codex_review.diff
-index 596dc3bbd..fe3bf7586 100644
+index 8534f5bf7..963b44f35 100644
 --- a/docs_build/dev/reports/codex_review.diff
 +++ b/docs_build/dev/reports/codex_review.diff
-@@ -1,36 +1,36 @@
- diff --git a/docs_build/dev/BUILD_PR.md b/docs_build/dev/BUILD_PR.md
--index 8e003cf3d..d47106b59 100644
-+index d47106b59..30700e9cd 100644
- --- a/docs_build/dev/BUILD_PR.md
- +++ b/docs_build/dev/BUILD_PR.md
- @@ -1,23 +1,23 @@
---# PR_26177_004-shared-color-foundation
--+# PR_26177_005-shared-text-foundation
-+-# PR_26177_005-shared-text-foundation
-++# PR_26177_006-shared-time-foundation
+@@ -1,458 +1,363 @@
+-diff --git a/docs_build/dev/BUILD_PR.md b/docs_build/dev/BUILD_PR.md
+-index 2f3f00812..edc9a0b75 100644
+---- a/docs_build/dev/BUILD_PR.md
+-+++ b/docs_build/dev/BUILD_PR.md
+-@@ -1,39 +1,40 @@
+--# PR_26177_DELTA_055-random-seed-enhancements
+-+# PR_26177_DELTA_056-shared-validation-assertions
+-
+- ## Purpose
+-
+--Enhance `RandomSeed` with matching procedural convenience methods.
+-+Move generic validation/assertion helpers out of random helper code into a shared validation module.
+-
+- ## Source Of Truth
+-
+--This `BUILD_PR.md`, `PLAN_PR.md`, the user request, and `docs_build/dev/ProjectInstructions.zip` are the source of truth for `PR_26177_DELTA_055-random-seed-enhancements`.
+-+This `BUILD_PR.md`, `PLAN_PR.md`, the user request, and `docs_build/dev/ProjectInstructions.zip` are the source of truth for `PR_26177_DELTA_056-shared-validation-assertions`.
+-
+- ## OWNER Override And Team Assignment
+-
+--OWNER override approved: Continue Team Delta random utility stack with `PR_26177_DELTA_055-random-seed-enhancements`.
+-+OWNER override approved: Continue Team Delta random utility stack with `PR_26177_DELTA_056-shared-validation-assertions`.
+-
+- Team Delta owns Shared JS, runtime utilities, technical debt remediation, and runtime test coverage.
+-
+- ## Stack
+-
+--- Base branch: `PR_26177_DELTA_054-random-utility`
+--- This PR depends on the shared helper module from PR_053 and the stack context from PR_054.
+-+- Base branch: `PR_26177_DELTA_055-random-seed-enhancements`
+-+- This PR depends on the random helper module from PR_053, `Random` from PR_054, and `RandomSeed` enhancements from PR_055.
+-
+- ## Exact Scope
+-
+--- Update `RandomSeed` to use shared helper logic where appropriate.
+--- Add:
+--  - `shuffle(array)`
+--  - `chance(percent)`
+--  - `weightedPick(weightedItems)`
+--  - `saveState()`
+--  - `restoreState(state)`
+--- Preserve existing `RandomSeed` sequence compatibility.
+--- Same seed must still reproduce same sequence.
+--- Reseeding must still reproduce same sequence.
+--- Add targeted unit tests for new methods.
+--- No adoption changes in existing game logic.
+-+- Create `src/shared/validation/assert.js`.
+-+- Move generic assertion helpers from random helper code into `assert.js`.
+-+- Include only generic reusable validation functions needed by current random helpers:
+-+  - `assertArray`
+-+  - `assertFiniteNumber`
+-+  - `assertOrderedRange`
+-+- Update random helper code to import from `src/shared/validation/assert.js`.
+-+- Preserve existing `Random` and `RandomSeed` behavior.
+-+- Do not change public API.
+-+- Do not expand into unrelated validation functions yet.
+-+- Add/update targeted unit tests if needed.
+- - No UI changes.
+-+- No API/database changes.
+-+- No unrelated cleanup.
+- - Create required Codex reports under `docs_build/dev/reports/`.
+- - Create repo-structured delta ZIP under `tmp/`.
+-
+-@@ -43,20 +44,21 @@ Team Delta owns Shared JS, runtime utilities, technical debt remediation, and ru
+- - `docs_build/dev/BUILD_PR.md`
+- - `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md`
+- - `docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md`
+--- `src/shared/math/RandomSeed.js`
+--- `tests/shared/RandomSeed.test.mjs`
+--- `docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements.md`
+--- `docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_branch-validation.md`
+--- `docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_requirement-checklist.md`
+--- `docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_validation-lane.md`
+--- `docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_manual-validation-notes.md`
+--- `docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_instruction-compliance-checklist.md`
+-+- `src/shared/validation/assert.js`
+-+- `src/shared/math/randomHelpers.js`
+-+- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions.md`
+-+- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_branch-validation.md`
+-+- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_requirement-checklist.md`
+-+- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_validation-lane.md`
+-+- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_manual-validation-notes.md`
+-+- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_instruction-compliance-checklist.md`
+- - `docs_build/dev/reports/codex_review.diff`
+- - `docs_build/dev/reports/codex_changed_files.txt`
+-
+- ## Out Of Scope
+-
+--- No seeded `next()` algorithm changes.
+-+- No public API changes.
+-+- No new unrelated validation helpers.
+- - No existing game logic adoption changes.
+- - No UI changes.
+- - No browser storage changes.
+-@@ -70,9 +72,9 @@ Team Delta owns Shared JS, runtime utilities, technical debt remediation, and ru
+- Run exactly:
+-
+- ```powershell
+--node ./scripts/run-node-test-files.mjs tests/shared/RandomSeed.test.mjs tests/shared/RandomHelpers.test.mjs
+--node --check src/shared/math/RandomSeed.js
+--node --check tests/shared/RandomSeed.test.mjs
+-+node ./scripts/run-node-test-files.mjs tests/shared/RandomHelpers.test.mjs tests/shared/Random.test.mjs tests/shared/RandomSeed.test.mjs
+-+node --check src/shared/validation/assert.js
+-+node --check src/shared/math/randomHelpers.js
+- git diff --check
+- ```
+-
+-@@ -83,5 +85,5 @@ Playwright is not required because this PR does not change UI or browser runtime
+- Create repo-structured delta ZIP:
+-
+- ```text
+--tmp/PR_26177_DELTA_055-random-seed-enhancements_delta.zip
+-+tmp/PR_26177_DELTA_056-shared-validation-assertions_delta.zip
+- ```
+-diff --git a/docs_build/dev/PLAN_PR.md b/docs_build/dev/PLAN_PR.md
+-index 87120e264..de53f9020 100644
+---- a/docs_build/dev/PLAN_PR.md
+-+++ b/docs_build/dev/PLAN_PR.md
+-@@ -1,42 +1,43 @@
+--# PLAN_PR: PR_26177_DELTA_055-random-seed-enhancements
+-+# PLAN_PR: PR_26177_DELTA_056-shared-validation-assertions
+-
+- ## Purpose
+-
+--Enhance `RandomSeed` with matching procedural convenience methods.
+-+Move generic validation/assertion helpers out of random helper code into a shared validation module.
+-
+- ## Owner And Assignment
+-
+- - Team: Delta
+--- OWNER override approved: Continue Team Delta random utility stack with `PR_26177_DELTA_055-random-seed-enhancements`.
+--- Stack base: `PR_26177_DELTA_054-random-utility`.
+-+- OWNER override approved: Continue Team Delta random utility stack with `PR_26177_DELTA_056-shared-validation-assertions`.
+-+- Stack base: `PR_26177_DELTA_055-random-seed-enhancements`.
+-
+- ## Scope
+-
+--- Update `RandomSeed` to use shared helper logic where appropriate.
+--- Add:
+--  - `shuffle(array)`
+--  - `chance(percent)`
+--  - `weightedPick(weightedItems)`
+--  - `saveState()`
+--  - `restoreState(state)`
+--- Preserve existing `RandomSeed` sequence compatibility.
+--- Same seed must still reproduce same sequence.
+--- Reseeding must still reproduce same sequence.
+--- Add targeted unit tests for new methods.
+--- No adoption changes in existing game logic.
+-+- Create `src/shared/validation/assert.js`.
+-+- Move generic assertion helpers from random helper code into `assert.js`.
+-+- Include only generic reusable validation functions needed by current random helpers:
+-+  - `assertArray`
+-+  - `assertFiniteNumber`
+-+  - `assertOrderedRange`
+-+- Update random helper code to import from `src/shared/validation/assert.js`.
+-+- Preserve existing `Random` and `RandomSeed` behavior.
+-+- Do not change public API.
+-+- Do not expand into unrelated validation functions yet.
+-+- Add/update targeted unit tests if needed.
+- - No UI changes.
+-+- No API/database changes.
+-+- No unrelated cleanup.
+-
+- ## Implementation Plan
+-
+--1. Update `src/shared/math/RandomSeed.js` to reuse `randomHelpers.js` for procedural helper methods.
+--2. Keep the existing seeded `next()` algorithm unchanged.
+--3. Add state save/restore methods.
+--4. Extend `tests/shared/RandomSeed.test.mjs` with sequence compatibility, new method, and state tests.
+-+1. Add `src/shared/validation/assert.js` with only the required generic assertion helpers.
+-+2. Remove duplicated generic assertions from `src/shared/math/randomHelpers.js`.
+-+3. Import the shared assertions from `randomHelpers.js`.
+-+4. Run targeted random helper, `Random`, and `RandomSeed` tests.
+- 5. Produce required PR reports and repo-structured ZIP.
+-
+- ## Acceptance Criteria
+-
+--- Existing seeded sequence values remain compatible.
+--- Same seed and reseeding behavior remain deterministic.
+--- New procedural methods use the same seeded random stream.
+--- State save/restore resumes the sequence from the saved point.
+-+- Existing random helper behavior is preserved.
+-+- Existing `Random` and `RandomSeed` behavior is preserved.
+-+- Public random APIs are unchanged.
+-+- Shared assertion module stays limited to the current reusable validation helpers.
+-diff --git a/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md b/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
+-index 9dcd7244d..6341fdf34 100644
+---- a/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
+-+++ b/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
+-@@ -31,7 +31,7 @@ If a team has no assignment, no active branch, and no active PR, it is inactive
+- | Team Alfa | none | none | none | Available | Active ownership lane |
+- | Team Bravo | none | none | none | Available | Active ownership lane |
+- | Team Charlie | none | none | none | Available | Active ownership lane |
+--| Team Delta | PR_26177_DELTA_055-random-seed-enhancements | PR_26177_DELTA_055-random-seed-enhancements | PR_26177_DELTA_055-random-seed-enhancements | Active | OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_055-random-seed-enhancements |
+-+| Team Delta | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | Active | OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_056-shared-validation-assertions |
+- | Team Golf | none | none | none | Available | Replacement active ownership lane for retired Team Gamma |
+- | Team OWNER | none | none | none | Available | Governance Phase 1 complete |
+-
+-diff --git a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
+-index 3b49412c4..9735b4bd4 100644
+---- a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
+-+++ b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
+-@@ -7,7 +7,7 @@
+- | Team Alfa | none | none | none | Available |
+- | Team Bravo | none | none | none | Available |
+- | Team Charlie | none | none | none | Available |
+--| Team Delta | PR_26177_DELTA_055-random-seed-enhancements | PR_26177_DELTA_055-random-seed-enhancements | PR_26177_DELTA_055-random-seed-enhancements | Active |
+-+| Team Delta | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | Active |
+- | Team Golf | none | none | none | Available |
+- | Team OWNER | none | none | none | Available |
+-
+-@@ -50,13 +50,13 @@ Current OWNER clarification:
+-
+- Status: Active
+-
+--Active assignment: PR_26177_DELTA_055-random-seed-enhancements.
+-+Active assignment: PR_26177_DELTA_056-shared-validation-assertions.
+-
+--Active branch: PR_26177_DELTA_055-random-seed-enhancements.
+-+Active branch: PR_26177_DELTA_056-shared-validation-assertions.
+-
+--Active PR: PR_26177_DELTA_055-random-seed-enhancements.
+-+Active PR: PR_26177_DELTA_056-shared-validation-assertions.
+-
+--OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_055-random-seed-enhancements.
+-+OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_056-shared-validation-assertions.
+-
+- ## Team Bravo
+-
+-diff --git a/src/shared/math/randomHelpers.js b/src/shared/math/randomHelpers.js
+-index 5df891668..103ae7db5 100644
+---- a/src/shared/math/randomHelpers.js
+-+++ b/src/shared/math/randomHelpers.js
+-@@ -1,3 +1,5 @@
+-+import { assertArray, assertFiniteNumber, assertOrderedRange } from "../validation/assert.js";
+-+
+- function assertRandomNext(randomNext) {
+-   if (typeof randomNext !== "function") {
+-     throw new TypeError("randomNext must be a function.");
+-@@ -15,27 +17,6 @@ function readRandomValue(randomNext) {
+-   return value;
++ï»¿diff --git a/admin/system-health.html b/admin/system-health.html
++index 5294d7d6e..0810945e9 100644
++--- a/admin/system-health.html
+++++ b/admin/system-health.html
++@@ -6,7 +6,7 @@
++     <base href="/">
++     <meta name="viewport" content="width=device-width, initial-scale=1">
++     <title>System Health - Game Foundry Studio LLC</title>
++-    <meta name="description" content="Admin system health foundation for environment, Postgres, R2, runtime, limits, and diagnostics planning.">
+++    <meta name="description" content="Admin system health dashboard for environment, Postgres, R2, runtime, limits, and diagnostics.">
++     <link rel="icon" href="/favicon.svg">
++     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
++ </head>
++@@ -18,7 +18,7 @@
++             <div class="container">
++                 <div class="kicker">Admin</div>
++                 <h1>System Health</h1>
++-                <p class="lede">Review the foundation view for environment, Postgres, Cloudflare R2, runtime configuration, capacity, and diagnostics.</p>
+++                <p class="lede">Review current deployment health for environment, Postgres, Cloudflare R2, runtime configuration, capacity, and diagnostics.</p>
++             </div>
++         </section>
++         <section class="section">
++@@ -67,7 +67,7 @@
++                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="admin-system-health" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
++                     <section class="tool-center-panel content-stack" aria-labelledby="admin-system-health-title">
++                         <div>
++-                            <div class="kicker">Foundation</div>
+++                            <div class="kicker">Current Deployment</div>
++                             <h2 id="admin-system-health-title">System Health Tables</h2>
++                         </div>
++                         <div class="table-wrapper">
++@@ -400,7 +400,7 @@
++                                 </thead>
++                                 <tbody data-admin-system-health-runtime-rows>
++                                     <tr><td>CLOUDFLARE_R2_ACCESS_KEY_ID</td><td>********</td><td data-health-status="PASS">PASS</td></tr>
++-                                    <tr><td>CLOUDFLARE_R2_BUCKET</td><td>Configured bucket placeholder</td><td data-health-status="PENDING" title="Reason: R2 bucket value reader is intentionally not wired in this foundation PR." aria-label="PENDING: R2 bucket value reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
+++                                    <tr><td>CLOUDFLARE_R2_BUCKET</td><td>Loading</td><td data-health-status="PENDING" title="Reason: Runtime environment diagnostics have not loaded the safe R2 bucket status yet." aria-label="PENDING: Runtime environment diagnostics have not loaded the safe R2 bucket status yet.">PENDING</td></tr>
++                                     <tr><td>CLOUDFLARE_R2_SECRET_ACCESS_KEY</td><td>********</td><td data-health-status="PASS">PASS</td></tr>
++                                     <tr><td>DATABASE_URL</td><td>********</td><td data-health-status="PASS">PASS</td></tr>
++                                     <tr><td>GAMEFOUNDRY_ENVIRONMENT</td><td>DEV / IST / UAT / PRD</td><td data-health-status="PASS">PASS</td></tr>
++@@ -419,11 +419,11 @@
++                                     </tr>
++                                 </thead>
++                                 <tbody>
++-                                    <tr><td>DB Size</td><td>Pending metric</td><td>Threshold not connected</td><td data-health-status="PENDING" title="Reason: DB size metric is intentionally not wired in this foundation PR." aria-label="PENDING: DB size metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
++-                                    <tr><td>Connections</td><td>Pending metric</td><td>Pool usage not connected</td><td data-health-status="PENDING" title="Reason: connection pool metric is intentionally not wired in this foundation PR." aria-label="PENDING: connection pool metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
++-                                    <tr><td>Storage</td><td>Pending metric</td><td>Bucket usage not connected</td><td data-health-status="PENDING" title="Reason: R2 storage usage metric is intentionally not wired in this foundation PR." aria-label="PENDING: R2 storage usage metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
++-                                    <tr><td>Class A Ops</td><td>Pending metric</td><td>R2 write/list budget not connected</td><td data-health-status="PENDING" title="Reason: R2 Class A operation metric is intentionally not wired in this foundation PR." aria-label="PENDING: R2 Class A operation metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
++-                                    <tr><td>Class B Ops</td><td>Pending metric</td><td>R2 read budget not connected</td><td data-health-status="PENDING" title="Reason: R2 Class B operation metric is intentionally not wired in this foundation PR." aria-label="PENDING: R2 Class B operation metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
+++                                    <tr><td>DB Size</td><td>Unavailable</td><td>Provider telemetry not configured</td><td data-health-status="PENDING" title="Reason: DB size is unavailable until safe Postgres provider telemetry is configured." aria-label="PENDING: DB size is unavailable until safe Postgres provider telemetry is configured.">PENDING</td></tr>
+++                                    <tr><td>Connections</td><td>Unavailable</td><td>Pool telemetry not configured</td><td data-health-status="PENDING" title="Reason: Connection pool usage is unavailable until safe Postgres provider telemetry is configured." aria-label="PENDING: Connection pool usage is unavailable until safe Postgres provider telemetry is configured.">PENDING</td></tr>
+++                                    <tr><td>Storage</td><td>Unavailable</td><td>Bucket usage telemetry not configured</td><td data-health-status="PENDING" title="Reason: R2 storage usage is unavailable until safe provider telemetry is configured." aria-label="PENDING: R2 storage usage is unavailable until safe provider telemetry is configured.">PENDING</td></tr>
+++                                    <tr><td>Class A Ops</td><td>Unavailable</td><td>R2 write/list telemetry not configured</td><td data-health-status="PENDING" title="Reason: R2 Class A operation usage is unavailable until safe provider telemetry is configured." aria-label="PENDING: R2 Class A operation usage is unavailable until safe provider telemetry is configured.">PENDING</td></tr>
+++                                    <tr><td>Class B Ops</td><td>Unavailable</td><td>R2 read telemetry not configured</td><td data-health-status="PENDING" title="Reason: R2 Class B operation usage is unavailable until safe provider telemetry is configured." aria-label="PENDING: R2 Class B operation usage is unavailable until safe provider telemetry is configured.">PENDING</td></tr>
++                                 </tbody>
++                             </table>
++                         </div>
++@@ -439,15 +439,15 @@
++                                     </tr>
++                                 </thead>
++                                 <tbody>
++-                                    <tr><td>Postgres Connection</td><td>Connection success, latency, and actionable failure detail</td><td>Server-owned Postgres health reader</td><td data-health-status="PENDING" title="Reason: live Postgres connection diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: live Postgres connection diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
++-                                    <tr><td>Postgres Migration Reader</td><td>Current migration version and pending migration signal</td><td>Server-owned Postgres migration reader</td><td data-health-status="PENDING" title="Reason: Postgres migration diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: Postgres migration diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
++-                                    <tr><td>R2 Bucket Configured</td><td>Configured bucket name presence without exposing secrets</td><td>Server-owned Cloudflare R2 configuration reader</td><td data-health-status="PENDING" title="Reason: R2 bucket configuration diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 bucket configuration diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
++-                                    <tr><td>R2 List</td><td>List operation availability and scoped prefix result</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 list diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 list diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
++-                                    <tr><td>R2 Read</td><td>Health object read availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 read diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 read diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
++-                                    <tr><td>R2 Write</td><td>Health object write availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 write diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 write diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
++-                                    <tr><td>R2 Delete</td><td>Health object cleanup availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 delete diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 delete diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
++-                                    <tr><td>Runtime Environment Masking</td><td>Masked display verification for secret-bearing variables</td><td>Server-owned runtime environment diagnostic</td><td data-health-status="PENDING" title="Reason: automated runtime masking diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: automated runtime masking diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
++-                                    <tr><td>Limits/Capacity Metrics</td><td>DB size, connections, storage usage, and R2 Class A/Class B operation signals</td><td>Server-owned metrics diagnostic</td><td data-health-status="PENDING" title="Reason: limits and capacity diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: limits and capacity diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
+++                                    <tr><td>Postgres Connection</td><td>Connection success, latency, and actionable failure detail</td><td>Server-owned Postgres health reader</td><td data-health-status="PENDING" title="Reason: Postgres connection diagnostics load through the safe Admin System Health API." aria-label="PENDING: Postgres connection diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
+++                                    <tr><td>Postgres Migration Reader</td><td>Current migration version and migration signal</td><td>Server-owned Postgres migration reader</td><td data-health-status="PENDING" title="Reason: Postgres migration diagnostics load through the safe Admin System Health API." aria-label="PENDING: Postgres migration diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
+++                                    <tr><td>R2 Bucket Configured</td><td>Configured bucket name presence without exposing secrets</td><td>Server-owned Cloudflare R2 configuration reader</td><td data-health-status="PENDING" title="Reason: R2 bucket configuration diagnostics load through the safe Admin System Health API." aria-label="PENDING: R2 bucket configuration diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
+++                                    <tr><td>R2 List</td><td>List operation availability and scoped prefix result</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 list diagnostics load through the safe Admin System Health API." aria-label="PENDING: R2 list diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
+++                                    <tr><td>R2 Read</td><td>Diagnostic object read availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 read diagnostics load through the safe Admin System Health API." aria-label="PENDING: R2 read diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
+++                                    <tr><td>R2 Write</td><td>Diagnostic object write availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 write diagnostics load through the safe Admin System Health API." aria-label="PENDING: R2 write diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
+++                                    <tr><td>R2 Delete</td><td>Diagnostic object cleanup availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 delete diagnostics load through the safe Admin System Health API." aria-label="PENDING: R2 delete diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
+++                                    <tr><td>Runtime Environment Masking</td><td>Masked display verification for secret-bearing variables</td><td>Server-owned runtime environment diagnostic</td><td data-health-status="PENDING" title="Reason: Runtime masking diagnostics load through the safe Admin System Health API." aria-label="PENDING: Runtime masking diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
+++                                    <tr><td>Limits/Capacity Metrics</td><td>DB size, connections, storage usage, and R2 Class A/Class B operation signals</td><td>Server-owned metrics diagnostic</td><td data-health-status="PENDING" title="Reason: Limits and capacity diagnostics are unavailable until safe provider telemetry is configured." aria-label="PENDING: Limits and capacity diagnostics are unavailable until safe provider telemetry is configured.">PENDING</td></tr>
++                                 </tbody>
++                             </table>
++                         </div>
++@@ -472,8 +472,8 @@
++                                             </thead>
++                                             <tbody>
++                                                 <tr><td data-health-status="PASS">PASS</td><td>Database Health</td><td>Postgres is the only planned database provider.</td></tr>
++-                                                <tr><td data-health-status="PASS">PASS</td><td>Runtime Environment</td><td>Secret values are masked in the foundation view.</td></tr>
++-                                                <tr><td data-health-status="PENDING" title="Reason: live diagnostics log wiring is intentionally not active in this foundation PR." aria-label="PENDING: live diagnostics log wiring is intentionally not active in this foundation PR.">PENDING</td><td>Diagnostics</td><td>Live diagnostics log wiring is intentionally deferred.</td></tr>
+++                                                <tr><td data-health-status="PASS">PASS</td><td>Runtime Environment</td><td>Secret values are masked in System Health.</td></tr>
+++                                                <tr><td data-health-status="PENDING" title="Reason: expanded diagnostics streaming is not configured for this deployment." aria-label="PENDING: expanded diagnostics streaming is not configured for this deployment.">PENDING</td><td>Diagnostics</td><td>Expanded diagnostics streaming is not configured.</td></tr>
++                                             </tbody>
++                                         </table>
++                                     </div>
++diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++index 01a698376..74a29674c 100644
++--- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+++++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++@@ -6,9 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
++ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
++
++ Changed runtime JS files considered:
++-(0%) src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++-(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++
++ Guardrail warnings:
++-(0%) src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++-(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
++index da369bcdb..cc856ba25 100644
++--- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
+++++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
++@@ -12,33 +12,30 @@ Note: entry percentages use function coverage when available, otherwise line cov
++ Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
++
++ Exercised tool entry points detected:
++-(76%) Toolbox Index - exercised 1 runtime JS files
+++(46%) Toolbox Index - exercised 1 runtime JS files
++ (0%) Tool Template V2 - not exercised by this Playwright run
++-(72%) Theme V2 Shared JS - exercised 4 runtime JS files
+++(78%) Theme V2 Shared JS - exercised 5 runtime JS files
++
++ Changed runtime JS files covered:
++-(0%) src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++-(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++
++ Files with executed line/function counts where available:
++-(36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2041/2041; executed functions 12/33
++-(53%) src/api/server-api-client.js - executed lines 168/168; executed functions 10/19
++-(64%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 63/98
+++(36%) src/api/server-api-client.js - executed lines 168/168; executed functions 5/14
+++(46%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 12/26
++ (65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
++-(67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
++-(73%) assets/toolbox/game-journey/js/index.js - executed lines 1662/1662; executed functions 108/148
++-(76%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 22/29
+++(75%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 76/102
++ (77%) assets/theme-v2/js/tool-display-mode.js - executed lines 304/304; executed functions 23/30
+++(80%) assets/theme-v2/js/admin-system-health.js - executed lines 920/920; executed functions 74/92
++ (80%) assets/theme-v2/js/theme-icons.js - executed lines 69/69; executed functions 4/5
++-(89%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 32/36
++-(100%) assets/js/shared/game-journey-api-client.js - executed lines 19/19; executed functions 2/2
+++(80%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 4/5
+++(83%) assets/js/shared/status.js - executed lines 37/37; executed functions 5/6
+++(91%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 10/11
+++(100%) src/api/admin-system-health-api-client.js - executed lines 31/31; executed functions 5/5
++
++ Uncovered or low-coverage changed JS files:
++-(0%) src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs - WARNING: uncovered changed runtime JS file; advisory only
++-(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - WARNING: uncovered changed runtime JS file; advisory only
+++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
++
++ Changed JS files considered:
++-(0%) scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs - changed JS file not collected as browser runtime coverage
++-(0%) src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs - changed JS file not collected as browser runtime coverage
++-(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - changed JS file not collected as browser runtime coverage
++-(0%) tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs - changed JS file not collected as browser runtime coverage
+++(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+++(0%) tests/dev-runtime/AdminHealthOperations.test.mjs - changed JS file not collected as browser runtime coverage
+++(0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
++diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
++index f2f927aff..f20e47b4c 100644
++--- a/src/dev-runtime/server/local-api-router.mjs
+++++ b/src/dev-runtime/server/local-api-router.mjs
++@@ -1416,16 +1416,16 @@ function systemHealthRuntimeHealth(environmentIdentity = {}, checkedAt = new Dat
++
++ function systemHealthServiceDisplayStatus(status, configured = true) {
++   if (configured === false) {
++-    return { healthStatus: "PENDING", status: "Not Configured" };
+++    return { healthStatus: "PENDING", status: "NOT CONFIGURED" };
++   }
++   const normalized = normalizeHealthStatus(status);
++   if (normalized === "PASS") {
++-    return { healthStatus: "PASS", status: "Healthy" };
+++    return { healthStatus: "PASS", status: "PASS" };
++   }
++   if (normalized === "FAIL") {
++-    return { healthStatus: "FAIL", status: "Failed" };
+++    return { healthStatus: "FAIL", status: "FAIL" };
++   }
++-  return { healthStatus: "WARN", status: "Warning" };
+++  return { healthStatus: "WARN", status: "WARN" };
+  }
 
-  ## Purpose
-
---Add a small shared color foundation.
--+Add a small shared text foundation.
-+-Add a small shared text foundation.
-++Add a small shared time foundation.
-
-  ## Source Of Truth
-
---This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth for `PR_26177_004-shared-color-foundation`.
--+This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth for `PR_26177_005-shared-text-foundation`.
-+-This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth for `PR_26177_005-shared-text-foundation`.
-++This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth for `PR_26177_006-shared-time-foundation`.
-
-  ## Stack
-
---- Base branch: `PR_26177_003-shared-geometry-foundation`
--+- Base branch: `PR_26177_004-shared-color-foundation`
-+-- Base branch: `PR_26177_004-shared-color-foundation`
-++- Base branch: `PR_26177_005-shared-text-foundation`
-
-  ## Exact Scope
-
---- Add `src/shared/color/` foundation.
---- Include hex/rgb/hsl conversion, clamp, lerp/blend helpers, luminance/contrast basics.
---- Add targeted tests for the shared color area.
---- No page styling changes.
--+- Add `src/shared/text/` foundation.
--+- Include safe string helpers such as slugify, casing, truncate, escapeHtml, and normalizeWhitespace.
--+- Add targeted tests for the shared text area.
--+- No copy rewrites outside tests/docs.
-+-- Add `src/shared/text/` foundation.
-+-- Include safe string helpers such as slugify, casing, truncate, escapeHtml, and normalizeWhitespace.
-+-- Add targeted tests for the shared text area.
-+-- No copy rewrites outside tests/docs.
-++- Add `src/shared/time/` foundation.
-++- Include duration formatting, timestamp helpers, debounce/throttle/sleep helpers where safe for shared runtime.
-++- Add targeted tests for the shared time area.
-++- No scheduler/runtime behavior changes.
-  - Create required Codex reports under `docs_build/dev/reports/`.
-  - Create repo-structured delta ZIP under `tmp/`.
-
-@@ -38,27 +38,27 @@ index 8e003cf3d..d47106b59 100644
-
-  - `docs_build/dev/PLAN_PR.md`
-  - `docs_build/dev/BUILD_PR.md`
---- `src/shared/color/color.js`
---- `tests/shared/ColorFoundation.test.mjs`
---- `docs_build/dev/reports/PR_26177_004-shared-color-foundation.md`
---- `docs_build/dev/reports/PR_26177_004-shared-color-foundation_branch-validation.md`
---- `docs_build/dev/reports/PR_26177_004-shared-color-foundation_requirement-checklist.md`
---- `docs_build/dev/reports/PR_26177_004-shared-color-foundation_validation-lane.md`
---- `docs_build/dev/reports/PR_26177_004-shared-color-foundation_manual-validation-notes.md`
--+- `src/shared/text/text.js`
--+- `tests/shared/TextFoundation.test.mjs`
--+- `docs_build/dev/reports/PR_26177_005-shared-text-foundation.md`
--+- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_branch-validation.md`
--+- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_requirement-checklist.md`
--+- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_validation-lane.md`
--+- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_manual-validation-notes.md`
-+-- `src/shared/text/text.js`
-+-- `tests/shared/TextFoundation.test.mjs`
-+-- `docs_build/dev/reports/PR_26177_005-shared-text-foundation.md`
-+-- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_branch-validation.md`
-+-- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_requirement-checklist.md`
-+-- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_validation-lane.md`
-+-- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_manual-validation-notes.md`
-++- `src/shared/time/time.js`
-++- `tests/shared/TimeFoundation.test.mjs`
-++- `docs_build/dev/reports/PR_26177_006-shared-time-foundation.md`
-++- `docs_build/dev/reports/PR_26177_006-shared-time-foundation_branch-validation.md`
-++- `docs_build/dev/reports/PR_26177_006-shared-time-foundation_requirement-checklist.md`
-++- `docs_build/dev/reports/PR_26177_006-shared-time-foundation_validation-lane.md`
-++- `docs_build/dev/reports/PR_26177_006-shared-time-foundation_manual-validation-notes.md`
-  - `docs_build/dev/reports/codex_review.diff`
-  - `docs_build/dev/reports/codex_changed_files.txt`
-
-  ## Out Of Scope
-
---- No page styling changes.
--+- No copy rewrites outside tests/docs.
-+-- No copy rewrites outside tests/docs.
-++- No scheduler/runtime behavior changes.
-  - No browser-owned product data.
-  - No runtime UI changes.
-  - No browser storage changes.
-@@ -66,12 +66,12 @@ index 8e003cf3d..d47106b59 100644
-  Run exactly:
-
-  ```powershell
---node ./scripts/run-node-test-files.mjs tests/shared/ColorFoundation.test.mjs
---node --check src/shared/color/color.js
---node --check tests/shared/ColorFoundation.test.mjs
--+node ./scripts/run-node-test-files.mjs tests/shared/TextFoundation.test.mjs
--+node --check src/shared/text/text.js
--+node --check tests/shared/TextFoundation.test.mjs
-+-node ./scripts/run-node-test-files.mjs tests/shared/TextFoundation.test.mjs
-+-node --check src/shared/text/text.js
-+-node --check tests/shared/TextFoundation.test.mjs
-++node ./scripts/run-node-test-files.mjs tests/shared/TimeFoundation.test.mjs
-++node --check src/shared/time/time.js
-++node --check tests/shared/TimeFoundation.test.mjs
-  git diff --check
-  ```
-
-@@ -79,127 +79,126 @@ index 8e003cf3d..d47106b59 100644
-  Create repo-structured delta ZIP:
-
-  ```text
---tmp/PR_26177_004-shared-color-foundation_delta.zip
--+tmp/PR_26177_005-shared-text-foundation_delta.zip
-+-tmp/PR_26177_005-shared-text-foundation_delta.zip
-++tmp/PR_26177_006-shared-time-foundation_delta.zip
-  ```
- diff --git a/docs_build/dev/PLAN_PR.md b/docs_build/dev/PLAN_PR.md
--index 62670625e..0682bd3cf 100644
-+index 0682bd3cf..907936aee 100644
- --- a/docs_build/dev/PLAN_PR.md
- +++ b/docs_build/dev/PLAN_PR.md
--@@ -1,23 +1,22 @@
---# PLAN_PR: PR_26177_004-shared-color-foundation
--+# PLAN_PR: PR_26177_005-shared-text-foundation
-+@@ -1,22 +1,22 @@
-+-# PLAN_PR: PR_26177_005-shared-text-foundation
-++# PLAN_PR: PR_26177_006-shared-time-foundation
-
-  ## Purpose
-
---Add a small shared color foundation.
--+Add a small shared text foundation.
-+-Add a small shared text foundation.
-++Add a small shared time foundation.
-
-  ## Scope
-
---- Add `src/shared/color/` foundation.
---- Include hex/rgb/hsl conversion helpers.
---- Include clamp, lerp/blend helpers, luminance, and contrast basics.
--+- Add `src/shared/text/` foundation.
--+- Include safe string helpers for whitespace normalization, slug/casing, truncation, and HTML escaping.
-+-- Add `src/shared/text/` foundation.
-+-- Include safe string helpers for whitespace normalization, slug/casing, truncation, and HTML escaping.
-++- Add `src/shared/time/` foundation.
-++- Include duration formatting, timestamp helpers, sleep, debounce, and throttle helpers.
-  - Add targeted tests.
---- No page styling changes.
--+- No copy rewrites outside tests/docs.
-+-- No copy rewrites outside tests/docs.
-++- No scheduler/runtime behavior changes.
-  - No browser-owned product data.
-  - No runtime UI changes.
-  - No unrelated cleanup.
-
-  ## Implementation Plan
-
---1. Add `src/shared/color/color.js`.
---2. Add `tests/shared/ColorFoundation.test.mjs`.
---3. Validate conversion, blending, luminance, and contrast helpers.
--+1. Add `src/shared/text/text.js`.
--+2. Add `tests/shared/TextFoundation.test.mjs`.
--+3. Validate safe string helpers.
-+-1. Add `src/shared/text/text.js`.
-+-2. Add `tests/shared/TextFoundation.test.mjs`.
-+-3. Validate safe string helpers.
-++1. Add `src/shared/time/time.js`.
-++2. Add `tests/shared/TimeFoundation.test.mjs`.
-++3. Validate duration, timestamp, sleep, debounce, and throttle helpers.
-  4. Produce required Codex reports and repo-structured ZIP.
- diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
--index 1b00743a4..b115685ce 100644
-+index b115685ce..70de807d0 100644
- --- a/docs_build/dev/reports/codex_changed_files.txt
- +++ b/docs_build/dev/reports/codex_changed_files.txt
- @@ -1,11 +1,11 @@
-  docs_build/dev/BUILD_PR.md
-  docs_build/dev/PLAN_PR.md
---docs_build/dev/reports/PR_26177_004-shared-color-foundation.md
---docs_build/dev/reports/PR_26177_004-shared-color-foundation_branch-validation.md
---docs_build/dev/reports/PR_26177_004-shared-color-foundation_manual-validation-notes.md
---docs_build/dev/reports/PR_26177_004-shared-color-foundation_requirement-checklist.md
---docs_build/dev/reports/PR_26177_004-shared-color-foundation_validation-lane.md
--+docs_build/dev/reports/PR_26177_005-shared-text-foundation.md
--+docs_build/dev/reports/PR_26177_005-shared-text-foundation_branch-validation.md
--+docs_build/dev/reports/PR_26177_005-shared-text-foundation_manual-validation-notes.md
--+docs_build/dev/reports/PR_26177_005-shared-text-foundation_requirement-checklist.md
--+docs_build/dev/reports/PR_26177_005-shared-text-foundation_validation-lane.md
-+-docs_build/dev/reports/PR_26177_005-shared-text-foundation.md
-+-docs_build/dev/reports/PR_26177_005-shared-text-foundation_branch-validation.md
-+-docs_build/dev/reports/PR_26177_005-shared-text-foundation_manual-validation-notes.md
-+-docs_build/dev/reports/PR_26177_005-shared-text-foundation_requirement-checklist.md
-+-docs_build/dev/reports/PR_26177_005-shared-text-foundation_validation-lane.md
-++docs_build/dev/reports/PR_26177_006-shared-time-foundation.md
-++docs_build/dev/reports/PR_26177_006-shared-time-foundation_branch-validation.md
-++docs_build/dev/reports/PR_26177_006-shared-time-foundation_manual-validation-notes.md
-++docs_build/dev/reports/PR_26177_006-shared-time-foundation_requirement-checklist.md
-++docs_build/dev/reports/PR_26177_006-shared-time-foundation_validation-lane.md
-  docs_build/dev/reports/codex_changed_files.txt
-  docs_build/dev/reports/codex_review.diff
---src/shared/color/color.js
---tests/shared/ColorFoundation.test.mjs
--+src/shared/text/text.js
--+tests/shared/TextFoundation.test.mjs
--diff --git a/docs_build/dev/reports/PR_26177_005-shared-text-foundation.md b/docs_build/dev/reports/PR_26177_005-shared-text-foundation.md
-+-src/shared/text/text.js
-+-tests/shared/TextFoundation.test.mjs
-++src/shared/time/time.js
-++tests/shared/TimeFoundation.test.mjs
-+diff --git a/docs_build/dev/reports/PR_26177_006-shared-time-foundation.md b/docs_build/dev/reports/PR_26177_006-shared-time-foundation.md
+--function assertFiniteNumber(value, name) {
+--  if (!Number.isFinite(value)) {
+--    throw new TypeError(`${name} must be a finite number.`);
+--  }
+--}
+--
+--function assertOrderedRange(min, max) {
+--  assertFiniteNumber(min, "min");
+--  assertFiniteNumber(max, "max");
+--
+--  if (max < min) {
+--    throw new RangeError("max must be greater than or equal to min.");
+--  }
+--}
+--
+--function assertArray(value, name) {
+--  if (!Array.isArray(value)) {
+--    throw new TypeError(`${name} must be an array.`);
+--  }
+--}
+--
+- function readWeightedItem(entry) {
+-   if (!entry || typeof entry !== "object") {
+-     throw new TypeError("weightedItems entries must be objects.");
+-diff --git a/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions.md b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions.md
++ function systemHealthServiceCard({ configured = true, id, label, lastChecked, status = "WARN", summary }) {
++@@ -1694,7 +1694,7 @@ function systemHealthNotificationsFoundation(checkedAt = new Date().toISOString(
++   ];
++   return {
++     lastChecked: checkedAt,
++-    message: "Notifications and alerts are placeholders only; no alert sending contract is configured for this deployment.",
+++    message: "Notifications and alerts are Not Configured; no alert sending contract is configured for this deployment.",
++     rows,
++     secretEditingAllowed: false,
++     secretsExposed: false,
++diff --git a/tests/dev-runtime/AdminHealthOperations.test.mjs b/tests/dev-runtime/AdminHealthOperations.test.mjs
++index 59bea182c..57a4af267 100644
++--- a/tests/dev-runtime/AdminHealthOperations.test.mjs
+++++ b/tests/dev-runtime/AdminHealthOperations.test.mjs
++@@ -172,9 +172,10 @@ test("Admin can view operational health while Creator sessions are blocked", asy
++         ["Runtime", "API", "Database", "Storage", "Authentication", "Email", "Background Jobs"],
++       );
++       assert.equal(
++-        health.serviceHealth.services.every((service) => ["Healthy", "Warning", "Failed", "Not Configured"].includes(service.status)),
+++        health.serviceHealth.services.every((service) => ["PASS", "WARN", "FAIL", "NOT CONFIGURED"].includes(service.status)),
++         true,
++       );
+++      assert.equal(health.serviceHealth.services.some((service) => service.status === "PASS"), true);
++       assert.equal(health.serviceHealth.services.every((service) => typeof service.summary === "string"), true);
++       assert.equal(JSON.stringify(health.serviceHealth).includes("/uat"), false);
++       assert.deepEqual(
++diff --git a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
++index cf54c49d3..3527df130 100644
++--- a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+++++ b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
++@@ -188,7 +188,8 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
++       expect(serviceCardText).toContain(label);
++     });
++     const serviceStatuses = await serviceCards.locator("[data-health-status]").allTextContents();
++-    expect(serviceStatuses.every((status) => ["Healthy", "Warning", "Failed", "Not Configured"].includes(status.trim()))).toBe(true);
+++    expect(serviceStatuses.every((status) => ["PASS", "WARN", "FAIL", "NOT CONFIGURED"].includes(status.trim()))).toBe(true);
+++    expect(serviceStatuses).toContain("PASS");
++     const configurationTable = page.getByRole("table", { name: "Configuration summary" });
++     await expect(configurationTable).toContainText("Current environment");
++     await expect(configurationTable).toContainText("Hosting model");
++@@ -350,6 +351,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
++   expect(pageSource).not.toMatch(/\sstyle\s*=/i);
++   expect(pageSource).not.toMatch(/data-health-status="(?:WARN|FAIL)"/);
++   expect(pageSource).not.toContain("No active failure is declared");
+++  expect(pageSource).not.toMatch(/foundation PR|foundation view|placeholder|Pending metric|intentionally not wired/i);
++   expect(pageSource).not.toContain("SQLite");
++   expect(pageSource).toContain("Environment Identity");
++   expect(pageSource).toContain("Environment Map");
++diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete.md b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete.md
  new file mode 100644
--index 000000000..c8fce16be
-+index 000000000..85ba1053d
+-index 000000000..726310533
++index 000000000..7cbe75d98
  --- /dev/null
--+++ b/docs_build/dev/reports/PR_26177_005-shared-text-foundation.md
-++++ b/docs_build/dev/reports/PR_26177_006-shared-time-foundation.md
- @@ -0,0 +1,23 @@
--+# PR_26177_005-shared-text-foundation
-++# PR_26177_006-shared-time-foundation
+-+++ b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions.md
+-@@ -0,0 +1,50 @@
+-+# PR_26177_DELTA_056-shared-validation-assertions
+++++ b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete.md
++@@ -0,0 +1,40 @@
+++# PR_26177_CHARLIE_006-system-health-dashboard-complete
  +
- +Date: 2026-06-26
--+Scope: Shared text foundation
-++Scope: Shared time foundation
- +Status: PASS
+-+Date: 2026-06-26
+-+Team: Delta
+-+Scope: Shared validation assertions extracted from random helper code
+-+Status: PASS
+++Team: Charlie
+++Branch: PR_26177_CHARLIE_006-system-health-dashboard-complete
+++Base: main
+++Scope: System Health Dashboard completion polish
  +
  +## Summary
  +
--+- Added `src/shared/text/text.js`.
--+- Added safe string helpers for whitespace normalization, slug/casing, truncation, and HTML escaping.
--+- Added targeted tests in `tests/shared/TextFoundation.test.mjs`.
--+- No copy rewrites, runtime UI, browser product-data ownership, API/database, or unrelated cleanup changes were made.
-++- Added `src/shared/time/time.js`.
-++- Added duration formatting, timestamp, sleep, debounce, and throttle helpers.
-++- Added targeted tests in `tests/shared/TimeFoundation.test.mjs`.
-++- No scheduler/runtime behavior, runtime UI, browser product-data ownership, API/database, or unrelated cleanup changes were made.
+-+- Added `src/shared/validation/assert.js`.
+-+- Moved generic reusable assertion helpers out of `src/shared/math/randomHelpers.js`.
+-+- Included only the current generic assertion helpers needed by random helpers: `assertArray`, `assertFiniteNumber`, and `assertOrderedRange`.
+-+- Updated `randomHelpers.js` to import those assertions from the shared validation module.
+-+- Preserved existing `Random`, `RandomSeed`, and random helper behavior.
+-+- Did not change public API.
+-+- Did not add unrelated validation helpers.
+-+- No UI, API, database, or unrelated cleanup changes were made.
+-+
+-+## Branch Validation
+-+
+-+PASS. Branch `PR_26177_DELTA_056-shared-validation-assertions` was created from clean `PR_26177_DELTA_055-random-seed-enhancements`.
+++- Removed stale foundation and placeholder wording from the Admin System Health dashboard source.
+++- Kept unavailable provider metrics explicit with safe `PENDING` status and clear reasons.
+++- Updated service health cards to display `PASS`, `WARN`, `FAIL`, or `NOT CONFIGURED` directly.
+++- Preserved the Web UI to API/service contract flow; the browser still renders only server-owned System Health data.
+++- Added targeted assertions for placeholder removal, service status display, secret masking, current-environment-only checks, and externalized Theme V2 script/style rules.
+ +
+ +## Changed Files
+ +
+-+- `docs_build/dev/PLAN_PR.md`
+-+- `docs_build/dev/BUILD_PR.md`
+-+- `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md`
+-+- `docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md`
+-+- `src/shared/validation/assert.js`
+-+- `src/shared/math/randomHelpers.js`
+-+- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions.md`
+-+- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_branch-validation.md`
+-+- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_requirement-checklist.md`
+-+- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_validation-lane.md`
+-+- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_manual-validation-notes.md`
+-+- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_instruction-compliance-checklist.md`
+++- `admin/system-health.html`
+++- `src/dev-runtime/server/local-api-router.mjs`
+++- `tests/dev-runtime/AdminHealthOperations.test.mjs`
+++- `tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
+++- `docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete.md`
+++- `docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_branch-validation.md`
+++- `docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_requirements-checklist.md`
+++- `docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_validation-lane.md`
+++- `docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_manual-validation-notes.md`
+ +- `docs_build/dev/reports/codex_changed_files.txt`
+ +- `docs_build/dev/reports/codex_review.diff`
  +
  +## Validation
  +
--+- PASS: `node ./scripts/run-node-test-files.mjs tests/shared/TextFoundation.test.mjs`.
--+- PASS: `node --check src/shared/text/text.js`.
--+- PASS: `node --check tests/shared/TextFoundation.test.mjs`.
-++- PASS: `node ./scripts/run-node-test-files.mjs tests/shared/TimeFoundation.test.mjs`.
-++- PASS: `node --check src/shared/time/time.js`.
-++- PASS: `node --check tests/shared/TimeFoundation.test.mjs`.
- +- PASS: `git diff --check`.
+-+- PASS: `node ./scripts/run-node-test-files.mjs tests/shared/RandomHelpers.test.mjs tests/shared/Random.test.mjs tests/shared/RandomSeed.test.mjs`
+-+- PASS: `node --check src/shared/validation/assert.js`
+-+- PASS: `node --check src/shared/math/randomHelpers.js`
+-+- PASS: `git diff --check`
+-+- SKIP: Playwright was not run because this PR does not change UI or browser runtime flows.
+++- PASS: `node --check src/dev-runtime/server/local-api-router.mjs`
+++- PASS: `node --check tests/dev-runtime/AdminHealthOperations.test.mjs`
+++- PASS: `node --check tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
+++- PASS: `node --test tests/dev-runtime/AdminHealthOperations.test.mjs tests/api/admin-system-health/contract.test.mjs`
+++- PASS: `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1`
  +
  +## Artifact
  +
--+- `tmp/PR_26177_005-shared-text-foundation_delta.zip`
--diff --git a/docs_build/dev/reports/PR_26177_005-shared-text-foundation_branch-validation.md b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_branch-validation.md
-++- `tmp/PR_26177_006-shared-time-foundation_delta.zip`
-+diff --git a/docs_build/dev/reports/PR_26177_006-shared-time-foundation_branch-validation.md b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_branch-validation.md
+-+- `tmp/PR_26177_DELTA_056-shared-validation-assertions_delta.zip`
+-diff --git a/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_branch-validation.md b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_branch-validation.md
+++- `tmp/PR_26177_CHARLIE_006-system-health-dashboard-complete_delta.zip`
++diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_branch-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_branch-validation.md
  new file mode 100644
--index 000000000..04f5b7ca5
-+index 000000000..281bceea1
+-index 000000000..f41b57b1d
++index 000000000..2368a289b
  --- /dev/null
--+++ b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_branch-validation.md
-++++ b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_branch-validation.md
- @@ -0,0 +1,5 @@
--+# PR_26177_005-shared-text-foundation Branch Validation
-++# PR_26177_006-shared-time-foundation Branch Validation
- +
--+- PASS: Current branch is `PR_26177_005-shared-text-foundation`.
--+- PASS: Branch is stacked on `PR_26177_004-shared-color-foundation`.
--+- PASS: Scope is documentation/report files plus shared text code and tests only.
--diff --git a/docs_build/dev/reports/PR_26177_005-shared-text-foundation_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_manual-validation-notes.md
-++- PASS: Current branch is `PR_26177_006-shared-time-foundation`.
-++- PASS: Branch is stacked on `PR_26177_005-shared-text-foundation`.
-++- PASS: Scope is documentation/report files plus shared time code and tests only.
-+diff --git a/docs_build/dev/reports/PR_26177_006-shared-time-foundation_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_manual-validation-notes.md
- new file mode 100644
--index 000000000..c93ec9d94
-+index 000000000..ce4c0fa1a
- --- /dev/null
--+++ b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_manual-validation-notes.md
-++++ b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_manual-validation-notes.md
- @@ -0,0 +1,6 @@
--+# PR_26177_005-shared-text-foundation Manual Validation Notes
-++# PR_26177_006-shared-time-foundation Manual Validation Notes
- +
- +- Reviewed scope against the user request and BUILD document.
- +- Confirmed the change does not alter UI, storage, API, database, scheduler, or engine behavior.
- +- Confirmed no `start_of_day` files were modified.
--+- Confirmed ZIP artifact path: `tmp/PR_26177_005-shared-text-foundation_delta.zip`.
--diff --git a/docs_build/dev/reports/PR_26177_005-shared-text-foundation_requirement-checklist.md b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_requirement-checklist.md
-++- Confirmed ZIP artifact path: `tmp/PR_26177_006-shared-time-foundation_delta.zip`.
-+diff --git a/docs_build/dev/reports/PR_26177_006-shared-time-foundation_requirement-checklist.md b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_requirement-checklist.md
- new file mode 100644
--index 000000000..87ebe2d92
-+index 000000000..74dc61da1
- --- /dev/null
--+++ b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_requirement-checklist.md
--@@ -0,0 +1,13 @@
--+# PR_26177_005-shared-text-foundation Requirement Checklist
-++++ b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_requirement-checklist.md
-+@@ -0,0 +1,15 @@
-++# PR_26177_006-shared-time-foundation Requirement Checklist
- +
- +- PASS: One PR purpose only.
- +- PASS: Smallest valid scoped change.
-@@ -207,134 +206,276 @@ index 000000000..87ebe2d92
- +- PASS: Did not modify `start_of_day` folders.
- +- PASS: Did not add browser product-data ownership.
- +- PASS: Used ES modules consistent with repo style.
--+- PASS: Added `src/shared/text/` foundation.
--+- PASS: Included `slugify`, casing, `truncate`, `escapeHtml`, and `normalizeWhitespace` helpers.
--+- PASS: No copy rewrites outside tests/docs.
--+- PASS: Added targeted tests for the shared text area.
-++- PASS: Added `src/shared/time/` foundation.
-++- PASS: Included duration formatting helpers.
-++- PASS: Included timestamp helpers.
-++- PASS: Included sleep/debounce/throttle helpers safe for opt-in shared runtime use.
-++- PASS: No scheduler/runtime behavior changes.
-++- PASS: Added targeted tests for the shared time area.
- +- PASS: Did not run full samples smoke by default.
--diff --git a/docs_build/dev/reports/PR_26177_005-shared-text-foundation_validation-lane.md b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_validation-lane.md
-+diff --git a/docs_build/dev/reports/PR_26177_006-shared-time-foundation_validation-lane.md b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_validation-lane.md
- new file mode 100644
--index 000000000..8fa44a0c0
-+index 000000000..dbebe4ce4
- --- /dev/null
--+++ b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_validation-lane.md
-++++ b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_validation-lane.md
- @@ -0,0 +1,8 @@
--+# PR_26177_005-shared-text-foundation Validation Lane
-++# PR_26177_006-shared-time-foundation Validation Lane
- +
--+- PASS: `node ./scripts/run-node-test-files.mjs tests/shared/TextFoundation.test.mjs`.
--+- PASS: `node --check src/shared/text/text.js`.
--+- PASS: `node --check tests/shared/TextFoundation.test.mjs`.
-++- PASS: `node ./scripts/run-node-test-files.mjs tests/shared/TimeFoundation.test.mjs`.
-++- PASS: `node --check src/shared/time/time.js`.
-++- PASS: `node --check tests/shared/TimeFoundation.test.mjs`.
- +- PASS: `git diff --check`.
- +
- +Full samples smoke was intentionally not run because this PR changes only a shared helper module and targeted tests.
--diff --git a/src/shared/text/text.js b/src/shared/text/text.js
-+diff --git a/src/shared/time/time.js b/src/shared/time/time.js
- new file mode 100644
--index 000000000..3e387388f
-+index 000000000..8ce8d6283
- --- /dev/null
--+++ b/src/shared/text/text.js
--@@ -0,0 +1,63 @@
--+const HTML_ESCAPE_MAP = Object.freeze({
--+  "&": "&amp;",
--+  "<": "&lt;",
--+  ">": "&gt;",
--+  "\"": "&quot;",
--+  "'": "&#39;",
--+});
+-+++ b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_branch-validation.md
+-@@ -0,0 +1,15 @@
+-+# PR_26177_DELTA_056-shared-validation-assertions Branch Validation
 -+
--+function toText(value) {
--+  return value == null ? "" : String(value);
+-+Status: PASS
+-+
+-+## Start Gates
+-+
+-+- PASS: Current branch was `PR_26177_DELTA_055-random-seed-enhancements`.
+-+- PASS: Worktree was clean before creating PR_056.
+-+- PASS: Branch `PR_26177_DELTA_056-shared-validation-assertions` was created from PR_055.
+-+
+-+## Scope Confirmation
+-+
+-+- PASS: Work is assigned to Team Delta.
+-+- PASS: Work is limited to extracting generic assertions used by random helpers.
+-+- PASS: No public API, UI, browser storage, API, database, or unrelated cleanup changes were made.
+-diff --git a/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_instruction-compliance-checklist.md
+++++ b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_branch-validation.md
++@@ -0,0 +1,13 @@
+++# PR_26177_CHARLIE_006 Branch Validation
+++
+++Result: PASS
+++
+++Checks:
+++- PASS: Started from `main`.
+++- PASS: Worktree was clean before branch creation.
+++- PASS: Local/origin sync was `0/0` before branch creation.
+++- PASS: Branch `PR_26177_CHARLIE_006-system-health-dashboard-complete` was created from current `main`.
+++- PASS: Scope stayed within System Health Dashboard completion.
+++- PASS: No `start_of_day` files changed.
+++- PASS: No direct commits to `main`.
+++- PASS: PR branch retained for review.
++diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_manual-validation-notes.md
+ new file mode 100644
+-index 000000000..a34dbd5f3
++index 000000000..75244edcf
+ --- /dev/null
+-+++ b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_instruction-compliance-checklist.md
+-@@ -0,0 +1,11 @@
+-+# PR_26177_DELTA_056-shared-validation-assertions Instruction Compliance Checklist
+-+
+-+| Instruction | Status | Notes |
+-+|---|---:|---|
+-+| Read `ProjectInstructions.zip` and `README.txt` first | PASS | Read `ProjectInstructions/README.txt` before work. |
+-+| Create PR_056 as stacked PR on current branch | PASS | Branch was created from `PR_26177_DELTA_055-random-seed-enhancements`. |
+-+| Hard stop if branch/worktree gates fail | PASS | Branch and clean worktree gates passed. |
+-+| Keep one PR purpose only | PASS | Scope is shared validation assertion extraction. |
+-+| Do not change public API | PASS | No public API changes were made. |
+-+| Produce required reports | PASS | Reports were added under `docs_build/dev/reports/`. |
+-+| Produce repo-structured ZIP under `tmp/` | PASS | ZIP path is `tmp/PR_26177_DELTA_056-shared-validation-assertions_delta.zip`. |
+-diff --git a/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_manual-validation-notes.md
+++++ b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_manual-validation-notes.md
++@@ -0,0 +1,9 @@
+++# PR_26177_CHARLIE_006 Manual Validation Notes
+++
+++- Confirmed System Health dashboard copy no longer contains stale `foundation PR`, `foundation view`, `placeholder`, `Pending metric`, or `intentionally not wired` wording.
+++- Confirmed provider metrics that are not available remain visibly marked `PENDING` with explanatory reasons.
+++- Confirmed service cards retain existing Theme V2 card layout while displaying direct health status values.
+++- Confirmed secret-like runtime variables remain masked as `********`.
+++- Confirmed current-environment System Health behavior remains intact; peer environments are reference-only.
+++- Confirmed no runtime/UI/API/database files outside the scoped System Health files were changed.
+++- Confirmed no `start_of_day` files were changed.
++diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_requirements-checklist.md b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_requirements-checklist.md
+ new file mode 100644
+-index 000000000..1d5548e3b
++index 000000000..1127e0ea8
+ --- /dev/null
+-+++ b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_manual-validation-notes.md
+-@@ -0,0 +1,11 @@
+-+# PR_26177_DELTA_056-shared-validation-assertions Manual Validation Notes
+-+
+-+Status: PASS
+-+
+-+Manual review confirmed:
+-+
+-+- The extracted assertions are generic and reusable.
+-+- `assert.js` intentionally contains only `assertArray`, `assertFiniteNumber`, and `assertOrderedRange`.
+-+- Random helper behavior is preserved through imports from the shared validation module.
+-+- `Random` and `RandomSeed` public APIs are unchanged.
+-+- No UI, browser storage, API, database, or unrelated files changed.
+-diff --git a/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_requirement-checklist.md b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_requirement-checklist.md
+++++ b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_requirements-checklist.md
++@@ -0,0 +1,17 @@
+++# PR_26177_CHARLIE_006 Requirement Checklist
+++
+++- PASS: Environment Summary remains current-deployment only.
+++- PASS: Postgres Health remains API/service-owned and displays safe values only.
+++- PASS: R2/Storage Health remains current-environment only.
+++- PASS: Runtime Environment Variables render from server-owned diagnostics.
+++- PASS: Runtime variables remain alphabetically sorted by key.
+++- PASS: Secret-like runtime values remain masked.
+++- PASS: Service Health cards now display direct `PASS`, `WARN`, `FAIL`, or `NOT CONFIGURED` text.
+++- PASS: Stale foundation and placeholder wording removed from the dashboard source.
+++- PASS: Empty/error states remain explicit `PENDING`, `WARN`, or `FAIL` with reasons.
+++- PASS: Theme V2 layout and externalized scripts/styles preserved.
+++- PASS: No inline styles, style blocks, script blocks, or inline event handlers introduced.
+++- PASS: Browser does not own authoritative product data.
+++- PASS: No MEM DB, local-mem, fake-login, browser storage SSoT, silent fallback, hidden default, or SQLite direction introduced.
+++- PASS: Targeted tests updated and run.
+++- PASS: Required reports and delta ZIP created.
++diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_validation-lane.md b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_validation-lane.md
+ new file mode 100644
+-index 000000000..00d322ad0
++index 000000000..408c9ac5d
+ --- /dev/null
+-+++ b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_requirement-checklist.md
+-@@ -0,0 +1,16 @@
+-+# PR_26177_DELTA_056-shared-validation-assertions Requirement Checklist
+-+
+-+| Requirement | Status | Notes |
+-+|---|---:|---|
+-+| Create `src/shared/validation/assert.js` | PASS | New shared validation module added. |
+-+| Move generic assertion helpers from random helper code into `assert.js` | PASS | `assertArray`, `assertFiniteNumber`, and `assertOrderedRange` were extracted. |
+-+| Include only generic reusable validation functions needed by current random helpers | PASS | No unrelated validation helpers were added. |
+-+| Update random helper code to import from `src/shared/validation/assert.js` | PASS | `randomHelpers.js` now imports from shared validation. |
+-+| Preserve existing `Random` behavior | PASS | Targeted `Random` tests pass. |
+-+| Preserve existing `RandomSeed` behavior | PASS | Targeted `RandomSeed` tests pass. |
+-+| Do not change public API | PASS | No public API methods or call sites changed. |
+-+| Do not expand into unrelated validation functions yet | PASS | Module includes only the requested assertions. |
+-+| Add/update targeted unit tests if needed | PASS | Existing targeted random tests cover behavior after extraction. |
+-+| No UI changes | PASS | No UI files changed. |
+-+| No API/database changes | PASS | No API or database files changed. |
+-+| No unrelated cleanup | PASS | Changes stayed scoped to assertion extraction and reports. |
+-diff --git a/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_validation-lane.md b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_validation-lane.md
+-new file mode 100644
+-index 000000000..01500c267
+---- /dev/null
+-+++ b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_validation-lane.md
+-@@ -0,0 +1,25 @@
+-+# PR_26177_DELTA_056-shared-validation-assertions Validation Lane
+-+
+-+Status: PASS
+-+
+-+## Commands
+-+
+-+```powershell
+-+node ./scripts/run-node-test-files.mjs tests/shared/RandomHelpers.test.mjs tests/shared/Random.test.mjs tests/shared/RandomSeed.test.mjs
+-+node --check src/shared/validation/assert.js
+-+node --check src/shared/math/randomHelpers.js
+-+git diff --check
+-+```
+-+
+-+## Results
+-+
+-+- PASS: `tests/shared/RandomHelpers.test.mjs`
+-+- PASS: `tests/shared/Random.test.mjs`
+-+- PASS: `tests/shared/RandomSeed.test.mjs`
+-+- PASS: `src/shared/validation/assert.js` syntax check
+-+- PASS: `src/shared/math/randomHelpers.js` syntax check
+-+- PASS: `git diff --check`
+-+
+-+## Playwright
+-+
+-+SKIP. Playwright was not run because this PR does not change UI or browser runtime flows.
+-diff --git a/src/shared/validation/assert.js b/src/shared/validation/assert.js
+-new file mode 100644
+-index 000000000..ee8974cbc
+---- /dev/null
+-+++ b/src/shared/validation/assert.js
+++++ b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_validation-lane.md
+ @@ -0,0 +1,20 @@
+-+export function assertArray(value, name) {
+-+  if (!Array.isArray(value)) {
+-+    throw new TypeError(`${name} must be an array.`);
+-+  }
 -+}
-++++ b/src/shared/time/time.js
-+@@ -0,0 +1,185 @@
-++const SECOND_MS = 1000;
-++const MINUTE_MS = 60 * SECOND_MS;
-++const HOUR_MS = 60 * MINUTE_MS;
-++const DAY_MS = 24 * HOUR_MS;
- +
--+function stripDiacritics(value) {
--+  return value.normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
-++function toFiniteNumber(value, fallback = 0) {
-++  const number = Number(value);
-++  return Number.isFinite(number) ? number : fallback;
- +}
- +
--+export function normalizeWhitespace(value) {
--+  return toText(value).replace(/\s+/g, " ").trim();
-++function normalizeDelay(value) {
-++  return Math.max(0, Math.floor(toFiniteNumber(value)));
- +}
- +
--+export function slugify(value) {
--+  return stripDiacritics(normalizeWhitespace(value))
--+    .toLowerCase()
--+    .replace(/[^a-z0-9]+/g, "-")
--+    .replace(/^-+|-+$/g, "");
-++function toDate(value = Date.now()) {
-++  const date = value instanceof Date ? new Date(value.getTime()) : new Date(value);
-++  if (Number.isNaN(date.getTime())) {
-++    throw new TypeError("value must be a valid date, timestamp, or date string.");
-++  }
-++  return date;
- +}
- +
--+export function toTitleCase(value) {
--+  return normalizeWhitespace(value).replace(/\b[\p{L}\p{N}][\p{L}\p{N}'-]*/gu, (word) => (
--+    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
--+  ));
-++/**
-++ * Formats a duration in milliseconds using compact day/hour/minute/second units.
-++ *
-++ * @param {number} milliseconds Duration in milliseconds.
-++ * @returns {string} Compact duration text.
-++ */
-++export function formatDuration(milliseconds) {
-++  const raw = toFiniteNumber(milliseconds);
-++  const sign = raw < 0 ? "-" : "";
-++  let remaining = Math.round(Math.abs(raw));
-++
-++  if (remaining < SECOND_MS) {
-++    return `${sign}${remaining}ms`;
-++  }
-++
-++  const units = [
-++    [DAY_MS, "d"],
-++    [HOUR_MS, "h"],
-++    [MINUTE_MS, "m"],
-++    [SECOND_MS, "s"],
-++  ];
-++  const parts = [];
-++
-++  for (const [unitMs, label] of units) {
-++    const count = Math.floor(remaining / unitMs);
-++    if (count > 0) {
-++      parts.push(`${count}${label}`);
-++      remaining -= count * unitMs;
-++    }
-++  }
-++
-++  if (remaining > 0) {
-++    parts.push(`${remaining}ms`);
-++  }
-++
-++  return `${sign}${parts.join(" ")}`;
- +}
- +
--+export function toCamelCase(value) {
--+  const words = stripDiacritics(normalizeWhitespace(value))
--+    .split(/[^A-Za-z0-9]+/)
--+    .filter(Boolean);
-++/**
-++ * Converts a date-like value to a Unix timestamp in milliseconds.
-++ *
-++ * @param {Date|string|number} [value] Date-like value.
-++ * @returns {number} Unix timestamp in milliseconds.
-++ */
-++export function toUnixMilliseconds(value = Date.now()) {
-++  return toDate(value).getTime();
-++}
- +
--+  return words.map((word, index) => {
--+    const lower = word.toLowerCase();
--+    return index === 0 ? lower : lower.charAt(0).toUpperCase() + lower.slice(1);
--+  }).join("");
-++/**
-++ * Converts a date-like value to an ISO-8601 timestamp.
-++ *
-++ * @param {Date|string|number} [value] Date-like value.
-++ * @returns {string} ISO timestamp.
-++ */
-++export function toIsoTimestamp(value = Date.now()) {
-++  return toDate(value).toISOString();
- +}
- +
--+export function truncate(value, maxLength, options = {}) {
--+  const text = toText(value);
--+  const length = Math.max(0, Math.floor(Number(maxLength) || 0));
--+  const suffix = options.suffix == null ? "..." : String(options.suffix);
-++/**
-++ * Resolves after the provided delay.
-++ *
-++ * @param {number} milliseconds Delay in milliseconds.
-++ * @returns {Promise<void>} Promise that resolves after the delay.
-++ */
-++export function sleep(milliseconds) {
-++  return new Promise((resolve) => {
-++    setTimeout(resolve, normalizeDelay(milliseconds));
-++  });
-++}
- +
--+  if (text.length <= length) {
--+    return text;
-++/**
-++ * Creates a debounced function that runs after calls settle.
-++ *
-++ * @param {Function} callback Function to debounce.
-++ * @param {number} waitMs Debounce delay in milliseconds.
-++ * @returns {Function & {cancel: Function}} Debounced function.
-++ */
-++export function debounce(callback, waitMs = 0) {
-++  if (typeof callback !== "function") {
-++    throw new TypeError("callback must be a function.");
- +  }
- +
--+  if (length <= suffix.length) {
--+    return suffix.slice(0, length);
-++  let timeoutId = null;
-++  const delay = normalizeDelay(waitMs);
-++
-++  function debounced(...args) {
-++    const context = this;
-++    if (timeoutId !== null) {
-++      clearTimeout(timeoutId);
-++    }
-++
-++    timeoutId = setTimeout(() => {
-++      timeoutId = null;
-++      callback.apply(context, args);
-++    }, delay);
- +  }
- +
--+  return `${text.slice(0, length - suffix.length)}${suffix}`;
-++  debounced.cancel = () => {
-++    if (timeoutId !== null) {
-++      clearTimeout(timeoutId);
-++      timeoutId = null;
-++    }
-++  };
-++
-++  return debounced;
- +}
- +
--+export function escapeHtml(value) {
--+  return toText(value).replace(/[&<>"']/g, (character) => HTML_ESCAPE_MAP[character]);
-++/**
-++ * Creates a throttled function that runs at most once per wait window.
-++ *
-++ * @param {Function} callback Function to throttle.
-++ * @param {number} waitMs Throttle window in milliseconds.
-++ * @returns {Function & {cancel: Function}} Throttled function.
-++ */
-++export function throttle(callback, waitMs = 0) {
-++  if (typeof callback !== "function") {
-++    throw new TypeError("callback must be a function.");
-++  }
-++
-++  const delay = normalizeDelay(waitMs);
-++  let lastRun = 0;
-++  let timeoutId = null;
-++  let pendingArgs = null;
-++  let pendingContext = null;
-++
-++  function invoke(timestamp) {
-++    lastRun = timestamp;
-++    timeoutId = null;
-++    callback.apply(pendingContext, pendingArgs);
-++    pendingArgs = null;
-++    pendingContext = null;
-++  }
-++
-++  function throttled(...args) {
-++    const now = Date.now();
-++    pendingArgs = args;
-++    pendingContext = this;
-++    const remaining = delay - (now - lastRun);
-++
-++    if (remaining <= 0 || remaining > delay) {
-++      if (timeoutId !== null) {
-++        clearTimeout(timeoutId);
-++      }
-++      invoke(now);
-++      return;
-++    }
-++
-++    if (timeoutId === null) {
-++      timeoutId = setTimeout(() => invoke(Date.now()), remaining);
-++    }
-++  }
-++
-++  throttled.cancel = () => {
-++    if (timeoutId !== null) {
-++      clearTimeout(timeoutId);
-++      timeoutId = null;
-++    }
-++    pendingArgs = null;
-++    pendingContext = null;
-++  };
-++
-++  return throttled;
- +}
--diff --git a/tests/shared/TextFoundation.test.mjs b/tests/shared/TextFoundation.test.mjs
-+diff --git a/tests/shared/TimeFoundation.test.mjs b/tests/shared/TimeFoundation.test.mjs
- new file mode 100644
--index 000000000..893c5edfd
-+index 000000000..b0df9a1b7
- --- /dev/null
--+++ b/tests/shared/TextFoundation.test.mjs
--@@ -0,0 +1,37 @@
-++++ b/tests/shared/TimeFoundation.test.mjs
-+@@ -0,0 +1,55 @@
- +/*
- +Toolbox Aid
- +David Quesenberry
- +06/26/2026
--+TextFoundation.test.mjs
-++TimeFoundation.test.mjs
- +*/
- +import assert from "node:assert/strict";
- +import {
--+  escapeHtml,
--+  normalizeWhitespace,
--+  slugify,
--+  toCamelCase,
--+  toTitleCase,
--+  truncate,
--+} from "../../src/shared/text/text.js";
 -+
--+export function run() {
--+  assert.equal(normalizeWhitespace("  Alpha\n\tBeta   Gamma  "), "Alpha Beta Gamma");
--+  assert.equal(normalizeWhitespace(null), "");
+-+export function assertFiniteNumber(value, name) {
+-+  if (!Number.isFinite(value)) {
+-+    throw new TypeError(`${name} must be a finite number.`);
+-+  }
+-+}
 -+
--+  assert.equal(slugify(" Café Racer: Level 12! "), "cafe-racer-level-12");
--+  assert.equal(slugify(" -- "), "");
+-+export function assertOrderedRange(min, max) {
+-+  assertFiniteNumber(min, "min");
+-+  assertFiniteNumber(max, "max");
 -+
--+  assert.equal(toTitleCase("the QUICK-brown fox"), "The Quick-brown Fox");
--+  assert.equal(toCamelCase("Café racer level 12"), "cafeRacerLevel12");
--+
--+  assert.equal(truncate("Hello world", 8), "Hello...");
--+  assert.equal(truncate("Hello", 8), "Hello");
--+  assert.equal(truncate("Hello world", 2), "..");
--+  assert.equal(truncate("Hello world", 8, { suffix: "!" }), "Hello w!");
--+
--+  assert.equal(escapeHtml("<button data-name=\"A&B\">It's</button>"), "&lt;button data-name=&quot;A&amp;B&quot;&gt;It&#39;s&lt;/button&gt;");
-++  debounce,
-++  formatDuration,
-++  sleep,
-++  throttle,
-++  toIsoTimestamp,
-++  toUnixMilliseconds,
-++} from "../../src/shared/time/time.js";
+-+  if (max < min) {
+-+    throw new RangeError("max must be greater than or equal to min.");
+-+  }
+-+}
+++# PR_26177_CHARLIE_006 Validation Lane
 ++
-++export async function run() {
-++  assert.equal(formatDuration(500), "500ms");
-++  assert.equal(formatDuration(3_661_250), "1h 1m 1s 250ms");
-++  assert.equal(formatDuration(-61_000), "-1m 1s");
+++Impacted lanes:
+++- Admin System Health page
+++- Local API Admin System Health status contract
+++- System Health Playwright page coverage
 ++
-++  const date = new Date("2026-06-26T12:34:56.789Z");
-++  assert.equal(toUnixMilliseconds(date), Date.UTC(2026, 5, 26, 12, 34, 56, 789));
-++  assert.equal(toIsoTimestamp(date), "2026-06-26T12:34:56.789Z");
-++  assert.throws(() => toIsoTimestamp("not a date"), TypeError);
+++Commands:
+++- PASS: `node --check src/dev-runtime/server/local-api-router.mjs`
+++- PASS: `node --check tests/dev-runtime/AdminHealthOperations.test.mjs`
+++- PASS: `node --check tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
+++- PASS: `node --test tests/dev-runtime/AdminHealthOperations.test.mjs tests/api/admin-system-health/contract.test.mjs`
+++  - 6 tests passed.
+++- PASS: `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1`
+++  - 3 tests passed.
 ++
-++  const start = Date.now();
-++  await sleep(5);
-++  assert.ok(Date.now() - start >= 0);
+++Skipped lanes:
+++- Full samples smoke was not run; this PR only touches targeted Admin System Health dashboard behavior and tests.
 ++
-++  const debounceCalls = [];
-++  const debounced = debounce((value) => debounceCalls.push(value), 5);
-++  debounced("first");
-++  debounced("second");
-++  assert.deepEqual(debounceCalls, []);
-++  await sleep(15);
-++  assert.deepEqual(debounceCalls, ["second"]);
-++  debounced("cancelled");
-++  debounced.cancel();
-++  await sleep(10);
-++  assert.deepEqual(debounceCalls, ["second"]);
-++
-++  const throttleCalls = [];
-++  const throttled = throttle((value) => throttleCalls.push(value), 10);
-++  throttled("first");
-++  throttled("second");
-++  assert.deepEqual(throttleCalls, ["first"]);
-++  await sleep(20);
-++  assert.deepEqual(throttleCalls, ["first", "second"]);
-++  throttled.cancel();
- +}
- +
- +if (import.meta.url === `file://${process.argv[1]}`) {
--+  run();
-++  await run();
- +}
-diff --git a/src/shared/time/time.js b/src/shared/time/time.js
+++Result: PASS
+diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
+index f2f927aff..f20e47b4c 100644
+--- a/src/dev-runtime/server/local-api-router.mjs
++++ b/src/dev-runtime/server/local-api-router.mjs
+@@ -1416,16 +1416,16 @@ function systemHealthRuntimeHealth(environmentIdentity = {}, checkedAt = new Dat
+
+ function systemHealthServiceDisplayStatus(status, configured = true) {
+   if (configured === false) {
+-    return { healthStatus: "PENDING", status: "Not Configured" };
++    return { healthStatus: "PENDING", status: "NOT CONFIGURED" };
+   }
+   const normalized = normalizeHealthStatus(status);
+   if (normalized === "PASS") {
+-    return { healthStatus: "PASS", status: "Healthy" };
++    return { healthStatus: "PASS", status: "PASS" };
+   }
+   if (normalized === "FAIL") {
+-    return { healthStatus: "FAIL", status: "Failed" };
++    return { healthStatus: "FAIL", status: "FAIL" };
+   }
+-  return { healthStatus: "WARN", status: "Warning" };
++  return { healthStatus: "WARN", status: "WARN" };
+ }
+
+ function systemHealthServiceCard({ configured = true, id, label, lastChecked, status = "WARN", summary }) {
+@@ -1694,7 +1694,7 @@ function systemHealthNotificationsFoundation(checkedAt = new Date().toISOString(
+   ];
+   return {
+     lastChecked: checkedAt,
+-    message: "Notifications and alerts are placeholders only; no alert sending contract is configured for this deployment.",
++    message: "Notifications and alerts are Not Configured; no alert sending contract is configured for this deployment.",
+     rows,
+     secretEditingAllowed: false,
+     secretsExposed: false,
+diff --git a/tests/dev-runtime/AdminHealthOperations.test.mjs b/tests/dev-runtime/AdminHealthOperations.test.mjs
+index 59bea182c..57a4af267 100644
+--- a/tests/dev-runtime/AdminHealthOperations.test.mjs
++++ b/tests/dev-runtime/AdminHealthOperations.test.mjs
+@@ -172,9 +172,10 @@ test("Admin can view operational health while Creator sessions are blocked", asy
+         ["Runtime", "API", "Database", "Storage", "Authentication", "Email", "Background Jobs"],
+       );
+       assert.equal(
+-        health.serviceHealth.services.every((service) => ["Healthy", "Warning", "Failed", "Not Configured"].includes(service.status)),
++        health.serviceHealth.services.every((service) => ["PASS", "WARN", "FAIL", "NOT CONFIGURED"].includes(service.status)),
+         true,
+       );
++      assert.equal(health.serviceHealth.services.some((service) => service.status === "PASS"), true);
+       assert.equal(health.serviceHealth.services.every((service) => typeof service.summary === "string"), true);
+       assert.equal(JSON.stringify(health.serviceHealth).includes("/uat"), false);
+       assert.deepEqual(
+diff --git a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+index cf54c49d3..3527df130 100644
+--- a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
++++ b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+@@ -188,7 +188,8 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
+       expect(serviceCardText).toContain(label);
+     });
+     const serviceStatuses = await serviceCards.locator("[data-health-status]").allTextContents();
+-    expect(serviceStatuses.every((status) => ["Healthy", "Warning", "Failed", "Not Configured"].includes(status.trim()))).toBe(true);
++    expect(serviceStatuses.every((status) => ["PASS", "WARN", "FAIL", "NOT CONFIGURED"].includes(status.trim()))).toBe(true);
++    expect(serviceStatuses).toContain("PASS");
+     const configurationTable = page.getByRole("table", { name: "Configuration summary" });
+     await expect(configurationTable).toContainText("Current environment");
+     await expect(configurationTable).toContainText("Hosting model");
+@@ -350,6 +351,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
+   expect(pageSource).not.toMatch(/\sstyle\s*=/i);
+   expect(pageSource).not.toMatch(/data-health-status="(?:WARN|FAIL)"/);
+   expect(pageSource).not.toContain("No active failure is declared");
++  expect(pageSource).not.toMatch(/foundation PR|foundation view|placeholder|Pending metric|intentionally not wired/i);
+   expect(pageSource).not.toContain("SQLite");
+   expect(pageSource).toContain("Environment Identity");
+   expect(pageSource).toContain("Environment Map");
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete.md b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete.md
 new file mode 100644
-index 000000000..8ce8d6283
+index 000000000..7cbe75d98
 --- /dev/null
-+++ b/src/shared/time/time.js
-@@ -0,0 +1,185 @@
-+const SECOND_MS = 1000;
-+const MINUTE_MS = 60 * SECOND_MS;
-+const HOUR_MS = 60 * MINUTE_MS;
-+const DAY_MS = 24 * HOUR_MS;
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete.md
+@@ -0,0 +1,40 @@
++# PR_26177_CHARLIE_006-system-health-dashboard-complete
 +
-+function toFiniteNumber(value, fallback = 0) {
-+  const number = Number(value);
-+  return Number.isFinite(number) ? number : fallback;
-+}
++Team: Charlie
++Branch: PR_26177_CHARLIE_006-system-health-dashboard-complete
++Base: main
++Scope: System Health Dashboard completion polish
 +
-+function normalizeDelay(value) {
-+  return Math.max(0, Math.floor(toFiniteNumber(value)));
-+}
++## Summary
 +
-+function toDate(value = Date.now()) {
-+  const date = value instanceof Date ? new Date(value.getTime()) : new Date(value);
-+  if (Number.isNaN(date.getTime())) {
-+    throw new TypeError("value must be a valid date, timestamp, or date string.");
-+  }
-+  return date;
-+}
++- Removed stale foundation and placeholder wording from the Admin System Health dashboard source.
++- Kept unavailable provider metrics explicit with safe `PENDING` status and clear reasons.
++- Updated service health cards to display `PASS`, `WARN`, `FAIL`, or `NOT CONFIGURED` directly.
++- Preserved the Web UI to API/service contract flow; the browser still renders only server-owned System Health data.
++- Added targeted assertions for placeholder removal, service status display, secret masking, current-environment-only checks, and externalized Theme V2 script/style rules.
 +
-+/**
-+ * Formats a duration in milliseconds using compact day/hour/minute/second units.
-+ *
-+ * @param {number} milliseconds Duration in milliseconds.
-+ * @returns {string} Compact duration text.
-+ */
-+export function formatDuration(milliseconds) {
-+  const raw = toFiniteNumber(milliseconds);
-+  const sign = raw < 0 ? "-" : "";
-+  let remaining = Math.round(Math.abs(raw));
++## Changed Files
 +
-+  if (remaining < SECOND_MS) {
-+    return `${sign}${remaining}ms`;
-+  }
-+
-+  const units = [
-+    [DAY_MS, "d"],
-+    [HOUR_MS, "h"],
-+    [MINUTE_MS, "m"],
-+    [SECOND_MS, "s"],
-+  ];
-+  const parts = [];
-+
-+  for (const [unitMs, label] of units) {
-+    const count = Math.floor(remaining / unitMs);
-+    if (count > 0) {
-+      parts.push(`${count}${label}`);
-+      remaining -= count * unitMs;
-+    }
-+  }
-+
-+  if (remaining > 0) {
-+    parts.push(`${remaining}ms`);
-+  }
-+
-+  return `${sign}${parts.join(" ")}`;
-+}
-+
-+/**
-+ * Converts a date-like value to a Unix timestamp in milliseconds.
-+ *
-+ * @param {Date|string|number} [value] Date-like value.
-+ * @returns {number} Unix timestamp in milliseconds.
-+ */
-+export function toUnixMilliseconds(value = Date.now()) {
-+  return toDate(value).getTime();
-+}
-+
-+/**
-+ * Converts a date-like value to an ISO-8601 timestamp.
-+ *
-+ * @param {Date|string|number} [value] Date-like value.
-+ * @returns {string} ISO timestamp.
-+ */
-+export function toIsoTimestamp(value = Date.now()) {
-+  return toDate(value).toISOString();
-+}
-+
-+/**
-+ * Resolves after the provided delay.
-+ *
-+ * @param {number} milliseconds Delay in milliseconds.
-+ * @returns {Promise<void>} Promise that resolves after the delay.
-+ */
-+export function sleep(milliseconds) {
-+  return new Promise((resolve) => {
-+    setTimeout(resolve, normalizeDelay(milliseconds));
-+  });
-+}
-+
-+/**
-+ * Creates a debounced function that runs after calls settle.
-+ *
-+ * @param {Function} callback Function to debounce.
-+ * @param {number} waitMs Debounce delay in milliseconds.
-+ * @returns {Function & {cancel: Function}} Debounced function.
-+ */
-+export function debounce(callback, waitMs = 0) {
-+  if (typeof callback !== "function") {
-+    throw new TypeError("callback must be a function.");
-+  }
-+
-+  let timeoutId = null;
-+  const delay = normalizeDelay(waitMs);
-+
-+  function debounced(...args) {
-+    const context = this;
-+    if (timeoutId !== null) {
-+      clearTimeout(timeoutId);
-+    }
-+
-+    timeoutId = setTimeout(() => {
-+      timeoutId = null;
-+      callback.apply(context, args);
-+    }, delay);
-+  }
-+
-+  debounced.cancel = () => {
-+    if (timeoutId !== null) {
-+      clearTimeout(timeoutId);
-+      timeoutId = null;
-+    }
-+  };
-+
-+  return debounced;
-+}
-+
-+/**
-+ * Creates a throttled function that runs at most once per wait window.
-+ *
-+ * @param {Function} callback Function to throttle.
-+ * @param {number} waitMs Throttle window in milliseconds.
-+ * @returns {Function & {cancel: Function}} Throttled function.
-+ */
-+export function throttle(callback, waitMs = 0) {
-+  if (typeof callback !== "function") {
-+    throw new TypeError("callback must be a function.");
-+  }
-+
-+  const delay = normalizeDelay(waitMs);
-+  let lastRun = 0;
-+  let timeoutId = null;
-+  let pendingArgs = null;
-+  let pendingContext = null;
-+
-+  function invoke(timestamp) {
-+    lastRun = timestamp;
-+    timeoutId = null;
-+    callback.apply(pendingContext, pendingArgs);
-+    pendingArgs = null;
-+    pendingContext = null;
-+  }
-+
-+  function throttled(...args) {
-+    const now = Date.now();
-+    pendingArgs = args;
-+    pendingContext = this;
-+    const remaining = delay - (now - lastRun);
-+
-+    if (remaining <= 0 || remaining > delay) {
-+      if (timeoutId !== null) {
-+        clearTimeout(timeoutId);
-+      }
-+      invoke(now);
-+      return;
-+    }
-+
-+    if (timeoutId === null) {
-+      timeoutId = setTimeout(() => invoke(Date.now()), remaining);
-+    }
-+  }
-+
-+  throttled.cancel = () => {
-+    if (timeoutId !== null) {
-+      clearTimeout(timeoutId);
-+      timeoutId = null;
-+    }
-+    pendingArgs = null;
-+    pendingContext = null;
-+  };
-+
-+  return throttled;
-+}
-diff --git a/tests/shared/TimeFoundation.test.mjs b/tests/shared/TimeFoundation.test.mjs
-new file mode 100644
-index 000000000..b0df9a1b7
---- /dev/null
-+++ b/tests/shared/TimeFoundation.test.mjs
-@@ -0,0 +1,55 @@
-+/*
-+Toolbox Aid
-+David Quesenberry
-+06/26/2026
-+TimeFoundation.test.mjs
-+*/
-+import assert from "node:assert/strict";
-+import {
-+  debounce,
-+  formatDuration,
-+  sleep,
-+  throttle,
-+  toIsoTimestamp,
-+  toUnixMilliseconds,
-+} from "../../src/shared/time/time.js";
-+
-+export async function run() {
-+  assert.equal(formatDuration(500), "500ms");
-+  assert.equal(formatDuration(3_661_250), "1h 1m 1s 250ms");
-+  assert.equal(formatDuration(-61_000), "-1m 1s");
-+
-+  const date = new Date("2026-06-26T12:34:56.789Z");
-+  assert.equal(toUnixMilliseconds(date), Date.UTC(2026, 5, 26, 12, 34, 56, 789));
-+  assert.equal(toIsoTimestamp(date), "2026-06-26T12:34:56.789Z");
-+  assert.throws(() => toIsoTimestamp("not a date"), TypeError);
-+
-+  const start = Date.now();
-+  await sleep(5);
-+  assert.ok(Date.now() - start >= 0);
-+
-+  const debounceCalls = [];
-+  const debounced = debounce((value) => debounceCalls.push(value), 5);
-+  debounced("first");
-+  debounced("second");
-+  assert.deepEqual(debounceCalls, []);
-+  await sleep(15);
-+  assert.deepEqual(debounceCalls, ["second"]);
-+  debounced("cancelled");
-+  debounced.cancel();
-+  await sleep(10);
-+  assert.deepEqual(debounceCalls, ["second"]);
-+
-+  const throttleCalls = [];
-+  const throttled = throttle((value) => throttleCalls.push(value), 10);
-+  throttled("first");
-+  throttled("second");
-+  assert.deepEqual(throttleCalls, ["first"]);
-+  await sleep(20);
-+  assert.deepEqual(throttleCalls, ["first", "second"]);
-+  throttled.cancel();
-+}
-+
-+if (import.meta.url === `file://${process.argv[1]}`) {
-+  await run();
-+}
-diff --git a/docs_build/dev/reports/PR_26177_006-shared-time-foundation_closeout.md b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_closeout.md
-new file mode 100644
-index 000000000..3141839a4
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_closeout.md
-@@ -0,0 +1,29 @@
-+# PR_26177_006-shared-time-foundation Closeout Report
-+
-+Date: 2026-06-26
-+Status: PASS
-+
-+## Branch
-+
-+- Current branch: `PR_26177_006-shared-time-foundation`.
-+- PR: #214.
-+- Base branch before merge: `PR_26177_005-shared-text-foundation`.
-+
-+## Scope Review
-+
-+- PASS: Change remains limited to shared time foundation code, targeted tests, BUILD/PLAN docs, and required reports.
-+- PASS: Local `.vscode/settings.json` developer setting was reviewed, left untouched, and excluded from staging.
-+- PASS: No `start_of_day` folders were modified.
-+- PASS: No legacy SQLite metrics files were removed, moved, or overwritten.
++- `admin/system-health.html`
++- `src/dev-runtime/server/local-api-router.mjs`
++- `tests/dev-runtime/AdminHealthOperations.test.mjs`
++- `tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
++- `docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete.md`
++- `docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_branch-validation.md`
++- `docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_requirements-checklist.md`
++- `docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_validation-lane.md`
++- `docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_manual-validation-notes.md`
++- `docs_build/dev/reports/codex_changed_files.txt`
++- `docs_build/dev/reports/codex_review.diff`
 +
 +## Validation
 +
-+- PASS: `node ./scripts/run-node-test-files.mjs tests/shared/HashFoundation.test.mjs tests/shared/NoiseFoundation.test.mjs tests/shared/GeometryFoundation.test.mjs tests/shared/ColorFoundation.test.mjs tests/shared/TextFoundation.test.mjs tests/shared/TimeFoundation.test.mjs`.
-+- PASS: `node --check src/shared/time/time.js`.
-+- PASS: `node --check tests/shared/TimeFoundation.test.mjs`.
-+- PASS: `git diff --check -- . ':!.vscode/settings.json'`.
-+- PASS: Normal targeted validation output did not include the Game Journey legacy SQLite metrics warning.
++- PASS: `node --check src/dev-runtime/server/local-api-router.mjs`
++- PASS: `node --check tests/dev-runtime/AdminHealthOperations.test.mjs`
++- PASS: `node --check tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
++- PASS: `node --test tests/dev-runtime/AdminHealthOperations.test.mjs tests/api/admin-system-health/contract.test.mjs`
++- PASS: `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1`
 +
-+## ZIP
++## Artifact
 +
-+- PASS: Refreshed repo-structured ZIP exists at `tmp/PR_26177_006-shared-time-foundation_delta.zip`.
++- `tmp/PR_26177_CHARLIE_006-system-health-dashboard-complete_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_branch-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_branch-validation.md
+new file mode 100644
+index 000000000..2368a289b
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_branch-validation.md
+@@ -0,0 +1,13 @@
++# PR_26177_CHARLIE_006 Branch Validation
++
++Result: PASS
++
++Checks:
++- PASS: Started from `main`.
++- PASS: Worktree was clean before branch creation.
++- PASS: Local/origin sync was `0/0` before branch creation.
++- PASS: Branch `PR_26177_CHARLIE_006-system-health-dashboard-complete` was created from current `main`.
++- PASS: Scope stayed within System Health Dashboard completion.
++- PASS: No `start_of_day` files changed.
++- PASS: No direct commits to `main`.
++- PASS: PR branch retained for review.
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_manual-validation-notes.md
+new file mode 100644
+index 000000000..75244edcf
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_manual-validation-notes.md
+@@ -0,0 +1,9 @@
++# PR_26177_CHARLIE_006 Manual Validation Notes
++
++- Confirmed System Health dashboard copy no longer contains stale `foundation PR`, `foundation view`, `placeholder`, `Pending metric`, or `intentionally not wired` wording.
++- Confirmed provider metrics that are not available remain visibly marked `PENDING` with explanatory reasons.
++- Confirmed service cards retain existing Theme V2 card layout while displaying direct health status values.
++- Confirmed secret-like runtime variables remain masked as `********`.
++- Confirmed current-environment System Health behavior remains intact; peer environments are reference-only.
++- Confirmed no runtime/UI/API/database files outside the scoped System Health files were changed.
++- Confirmed no `start_of_day` files were changed.
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_requirements-checklist.md b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_requirements-checklist.md
+new file mode 100644
+index 000000000..1127e0ea8
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_requirements-checklist.md
+@@ -0,0 +1,17 @@
++# PR_26177_CHARLIE_006 Requirement Checklist
++
++- PASS: Environment Summary remains current-deployment only.
++- PASS: Postgres Health remains API/service-owned and displays safe values only.
++- PASS: R2/Storage Health remains current-environment only.
++- PASS: Runtime Environment Variables render from server-owned diagnostics.
++- PASS: Runtime variables remain alphabetically sorted by key.
++- PASS: Secret-like runtime values remain masked.
++- PASS: Service Health cards now display direct `PASS`, `WARN`, `FAIL`, or `NOT CONFIGURED` text.
++- PASS: Stale foundation and placeholder wording removed from the dashboard source.
++- PASS: Empty/error states remain explicit `PENDING`, `WARN`, or `FAIL` with reasons.
++- PASS: Theme V2 layout and externalized scripts/styles preserved.
++- PASS: No inline styles, style blocks, script blocks, or inline event handlers introduced.
++- PASS: Browser does not own authoritative product data.
++- PASS: No MEM DB, local-mem, fake-login, browser storage SSoT, silent fallback, hidden default, or SQLite direction introduced.
++- PASS: Targeted tests updated and run.
++- PASS: Required reports and delta ZIP created.
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_validation-lane.md b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_validation-lane.md
+new file mode 100644
+index 000000000..408c9ac5d
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_validation-lane.md
+@@ -0,0 +1,20 @@
++# PR_26177_CHARLIE_006 Validation Lane
++
++Impacted lanes:
++- Admin System Health page
++- Local API Admin System Health status contract
++- System Health Playwright page coverage
++
++Commands:
++- PASS: `node --check src/dev-runtime/server/local-api-router.mjs`
++- PASS: `node --check tests/dev-runtime/AdminHealthOperations.test.mjs`
++- PASS: `node --check tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
++- PASS: `node --test tests/dev-runtime/AdminHealthOperations.test.mjs tests/api/admin-system-health/contract.test.mjs`
++  - 6 tests passed.
++- PASS: `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1`
++  - 3 tests passed.
++
++Skipped lanes:
++- Full samples smoke was not run; this PR only touches targeted Admin System Health dashboard behavior and tests.
++
++Result: PASS

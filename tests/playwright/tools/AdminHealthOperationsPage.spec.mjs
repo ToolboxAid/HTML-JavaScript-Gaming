@@ -188,7 +188,8 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
       expect(serviceCardText).toContain(label);
     });
     const serviceStatuses = await serviceCards.locator("[data-health-status]").allTextContents();
-    expect(serviceStatuses.every((status) => ["Healthy", "Warning", "Failed", "Not Configured"].includes(status.trim()))).toBe(true);
+    expect(serviceStatuses.every((status) => ["PASS", "WARN", "FAIL", "NOT CONFIGURED"].includes(status.trim()))).toBe(true);
+    expect(serviceStatuses).toContain("PASS");
     const configurationTable = page.getByRole("table", { name: "Configuration summary" });
     await expect(configurationTable).toContainText("Current environment");
     await expect(configurationTable).toContainText("Hosting model");
@@ -350,6 +351,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
   expect(pageSource).not.toMatch(/\sstyle\s*=/i);
   expect(pageSource).not.toMatch(/data-health-status="(?:WARN|FAIL)"/);
   expect(pageSource).not.toContain("No active failure is declared");
+  expect(pageSource).not.toMatch(/foundation PR|foundation view|placeholder|Pending metric|intentionally not wired/i);
   expect(pageSource).not.toContain("SQLite");
   expect(pageSource).toContain("Environment Identity");
   expect(pageSource).toContain("Environment Map");
