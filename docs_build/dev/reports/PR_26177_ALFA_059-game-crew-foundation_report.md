@@ -26,3 +26,6 @@ PASS - PR059 is reworked, validated, and ready for owner testing after package g
 
 ## EOD Revalidation
 2026-06-26 - Reconfirmed the PR059 branch has no `mock-db-store.js` or `AdminDbViewer.spec.mjs` delta, reran Game Crew and Tags focused Playwright lanes, reran DevRuntimeBoundary, and rebuilt the delta ZIP.
+
+## Integrated Main Follow-up
+2026-06-26 - After merging PR058-PR061 into latest main, restored the scoped Game Crew save dispatcher and `persistGameCrewProviderState()` hook so `addMember`/`removeMember` write only active Game Hub rows plus `project_members`. This prevents Game Crew from falling through to full product snapshot persistence and avoids unrelated Admin membership tables.

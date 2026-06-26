@@ -7,4 +7,5 @@
 - Flat Tags schema/provider alignment: PASS
 - Mock-db/Admin viewer expansion removed from branch delta: PASS
 - EOD rerun validation: PASS
-- Worktree validation before package: PASS pending final status check
+- Integrated main scoped persistence fix: PASS
+- Worktree validation before package: PASS

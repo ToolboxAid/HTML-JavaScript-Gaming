@@ -2806,6 +2806,11 @@ const GAME_CONFIGURATION_SAVE_METHODS = new Set([
   "updateConfiguration",
 ]);
 
+const GAME_CREW_SAVE_METHODS = new Set([
+  "addMember",
+  "removeMember",
+]);
+
 const GAME_JOURNEY_TOOL_STORE_METHODS = new Set([
   "addItem",
   "addNote",
@@ -4059,6 +4064,34 @@ class ApiRuntimeDataSource {
       ...gameWorkspaceTables(this.gameWorkspaceRepository),
       ...gameConfigurationTables(this.gameConfigurationRepository),
     });
+  }
+
+  async persistGameCrewProviderState(action) {
+    const adapter = this.supabaseDatabaseAdapter(action);
+    const workspaceTables = gameWorkspaceTables(this.gameWorkspaceRepository);
+    const crewTables = gameCrewTables(this.gameCrewRepository);
+    const written = {
+      game_workspace_games: 0,
+      game_workspace_progress: 0,
+      project_members: 0,
+    };
+    if (workspaceTables.game_workspace_games?.length) {
+      const rows = await adapter.upsertProductTable("game_workspace_games", workspaceTables.game_workspace_games);
+      written.game_workspace_games = Array.isArray(rows) ? rows.length : workspaceTables.game_workspace_games.length;
+    }
+    if (workspaceTables.game_workspace_progress?.length) {
+      const rows = await adapter.upsertProductTable("game_workspace_progress", workspaceTables.game_workspace_progress);
+      written.game_workspace_progress = Array.isArray(rows) ? rows.length : workspaceTables.game_workspace_progress.length;
+    }
+    if (crewTables.project_members?.length) {
+      const rows = await adapter.upsertProductTable("project_members", crewTables.project_members);
+      written.project_members = Array.isArray(rows) ? rows.length : crewTables.project_members.length;
+    }
+    return {
+      providerId: SUPABASE_POSTGRES_PROVIDER_ID,
+      serverApiOwnsKeyGeneration: true,
+      written,
+    };
   }
 
   async persistGameWorkspaceProviderState(action) {
@@ -7138,6 +7171,9 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
     if (repository === this.gameConfigurationRepository && GAME_CONFIGURATION_SAVE_METHODS.has(methodName) && !this.sessionUserKey) {
       throw httpError("Sign in required to save Game Configuration through the API.", 401);
     }
+    if (repository === this.gameCrewRepository && GAME_CREW_SAVE_METHODS.has(methodName) && !this.sessionUserKey) {
+      throw httpError("Sign in required to save project crew membership through the API.", 401);
+    }
     const serviceWriteMethods = repository?.writeMethods instanceof Set ? repository.writeMethods : null;
     const requiresAuthenticatedWrite = repository?.requiresAuthenticatedWrites === true
       && (serviceWriteMethods ? serviceWriteMethods.has(methodName) : repositoryMethodRequiresPersistence(methodName));
@@ -7173,6 +7209,8 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
     if (repositoryMethodRequiresPersistence(methodName) && repository?.usesDatabasePersistence !== true && !methodPersistsThroughToolStore) {
       if (repository === this.gameWorkspaceRepository) {
         await this.persistGameWorkspaceProviderState(`Persisting ${methodName} result`);
+      } else if (repository === this.gameCrewRepository) {
+        await this.persistGameCrewProviderState(`Persisting ${methodName} result`);
       } else if (repository === this.gameConfigurationRepository) {
         await this.persistGameConfigurationProviderState(`Persisting ${methodName} result`);
       } else if (repository === this.assetRepository) {

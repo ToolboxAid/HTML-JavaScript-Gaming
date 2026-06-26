@@ -7,3 +7,4 @@
 - Active runtime no longer imports retired Tags/Game Design/Game Configuration mock repository files.
 - The PR no longer changes `mock-db-store.js` or Admin DB viewer table wiring for the new Alfa tools.
 - EOD rerun confirmed Game Crew and Tags remain human-testable through the API/database path.
+- Integrated main validation confirmed Game Crew no longer touches unrelated Admin membership tables while saving project crew membership.
