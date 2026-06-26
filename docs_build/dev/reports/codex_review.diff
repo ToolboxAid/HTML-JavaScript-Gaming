@@ -1,176 +1,21 @@
-diff --git a/assets/toolbox/text-to-speech/js/index.js b/assets/toolbox/text-to-speech/js/index.js
-index 101df1a5a..d76bd1bd0 100644
---- a/assets/toolbox/text-to-speech/js/index.js
-+++ b/assets/toolbox/text-to-speech/js/index.js
-@@ -77,8 +77,8 @@ const TTS_PROVIDER_ADAPTER_PLAN = Object.freeze([
-
- const TTS_PROFILE_CONTRACT_VERSION = "tts-profile-emotion-v1";
- const NEW_ROW_KEY = "__new__";
--const DEFAULT_TTS_PROFILE_ID = "default-balanced-profile";
--const DEFAULT_TTS_EMOTION_ID = "neutral";
-+const DEFAULT_TTS_PROFILE_ID = "tts-profile";
-+const DEFAULT_TTS_EMOTION_ID = "calm";
- const SIGN_IN_ROUTE = "account/sign-in.html";
-
- const TTS_PROFILE_GENDER_OPTIONS = Object.freeze([
-@@ -89,7 +89,6 @@ const TTS_PROFILE_GENDER_OPTIONS = Object.freeze([
- ]);
-
- const TTS_PROFILE_EMOTION_OPTIONS = Object.freeze([
--  Object.freeze({ label: "Neutral", value: "neutral" }),
-   Object.freeze({ label: "Happy", value: "happy" }),
-   Object.freeze({ label: "Angry", value: "angry" }),
-   Object.freeze({ label: "Scared", value: "scared" }),
-@@ -115,7 +114,7 @@ function createTtsMessage({
-   id,
-   name,
-   text,
--  emotionKey = "neutral",
-+  emotionKey = DEFAULT_TTS_EMOTION_ID,
-   voiceProfileKey = "browser-speech",
-   languageCode = "en-US",
-   status = "draft",
-@@ -125,7 +124,7 @@ function createTtsMessage({
-     id: String(id || "tts-message-draft"),
-     name: String(name || "Untitled TTS Message"),
-     text: String(text || ""),
--    emotionKey: String(emotionKey || "neutral"),
-+    emotionKey: String(emotionKey || DEFAULT_TTS_EMOTION_ID),
-     voiceProfileKey: String(voiceProfileKey || "browser-speech"),
-     languageCode: String(languageCode || "en-US"),
-     status: TTS_MESSAGE_STATUSES.includes(status) ? status : "draft",
-@@ -141,7 +140,7 @@ function createTtsMessage({
-   };
- }
-
--function createEmotionProfile({ key = "neutral", name = "Neutral", intensity = 0.5 } = {}) {
-+function createEmotionProfile({ key = DEFAULT_TTS_EMOTION_ID, name = "Calm", intensity = 0.5 } = {}) {
-   const numericIntensity = Number(intensity);
-   const safeIntensity = Number.isNaN(numericIntensity) ? 0.5 : Math.min(1, Math.max(0, numericIntensity));
-   return { key: String(key), name: String(name), intensity: safeIntensity, owner: TTS_OWNERSHIP.AUDIO };
-@@ -174,7 +173,7 @@ function labelForOption(options, value, fallback = "") {
- function createTextToSpeechProfileEmotion({
-   active = true,
-   displayOrder = 0,
--  emotion = "neutral",
-+  emotion = DEFAULT_TTS_EMOTION_ID,
-   emotionLabel = "",
-   id = "",
-   messageUsageCount = 0,
-@@ -216,17 +215,17 @@ function createTextToSpeechProfile({
-   id = "",
-   language = TEXT_TO_SPEECH_DEFAULTS.language,
-   messageStudioUsageCount = 0,
--  name = "Default Balanced Profile",
-+  name = "Untitled TTS Profile",
-   references = [],
-   segmentUsageCount = 0,
-   usageCount = 0,
-   voice = "",
-   voiceName = ""
- } = {}) {
--  const profileName = String(name || "Default Balanced Profile").trim() || "Default Balanced Profile";
--  const emotionRows = Array.isArray(emotions) && emotions.length
-+  const profileName = String(name || "Untitled TTS Profile").trim() || "Untitled TTS Profile";
-+  const emotionRows = Array.isArray(emotions)
-     ? emotions.map((emotion) => createTextToSpeechProfileEmotion(emotion))
--    : [createTextToSpeechProfileEmotion()];
-+    : [];
-   return {
-     active: active !== false,
-     age: String(age || TEXT_TO_SPEECH_DEFAULTS.voiceAge),
-@@ -250,7 +249,7 @@ function createTextToSpeechProfileEmotionFromApi(setting = {}) {
-   return createTextToSpeechProfileEmotion({
-     active: setting.active !== false,
-     displayOrder: setting.displayOrder || 0,
--    emotion: setting.emotion || setting.emotionLabel || setting.name || "neutral",
-+    emotion: setting.emotion || setting.emotionLabel || setting.name || DEFAULT_TTS_EMOTION_ID,
-     emotionLabel: setting.emotionLabel || setting.name || setting.emotion || "",
-     id: setting.key || setting.emotionProfileKey || setting.emotion || "",
-     messagePartsUsageCount: setting.segmentUsageCount ?? setting.messagePartsUsageCount ?? 0,
-@@ -301,30 +300,12 @@ function defaultVoiceForProfile(voiceOptions = [], preferredGender = "") {
-   return preferred || voiceOptions[0];
- }
-
--function createDefaultEmotionSettings({ markNeutralInUse = false } = {}) {
--  return [
--    createTextToSpeechProfileEmotion({
--      emotion: "neutral",
--      messagePartsUsageCount: markNeutralInUse ? 1 : 0,
--    }),
--    createTextToSpeechProfileEmotion({ emotion: "calm" }),
--    createTextToSpeechProfileEmotion({ emotion: "urgent", pitch: 1.08, rate: 1.15, volume: 1 }),
--  ];
-+function createDefaultEmotionSettings() {
-+  return [];
- }
-
--function createDefaultTextToSpeechProfiles(voiceOptions = []) {
--  const balancedVoice = defaultVoiceForProfile(voiceOptions);
--  return [
--    createTextToSpeechProfile({
--      emotions: createDefaultEmotionSettings({ markNeutralInUse: true }),
--      id: DEFAULT_TTS_PROFILE_ID,
--      language: balancedVoice?.language || TEXT_TO_SPEECH_DEFAULTS.language,
--      messageStudioUsageCount: 1,
--      name: "Default Balanced Profile",
--      voice: balancedVoice?.value || "",
--      voiceName: balancedVoice?.name || balancedVoice?.label || "Default browser voice"
--    }),
--  ];
-+function createDefaultTextToSpeechProfiles() {
-+  return [];
- }
-
- function signInUrl() {
-@@ -681,7 +662,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
-     languageCell.append(createEditorSelect(profile?.language || TEXT_TO_SPEECH_DEFAULTS.language, "ttsProfileLanguage", languageSelectOptions()));
-     const ageCell = document.createElement("td");
-     ageCell.append(createEditorSelect(profile?.age || TEXT_TO_SPEECH_DEFAULTS.voiceAge, "ttsProfileAge", TEXT_TO_SPEECH_AGE_FILTER_OPTIONS));
--    const emotionCountCell = createCell(profile ? String(profile.emotions.length) : "1");
-+    const emotionCountCell = createCell(profile ? String(profile.emotions.length) : "0");
-     const usageCell = createCell(profile ? String(profile.usageCount || profile.messageStudioUsageCount || 0) : "0");
-     const statusCell = document.createElement("td");
-     statusCell.append(createCheckbox(profile?.active !== false, "ttsProfileActive"));
-@@ -818,7 +799,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
-     return createTextToSpeechProfile({
-       active: editorChecked(row, "[data-tts-profile-active]"),
-       age: editorValue(row, "[data-tts-profile-age]"),
--      emotions: key === NEW_ROW_KEY ? [createTextToSpeechProfileEmotion()] : state.profiles.find((profile) => profile.id === key)?.emotions || [],
-+      emotions: key === NEW_ROW_KEY ? [] : state.profiles.find((profile) => profile.id === key)?.emotions || [],
-       gender: editorValue(row, "[data-tts-profile-gender]"),
-       id: key === NEW_ROW_KEY ? "" : key,
-       language: editorValue(row, "[data-tts-profile-language]"),
 diff --git a/docs_build/database/seed/messages.json b/docs_build/database/seed/messages.json
-index 5ec8d609c..2c12afc92 100644
+index 2c12afc92..b3db60c21 100644
 --- a/docs_build/database/seed/messages.json
 +++ b/docs_build/database/seed/messages.json
-@@ -16,7 +16,6 @@
-       "Notification"
-     ],
-     "messages_emotion_profiles": [
--      "Neutral",
-       "Calm",
-       "Urgent",
-       "Whisper",
-@@ -25,9 +24,7 @@
-       "Sad",
-       "Mysterious"
-     ],
--    "messages_tts_profiles": [
--      "Default Balanced Profile"
--    ],
-+    "messages_tts_profiles": [],
+@@ -28,5 +28,5 @@
      "messages_records": [],
      "messages_segments": []
    },
-diff --git a/docs_build/dev/reports/PR_26177_BRAVO_006-delete-broken-tts-seed-profiles.md b/docs_build/dev/reports/PR_26177_BRAVO_006-delete-broken-tts-seed-profiles.md
+-  "note": "Seed names are applied by the server-side Messages Postgres service. Browser pages must not seed authoritative records."
++  "note": "Seed names are applied by the server-side Messages Postgres service. Browser pages must not seed authoritative records. Retired TTS parent profiles Default Balanced Profile, Hero, Merchant, Neutral, and Robot are pruned server-side and must not be reintroduced as seed records."
+ }
+diff --git a/docs_build/dev/reports/PR_26177_BRAVO_007-delete-broken-tts-profile-parents.md b/docs_build/dev/reports/PR_26177_BRAVO_007-delete-broken-tts-profile-parents.md
 new file mode 100644
-index 000000000..e66d2587f
+index 000000000..8467b6523
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_BRAVO_006-delete-broken-tts-seed-profiles.md
-@@ -0,0 +1,62 @@
-+# PR_26177_BRAVO_006-delete-broken-tts-seed-profiles
++++ b/docs_build/dev/reports/PR_26177_BRAVO_007-delete-broken-tts-profile-parents.md
+@@ -0,0 +1,64 @@
++# PR_26177_BRAVO_007-delete-broken-tts-profile-parents
 +
 +## Branch Validation
 +- PASS: Initial branch was `bravo/26177-text-to-speech`.
@@ -178,160 +23,181 @@ index 000000000..e66d2587f
 +- PASS: No `start_of_day` folders were modified.
 +
 +## Scope Summary
-+- Deleted the broken Text To Speech seed profile set from the server/runtime seed path.
-+- Removed the broken `Neutral` emotion seed and removed hidden default Neutral/profile creation in the TTS runtime helpers.
-+- Preserved guest browsing and guest save redirect behavior to `account/sign-in.html`.
-+- Updated targeted TTS, Messages API, seed integrity, and impacted Playwright specs to expect explicit working test profiles instead of broken seed records.
++- Added server-side cleanup for retired TTS parent profiles during Messages service readiness.
++- Retired parent profile names: `Default Balanced Profile`, `Hero`, `Merchant`, `Neutral`, `Robot`.
++- Cleanup deletes retired parent profile rows, profile emotion child settings, stale message/sentence/event-action references that point at those retired parents, and orphaned profile-emotion join rows.
++- Updated the Messages seed documentation note and targeted service tests.
 +
-+## Removed Invalid Profiles / Emotions
-+- `Default Balanced Profile`: removed from server-side TTS seed inventory and browser runtime default profile helper output.
-+- `Hero`: remains absent from the TTS seed/runtime profile set and is asserted absent in TTS Playwright coverage.
-+- `Merchant`: remains absent from the TTS seed/runtime profile set and is asserted absent in TTS Playwright coverage.
-+- `Neutral`: removed from the Messages emotion seed inventory and from TTS Profile emotion editor defaults/options. Existing `Neutral` voice gender terminology remains because it is a voice filter, not an Emotion Profile record.
-+- `Robot`: remains absent from the TTS seed/runtime emotion set and is asserted absent in seed/UI coverage.
++## Requirement Checklist
++- PASS: Delete parent TTS Profile records for `Default Balanced Profile`, `Hero`, `Merchant`, `Neutral`, and `Robot`.
++- PASS: Remove remaining database references to those retired profiles.
++- PASS: Remove child emotion settings for retired parent profiles.
++- PASS: Remove orphaned profile-emotion settings whose profile or emotion parent no longer exists.
++- PASS: Prevent retired empty parent rows from appearing in TTS UI by deleting them through the API/service layer before profile reads.
++- PASS: Seed documentation and targeted tests updated.
++- PASS: Guest save redirect behavior preserved; no TTS write-auth changes were made.
++- PASS: No governance changes.
++- PASS: No unrelated cleanup or repo-wide refactor.
 +
 +## File Inventory
-+- `assets/toolbox/text-to-speech/js/index.js`
 +- `docs_build/database/seed/messages.json`
 +- `src/dev-runtime/messages/messages-postgres-service.mjs`
-+- `tests/dev-runtime/DbSeedIntegrity.test.mjs`
 +- `tests/dev-runtime/MessagesPublishValidation.test.mjs`
-+- `tests/playwright/tools/EventsTool.spec.mjs`
-+- `tests/playwright/tools/MessagesTool.spec.mjs`
-+- `tests/playwright/tools/TextToSpeechFunctional.spec.mjs`
-+- `tests/tools/Text2SpeechShell.test.mjs`
-+- `docs_build/dev/reports/PR_26177_BRAVO_006-delete-broken-tts-seed-profiles.md`
++- `docs_build/dev/reports/PR_26177_BRAVO_007-delete-broken-tts-profile-parents.md`
 +- `docs_build/dev/reports/codex_changed_files.txt`
 +- `docs_build/dev/reports/codex_review.diff`
 +
-+## Guest Save Routing Checklist
-+- PASS: TTS save/create/update/delete still require authenticated write checks.
-+- PASS: Unauthenticated TTS profile save continues to route to `account/sign-in.html`.
-+- PASS: Guest browsing remains allowed because profile reads still load without sign-in.
-+- PASS: No local storage product-data fallback was added.
++## DB/API Inventory
++- `messages_tts_profiles`: retired profile parent rows are deleted by exact creator-facing name.
++- `messages_tts_profile_emotion_settings`: child settings for retired profiles and orphaned join rows are deleted.
++- `messages_records`: stale rows referencing retired TTS profiles are deleted to avoid orphaned profile references.
++- `messages_segments`: stale rows referencing retired TTS profiles, plus child segments for deleted stale messages, are deleted.
++- `messages_event_actions`: stale actions referencing deleted stale messages are deleted.
++- Local API profile reads continue through `listTtsProfiles()` after `ensureReady()`.
++
++## Test Inventory
++- Added `Messages seed cleanup deletes retired parent TTS profiles and orphaned settings`.
++- Existing `MessagesPublishValidation` coverage remains green for usage counts, delete blocking, profile-scoped emotions, and guest TTS write protection.
++- Existing TTS helper tests remain green for no hidden default seed profile/emotion behavior.
 +
 +## Validation Lane Report
-+- PASS: `node --check assets/toolbox/text-to-speech/js/index.js`
 +- PASS: `node --check src/dev-runtime/messages/messages-postgres-service.mjs`
-+- PASS: `node --check tests/playwright/tools/TextToSpeechFunctional.spec.mjs`
-+- PASS: `node --check tests/playwright/tools/MessagesTool.spec.mjs`
-+- PASS: `node --check tests/playwright/tools/EventsTool.spec.mjs`
-+- PASS: `node --test tests/tools/Text2SpeechShell.test.mjs` (6/6)
-+- PASS: `node --test tests/dev-runtime/MessagesPublishValidation.test.mjs` (6/6)
++- PASS: `node --check tests/dev-runtime/MessagesPublishValidation.test.mjs`
++- PASS: `node --test tests/dev-runtime/MessagesPublishValidation.test.mjs` (7/7)
 +- PASS: `node --test --test-name-pattern "Messages Local API seeds" tests/dev-runtime/DbSeedIntegrity.test.mjs` (1/1)
++- PASS: `node --test tests/tools/Text2SpeechShell.test.mjs` (6/6)
 +- BLOCKED: `npx playwright test tests/playwright/tools/TextToSpeechFunctional.spec.mjs tests/playwright/tools/MessagesTool.spec.mjs tests/playwright/tools/EventsTool.spec.mjs --project=playwright`
 +  - Browser launch failed before page code ran because Chromium is missing at `C:\Users\davidq\AppData\Local\ms-playwright\chromium-1217\chrome-win64\chrome.exe`.
 +
 +## Manual Validation Notes
-+- Reviewed seed/runtime references for `Default Balanced Profile`, `Hero`, `Merchant`, `Neutral`, and `Robot`.
-+- Remaining `Neutral` source references are limited to voice gender/filter terminology, negative absence assertions, or descriptive prose for the `Calm` seed.
-+- Playwright manual UI validation was not possible in this environment because the local Playwright Chromium binary is missing.
++- Reviewed remaining references for the retired profile names.
++- Positive retired-name references are limited to the cleanup constant, seed note, and tests/assertions proving deletion or absence.
++- Existing `Neutral` voice gender terminology remains because it is not a TTS Profile parent record.
 +
 +## Known Issues
-+- Playwright browser validation remains blocked until the local Chromium browser is installed for this Playwright version.
++- Playwright browser validation remains blocked until the local Playwright Chromium browser is installed for this version.
 +
 +## Repo-Structured ZIP
-+- `tmp/PR_26177_BRAVO_006-delete-broken-tts-seed-profiles_delta.zip`
++- `tmp/PR_26177_BRAVO_007-delete-broken-tts-profile-parents_delta.zip`
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 6402d9db4..80393bf07 100644
+index 80393bf07..0144edc9b 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -2,9 +2,8 @@ assets/toolbox/text-to-speech/js/index.js
+@@ -1,12 +1,6 @@
+-assets/toolbox/text-to-speech/js/index.js
  docs_build/database/seed/messages.json
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
--docs_build/dev/reports/PR_26177_BRAVO_005-fix-tts-seed-profiles-and-guest-save-routing.md
-+docs_build/dev/reports/PR_26177_BRAVO_006-delete-broken-tts-seed-profiles.md
+-docs_build/dev/reports/PR_26177_BRAVO_006-delete-broken-tts-seed-profiles.md
++docs_build/dev/reports/PR_26177_BRAVO_007-delete-broken-tts-profile-parents.md
  src/dev-runtime/messages/messages-postgres-service.mjs
--src/dev-runtime/server/local-api-router.mjs
- tests/dev-runtime/DbSeedIntegrity.test.mjs
+-tests/dev-runtime/DbSeedIntegrity.test.mjs
  tests/dev-runtime/MessagesPublishValidation.test.mjs
- tests/playwright/tools/EventsTool.spec.mjs
+-tests/playwright/tools/EventsTool.spec.mjs
+-tests/playwright/tools/MessagesTool.spec.mjs
+-tests/playwright/tools/TextToSpeechFunctional.spec.mjs
+-tests/tools/Text2SpeechShell.test.mjs
 diff --git a/src/dev-runtime/messages/messages-postgres-service.mjs b/src/dev-runtime/messages/messages-postgres-service.mjs
-index d904e786d..2504b7453 100644
+index 2504b7453..6315df2e9 100644
 --- a/src/dev-runtime/messages/messages-postgres-service.mjs
 +++ b/src/dev-runtime/messages/messages-postgres-service.mjs
-@@ -14,7 +14,6 @@ const SEED_CATEGORY_NAMES = Object.freeze([
-   "Notification",
+@@ -26,6 +26,13 @@ const SEED_EMOTION_PROFILES = Object.freeze([
  ]);
- const SEED_EMOTION_PROFILES = Object.freeze([
--  Object.freeze({ description: "Balanced spoken delivery for general narration or dialog.", name: "Neutral", pauseAfterMs: 150, pauseBeforeMs: 0, pitch: 1, rate: 1, volume: 1 }),
-   Object.freeze({ description: "Bright, positive delivery for friendly or successful moments.", name: "Happy", pauseAfterMs: 110, pauseBeforeMs: 0, pitch: 1.08, rate: 1.04, volume: 1 }),
-   Object.freeze({ description: "Neutral spoken delivery for general narration or dialog.", name: "Calm", pauseAfterMs: 150, pauseBeforeMs: 0, pitch: 1, rate: 1, volume: 1 }),
-   Object.freeze({ description: "Fast, alert delivery for warnings and immediate danger.", name: "Urgent", pauseAfterMs: 80, pauseBeforeMs: 0, pitch: 1.08, rate: 1.15, volume: 1 }),
-@@ -25,12 +24,8 @@ const SEED_EMOTION_PROFILES = Object.freeze([
-   Object.freeze({ description: "Soft delivery for loss, regret, or reflective moments.", name: "Sad", pauseAfterMs: 220, pauseBeforeMs: 100, pitch: 0.9, rate: 0.85, volume: 0.8 }),
-   Object.freeze({ description: "Measured delivery for suspense, hidden lore, or strange events.", name: "Mysterious", pauseAfterMs: 260, pauseBeforeMs: 120, pitch: 0.92, rate: 0.88, volume: 0.85 }),
- ]);
--const SEED_TTS_PROFILES = Object.freeze([
--  Object.freeze({ description: "Default Text To Speech browser profile.", language: "en-US", name: "Default Balanced Profile", pitch: 1, providerKey: "browser-speech", rate: 1, voiceName: "Default browser voice", volume: 1 }),
--]);
--const SEED_TTS_PROFILE_EMOTION_SETTINGS = Object.freeze([
--  Object.freeze({ emotions: ["Neutral", "Calm", "Urgent"], ttsProfileName: "Default Balanced Profile" }),
--]);
-+const SEED_TTS_PROFILES = Object.freeze([]);
-+const SEED_TTS_PROFILE_EMOTION_SETTINGS = Object.freeze([]);
+ const SEED_TTS_PROFILES = Object.freeze([]);
+ const SEED_TTS_PROFILE_EMOTION_SETTINGS = Object.freeze([]);
++const RETIRED_TTS_PROFILE_PARENT_NAMES = Object.freeze([
++  "Default Balanced Profile",
++  "Hero",
++  "Merchant",
++  "Neutral",
++  "Robot",
++]);
  const SUPPORTED_TTS_PROVIDER_KEYS = Object.freeze([
    "browser-speech",
    "elevenlabs",
-@@ -1098,19 +1093,14 @@ export class MessagesPostgresService {
+@@ -576,6 +583,7 @@ export class MessagesPostgresService {
+         }, { skipEnsure: true });
+       }
+     }
++    await this.deleteRetiredTtsProfileParents();
+     for (const profile of SEED_TTS_PROFILES) {
+       const existing = await this.findTtsProfileByNameRaw(profile.name);
+       if (!existing) {
+@@ -590,6 +598,54 @@ export class MessagesPostgresService {
+     await this.backfillDefaultVoiceProfileReferences();
    }
 
-   async defaultVoiceProfileKeyRaw() {
--    const defaultProfile = await this.findTtsProfileByNameRaw("Default Balanced Profile");
--    if (defaultProfile) {
--      return defaultProfile.key;
--    }
--    const fallback = (await this.tableRows("messages_tts_profiles")).sort(compareName)[0];
--    if (!fallback) {
--      throw httpError("TTS Profile seed is unavailable. Restart the Local API runtime.");
--    }
--    return fallback.key;
-+    return "";
-   }
-
-   async backfillDefaultVoiceProfileReferences() {
-     const voiceProfileKey = await this.defaultVoiceProfileKeyRaw();
-+    if (!voiceProfileKey) {
-+      return;
++  async deleteRetiredTtsProfileParents() {
++    const retiredNames = new Set(RETIRED_TTS_PROFILE_PARENT_NAMES.map((name) => name.toLowerCase()));
++    const profiles = await this.tableRows("messages_tts_profiles");
++    for (const profile of profiles) {
++      if (!retiredNames.has(normalizeText(profile.name).trim().toLowerCase())) {
++        continue;
++      }
++      await this.deleteRetiredTtsProfileReferences(profile.key);
++      const settings = await this.rowsByField("messages_tts_profile_emotion_settings", "ttsProfileKey", profile.key);
++      for (const setting of settings) {
++        await this.deleteRow("messages_tts_profile_emotion_settings", setting.key);
++      }
++      await this.deleteRow("messages_tts_profiles", profile.key);
 +    }
-     for (const tableName of ["messages_records", "messages_segments"]) {
-       const rows = await this.tableRows(tableName);
-       for (const row of rows) {
-diff --git a/tests/dev-runtime/DbSeedIntegrity.test.mjs b/tests/dev-runtime/DbSeedIntegrity.test.mjs
-index b178477ca..aecb59368 100644
---- a/tests/dev-runtime/DbSeedIntegrity.test.mjs
-+++ b/tests/dev-runtime/DbSeedIntegrity.test.mjs
-@@ -93,20 +93,44 @@ test("Messages Local API seeds through the Postgres service and preserves respon
-     const emotionProfiles = await apiJson(server.baseUrl, "/api/messages/emotion-profiles");
-     const urgent = emotionProfiles.emotionProfiles.find((profile) => profile.name === "Urgent");
-     assert.ok(urgent, "Messages emotion profiles should include Urgent");
-+    assert.equal(emotionProfiles.emotionProfiles.some((profile) => profile.name === "Neutral"), false);
-+    assert.equal(emotionProfiles.emotionProfiles.some((profile) => profile.name === "Robot"), false);
-
-     const ttsProfiles = await apiJson(server.baseUrl, "/api/messages/tts-profiles");
--    const defaultProfile = ttsProfiles.ttsProfiles.find((profile) => profile.name === "Default Balanced Profile");
--    assert.deepEqual(ttsProfiles.ttsProfiles.map((profile) => profile.name), ["Default Balanced Profile"]);
--    assert.ok(defaultProfile, "Messages TTS profiles should include the default-safe Text To Speech profile");
--    assert.deepEqual(defaultProfile.emotionSettings.map((setting) => setting.emotionLabel), ["Neutral", "Calm", "Urgent"]);
--    assert.equal(defaultProfile.gender, "");
-+    assert.deepEqual(ttsProfiles.ttsProfiles.map((profile) => profile.name), []);
++    await this.deleteOrphanedTtsProfileEmotionSettings();
++  }
 +
-+    await apiJson(server.baseUrl, "/api/session/user", {
-+      body: JSON.stringify({ userKey: MOCK_DB_KEYS.users.user1 }),
-+      method: "POST",
-+    });
-+    const createdProfile = await apiJson(server.baseUrl, "/api/messages/tts-profiles", {
-+      body: JSON.stringify({
-+        emotionSettings: [{
-+          emotion: "urgent",
-+          emotionLabel: "Urgent",
-+          pitch: 1.08,
-+          rate: 1.15,
-+          volume: 1,
-+        }],
++  async deleteRetiredTtsProfileReferences(ttsProfileKey) {
++    const directSegments = await this.rowsByField("messages_segments", "voiceProfileKey", ttsProfileKey);
++    for (const segment of directSegments) {
++      await this.deleteRow("messages_segments", segment.key);
++    }
++    const messages = await this.rowsByField("messages_records", "voiceProfileKey", ttsProfileKey);
++    for (const message of messages) {
++      const messageSegments = await this.rowsByField("messages_segments", "messageKey", message.key);
++      for (const segment of messageSegments) {
++        await this.deleteRow("messages_segments", segment.key);
++      }
++      const eventActions = await this.rowsByField("messages_event_actions", "messageKey", message.key);
++      for (const eventAction of eventActions) {
++        await this.deleteRow("messages_event_actions", eventAction.key);
++      }
++      await this.deleteRow("messages_records", message.key);
++    }
++  }
++
++  async deleteOrphanedTtsProfileEmotionSettings() {
++    const profileKeys = new Set((await this.tableRows("messages_tts_profiles")).map((profile) => profile.key));
++    const emotionKeys = new Set((await this.tableRows("messages_emotion_profiles")).map((emotion) => emotion.key));
++    const settings = await this.tableRows("messages_tts_profile_emotion_settings");
++    for (const setting of settings) {
++      if (profileKeys.has(setting.ttsProfileKey) && emotionKeys.has(setting.emotionProfileKey)) {
++        continue;
++      }
++      await this.deleteRow("messages_tts_profile_emotion_settings", setting.key);
++    }
++  }
++
+   async seedDefaultTtsProfileEmotionSettings() {
+     for (const profileSettings of SEED_TTS_PROFILE_EMOTION_SETTINGS) {
+       const ttsProfile = await this.findTtsProfileByNameRaw(profileSettings.ttsProfileName);
+diff --git a/tests/dev-runtime/MessagesPublishValidation.test.mjs b/tests/dev-runtime/MessagesPublishValidation.test.mjs
+index 123add28f..5036fe193 100644
+--- a/tests/dev-runtime/MessagesPublishValidation.test.mjs
++++ b/tests/dev-runtime/MessagesPublishValidation.test.mjs
+@@ -54,6 +54,101 @@ async function createWorkingTtsProfile(service, {
+   });
+ }
+
++test("Messages seed cleanup deletes retired parent TTS profiles and orphaned settings", async () => {
++  const { postgresClient, service } = createServiceHarness();
++  const retiredNames = ["Default Balanced Profile", "Hero", "Merchant", "Neutral", "Robot"];
++
++  for (const [index, name] of retiredNames.entries()) {
++    const key = `retired-profile-${index}`;
++    await postgresClient.requestTable("messages_tts_profiles", {
++      body: datedRow({
++        description: "Retired broken TTS parent profile.",
++        key,
 +        language: "en-US",
-+        name: "Seed Integrity Test Profile",
++        name,
 +        pitch: 1,
 +        providerKey: "browser-speech",
 +        rate: 1,
@@ -340,590 +206,80 @@ index b178477ca..aecb59368 100644
 +      }),
 +      method: "POST",
 +    });
-+    assert.equal(createdProfile.ttsProfile.name, "Seed Integrity Test Profile");
-+    assert.deepEqual(createdProfile.ttsProfile.emotionSettings.map((setting) => setting.emotionLabel), ["Urgent"]);
-
-     const created = await apiJson(server.baseUrl, "/api/messages/messages", {
-       body: JSON.stringify({
-         emotionProfileKey: urgent.key,
-         messageText: "Postgres-backed message text.",
-         name: "Postgres Cutover Message",
--        voiceProfileKey: defaultProfile.key,
-+        voiceProfileKey: createdProfile.ttsProfile.key,
-       }),
-       method: "POST",
-     });
-@@ -114,7 +138,7 @@ test("Messages Local API seeds through the Postgres service and preserves respon
-     assert.equal(created.message.categoryName, "Dialog");
-     assert.equal(created.message.emotionProfileName, "Urgent");
-     assert.equal(created.message.messageText, "Postgres-backed message text.");
--    assert.equal(created.message.voiceProfileName, "Default Balanced Profile");
-+    assert.equal(created.message.voiceProfileName, "Seed Integrity Test Profile");
-
-     const segment = await apiJson(server.baseUrl, "/api/messages/segments", {
-       body: JSON.stringify({
-@@ -122,13 +146,13 @@ test("Messages Local API seeds through the Postgres service and preserves respon
-         emotionProfileKey: urgent.key,
-         messageKey: created.message.key,
-         segmentText: "Postgres-backed message part.",
--        voiceProfileKey: defaultProfile.key,
-+        voiceProfileKey: createdProfile.ttsProfile.key,
-       }),
-       method: "POST",
-     });
-     assert.equal(segment.segment.messageName, "Postgres Cutover Message");
-     assert.equal(segment.segment.emotionProfileName, "Urgent");
--    assert.equal(segment.segment.voiceProfileName, "Default Balanced Profile");
-+    assert.equal(segment.segment.voiceProfileName, "Seed Integrity Test Profile");
-
-     const list = await apiJson(server.baseUrl, "/api/messages/messages");
-     const listed = list.messages.find((message) => message.key === created.message.key);
-diff --git a/tests/dev-runtime/MessagesPublishValidation.test.mjs b/tests/dev-runtime/MessagesPublishValidation.test.mjs
-index 7524a600f..123add28f 100644
---- a/tests/dev-runtime/MessagesPublishValidation.test.mjs
-+++ b/tests/dev-runtime/MessagesPublishValidation.test.mjs
-@@ -25,11 +25,40 @@ function datedRow(row) {
-   };
- }
-
-+async function createWorkingTtsProfile(service, {
-+  emotionNames = ["Calm"],
-+  name = "Test Browser Profile",
-+} = {}) {
-+  const emotionProfiles = await service.listEmotionProfiles();
-+  const emotionSettings = emotionNames.map((emotionName) => {
-+    const emotion = emotionProfiles.find((profile) => profile.name === emotionName);
-+    assert.ok(emotion, `Expected ${emotionName} emotion profile`);
-+    return {
-+      emotion: emotion.name,
-+      emotionLabel: emotion.name,
-+      pitch: emotion.pitch,
-+      rate: emotion.rate,
-+      volume: emotion.volume,
-+    };
++    await postgresClient.requestTable("messages_tts_profile_emotion_settings", {
++      body: datedRow({
++        displayOrder: index + 1,
++        emotionProfileKey: `retired-emotion-${index}`,
++        key: `retired-setting-${index}`,
++        pitch: 1,
++        rate: 1,
++        ssmlLikePreset: "normal",
++        ttsProfileKey: key,
++        volume: 1,
++      }),
++      method: "POST",
++    });
++  }
++
++  await postgresClient.requestTable("messages_records", {
++    body: datedRow({
++      categoryKey: "retired-category",
++      emotionProfileKey: "retired-emotion-0",
++      key: "retired-message",
++      messageText: "Retired message reference.",
++      name: "Retired Message",
++      notes: "",
++      voiceProfileKey: "retired-profile-0",
++    }),
++    method: "POST",
 +  });
-+  return service.createTtsProfile({
-+    active: true,
-+    emotionSettings,
-+    language: "en-US",
-+    name,
-+    pitch: 1,
-+    providerKey: "browser-speech",
-+    rate: 1,
-+    voiceName: "Default browser voice",
-+    volume: 1,
++  await postgresClient.requestTable("messages_segments", {
++    body: datedRow({
++      displayOrder: 1,
++      emotionProfileKey: "retired-emotion-0",
++      key: "retired-segment",
++      messageKey: "retired-message",
++      segmentText: "Retired sentence reference.",
++      voiceProfileKey: "retired-profile-0",
++    }),
++    method: "POST",
 +  });
-+}
++  await postgresClient.requestTable("messages_event_actions", {
++    body: datedRow({
++      actionType: "speak-message",
++      key: "retired-event-action",
++      messageKey: "retired-message",
++      name: "Retired event action",
++    }),
++    method: "POST",
++  });
++  await postgresClient.requestTable("messages_tts_profile_emotion_settings", {
++    body: datedRow({
++      displayOrder: 99,
++      emotionProfileKey: "missing-emotion",
++      key: "orphan-setting",
++      pitch: 1,
++      rate: 1,
++      ssmlLikePreset: "normal",
++      ttsProfileKey: "missing-profile",
++      volume: 1,
++    }),
++    method: "POST",
++  });
++
++  await service.ensureReady();
++
++  const ttsProfiles = await postgresClient.requestTable("messages_tts_profiles");
++  assert.deepEqual(ttsProfiles.map((profile) => profile.name).filter((name) => retiredNames.includes(name)), []);
++  const settings = await postgresClient.requestTable("messages_tts_profile_emotion_settings");
++  assert.equal(settings.some((setting) => String(setting.ttsProfileKey).startsWith("retired-profile-")), false);
++  assert.equal(settings.some((setting) => setting.key === "orphan-setting"), false);
++  assert.equal((await postgresClient.requestTable("messages_records")).some((message) => message.voiceProfileKey === "retired-profile-0"), false);
++  assert.equal((await postgresClient.requestTable("messages_segments")).some((segment) => segment.voiceProfileKey === "retired-profile-0"), false);
++  assert.equal((await postgresClient.requestTable("messages_event_actions")).some((action) => action.messageKey === "retired-message"), false);
++  assert.deepEqual((await service.listTtsProfiles()).map((profile) => profile.name), []);
++  service.close();
++});
 +
  test("Messages publish validation passes publish-ready message configuration", async () => {
    const { service } = createServiceHarness();
-
-   const emotion = (await service.listEmotionProfiles()).find((profile) => profile.name === "Calm");
--  const voice = (await service.listTtsProfiles()).find((profile) => profile.name === "Default Balanced Profile");
-+  const voice = await createWorkingTtsProfile(service, { name: "Publish Test Profile" });
-   assert.ok(emotion);
-   assert.ok(voice);
-
-@@ -135,7 +164,7 @@ test("Messages TTS profiles expose usage counts and block referenced profile del
-   const { service } = createServiceHarness();
-
-   const emotion = (await service.listEmotionProfiles()).find((profile) => profile.name === "Calm");
--  const voice = (await service.listTtsProfiles()).find((profile) => profile.name === "Default Balanced Profile");
-+  const voice = await createWorkingTtsProfile(service, { name: "Usage Test Profile" });
-   assert.ok(emotion);
-   assert.ok(voice);
-
-@@ -182,14 +211,16 @@ test("Messages TTS profiles expose usage counts and block referenced profile del
- test("Messages enforces profile-scoped Emotion Profiles for save and publish validation", async () => {
-   const { postgresClient, service } = createServiceHarness();
-
--  const profiles = await service.listTtsProfiles();
--  const defaultProfile = profiles.find((profile) => profile.name === "Default Balanced Profile");
-+  const defaultProfile = await createWorkingTtsProfile(service, {
-+    emotionNames: ["Calm", "Urgent"],
-+    name: "Scoped Test Profile",
-+  });
-   const urgent = (await service.listEmotionProfiles()).find((profile) => profile.name === "Urgent");
-   const whisper = (await service.listEmotionProfiles()).find((profile) => profile.name === "Whisper");
-   assert.ok(defaultProfile);
-   assert.ok(urgent);
-   assert.ok(whisper);
--  assert.deepEqual(defaultProfile.emotionSettings.map((setting) => setting.emotionLabel), ["Neutral", "Calm", "Urgent"]);
-+  assert.deepEqual(defaultProfile.emotionSettings.map((setting) => setting.emotionLabel), ["Calm", "Urgent"]);
-
-   const whisperProfile = await service.createTtsProfile({
-     active: true,
-@@ -246,8 +277,8 @@ test("Messages TTS profile saves accept creator-facing Emotion labels and protec
-   const created = await service.createTtsProfile({
-     active: true,
-     emotionSettings: [{
--      emotion: "neutral",
--      emotionLabel: "Neutral",
-+      emotion: "calm",
-+      emotionLabel: "Calm",
-       pitch: 1,
-       rate: 1,
-       volume: 1,
-@@ -260,7 +291,7 @@ test("Messages TTS profile saves accept creator-facing Emotion labels and protec
-     voiceName: "Browser guide updated",
-     volume: 1,
-   });
--  assert.deepEqual(created.emotionSettings.map((setting) => setting.emotionLabel), ["Neutral"]);
-+  assert.deepEqual(created.emotionSettings.map((setting) => setting.emotionLabel), ["Calm"]);
-
-   const updated = await service.updateTtsProfile(created.key, {
-     ...created,
-@@ -333,8 +364,8 @@ test("Messages API requires sign-in for Text To Speech profile and emotion write
-     actorKey: "test-author",
-     body: {
-       emotionSettings: [{
--        emotion: "neutral",
--        emotionLabel: "Neutral",
-+        emotion: "calm",
-+        emotionLabel: "Calm",
-         pitch: 1,
-         rate: 1,
-         volume: 1,
-diff --git a/tests/playwright/tools/EventsTool.spec.mjs b/tests/playwright/tools/EventsTool.spec.mjs
-index 7d978fa32..16743bc31 100644
---- a/tests/playwright/tools/EventsTool.spec.mjs
-+++ b/tests/playwright/tools/EventsTool.spec.mjs
-@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
- import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
- import { createMessagesPostgresClientStub } from "../../helpers/messagesPostgresClientStub.mjs";
- import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
-+import { SEED_DB_KEYS } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
-
- async function jsonRequest(url, options = {}) {
-   const response = await fetch(url, {
-@@ -27,12 +28,38 @@ test.afterEach(async ({ page }) => {
- });
-
- async function createMessage(server) {
-+  const session = await jsonRequest(`${server.baseUrl}/api/session/user`, {
-+    body: JSON.stringify({ userKey: SEED_DB_KEYS.users.user1 }),
-+    method: "POST",
-+  });
-+  expect(session.response.ok).toBe(true);
-+  expect(session.payload.ok).toBe(true);
-+
-   const emotionResult = await jsonRequest(`${server.baseUrl}/api/messages/emotion-profiles`);
--  const voiceResult = await jsonRequest(`${server.baseUrl}/api/messages/tts-profiles`);
-   const urgent = emotionResult.payload.data.emotionProfiles.find((profile) => profile.name === "Urgent");
--  const ttsProfile = voiceResult.payload.data.ttsProfiles.find((profile) => profile.name === "Default Balanced Profile");
-   expect(urgent).toBeTruthy();
--  expect(ttsProfile).toBeTruthy();
-+  const profileResult = await jsonRequest(`${server.baseUrl}/api/messages/tts-profiles`, {
-+    body: JSON.stringify({
-+      emotionSettings: [{
-+        emotion: "urgent",
-+        emotionLabel: "Urgent",
-+        pitch: 1.08,
-+        rate: 1.15,
-+        volume: 1,
-+      }],
-+      language: "en-US",
-+      name: "Events Test Profile",
-+      pitch: 1,
-+      providerKey: "browser-speech",
-+      rate: 1,
-+      voiceName: "Default browser voice",
-+      volume: 1,
-+    }),
-+    method: "POST",
-+  });
-+  expect(profileResult.response.ok).toBe(true);
-+  expect(profileResult.payload.ok).toBe(true);
-+  const ttsProfile = profileResult.payload.data.ttsProfile;
-   const messageResult = await jsonRequest(`${server.baseUrl}/api/messages/messages`, {
-     body: JSON.stringify({
-       emotionProfileKey: urgent.key,
-diff --git a/tests/playwright/tools/MessagesTool.spec.mjs b/tests/playwright/tools/MessagesTool.spec.mjs
-index ebee8ce97..a1e53472c 100644
---- a/tests/playwright/tools/MessagesTool.spec.mjs
-+++ b/tests/playwright/tools/MessagesTool.spec.mjs
-@@ -6,6 +6,7 @@ import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageRe
- import { SEED_DB_KEYS } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
-
- const ULID_PATTERN = /^[0-9A-HJKMNP-TV-Z]{26}$/;
-+const TEST_TTS_PROFILE_NAME = "Message Test Profile";
-
- async function jsonRequest(url, options = {}) {
-   const response = await fetch(url, {
-@@ -22,6 +23,48 @@ async function jsonRequest(url, options = {}) {
-   };
- }
-
-+async function signInServer(server) {
-+  const session = await jsonRequest(`${server.baseUrl}/api/session/user`, {
-+    body: JSON.stringify({ userKey: SEED_DB_KEYS.users.user1 }),
-+    method: "POST",
-+  });
-+  expect(session.response.ok).toBe(true);
-+  expect(session.payload.ok).toBe(true);
-+}
-+
-+async function ensureMessageTestTtsProfile(server, {
-+  emotionSettings = [
-+    { emotion: "calm", emotionLabel: "Calm", pitch: 1, rate: 1, volume: 1 },
-+    { emotion: "urgent", emotionLabel: "Urgent", pitch: 1.08, rate: 1.15, volume: 1 },
-+  ],
-+  name = TEST_TTS_PROFILE_NAME,
-+} = {}) {
-+  await signInServer(server);
-+  const existing = await jsonRequest(`${server.baseUrl}/api/messages/tts-profiles`);
-+  expect(existing.response.ok).toBe(true);
-+  expect(existing.payload.ok).toBe(true);
-+  const found = existing.payload.data.ttsProfiles.find((profile) => profile.name === name);
-+  if (found) {
-+    return found;
-+  }
-+  const created = await jsonRequest(`${server.baseUrl}/api/messages/tts-profiles`, {
-+    body: JSON.stringify({
-+      emotionSettings,
-+      language: "en-US",
-+      name,
-+      pitch: 1,
-+      providerKey: "browser-speech",
-+      rate: 1,
-+      voiceName: "Default browser voice",
-+      volume: 1,
-+    }),
-+    method: "POST",
-+  });
-+  expect(created.response.ok).toBe(true);
-+  expect(created.payload.ok).toBe(true);
-+  return created.payload.data.ttsProfile;
-+}
-+
- test.beforeEach(async ({ page }) => {
-   await installPlaywrightStorageIsolation(page, {
-     lane: "messages-tool",
-@@ -112,6 +155,9 @@ async function openMessagesPage(page, options = {}) {
-       },
-     };
-   });
-+  if (options.seedMessageTtsProfile !== false) {
-+    await ensureMessageTestTtsProfile(server);
-+  }
-   await workspaceV2CoverageReporter.start(page);
-   await page.goto(`${server.baseUrl}/tools/messages/index.html`, { waitUntil: "networkidle" });
-   return failures;
-@@ -205,7 +251,7 @@ async function voiceProfiles(server) {
-   return profilesResult.payload.data.ttsProfiles;
- }
-
--async function createReferencedSentence(server, message, emotionName = "Urgent", voiceName = "Default Balanced Profile") {
-+async function createReferencedSentence(server, message, emotionName = "Urgent", voiceName = TEST_TTS_PROFILE_NAME) {
-   const emotion = await emotionProfile(server, emotionName);
-   const voice = await voiceProfile(server, voiceName);
-   expect(emotion).toBeTruthy();
-@@ -264,7 +310,7 @@ test("Message Studio uses the approved table-first Messages structure", async ({
-     await expect(page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile]")).toBeVisible();
-     await expect(page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile] option")).toHaveText([
-       "Select TTS profile",
--      "Default Balanced Profile",
-+      TEST_TTS_PROFILE_NAME,
-     ]);
-     await expect(page.locator("[data-messages-row-editor='__new__']").getByRole("button", { name: "Save" })).toBeVisible();
-     await expect(page.locator("[data-messages-row-editor='__new__']").getByRole("button", { name: "Cancel" })).toBeVisible();
-@@ -277,11 +323,11 @@ test("Message Studio uses the approved table-first Messages structure", async ({
-
-     await addMessage(page, {
-       name: "Bat Encounter",
--      ttsProfile: "Default Balanced Profile",
-+      ttsProfile: TEST_TTS_PROFILE_NAME,
-     });
-     await expect(page.locator("[data-messages-log]")).toHaveText("Saved message Bat Encounter.");
-     const messageRow = page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" });
--    await expect(messageRow).toContainText("Default Balanced Profile");
-+    await expect(messageRow).toContainText(TEST_TTS_PROFILE_NAME);
-     await expect(messageRow.getByRole("button", { name: "Sentences" })).toBeVisible();
-     await expect(messageRow.getByRole("button", { name: "Edit" })).toBeVisible();
-     await expect(messageRow.getByRole("button", { name: "Archive" })).toBeVisible();
-@@ -299,7 +345,6 @@ test("Message Studio uses the approved table-first Messages structure", async ({
-     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-voice]")).toHaveCount(0);
-     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion] option")).toHaveText([
-       "Select emotion",
--      "Neutral",
-       "Calm",
-       "Urgent",
-     ]);
-@@ -346,7 +391,7 @@ test("Message Studio uses the approved table-first Messages structure", async ({
-     await expect(page.locator("[data-messages-log]")).not.toContainText(/before preview/i);
-     await expectPlaybackDiagnostics(page, {
-       gender: "Any",
--      profile: "Default Balanced Profile",
-+      profile: TEST_TTS_PROFILE_NAME,
-       voice: "Default browser voice",
-     });
-
-@@ -380,7 +425,7 @@ test("Message Studio uses the approved table-first Messages structure", async ({
-     await expect(page.locator("[data-messages-log]")).not.toContainText(/before preview/i);
-     await expectPlaybackDiagnostics(page, {
-       gender: "Any",
--      profile: "Default Balanced Profile",
-+      profile: TEST_TTS_PROFILE_NAME,
-       voice: "Default browser voice",
-     });
-
-@@ -421,7 +466,7 @@ test("Message Studio uses the approved table-first Messages structure", async ({
-     await expect(page.locator("[data-messages-log]")).not.toContainText(/before preview/i);
-     await expectPlaybackDiagnostics(page, {
-       gender: "Any",
--      profile: "Default Balanced Profile",
-+      profile: TEST_TTS_PROFILE_NAME,
-       voice: "Default browser voice",
-     });
-     await page.getByRole("button", { name: "Stop Speech" }).click();
-@@ -492,20 +537,20 @@ test("Message Studio uses the approved table-first Messages structure", async ({
-     await page.locator("[data-messages-row-editor] [data-message-name]").fill("Bat Encounter Updated");
-     await page.locator("[data-messages-row-editor] [data-messages-commit]").click();
-     await expect(page.locator("[data-messages-log]")).toHaveText("Saved message Bat Encounter Updated.");
--    await expect(page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter Updated" })).toContainText("Default Balanced Profile");
-+    await expect(page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter Updated" })).toContainText(TEST_TTS_PROFILE_NAME);
-
-     const updatedMessage = await createdMessage(failures.server, "Bat Encounter Updated");
-     expect(updatedMessage).toEqual(expect.objectContaining({
-       active: true,
-       categoryName: "Dialog",
--      voiceProfileName: "Default Balanced Profile",
-+      voiceProfileName: TEST_TTS_PROFILE_NAME,
-     }));
-     expect(updatedMessage.key).toMatch(ULID_PATTERN);
-     expect(updatedMessage).not.toHaveProperty("rate");
-     expect(updatedMessage).not.toHaveProperty("pitch");
-     expect(updatedMessage).not.toHaveProperty("volume");
-
--    const defaultProfile = (await voiceProfiles(failures.server)).find((profile) => profile.name === "Default Balanced Profile");
-+    const defaultProfile = (await voiceProfiles(failures.server)).find((profile) => profile.name === TEST_TTS_PROFILE_NAME);
-     expect(defaultProfile).toEqual(expect.objectContaining({
-       language: "en-US",
-       providerKey: "browser-speech",
-@@ -571,7 +616,6 @@ test("Message Studio consumes active Local API Text To Speech profiles", async (
-     await page.getByRole("button", { name: "Add Sentence" }).click();
-     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion] option")).toHaveText([
-       "Select emotion",
--      "Neutral",
-       "Urgent",
-     ]);
-     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]")).not.toContainText("Happy");
-@@ -626,10 +670,10 @@ test("Message Studio loads Text To Speech profiles and filters sentence emotions
-     const profileOptions = page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile] option");
-     await expect(profileOptions).toHaveText([
-       "Select TTS profile",
--      "Default Balanced Profile",
-+      TEST_TTS_PROFILE_NAME,
-     ]);
-     await page.locator("[data-messages-row-editor='__new__'] [data-message-name]").fill("Profile Filter Test");
--    await page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile]").selectOption({ label: "Default Balanced Profile" });
-+    await page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile]").selectOption({ label: TEST_TTS_PROFILE_NAME });
-     await page.locator("[data-messages-commit='__new__']").click();
-     await expect(page.locator("[data-messages-log]")).toHaveText("Saved message Profile Filter Test.");
-
-@@ -637,7 +681,6 @@ test("Message Studio loads Text To Speech profiles and filters sentence emotions
-     await page.getByRole("button", { name: "Add Sentence" }).click();
-     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion] option")).toHaveText([
-       "Select emotion",
--      "Neutral",
-       "Calm",
-       "Urgent",
-     ]);
-@@ -665,7 +708,7 @@ test("Message Studio loads Text To Speech profiles and filters sentence emotions
-     })]);
-     await expectPlaybackDiagnostics(page, {
-       gender: "Any",
--      profile: "Default Balanced Profile",
-+      profile: TEST_TTS_PROFILE_NAME,
-       voice: "Default browser voice",
-     });
-     await expect(page.locator("[data-messages-validation-errors]")).not.toContainText(/before preview/i);
-@@ -680,7 +723,7 @@ test("Message Studio loads Text To Speech profiles and filters sentence emotions
-     expect(spokenMessage.map((utterance) => utterance.text)).toEqual(["Urgent voice check."]);
-     await expectPlaybackDiagnostics(page, {
-       gender: "Any",
--      profile: "Default Balanced Profile",
-+      profile: TEST_TTS_PROFILE_NAME,
-       voice: "Default browser voice",
-     });
-
-@@ -698,7 +741,7 @@ test("Message Studio disables Delete when a message is referenced", async ({ pag
-   try {
-     await addMessage(page, {
-       name: "Referenced Encounter",
--      ttsProfile: "Default Balanced Profile",
-+      ttsProfile: TEST_TTS_PROFILE_NAME,
-     });
-     const message = await createdMessage(failures.server, "Referenced Encounter");
-     const segment = await createReferencedSentence(failures.server, message);
-diff --git a/tests/playwright/tools/TextToSpeechFunctional.spec.mjs b/tests/playwright/tools/TextToSpeechFunctional.spec.mjs
-index 5fb4aa83a..66f238b59 100644
---- a/tests/playwright/tools/TextToSpeechFunctional.spec.mjs
-+++ b/tests/playwright/tools/TextToSpeechFunctional.spec.mjs
-@@ -150,11 +150,14 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
-     await expect(page.getByText("Presets", { exact: true })).toHaveCount(0);
-
-     await expect(page.locator("[data-tts-voice-count]")).toHaveText("2");
--    await expect(page.locator("[data-tts-profile-count]")).toHaveText("1");
--    await expect(page.locator("[data-tts-emotion-count]")).toHaveText("3");
--    await expect(page.locator("[data-tts-profile-table]")).toContainText("Default Balanced Profile");
-+    await expect(page.locator("[data-tts-profile-count]")).toHaveText("0");
-+    await expect(page.locator("[data-tts-emotion-count]")).toHaveText("0");
-+    await expect(page.locator("[data-tts-profile-table]")).toContainText("No TTS profiles yet.");
-+    await expect(page.locator("[data-tts-profile-table]")).not.toContainText("Default Balanced Profile");
-     await expect(page.locator("[data-tts-profile-table]")).not.toContainText("Hero");
-     await expect(page.locator("[data-tts-profile-table]")).not.toContainText("Merchant");
-+    await expect(page.locator("[data-tts-profile-table]")).not.toContainText("Neutral");
-+    await expect(page.locator("[data-tts-profile-table]")).not.toContainText("Robot");
-     await expect(page.getByLabel("TTS Profiles").getByRole("columnheader")).toHaveText([
-       "Profile",
-       "Gender",
-@@ -166,48 +169,14 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
-       "Status",
-       "Actions",
-     ]);
--    const defaultProfileRow = page.locator("[data-tts-profile-row]").filter({ hasText: "Default Balanced Profile" });
-     await expect(page.locator("[data-tts-emotion-host]")).toHaveCount(0);
--    await defaultProfileRow.locator("td").nth(5).click();
--    await expect(page.locator("[data-tts-emotion-host]")).toHaveCount(0);
--    await expect(defaultProfileRow.locator("[data-tts-profile-name-cell]")).toHaveAttribute("aria-expanded", "false");
--    await defaultProfileRow.locator("[data-tts-profile-name-cell]").click();
--    await expect(defaultProfileRow.locator("[data-tts-profile-name-cell]")).toHaveAttribute("aria-expanded", "true");
--    await expect(page.getByRole("heading", { name: "Emotion Settings" })).toHaveCount(0);
--    await expect(page.getByLabel("TTS Profile Emotions").getByRole("columnheader")).toHaveText([
--      "Emotion",
--      "Pitch",
--      "Rate",
--      "Volume",
--      "Usage",
--      "Actions",
--    ]);
-     await expect(page.getByRole("columnheader", { name: "Delivery Preset" })).toHaveCount(0);
--    await expect(page.locator("[data-tts-emotion-row]")).toHaveCount(3);
--    const neutralEmotionRow = page.locator("[data-tts-emotion-row]").filter({ hasText: "Neutral" });
--    await expect(neutralEmotionRow.getByRole("button", { name: "Play" })).toBeVisible();
--    await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Calm" })).toBeVisible();
--    await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Urgent" })).toBeVisible();
--    await page.locator("[data-tts-text-input]").fill("Launch the next wave.");
--    await neutralEmotionRow.getByRole("button", { name: "Play" }).click();
--    await expect(page.locator("[data-tts-status]")).toContainText("Speech queued");
--    await expect(page.locator("[data-tts-status]")).not.toContainText("Select an available browser voice before preview.");
--    let calls = await page.evaluate(() => window.__textToSpeechCalls);
--    expect(calls.at(-1)).toEqual(expect.objectContaining({
--      lang: "en-US",
--      pitch: 1,
--      rate: 1,
--      text: "Launch the next wave.",
--      type: "speak",
--      voiceName: "Arcade Voice",
--      volume: 1,
--    }));
--    await expect(page.locator("[data-tts-emotion-add-control-row]").getByRole("button", { name: "Add Emotion" })).toBeVisible();
--    await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Robot" })).toHaveCount(0);
-+    await expect(page.locator("[data-tts-emotion-row]")).toHaveCount(0);
-
-     await expect(page.locator("[data-tts-profile-add-control-row]").getByRole("button", { name: "Add Profile" })).toBeVisible();
-     await page.locator("[data-tts-profile-add-control-row]").getByRole("button", { name: "Add Profile" }).click();
-     await expect(page.locator("[data-tts-profile-editor='__new__']")).toBeVisible();
-+    await expect(page.locator("[data-tts-profile-editor='__new__']").locator("td").nth(5)).toHaveText("0");
-     await page.locator("[data-tts-profile-editor='__new__'] [data-tts-profile-name]").fill("Creature Profile");
-     await page.locator("[data-tts-profile-editor='__new__'] [data-tts-profile-gender]").selectOption("neutral");
-     const newProfileVoiceSelect = page.locator("[data-tts-profile-editor='__new__'] [data-tts-profile-voice]");
-@@ -218,6 +187,15 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
-     await expect(page.locator("[data-tts-status]")).toHaveText("Saved TTS profile: Creature Profile.");
-     await expect(page.locator("[data-tts-profile-table]")).toContainText("Creature Profile");
-     await expect(page.locator("[data-tts-profile-row]").filter({ hasText: "Creature Profile" })).toContainText("Narrator Voice");
-+    await expect(page.locator("[data-tts-emotion-row]")).toHaveCount(0);
-+    await expect(page.getByLabel("TTS Profile Emotions").getByRole("columnheader")).toHaveText([
-+      "Emotion",
-+      "Pitch",
-+      "Rate",
-+      "Volume",
-+      "Usage",
-+      "Actions",
-+    ]);
-     await page.locator("[data-tts-profile-row]").filter({ hasText: "Creature Profile" }).getByRole("button", { name: "Edit Profile" }).click();
-     await expect(page.locator("[data-tts-profile-editor] [data-tts-profile-voice]")).toHaveValue("narrator-voice-uri");
-     await page.locator("[data-tts-profile-editor] [data-tts-profile-name]").fill("Creature Profile Updated");
-@@ -265,7 +243,7 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
-
-     await urgentEmotionRow.getByRole("button", { name: "Play" }).click();
-     await expect(page.locator("[data-tts-status]")).toContainText("Speech queued");
--    calls = await page.evaluate(() => window.__textToSpeechCalls);
-+    let calls = await page.evaluate(() => window.__textToSpeechCalls);
-     expect(calls.at(-1)).toEqual(expect.objectContaining({
-       lang: "en-GB",
-       pitch: 1.2,
-@@ -310,7 +288,7 @@ test("Text To Speech guest profile save redirects to sign in", async ({ page })
-   const failures = await openTextToSpeechPage(page, { authenticated: false });
-   try {
-     await expect(page.getByRole("heading", { level: 1, name: "Text To Speech" })).toBeVisible();
--    await expect(page.locator("[data-tts-profile-count]")).toHaveText("1");
-+    await expect(page.locator("[data-tts-profile-count]")).toHaveText("0");
-     await page.locator("[data-tts-profile-add-control-row]").getByRole("button", { name: "Add Profile" }).click();
-     await page.locator("[data-tts-profile-editor='__new__'] [data-tts-profile-name]").fill("Guest Save Profile");
-     await page.locator("[data-tts-commit-profile='__new__']").click();
-@@ -375,17 +353,18 @@ test("Text To Speech shows actionable error when browser speech synthesis is una
-   const failures = await openTextToSpeechPage(page, { speechAvailable: false });
-   try {
-     await expect(page.getByRole("heading", { level: 1, name: "Text To Speech" })).toBeVisible();
--    await expect(page.locator("[data-tts-profile-count]")).toHaveText("1");
--    await expect(page.locator("[data-tts-emotion-count]")).toHaveText("3");
-+    await expect(page.locator("[data-tts-profile-count]")).toHaveText("0");
-+    await expect(page.locator("[data-tts-emotion-count]")).toHaveText("0");
-     await expect(page.locator("[data-tts-engine-status]")).toContainText("SpeechSynthesis is unavailable");
-     await expect(page.locator("[data-tts-status]")).toContainText("Use a browser with Web Speech API support");
-     await expect(page.locator("[data-tts-voice-select]")).toHaveCount(0);
-     await expect(page.locator("[data-tts-speak]")).toBeDisabled();
-     await expect(page.locator("[data-tts-stop]")).toBeDisabled();
--    const defaultProfileRow = page.locator("[data-tts-profile-row]").filter({ hasText: "Default Balanced Profile" });
--    await defaultProfileRow.locator("[data-tts-profile-name-cell]").click();
--    await page.locator("[data-tts-emotion-row]").filter({ hasText: "Neutral" }).getByRole("button", { name: "Play" }).click();
--    await expect(page.locator("[data-tts-status]")).toHaveText("SpeechSynthesis is unavailable in this browser. Use a browser with Web Speech API support.");
-+    await expect(page.locator("[data-tts-profile-table]")).not.toContainText("Default Balanced Profile");
-+    await expect(page.locator("[data-tts-profile-table]")).not.toContainText("Neutral");
-+    await expect(page.locator("[data-tts-profile-table]")).not.toContainText("Robot");
-+    await expect(page.locator("[data-tts-emotion-row]")).toHaveCount(0);
-+    await expect(page.locator("[data-tts-status]")).toContainText("Use a browser with Web Speech API support.");
-     await expect(page.locator("[data-tts-status]")).not.toContainText("TypeError");
-     await expect(page.locator("[data-tts-status]")).not.toContainText("undefined");
-
-diff --git a/tests/tools/Text2SpeechShell.test.mjs b/tests/tools/Text2SpeechShell.test.mjs
-index f701dc13f..df46f66f0 100644
---- a/tests/tools/Text2SpeechShell.test.mjs
-+++ b/tests/tools/Text2SpeechShell.test.mjs
-@@ -93,9 +93,16 @@ test("Text2Speech provider adapter plan keeps browser speech implemented and pai
-   assert.ok(TTS_PROVIDER_ADAPTER_PLAN.slice(1).every((provider) => provider.status === "planned"));
- });
-
--test("Text2Speech profile helpers preserve creator-facing default emotion settings", () => {
-+test("Text2Speech profile helpers do not expose broken seed profiles or hidden emotions", () => {
-   const voiceOptions = [{ language: "en-US", label: "Test Voice (en-US)", name: "Test Voice", value: "test-voice" }];
-   const defaults = createDefaultTextToSpeechProfiles(voiceOptions);
-+  const emptyProfile = createTextToSpeechProfile({
-+    id: "empty-profile",
-+    name: "Empty Profile",
-+    voice: "test-voice",
-+    voiceName: "Test Voice",
-+  });
-+  const defaultEmotion = createTextToSpeechProfileEmotion();
-   const custom = createTextToSpeechProfile({
-     emotions: [
-       createTextToSpeechProfileEmotion({
-@@ -113,11 +120,11 @@ test("Text2Speech profile helpers preserve creator-facing default emotion settin
-   });
-
-   assert.equal(TTS_PROFILE_CONTRACT_VERSION, "tts-profile-emotion-v1");
--  assert.equal(defaults[0].name, "Default Balanced Profile");
--  assert.equal(defaults[0].messageStudioUsageCount, 1);
--  assert.equal(defaults.length, 1);
--  assert.deepEqual(defaults[0].emotions.map((emotion) => emotion.emotionLabel), ["Neutral", "Calm", "Urgent"]);
--  assert.equal(defaults[0].emotions.find((emotion) => emotion.emotion === "neutral").messagePartsUsageCount, 1);
-+  assert.deepEqual(defaults, []);
-+  assert.deepEqual(emptyProfile.emotions, []);
-+  assert.equal(createEmotionProfile().name, "Calm");
-+  assert.equal(defaultEmotion.emotion, "calm");
-+  assert.equal(defaultEmotion.emotionLabel, "Calm");
-   assert.deepEqual(custom, {
-     active: true,
-     age: "any",

@@ -54,6 +54,101 @@ async function createWorkingTtsProfile(service, {
   });
 }
 
+test("Messages seed cleanup deletes retired parent TTS profiles and orphaned settings", async () => {
+  const { postgresClient, service } = createServiceHarness();
+  const retiredNames = ["Default Balanced Profile", "Hero", "Merchant", "Neutral", "Robot"];
+
+  for (const [index, name] of retiredNames.entries()) {
+    const key = `retired-profile-${index}`;
+    await postgresClient.requestTable("messages_tts_profiles", {
+      body: datedRow({
+        description: "Retired broken TTS parent profile.",
+        key,
+        language: "en-US",
+        name,
+        pitch: 1,
+        providerKey: "browser-speech",
+        rate: 1,
+        voiceName: "Default browser voice",
+        volume: 1,
+      }),
+      method: "POST",
+    });
+    await postgresClient.requestTable("messages_tts_profile_emotion_settings", {
+      body: datedRow({
+        displayOrder: index + 1,
+        emotionProfileKey: `retired-emotion-${index}`,
+        key: `retired-setting-${index}`,
+        pitch: 1,
+        rate: 1,
+        ssmlLikePreset: "normal",
+        ttsProfileKey: key,
+        volume: 1,
+      }),
+      method: "POST",
+    });
+  }
+
+  await postgresClient.requestTable("messages_records", {
+    body: datedRow({
+      categoryKey: "retired-category",
+      emotionProfileKey: "retired-emotion-0",
+      key: "retired-message",
+      messageText: "Retired message reference.",
+      name: "Retired Message",
+      notes: "",
+      voiceProfileKey: "retired-profile-0",
+    }),
+    method: "POST",
+  });
+  await postgresClient.requestTable("messages_segments", {
+    body: datedRow({
+      displayOrder: 1,
+      emotionProfileKey: "retired-emotion-0",
+      key: "retired-segment",
+      messageKey: "retired-message",
+      segmentText: "Retired sentence reference.",
+      voiceProfileKey: "retired-profile-0",
+    }),
+    method: "POST",
+  });
+  await postgresClient.requestTable("messages_event_actions", {
+    body: datedRow({
+      actionType: "speak-message",
+      key: "retired-event-action",
+      messageKey: "retired-message",
+      name: "Retired event action",
+    }),
+    method: "POST",
+  });
+  await postgresClient.requestTable("messages_tts_profile_emotion_settings", {
+    body: datedRow({
+      displayOrder: 99,
+      emotionProfileKey: "missing-emotion",
+      key: "orphan-setting",
+      pitch: 1,
+      rate: 1,
+      ssmlLikePreset: "normal",
+      ttsProfileKey: "missing-profile",
+      volume: 1,
+    }),
+    method: "POST",
+  });
+
+  await service.ensureReady();
+
+  const ttsProfiles = await postgresClient.requestTable("messages_tts_profiles");
+  assert.deepEqual(ttsProfiles.map((profile) => profile.name).filter((name) => retiredNames.includes(name)), []);
+  const settings = await postgresClient.requestTable("messages_tts_profile_emotion_settings");
+  assert.equal(settings.some((setting) => String(setting.ttsProfileKey).startsWith("retired-profile-")), false);
+  assert.equal(settings.some((setting) => setting.key === "orphan-setting"), false);
+  assert.equal((await postgresClient.requestTable("messages_records")).some((message) => message.voiceProfileKey === "retired-profile-0"), false);
+  assert.equal((await postgresClient.requestTable("messages_segments")).some((segment) => segment.voiceProfileKey === "retired-profile-0"), false);
+  assert.equal((await postgresClient.requestTable("messages_event_actions")).some((action) => action.messageKey === "retired-message"), false);
+  assert.deepEqual((await service.listTtsProfiles()).map((profile) => profile.name), []);
+  service.close();
+});
+
 test("Messages publish validation passes publish-ready message configuration", async () => {
   const { service } = createServiceHarness();
 

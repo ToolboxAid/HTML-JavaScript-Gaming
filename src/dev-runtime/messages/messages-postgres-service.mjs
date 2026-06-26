@@ -26,6 +26,13 @@ const SEED_EMOTION_PROFILES = Object.freeze([
 ]);
 const SEED_TTS_PROFILES = Object.freeze([]);
 const SEED_TTS_PROFILE_EMOTION_SETTINGS = Object.freeze([]);
+const RETIRED_TTS_PROFILE_PARENT_NAMES = Object.freeze([
+  "Default Balanced Profile",
+  "Hero",
+  "Merchant",
+  "Neutral",
+  "Robot",
+]);
 const SUPPORTED_TTS_PROVIDER_KEYS = Object.freeze([
   "browser-speech",
   "elevenlabs",
@@ -576,6 +583,7 @@ export class MessagesPostgresService {
         }, { skipEnsure: true });
       }
     }
+    await this.deleteRetiredTtsProfileParents();
     for (const profile of SEED_TTS_PROFILES) {
       const existing = await this.findTtsProfileByNameRaw(profile.name);
       if (!existing) {
@@ -588,6 +596,54 @@ export class MessagesPostgresService {
     }
     await this.seedDefaultTtsProfileEmotionSettings();
     await this.backfillDefaultVoiceProfileReferences();
+  }
+
+  async deleteRetiredTtsProfileParents() {
+    const retiredNames = new Set(RETIRED_TTS_PROFILE_PARENT_NAMES.map((name) => name.toLowerCase()));
+    const profiles = await this.tableRows("messages_tts_profiles");
+    for (const profile of profiles) {
+      if (!retiredNames.has(normalizeText(profile.name).trim().toLowerCase())) {
+        continue;
+      }
+      await this.deleteRetiredTtsProfileReferences(profile.key);
+      const settings = await this.rowsByField("messages_tts_profile_emotion_settings", "ttsProfileKey", profile.key);
+      for (const setting of settings) {
+        await this.deleteRow("messages_tts_profile_emotion_settings", setting.key);
+      }
+      await this.deleteRow("messages_tts_profiles", profile.key);
+    }
+    await this.deleteOrphanedTtsProfileEmotionSettings();
+  }
+
+  async deleteRetiredTtsProfileReferences(ttsProfileKey) {
+    const directSegments = await this.rowsByField("messages_segments", "voiceProfileKey", ttsProfileKey);
+    for (const segment of directSegments) {
+      await this.deleteRow("messages_segments", segment.key);
+    }
+    const messages = await this.rowsByField("messages_records", "voiceProfileKey", ttsProfileKey);
+    for (const message of messages) {
+      const messageSegments = await this.rowsByField("messages_segments", "messageKey", message.key);
+      for (const segment of messageSegments) {
+        await this.deleteRow("messages_segments", segment.key);
+      }
+      const eventActions = await this.rowsByField("messages_event_actions", "messageKey", message.key);
+      for (const eventAction of eventActions) {
+        await this.deleteRow("messages_event_actions", eventAction.key);
+      }
+      await this.deleteRow("messages_records", message.key);
+    }
+  }
+
+  async deleteOrphanedTtsProfileEmotionSettings() {
+    const profileKeys = new Set((await this.tableRows("messages_tts_profiles")).map((profile) => profile.key));
+    const emotionKeys = new Set((await this.tableRows("messages_emotion_profiles")).map((emotion) => emotion.key));
+    const settings = await this.tableRows("messages_tts_profile_emotion_settings");
+    for (const setting of settings) {
+      if (profileKeys.has(setting.ttsProfileKey) && emotionKeys.has(setting.emotionProfileKey)) {
+        continue;
+      }
+      await this.deleteRow("messages_tts_profile_emotion_settings", setting.key);
+    }
   }
 
   async seedDefaultTtsProfileEmotionSettings() {
