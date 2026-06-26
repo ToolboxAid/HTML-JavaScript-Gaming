@@ -1119,18 +1119,17 @@ function systemHealthLocalApiStartupDiagnostics(env = process.env) {
     },
     {
       field: "Configurable multiple runtime ports",
-      reason: "Configurable multiple runtime ports are explicitly deferred/cancelled for this PR.",
-      status: "PENDING",
-      value: "deferred/cancelled",
+      reason: "Configurable Runtime Ports are deprecated/superseded by fixed Local API and static site configuration.",
+      status: "PASS",
+      value: "deprecated/superseded",
     },
   ];
-  const actionableRows = rows.filter((row) => row.status !== "PENDING");
   return {
-    message: "Local API startup diagnostics use the approved safe output format; configurable multiple runtime ports remain deferred.",
+    message: "Local API startup diagnostics use the approved safe output format; configurable multiple runtime ports are deprecated/superseded.",
     rows,
     secretEditingAllowed: false,
     secretsExposed: false,
-    status: overallHealthStatus(actionableRows),
+    status: overallHealthStatus(rows),
   };
 }
 
@@ -2423,6 +2422,24 @@ function environmentLabelSuppressesBanner(label) {
   return ENVIRONMENT_LABEL_HIDDEN_VALUES.includes(normalized);
 }
 
+function environmentLabelDiagnosticName(label) {
+  const normalizedName = normalizeEnvironmentName(label);
+  if (normalizedName) {
+    return normalizedName === "PRD" ? "PROD" : normalizedName;
+  }
+  return String(label || "").trim() ? "CUSTOM" : "UNCONFIGURED";
+}
+
+function environmentSafeguardStatus(publicConfig, environmentBanner) {
+  const label = String(publicConfig?.environmentLabel || "").trim();
+  if (!label) {
+    return environmentBanner.active ? "missing-label-diagnostic" : "missing-label-hidden";
+  }
+  return environmentLabelSuppressesBanner(label)
+    ? "production-banner-hidden"
+    : "non-production-banner-visible";
+}
+
 function inactiveEnvironmentBanner() {
   return {
     active: false,
@@ -2465,7 +2482,11 @@ function publicConfigDiagnostics(publicConfig, environmentBanner) {
   return {
     apiUrlConfigured: Boolean(publicConfig.apiUrl),
     environmentBannerActive: environmentBanner.active,
+    environmentBannerSource: environmentBanner.source || ENVIRONMENT_BANNER_SOURCE,
+    environmentBannerTone: environmentBanner.tone,
     environmentLabelConfigured: Boolean(publicConfig.environmentLabel),
+    environmentLabelNormalized: environmentLabelDiagnosticName(publicConfig.environmentLabel),
+    environmentSafeguard: environmentSafeguardStatus(publicConfig, environmentBanner),
     secretsExposed: false,
     siteUrlConfigured: Boolean(publicConfig.siteUrl),
   };
