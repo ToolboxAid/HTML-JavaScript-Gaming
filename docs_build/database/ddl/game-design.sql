@@ -20,6 +20,15 @@ CREATE INDEX IF NOT EXISTS idx_game_design_documents_gamekey ON game_design_docu
 CREATE INDEX IF NOT EXISTS idx_game_design_documents_createdby ON game_design_documents ("createdBy");
 CREATE INDEX IF NOT EXISTS idx_game_design_documents_updatedby ON game_design_documents ("updatedBy");
 
+ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "gamePurpose" text;
+ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "gameType" text;
+ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "genre" text;
+ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "playStyle" text;
+ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "playerMode" text;
+ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "designSummary" text;
+ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "capabilityDemoAuthoring" boolean NOT NULL DEFAULT false;
+ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "capabilityDemoNotes" text;
+
 CREATE TABLE IF NOT EXISTS game_design_validation_items (
     key text PRIMARY KEY,
     "gameKey" text REFERENCES game_workspace_games(key),
@@ -35,3 +44,21 @@ CREATE TABLE IF NOT EXISTS game_design_validation_items (
 CREATE INDEX IF NOT EXISTS idx_game_design_validation_items_gamekey ON game_design_validation_items ("gameKey");
 CREATE INDEX IF NOT EXISTS idx_game_design_validation_items_createdby ON game_design_validation_items ("createdBy");
 CREATE INDEX IF NOT EXISTS idx_game_design_validation_items_updatedby ON game_design_validation_items ("updatedBy");
+ALTER TABLE game_design_validation_items ADD COLUMN IF NOT EXISTS "field" text;
+
+CREATE TABLE IF NOT EXISTS game_design_capability_demos (
+    key text PRIMARY KEY,
+    "gameKey" text REFERENCES game_workspace_games(key),
+    "gameName" text,
+    "gamePurpose" text,
+    "authoringMode" text,
+    "status" text,
+    "createdAt" timestamptz NOT NULL DEFAULT now(),
+    "updatedAt" timestamptz NOT NULL DEFAULT now(),
+    "createdBy" text NOT NULL REFERENCES users(key),
+    "updatedBy" text NOT NULL REFERENCES users(key)
+);
+
+CREATE INDEX IF NOT EXISTS idx_game_design_capability_demos_gamekey ON game_design_capability_demos ("gameKey");
+CREATE INDEX IF NOT EXISTS idx_game_design_capability_demos_createdby ON game_design_capability_demos ("createdBy");
+CREATE INDEX IF NOT EXISTS idx_game_design_capability_demos_updatedby ON game_design_capability_demos ("updatedBy");

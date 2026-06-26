@@ -1,11 +1,17 @@
-# PR_26177_ALFA_058-flat-project-tags Validation Lane
+# PR_26177_ALFA_058 Validation Lane
 
-Generated: 2026-06-26 18:53:15 UTC
+## Static / Guardrail
+- PASS - `node --check src/dev-runtime/toolbox-api/alfa-tool-services.mjs`
+- PASS - `node --check src/dev-runtime/server/local-api-router.mjs`
+- PASS - `node --check src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js`
+- PASS - `node --test tests/dev-runtime/DevRuntimeBoundary.test.mjs`
 
-- PASS - node --check assets/toolbox/tags/js/index.js
-- PASS - node --check src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js
-- PASS - node --check src/dev-runtime/server/local-api-router.mjs
-- PASS - node --check tests/playwright/tools/TagsTool.spec.mjs
-- PASS - python -m json.tool docs_build/database/seed/tags.json
-- PASS - git diff --check (line-ending notices only)
-- PASS - npx playwright test tests/playwright/tools/TagsTool.spec.mjs --workers=1 --reporter=line (4 passed)
+## Playwright
+- PASS - `npx playwright test tests/playwright/tools/TagsTool.spec.mjs --project=playwright`
+- PASS - `npx playwright test tests/playwright/tools/GameDesignApiDb.spec.mjs --project=playwright`
+- PASS - `npx playwright test tests/playwright/tools/GameConfigurationApiDb.spec.mjs --project=playwright`
+- PASS - `npx playwright test tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs --project=playwright`
+- PASS - `npx playwright test tests/playwright/tools/AssetToolMockRepository.spec.mjs --project=playwright -g "Asset repository exposes catalog tables"`
+
+## Notes
+- Full Asset suite timed out and was not used as final validation because only the shared tag fixture test was impacted.

@@ -8,9 +8,6 @@ import {
   pickerDiagnosticForRole,
 } from "../persistence/tool-repositories/assets-mock-repository.js";
 import {
-  createTagsToolMockRepository,
-} from "../persistence/tool-repositories/tags-mock-repository.js";
-import {
   createObjectsToolMockRepository,
 } from "../persistence/tool-repositories/objects-mock-repository.js";
 import {
@@ -59,15 +56,15 @@ import {
 import {
   GAME_CONFIGURATION_PLAYER_MODES,
   GAME_CONFIGURATION_SECTIONS,
-  createGameConfigurationMockRepository,
-} from "../persistence/tool-repositories/game-configuration-mock-repository.js";
-import {
   GAME_DESIGN_GAME_TYPES,
   GAME_DESIGN_GENRES,
   GAME_DESIGN_PLAYER_MODES,
   GAME_DESIGN_PLAY_STYLES,
-  createGameDesignMockRepository,
-} from "../persistence/tool-repositories/game-design-mock-repository.js";
+  TAGS_TOOL_TABLES,
+  createGameConfigurationApiService,
+  createGameDesignApiService,
+  createTagsApiService,
+} from "../toolbox-api/alfa-tool-services.mjs";
 import {
   GAME_JOURNEY_KEYS,
   GAME_JOURNEY_STATUS_BY_ID,
@@ -2787,16 +2784,6 @@ const GAME_WORKSPACE_SAVE_METHODS = new Set([
   "updateGameStatus",
 ]);
 
-const TAGS_SAVE_METHODS = new Set([
-  "addTag",
-  "assignTagToProject",
-  "clearTags",
-  "deleteTag",
-  "removeTagFromProject",
-  "resetTags",
-  "updateTag",
-]);
-
 const GAME_JOURNEY_TOOL_STORE_METHODS = new Set([
   "addItem",
   "addNote",
@@ -3266,18 +3253,13 @@ function gameDesignTables(repository) {
 function gameConfigurationTables(repository) {
   const tables = repository.getTables();
   return normalizeOwnedTables("game-configuration", {
-    game_configuration_records: (tables.game_configuration_documents || []).map((record, index) => ({
+    game_configuration_records: (tables.game_configuration_records || []).map((record, index) => ({
       ...snapshotAuditFields(index + 180, SEED_DB_KEYS.users.user1),
       key: record.key,
       gameKey: gameWorkspaceGameKey(record.gameKey || record.gameId),
       playerMode: record.playerMode || "1 Player",
       status: record.status || record.readinessStatus || "Ready",
-      summary: record.gameBasics || [
-        record.sceneTemplate,
-        record.inputProfile,
-        record.physicsProfile,
-        record.cameraMode,
-      ].filter(Boolean).join(", "),
+      summary: record.summary || record.gameBasics || "",
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
       createdBy: record.createdBy || SEED_DB_KEYS.users.user1,
@@ -3691,24 +3673,26 @@ class ApiRuntimeDataSource {
     };
     this.gameWorkspaceRepository = createGameWorkspaceMockRepository();
     this.gameWorkspaceRepository.resetGameData();
-    this.gameDesignRepository = createGameDesignMockRepository({
+    const alfaServiceOptions = {
+      databaseAdapter: (action) => this.supabaseDatabaseAdapter(action),
       gameWorkspaceRepository: this.gameWorkspaceRepository,
-    });
-    this.gameConfigurationRepository = createGameConfigurationMockRepository({
-      gameDesignRepository: this.gameDesignRepository,
+      sessionUserKey: () => this.sessionUserKey,
+    };
+    this.gameDesignRepository = createGameDesignApiService(alfaServiceOptions);
+    this.gameConfigurationRepository = createGameConfigurationApiService({
+      ...alfaServiceOptions,
+      gameDesignService: this.gameDesignRepository,
     });
     this.paletteRepository = createGameWorkspacePaletteRepository({
       gameWorkspaceRepository: this.gameWorkspaceRepository,
       ...this.sharedOptions,
     });
-    this.tagsRepository = createTagsToolMockRepository({
-      gameWorkspaceRepository: this.gameWorkspaceRepository,
-      ...this.sharedOptions,
+    this.tagsRepository = createTagsApiService({
+      ...alfaServiceOptions,
       sessionUserKey: () => this.sessionUserKey,
       usageProvider: () => this.assetRepository?.listAssets() || [],
     });
     this.assetRepository = createAssetToolMockRepository({
-      configurationRepository: this.gameConfigurationRepository,
       gameWorkspaceRepository: this.gameWorkspaceRepository,
       paletteRepository: this.paletteRepository,
       projectAssetStorage: createConfiguredProjectAssetStorage(),
@@ -6813,8 +6797,11 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
     if (repository === this.gameWorkspaceRepository && GAME_WORKSPACE_SAVE_METHODS.has(methodName) && !this.sessionUserKey) {
       throw new Error("Sign in required to save Game Hub project records through Local API.");
     }
-    if (repository === this.tagsRepository && TAGS_SAVE_METHODS.has(methodName) && !this.sessionUserKey) {
-      const error = new Error("Sign in required to save project tags through the API.");
+    const serviceWriteMethods = repository?.writeMethods instanceof Set ? repository.writeMethods : null;
+    const requiresAuthenticatedWrite = repository?.requiresAuthenticatedWrites === true
+      && (serviceWriteMethods ? serviceWriteMethods.has(methodName) : repositoryMethodRequiresPersistence(methodName));
+    if (requiresAuthenticatedWrite && !this.sessionUserKey) {
+      const error = new Error(repository.authenticationRequiredMessage || "Sign in required to save product data through the API.");
       error.statusCode = 401;
       throw error;
     }
@@ -6842,7 +6829,7 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
     }
     const methodPersistsThroughToolStore =
       repository === this.gameJourneyRepository && GAME_JOURNEY_TOOL_STORE_METHODS.has(methodName);
-    if (repositoryMethodRequiresPersistence(methodName) && !methodPersistsThroughToolStore) {
+    if (repositoryMethodRequiresPersistence(methodName) && repository?.usesDatabasePersistence !== true && !methodPersistsThroughToolStore) {
       if (repository === this.gameWorkspaceRepository) {
         await this.persistGameWorkspaceProviderState(`Persisting ${methodName} result`);
       } else if (repository === this.tagsRepository) {

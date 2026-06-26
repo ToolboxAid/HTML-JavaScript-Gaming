@@ -1,5 +1,9 @@
 import { expect, test } from "@playwright/test";
 import process from "node:process";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import { createPostgresConnectionClient } from "../../../src/dev-runtime/persistence/postgres-connection-client.mjs";
+import { SEED_DB_KEYS } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
@@ -7,7 +11,7 @@ import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageRe
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
     lane: "game-design",
-    surface: "game design mock repository"
+    surface: "game design API and database persistence"
   });
 });
 
@@ -25,6 +29,42 @@ function restoreEnvValue(key, value) {
     return;
   }
   process.env[key] = value;
+}
+
+let schemaReadyPromise = null;
+
+async function ensureGameDesignDatabaseSchema() {
+  if (!schemaReadyPromise) {
+    schemaReadyPromise = (async () => {
+      const client = createPostgresConnectionClient();
+      for (const ddlFile of [
+        "docs_build/database/ddl/account.sql",
+        "docs_build/database/ddl/game-workspace.sql",
+        "docs_build/database/ddl/game-design.sql",
+      ]) {
+        await client.query(await readFile(path.resolve(ddlFile), "utf8"));
+      }
+    })();
+  }
+  try {
+    await schemaReadyPromise;
+  } catch (error) {
+    schemaReadyPromise = null;
+    throw error;
+  }
+}
+
+async function setServerSession(server, userKey = SEED_DB_KEYS.users.user1) {
+  await fetch(`${server.baseUrl}/api/session/mode`, {
+    body: JSON.stringify({ modeId: "local-db" }),
+    headers: { "Content-Type": "application/json" },
+    method: "POST"
+  });
+  await fetch(`${server.baseUrl}/api/session/user`, {
+    body: JSON.stringify({ userKey }),
+    headers: { "Content-Type": "application/json" },
+    method: "POST"
+  });
 }
 
 async function openRepoPage(page, pathName) {
@@ -60,6 +100,8 @@ async function openRepoPage(page, pathName) {
     failedRequests.push(`FAILED ${request.url()}`);
   });
 
+  await ensureGameDesignDatabaseSchema();
+  await setServerSession(server);
   await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
   return { failedRequests, pageErrors, consoleErrors, server };
@@ -178,11 +220,11 @@ test("Game Design saves and updates design fields against the active game", asyn
     await expect(page.locator("[data-game-design-output]")).toContainText("Next Step");
     await expect(page.locator("[data-game-design-output]")).not.toContainText("{");
     await expect(page.locator("[data-game-design-output]")).not.toContainText('"gameType"');
-    await expect(page.locator("[data-game-design-validation-overlay]")).toBeVisible();
-    await expect(page.locator("[data-game-design-validation-list]")).toContainText("Game Type");
-    await expect(page.locator("[data-game-design-validation-list]")).toContainText("Genre");
-    await expect(page.locator("[data-game-design-validation-list]")).toContainText("Play Style");
-    await expect(page.locator("[data-game-design-validation-list]")).toContainText("Design Summary");
+    await expect(page.locator("[data-game-design-validation-overlay]")).toBeHidden();
+    await expect(page.getByLabel("Game Type")).toHaveValue("Puzzle");
+    await expect(page.getByLabel("Genre")).toHaveValue("Adventure");
+    await expect(page.getByLabel("Play Style")).toHaveValue("Single Player");
+    await expect(page.getByLabel("Design Summary")).toHaveValue(/compact puzzle adventure/i);
 
     await page.getByLabel("Game Type").selectOption("Puzzle");
     await page.getByLabel("Genre").selectOption("Adventure");

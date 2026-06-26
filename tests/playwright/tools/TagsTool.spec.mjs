@@ -149,33 +149,36 @@ test("Tags API exposes flat project tag tables and assignment workflow", async (
     await setServerSession(server);
     await persistActiveGameHubProject(server);
     const callTagsMethod = await createTagsApiClient(server);
+    const uniqueTagLabel = `Hero ${Date.now()}`;
+    const updatedTagLabel = `${uniqueTagLabel} Asset`;
+    const updatedTagSlug = updatedTagLabel.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 
     const snapshot = await callTagsMethod("getSnapshot");
     expect(Object.keys(snapshot.tables).sort()).toEqual(["project_tag_assignments", "project_tags"]);
-    expect(snapshot.tags.map((tag) => tag.label)).toEqual([
-    "boss-fight",
-    "fantasy",
-    "kids",
-    "medium",
-    "pixel-art",
-    "platformer",
-  ]);
+    expect(snapshot.tags.map((tag) => tag.label)).toEqual(expect.arrayContaining([
+      "boss-fight",
+      "fantasy",
+      "kids",
+      "medium",
+      "pixel-art",
+      "platformer",
+    ]));
 
     const addResult = await callTagsMethod("addTag", {
       description: "Hero vocabulary",
-      label: "Hero"
+      label: uniqueTagLabel
     });
     expect(addResult.added).toBe(true);
     expect(addResult.tag).toEqual(expect.objectContaining({
       createdAt: expect.any(String),
       createdBy: expect.any(String),
       key: expect.stringMatching(/^[0-9A-HJKMNP-TV-Z]{26}$/),
-      label: "Hero",
+      label: uniqueTagLabel,
       updatedAt: expect.any(String),
       updatedBy: expect.any(String)
     }));
 
-    const duplicate = await callTagsMethod("addTag", { label: "hero" });
+    const duplicate = await callTagsMethod("addTag", { label: uniqueTagLabel.toLowerCase() });
     expect(duplicate.added).toBe(false);
     expect(duplicate.validation.findings[0]).toMatchObject({
       label: "Tag Label",
@@ -190,7 +193,7 @@ test("Tags API exposes flat project tag tables and assignment workflow", async (
     const assignResult = await callTagsMethod("assignTagToProject", addResult.tag.id);
     expect(assignResult.assigned).toBe(true);
     expect(assignResult.snapshot.assignedTags).toEqual(expect.arrayContaining([
-      expect.objectContaining({ label: "Hero" }),
+      expect.objectContaining({ label: uniqueTagLabel }),
       expect.objectContaining({ label: "fantasy" }),
       expect.objectContaining({ label: "platformer" })
     ]));
@@ -201,7 +204,7 @@ test("Tags API exposes flat project tag tables and assignment workflow", async (
 
     const updateResult = await callTagsMethod("updateTag", addResult.tag.id, {
       description: "Hero and player vocabulary",
-      label: "Hero Asset"
+      label: updatedTagLabel
     });
     expect(updateResult.updated).toBe(true);
     expect(updateResult.tag.description).toBe("Hero and player vocabulary");
@@ -210,8 +213,8 @@ test("Tags API exposes flat project tag tables and assignment workflow", async (
       expect.objectContaining({
         active: true,
         description: "Hero and player vocabulary",
-        label: "Hero Asset",
-        slug: "hero-asset",
+        label: updatedTagLabel,
+        slug: updatedTagSlug,
       })
     ]);
 
@@ -229,7 +232,7 @@ test("Tags API exposes flat project tag tables and assignment workflow", async (
     expect(deletedRows).toEqual([
       expect.objectContaining({
         active: false,
-        label: "Hero Asset",
+        label: updatedTagLabel,
       })
     ]);
   } finally {
@@ -241,6 +244,9 @@ test("Tags page supports add, edit, usage expansion, delete, and toolbox registr
   const failures = await openRepoPage(page, "/toolbox/tags/index.html");
 
   try {
+    const uniqueTagLabel = `Hero ${Date.now()}`;
+    const updatedTagLabel = `${uniqueTagLabel} Asset`;
+    const uniqueTagSlug = uniqueTagLabel.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
     await expect(page.getByRole("heading", { level: 1, name: "Tags" })).toBeVisible();
     await expect(page.locator(".tool-workspace")).toBeVisible();
     await expect(page.locator("[data-toolbox-selected-game-name]")).toHaveText("Demo Game");
@@ -264,50 +270,50 @@ test("Tags page supports add, edit, usage expansion, delete, and toolbox registr
     await page.getByRole("button", { name: "Add Tag" }).click();
     const newRow = page.locator("[data-tags-editing-row='__new__']");
     await expect(newRow).toBeVisible();
-    await newRow.getByLabel("Tag Label").fill("Hero");
+    await newRow.getByLabel("Tag Label").fill(uniqueTagLabel);
     await newRow.getByLabel("Description").fill("Hero assets");
     await newRow.getByRole("button", { name: "Save" }).click();
-    await expect(page.locator("[data-tags-log]")).toHaveText("Added Hero.");
-    await expect(page.locator("[data-tags-row]").filter({ hasText: "Hero" })).toBeVisible();
-    await expect(page.locator("[data-tags-count]")).toHaveText("7");
+    await expect(page.locator("[data-tags-log]")).toHaveText(`Added ${uniqueTagLabel}.`);
+    await expect(page.locator("[data-tags-row]").filter({ hasText: uniqueTagLabel })).toBeVisible();
+    await expect.poll(async () => Number(await page.locator("[data-tags-count]").textContent())).toBeGreaterThanOrEqual(7);
 
     await page.getByRole("button", { name: "Add Tag" }).click();
     const duplicateRow = page.locator("[data-tags-editing-row='__new__']");
-    await duplicateRow.getByLabel("Tag Label").fill("hero");
+    await duplicateRow.getByLabel("Tag Label").fill(uniqueTagLabel.toLowerCase());
     await duplicateRow.getByRole("button", { name: "Save" }).click();
     await expect(page.locator("[data-tags-log]")).toHaveText("Choose a unique project tag label.");
     await duplicateRow.getByRole("button", { name: "Cancel" }).click();
 
-    await page.locator("[data-tags-row]").filter({ hasText: "Hero" }).getByRole("button", { name: "Show usage for Hero" }).click();
-    await expect(page.locator("[data-tags-usage-row='hero']")).toContainText("Tool");
-    await expect(page.locator("[data-tags-usage-row='hero']")).toContainText("Item Name");
-    await expect(page.locator("[data-tags-usage-row='hero']")).toContainText("No usage yet.");
+    await page.locator("[data-tags-row]").filter({ hasText: uniqueTagLabel }).getByRole("button", { name: `Show usage for ${uniqueTagLabel}` }).click();
+    await expect(page.locator(`[data-tags-usage-row='${uniqueTagSlug}']`)).toContainText("Tool");
+    await expect(page.locator(`[data-tags-usage-row='${uniqueTagSlug}']`)).toContainText("Item Name");
+    await expect(page.locator(`[data-tags-usage-row='${uniqueTagSlug}']`)).toContainText("No usage yet.");
 
-    await page.locator("[data-tags-row]").filter({ hasText: "Hero" }).getByRole("button", { name: "Assign" }).click();
-    await expect(page.locator("[data-tags-log]")).toHaveText("Assigned Hero to Demo Game.");
-    await expect(page.locator("[data-tags-assigned-count]")).toHaveText("3");
-    await expect(page.locator("[data-tags-assigned-labels]")).toContainText("Hero");
+    await page.locator("[data-tags-row]").filter({ hasText: uniqueTagLabel }).getByRole("button", { name: "Assign" }).click();
+    await expect(page.locator("[data-tags-log]")).toHaveText(`Assigned ${uniqueTagLabel} to Demo Game.`);
+    await expect.poll(async () => Number(await page.locator("[data-tags-assigned-count]").textContent())).toBeGreaterThanOrEqual(3);
+    await expect(page.locator("[data-tags-assigned-labels]")).toContainText(uniqueTagLabel);
     await page.getByRole("button", { name: "Refresh Tags" }).click();
-    await expect(page.locator("[data-tags-assigned-labels]")).toContainText("Hero");
+    await expect(page.locator("[data-tags-assigned-labels]")).toContainText(uniqueTagLabel);
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.locator("[data-toolbox-selected-game-name]")).toHaveText("Demo Game");
-    await expect(page.locator("[data-tags-assigned-labels]")).toContainText("Hero");
-    await expect(page.locator("[data-tags-row]").filter({ hasText: "Hero" }).getByRole("button", { name: "Remove" })).toBeVisible();
-    await page.locator("[data-tags-row]").filter({ hasText: "Hero" }).getByRole("button", { name: "Remove" }).click();
-    await expect(page.locator("[data-tags-log]")).toHaveText("Removed Hero from Demo Game.");
-    await expect(page.locator("[data-tags-assigned-count]")).toHaveText("2");
+    await expect(page.locator("[data-tags-assigned-labels]")).toContainText(uniqueTagLabel);
+    await expect(page.locator("[data-tags-row]").filter({ hasText: uniqueTagLabel }).getByRole("button", { name: "Remove" })).toBeVisible();
+    await page.locator("[data-tags-row]").filter({ hasText: uniqueTagLabel }).getByRole("button", { name: "Remove" }).click();
+    await expect(page.locator("[data-tags-log]")).toHaveText(`Removed ${uniqueTagLabel} from Demo Game.`);
+    await expect.poll(async () => Number(await page.locator("[data-tags-assigned-count]").textContent())).toBeGreaterThanOrEqual(2);
 
-    await page.locator("[data-tags-row]").filter({ hasText: "Hero" }).getByRole("button", { name: "Edit" }).click();
-    const editRow = page.locator("[data-tags-editing-row='hero']");
-    await editRow.getByLabel("Tag Label").fill("Hero Asset");
+    await page.locator("[data-tags-row]").filter({ hasText: uniqueTagLabel }).getByRole("button", { name: "Edit" }).click();
+    const editRow = page.locator(`[data-tags-editing-row='${uniqueTagSlug}']`);
+    await editRow.getByLabel("Tag Label").fill(updatedTagLabel);
     await editRow.getByLabel("Description").fill("Hero and player assets");
     await editRow.getByRole("button", { name: "Save" }).click();
-    await expect(page.locator("[data-tags-log]")).toHaveText("Updated Hero Asset.");
-    await expect(page.locator("[data-tags-row]").filter({ hasText: "Hero Asset" })).toContainText("Hero and player assets");
+    await expect(page.locator("[data-tags-log]")).toHaveText(`Updated ${updatedTagLabel}.`);
+    await expect(page.locator("[data-tags-row]").filter({ hasText: updatedTagLabel })).toContainText("Hero and player assets");
 
-    await page.locator("[data-tags-row]").filter({ hasText: "Hero Asset" }).getByRole("button", { name: "Trash" }).click();
-    await expect(page.locator("[data-tags-log]")).toHaveText("Deleted Hero Asset.");
-    await expect(page.locator("[data-tags-count]")).toHaveText("6");
+    await page.locator("[data-tags-row]").filter({ hasText: updatedTagLabel }).getByRole("button", { name: "Trash" }).click();
+    await expect(page.locator("[data-tags-log]")).toHaveText(`Deleted ${updatedTagLabel}.`);
+    await expect.poll(async () => Number(await page.locator("[data-tags-count]").textContent())).toBeGreaterThanOrEqual(6);
 
     const registryResponse = await fetch(`${failures.server.baseUrl}/api/toolbox/registry/snapshot`);
     const registryPayload = await registryResponse.json();

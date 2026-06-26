@@ -1,26 +1,35 @@
 # PR_26177_ALFA_058-flat-project-tags Report
 
-Generated: 2026-06-26 18:53:15 UTC
-Branch: `PR_26177_ALFA_058-flat-project-tags`
-Base: `main`
-Current HEAD before packaging: `675b1a40f`
-
 ## Summary
-PR058 keeps Tags as a human-testable flat tag tool. The tool loads the current Game Hub game context, shows starter current-game tag assignments from API runtime state, supports add/edit/assign/remove/delete actions through the API, persists rows to database-backed tag tables, and survives refresh/reload.
+- Reworked Tags to use Browser -> API -> Database through the shared server repository client and DB-backed API service.
+- Removed retired Tags, Game Design, and Game Configuration mock repository files from the active runtime stack.
+- Updated `local-api-router.mjs` so Tags, Game Design, and Game Configuration route to API database services rather than mock repositories.
+- Added guardrail coverage that fails if retired Alfa mock repository files exist or are imported by active JS/MJS.
+- Kept Tags flat: no category table, category UI, grouped category filtering, or category-owned seed data.
 
-## Implementation Notes
-- Center title is `Tags`; no Workspace wording is used.
-- Starter runtime tag state includes assignments for the selected Demo Game so the tool opens with current-game tag context.
-- Static seed JSON keeps project assignments empty because runtime project keys remain server/API-owned.
-- The Playwright lane uses `/toolbox/tags/index.html` and asserts the shared status bar selected game.
-- Guest write coverage checks add, update, assign, remove, and delete API methods.
-- No categories, SQLite, tmp runtime dependency, JSON source of truth, mock-db-store expansion, or new mock repository file was added.
+## Data Contract
+- DDL remains under `docs_build/database/ddl/`.
+- Tags use `project_tags` and `project_tag_assignments` only.
+- Server/API owns authoritative keys for created records.
+- Records include `createdAt`, `updatedAt`, `createdBy`, `updatedBy` and ownership references `users.key`.
+- Browser does not own product data and does not use JSON/local storage as source of truth.
 
 ## Validation
-- PASS - node --check assets/toolbox/tags/js/index.js
-- PASS - node --check src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js
-- PASS - node --check src/dev-runtime/server/local-api-router.mjs
-- PASS - node --check tests/playwright/tools/TagsTool.spec.mjs
-- PASS - python -m json.tool docs_build/database/seed/tags.json
-- PASS - git diff --check (line-ending notices only)
-- PASS - npx playwright test tests/playwright/tools/TagsTool.spec.mjs --workers=1 --reporter=line (4 passed)
+- PASS - `node --check src/dev-runtime/toolbox-api/alfa-tool-services.mjs`
+- PASS - `node --check src/dev-runtime/server/local-api-router.mjs`
+- PASS - `node --check src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js`
+- PASS - `node --test tests/dev-runtime/DevRuntimeBoundary.test.mjs`
+- PASS - `npx playwright test tests/playwright/tools/TagsTool.spec.mjs --project=playwright`
+- PASS - `npx playwright test tests/playwright/tools/GameDesignApiDb.spec.mjs --project=playwright`
+- PASS - `npx playwright test tests/playwright/tools/GameConfigurationApiDb.spec.mjs --project=playwright`
+- PASS - `npx playwright test tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs --project=playwright`
+- PASS - `npx playwright test tests/playwright/tools/AssetToolMockRepository.spec.mjs --project=playwright -g "Asset repository exposes catalog tables"`
+- INFO - Full `AssetToolMockRepository.spec.mjs` was not part of the impacted lane and timed out when run as a broad suite; the touched Asset tag-reference test passed.
+
+## Removed Mock Repository Files
+- `src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js`
+- `src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js`
+- `src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js`
+
+## Status
+PASS - PR058 is reworked and ready for owner testing after the stack-wide no-mock correction is propagated to PR059-PR061.
