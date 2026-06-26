@@ -31,7 +31,9 @@ const elements = {
   capabilityDemoNotes: document.querySelector("[data-game-design-capability-notes]"),
   capabilityDemoPanel: document.querySelector("[data-game-design-capability-panel]"),
   configurationLink: document.querySelector("[data-game-design-configuration-link]"),
+  coreLoop: document.querySelector("[data-game-design-core-loop]"),
   designSummary: document.querySelector("[data-game-design-summary]"),
+  designNotes: document.querySelector("[data-game-design-notes]"),
   designStatus: document.querySelector("[data-game-design-status]"),
   form: document.querySelector("[data-game-design-form]"),
   gameType: document.querySelector("[data-game-design-type]"),
@@ -41,20 +43,30 @@ const elements = {
   handoffProgress: document.querySelector("[data-game-design-game-progress]"),
   handoffPublishing: document.querySelector("[data-game-design-publishing-progress]"),
   handoffRecommended: document.querySelector("[data-game-design-recommended-tool]"),
+  loseCondition: document.querySelector("[data-game-design-lose-condition]"),
+  outputAudience: document.querySelector("[data-game-design-output-audience]"),
   outputCapability: document.querySelector("[data-game-design-output-capability]"),
+  outputCoreLoop: document.querySelector("[data-game-design-output-core-loop]"),
+  outputLose: document.querySelector("[data-game-design-output-lose]"),
   outputMissing: document.querySelector("[data-game-design-output-missing]"),
   outputNextStep: document.querySelector("[data-game-design-output-next-step]"),
+  outputNotes: document.querySelector("[data-game-design-output-notes]"),
   outputPlayerMode: document.querySelector("[data-game-design-output-player-mode]"),
+  outputStory: document.querySelector("[data-game-design-output-story]"),
   outputSummary: document.querySelector("[data-game-design-output-summary]"),
   outputValidation: document.querySelector("[data-game-design-output-validation]"),
+  outputWin: document.querySelector("[data-game-design-output-win]"),
   playerMode: document.querySelector("[data-game-design-player-mode]"),
   playStyle: document.querySelector("[data-game-design-play-style]"),
+  story: document.querySelector("[data-game-design-story]"),
+  targetAudience: document.querySelector("[data-game-design-target-audience]"),
   gameContext: document.querySelector("[data-game-design-game-context]"),
   gameOverlay: document.querySelector("[data-game-design-game-overlay]"),
   statusLog: document.querySelector("[data-game-design-log]"),
   tableCounts: document.querySelector("[data-game-design-table-counts]"),
   validationList: document.querySelector("[data-game-design-validation-list]"),
-  validationOverlay: document.querySelector("[data-game-design-validation-overlay]")
+  validationOverlay: document.querySelector("[data-game-design-validation-overlay]"),
+  winCondition: document.querySelector("[data-game-design-win-condition]")
 };
 
 function setText(element, value) {
@@ -110,11 +122,18 @@ function readForm() {
   return {
     capabilityDemoAuthoring: repository.getActiveGame()?.purpose === "Capability Demo",
     capabilityDemoNotes: elements.capabilityDemoNotes?.value,
+    coreLoop: elements.coreLoop?.value,
+    designNotes: elements.designNotes?.value,
     designSummary: elements.designSummary?.value,
     gameType: elements.gameType?.value,
     genre: elements.genre?.value,
+    loseCondition: elements.loseCondition?.value,
     playerMode: elements.playerMode?.value,
-    playStyle: elements.playStyle?.value
+    playStyle: elements.playStyle?.value,
+    story: elements.story?.value,
+    summary: elements.designSummary?.value,
+    targetAudience: elements.targetAudience?.value,
+    winCondition: elements.winCondition?.value
   };
 }
 
@@ -133,6 +152,24 @@ function clearForm() {
   }
   if (elements.designSummary) {
     elements.designSummary.value = "";
+  }
+  if (elements.story) {
+    elements.story.value = "";
+  }
+  if (elements.coreLoop) {
+    elements.coreLoop.value = "";
+  }
+  if (elements.winCondition) {
+    elements.winCondition.value = "";
+  }
+  if (elements.loseCondition) {
+    elements.loseCondition.value = "";
+  }
+  if (elements.targetAudience) {
+    elements.targetAudience.value = "";
+  }
+  if (elements.designNotes) {
+    elements.designNotes.value = "";
   }
   if (elements.capabilityDemoNotes) {
     elements.capabilityDemoNotes.value = "";
@@ -158,7 +195,25 @@ function applyDesignToForm(design) {
     elements.playerMode.value = design.playerMode || "1 Player";
   }
   if (elements.designSummary) {
-    elements.designSummary.value = design.designSummary;
+    elements.designSummary.value = design.summary || design.designSummary;
+  }
+  if (elements.story) {
+    elements.story.value = design.story;
+  }
+  if (elements.coreLoop) {
+    elements.coreLoop.value = design.coreLoop;
+  }
+  if (elements.winCondition) {
+    elements.winCondition.value = design.winCondition;
+  }
+  if (elements.loseCondition) {
+    elements.loseCondition.value = design.loseCondition;
+  }
+  if (elements.targetAudience) {
+    elements.targetAudience.value = design.targetAudience;
+  }
+  if (elements.designNotes) {
+    elements.designNotes.value = design.designNotes;
   }
   if (elements.capabilityDemoNotes) {
     elements.capabilityDemoNotes.value = design.capabilityDemoNotes;
@@ -243,7 +298,13 @@ function renderOutput(snapshot, validation) {
   const activeGame = snapshot.activeGame || snapshot.activeProject;
   const missingRequirements = validation.findings.map((finding) => finding.label).join(", ");
 
-  setText(elements.outputSummary, activeDesign?.designSummary || "No design summary saved yet.");
+  setText(elements.outputSummary, activeDesign?.summary || activeDesign?.designSummary || "No design summary saved yet.");
+  setText(elements.outputStory, activeDesign?.story || "No story saved yet.");
+  setText(elements.outputCoreLoop, activeDesign?.coreLoop || "No core loop saved yet.");
+  setText(elements.outputWin, activeDesign?.winCondition || "No win condition saved yet.");
+  setText(elements.outputLose, activeDesign?.loseCondition || "No lose condition saved yet.");
+  setText(elements.outputAudience, activeDesign?.targetAudience || "No audience saved yet.");
+  setText(elements.outputNotes, activeDesign?.designNotes || "No notes saved yet.");
   setText(elements.outputPlayerMode, activeDesign?.playerMode || "1 Player");
   setText(elements.outputValidation, validation.status);
   setText(elements.outputNextStep, snapshot.progressHandoff.recommendedNextTool);

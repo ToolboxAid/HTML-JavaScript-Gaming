@@ -6,7 +6,9 @@
   "browserAuthoritativeKeyGenerationAllowed": false,
   "tables": {
     "game_design_documents": [],
-    "game_design_validation_items": []
+    "game_design_validation_items": [],
+    "game_design_sections": [],
+    "game_design_capability_demos": []
   },
   "note": "Seed records for this group are intentionally empty until an Admin-owned server API seeds them."
 }

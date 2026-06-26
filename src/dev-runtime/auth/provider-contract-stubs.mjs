@@ -81,6 +81,7 @@ export const SUPABASE_POSTGRES_PRODUCT_TABLES = Object.freeze([
   "game_workspace_progress",
   "game_design_documents",
   "game_design_validation_items",
+  "game_design_sections",
   "game_design_capability_demos",
   "game_configuration_records",
   "game_configuration_validation_items",

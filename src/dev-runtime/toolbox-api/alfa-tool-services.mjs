@@ -8,6 +8,7 @@ export const TAGS_TOOL_TABLES = Object.freeze([
 export const GAME_DESIGN_TABLES = Object.freeze([
   "game_design_documents",
   "game_design_validation_items",
+  "game_design_sections",
   "game_design_capability_demos",
 ]);
 
@@ -125,7 +126,22 @@ const DESIGN_REQUIRED_FIELDS = Object.freeze([
   { field: "genre", label: "Genre", action: "Select a genre so game discovery and expectations are clear." },
   { field: "playStyle", label: "Play Style", action: "Select the play style that best describes the intended experience." },
   { field: "playerMode", label: "Player Mode", action: "Select how players participate and receive input." },
-  { field: "designSummary", label: "Design Summary", action: "Write a short design summary that explains the game promise." },
+  { field: "summary", label: "Summary", action: "Write a short summary that explains the game promise." },
+  { field: "story", label: "Story", action: "Write the story or premise players enter." },
+  { field: "coreLoop", label: "Core Loop", action: "Describe what players repeatedly do." },
+  { field: "winCondition", label: "Win Condition", action: "Describe how players win." },
+  { field: "loseCondition", label: "Lose Condition", action: "Describe how players lose or fail." },
+  { field: "targetAudience", label: "Target Audience", action: "Describe the intended players." },
+]);
+
+const DESIGN_SECTION_FIELDS = Object.freeze([
+  Object.freeze({ field: "summary", heading: "Summary", sectionKey: "summary" }),
+  Object.freeze({ field: "story", heading: "Story", sectionKey: "story" }),
+  Object.freeze({ field: "coreLoop", heading: "Core Loop", sectionKey: "core-loop" }),
+  Object.freeze({ field: "winCondition", heading: "Win Condition", sectionKey: "win-condition" }),
+  Object.freeze({ field: "loseCondition", heading: "Lose Condition", sectionKey: "lose-condition" }),
+  Object.freeze({ field: "targetAudience", heading: "Target Audience", sectionKey: "target-audience" }),
+  Object.freeze({ field: "designNotes", heading: "Design Notes", sectionKey: "design-notes" }),
 ]);
 
 const SYSTEM_USER_KEY = SEED_DB_KEYS.users.forgeBot;
@@ -637,6 +653,7 @@ export function createTagsApiService(options = {}) {
 }
 
 function createDesignRow(game, input = {}, userKey = DEFAULT_USER_KEY, existing = null) {
+  const summary = normalizeText(input.summary || input.designSummary);
   const row = {
     key: existing?.key || makeSeedUlid(sourceSequence(`game-design:${game.key}`, 8800)),
     gameKey: game.key,
@@ -646,7 +663,14 @@ function createDesignRow(game, input = {}, userKey = DEFAULT_USER_KEY, existing 
     genre: normalizeChoice(input.genre, GAME_DESIGN_GENRES),
     playStyle: normalizeChoice(input.playStyle, GAME_DESIGN_PLAY_STYLES),
     playerMode: normalizePlayerMode(input.playerMode),
-    designSummary: normalizeText(input.designSummary),
+    summary,
+    designSummary: summary,
+    story: normalizeText(input.story),
+    coreLoop: normalizeText(input.coreLoop),
+    winCondition: normalizeText(input.winCondition),
+    loseCondition: normalizeText(input.loseCondition),
+    targetAudience: normalizeText(input.targetAudience),
+    designNotes: normalizeText(input.designNotes),
     capabilityDemoAuthoring: game.purpose === "Capability Demo" || input.capabilityDemoAuthoring === true,
     capabilityDemoNotes: normalizeText(input.capabilityDemoNotes),
     status: "Under Construction",
@@ -674,6 +698,7 @@ export function createGameDesignApiService(options = {}) {
   let lastTables = {
     game_design_capability_demos: [],
     game_design_documents: [],
+    game_design_sections: [],
     game_design_validation_items: [],
   };
 
@@ -692,6 +717,7 @@ export function createGameDesignApiService(options = {}) {
     }
     let documents = await adapter.requestTable("game_design_documents");
     let validationItems = await adapter.requestTable("game_design_validation_items");
+    let sections = await adapter.requestTable("game_design_sections");
     let demos = [];
     try {
       demos = await adapter.requestTable("game_design_capability_demos");
@@ -699,8 +725,7 @@ export function createGameDesignApiService(options = {}) {
       demos = [];
     }
     const existingDesign = game ? documents.find((row) => row.gameKey === game.key) : null;
-    const existingDesignHasEditableFields = Boolean(existingDesign && DESIGN_REQUIRED_FIELDS.some((requirement) => normalizeText(existingDesign[requirement.field])));
-    if (seed && game && (!existingDesign || !existingDesignHasEditableFields)) {
+    if (seed && game && !existingDesign) {
       const seedInput = game.purpose === "Capability Demo"
         ? {
             capabilityDemoAuthoring: true,
@@ -708,6 +733,12 @@ export function createGameDesignApiService(options = {}) {
             designSummary: `${game.name} demonstrates one planned capability as a game-owned demo.`,
             gameType: "Capability Demo",
             genre: "Utility",
+            story: `${game.name} demonstrates a focused creator capability in a playable scene.`,
+            coreLoop: "Start the demo, try the capability, and confirm the expected result.",
+            winCondition: "Complete the capability check successfully.",
+            loseCondition: "Restart the demo if the capability check fails.",
+            targetAudience: "Creators validating a focused game feature.",
+            designNotes: "Capability Demo authoring stays game-owned.",
             playStyle: "Guided Tutorial",
             playerMode: "1 Player",
           }
@@ -715,12 +746,19 @@ export function createGameDesignApiService(options = {}) {
             designSummary: "A compact puzzle adventure with one clear game promise.",
             gameType: "Puzzle",
             genre: "Adventure",
+            story: "A curious maker enters a clockwork library.",
+            coreLoop: "Explore a compact room, solve a tile puzzle, and unlock the next shelf.",
+            winCondition: "Restore the library clock before the final bell.",
+            loseCondition: "The room resets after too many missed moves.",
+            targetAudience: "Puzzle fans and first-time creators.",
+            designNotes: "Seeded Game Design data stays scoped to the current Game Hub game.",
             playStyle: "Single Player",
             playerMode: "1 Player",
           };
       await saveDesign(seedInput);
       documents = await adapter.requestTable("game_design_documents");
       validationItems = await adapter.requestTable("game_design_validation_items");
+      sections = await adapter.requestTable("game_design_sections");
       try {
         demos = await adapter.requestTable("game_design_capability_demos");
       } catch {
@@ -730,6 +768,7 @@ export function createGameDesignApiService(options = {}) {
     lastTables = {
       game_design_capability_demos: demos,
       game_design_documents: documents,
+      game_design_sections: sections,
       game_design_validation_items: validationItems,
     };
     return lastTables;
@@ -740,7 +779,7 @@ export function createGameDesignApiService(options = {}) {
       return null;
     }
     const row = tables.game_design_documents.find((document) => document.gameKey === game.key) || null;
-    return row ? { ...row, gameId: game.id } : null;
+    return row ? { ...row, designSummary: row.summary || row.designSummary || "", gameId: game.id, summary: row.summary || row.designSummary || "" } : null;
   }
 
   function validateDesignInput(input = {}) {
@@ -752,11 +791,16 @@ export function createGameDesignApiService(options = {}) {
       };
     }
     const design = {
-      designSummary: normalizeText(input.designSummary),
+      summary: normalizeText(input.summary || input.designSummary),
       gameType: normalizeChoice(input.gameType, GAME_DESIGN_GAME_TYPES),
       genre: normalizeChoice(input.genre, GAME_DESIGN_GENRES),
+      coreLoop: normalizeText(input.coreLoop),
+      loseCondition: normalizeText(input.loseCondition),
       playerMode: normalizePlayerMode(input.playerMode),
       playStyle: normalizeChoice(input.playStyle, GAME_DESIGN_PLAY_STYLES),
+      story: normalizeText(input.story),
+      targetAudience: normalizeText(input.targetAudience),
+      winCondition: normalizeText(input.winCondition),
     };
     const findings = DESIGN_REQUIRED_FIELDS.filter((requirement) => !design[requirement.field]);
     return { findings, status: findings.length ? "Needs Input" : "Ready" };
@@ -775,6 +819,34 @@ export function createGameDesignApiService(options = {}) {
     }
     if (findings.length) {
       await adapter.upsertProductTable("game_design_validation_items", createDesignValidationRows(gameKey, findings, adapter, activeUserKey(options)));
+    }
+  }
+
+  async function replaceDesignSectionRows(adapter, game, document) {
+    const existingRows = await adapter.requestTable("game_design_sections", {
+      query: `gameKey=eq.${encodeURIComponent(game.key)}`,
+    });
+    for (const row of existingRows) {
+      await adapter.requestTable("game_design_sections", {
+        method: "DELETE",
+        prefer: "return=representation",
+        query: `key=eq.${encodeURIComponent(row.key)}`,
+      });
+    }
+    const rows = DESIGN_SECTION_FIELDS
+      .map((section, index) => ({
+        body: normalizeText(document[section.field]),
+        documentKey: document.key,
+        gameKey: game.key,
+        heading: section.heading,
+        key: adapter.createRecordKey(),
+        sectionKey: section.sectionKey,
+        sortOrder: index + 1,
+        ...auditFields(activeUserKey(options)),
+      }))
+      .filter((row) => row.body);
+    if (rows.length) {
+      await adapter.upsertProductTable("game_design_sections", rows);
     }
   }
 
@@ -820,6 +892,7 @@ export function createGameDesignApiService(options = {}) {
     const { findings, row } = createDesignRow(game, input, activeUserKey(options), existing);
     await adapter.upsertProductTable("game_design_documents", [row]);
     await replaceDesignValidationRows(adapter, game.key, findings);
+    await replaceDesignSectionRows(adapter, game, row);
     await replaceCapabilityDemoRow(adapter, game, row);
     const snapshot = await getSnapshot(false);
     return {
@@ -857,6 +930,9 @@ export function createGameDesignApiService(options = {}) {
         `Genre: ${design?.genre || "Missing"}`,
         `Play style: ${design?.playStyle || "Missing"}`,
         `Player mode: ${design?.playerMode || "Missing"}`,
+        `Summary: ${design?.summary || design?.designSummary ? "Ready" : "Missing"}`,
+        `Story: ${design?.story ? "Ready" : "Missing"}`,
+        `Core loop: ${design?.coreLoop ? "Ready" : "Missing"}`,
         `Validation: ${validation.status}`,
       ],
       publishingProgress: ready
@@ -907,6 +983,7 @@ export function createGameDesignApiService(options = {}) {
     lastTables = {
       game_design_capability_demos: [],
       game_design_documents: [],
+      game_design_sections: [],
       game_design_validation_items: [],
     };
     return getSnapshot(false);
@@ -920,7 +997,7 @@ export function createGameDesignApiService(options = {}) {
   return {
     clearGameContext,
     clearProjectContext: clearGameContext,
-    getActiveDesign: async () => activeDesignFromTables(await readTables()),
+    getActiveDesign: async () => activeDesignFromTables(await readTables(false)),
     getActiveGame: async () => activeGame(),
     getActiveProject: async () => activeGame(),
     getGameProgressHandoff,
@@ -1022,8 +1099,7 @@ export function createGameConfigurationApiService(options = {}) {
     const existingConfiguration = handoff.activeProject
       ? records.find((row) => row.gameKey === handoff.activeProject.key)
       : null;
-    const existingConfigurationHasEditableFields = Boolean(existingConfiguration && GAME_CONFIGURATION_SECTIONS.some((section) => normalizeText(existingConfiguration[section])));
-    if (seed && handoff.ready && handoff.activeProject && (!existingConfiguration || !existingConfigurationHasEditableFields)) {
+    if (seed && handoff.ready && handoff.activeProject && !existingConfiguration) {
       await updateConfiguration(handoff.activeProject.id, {
         audioSetup: "Simple pickup, hazard, and completion sounds.",
         gameBasics: "A playable puzzle configuration ready for asset planning.",
@@ -1163,6 +1239,12 @@ export function createGameConfigurationApiService(options = {}) {
       designSummary: "A compact puzzle adventure with a clear rules handoff for configuration.",
       gameType: "Puzzle",
       genre: "Adventure",
+      story: "A curious maker enters a clockwork library.",
+      coreLoop: "Explore a compact room, solve a tile puzzle, and unlock the next shelf.",
+      winCondition: "Restore the library clock before the final bell.",
+      loseCondition: "The room resets after too many missed moves.",
+      targetAudience: "Puzzle fans and first-time creators.",
+      designNotes: "Valid Game Design data is ready for configuration.",
       playerMode: "1 Player",
       playStyle: "Single Player",
     });
