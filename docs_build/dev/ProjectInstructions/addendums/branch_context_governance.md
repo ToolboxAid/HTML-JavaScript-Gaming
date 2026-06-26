@@ -21,6 +21,8 @@ At the start of work, report or validate:
 - active PR number/name or explicit `PLAN_ONLY`
 - previous PR Closed status unless this is an explicitly documented stacked PR chain
 
+Session start must follow the canonical START phase in `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`.
+
 ## Stop Conditions
 
 Stop and report before changing files when:
@@ -38,6 +40,8 @@ Stop and report before changing files when:
 
 After a branch is created, the branch remains the working context.
 
+This is the canonical WORK phase: remain on the PR branch, never checkout `main`, commit only on the PR branch, push only the PR branch, validate from the PR branch, and open/update the PR from the PR branch.
+
 Do not automatically return to `main` after:
 
 - commit
@@ -47,7 +51,7 @@ Do not automatically return to `main` after:
 - review updates
 - additional commits
 
-Return to `main` only after the PR is merged, the branch is retired, or OWNER explicitly says to return to `main`.
+Return to `main` only in the canonical END phase after the PR is merged, the branch is retired, or OWNER explicitly says to return to `main`.
 
 Returning to `main` is required before Closed can be recorded.
 
@@ -58,6 +62,7 @@ Closed branch context requires:
 - local/origin sync is `0/0`
 - no untracked files
 - source branch disposition recorded as `retained`
+- branch, HEAD SHA, and date/time recorded as the new EOD baseline when this is EOD closeout
 
 ## GitHub Authority
 

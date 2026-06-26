@@ -49,7 +49,7 @@ Existing Project Instructions outside `docs_build/dev/ProjectInstructions/` rema
 
 ## Single Source and Main Lock Governance
 
-`docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md` defines the single active Project Instructions source, EOD main lock, next-day reset, and team branch creation gate.
+`docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md` defines the single active Project Instructions source, canonical START / WORK / END branch lifecycle, EOD main lock, next-day reset, team branch creation gate, daily synchronization baseline, and mandatory hard stops.
 
 ## Merge Control
 

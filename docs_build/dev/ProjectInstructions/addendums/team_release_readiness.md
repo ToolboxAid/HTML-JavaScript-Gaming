@@ -18,9 +18,13 @@ Teams may start only when all of the following are true:
 - OWNER governance exists.
 - One-active-branch-per-team rule exists.
 - No-direct-main rule exists.
+- Canonical START / WORK / END lifecycle exists.
 - Out-of-scope stop rule exists.
 - Build Path sync rule exists.
 - PR lifecycle states exist in order: PR Open, Plan, Build, Validation, Approved, Merged, Main Verified, Closed.
+- START requires synchronized `main`, clean worktree, `main...origin/main` `0 0`, and HEAD matching published EOD SHA before branch creation.
+- WORK requires remaining on the PR branch.
+- END requires merge, return to synchronized `main`, and publishing branch, HEAD SHA, and date/time.
 - Previous-PR Closed gate exists before a team starts another PR, except explicitly documented stacked PR chains.
 - Final closeout output includes branch, worktree, local/origin sync, PR number/name, PR status, merge/final commit, branch disposition, backlog update status, tool state update status, ZIP path, and Closeout PASS/FAIL.
 

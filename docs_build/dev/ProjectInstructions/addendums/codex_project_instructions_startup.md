@@ -23,31 +23,25 @@ Codex must use this as the only active source of truth for:
 
 ## Branch Lifecycle Start Gate
 
-START RULE:
-- Every team starts on `main`.
-- `main` must be clean.
-- `main...origin/main` must be `0 0`.
-- `HEAD` SHA must match published EOD SHA.
-- Only then create or switch to the PR branch.
-- No commits are allowed on `main`.
+Every PR follows exactly three phases:
 
-WORK RULE:
-- Codex must remain on the PR branch during implementation.
-- Codex commits only to the PR branch.
-- Codex pushes only the PR branch.
-- HARD STOP if branch changes unexpectedly.
-- HARD STOP before committing if current branch is `main`.
+```text
+START
+WORK
+END
+```
 
-END RULE:
-- After PR validation, push the PR branch.
-- Merge PR into `main` only when approved.
-- Checkout `main`.
-- Run `git fetch origin`.
-- Run `git pull --ff-only origin main`.
-- Confirm current branch is `main`.
-- Confirm worktree is clean.
-- Confirm `main...origin/main` is `0 0`.
-- Record `HEAD` SHA as new EOD baseline.
+Codex must follow the canonical lifecycle in:
+
+`docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`
+
+Startup enforcement:
+- START begins on synchronized `main`.
+- WORK remains on the PR branch. Never checkout `main`.
+- END merges, returns to synchronized `main`, publishes branch, HEAD SHA, and date/time, then stops all work.
+- STOP if current branch is `main` before commit.
+- STOP if attempting to push `main`.
+- STOP if a new PR starts before returning to synchronized `main`.
 
 Deprecated Project Instructions material outside `docs_build/dev/ProjectInstructions/` is reference-only and must not override active governance.
 

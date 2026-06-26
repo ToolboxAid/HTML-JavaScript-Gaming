@@ -26,36 +26,33 @@ Define the standard pull request workflow for Game Foundry Studio.
 15. Pull latest main before starting the next PR.
 16. Verify Main Verified and Closed gates.
 
-## Branch Lifecycle Governance
+## Branch Lifecycle (Canonical)
 
-### START RULE
+Every PR follows exactly three phases:
 
-- Every team starts on `main`.
-- `main` must be clean.
-- `main...origin/main` must be `0 0`.
-- `HEAD` SHA must match published EOD SHA.
-- Only then create or switch to the PR branch.
-- No commits are allowed on `main`.
+```text
+START
+WORK
+END
+```
 
-### WORK RULE
+The canonical START, WORK, END, Daily Synchronization, and Mandatory Hard Stops rules live in:
 
-- Codex must remain on the PR branch during implementation.
-- Codex commits only to the PR branch.
-- Codex pushes only the PR branch.
-- HARD STOP if branch changes unexpectedly.
-- HARD STOP before committing if current branch is `main`.
+`docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`
 
-### END RULE
+PR workflow must follow that lifecycle exactly.
 
-- After PR validation, push the PR branch.
-- Merge PR into `main` only when approved.
-- Checkout `main`.
-- Run `git fetch origin`.
-- Run `git pull --ff-only origin main`.
-- Confirm current branch is `main`.
-- Confirm worktree is clean.
-- Confirm `main...origin/main` is `0 0`.
-- Record `HEAD` SHA as new EOD baseline.
+Summary:
+- START happens on synchronized `main` only and creates the PR branch only after all required gates pass.
+- WORK happens only on the PR branch.
+- END validates, commits, pushes, opens/updates the PR, merges, returns to synchronized `main`, publishes branch, HEAD SHA, and date/time, then stops all work.
+- No commits on `main`.
+- No implementation on `main`.
+- No validation on `main` except start validation.
+- Never checkout `main` during WORK.
+- STOP before commit if current branch is `main`.
+- STOP if current branch changes unexpectedly.
+- STOP if attempting to push `main`.
 
 ## PR Lifecycle States
 

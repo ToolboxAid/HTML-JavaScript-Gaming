@@ -13,9 +13,11 @@ OWNER identifies available teams when starting work.
 
 Before a team starts, validate:
 
-- current branch and expected branch are known
-- worktree is clean or unrelated changes are understood
-- `main` is current when a new branch is required
+- canonical START phase is complete
+- current branch is `main`
+- worktree is clean
+- `main...origin/main` is `0 0`
+- `HEAD` SHA matches published EOD SHA
 - active assignment is selected or confirmed by OWNER
 - assigned team uses NATO phonetic naming
 - work remains with the assigned team until complete or OWNER reassignment
@@ -62,13 +64,14 @@ For backlog-driven work:
 2. Select only the OWNER-approved backlog item.
 3. Use the approved status model from `status_model.md`.
 4. Confirm the previous PR for the team is Closed, unless this is an explicitly documented stacked PR chain.
-5. Create or use the approved team branch and PR identity.
-6. Mark lifecycle state as PR Open.
-7. Plan on the same PR branch.
-8. Build on the same PR branch.
-9. Record active work in the active team registry when required.
-10. Open or update a draft PR during active work.
-11. Merge only through OWNER-approved PR workflow.
+5. Follow the canonical START phase in `project_instructions_single_source_eod_lock.md`.
+6. Create or use the approved team branch and PR identity only after START passes.
+7. Mark lifecycle state as PR Open.
+8. Plan on the same PR branch.
+9. Build on the same PR branch.
+10. Record active work in the active team registry when required.
+11. Open or update a draft PR during active WORK.
+12. Merge only through OWNER-approved PR workflow and canonical END.
 
 ## Team Command Examples
 
@@ -94,6 +97,7 @@ A team or OWNER PR is release-ready when:
 - PR summary states the validation result
 - lifecycle state is at least Validation
 - required reports and repo-structured ZIP under `tmp/` exist before Closed
+- canonical END publishes branch, HEAD SHA, and date/time when the PR merges
 
 Closed readiness requires:
 - PR merged and pushed

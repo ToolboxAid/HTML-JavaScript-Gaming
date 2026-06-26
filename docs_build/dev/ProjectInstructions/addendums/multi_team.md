@@ -51,6 +51,7 @@ Rules:
 - One Codex session may execute multiple sequential PRs.
 - Each PR must still have one clear purpose.
 - Each PR must create or use its own approved branch.
+- Each PR must follow the canonical START / WORK / END lifecycle in `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`.
 - Each PR may be committed and pushed during active work.
 - Each PR may be opened as a draft PR during active work.
 - Do not commit directly to main.
@@ -69,13 +70,14 @@ During active work:
 - Pushes are allowed and expected.
 - Draft PRs are allowed and expected.
 - Direct commits to main are prohibited.
+- WORK remains on the PR branch; never checkout main during WORK.
 - Merges to main are prohibited unless explicitly approved by the owner.
 
 At end of day:
 - Owner reviews ready PRs.
 - Owner explicitly approves which PRs merge.
 - Only owner-approved PRs may merge to main.
-- After merge, return to main and pull latest main.
+- After merge, execute the canonical END phase, return to synchronized main, and publish branch, HEAD SHA, and date/time.
 - Do not treat sequential PR completion as merge approval.
 
 Commit/push during the day is allowed only on assigned team/OWNER/PR branches.

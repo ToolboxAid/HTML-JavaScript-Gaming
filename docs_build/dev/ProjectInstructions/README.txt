@@ -13,7 +13,10 @@ Team assignment workflow:
 Team assignments are tracked under team_assignments/. A team pulls work from BACKLOG_MASTER.md, marks the item building when assigned, and records the active assignment under the owning team. Teams work only on assigned items unless an OWNER override explicitly changes the assignment.
 
 No direct commits to main:
-Do not commit directly to main unless the owner explicitly instructs that exception. Normal work must use PR branches, draft PRs, validation evidence, and owner-controlled merge approval.
+Do not commit directly to main. Normal work must use PR branches, draft PRs, validation evidence, and owner-controlled merge approval.
+
+Branch lifecycle:
+Every PR follows exactly three phases: START, WORK, END. The canonical lifecycle is `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`.
 
 OWNER override rule:
 An OWNER override must use this wording:
@@ -40,6 +43,7 @@ READ THIS FIRST
 9. Follow OWNER governance decisions.
 10. When guidance conflicts, newest OWNER-approved guidance wins.
 11. Batch Governance Mode is the default for governance, documentation, and administrative work.
+12. Follow the canonical START / WORK / END lifecycle.
 
 Addendum index:
 - Single Source and EOD Main Lock: docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md

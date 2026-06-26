@@ -22,6 +22,7 @@ Before a governance, documentation, or administrative PR is merged, validate:
 - PR workflow guidance remains intact.
 - Team assignment governance remains intact.
 - Active team registry guidance remains compatible with temporary active teams.
+- Canonical START / WORK / END branch lifecycle guidance remains intact.
 - No protected Project Instructions guidance was deleted.
 - No permanent team roster or permanent discipline ownership was restored.
 - No direct-to-main commit rule was bypassed.
@@ -36,6 +37,7 @@ The release gate should confirm these files when relevant to the PR:
 - `docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md`
 - `docs_build/dev/ProjectInstructions/addendums/governance_phase1_complete.md`
 - `docs_build/dev/ProjectInstructions/addendums/pr_workflow.md`
+- `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`
 - `docs_build/dev/ProjectInstructions/addendums/project_reference_files.md`
 - `docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md`
 - `docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md`

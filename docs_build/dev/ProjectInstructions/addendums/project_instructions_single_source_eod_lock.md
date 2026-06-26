@@ -56,36 +56,143 @@ No team creates a PR branch until:
 
 If any check fails, stop before branch creation and restore main to the published EOD state or request OWNER direction.
 
-## Branch Lifecycle Governance
+## Branch Lifecycle (Canonical)
 
-### START RULE
+Every PR follows exactly three phases:
 
-- Every team starts on `main`.
-- `main` must be clean.
-- `main...origin/main` must be `0 0`.
-- `HEAD` SHA must match published EOD SHA.
-- Only then create or switch to the PR branch.
-- No commits are allowed on `main`.
+```text
+START
+WORK
+END
+```
 
-### WORK RULE
+## START
 
-- Codex must remain on the PR branch during implementation.
-- Codex commits only to the PR branch.
-- Codex pushes only the PR branch.
-- HARD STOP if branch changes unexpectedly.
-- HARD STOP before committing if current branch is `main`.
+Every team begins on `main`.
 
-### END RULE
+Required:
 
-- After PR validation, push the PR branch.
-- Merge PR into `main` only when approved.
-- Checkout `main`.
-- Run `git fetch origin`.
-- Run `git pull --ff-only origin main`.
-- Confirm current branch is `main`.
-- Confirm worktree is clean.
-- Confirm `main...origin/main` is `0 0`.
-- Record `HEAD` SHA as new EOD baseline.
+```text
+git checkout main
+git fetch origin
+git pull --ff-only origin main
+git status
+git rev-list --left-right --count main...origin/main
+git rev-parse HEAD
+```
+
+Required results:
+
+```text
+Current branch: main
+Working tree clean
+main...origin/main
+0 0
+HEAD equals published EOD SHA
+```
+
+Only after ALL four pass may a branch be created.
+
+Create the PR branch:
+
+```text
+git switch -c PR_<name>
+```
+
+Rules:
+
+- No commits on `main`.
+- No implementation on `main`.
+- No validation on `main` except start validation.
+
+## WORK
+
+From branch creation until merge:
+
+- Remain on the PR branch.
+- Never checkout `main`.
+- Commit only on the PR branch.
+- Push only the PR branch.
+- Execute validation from the PR branch.
+- Open/update the PR from the PR branch.
+
+Hard Stops:
+
+```text
+If current branch == main before commit:
+    STOP
+
+If current branch changes unexpectedly:
+    STOP
+
+If attempting to push main:
+    STOP
+```
+
+## END
+
+After validation succeeds:
+
+```text
+Commit
+Push PR branch
+Open/update PR
+Merge PR
+```
+
+Immediately execute:
+
+```text
+git checkout main
+git fetch origin
+git pull --ff-only origin main
+git status
+git rev-list --left-right --count main...origin/main
+git rev-parse HEAD
+```
+
+Required result:
+
+```text
+Current branch: main
+Working tree clean
+main...origin/main
+0 0
+```
+
+Publish:
+
+```text
+Branch
+HEAD SHA
+Date/time
+```
+
+This becomes tomorrow's official baseline.
+
+Stop all work.
+
+## Daily Synchronization
+
+End of every day publish:
+
+```text
+Branch: main
+HEAD SHA
+```
+
+Every team must begin tomorrow from that exact SHA.
+
+## Mandatory Hard Stops
+
+STOP if:
+
+- current branch is `main` before commit
+- worktree dirty before creating PR branch
+- `main...origin/main` is not `0 0` before creating PR branch
+- `HEAD` SHA differs from published baseline
+- merge attempted without successful validation
+- new PR started before returning to synchronized `main`
 
 ## Start Of Day Boundary
 
