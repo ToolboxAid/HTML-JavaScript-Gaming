@@ -1,93 +1,98 @@
+diff --git a/docs_build/dev/reports/PR_26177_BRAVO_EOD-closeout.md b/docs_build/dev/reports/PR_26177_BRAVO_EOD-closeout.md
+index 87ef7975a..004761a72 100644
+--- a/docs_build/dev/reports/PR_26177_BRAVO_EOD-closeout.md
++++ b/docs_build/dev/reports/PR_26177_BRAVO_EOD-closeout.md
+@@ -5,8 +5,8 @@ Branch Validation
+ =========================================
+ FAIL
+ - PASS: Started on Bravo branch `bravo/26177-text-to-speech`.
+-- FAIL: Ended on main. EOD hard-stopped on `bravo/26177-text-to-speech` because impacted Playwright validation failed before push or merge.
+-- PASS: Working tree clean after PR_013 report/fix commit is expected; verify with final `git status --short --branch`.
++- FAIL: Ended on main. EOD hard-stopped on `bravo/26177-text-to-speech` because Playwright Chromium installation failed before impacted browser validation could run.
++- PASS: Working tree clean after PR_014 report commit is expected; verify with final `git status --short --branch`.
+ - FAIL: Local/origin synchronized. Bravo remains ahead of `origin/main` and was not pushed because EOD validation failed.
+
+ =========================================
+@@ -23,9 +23,10 @@ Bravo branch dependency order reviewed:
+ 8. `87db3eb65` Delete empty TTS profile parents
+ 9. `9b8af1f2c` Force delete broken TTS profiles
+ 10. `36a574959` Add emotion editor preview playback
+-11. PR_26177_BRAVO_013 Fix Local DB snapshot EOD gate
++11. `e37112bf5` Fix Local DB snapshot EOD gate
++12. PR_26177_BRAVO_014 Playwright Chromium validation report
+
+-No merge into main was attempted. No merge conflicts were encountered because the hard stop occurred during Playwright validation before main integration.
++No merge into main was attempted. No merge conflicts were encountered because the hard stop occurred before browser validation and before main integration.
+
+ =========================================
+ Validation
+@@ -35,9 +36,14 @@ FAIL
+   - Command: `node --test tests/tools/Text2SpeechShell.test.mjs tests/tools/MessagesPlaybackSource.test.mjs tests/dev-runtime/MessagesPublishValidation.test.mjs tests/dev-runtime/DbSeedIntegrity.test.mjs`
+   - Result: 23 passing, 0 failing.
+ - FAIL: Playwright.
+-  - Command: `npx playwright test tests/playwright/tools/TextToSpeechFunctional.spec.mjs tests/playwright/tools/MessagesTool.spec.mjs --project=playwright`
+-  - Result: 9 failed before page code ran.
+-  - Failure: Chromium executable is missing at `C:\Users\davidq\AppData\Local\ms-playwright\chromium-1217\chrome-win64\chrome.exe`.
++  - Chromium installed: NO.
++  - Install commands attempted:
++    - `npx playwright install chromium`
++    - `npx playwright install chromium`
++    - `npx playwright install chromium --force`
++  - Result: install attempts timed out and left no `chrome.exe` at `C:\Users\davidq\AppData\Local\ms-playwright\chromium-1217\chrome-win64\chrome.exe`.
++  - The partial `chromium-1217` browser cache was removed after the failed install attempts.
++  - Browser specs were not rerun after install failure.
+ - PASS: Local API. `/api/local-db/snapshot`, `/api/local-db/seed`, and `/api/dev/testing/mock-db-state` passed through `DbSeedIntegrity.test.mjs`.
+ - PASS: Text to Speech. Focused TTS unit assertions passed.
+ - PASS: Emotion Profiles. Focused Messages publish/profile assertions passed.
+@@ -48,17 +54,18 @@ FAIL
+ Repository Status
+ =========================================
+ Current branch: `bravo/26177-text-to-speech`
+-Working tree: expected clean after PR_013 commit
+-Local commits ahead: expected 11 after PR_013 commit
++Working tree: expected clean after PR_014 report commit
++Local commits ahead: expected 12 after PR_014 report commit
+ Remote commits ahead: 0 relative to `origin/main`
+ Latest main commit: `8cdd87bf2 Merge pull request #208 from ToolboxAid/PR_26177_DELTA_056-shared-validation-assertions`
+
+ =========================================
+ Outstanding Bravo Work
+ =========================================
+-- Install or restore the expected Playwright Chromium browser at `C:\Users\davidq\AppData\Local\ms-playwright\chromium-1217\chrome-win64\chrome.exe`.
++- Complete Playwright Chromium installation from a clean browser cache so `C:\Users\davidq\AppData\Local\ms-playwright\chromium-1217\chrome-win64\chrome.exe` exists.
+ - Rerun impacted Playwright coverage:
+-  - `npx playwright test tests/playwright/tools/TextToSpeechFunctional.spec.mjs tests/playwright/tools/MessagesTool.spec.mjs --project=playwright`
++  - `npx playwright test tests/playwright/tools/TextToSpeechFunctional.spec.mjs --project=playwright`
++  - `npx playwright test tests/playwright/tools/MessagesTool.spec.mjs --project=playwright`
+ - Push the Bravo branch only after all EOD validation passes.
+ - Merge Bravo into main only after all EOD validation passes.
+ - Push main and verify local/origin synchronization.
+@@ -67,7 +74,9 @@ Outstanding Bravo Work
+ =========================================
+ Manual Validation
+ =========================================
+-- Verified EOD retry stayed on `bravo/26177-text-to-speech`.
+-- Verified the exact unit/API validation command now passes 23/23.
+-- Verified impacted Playwright is blocked by missing Chromium before page code runs.
+-- Stopped before push, main merge, main push, and branch deletion because Playwright validation failed.
++- Verified PR_014 stayed on `bravo/26177-text-to-speech`.
++- Verified Chromium was missing at the expected Playwright cache path.
++- Attempted Playwright Chromium installation three times, including one clean-cache `--force` attempt.
++- Verified `chrome.exe` remained missing after install attempts.
++- Removed the partial `chromium-1217` cache left by the failed installation attempts.
++- Stopped before browser tests, push, main merge, main push, and branch deletion because Chromium installation failed.
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 9bb1d6b6e..c0935b1f9 100644
+index c0935b1f9..b051a237f 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,6 +1,9 @@
--assets/toolbox/text-to-speech/js/index.js
-+docs_build/database/seed/guest/idea-board.json
-+docs_build/database/seed/guest/messages.json
-+docs_build/database/seed/guest/text-to-speech.json
-+docs_build/database/seed/guest/users.json
+@@ -1,9 +1,4 @@
+-docs_build/database/seed/guest/idea-board.json
+-docs_build/database/seed/guest/messages.json
+-docs_build/database/seed/guest/text-to-speech.json
+-docs_build/database/seed/guest/users.json
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
--docs_build/dev/reports/PR_26177_BRAVO_012-add-emotion-editor-preview.md
--tests/playwright/tools/TextToSpeechFunctional.spec.mjs
--tests/tools/Text2SpeechShell.test.mjs
-+docs_build/dev/reports/PR_26177_BRAVO_013-fix-local-db-snapshot-eod-gate.md
-+docs_build/dev/reports/PR_26177_BRAVO_EOD-closeout.md
-+src/dev-runtime/server/local-api-router.mjs
-diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index 91f78c104..206cfec57 100644
---- a/src/dev-runtime/server/local-api-router.mjs
-+++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -3529,7 +3529,15 @@ class ApiRuntimeDataSource {
-   }
-
-   async currentStateSnapshot() {
--    return this.snapshot();
-+    return this.snapshot({ includePostgresCompletionMetrics: false });
-+  }
-+
-+  async resetStateSnapshot() {
-+    this.applyStateSnapshot({
-+      cleared: false,
-+      tables: createServerSeedTables(),
-+    });
-+    return this.currentStateSnapshot();
-   }
-
-   applyStateSnapshot(state = {}) {
-@@ -5416,6 +5424,10 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
-   }
-
-   setMode(modeId) {
-+    const normalizedModeId = String(modeId || "").trim();
-+    if (normalizedModeId && normalizedModeId !== "local-db" && normalizedModeId !== FIXED_ACCOUNT_SESSION_MODE.id) {
-+      throw new Error(`Unknown local login environment: ${normalizedModeId}.`);
-+    }
-     return {
-       ...clone(FIXED_ACCOUNT_SESSION_MODE),
-       diagnostic: "Session mode switching is disabled; account sessions use the fixed server-owned auth session.",
-@@ -6704,7 +6716,7 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
-     return result;
-   }
-
--  async snapshot() {
-+  async snapshot({ includePostgresCompletionMetrics = true } = {}) {
-     const schemas = getMockDbTableSchemas();
-     const toolGroups = getMockDbToolGroups();
-     const owners = {
-@@ -6754,7 +6766,7 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
-       ...gameConfigurationTables(this.gameConfigurationRepository),
-       ...objectsTables(this.objectsRepository),
-       ...controlsTables(this.inputMappingRepository),
--      ...(await gameJourneyTables(this.gameJourneyRepository)),
-+      ...(includePostgresCompletionMetrics ? await gameJourneyTables(this.gameJourneyRepository) : {}),
-       ...paletteTables(this.paletteRepository),
-       ...tagsTables(this.tagsRepository),
-       ...assetTables(this.assetRepository),
-@@ -6943,6 +6955,24 @@ export function createLocalApiRouter({
-         return true;
-       }
-
-+      if (parts[1] === "local-db") {
-+        if (request.method === "GET" && parts[2] === "snapshot") {
-+          ok(response, await dataSource.currentStateSnapshot());
-+          return true;
-+        }
-+        if (request.method === "POST" && parts[2] === "seed") {
-+          ok(response, await dataSource.resetStateSnapshot());
-+          return true;
-+        }
-+      }
-+
-+      if (parts[1] === "dev" && parts[2] === "testing" && request.method === "POST" && parts[3] === "mock-db-state") {
-+        const body = await readRequestJson(request);
-+        dataSource.applyStateSnapshot(body.state);
-+        ok(response, await dataSource.currentStateSnapshot());
-+        return true;
-+      }
-+
-       if (parts[1] === "project-workspace" && request.method === "GET" && parts[2] === "projects") {
-         ok(response, dataSource.projectWorkspaceProjectsForRoute());
-         return true;
+-docs_build/dev/reports/PR_26177_BRAVO_013-fix-local-db-snapshot-eod-gate.md
++docs_build/dev/reports/PR_26177_BRAVO_014-playwright-chromium-validation.md
+ docs_build/dev/reports/PR_26177_BRAVO_EOD-closeout.md
+-src/dev-runtime/server/local-api-router.mjs

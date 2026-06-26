@@ -1,9 +1,4 @@
-docs_build/database/seed/guest/idea-board.json
-docs_build/database/seed/guest/messages.json
-docs_build/database/seed/guest/text-to-speech.json
-docs_build/database/seed/guest/users.json
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/PR_26177_BRAVO_013-fix-local-db-snapshot-eod-gate.md
+docs_build/dev/reports/PR_26177_BRAVO_014-playwright-chromium-validation.md
 docs_build/dev/reports/PR_26177_BRAVO_EOD-closeout.md
-src/dev-runtime/server/local-api-router.mjs
