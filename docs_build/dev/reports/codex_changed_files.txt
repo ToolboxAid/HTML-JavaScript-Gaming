@@ -1,87 +1,11 @@
-﻿R100	docs_build/dev/dod/tool_ui_readiness_dod.md	archive/docs_build/dev/dod/tool_ui_readiness_dod.md
-R100	docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md
-R100	docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_APPEND.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_APPEND.md
-R100	docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE.md
-R100	docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE_8_19.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE_8_19.md
-R100	docs_build/dev/roadmaps/MASTER_ROADMAP_RECOVERY.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_RECOVERY.md
-R100	docs_build/dev/roadmaps/MASTER_ROADMAP_SAMPLES2TOOLS.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_SAMPLES2TOOLS.md
-R100	docs_build/dev/roadmaps/MASTER_ROADMAP_TOOLS.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_TOOLS.md
-R100	docs_build/dev/roadmaps/MIDI_STUDIO_V2_ROADMAP.md	archive/docs_build/dev/roadmaps/MIDI_STUDIO_V2_ROADMAP.md
-R100	docs_build/dev/roadmaps/README.md	archive/docs_build/dev/roadmaps/README.md
-R100	docs_build/dev/roadmaps/phases.txt	archive/docs_build/dev/roadmaps/phases.txt
-D	docs_build/dev/BUILD_PR.md
-D	docs_build/dev/BUILD_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT.md
-D	docs_build/dev/NEXT_RESTART.md
-D	docs_build/dev/PLAN_PR.md
-D	docs_build/dev/PLAN_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT.md
-D	docs_build/dev/PROJECT_INSTRUCTIONS.md
-D	docs_build/dev/PROJECT_MULTI_PC.txt
-M	docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-M	docs_build/dev/ProjectInstructions/README.txt
-M	docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
-A	docs_build/dev/ProjectInstructions/addendums/assistant_execution_modes.md
-M	docs_build/dev/ProjectInstructions/addendums/branch_context_governance.md
-M	docs_build/dev/ProjectInstructions/addendums/branch_lock_governance.md
-A	docs_build/dev/ProjectInstructions/addendums/canonical_repository_structure.md
-A	docs_build/dev/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
-A	docs_build/dev/ProjectInstructions/addendums/codex_project_instructions_startup.md
-R100	docs_build/dev/koti_layout_contract.md	docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md
-A	docs_build/dev/ProjectInstructions/addendums/legacy_migration_policy.md
-M	docs_build/dev/ProjectInstructions/addendums/multi_team.md
-A	docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md
-M	docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
-M	docs_build/dev/ProjectInstructions/addendums/preservation.md
-A	docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
-M	docs_build/dev/ProjectInstructions/addendums/release_gate.md
-R100	docs_build/dev/samples2tools_adapter_guidance.md	docs_build/dev/ProjectInstructions/addendums/samples2tools_adapter_guidance.md
-M	docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
-M	docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
-A	docs_build/dev/ProjectInstructions/addendums/test_structure_standardization.md
-A	docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md
-R100	docs_build/dev/workspace_v2_playwright_gate.md	docs_build/dev/ProjectInstructions/addendums/workspace_v2_playwright_gate.md
-M	docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
-D	docs_build/dev/bundle_readme.md
-D	docs_build/dev/codex_commands.md
-D	docs_build/dev/codex_rules.md
-D	docs_build/dev/commit_comment.txt
-A	docs_build/dev/pr/BUILD_PR.md
-A	docs_build/dev/pr/PLAN_PR.md
-R100	docs_build/dev/plan_pr_tool_workspace_manifest_boundaries.md	docs_build/dev/pr/plan_pr_tool_workspace_manifest_boundaries.md
-R096	docs_build/dev/pr_koti_layout_contract.md	docs_build/dev/pr/pr_koti_layout_contract.md
-R100	docs_build/dev/pr_tool_fix_asset_browser_1505.md	docs_build/dev/pr/pr_tool_fix_asset_browser_1505.md
-R100	docs_build/dev/pr_tool_fix_fullscreen_exit_state.md	docs_build/dev/pr/pr_tool_fix_fullscreen_exit_state.md
-R100	docs_build/dev/pr_tool_fix_parallax_header_metadata.md	docs_build/dev/pr/pr_tool_fix_parallax_header_metadata.md
-R100	docs_build/dev/pr_tool_header_singleline.md	docs_build/dev/pr/pr_tool_header_singleline.md
-R100	docs_build/dev/pr_tool_interactive_uat.md	docs_build/dev/pr/pr_tool_interactive_uat.md
-R100	docs_build/dev/pr_tool_layout_workflow_baseline.md	docs_build/dev/pr/pr_tool_layout_workflow_baseline.md
-R100	docs_build/dev/pr_tool_remove_future_import_hints.md	docs_build/dev/pr/pr_tool_remove_future_import_hints.md
-R100	docs_build/dev/pr_tool_remove_static_header_intro.md	docs_build/dev/pr/pr_tool_remove_static_header_intro.md
-R100	docs_build/dev/pr_tool_stabilization.md	docs_build/dev/pr/pr_tool_stabilization.md
-R100	docs_build/dev/pr_tool_uat_closeout.md	docs_build/dev/pr/pr_tool_uat_closeout.md
-R100	docs_build/dev/pr_tool_uat_fix_fullscreen_header_wiring.md	docs_build/dev/pr/pr_tool_uat_fix_fullscreen_header_wiring.md
-R100	docs_build/dev/pr_tool_uat_fix_header_asset_browser.md	docs_build/dev/pr/pr_tool_uat_fix_header_asset_browser.md
-R100	docs_build/dev/pr_tool_uat_fixes.md	docs_build/dev/pr/pr_tool_uat_fixes.md
-A	docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock.md
-A	docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_branch-validation.md
-A	docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_manual-validation-notes.md
-A	docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_requirement-checklist.md
-A	docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_validation-lane.md
-R100	docs_build/dev/component-audit.md	docs_build/dev/reports/audits/component-audit.md
-R100	docs_build/dev/css-audit.md	docs_build/dev/reports/audits/css-audit.md
-R100	docs_build/dev/security-audit.md	docs_build/dev/reports/audits/security-audit.md
-M	docs_build/dev/reports/codex_changed_files.txt
-M	docs_build/dev/reports/codex_review.diff
-A	docs_build/dev/reports/legacy-docs-archive-report.md
-D	docs_build/dev/restart_notes_11_105.md
-D	docs_build/dev/restart_notes_11_110.md
-D	docs_build/dev/restart_notes_11_111.md
-D	docs_build/dev/restart_notes_11_112.md
-D	docs_build/dev/restart_notes_11_116.md
-D	docs_build/dev/restart_notes_11_118.md
-D	docs_build/dev/restart_notes_11_119.md
-D	docs_build/dev/restart_notes_11_120.md
-D	docs_build/dev/restart_notes_11_121.md
-D	docs_build/dev/restart_notes_11_122.md
-D	docs_build/dev/restart_notes_11_123.md
-D	docs_build/dev/validation_checklist.txt
-A	project-instructions/README.md
+assets/toolbox/hitboxes/js/index.js
+docs_build/dev/admin-notes/tools/index.txt
+docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation.md
+docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation_branch-validation.md
+docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation_manual-validation-notes.md
+docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation_requirement-checklist.md
+docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation_validation-lane.md
+src/shared/toolbox/tool-metadata-inventory.js
+toolbox/hitboxes/index.html
+docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/codex_review.diff
