@@ -16,6 +16,16 @@ Status: PASS
 - PASS: Deleted bundle_readme.md and validation_checklist.txt.
 - PASS: Updated active references to moved paths.
 - PASS: docs_build/dev root no longer contains active loose instruction, audit, contract, or PR files.
+- PASS: Added Tool MVP Stacked PR Standard under docs_build/dev/ProjectInstructions/.
+- PASS: Documented one large Codex command -> multiple focused stacked PRs -> each PR has a testable Creator outcome.
+- PASS: Documented no giant PR and no stopping after every small PR unless blocked.
+- PASS: Documented independently scoped Creator-testable PRs.
+- PASS: Documented required question: What can Mr. Q test after applying this ZIP?
+- PASS: Documented stack continuation blockers.
+- PASS: Documented Creator-facing visible acceptance first for tool MVP PR planning.
+- PASS: Documented Hitboxes MVP example stack.
+- PASS: Updated PR planning/template requirements for tool MVP PRs.
+- PASS: Updated report requirements for tool MVP PRs.
 - PASS: project-instructions/** changes were removed from this PR except for a tiny deprecated pointer README.
 - PASS: Ambiguous old docs were reviewed before cleanup; unique current governance content exists under docs_build/dev/ProjectInstructions/.
 - PASS: docs_build/dev/ProjectInstructions/** was not deleted.

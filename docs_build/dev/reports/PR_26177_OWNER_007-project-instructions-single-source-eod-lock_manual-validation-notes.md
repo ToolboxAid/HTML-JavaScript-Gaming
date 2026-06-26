@@ -10,6 +10,8 @@ Status: PASS
 - Moved PR-specific docs into docs_build/dev/pr/.
 - Moved audit outputs into docs_build/dev/reports/audits/.
 - Deleted stale bundle metadata from docs_build/dev root.
+- Added Tool MVP Stacked PR Standard as active ProjectInstructions governance.
+- Updated PR workflow/template and reporting governance for tool MVP PRs.
 - Reviewed ambiguous old project-instructions addendum files and left them unchanged in this PR.
 - Confirmed active/current governance content is under docs_build/dev/ProjectInstructions/.
 - Confirmed docs_build/dev/ProjectInstructions/** was preserved.

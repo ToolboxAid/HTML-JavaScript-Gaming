@@ -34,6 +34,24 @@ Codex responses must include:
 - Merge commit(s)
 - Validation results
 
+## Tool MVP PR Report Requirements
+
+Every tool MVP PR report must include:
+- Creator-testable outcome
+- What Playwright tests
+- What Mr. Q should manually test
+- Whether the PR is part of a stacked MVP sequence
+- Previous PR dependency
+- Next PR dependency
+
+The report must answer:
+
+```text
+What can Mr. Q test after applying this ZIP?
+```
+
+If a tool MVP PR has no Playwright lane, the report must state why and list the manual Creator validation instead.
+
 ## Code Change Reporting
 
 When a ZIP is uploaded, report executable code changes only.

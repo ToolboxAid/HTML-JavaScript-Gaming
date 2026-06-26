@@ -118,6 +118,28 @@ For governance, documentation, and administrative work, use Batch Governance Mod
 
 Use stacked sequential PRs only when dependency order requires it.
 
+## Tool MVP Stacked PRs
+
+Tool MVP work must follow:
+
+`docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md`
+
+For tool MVPs, use one large Codex command, multiple focused stacked PRs, and one testable Creator outcome per PR.
+
+Do not create one giant PR.
+
+Do not stop after every small PR unless blocked by branch state, failed validation, missing source files, Project Instructions conflict, or an unresolved dependency from a prior PR.
+
+Each tool MVP PR plan or template must include:
+- Creator-testable outcome
+- What Playwright tests
+- What Mr. Q should manually test
+- Whether the PR is part of a stacked MVP sequence
+- Previous PR dependency
+- Next PR dependency
+
+Visible acceptance must be Creator-facing first. Architecture can be handled under the covers, but the PR purpose must be user-testable.
+
 ## OWNER Shortcut: PRs
 
 Keyword:

@@ -56,6 +56,8 @@ Existing Project Instructions outside `docs_build/dev/ProjectInstructions/` rema
 
 `docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md` defines the King of the Iceberg layout data contract.
 
+`docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md` defines the Creator-facing stacked PR standard for tool MVP work.
+
 ## Single Source and Main Lock Governance
 
 `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md` defines the single active Project Instructions source, canonical START / WORK / END branch lifecycle, EOD main lock, next-day reset, team branch creation gate, daily synchronization baseline, and mandatory hard stops.

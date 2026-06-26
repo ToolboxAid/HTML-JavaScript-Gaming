@@ -18,6 +18,8 @@ This `docs_build/dev/pr/BUILD_PR.md`, `docs_build/dev/pr/PLAN_PR.md`, and the us
 - Move active governance/contract docs from `docs_build/dev/` root into `docs_build/dev/ProjectInstructions/addendums/`.
 - Move audit outputs from `docs_build/dev/` root into `docs_build/dev/reports/audits/`.
 - Delete stale one-off bundle metadata from `docs_build/dev/` root.
+- Add Tool MVP Stacked PR Standard under `docs_build/dev/ProjectInstructions/`.
+- Update PR planning/template and report requirements for tool MVP PRs.
 - Keep preserved historical ProjectInstructions material reference-only.
 - Keep `project-instructions/` out of this PR except for a tiny deprecated pointer.
 - Update active team start/governance docs to reference only `docs_build/dev/ProjectInstructions/`.
@@ -34,6 +36,7 @@ This `docs_build/dev/pr/BUILD_PR.md`, `docs_build/dev/pr/PLAN_PR.md`, and the us
 - `docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md`
 - `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md`
 - `docs_build/dev/ProjectInstructions/addendums/*.md`
+- `docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md`
 - `docs_build/dev/reports/audits/*.md`
 - `project-instructions/README.md` (tiny deprecated pointer only)
 - `docs_build/dev/PROJECT_INSTRUCTIONS.md` (delete)
@@ -86,6 +89,7 @@ Test-Path docs_build/dev/css-audit.md
 Test-Path docs_build/dev/bundle_readme.md
 Test-Path docs_build/dev/validation_checklist.txt
 rg -n 'only active Project Instructions source|docs_build/dev/ProjectInstructions/' docs_build/dev/ProjectInstructions
+rg -n 'Tool MVP Stacked PR Standard|Creator-testable outcome|What can Mr\\. Q test after applying this ZIP|What Playwright tests|What Mr\\. Q should manually test|Previous PR dependency|Next PR dependency' docs_build/dev/ProjectInstructions
 rg -n 'docs_build/dev/PROJECT_INSTRUCTIONS.md.*source of truth|Codex must always read `docs_build/dev/PROJECT_INSTRUCTIONS.md`|Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`' docs_build/dev/ProjectInstructions project-instructions
 git diff --name-status $(git merge-base HEAD origin/main) -- project-instructions
 git diff --name-status $(git merge-base HEAD origin/main) -- docs_build/dev/pr docs_build/dev/ProjectInstructions/addendums docs_build/dev/reports/audits

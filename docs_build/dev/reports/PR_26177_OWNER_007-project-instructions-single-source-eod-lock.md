@@ -2,7 +2,7 @@
 
 Date: 2026-06-26
 Branch: PR_26177_OWNER_007-project-instructions-single-source-eod-lock
-Scope: Project Instructions single-source governance, EOD main lock, branch lifecycle governance, and docs_build/dev root cleanup
+Scope: Project Instructions single-source governance, EOD main lock, branch lifecycle governance, docs_build/dev root cleanup, and Tool MVP stacked PR governance
 Status: PASS
 
 ## Summary
@@ -16,10 +16,25 @@ Status: PASS
 - Moved active governance/contract root docs into docs_build/dev/ProjectInstructions/addendums/.
 - Moved audit outputs into docs_build/dev/reports/audits/.
 - Deleted stale one-off bundle metadata from docs_build/dev root.
+- Added docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md.
+- Updated PR workflow governance so tool MVP PR plans/templates include Creator-testable outcome, Playwright test scope, Mr. Q manual test scope, stacked MVP sequence membership, and previous/next PR dependencies.
+- Updated Codex artifact/reporting governance so every tool MVP PR report includes those same fields and answers what Mr. Q can test after applying the ZIP.
 - Corrected project-instructions/** scope so the PR only adds a tiny deprecated pointer README there.
 - Preserved project-instructions/addendums/** unchanged in the PR; unique current governance content is carried by docs_build/dev/ProjectInstructions/addendums/.
 - Confirmed docs_build/dev root no longer contains active loose instruction, audit, contract, or PR files.
 - No product/runtime, start_of_day, feature, or legacy SQLite file changes were made.
+
+## Tool MVP Stacked PR Standard
+
+Added governance:
+- One large Codex command -> multiple focused stacked PRs -> each PR has a testable Creator outcome.
+- No one giant PR.
+- No stopping after every small PR unless blocked.
+- Each PR is independently scoped and Creator-testable.
+- Each PR answers: What can Mr. Q test after applying this ZIP?
+- Codex continues through the stack unless blocked by branch state, failed validation, missing source files, Project Instructions conflict, or unresolved prior-PR dependency.
+- Visible acceptance for tool MVP planning is Creator-facing first.
+- Hitboxes MVP example stack is included.
 
 ## Moved To ProjectInstructions SSoT
 
@@ -68,15 +83,6 @@ Deleted stale one-off root files:
 - docs_build/dev/bundle_readme.md
 - docs_build/dev/validation_checklist.txt
 
-## Ambiguous Old Docs Handling
-
-- Reviewed loose root docs before moving or deleting them.
-- Moved active/contract content into docs_build/dev/ProjectInstructions/addendums/.
-- Moved one-off PR docs into docs_build/dev/pr/ instead of deleting them by filename.
-- Moved audit outputs into docs_build/dev/reports/audits/.
-- Removed project-instructions/addendums/** edits from the PR so old files remain historical reference, not a second active source.
-- Added only project-instructions/README.md as a tiny deprecated pointer to docs_build/dev/ProjectInstructions/.
-
 ## Validation
 
 - PASS: current branch is PR_26177_OWNER_007-project-instructions-single-source-eod-lock.
@@ -84,6 +90,9 @@ Deleted stale one-off root files:
 - PASS: targeted path checks confirm duplicate root instruction files, moved root files, and listed stale one-off files are absent.
 - PASS: project-instructions/** PR diff is limited to project-instructions/README.md.
 - PASS: active moved governance/contract docs are indexed in docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md and README.txt.
+- PASS: Tool MVP Stacked PR Standard exists and includes required governance text.
+- PASS: PR workflow/template requirements include Creator-testable outcome, Playwright tests, Mr. Q manual test, stack membership, and previous/next dependency.
+- PASS: Codex report requirements include Creator-testable outcome, Playwright tests, Mr. Q manual test, stack membership, and previous/next dependency.
 - PASS: targeted grep found no active duplicate ProjectInstructions source-of-truth claim outside the active source.
 - PASS: targeted grep confirmed canonical lifecycle language appears in active governance docs.
 - PASS: product/runtime and start_of_day changed-file check returned no files.
