@@ -39,6 +39,66 @@ test("Sprites shell loads API-backed empty state without inline page code", asyn
   }
 });
 
+test("Sprites shell is reachable from the Toolbox navigation route", async ({ page }) => {
+  const server = await startRepoServer();
+  await page.route("**/api/sprites/records", async (route) => {
+    await route.fulfill({
+      body: JSON.stringify({ data: { sprites: [] }, ok: true }),
+      contentType: "application/json",
+      status: 200,
+    });
+  });
+  await workspaceV2CoverageReporter.start(page);
+  try {
+    await page.goto(`${server.baseUrl}/`, { waitUntil: "networkidle" });
+    const spritesLink = page.locator("[data-toolbox-menu-item][data-route='sprites']").first();
+    await expect(spritesLink).toHaveAttribute("href", "toolbox/sprites/index.html");
+    const href = await spritesLink.getAttribute("href");
+    await page.goto(`${server.baseUrl}/${href}`, { waitUntil: "networkidle" });
+    await expect(page.getByRole("heading", { level: 1, name: "Sprites" })).toBeVisible();
+    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await server.close();
+  }
+});
+
+test("Sprites shell keeps Palette and storage follow-ups visible without owning color data", async ({ page }) => {
+  const server = await openSpritesPage(page, async (currentPage) => {
+    await currentPage.route("**/api/sprites/records", async (route) => {
+      await route.fulfill({
+        body: JSON.stringify({
+          data: {
+            sprites: [
+              {
+                key: "01J1SPRITEPOLISH0000000000",
+                name: "Polish Sprite",
+                paletteColorKeys: ["palette_color_polish"],
+                status: "ready",
+                updatedAt: "2026-06-26T14:00:00.000Z",
+                usageCount: 0,
+              },
+            ],
+          },
+          ok: true,
+        }),
+        contentType: "application/json",
+        status: 200,
+      });
+    });
+  });
+
+  try {
+    await expect(page.locator("[data-sprites-palette-status]")).toContainText("1 Palette/Colors key reference");
+    await expect(page.locator("[data-sprites-palette-selection-status]")).toContainText("display-only");
+    await expect(page.locator("[data-sprites-storage-status]")).toContainText("Binary upload/storage import is not configured");
+    await expect(page.locator("[data-sprites-table-body]")).toContainText("palette_color_polish");
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await server.close();
+  }
+});
+
 test("Sprites shell renders records and Palette/Colors key references from API response", async ({ page }) => {
   const server = await openSpritesPage(page, async (currentPage) => {
     await currentPage.route("**/api/sprites/records", async (route) => {

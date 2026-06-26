@@ -23,10 +23,14 @@
 
 ### Graphics
 
-0% Complete — Create the visual look of your game
+20% Complete — Create the visual look of your game
 
 - [ ] Bravo - Asset Studio V2
-- [ ] Bravo - Sprite Studio V2
+- [x] Charlie - Sprites MVP
+  - Completion reference: PR_26177_CHARLIE_009 through PR_26177_CHARLIE_016.
+  - Scope: API-backed Sprites asset management MVP.
+  - Palette/Colors remains the reusable color source of truth.
+  - Future enhancements only: binary storage upload, Palette/Colors selector integration, and deeper cross-tool references.
 - [ ] Bravo - Animation Studio V2
 - [ ] Bravo - Palette Manager
 - [ ] Bravo - Video Studio

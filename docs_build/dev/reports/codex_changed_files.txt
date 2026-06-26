@@ -1,24 +1,22 @@
 # git status --short
-M assets/toolbox/sprites/js/index.js
+M docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
  M tests/playwright/tools/SpritesToolShell.spec.mjs
- M toolbox/sprites/index.html
-?? docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-branch-validation.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-manual-validation-notes.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-requirements-checklist.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-validation-lane.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_016-sprites-playwright-final-polish-branch-validation.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_016-sprites-playwright-final-polish-manual-validation-notes.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_016-sprites-playwright-final-polish-requirements-checklist.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_016-sprites-playwright-final-polish-validation-lane.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_016-sprites-playwright-final-polish.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-branch-validation.md
-docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-manual-validation-notes.md
-docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-requirements-checklist.md
-docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-validation-lane.md
-docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection.md
+docs_build/dev/reports/PR_26177_CHARLIE_016-sprites-playwright-final-polish-branch-validation.md
+docs_build/dev/reports/PR_26177_CHARLIE_016-sprites-playwright-final-polish-manual-validation-notes.md
+docs_build/dev/reports/PR_26177_CHARLIE_016-sprites-playwright-final-polish-requirements-checklist.md
+docs_build/dev/reports/PR_26177_CHARLIE_016-sprites-playwright-final-polish-validation-lane.md
+docs_build/dev/reports/PR_26177_CHARLIE_016-sprites-playwright-final-polish.md
 
 # git diff --stat
-assets/toolbox/sprites/js/index.js                 | 63 +++++++++++++++++++-
- .../dev/reports/playwright_v8_coverage_report.txt  |  2 +-
- tests/playwright/tools/SpritesToolShell.spec.mjs   | 69 +++++++++++++++++++++-
- toolbox/sprites/index.html                         |  9 +++
- 4 files changed, 138 insertions(+), 5 deletions(-)
+.../ProjectInstructions/backlog/BACKLOG_MASTER.md  |  8 ++-
+ .../dev/reports/playwright_v8_coverage_report.txt  |  4 +-
+ tests/playwright/tools/SpritesToolShell.spec.mjs   | 60 ++++++++++++++++++++++
+ 3 files changed, 68 insertions(+), 4 deletions(-)
