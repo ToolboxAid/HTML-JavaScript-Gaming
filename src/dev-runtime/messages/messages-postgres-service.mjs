@@ -24,17 +24,12 @@ const SEED_EMOTION_PROFILES = Object.freeze([
   Object.freeze({ description: "Bright delivery for reveals, wins, and high-energy moments.", name: "Excited", pauseAfterMs: 100, pauseBeforeMs: 0, pitch: 1.12, rate: 1.12, volume: 1 }),
   Object.freeze({ description: "Soft delivery for loss, regret, or reflective moments.", name: "Sad", pauseAfterMs: 220, pauseBeforeMs: 100, pitch: 0.9, rate: 0.85, volume: 0.8 }),
   Object.freeze({ description: "Measured delivery for suspense, hidden lore, or strange events.", name: "Mysterious", pauseAfterMs: 260, pauseBeforeMs: 120, pitch: 0.92, rate: 0.88, volume: 0.85 }),
-  Object.freeze({ description: "Synthetic delivery for mechanical or artificial characters.", name: "Robot", pauseAfterMs: 120, pauseBeforeMs: 40, pitch: 0.82, rate: 0.92, volume: 0.9 }),
 ]);
 const SEED_TTS_PROFILES = Object.freeze([
   Object.freeze({ description: "Default Text To Speech browser profile.", language: "en-US", name: "Default Balanced Profile", pitch: 1, providerKey: "browser-speech", rate: 1, voiceName: "Default browser voice", volume: 1 }),
-  Object.freeze({ description: "Starter Text To Speech browser profile.", language: "en-US", name: "Man Profile 1", pitch: 1, providerKey: "browser-speech", rate: 1, voiceName: "Default browser voice", volume: 1 }),
-  Object.freeze({ description: "Starter Text To Speech browser profile.", language: "en-US", name: "Woman Profile 2", pitch: 1, providerKey: "browser-speech", rate: 1, voiceName: "Default browser voice", volume: 1 }),
 ]);
 const SEED_TTS_PROFILE_EMOTION_SETTINGS = Object.freeze([
   Object.freeze({ emotions: ["Neutral", "Calm", "Urgent"], ttsProfileName: "Default Balanced Profile" }),
-  Object.freeze({ emotions: ["Neutral", "Calm", "Urgent"], ttsProfileName: "Man Profile 1" }),
-  Object.freeze({ emotions: ["Whisper", "Robot"], ttsProfileName: "Woman Profile 2" }),
 ]);
 const SUPPORTED_TTS_PROVIDER_KEYS = Object.freeze([
   "browser-speech",
@@ -293,6 +288,11 @@ function normalizeInteger(value, fallback) {
 function normalizeActorKey(actorKey) {
   const normalized = normalizeText(actorKey).trim();
   return normalized || SEED_DB_KEYS.users.forgeBot;
+}
+
+function messagesWriteRequiresAuthenticatedActor(resource, method) {
+  return String(method || "GET").toUpperCase() === "POST"
+    && ["emotion-profiles", "tts-profiles"].includes(resource);
 }
 
 function activeFromDatabase(value) {
@@ -1830,6 +1830,9 @@ export async function handleMessagesApiContract({
   const resource = parts[0] || "";
   const key = parts[1] || "";
   const action = parts[2] || "";
+  if (messagesWriteRequiresAuthenticatedActor(resource, normalizedMethod) && !normalizeText(actorKey).trim()) {
+    throw httpError("Sign in required to save Text To Speech profiles and emotions.", 401);
+  }
 
   if (resource === "publish-validation" && normalizedMethod === "GET" && !key) {
     return {

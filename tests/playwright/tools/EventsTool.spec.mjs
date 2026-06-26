@@ -30,7 +30,7 @@ async function createMessage(server) {
   const emotionResult = await jsonRequest(`${server.baseUrl}/api/messages/emotion-profiles`);
   const voiceResult = await jsonRequest(`${server.baseUrl}/api/messages/tts-profiles`);
   const urgent = emotionResult.payload.data.emotionProfiles.find((profile) => profile.name === "Urgent");
-  const ttsProfile = voiceResult.payload.data.ttsProfiles.find((profile) => profile.name === "Man Profile 1");
+  const ttsProfile = voiceResult.payload.data.ttsProfiles.find((profile) => profile.name === "Default Balanced Profile");
   expect(urgent).toBeTruthy();
   expect(ttsProfile).toBeTruthy();
   const messageResult = await jsonRequest(`${server.baseUrl}/api/messages/messages`, {

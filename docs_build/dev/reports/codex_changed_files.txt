@@ -1,6 +1,13 @@
 assets/toolbox/text-to-speech/js/index.js
+docs_build/database/seed/messages.json
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/PR_26177_BRAVO_004-fix-emotion-preview-parent-voice.md
+docs_build/dev/reports/PR_26177_BRAVO_005-fix-tts-seed-profiles-and-guest-save-routing.md
+src/dev-runtime/messages/messages-postgres-service.mjs
+src/dev-runtime/server/local-api-router.mjs
+tests/dev-runtime/DbSeedIntegrity.test.mjs
+tests/dev-runtime/MessagesPublishValidation.test.mjs
+tests/playwright/tools/EventsTool.spec.mjs
+tests/playwright/tools/MessagesTool.spec.mjs
 tests/playwright/tools/TextToSpeechFunctional.spec.mjs
 tests/tools/Text2SpeechShell.test.mjs

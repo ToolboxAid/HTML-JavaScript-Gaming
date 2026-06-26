@@ -29,7 +29,7 @@ test("Messages publish validation passes publish-ready message configuration", a
   const { service } = createServiceHarness();
 
   const emotion = (await service.listEmotionProfiles()).find((profile) => profile.name === "Calm");
-  const voice = (await service.listTtsProfiles()).find((profile) => profile.name === "Man Profile 1");
+  const voice = (await service.listTtsProfiles()).find((profile) => profile.name === "Default Balanced Profile");
   assert.ok(emotion);
   assert.ok(voice);
 
@@ -135,7 +135,7 @@ test("Messages TTS profiles expose usage counts and block referenced profile del
   const { service } = createServiceHarness();
 
   const emotion = (await service.listEmotionProfiles()).find((profile) => profile.name === "Calm");
-  const voice = (await service.listTtsProfiles()).find((profile) => profile.name === "Man Profile 1");
+  const voice = (await service.listTtsProfiles()).find((profile) => profile.name === "Default Balanced Profile");
   assert.ok(emotion);
   assert.ok(voice);
 
@@ -183,23 +183,38 @@ test("Messages enforces profile-scoped Emotion Profiles for save and publish val
   const { postgresClient, service } = createServiceHarness();
 
   const profiles = await service.listTtsProfiles();
-  const man = profiles.find((profile) => profile.name === "Man Profile 1");
-  const woman = profiles.find((profile) => profile.name === "Woman Profile 2");
+  const defaultProfile = profiles.find((profile) => profile.name === "Default Balanced Profile");
   const urgent = (await service.listEmotionProfiles()).find((profile) => profile.name === "Urgent");
   const whisper = (await service.listEmotionProfiles()).find((profile) => profile.name === "Whisper");
-  assert.ok(man);
-  assert.ok(woman);
+  assert.ok(defaultProfile);
   assert.ok(urgent);
   assert.ok(whisper);
-  assert.deepEqual(man.emotionSettings.map((setting) => setting.emotionLabel), ["Neutral", "Calm", "Urgent"]);
-  assert.deepEqual(woman.emotionSettings.map((setting) => setting.emotionLabel), ["Whisper", "Robot"]);
+  assert.deepEqual(defaultProfile.emotionSettings.map((setting) => setting.emotionLabel), ["Neutral", "Calm", "Urgent"]);
+
+  const whisperProfile = await service.createTtsProfile({
+    active: true,
+    emotionSettings: [{
+      emotion: "whisper",
+      emotionLabel: "Whisper",
+      pitch: 0.95,
+      rate: 0.9,
+      volume: 0.55,
+    }],
+    language: "en-US",
+    name: "Whisper Test Profile",
+    pitch: 1,
+    providerKey: "browser-speech",
+    rate: 1,
+    voiceName: "Default browser voice",
+    volume: 1,
+  });
 
   await assert.rejects(
     () => service.createMessage({
       emotionProfileKey: urgent.key,
       messageText: "Wrong scoped emotion.",
       name: "Wrong Scoped Emotion",
-      voiceProfileKey: woman.key,
+      voiceProfileKey: whisperProfile.key,
     }),
     /Add this Emotion Profile to the selected TTS Profile/,
   );
@@ -213,7 +228,7 @@ test("Messages enforces profile-scoped Emotion Profiles for save and publish val
       messageText: "Publish should catch missing profile emotion.",
       name: "Missing Profile Emotion Setting",
       notes: "",
-      voiceProfileKey: man.key,
+      voiceProfileKey: defaultProfile.key,
     }),
     method: "POST",
   });
@@ -279,5 +294,63 @@ test("Messages TTS profile saves accept creator-facing Emotion labels and protec
     }),
     /Emotion Profile Urgent is referenced/,
   );
+  service.close();
+});
+
+test("Messages API requires sign-in for Text To Speech profile and emotion writes", async () => {
+  const { service } = createServiceHarness();
+
+  await assert.rejects(
+    () => handleMessagesApiContract({
+      body: {
+        language: "en-US",
+        name: "Guest TTS Profile",
+        providerKey: "browser-speech",
+        voiceName: "Default browser voice",
+      },
+      method: "POST",
+      parts: ["tts-profiles"],
+      service,
+    }),
+    /Sign in required to save Text To Speech profiles and emotions/,
+  );
+  await assert.rejects(
+    () => handleMessagesApiContract({
+      body: {
+        name: "Guest Emotion Profile",
+        pitch: 1,
+        rate: 1,
+        volume: 1,
+      },
+      method: "POST",
+      parts: ["emotion-profiles"],
+      service,
+    }),
+    /Sign in required to save Text To Speech profiles and emotions/,
+  );
+
+  const authenticated = await handleMessagesApiContract({
+    actorKey: "test-author",
+    body: {
+      emotionSettings: [{
+        emotion: "neutral",
+        emotionLabel: "Neutral",
+        pitch: 1,
+        rate: 1,
+        volume: 1,
+      }],
+      language: "en-US",
+      name: "Authenticated TTS Profile",
+      pitch: 1,
+      providerKey: "browser-speech",
+      rate: 1,
+      voiceName: "Default browser voice",
+      volume: 1,
+    },
+    method: "POST",
+    parts: ["tts-profiles"],
+    service,
+  });
+  assert.equal(authenticated.ttsProfile.name, "Authenticated TTS Profile");
   service.close();
 });

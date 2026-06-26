@@ -95,22 +95,18 @@ test("Messages Local API seeds through the Postgres service and preserves respon
     assert.ok(urgent, "Messages emotion profiles should include Urgent");
 
     const ttsProfiles = await apiJson(server.baseUrl, "/api/messages/tts-profiles");
-    const manProfile = ttsProfiles.ttsProfiles.find((profile) => profile.name === "Man Profile 1");
-    const womanProfile = ttsProfiles.ttsProfiles.find((profile) => profile.name === "Woman Profile 2");
-    assert.ok(manProfile, "Messages TTS profiles should include Man Profile 1 from Text To Speech");
-    assert.ok(womanProfile, "Messages TTS profiles should include Woman Profile 2 from Text To Speech");
-    assert.equal(ttsProfiles.ttsProfiles.some((profile) => profile.name === "Default Balanced Profile"), true);
-    assert.equal(manProfile.emotionSettings.some((setting) => setting.emotionLabel === "Neutral"), true);
-    assert.equal(womanProfile.emotionSettings.some((setting) => setting.emotionLabel === "Robot"), true);
-    assert.equal(manProfile.gender, "");
-    assert.equal(womanProfile.gender, "");
+    const defaultProfile = ttsProfiles.ttsProfiles.find((profile) => profile.name === "Default Balanced Profile");
+    assert.deepEqual(ttsProfiles.ttsProfiles.map((profile) => profile.name), ["Default Balanced Profile"]);
+    assert.ok(defaultProfile, "Messages TTS profiles should include the default-safe Text To Speech profile");
+    assert.deepEqual(defaultProfile.emotionSettings.map((setting) => setting.emotionLabel), ["Neutral", "Calm", "Urgent"]);
+    assert.equal(defaultProfile.gender, "");
 
     const created = await apiJson(server.baseUrl, "/api/messages/messages", {
       body: JSON.stringify({
         emotionProfileKey: urgent.key,
         messageText: "Postgres-backed message text.",
         name: "Postgres Cutover Message",
-        voiceProfileKey: manProfile.key,
+        voiceProfileKey: defaultProfile.key,
       }),
       method: "POST",
     });
@@ -118,7 +114,7 @@ test("Messages Local API seeds through the Postgres service and preserves respon
     assert.equal(created.message.categoryName, "Dialog");
     assert.equal(created.message.emotionProfileName, "Urgent");
     assert.equal(created.message.messageText, "Postgres-backed message text.");
-    assert.equal(created.message.voiceProfileName, "Man Profile 1");
+    assert.equal(created.message.voiceProfileName, "Default Balanced Profile");
 
     const segment = await apiJson(server.baseUrl, "/api/messages/segments", {
       body: JSON.stringify({
@@ -126,13 +122,13 @@ test("Messages Local API seeds through the Postgres service and preserves respon
         emotionProfileKey: urgent.key,
         messageKey: created.message.key,
         segmentText: "Postgres-backed message part.",
-        voiceProfileKey: manProfile.key,
+        voiceProfileKey: defaultProfile.key,
       }),
       method: "POST",
     });
     assert.equal(segment.segment.messageName, "Postgres Cutover Message");
     assert.equal(segment.segment.emotionProfileName, "Urgent");
-    assert.equal(segment.segment.voiceProfileName, "Man Profile 1");
+    assert.equal(segment.segment.voiceProfileName, "Default Balanced Profile");
 
     const list = await apiJson(server.baseUrl, "/api/messages/messages");
     const listed = list.messages.find((message) => message.key === created.message.key);

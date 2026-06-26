@@ -115,9 +115,8 @@ test("Text2Speech profile helpers preserve creator-facing default emotion settin
   assert.equal(TTS_PROFILE_CONTRACT_VERSION, "tts-profile-emotion-v1");
   assert.equal(defaults[0].name, "Default Balanced Profile");
   assert.equal(defaults[0].messageStudioUsageCount, 1);
-  assert.deepEqual(defaults[0].emotions.map((emotion) => emotion.emotionLabel), ["Neutral", "Happy", "Angry", "Scared"]);
-  assert.deepEqual(defaults[1].emotions.map((emotion) => emotion.emotionLabel), ["Neutral", "Happy", "Angry", "Scared"]);
-  assert.deepEqual(defaults[2].emotions.map((emotion) => emotion.emotionLabel), ["Neutral", "Happy", "Angry", "Scared"]);
+  assert.equal(defaults.length, 1);
+  assert.deepEqual(defaults[0].emotions.map((emotion) => emotion.emotionLabel), ["Neutral", "Calm", "Urgent"]);
   assert.equal(defaults[0].emotions.find((emotion) => emotion.emotion === "neutral").messagePartsUsageCount, 1);
   assert.deepEqual(custom, {
     active: true,
@@ -163,4 +162,6 @@ test("Text2Speech runtime uses Local API profile contracts instead of browser-ow
   assert.equal(source.includes("createTtsProfile"), true);
   assert.equal(source.includes("updateTtsProfile"), true);
   assert.equal(source.includes("deleteTtsProfile"), true);
+  assert.equal(source.includes("getSessionCurrent"), true);
+  assert.equal(source.includes("account/sign-in.html"), true);
 });

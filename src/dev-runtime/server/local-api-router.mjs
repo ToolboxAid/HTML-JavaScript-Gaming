@@ -6229,7 +6229,7 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
   }
 
   messagesActorKey() {
-    return this.sessionUserKey || SEED_DB_KEYS.users.forgeBot;
+    return this.sessionUserKey || "";
   }
 
   async messagesApiContract(method, parts, body) {

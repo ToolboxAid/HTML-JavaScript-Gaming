@@ -16,6 +16,7 @@
       "Notification"
     ],
     "messages_emotion_profiles": [
+      "Neutral",
       "Calm",
       "Urgent",
       "Whisper",
@@ -25,8 +26,7 @@
       "Mysterious"
     ],
     "messages_tts_profiles": [
-      "Browser Speech Default",
-      "Narration Preview"
+      "Default Balanced Profile"
     ],
     "messages_records": [],
     "messages_segments": []

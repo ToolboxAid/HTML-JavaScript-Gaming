@@ -1,12 +1,25 @@
 import { expect, test } from "@playwright/test";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
+import { SEED_DB_KEYS } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
 
 test.afterAll(async () => {
   await workspaceV2CoverageReporter.writeReport();
 });
 
-async function openTextToSpeechPage(page, { speechAvailable = true } = {}) {
+async function jsonRequest(url, options = {}) {
+  const response = await fetch(url, {
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {}),
+    },
+    ...options,
+  });
+  const payload = await response.json().catch(() => null);
+  return { payload, response };
+}
+
+async function openTextToSpeechPage(page, { authenticated = true, speechAvailable = true } = {}) {
   const server = await startRepoServer();
   const failures = {
     consoleErrors: [],
@@ -23,6 +36,16 @@ async function openTextToSpeechPage(page, { speechAvailable = true } = {}) {
     if (response.status() >= 400) failures.failedRequests.push(`${response.status()} ${response.url()}`);
   });
   page.on("requestfailed", (request) => failures.failedRequests.push(`FAILED ${request.url()}`));
+
+  if (authenticated) {
+    const session = await jsonRequest(`${server.baseUrl}/api/session/user`, {
+      body: JSON.stringify({ userKey: SEED_DB_KEYS.users.user1 }),
+      method: "POST",
+    });
+    if (!session.payload?.ok) {
+      throw new Error("Unable to authenticate Text To Speech Playwright session.");
+    }
+  }
 
   await page.addInitScript(({ apiUrl, siteUrl, speechAvailable: enabled }) => {
     Object.defineProperty(Navigator.prototype, "webdriver", {
@@ -127,11 +150,11 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
     await expect(page.getByText("Presets", { exact: true })).toHaveCount(0);
 
     await expect(page.locator("[data-tts-voice-count]")).toHaveText("2");
-    await expect(page.locator("[data-tts-profile-count]")).toHaveText("3");
-    await expect(page.locator("[data-tts-emotion-count]")).toHaveText("8");
+    await expect(page.locator("[data-tts-profile-count]")).toHaveText("1");
+    await expect(page.locator("[data-tts-emotion-count]")).toHaveText("3");
     await expect(page.locator("[data-tts-profile-table]")).toContainText("Default Balanced Profile");
-    await expect(page.locator("[data-tts-profile-table]")).toContainText("Man Profile 1");
-    await expect(page.locator("[data-tts-profile-table]")).toContainText("Woman Profile 2");
+    await expect(page.locator("[data-tts-profile-table]")).not.toContainText("Hero");
+    await expect(page.locator("[data-tts-profile-table]")).not.toContainText("Merchant");
     await expect(page.getByLabel("TTS Profiles").getByRole("columnheader")).toHaveText([
       "Profile",
       "Gender",
@@ -180,15 +203,7 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
       volume: 1,
     }));
     await expect(page.locator("[data-tts-emotion-add-control-row]").getByRole("button", { name: "Add Emotion" })).toBeVisible();
-    await page.locator("[data-tts-profile-row]").filter({ hasText: "Man Profile 1" }).locator("[data-tts-profile-name-cell]").click();
-    await expect(page.locator("[data-tts-emotion-row]")).toHaveCount(3);
-    await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Neutral" })).toBeVisible();
-    await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Calm" })).toBeVisible();
-    await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Urgent" })).toBeVisible();
-    await page.locator("[data-tts-profile-row]").filter({ hasText: "Woman Profile 2" }).locator("[data-tts-profile-name-cell]").click();
-    await expect(page.locator("[data-tts-emotion-row]")).toHaveCount(2);
-    await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Whisper" })).toBeVisible();
-    await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Robot" })).toBeVisible();
+    await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Robot" })).toHaveCount(0);
 
     await expect(page.locator("[data-tts-profile-add-control-row]").getByRole("button", { name: "Add Profile" })).toBeVisible();
     await page.locator("[data-tts-profile-add-control-row]").getByRole("button", { name: "Add Profile" }).click();
@@ -291,6 +306,24 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
   }
 });
 
+test("Text To Speech guest profile save redirects to sign in", async ({ page }) => {
+  const failures = await openTextToSpeechPage(page, { authenticated: false });
+  try {
+    await expect(page.getByRole("heading", { level: 1, name: "Text To Speech" })).toBeVisible();
+    await expect(page.locator("[data-tts-profile-count]")).toHaveText("1");
+    await page.locator("[data-tts-profile-add-control-row]").getByRole("button", { name: "Add Profile" }).click();
+    await page.locator("[data-tts-profile-editor='__new__'] [data-tts-profile-name]").fill("Guest Save Profile");
+    await page.locator("[data-tts-commit-profile='__new__']").click();
+    await page.waitForURL(/\/account\/sign-in\.html$/);
+
+    expect(failures.failedRequests).toEqual([]);
+    expect(failures.pageErrors).toEqual([]);
+    expect(failures.consoleErrors).toEqual([]);
+  } finally {
+    await closeTextToSpeechRun(failures, page);
+  }
+});
+
 test("Text To Speech is registered on the toolbox index with the active toolbox path", async ({ page }) => {
   const server = await startRepoServer();
   const failures = {
@@ -342,8 +375,8 @@ test("Text To Speech shows actionable error when browser speech synthesis is una
   const failures = await openTextToSpeechPage(page, { speechAvailable: false });
   try {
     await expect(page.getByRole("heading", { level: 1, name: "Text To Speech" })).toBeVisible();
-    await expect(page.locator("[data-tts-profile-count]")).toHaveText("3");
-    await expect(page.locator("[data-tts-emotion-count]")).toHaveText("8");
+    await expect(page.locator("[data-tts-profile-count]")).toHaveText("1");
+    await expect(page.locator("[data-tts-emotion-count]")).toHaveText("3");
     await expect(page.locator("[data-tts-engine-status]")).toContainText("SpeechSynthesis is unavailable");
     await expect(page.locator("[data-tts-status]")).toContainText("Use a browser with Web Speech API support");
     await expect(page.locator("[data-tts-voice-select]")).toHaveCount(0);

@@ -16,6 +16,7 @@ import {
   listTtsProfiles,
   updateTtsProfile,
 } from "../../../../toolbox/messages/messages-api-client.js";
+import { getSessionCurrent } from "../../../../src/api/session-api-client.js";
 
 const TTS_OWNERSHIP = Object.freeze({
   DESIGN: "Design",
@@ -78,6 +79,7 @@ const TTS_PROFILE_CONTRACT_VERSION = "tts-profile-emotion-v1";
 const NEW_ROW_KEY = "__new__";
 const DEFAULT_TTS_PROFILE_ID = "default-balanced-profile";
 const DEFAULT_TTS_EMOTION_ID = "neutral";
+const SIGN_IN_ROUTE = "account/sign-in.html";
 
 const TTS_PROFILE_GENDER_OPTIONS = Object.freeze([
   Object.freeze({ label: "Neutral", value: "neutral" }),
@@ -95,7 +97,6 @@ const TTS_PROFILE_EMOTION_OPTIONS = Object.freeze([
   Object.freeze({ label: "Urgent", value: "urgent" }),
   Object.freeze({ label: "Whisper", value: "whisper" }),
   Object.freeze({ label: "Excited", value: "excited" }),
-  Object.freeze({ label: "Robot", value: "robot" })
 ]);
 
 function boundedNumber(value, { fallback, max, min, value: defaultValue }) {
@@ -306,16 +307,13 @@ function createDefaultEmotionSettings({ markNeutralInUse = false } = {}) {
       emotion: "neutral",
       messagePartsUsageCount: markNeutralInUse ? 1 : 0,
     }),
-    createTextToSpeechProfileEmotion({ emotion: "happy", pitch: 1.08, rate: 1.04 }),
-    createTextToSpeechProfileEmotion({ emotion: "angry", pitch: 0.96, rate: 1.08, volume: 1 }),
-    createTextToSpeechProfileEmotion({ emotion: "scared", pitch: 1.12, rate: 1.12, volume: 0.9 }),
+    createTextToSpeechProfileEmotion({ emotion: "calm" }),
+    createTextToSpeechProfileEmotion({ emotion: "urgent", pitch: 1.08, rate: 1.15, volume: 1 }),
   ];
 }
 
 function createDefaultTextToSpeechProfiles(voiceOptions = []) {
   const balancedVoice = defaultVoiceForProfile(voiceOptions);
-  const manVoice = defaultVoiceForProfile(voiceOptions, "male") || balancedVoice;
-  const womanVoice = defaultVoiceForProfile(voiceOptions, "female") || voiceOptions[1] || balancedVoice;
   return [
     createTextToSpeechProfile({
       emotions: createDefaultEmotionSettings({ markNeutralInUse: true }),
@@ -326,25 +324,14 @@ function createDefaultTextToSpeechProfiles(voiceOptions = []) {
       voice: balancedVoice?.value || "",
       voiceName: balancedVoice?.name || balancedVoice?.label || "Default browser voice"
     }),
-    createTextToSpeechProfile({
-      emotions: createDefaultEmotionSettings(),
-      gender: "male",
-      id: "man-profile-1",
-      language: manVoice?.language || TEXT_TO_SPEECH_DEFAULTS.language,
-      name: "Man Profile 1",
-      voice: manVoice?.value || "",
-      voiceName: manVoice?.name || manVoice?.label || "Default browser voice"
-    }),
-    createTextToSpeechProfile({
-      emotions: createDefaultEmotionSettings(),
-      gender: "female",
-      id: "woman-profile-2",
-      language: womanVoice?.language || TEXT_TO_SPEECH_DEFAULTS.language,
-      name: "Woman Profile 2",
-      voice: womanVoice?.value || "",
-      voiceName: womanVoice?.name || womanVoice?.label || "Default browser voice"
-    })
   ];
+}
+
+function signInUrl() {
+  if (typeof document === "undefined" || typeof window === "undefined") {
+    return SIGN_IN_ROUTE;
+  }
+  return new URL(SIGN_IN_ROUTE, document.baseURI || window.location.href).href;
 }
 
 function isDefaultBrowserVoice(value) {
@@ -851,6 +838,38 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
     return errors;
   }
 
+  function currentSessionState() {
+    try {
+      const session = getSessionCurrent();
+      return {
+        apiAvailable: true,
+        authenticated: Boolean(session?.authenticated && session.userKey),
+        session,
+      };
+    } catch (error) {
+      console.warn("Text To Speech could not verify the current session.", error instanceof Error ? error.message : String(error || ""));
+      return {
+        apiAvailable: false,
+        authenticated: false,
+        session: null,
+      };
+    }
+  }
+
+  function requireAuthenticatedWrite(action) {
+    const sessionState = currentSessionState();
+    if (!sessionState.apiAvailable) {
+      writeStatus("Session status could not be verified. Try again shortly.", "FAIL");
+      return false;
+    }
+    if (!sessionState.authenticated) {
+      writeStatus(`Sign in before ${action}.`, "FAIL");
+      window.location.href = signInUrl();
+      return false;
+    }
+    return true;
+  }
+
   function profileApiPayload(profile) {
     return {
       active: profile.active !== false,
@@ -947,6 +966,9 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
   }
 
   function commitProfile(key) {
+    if (!requireAuthenticatedWrite("saving Text To Speech profiles")) {
+      return;
+    }
     const profile = profileValues(key);
     const errors = validateProfile(profile);
     if (errors.length) {
@@ -975,6 +997,9 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
   }
 
   function deleteProfile(key) {
+    if (!requireAuthenticatedWrite("deleting Text To Speech profiles")) {
+      return;
+    }
     const profile = state.profiles.find((candidate) => candidate.id === key);
     if (!profile) return;
     if (profileInUseByMessageStudio(profile)) {
@@ -1004,6 +1029,9 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
   }
 
   function commitEmotion(key) {
+    if (!requireAuthenticatedWrite("saving Text To Speech emotion settings")) {
+      return;
+    }
     const emotion = emotionValues(key);
     const errors = validateEmotion(emotion, key === NEW_ROW_KEY ? "" : key);
     if (errors.length) {
@@ -1046,6 +1074,9 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
   }
 
   function deleteEmotion(key) {
+    if (!requireAuthenticatedWrite("deleting Text To Speech emotion settings")) {
+      return;
+    }
     const profile = selectedProfile();
     const emotion = profile?.emotions.find((candidate) => candidate.id === key);
     if (!profile || !emotion) return;
