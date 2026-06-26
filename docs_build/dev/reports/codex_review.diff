@@ -1,218 +1,212 @@
 diff --git a/docs_build/dev/BUILD_PR.md b/docs_build/dev/BUILD_PR.md
-index 8b322a4d5..0a265576e 100644
+index 0a265576e..2c940b3d8 100644
 --- a/docs_build/dev/BUILD_PR.md
 +++ b/docs_build/dev/BUILD_PR.md
-@@ -1,38 +1,32 @@
--# PR_26177_DELTA_052-random-seed-utility
-+# PR_26177_DELTA_053-random-shared-helpers
+@@ -1,31 +1,42 @@
+-# PR_26177_DELTA_053-random-shared-helpers
++# PR_26177_DELTA_054-random-utility
 
  ## Purpose
 
--Add a reusable shared JavaScript `RandomSeed` utility for deterministic seeded random sequences.
-+Create shared internal helper logic for random utility operations.
+-Create shared internal helper logic for random utility operations.
++Add a nondeterministic `Random` utility with the same public convenience API shape as `RandomSeed`.
 
  ## Source Of Truth
 
--This `BUILD_PR.md`, `PLAN_PR.md`, the user request, and `docs_build/dev/ProjectInstructions.zip` are the source of truth for `PR_26177_DELTA_052-random-seed-utility`.
-+This `BUILD_PR.md`, `PLAN_PR.md`, the user request, and `docs_build/dev/ProjectInstructions.zip` are the source of truth for `PR_26177_DELTA_053-random-shared-helpers`.
+-This `BUILD_PR.md`, `PLAN_PR.md`, the user request, and `docs_build/dev/ProjectInstructions.zip` are the source of truth for `PR_26177_DELTA_053-random-shared-helpers`.
++This `BUILD_PR.md`, `PLAN_PR.md`, the user request, and `docs_build/dev/ProjectInstructions.zip` are the source of truth for `PR_26177_DELTA_054-random-utility`.
 
  ## OWNER Override And Team Assignment
 
--OWNER override approved: Assign Team Delta `PR_26177_DELTA_052-random-seed-utility`.
-+OWNER override approved: Continue Team Delta random utility stack with `PR_26177_DELTA_053-random-shared-helpers`.
+-OWNER override approved: Continue Team Delta random utility stack with `PR_26177_DELTA_053-random-shared-helpers`.
++OWNER override approved: Continue Team Delta random utility stack with `PR_26177_DELTA_054-random-utility`.
 
  Team Delta owns Shared JS, runtime utilities, technical debt remediation, and runtime test coverage.
 
++## Stack
++
++- Base branch: `PR_26177_DELTA_053-random-shared-helpers`
++- This PR depends on the internal random helper module from PR_053.
++
  ## Exact Scope
 
--- Add reusable shared JavaScript utility class named `RandomSeed`.
--- Constructor accepts an initial seed.
--- Include:
--  - `seed(value)`
--  - `next()`
--  - `nextInt(min, max)`
--  - `nextFloat(min, max)`
--  - `pick(array)`
--- Same seed must reproduce the same sequence after reseeding.
--- Different seeds should produce different sequences.
--- Add JSDoc.
-+- Add internal/shared helper functions for:
-+  - `nextInt(randomNext, min, max)`
-+  - `nextFloat(randomNext, min, max)`
-+  - `pick(randomNext, array)`
-+  - `shuffle(randomNext, array)`
-+  - `chance(randomNext, percent)`
-+  - `weightedPick(randomNext, weightedItems)`
-+- Helper must consume a `randomNext` function returning float `>= 0` and `< 1`.
-+- Do not expose this as Creator-facing API.
-+- Do not change existing `RandomSeed` behavior.
+-- Add internal/shared helper functions for:
+-  - `nextInt(randomNext, min, max)`
+-  - `nextFloat(randomNext, min, max)`
+-  - `pick(randomNext, array)`
+-  - `shuffle(randomNext, array)`
+-  - `chance(randomNext, percent)`
+-  - `weightedPick(randomNext, weightedItems)`
+-- Helper must consume a `randomNext` function returning float `>= 0` and `< 1`.
+-- Do not expose this as Creator-facing API.
+-- Do not change existing `RandomSeed` behavior.
++- Add `Random` utility.
++- Include:
++  - `Random.next()`
++  - `Random.nextInt(min, max)`
++  - `Random.nextFloat(min, max)`
++  - `Random.pick(array)`
++  - `Random.shuffle(array)`
++  - `Random.chance(percent)`
++  - `Random.weightedPick(weightedItems)`
++  - `Random.uuid()`
++- Prefer `crypto.getRandomValues()` when available.
++- Use `Math.random()` only as compatibility fallback.
++- No deterministic seed support in `Random`.
++- No browser storage.
++- No UI changes.
++- Add JSDoc.
  - Add targeted unit tests.
--- Do not replace existing `Math.random()` usage.
--- No UI changes.
--- No browser storage.
--- No API/database changes.
--- No unrelated cleanup.
  - Create required Codex reports under `docs_build/dev/reports/`.
  - Create repo-structured delta ZIP under `tmp/`.
-
-@@ -42,25 +36,26 @@ Team Delta owns Shared JS, runtime utilities, technical debt remediation, and ru
+@@ -36,21 +47,21 @@ Team Delta owns Shared JS, runtime utilities, technical debt remediation, and ru
  - `docs_build/dev/BUILD_PR.md`
  - `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md`
  - `docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md`
--- `src/shared/math/RandomSeed.js`
--- `tests/shared/RandomSeed.test.mjs`
--- `docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility.md`
--- `docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility_branch-validation.md`
--- `docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility_requirement-checklist.md`
--- `docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility_validation-lane.md`
--- `docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility_manual-validation-notes.md`
--- `docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility_instruction-compliance-checklist.md`
-+- `src/shared/math/randomHelpers.js`
-+- `tests/shared/RandomHelpers.test.mjs`
-+- `docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers.md`
-+- `docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers_branch-validation.md`
-+- `docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers_requirement-checklist.md`
-+- `docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers_validation-lane.md`
-+- `docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers_manual-validation-notes.md`
-+- `docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers_instruction-compliance-checklist.md`
+-- `src/shared/math/randomHelpers.js`
+-- `tests/shared/RandomHelpers.test.mjs`
+-- `docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers.md`
+-- `docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers_branch-validation.md`
+-- `docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers_requirement-checklist.md`
+-- `docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers_validation-lane.md`
+-- `docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers_manual-validation-notes.md`
+-- `docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers_instruction-compliance-checklist.md`
++- `src/shared/math/Random.js`
++- `tests/shared/Random.test.mjs`
++- `docs_build/dev/reports/PR_26177_DELTA_054-random-utility.md`
++- `docs_build/dev/reports/PR_26177_DELTA_054-random-utility_branch-validation.md`
++- `docs_build/dev/reports/PR_26177_DELTA_054-random-utility_requirement-checklist.md`
++- `docs_build/dev/reports/PR_26177_DELTA_054-random-utility_validation-lane.md`
++- `docs_build/dev/reports/PR_26177_DELTA_054-random-utility_manual-validation-notes.md`
++- `docs_build/dev/reports/PR_26177_DELTA_054-random-utility_instruction-compliance-checklist.md`
  - `docs_build/dev/reports/codex_review.diff`
  - `docs_build/dev/reports/codex_changed_files.txt`
 
  ## Out Of Scope
 
-+- No Creator-facing API exposure.
-+- No existing `RandomSeed` behavior changes.
+-- No Creator-facing API exposure.
+-- No existing `RandomSeed` behavior changes.
++- No deterministic seed support in `Random`.
++- No existing game logic adoption changes.
  - No existing `Math.random()` call-site replacements.
  - No UI changes.
  - No browser storage changes.
- - No API changes.
- - No database changes.
--- No engine core changes outside the new shared utility.
- - No `start_of_day` folder changes.
- - No unrelated cleanup.
-
-@@ -69,18 +64,18 @@ Team Delta owns Shared JS, runtime utilities, technical debt remediation, and ru
+@@ -64,9 +75,9 @@ Team Delta owns Shared JS, runtime utilities, technical debt remediation, and ru
  Run exactly:
 
  ```powershell
--node ./scripts/run-node-test-files.mjs tests/shared/RandomSeed.test.mjs
--node --check src/shared/math/RandomSeed.js
--node --check tests/shared/RandomSeed.test.mjs
-+node ./scripts/run-node-test-files.mjs tests/shared/RandomHelpers.test.mjs tests/shared/RandomSeed.test.mjs
-+node --check src/shared/math/randomHelpers.js
-+node --check tests/shared/RandomHelpers.test.mjs
+-node ./scripts/run-node-test-files.mjs tests/shared/RandomHelpers.test.mjs tests/shared/RandomSeed.test.mjs
+-node --check src/shared/math/randomHelpers.js
+-node --check tests/shared/RandomHelpers.test.mjs
++node ./scripts/run-node-test-files.mjs tests/shared/Random.test.mjs tests/shared/RandomHelpers.test.mjs
++node --check src/shared/math/Random.js
++node --check tests/shared/Random.test.mjs
  git diff --check
  ```
 
--Playwright is not required because this PR does not change UI or browser runtime behavior.
-+Playwright is not required because this PR does not change UI or browser runtime flows.
-
- ## Artifact
-
+@@ -77,5 +88,5 @@ Playwright is not required because this PR does not change UI or browser runtime
  Create repo-structured delta ZIP:
 
  ```text
--tmp/PR_26177_DELTA_052-random-seed-utility_delta.zip
-+tmp/PR_26177_DELTA_053-random-shared-helpers_delta.zip
+-tmp/PR_26177_DELTA_053-random-shared-helpers_delta.zip
++tmp/PR_26177_DELTA_054-random-utility_delta.zip
  ```
 diff --git a/docs_build/dev/PLAN_PR.md b/docs_build/dev/PLAN_PR.md
-index d12263894..55fef9a6a 100644
+index 55fef9a6a..c2b19c33e 100644
 --- a/docs_build/dev/PLAN_PR.md
 +++ b/docs_build/dev/PLAN_PR.md
-@@ -1,48 +1,40 @@
--# PLAN_PR: PR_26177_DELTA_052-random-seed-utility
-+# PLAN_PR: PR_26177_DELTA_053-random-shared-helpers
+@@ -1,40 +1,46 @@
+-# PLAN_PR: PR_26177_DELTA_053-random-shared-helpers
++# PLAN_PR: PR_26177_DELTA_054-random-utility
 
  ## Purpose
 
--Add a reusable shared JavaScript `RandomSeed` utility for deterministic seeded random sequences.
-+Create shared internal helper logic for random utility operations.
+-Create shared internal helper logic for random utility operations.
++Add a nondeterministic `Random` utility with the same public convenience API shape as `RandomSeed`.
 
  ## Owner And Assignment
 
  - Team: Delta
--- OWNER override approved: Assign Team Delta `PR_26177_DELTA_052-random-seed-utility`.
-+- OWNER override approved: Continue Team Delta random utility stack with `PR_26177_DELTA_053-random-shared-helpers`.
- - Ownership fit: Team Delta owns Shared JS, runtime utilities, technical debt remediation, and runtime test coverage.
+-- OWNER override approved: Continue Team Delta random utility stack with `PR_26177_DELTA_053-random-shared-helpers`.
+-- Ownership fit: Team Delta owns Shared JS, runtime utilities, technical debt remediation, and runtime test coverage.
++- OWNER override approved: Continue Team Delta random utility stack with `PR_26177_DELTA_054-random-utility`.
++- Stack base: `PR_26177_DELTA_053-random-shared-helpers`.
 
  ## Scope
 
--- Add a shared JavaScript utility class named `RandomSeed`.
--- Constructor accepts an initial seed.
--- Include:
--  - `seed(value)`
--  - `next()`
--  - `nextInt(min, max)`
--  - `nextFloat(min, max)`
--  - `pick(array)`
--- Add JSDoc for the utility and public methods.
-+- Add internal/shared helper functions for:
-+  - `nextInt(randomNext, min, max)`
-+  - `nextFloat(randomNext, min, max)`
-+  - `pick(randomNext, array)`
-+  - `shuffle(randomNext, array)`
-+  - `chance(randomNext, percent)`
-+  - `weightedPick(randomNext, weightedItems)`
-+- Helper functions must consume a `randomNext` function returning a float `>= 0` and `< 1`.
-+- Do not expose these helpers as Creator-facing API.
-+- Do not change existing `RandomSeed` behavior.
+-- Add internal/shared helper functions for:
+-  - `nextInt(randomNext, min, max)`
+-  - `nextFloat(randomNext, min, max)`
+-  - `pick(randomNext, array)`
+-  - `shuffle(randomNext, array)`
+-  - `chance(randomNext, percent)`
+-  - `weightedPick(randomNext, weightedItems)`
+-- Helper functions must consume a `randomNext` function returning a float `>= 0` and `< 1`.
+-- Do not expose these helpers as Creator-facing API.
+-- Do not change existing `RandomSeed` behavior.
++- Add `Random` utility.
++- Include:
++  - `Random.next()`
++  - `Random.nextInt(min, max)`
++  - `Random.nextFloat(min, max)`
++  - `Random.pick(array)`
++  - `Random.shuffle(array)`
++  - `Random.chance(percent)`
++  - `Random.weightedPick(weightedItems)`
++  - `Random.uuid()`
++- Prefer `crypto.getRandomValues()` when available.
++- Use `Math.random()` only as compatibility fallback.
++- No deterministic seed support in `Random`.
++- No browser storage.
++- No UI changes.
++- Add JSDoc.
  - Add targeted unit tests.
--- Do not replace existing `Math.random()` usage.
--- No UI changes.
--- No browser storage.
--- No API/database changes.
--- No unrelated cleanup.
 
  ## Implementation Plan
 
--1. Add `src/shared/math/RandomSeed.js`.
--2. Add `tests/shared/RandomSeed.test.mjs`.
--3. Validate deterministic reseeding, different-seed divergence, numeric ranges, and array picking.
--4. Run targeted unit tests for `RandomSeed`.
--5. Run changed-file syntax checks for the new JS and test files.
--6. Produce required reports and repo-structured ZIP.
-+1. Add `src/shared/math/randomHelpers.js`.
-+2. Add `tests/shared/RandomHelpers.test.mjs`.
-+3. Validate helper behavior and input guards with targeted unit tests.
-+4. Preserve current `RandomSeed` implementation and tests unchanged.
-+5. Produce required PR reports and repo-structured ZIP.
+-1. Add `src/shared/math/randomHelpers.js`.
+-2. Add `tests/shared/RandomHelpers.test.mjs`.
+-3. Validate helper behavior and input guards with targeted unit tests.
+-4. Preserve current `RandomSeed` implementation and tests unchanged.
++1. Add `src/shared/math/Random.js`.
++2. Reuse internal helper functions from `src/shared/math/randomHelpers.js`.
++3. Add `tests/shared/Random.test.mjs`.
++4. Validate crypto preference, Math fallback, utility methods, UUID shape, and absence of seed API.
+ 5. Produce required PR reports and repo-structured ZIP.
 
  ## Acceptance Criteria
 
--- Same seed reproduces the same sequence after reseeding.
--- Different seeds produce different sequences.
--- `next()` returns deterministic normalized values.
--- `nextInt(min, max)` returns deterministic inclusive integers inside range.
--- `nextFloat(min, max)` returns deterministic floats inside range.
--- `pick(array)` returns deterministic values from the provided array.
--- Existing `Math.random()` usage remains unchanged.
-+- Helpers use only the supplied `randomNext` source.
-+- Integer, float, pick, shuffle, chance, and weighted pick operations are covered.
-+- Invalid `randomNext`, ranges, arrays, percentages, and weighted item inputs reject predictably.
-+- Existing `RandomSeed` behavior remains unchanged.
+-- Helpers use only the supplied `randomNext` source.
+-- Integer, float, pick, shuffle, chance, and weighted pick operations are covered.
+-- Invalid `randomNext`, ranges, arrays, percentages, and weighted item inputs reject predictably.
+-- Existing `RandomSeed` behavior remains unchanged.
++- `Random` exposes the required static convenience methods.
++- `Random` does not expose deterministic seed support.
++- `Random` uses `crypto.getRandomValues()` when available.
++- `Math.random()` is used only when crypto random values are unavailable.
 diff --git a/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md b/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
-index 841dc2a76..cf0a714b8 100644
+index cf0a714b8..a546aa1d5 100644
 --- a/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
 +++ b/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
 @@ -31,7 +31,7 @@ If a team has no assignment, no active branch, and no active PR, it is inactive
  | Team Alfa | none | none | none | Available | Active ownership lane |
  | Team Bravo | none | none | none | Available | Active ownership lane |
  | Team Charlie | none | none | none | Available | Active ownership lane |
--| Team Delta | PR_26177_DELTA_052-random-seed-utility | PR_26177_DELTA_052-random-seed-utility | PR_26177_DELTA_052-random-seed-utility | Active | OWNER override approved: Assign Team Delta PR_26177_DELTA_052-random-seed-utility |
-+| Team Delta | PR_26177_DELTA_053-random-shared-helpers | PR_26177_DELTA_053-random-shared-helpers | PR_26177_DELTA_053-random-shared-helpers | Active | OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_053-random-shared-helpers |
+-| Team Delta | PR_26177_DELTA_053-random-shared-helpers | PR_26177_DELTA_053-random-shared-helpers | PR_26177_DELTA_053-random-shared-helpers | Active | OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_053-random-shared-helpers |
++| Team Delta | PR_26177_DELTA_054-random-utility | PR_26177_DELTA_054-random-utility | PR_26177_DELTA_054-random-utility | Active | OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_054-random-utility |
  | Team Golf | none | none | none | Available | Replacement active ownership lane for retired Team Gamma |
  | Team OWNER | none | none | none | Available | Governance Phase 1 complete |
 
 diff --git a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
-index bf359530c..bd334569a 100644
+index bd334569a..ed14e49b5 100644
 --- a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
 +++ b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
 @@ -7,7 +7,7 @@
  | Team Alfa | none | none | none | Available |
  | Team Bravo | none | none | none | Available |
  | Team Charlie | none | none | none | Available |
--| Team Delta | PR_26177_DELTA_052-random-seed-utility | PR_26177_DELTA_052-random-seed-utility | PR_26177_DELTA_052-random-seed-utility | Active |
-+| Team Delta | PR_26177_DELTA_053-random-shared-helpers | PR_26177_DELTA_053-random-shared-helpers | PR_26177_DELTA_053-random-shared-helpers | Active |
+-| Team Delta | PR_26177_DELTA_053-random-shared-helpers | PR_26177_DELTA_053-random-shared-helpers | PR_26177_DELTA_053-random-shared-helpers | Active |
++| Team Delta | PR_26177_DELTA_054-random-utility | PR_26177_DELTA_054-random-utility | PR_26177_DELTA_054-random-utility | Active |
  | Team Golf | none | none | none | Available |
  | Team OWNER | none | none | none | Available |
 
@@ -220,45 +214,46 @@ index bf359530c..bd334569a 100644
 
  Status: Active
 
--Active assignment: PR_26177_DELTA_052-random-seed-utility.
-+Active assignment: PR_26177_DELTA_053-random-shared-helpers.
+-Active assignment: PR_26177_DELTA_053-random-shared-helpers.
++Active assignment: PR_26177_DELTA_054-random-utility.
 
--Active branch: PR_26177_DELTA_052-random-seed-utility.
-+Active branch: PR_26177_DELTA_053-random-shared-helpers.
+-Active branch: PR_26177_DELTA_053-random-shared-helpers.
++Active branch: PR_26177_DELTA_054-random-utility.
 
--Active PR: PR_26177_DELTA_052-random-seed-utility.
-+Active PR: PR_26177_DELTA_053-random-shared-helpers.
+-Active PR: PR_26177_DELTA_053-random-shared-helpers.
++Active PR: PR_26177_DELTA_054-random-utility.
 
--OWNER override approved: Assign Team Delta PR_26177_DELTA_052-random-seed-utility.
-+OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_053-random-shared-helpers.
+-OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_053-random-shared-helpers.
++OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_054-random-utility.
 
  ## Team Bravo
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers.md b/docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers.md
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_054-random-utility.md b/docs_build/dev/reports/PR_26177_DELTA_054-random-utility.md
 new file mode 100644
-index 000000000..94992f7ff
+index 000000000..0d1641316
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers.md
-@@ -0,0 +1,49 @@
-+# PR_26177_DELTA_053-random-shared-helpers
++++ b/docs_build/dev/reports/PR_26177_DELTA_054-random-utility.md
+@@ -0,0 +1,50 @@
++# PR_26177_DELTA_054-random-utility
 +
 +Date: 2026-06-26
 +Team: Delta
-+Scope: Shared internal random helper logic and targeted unit tests
++Scope: Nondeterministic shared Random utility and targeted unit tests
 +Status: PASS
 +
 +## Summary
 +
-+- Added internal shared random helper functions in `src/shared/math/randomHelpers.js`.
-+- Added helpers for `nextInt`, `nextFloat`, `pick`, `shuffle`, `chance`, and `weightedPick`.
-+- Helpers consume caller-provided `randomNext` functions returning floats `>= 0` and `< 1`.
-+- Kept helpers as shared internal code only; no Creator-facing API was added.
-+- Preserved existing `RandomSeed` behavior and did not change its implementation in this PR.
-+- Added targeted unit tests in `tests/shared/RandomHelpers.test.mjs`.
-+- Updated Team Delta active assignment metadata for the stacked random utility workstream.
++- Added `Random` as a nondeterministic shared random utility in `src/shared/math/Random.js`.
++- Added static convenience methods matching the public shape requested: `next`, `nextInt`, `nextFloat`, `pick`, `shuffle`, `chance`, `weightedPick`, and `uuid`.
++- Reused internal helper logic from PR_053.
++- Preferred `crypto.getRandomValues()` when available.
++- Used `Math.random()` only as compatibility fallback when crypto random values are unavailable.
++- Did not add deterministic seed support to `Random`.
++- Added targeted unit tests in `tests/shared/Random.test.mjs`.
++- No browser storage, UI, API, database, or existing game logic adoption changes were made.
 +
 +## Branch Validation
 +
-+PASS. Branch `PR_26177_DELTA_053-random-shared-helpers` was created from clean synchronized `main` after PR_052 merged.
++PASS. Branch `PR_26177_DELTA_054-random-utility` was created from `PR_26177_DELTA_053-random-shared-helpers`.
 +
 +## Changed Files
 +
@@ -266,394 +261,411 @@ index 000000000..94992f7ff
 +- `docs_build/dev/BUILD_PR.md`
 +- `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md`
 +- `docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md`
-+- `src/shared/math/randomHelpers.js`
-+- `tests/shared/RandomHelpers.test.mjs`
-+- `docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers.md`
-+- `docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers_branch-validation.md`
-+- `docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers_requirement-checklist.md`
-+- `docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers_validation-lane.md`
-+- `docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers_manual-validation-notes.md`
-+- `docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers_instruction-compliance-checklist.md`
++- `src/shared/math/Random.js`
++- `tests/shared/Random.test.mjs`
++- `docs_build/dev/reports/PR_26177_DELTA_054-random-utility.md`
++- `docs_build/dev/reports/PR_26177_DELTA_054-random-utility_branch-validation.md`
++- `docs_build/dev/reports/PR_26177_DELTA_054-random-utility_requirement-checklist.md`
++- `docs_build/dev/reports/PR_26177_DELTA_054-random-utility_validation-lane.md`
++- `docs_build/dev/reports/PR_26177_DELTA_054-random-utility_manual-validation-notes.md`
++- `docs_build/dev/reports/PR_26177_DELTA_054-random-utility_instruction-compliance-checklist.md`
 +- `docs_build/dev/reports/codex_changed_files.txt`
 +- `docs_build/dev/reports/codex_review.diff`
 +
 +## Validation
 +
-+- PASS: `node ./scripts/run-node-test-files.mjs tests/shared/RandomHelpers.test.mjs tests/shared/RandomSeed.test.mjs`
-+- PASS: `node --check src/shared/math/randomHelpers.js`
-+- PASS: `node --check tests/shared/RandomHelpers.test.mjs`
++- PASS: `node ./scripts/run-node-test-files.mjs tests/shared/Random.test.mjs tests/shared/RandomHelpers.test.mjs`
++- PASS: `node --check src/shared/math/Random.js`
++- PASS: `node --check tests/shared/Random.test.mjs`
 +- PASS: `git diff --check`
 +- SKIP: Playwright was not run because this PR does not change UI or browser runtime flows.
 +
 +## Artifact
 +
-+- `tmp/PR_26177_DELTA_053-random-shared-helpers_delta.zip`
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers_branch-validation.md b/docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers_branch-validation.md
++- `tmp/PR_26177_DELTA_054-random-utility_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_054-random-utility_branch-validation.md b/docs_build/dev/reports/PR_26177_DELTA_054-random-utility_branch-validation.md
 new file mode 100644
-index 000000000..93e50a9f3
+index 000000000..8915ce567
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers_branch-validation.md
-@@ -0,0 +1,16 @@
-+# PR_26177_DELTA_053-random-shared-helpers Branch Validation
++++ b/docs_build/dev/reports/PR_26177_DELTA_054-random-utility_branch-validation.md
+@@ -0,0 +1,15 @@
++# PR_26177_DELTA_054-random-utility Branch Validation
 +
 +Status: PASS
 +
 +## Start Gates
 +
-+- PASS: PR_052 was merged before starting PR_053.
-+- PASS: Current branch was `main` before creating PR_053.
-+- PASS: `main` worktree was clean and synchronized with `origin/main`.
-+- PASS: Branch `PR_26177_DELTA_053-random-shared-helpers` was created from `main`.
++- PASS: PR_054 branch was created from `PR_26177_DELTA_053-random-shared-helpers`.
++- PASS: Stack base was clean before branch creation.
++- PASS: Branch name is `PR_26177_DELTA_054-random-utility`.
 +
 +## Scope Confirmation
 +
 +- PASS: Work is assigned to Team Delta.
-+- PASS: Work is limited to shared internal random helper logic, targeted tests, PR docs, reports, and ZIP packaging.
-+- PASS: No Creator-facing API, UI, browser storage, API, database, or unrelated cleanup changes were made.
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers_instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers_instruction-compliance-checklist.md
++- PASS: Work is limited to nondeterministic Random utility, targeted tests, PR docs, reports, and ZIP packaging.
++- PASS: No deterministic seed support, UI, browser storage, API, database, or unrelated cleanup changes were made.
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_054-random-utility_instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26177_DELTA_054-random-utility_instruction-compliance-checklist.md
 new file mode 100644
-index 000000000..afa748b08
+index 000000000..4c8ffc09a
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers_instruction-compliance-checklist.md
++++ b/docs_build/dev/reports/PR_26177_DELTA_054-random-utility_instruction-compliance-checklist.md
 @@ -0,0 +1,11 @@
-+# PR_26177_DELTA_053-random-shared-helpers Instruction Compliance Checklist
++# PR_26177_DELTA_054-random-utility Instruction Compliance Checklist
 +
 +| Instruction | Status | Notes |
 +|---|---:|---|
-+| Read `ProjectInstructions.zip` and `README.txt` first | PASS | Read `ProjectInstructions/README.txt` before work. |
-+| Merge PR_052 before starting stacked PRs | PASS | PR #204 was merged and `main` synced first. |
-+| Keep one PR purpose only | PASS | Scope is shared internal random helper logic. |
-+| Use Team Delta ownership | PASS | Team Delta owns Shared JS and runtime test coverage. |
-+| Do not expose Creator-facing API | PASS | No Creator-facing surface was added. |
++| Continue stacked Random PR sequence | PASS | Branch was created from PR_053. |
++| Keep one PR purpose only | PASS | Scope is nondeterministic Random utility. |
++| Use shared helper logic from PR_053 | PASS | Random delegates convenience methods to `randomHelpers.js`. |
++| Do not add deterministic seed support | PASS | No seed API or seed state was added. |
++| No UI/browser storage/API/database changes | PASS | No such files or behaviors changed. |
 +| Produce required reports | PASS | Reports were added under `docs_build/dev/reports/`. |
-+| Produce repo-structured ZIP under `tmp/` | PASS | ZIP path is `tmp/PR_26177_DELTA_053-random-shared-helpers_delta.zip`. |
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers_manual-validation-notes.md
++| Produce repo-structured ZIP under `tmp/` | PASS | ZIP path is `tmp/PR_26177_DELTA_054-random-utility_delta.zip`. |
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_054-random-utility_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_DELTA_054-random-utility_manual-validation-notes.md
 new file mode 100644
-index 000000000..c167ef6a5
+index 000000000..e7a29b57a
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers_manual-validation-notes.md
++++ b/docs_build/dev/reports/PR_26177_DELTA_054-random-utility_manual-validation-notes.md
 @@ -0,0 +1,11 @@
-+# PR_26177_DELTA_053-random-shared-helpers Manual Validation Notes
++# PR_26177_DELTA_054-random-utility Manual Validation Notes
 +
 +Status: PASS
 +
 +Manual review confirmed:
 +
-+- Helper functions are shared internal JavaScript utilities under `src/shared/math/`.
-+- The helpers are not wired into existing game logic or Creator-facing surfaces.
-+- Existing `RandomSeed` behavior was preserved by leaving `RandomSeed.js` unchanged in this PR.
-+- Unit tests cover deterministic helper behavior and input validation.
-+- No browser storage, UI, API, database, or `start_of_day` files changed.
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers_requirement-checklist.md b/docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers_requirement-checklist.md
++- `Random` is nondeterministic and does not support seeding.
++- `Random` prefers `crypto.getRandomValues()` and falls back to `Math.random()` only when crypto random values are unavailable.
++- Public methods match the requested convenience API shape.
++- `Random` does not use browser storage and is not wired into UI or existing game logic.
++- Tests mock crypto and Math fallback sources and restore globals after assertions.
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_054-random-utility_requirement-checklist.md b/docs_build/dev/reports/PR_26177_DELTA_054-random-utility_requirement-checklist.md
 new file mode 100644
-index 000000000..34510ef5e
+index 000000000..3a4232a4b
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers_requirement-checklist.md
-@@ -0,0 +1,14 @@
-+# PR_26177_DELTA_053-random-shared-helpers Requirement Checklist
++++ b/docs_build/dev/reports/PR_26177_DELTA_054-random-utility_requirement-checklist.md
+@@ -0,0 +1,20 @@
++# PR_26177_DELTA_054-random-utility Requirement Checklist
 +
 +| Requirement | Status | Notes |
 +|---|---:|---|
-+| Add `nextInt(randomNext, min, max)` helper | PASS | Added in `src/shared/math/randomHelpers.js`. |
-+| Add `nextFloat(randomNext, min, max)` helper | PASS | Added in `src/shared/math/randomHelpers.js`. |
-+| Add `pick(randomNext, array)` helper | PASS | Added in `src/shared/math/randomHelpers.js`. |
-+| Add `shuffle(randomNext, array)` helper | PASS | Added in `src/shared/math/randomHelpers.js`. |
-+| Add `chance(randomNext, percent)` helper | PASS | Added in `src/shared/math/randomHelpers.js`. |
-+| Add `weightedPick(randomNext, weightedItems)` helper | PASS | Added in `src/shared/math/randomHelpers.js`. |
-+| Helpers consume `randomNext` returning float `>= 0` and `< 1` | PASS | Helpers validate `randomNext` output before use. |
-+| Do not expose as Creator-facing API | PASS | No UI, tool, or barrel export exposure was added. |
-+| Do not change existing `RandomSeed` behavior | PASS | `RandomSeed.js` was not changed in this PR; existing test passed. |
-+| Add targeted unit tests | PASS | Added `tests/shared/RandomHelpers.test.mjs`. |
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers_validation-lane.md b/docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers_validation-lane.md
++| Add `Random` utility | PASS | Added `src/shared/math/Random.js`. |
++| Include `Random.next()` | PASS | Static method added. |
++| Include `Random.nextInt(min, max)` | PASS | Static method added using shared helper. |
++| Include `Random.nextFloat(min, max)` | PASS | Static method added using shared helper. |
++| Include `Random.pick(array)` | PASS | Static method added using shared helper. |
++| Include `Random.shuffle(array)` | PASS | Static method added using shared helper. |
++| Include `Random.chance(percent)` | PASS | Static method added using shared helper. |
++| Include `Random.weightedPick(weightedItems)` | PASS | Static method added using shared helper. |
++| Include `Random.uuid()` | PASS | Static RFC 4122 v4 UUID method added. |
++| Prefer `crypto.getRandomValues()` when available | PASS | `Random.next()` and `Random.uuid()` use crypto random values when present. |
++| Use `Math.random()` only as compatibility fallback | PASS | Fallback path is used only when crypto random values are unavailable. |
++| No deterministic seed support in `Random` | PASS | No `seed` method or seed state added. |
++| No browser storage | PASS | No storage usage added. |
++| No UI changes | PASS | No UI files changed. |
++| Add JSDoc | PASS | Added class and public method JSDoc. |
++| Add targeted unit tests | PASS | Added `tests/shared/Random.test.mjs`. |
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_054-random-utility_validation-lane.md b/docs_build/dev/reports/PR_26177_DELTA_054-random-utility_validation-lane.md
 new file mode 100644
-index 000000000..69205e83e
+index 000000000..09eb20a34
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_053-random-shared-helpers_validation-lane.md
++++ b/docs_build/dev/reports/PR_26177_DELTA_054-random-utility_validation-lane.md
 @@ -0,0 +1,24 @@
-+# PR_26177_DELTA_053-random-shared-helpers Validation Lane
++# PR_26177_DELTA_054-random-utility Validation Lane
 +
 +Status: PASS
 +
 +## Commands
 +
 +```powershell
-+node ./scripts/run-node-test-files.mjs tests/shared/RandomHelpers.test.mjs tests/shared/RandomSeed.test.mjs
-+node --check src/shared/math/randomHelpers.js
-+node --check tests/shared/RandomHelpers.test.mjs
++node ./scripts/run-node-test-files.mjs tests/shared/Random.test.mjs tests/shared/RandomHelpers.test.mjs
++node --check src/shared/math/Random.js
++node --check tests/shared/Random.test.mjs
 +git diff --check
 +```
 +
 +## Results
 +
++- PASS: `tests/shared/Random.test.mjs`
 +- PASS: `tests/shared/RandomHelpers.test.mjs`
-+- PASS: `tests/shared/RandomSeed.test.mjs`
-+- PASS: `src/shared/math/randomHelpers.js` syntax check
-+- PASS: `tests/shared/RandomHelpers.test.mjs` syntax check
++- PASS: `src/shared/math/Random.js` syntax check
++- PASS: `tests/shared/Random.test.mjs` syntax check
 +- PASS: `git diff --check`
 +
 +## Playwright
 +
 +SKIP. Playwright was not run because this PR does not change UI or browser runtime flows.
-diff --git a/src/shared/math/randomHelpers.js b/src/shared/math/randomHelpers.js
+diff --git a/src/shared/math/Random.js b/src/shared/math/Random.js
 new file mode 100644
-index 000000000..5df891668
+index 000000000..84f38782a
 --- /dev/null
-+++ b/src/shared/math/randomHelpers.js
-@@ -0,0 +1,183 @@
-+function assertRandomNext(randomNext) {
-+  if (typeof randomNext !== "function") {
-+    throw new TypeError("randomNext must be a function.");
-+  }
++++ b/src/shared/math/Random.js
+@@ -0,0 +1,151 @@
++import {
++  chance as randomChance,
++  nextFloat as randomNextFloat,
++  nextInt as randomNextInt,
++  pick as randomPick,
++  shuffle as randomShuffle,
++  weightedPick as randomWeightedPick,
++} from "./randomHelpers.js";
++
++const UINT32_RANGE = 0x100000000;
++const UUID_BYTE_LENGTH = 16;
++
++function getCryptoSource() {
++  const cryptoSource = globalThis.crypto;
++  return cryptoSource && typeof cryptoSource.getRandomValues === "function" ? cryptoSource : null;
 +}
 +
-+function readRandomValue(randomNext) {
-+  assertRandomNext(randomNext);
-+  const value = Number(randomNext());
-+
-+  if (!Number.isFinite(value) || value < 0 || value >= 1) {
-+    throw new RangeError("randomNext must return a finite number >= 0 and < 1.");
++function randomUint32() {
++  const cryptoSource = getCryptoSource();
++  if (cryptoSource) {
++    const values = new Uint32Array(1);
++    cryptoSource.getRandomValues(values);
++    return values[0] >>> 0;
 +  }
 +
-+  return value;
++  return Math.floor(Math.random() * UINT32_RANGE) >>> 0;
 +}
 +
-+function assertFiniteNumber(value, name) {
-+  if (!Number.isFinite(value)) {
-+    throw new TypeError(`${name} must be a finite number.`);
++function fillRandomBytes(bytes) {
++  const cryptoSource = getCryptoSource();
++  if (cryptoSource) {
++    cryptoSource.getRandomValues(bytes);
++    return bytes;
 +  }
++
++  for (let index = 0; index < bytes.length; index += 1) {
++    bytes[index] = Math.floor(Math.random() * 256);
++  }
++
++  return bytes;
 +}
 +
-+function assertOrderedRange(min, max) {
-+  assertFiniteNumber(min, "min");
-+  assertFiniteNumber(max, "max");
-+
-+  if (max < min) {
-+    throw new RangeError("max must be greater than or equal to min.");
-+  }
++function byteToHex(byte) {
++  return byte.toString(16).padStart(2, "0");
 +}
 +
-+function assertArray(value, name) {
-+  if (!Array.isArray(value)) {
-+    throw new TypeError(`${name} must be an array.`);
-+  }
-+}
++function formatUuid(bytes) {
++  bytes[6] = (bytes[6] & 0x0f) | 0x40;
++  bytes[8] = (bytes[8] & 0x3f) | 0x80;
 +
-+function readWeightedItem(entry) {
-+  if (!entry || typeof entry !== "object") {
-+    throw new TypeError("weightedItems entries must be objects.");
-+  }
-+
-+  if (!Object.hasOwn(entry, "item") && !Object.hasOwn(entry, "value")) {
-+    throw new TypeError("weightedItems entries must include item or value.");
-+  }
-+
-+  const weight = Number(entry.weight);
-+  if (!Number.isFinite(weight) || weight <= 0) {
-+    throw new RangeError("weightedItems entries must include a positive finite weight.");
-+  }
-+
-+  return {
-+    item: Object.hasOwn(entry, "item") ? entry.item : entry.value,
-+    weight,
-+  };
-+}
-+
-+/**
-+ * Returns an integer between min and max, inclusive, using the supplied random source.
-+ *
-+ * @param {Function} randomNext Function returning a float >= 0 and < 1.
-+ * @param {number} min Inclusive lower bound.
-+ * @param {number} max Inclusive upper bound.
-+ * @returns {number} Random integer in the requested range.
-+ */
-+export function nextInt(randomNext, min, max) {
-+  assertOrderedRange(min, max);
-+  const lower = Math.ceil(min);
-+  const upper = Math.floor(max);
-+
-+  if (upper < lower) {
-+    throw new RangeError("integer range must include at least one integer.");
-+  }
-+
-+  return Math.floor(readRandomValue(randomNext) * (upper - lower + 1)) + lower;
++  const hex = Array.from(bytes, byteToHex);
++  return [
++    hex.slice(0, 4).join(""),
++    hex.slice(4, 6).join(""),
++    hex.slice(6, 8).join(""),
++    hex.slice(8, 10).join(""),
++    hex.slice(10, 16).join(""),
++  ].join("-");
 +}
 +
 +/**
-+ * Returns a float in the range [min, max), using the supplied random source.
-+ *
-+ * @param {Function} randomNext Function returning a float >= 0 and < 1.
-+ * @param {number} min Inclusive lower bound.
-+ * @param {number} max Exclusive upper bound.
-+ * @returns {number} Random float in the requested range.
++ * Nondeterministic random utility for convenience operations that do not need
++ * seeded repeatability. `Random` prefers `crypto.getRandomValues()` and uses
++ * `Math.random()` only as a compatibility fallback.
 + */
-+export function nextFloat(randomNext, min, max) {
-+  assertOrderedRange(min, max);
-+  return min + readRandomValue(randomNext) * (max - min);
++export class Random {
++  /**
++   * Returns a nondeterministic number in the range [0, 1).
++   *
++   * @returns {number} Nondeterministic random number.
++   */
++  static next() {
++    return randomUint32() / UINT32_RANGE;
++  }
++
++  /**
++   * Returns a nondeterministic integer between min and max, inclusive.
++   *
++   * @param {number} min Inclusive lower bound.
++   * @param {number} max Inclusive upper bound.
++   * @returns {number} Random integer in the requested range.
++   */
++  static nextInt(min, max) {
++    return randomNextInt(() => Random.next(), min, max);
++  }
++
++  /**
++   * Returns a nondeterministic floating-point number in the range [min, max).
++   *
++   * @param {number} min Inclusive lower bound.
++   * @param {number} max Exclusive upper bound.
++   * @returns {number} Random float in the requested range.
++   */
++  static nextFloat(min, max) {
++    return randomNextFloat(() => Random.next(), min, max);
++  }
++
++  /**
++   * Selects one nondeterministic item from a non-empty array.
++   *
++   * @template T
++   * @param {T[]} array Source items.
++   * @returns {T} Selected item.
++   */
++  static pick(array) {
++    return randomPick(() => Random.next(), array);
++  }
++
++  /**
++   * Returns a nondeterministically shuffled copy of an array.
++   *
++   * @template T
++   * @param {T[]} array Source items.
++   * @returns {T[]} Shuffled copy.
++   */
++  static shuffle(array) {
++    return randomShuffle(() => Random.next(), array);
++  }
++
++  /**
++   * Returns true when a nondeterministic roll falls within the percent chance.
++   *
++   * @param {number} percent Percent chance from 0 through 100.
++   * @returns {boolean} Whether the chance roll succeeds.
++   */
++  static chance(percent) {
++    return randomChance(() => Random.next(), percent);
++  }
++
++  /**
++   * Picks one nondeterministic weighted item.
++   *
++   * @template T
++   * @param {{item?: T, value?: T, weight: number}[]} weightedItems Weighted item entries.
++   * @returns {T} Selected item.
++   */
++  static weightedPick(weightedItems) {
++    return randomWeightedPick(() => Random.next(), weightedItems);
++  }
++
++  /**
++   * Creates an RFC 4122 version 4 UUID using the same nondeterministic source.
++   *
++   * @returns {string} Random UUID string.
++   */
++  static uuid() {
++    return formatUuid(fillRandomBytes(new Uint8Array(UUID_BYTE_LENGTH)));
++  }
 +}
 +
-+/**
-+ * Picks one item from a non-empty array using the supplied random source.
-+ *
-+ * @template T
-+ * @param {Function} randomNext Function returning a float >= 0 and < 1.
-+ * @param {T[]} array Source items.
-+ * @returns {T} Selected item.
-+ */
-+export function pick(randomNext, array) {
-+  assertArray(array, "array");
-+
-+  if (array.length === 0) {
-+    throw new RangeError("array must contain at least one item.");
-+  }
-+
-+  return array[nextInt(randomNext, 0, array.length - 1)];
-+}
-+
-+/**
-+ * Returns a shuffled copy of an array using the supplied random source.
-+ *
-+ * @template T
-+ * @param {Function} randomNext Function returning a float >= 0 and < 1.
-+ * @param {T[]} array Source items.
-+ * @returns {T[]} Shuffled copy.
-+ */
-+export function shuffle(randomNext, array) {
-+  assertArray(array, "array");
-+  const shuffled = [...array];
-+
-+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
-+    const swapIndex = nextInt(randomNext, 0, index);
-+    [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
-+  }
-+
-+  return shuffled;
-+}
-+
-+/**
-+ * Returns true when the supplied random source falls within the percent chance.
-+ *
-+ * @param {Function} randomNext Function returning a float >= 0 and < 1.
-+ * @param {number} percent Percent chance from 0 through 100.
-+ * @returns {boolean} Whether the chance roll succeeds.
-+ */
-+export function chance(randomNext, percent) {
-+  assertFiniteNumber(percent, "percent");
-+
-+  if (percent < 0 || percent > 100) {
-+    throw new RangeError("percent must be between 0 and 100.");
-+  }
-+
-+  if (percent === 0) {
-+    return false;
-+  }
-+
-+  if (percent === 100) {
-+    return true;
-+  }
-+
-+  return readRandomValue(randomNext) < percent / 100;
-+}
-+
-+/**
-+ * Picks one weighted item using positive finite item weights.
-+ *
-+ * @template T
-+ * @param {Function} randomNext Function returning a float >= 0 and < 1.
-+ * @param {{item?: T, value?: T, weight: number}[]} weightedItems Weighted item entries.
-+ * @returns {T} Selected item.
-+ */
-+export function weightedPick(randomNext, weightedItems) {
-+  assertArray(weightedItems, "weightedItems");
-+
-+  if (weightedItems.length === 0) {
-+    throw new RangeError("weightedItems must contain at least one item.");
-+  }
-+
-+  const entries = weightedItems.map(readWeightedItem);
-+  const totalWeight = entries.reduce((total, entry) => total + entry.weight, 0);
-+  const threshold = nextFloat(randomNext, 0, totalWeight);
-+  let cursor = 0;
-+
-+  for (const entry of entries) {
-+    cursor += entry.weight;
-+    if (threshold < cursor) {
-+      return entry.item;
-+    }
-+  }
-+
-+  return entries.at(-1).item;
-+}
-diff --git a/tests/shared/RandomHelpers.test.mjs b/tests/shared/RandomHelpers.test.mjs
++export default Random;
+diff --git a/tests/shared/Random.test.mjs b/tests/shared/Random.test.mjs
 new file mode 100644
-index 000000000..7884944ab
+index 000000000..1559aa1ca
 --- /dev/null
-+++ b/tests/shared/RandomHelpers.test.mjs
-@@ -0,0 +1,68 @@
++++ b/tests/shared/Random.test.mjs
+@@ -0,0 +1,112 @@
 +/*
 +Toolbox Aid
 +David Quesenberry
 +06/26/2026
-+RandomHelpers.test.mjs
++Random.test.mjs
 +*/
 +import assert from "node:assert/strict";
-+import {
-+  chance,
-+  nextFloat,
-+  nextInt,
-+  pick,
-+  shuffle,
-+  weightedPick,
-+} from "../../src/shared/math/randomHelpers.js";
++import { Random } from "../../src/shared/math/Random.js";
++
++const UUID_V4_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 +
 +function sequence(values) {
 +  let index = 0;
 +  return () => values[index++ % values.length];
 +}
 +
-+export function run() {
-+  assert.equal(nextInt(sequence([0]), 2, 5), 2);
-+  assert.equal(nextInt(sequence([0.999]), 2, 5), 5);
-+  assert.equal(nextFloat(sequence([0.25]), -2, 2), -1);
-+  assert.equal(pick(sequence([0.6]), ["a", "b", "c"]), "b");
++function setCrypto(value) {
++  Object.defineProperty(globalThis, "crypto", {
++    configurable: true,
++    enumerable: true,
++    value,
++  });
++}
 +
-+  const source = ["a", "b", "c", "d"];
-+  const shuffled = shuffle(sequence([0.1, 0.6, 0.2]), source);
-+  assert.deepEqual(source, ["a", "b", "c", "d"]);
-+  assert.deepEqual(shuffled, ["c", "d", "b", "a"]);
++async function withRandomSources({ cryptoSource, mathValues }, callback) {
++  const cryptoDescriptor = Object.getOwnPropertyDescriptor(globalThis, "crypto");
++  const originalMathRandom = Math.random;
 +
-+  assert.equal(chance(sequence([0.49]), 50), true);
-+  assert.equal(chance(sequence([0.5]), 50), false);
-+  assert.equal(chance(sequence([0.99]), 0), false);
-+  assert.equal(chance(sequence([0.99]), 100), true);
++  if (Object.hasOwn({ cryptoSource }, "cryptoSource")) {
++    setCrypto(cryptoSource);
++  }
 +
-+  assert.equal(
-+    weightedPick(sequence([0.1]), [
-+      { item: "common", weight: 7 },
-+      { item: "rare", weight: 3 },
-+    ]),
-+    "common"
++  if (mathValues) {
++    Math.random = sequence(mathValues);
++  }
++
++  try {
++    await callback();
++  } finally {
++    if (cryptoDescriptor) {
++      Object.defineProperty(globalThis, "crypto", cryptoDescriptor);
++    } else {
++      delete globalThis.crypto;
++    }
++    Math.random = originalMathRandom;
++  }
++}
++
++export async function run() {
++  let cryptoCalls = 0;
++  await withRandomSources(
++    {
++      cryptoSource: {
++        getRandomValues(values) {
++          cryptoCalls += 1;
++          if (values instanceof Uint32Array) {
++            values[0] = 0x80000000;
++            return values;
++          }
++
++          for (let index = 0; index < values.length; index += 1) {
++            values[index] = index;
++          }
++          return values;
++        },
++      },
++    },
++    async () => {
++      assert.equal(Random.next(), 0.5);
++      assert.equal(Random.uuid(), "00010203-0405-4607-8809-0a0b0c0d0e0f");
++      assert.equal(cryptoCalls >= 2, true);
++    }
 +  );
-+  assert.equal(
-+    weightedPick(sequence([0.8]), [
-+      { value: "common", weight: 7 },
-+      { value: "rare", weight: 3 },
-+    ]),
-+    "rare"
++
++  await withRandomSources({ cryptoSource: undefined, mathValues: [0.25] }, async () => {
++    assert.equal(Random.next(), 0.25);
++  });
++
++  await withRandomSources(
++    {
++      cryptoSource: undefined,
++      mathValues: [0.5, 0.25, 0.9, 0.1, 0.6, 0.2, 0.49, 0.5, 0.8],
++    },
++    async () => {
++      assert.equal(Random.nextInt(0, 10), 5);
++      assert.equal(Random.nextFloat(10, 20), 12.5);
++      assert.equal(Random.pick(["a", "b", "c"]), "c");
++      assert.deepEqual(Random.shuffle(["a", "b", "c", "d"]), ["c", "d", "b", "a"]);
++      assert.equal(Random.chance(50), true);
++      assert.equal(Random.chance(50), false);
++      assert.equal(
++        Random.weightedPick([
++          { item: "common", weight: 7 },
++          { item: "rare", weight: 3 },
++        ]),
++        "rare"
++      );
++    }
 +  );
 +
-+  assert.throws(() => nextInt(() => 1, 0, 10), RangeError);
-+  assert.throws(() => nextFloat(() => -0.1, 0, 10), RangeError);
-+  assert.throws(() => nextInt("not-a-function", 0, 10), TypeError);
-+  assert.throws(() => nextInt(sequence([0.5]), 10, 1), RangeError);
-+  assert.throws(() => nextInt(sequence([0.5]), 0.2, 0.8), RangeError);
-+  assert.throws(() => pick(sequence([0.5]), []), RangeError);
-+  assert.throws(() => shuffle(sequence([0.5]), "abc"), TypeError);
-+  assert.throws(() => chance(sequence([0.5]), 101), RangeError);
-+  assert.throws(() => weightedPick(sequence([0.5]), []), RangeError);
-+  assert.throws(() => weightedPick(sequence([0.5]), [{ item: "none", weight: 0 }]), RangeError);
-+  assert.throws(() => weightedPick(sequence([0.5]), [{ weight: 1 }]), TypeError);
++  await withRandomSources({ cryptoSource: undefined, mathValues: Array(16).fill(0.5) }, async () => {
++    assert.match(Random.uuid(), UUID_V4_PATTERN);
++  });
++
++  assert.equal(typeof Random.seed, "undefined");
++  assert.throws(() => Random.pick([]), RangeError);
++  assert.throws(() => Random.chance(-1), RangeError);
 +}
 +
 +if (import.meta.url === `file://${process.argv[1]}`) {
-+  run();
++  await run();
 +}
