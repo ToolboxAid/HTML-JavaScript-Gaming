@@ -40,6 +40,7 @@
                                 <div class="accordion-body content-stack">
                                     <p>Environment Identity</p>
                                     <p>Environment Map</p>
+                                    <p>Environment Health Comparison</p>
                                     <p>Environment Capabilities</p>
                                     <p>Health API Contract</p>
                                     <p>Admin API Registry</p>
@@ -51,6 +52,7 @@
                                     <p>Notifications &amp; Alerts</p>
                                     <p>Local API Startup</p>
                                     <p>Database Health</p>
+                                    <p>Postgres Metrics</p>
                                     <p>Storage Health</p>
                                     <p>Runtime Health</p>
                                     <p>Health Check History</p>
@@ -106,6 +108,25 @@
                                     <tr><td>IST</td><td>Local Docker</td><td>Local Docker PostgreSQL</td><td>/ist</td></tr>
                                     <tr><td>UAT</td><td>Cloudflare</td><td>Supabase PostgreSQL</td><td>/uat</td></tr>
                                     <tr><td>PRD</td><td>Cloudflare</td><td>Supabase PostgreSQL</td><td>/prd</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Environment health comparison">
+                                <caption>Environment Health Comparison</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Environment</th>
+                                        <th scope="col">Hosting model</th>
+                                        <th scope="col">Runtime expectation</th>
+                                        <th scope="col">Database model</th>
+                                        <th scope="col">Storage folder</th>
+                                        <th scope="col">State</th>
+                                        <th scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-system-health-environment-comparison-rows>
+                                    <tr><td>Environment comparison</td><td>Reference-only</td><td>Waiting for safe API status</td><td>Reference-only</td><td>Reference-only</td><td>Unavailable</td><td data-health-status="PENDING" title="Reason: environment comparison has not loaded yet." aria-label="PENDING: environment comparison has not loaded yet.">PENDING</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -294,22 +315,38 @@
                             </table>
                         </div>
                         <div class="table-wrapper">
+                            <table class="data-table" aria-label="Postgres metrics">
+                                <caption>Postgres Metrics</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Metric</th>
+                                        <th scope="col">Safe Value</th>
+                                        <th scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-system-health-postgres-metric-rows>
+                                    <tr><td>Postgres metrics</td><td>Unavailable until safe API status loads</td><td data-health-status="PENDING" title="Reason: Postgres metrics have not loaded yet." aria-label="PENDING: Postgres metrics have not loaded yet.">PENDING</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
                             <table class="data-table" aria-label="Storage health">
                                 <caption>Storage Health - Cloudflare R2</caption>
                                 <thead>
                                     <tr>
                                         <th scope="col">Check</th>
                                         <th scope="col">Target</th>
+                                        <th scope="col">Timing</th>
                                         <th scope="col">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr><td>Bucket connectivity</td><td data-admin-system-health-storage-value="bucket">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="bucket" title="Reason: R2 bucket connectivity has not loaded yet." aria-label="PENDING: R2 bucket connectivity has not loaded yet.">PENDING</td></tr>
-                                    <tr><td>List</td><td data-admin-system-health-storage-value="list">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="list" title="Reason: R2 list check has not loaded yet." aria-label="PENDING: R2 list check has not loaded yet.">PENDING</td></tr>
-                                    <tr><td>Upload</td><td data-admin-system-health-storage-value="upload">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="upload" title="Reason: R2 upload check has not loaded yet." aria-label="PENDING: R2 upload check has not loaded yet.">PENDING</td></tr>
-                                    <tr><td>Read</td><td data-admin-system-health-storage-value="read">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="read" title="Reason: R2 read check has not loaded yet." aria-label="PENDING: R2 read check has not loaded yet.">PENDING</td></tr>
-                                    <tr><td>Delete</td><td data-admin-system-health-storage-value="delete">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="delete" title="Reason: R2 delete check has not loaded yet." aria-label="PENDING: R2 delete check has not loaded yet.">PENDING</td></tr>
-                                    <tr><td>Last checked</td><td data-admin-system-health-storage-value="lastChecked">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="lastChecked" title="Reason: R2 health has not loaded yet." aria-label="PENDING: R2 health has not loaded yet.">PENDING</td></tr>
+                                    <tr><td>Bucket connectivity</td><td data-admin-system-health-storage-value="bucket">Loading</td><td data-admin-system-health-storage-timing="bucket">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="bucket" title="Reason: R2 bucket connectivity has not loaded yet." aria-label="PENDING: R2 bucket connectivity has not loaded yet.">PENDING</td></tr>
+                                    <tr><td>List</td><td data-admin-system-health-storage-value="list">Loading</td><td data-admin-system-health-storage-timing="list">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="list" title="Reason: R2 list check has not loaded yet." aria-label="PENDING: R2 list check has not loaded yet.">PENDING</td></tr>
+                                    <tr><td>Upload</td><td data-admin-system-health-storage-value="upload">Loading</td><td data-admin-system-health-storage-timing="upload">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="upload" title="Reason: R2 upload check has not loaded yet." aria-label="PENDING: R2 upload check has not loaded yet.">PENDING</td></tr>
+                                    <tr><td>Read</td><td data-admin-system-health-storage-value="read">Loading</td><td data-admin-system-health-storage-timing="read">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="read" title="Reason: R2 read check has not loaded yet." aria-label="PENDING: R2 read check has not loaded yet.">PENDING</td></tr>
+                                    <tr><td>Delete</td><td data-admin-system-health-storage-value="delete">Loading</td><td data-admin-system-health-storage-timing="delete">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="delete" title="Reason: R2 delete check has not loaded yet." aria-label="PENDING: R2 delete check has not loaded yet.">PENDING</td></tr>
+                                    <tr><td>Last checked</td><td data-admin-system-health-storage-value="lastChecked">Loading</td><td data-admin-system-health-storage-timing="lastChecked">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="lastChecked" title="Reason: R2 health has not loaded yet." aria-label="PENDING: R2 health has not loaded yet.">PENDING</td></tr>
                                 </tbody>
                             </table>
                         </div>

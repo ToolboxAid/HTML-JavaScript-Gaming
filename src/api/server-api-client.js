@@ -80,12 +80,13 @@ export function safeRequestServerApi(path, options = {}) {
   }
 }
 
-export function requireServerApiData(response, context) {
+export function requireServerApiData(response, context, options = {}) {
   if (!response.ok) {
     throw new Error(response.error);
   }
   if (!response.payload || !Object.prototype.hasOwnProperty.call(response.payload, "data")) {
-    throw new Error(`${context} did not return server data. Restore the Browser -> Server API -> Data Source contract.`);
+    const restoreMessage = options.restoreMessage || `Restore the ${SERVER_DATA_BOUNDARY_RULE} contract.`;
+    throw new Error(`${context} did not return server data. ${restoreMessage}`);
   }
   return response.payload.data;
 }

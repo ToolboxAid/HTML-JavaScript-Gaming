@@ -32,6 +32,9 @@
 - [x] Produce `codex_review.diff`.
 - [x] Produce `codex_changed_files.txt`.
 - [x] Produce repo-structured ZIP under `tmp/`.
+- [x] Resolve merge conflicts against `origin/main` only.
+- [x] Preserve OWNER_050 environment governance decisions after conflict resolution.
+- [x] Refresh repo-structured ZIP after conflict resolution.
 
 ## Result
 

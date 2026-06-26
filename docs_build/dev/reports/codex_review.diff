@@ -87,10 +87,10 @@ index 9d5e4301b..e4fd3594e 100644
  # Environment-specific service limit placeholders.
  # Leave empty when live usage/limit reporting is not configured.
 diff --git a/docs_build/dev/BUILD_PR.md b/docs_build/dev/BUILD_PR.md
-index 0a9dd074a..2b1d4dcba 100644
+index 0a9dd074a..73ffaa35e 100644
 --- a/docs_build/dev/BUILD_PR.md
 +++ b/docs_build/dev/BUILD_PR.md
-@@ -1,109 +1,75 @@
+@@ -1,109 +1,76 @@
 -# PR_26175_ALFA_047-theme-v2-svg-icon-registry
 +# PR_26177_OWNER_050-environment-governance-model
 
@@ -237,6 +237,7 @@ index 0a9dd074a..2b1d4dcba 100644
  ```powershell
 -npx playwright test tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs --workers=1
 -rg -n "<[s]tyle|[s]tyle=" docs_build/design/theme-v2-icons/theme-v2-icon-style-guide.md tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs
++git status
 +git diff --check
  ```
 
@@ -378,52 +379,9 @@ index 262b216e7..0e4f9b470 100644
  - Codex Project Instructions Startup: project-instructions/addendums/codex-project-instructions-startup.md
  - Project Reference Files Governance: docs_build/dev/ProjectInstructions/addendums/project_reference_files.md
 +- Environment Governance Model: docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md
-diff --git a/docs_build/dev/ProjectInstructions/addendums/postgres_only.md b/docs_build/dev/ProjectInstructions/addendums/postgres_only.md
-index 55af64381..369ce2006 100644
---- a/docs_build/dev/ProjectInstructions/addendums/postgres_only.md
-+++ b/docs_build/dev/ProjectInstructions/addendums/postgres_only.md
-@@ -1,4 +1,4 @@
--SQLite is deprecated.
-+SQLite is deprecated/retired and is not an active runtime database.
-
- Game Foundry Studio standard database:
- PostgreSQL
-@@ -7,5 +7,6 @@ Rules:
- - No new SQLite implementations
- - No new SQLite dependencies
- - Existing SQLite references are technical debt
--- New persistence work targets PostgreSQL
-+- New persistence work targets PostgreSQL/Postgres
-+- Local (VS Code), DEV, IST, UAT, and PROD runtime database work targets Postgres
- - PRs introducing SQLite should be rejected
-diff --git a/docs_build/dev/ProjectInstructions/addendums/release_gate.md b/docs_build/dev/ProjectInstructions/addendums/release_gate.md
-index a509f1791..79af94858 100644
---- a/docs_build/dev/ProjectInstructions/addendums/release_gate.md
-+++ b/docs_build/dev/ProjectInstructions/addendums/release_gate.md
-@@ -37,6 +37,7 @@ The release gate should confirm these files when relevant to the PR:
- - `docs_build/dev/ProjectInstructions/addendums/governance_phase1_complete.md`
- - `docs_build/dev/ProjectInstructions/addendums/pr_workflow.md`
- - `docs_build/dev/ProjectInstructions/addendums/project_reference_files.md`
-+- `docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md`
- - `docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md`
- - `docs_build/dev/admin-notes/Installs required.txt` when present
- - `docs_build/dev/admin-notes/Table layout.txt` when present
-diff --git a/docs_build/dev/admin-notes/index.txt b/docs_build/dev/admin-notes/index.txt
-index 93654fa6e..4744bea93 100644
---- a/docs_build/dev/admin-notes/index.txt
-+++ b/docs_build/dev/admin-notes/index.txt
-@@ -2,7 +2,7 @@
- [.] Start the server
- npm run dev:local-api
-
--[x] Deploy DEV, IST, UAT, PRD
-+[x] Deploy Local (VS Code), DEV, IST, UAT, PROD
- node .\scripts\validate-supabase-dev.mjs
- node .\scripts\apply-supabase-dev-ddl.mjs
- node .\scripts\validate-supabase-dev.mjs
 diff --git a/docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md b/docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md
 new file mode 100644
-index 000000000..000000000
+index 000000000..ef3c0e1cd
 --- /dev/null
 +++ b/docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md
 @@ -0,0 +1,114 @@
@@ -541,12 +499,55 @@ index 000000000..000000000
 +## Scope Boundary
 +
 +This governance addendum defines documentation and configuration contract rules only. It does not change runtime code, API implementation code, storage implementation code, database DDL, or secret values.
+diff --git a/docs_build/dev/ProjectInstructions/addendums/postgres_only.md b/docs_build/dev/ProjectInstructions/addendums/postgres_only.md
+index 55af64381..369ce2006 100644
+--- a/docs_build/dev/ProjectInstructions/addendums/postgres_only.md
++++ b/docs_build/dev/ProjectInstructions/addendums/postgres_only.md
+@@ -1,4 +1,4 @@
+-SQLite is deprecated.
++SQLite is deprecated/retired and is not an active runtime database.
+
+ Game Foundry Studio standard database:
+ PostgreSQL
+@@ -7,5 +7,6 @@ Rules:
+ - No new SQLite implementations
+ - No new SQLite dependencies
+ - Existing SQLite references are technical debt
+-- New persistence work targets PostgreSQL
++- New persistence work targets PostgreSQL/Postgres
++- Local (VS Code), DEV, IST, UAT, and PROD runtime database work targets Postgres
+ - PRs introducing SQLite should be rejected
+diff --git a/docs_build/dev/ProjectInstructions/addendums/release_gate.md b/docs_build/dev/ProjectInstructions/addendums/release_gate.md
+index a509f1791..79af94858 100644
+--- a/docs_build/dev/ProjectInstructions/addendums/release_gate.md
++++ b/docs_build/dev/ProjectInstructions/addendums/release_gate.md
+@@ -37,6 +37,7 @@ The release gate should confirm these files when relevant to the PR:
+ - `docs_build/dev/ProjectInstructions/addendums/governance_phase1_complete.md`
+ - `docs_build/dev/ProjectInstructions/addendums/pr_workflow.md`
+ - `docs_build/dev/ProjectInstructions/addendums/project_reference_files.md`
++- `docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md`
+ - `docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md`
+ - `docs_build/dev/admin-notes/Installs required.txt` when present
+ - `docs_build/dev/admin-notes/Table layout.txt` when present
+diff --git a/docs_build/dev/admin-notes/index.txt b/docs_build/dev/admin-notes/index.txt
+index 93654fa6e..4744bea93 100644
+--- a/docs_build/dev/admin-notes/index.txt
++++ b/docs_build/dev/admin-notes/index.txt
+@@ -2,7 +2,7 @@
+ [.] Start the server
+ npm run dev:local-api
+
+-[x] Deploy DEV, IST, UAT, PRD
++[x] Deploy Local (VS Code), DEV, IST, UAT, PROD
+ node .\scripts\validate-supabase-dev.mjs
+ node .\scripts\apply-supabase-dev-ddl.mjs
+ node .\scripts\validate-supabase-dev.mjs
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model.md b/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model.md
 new file mode 100644
-index 000000000..000000000
+index 000000000..e99a11c36
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model.md
-@@ -0,0 +1,72 @@
+@@ -0,0 +1,83 @@
 +# PR_26177_OWNER_050-environment-governance-model
 +
 +Date: 2026-06-25
@@ -565,6 +566,16 @@ index 000000000..000000000
 +- Clarified that SQLite is deprecated/retired and is not an active runtime database.
 +- Updated `.env.example` comments/placeholders to use the official model and local R2 prefixes.
 +- No runtime code, UI, engine core, secret, DDL, or storage implementation changes were made.
++
++## Conflict Resolution
++
++- Resolved merge conflicts against `origin/main` only.
++- Conflicts were limited to generated Codex artifacts:
++  - `docs_build/dev/reports/codex_changed_files.txt`
++  - `docs_build/dev/reports/codex_review.diff`
++- Regenerated both Codex artifacts from the final PR delta after the `origin/main` merge.
++- Preserved the OWNER_050 environment governance purpose and decisions.
++- Final PR delta remains documentation/governance plus `.env.example` comments/placeholders.
 +
 +## Branch Validation
 +
@@ -612,19 +623,20 @@ index 000000000..000000000
 +
 +## Validation
 +
++- PASS: `git status`.
 +- PASS: `git diff --check`.
 +- PASS: Documentation review confirmed the official environment model, invariance rule, shared API/service contract, required services, R2 prefixes, guest seed data rule, and SQLite retired status.
-+- SKIP: Playwright was not run because no runtime files changed.
++- SKIP: Playwright was not run because conflict resolution changed only docs/report/template files in the PR delta.
 +
 +## Artifact
 +
 +- `tmp/PR_26177_OWNER_050-environment-governance-model_delta.zip`
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_branch-validation.md b/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_branch-validation.md
 new file mode 100644
-index 000000000..000000000
+index 000000000..f2d6ed6d1
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_branch-validation.md
-@@ -0,0 +1,26 @@
+@@ -0,0 +1,28 @@
 +# PR_26177_OWNER_050-environment-governance-model Branch Validation
 +
 +## Branch
@@ -641,6 +653,8 @@ index 000000000..000000000
 +- Current branch was `main` before branch creation: PASS.
 +- Worktree before BUILD was clean: PASS.
 +- Current branch is the scoped OWNER_050 branch: PASS.
++- Conflict resolution was performed against `origin/main` only: PASS.
++- Merge conflicts were limited to generated Codex report artifacts: PASS.
 +- Scope is limited to environment governance, `.env.example` comments/placeholders, reports, and Codex review artifacts: PASS.
 +- No runtime files changed: PASS.
 +- No UI files changed: PASS.
@@ -653,10 +667,10 @@ index 000000000..000000000
 +PASS
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_instruction-compliance-checklist.md
 new file mode 100644
-index 000000000..000000000
+index 000000000..966ffca9a
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_instruction-compliance-checklist.md
-@@ -0,0 +1,24 @@
+@@ -0,0 +1,27 @@
 +# PR_26177_OWNER_050-environment-governance-model Instruction Compliance Checklist
 +
 +- [x] Read repo BUILD instructions before task actions.
@@ -677,16 +691,19 @@ index 000000000..000000000
 +- [x] Avoided persisted `imageDataUrl` contract changes.
 +- [x] Created required Codex reports under `docs_build/dev/reports/`.
 +- [x] Created repo-structured delta ZIP under `tmp/`.
++- [x] Merged `origin/main` only for conflict resolution.
++- [x] Resolved only generated Codex artifact conflicts.
++- [x] Refreshed reports and ZIP after conflict resolution.
 +
 +## Result
 +
 +PASS
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_manual-validation-notes.md
 new file mode 100644
-index 000000000..000000000
+index 000000000..8ea5147fe
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_manual-validation-notes.md
-@@ -0,0 +1,20 @@
+@@ -0,0 +1,23 @@
 +# PR_26177_OWNER_050-environment-governance-model Manual Validation Notes
 +
 +Manual validation was limited to governance/documentation review because this PR establishes environment governance and updates `.env.example` comments/placeholders only.
@@ -703,16 +720,19 @@ index 000000000..000000000
 +- Confirmed all environments receive approved guest seed data for all tools.
 +- Confirmed SQLite is documented as deprecated/retired and not an active runtime database.
 +- Confirmed `.env.example` comments/placeholders align to the official model.
++- Confirmed merge conflicts against `origin/main` were limited to generated Codex report artifacts.
++- Confirmed OWNER_050 environment governance decisions were preserved after conflict resolution.
++- Confirmed Playwright is not impacted because conflict resolution changed only docs/report/template files in the PR delta.
 +
 +## Result
 +
 +PASS
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_requirement-checklist.md b/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_requirement-checklist.md
 new file mode 100644
-index 000000000..000000000
+index 000000000..a53166b57
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_requirement-checklist.md
-@@ -0,0 +1,38 @@
+@@ -0,0 +1,41 @@
 +# PR_26177_OWNER_050-environment-governance-model Requirement Checklist
 +
 +- [x] Establish `Local (VS Code) -> DEV -> IST -> UAT -> PROD` as the official environment model.
@@ -747,16 +767,19 @@ index 000000000..000000000
 +- [x] Produce `codex_review.diff`.
 +- [x] Produce `codex_changed_files.txt`.
 +- [x] Produce repo-structured ZIP under `tmp/`.
++- [x] Resolve merge conflicts against `origin/main` only.
++- [x] Preserve OWNER_050 environment governance decisions after conflict resolution.
++- [x] Refresh repo-structured ZIP after conflict resolution.
 +
 +## Result
 +
 +PASS
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_validation-lane.md b/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_validation-lane.md
 new file mode 100644
-index 000000000..000000000
+index 000000000..66eed6016
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_validation-lane.md
-@@ -0,0 +1,22 @@
+@@ -0,0 +1,29 @@
 +# PR_26177_OWNER_050-environment-governance-model Validation Lane
 +
 +## Lane
@@ -765,16 +788,23 @@ index 000000000..000000000
 +
 +## Commands
 +
++- `git status`
 +- `git diff --check`
 +
 +## Skipped Lanes
 +
-+- Runtime validation skipped: no runtime files changed.
-+- UI/browser validation skipped: no UI files changed.
-+- Playwright skipped: no runtime files changed.
++- Runtime validation skipped: conflict resolution changed only docs/report/template files in the PR delta.
++- UI/browser validation skipped: conflict resolution changed only docs/report/template files in the PR delta.
++- Playwright skipped: no runtime files changed in the PR delta.
 +- Engine validation skipped: no engine core files changed.
 +- Database migration validation skipped: no DDL, migration, or runtime database implementation changed.
 +- Storage runtime validation skipped: no storage implementation changed.
++
++## Conflict Resolution
++
++- `origin/main` was merged into the branch.
++- Conflicts were limited to `docs_build/dev/reports/codex_changed_files.txt` and `docs_build/dev/reports/codex_review.diff`.
++- Both generated artifacts were regenerated after the merge.
 +
 +## Result
 +

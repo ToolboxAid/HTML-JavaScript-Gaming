@@ -17,6 +17,16 @@ Status: PASS
 - Updated `.env.example` comments/placeholders to use the official model and local R2 prefixes.
 - No runtime code, UI, engine core, secret, DDL, or storage implementation changes were made.
 
+## Conflict Resolution
+
+- Resolved merge conflicts against `origin/main` only.
+- Conflicts were limited to generated Codex artifacts:
+  - `docs_build/dev/reports/codex_changed_files.txt`
+  - `docs_build/dev/reports/codex_review.diff`
+- Regenerated both Codex artifacts from the final PR delta after the `origin/main` merge.
+- Preserved the OWNER_050 environment governance purpose and decisions.
+- Final PR delta remains documentation/governance plus `.env.example` comments/placeholders.
+
 ## Branch Validation
 
 PASS. Current branch is `PR_26177_OWNER_050-environment-governance-model`, created from clean `main` at `0c0f2ebc0`.
@@ -63,9 +73,10 @@ PASS. Current branch is `PR_26177_OWNER_050-environment-governance-model`, creat
 
 ## Validation
 
+- PASS: `git status`.
 - PASS: `git diff --check`.
 - PASS: Documentation review confirmed the official environment model, invariance rule, shared API/service contract, required services, R2 prefixes, guest seed data rule, and SQLite retired status.
-- SKIP: Playwright was not run because no runtime files changed.
+- SKIP: Playwright was not run because conflict resolution changed only docs/report/template files in the PR delta.
 
 ## Artifact
 

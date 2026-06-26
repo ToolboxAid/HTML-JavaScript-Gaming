@@ -4,6 +4,7 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { databaseSslMode } from "../src/dev-runtime/persistence/postgres-connection-client.mjs";
 import { startLocalApiServer } from "../src/dev-runtime/server/local-api-server.mjs";
+import { loadStorageConfig } from "../src/dev-runtime/storage/storage-config.mjs";
 
 const RUNTIME_ENV_FILE = ".env";
 const NOT_CONFIGURED = "(not configured)";
@@ -181,6 +182,28 @@ function formatRuntimePortLogLines({ env, localServer }) {
   ];
 }
 
+function databaseMode(env) {
+  const rawValue = String(env.GAMEFOUNDRY_DATABASE_URL || "").trim();
+  if (!rawValue) {
+    return "not configured";
+  }
+  try {
+    const parsedUrl = new URL(rawValue);
+    return ["postgres:", "postgresql:"].includes(parsedUrl.protocol) ? "Postgres" : "invalid database URL";
+  } catch {
+    return "invalid database URL";
+  }
+}
+
+function storageStatus(env) {
+  const storageConfig = loadStorageConfig(env);
+  if (storageConfig.configured) {
+    return `configured (bucket ${storageConfig.safe.bucket}; prefix ${storageConfig.safe.projectsPrefix})`;
+  }
+  const issue = storageConfig.validationError || `missing ${storageConfig.missingKeys?.join(", ") || "storage configuration"}`;
+  return `not configured (${issue})`;
+}
+
 export function formatStartupLogLines({
   accountConnection,
   configuredDatabaseSslMode,
@@ -190,14 +213,21 @@ export function formatStartupLogLines({
   localServer,
   runtimeEnv,
 }) {
+  const configuredApiUrl = String(env.GAMEFOUNDRY_API_URL || "").trim() || defaultApiUrl(localServer.baseUrl);
+  const configuredSiteUrl = configuredValue(env.GAMEFOUNDRY_SITE_URL);
   return [
     `GameFoundry API runtime server running at ${localServer.baseUrl}`,
-    `Configured site URL: ${configuredValue(env.GAMEFOUNDRY_SITE_URL)}`,
-    `Configured API URL: ${String(env.GAMEFOUNDRY_API_URL || "").trim() || defaultApiUrl(localServer.baseUrl)}`,
+    `Configured site URL: ${configuredSiteUrl}`,
+    `Configured API URL: ${configuredApiUrl}`,
+    `Local API URL: ${configuredApiUrl}`,
+    `Local site URL: ${configuredSiteUrl}`,
+    `Local site URL port: ${portFromUrl(env.GAMEFOUNDRY_SITE_URL)}`,
     ...formatEnvironmentVariableLogLines(runtimeEnv),
     ...formatRuntimePortLogLines({ env, localServer }),
     connectionStatusLine("auth", accountConnection),
     connectionStatusLine("database", databaseConnection),
+    `Database mode: ${databaseMode(env)}`,
+    `Storage status: ${storageStatus(env)}`,
     `Database SSL mode: ${configuredDatabaseSslMode || `invalid (${databaseSslModeError})`}`,
     "Press Ctrl+C to stop.",
   ];

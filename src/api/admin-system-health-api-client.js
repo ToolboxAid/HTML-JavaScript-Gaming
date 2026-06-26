@@ -20,6 +20,10 @@ export function runAdminSystemHealthStorageConnectivityAction(actionId) {
   );
 }
 
+export function runAdminSystemHealthStorageExpandedValidation() {
+  return runAdminSystemHealthStorageConnectivityAction("storage-expanded-validation");
+}
+
 export function runAdminSystemHealthAction(actionId) {
   return requireServerApiData(
     safeRequestServerApi("/admin/system-health/action", {

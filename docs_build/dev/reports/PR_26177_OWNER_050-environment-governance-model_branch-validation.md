@@ -14,6 +14,8 @@
 - Current branch was `main` before branch creation: PASS.
 - Worktree before BUILD was clean: PASS.
 - Current branch is the scoped OWNER_050 branch: PASS.
+- Conflict resolution was performed against `origin/main` only: PASS.
+- Merge conflicts were limited to generated Codex report artifacts: PASS.
 - Scope is limited to environment governance, `.env.example` comments/placeholders, reports, and Codex review artifacts: PASS.
 - No runtime files changed: PASS.
 - No UI files changed: PASS.

@@ -18,6 +18,9 @@
 - [x] Avoided persisted `imageDataUrl` contract changes.
 - [x] Created required Codex reports under `docs_build/dev/reports/`.
 - [x] Created repo-structured delta ZIP under `tmp/`.
+- [x] Merged `origin/main` only for conflict resolution.
+- [x] Resolved only generated Codex artifact conflicts.
+- [x] Refreshed reports and ZIP after conflict resolution.
 
 ## Result
 

@@ -58,4 +58,26 @@ export function run() {
   assert.equal(replaced.frames.length, 1);
   assert.equal(replaced.frames[0].events.status, 'patched');
   assert.equal(replay.getTimelineSnapshot(0).snapshot.events.status, 'patched');
+
+  const originalStructuredClone = globalThis.structuredClone;
+  try {
+    globalThis.structuredClone = undefined;
+    const fallbackReplay = new ReplaySystem();
+    const fallbackFrame = { input: { jump: true }, events: { status: 'fallback' } };
+    fallbackReplay.startRecording({
+      metadata: { mode: 'json-fallback' },
+      initialState: { player: { x: 4 } },
+    });
+    fallbackReplay.recordFrame(fallbackFrame);
+    fallbackFrame.input.jump = false;
+    fallbackReplay.stopRecording({ finalState: { status: 'done' } });
+
+    const fallbackSavedReplay = fallbackReplay.getReplay();
+    assert.equal(fallbackSavedReplay.metadata.mode, 'json-fallback');
+    assert.equal(fallbackSavedReplay.initialState.player.x, 4);
+    assert.equal(fallbackSavedReplay.frames[0].input.jump, true);
+    assert.equal(fallbackSavedReplay.finalState.status, 'done');
+  } finally {
+    globalThis.structuredClone = originalStructuredClone;
+  }
 }

@@ -356,6 +356,7 @@ const SYSTEM_HEALTH_STORAGE_ACTION_IDS = Object.freeze([
   "storage-read-test-object",
   "storage-delete-test-object",
 ]);
+const SYSTEM_HEALTH_STORAGE_EXPANDED_VALIDATION_ACTION_ID = "storage-expanded-validation";
 const SYSTEM_HEALTH_MANUAL_ACTION_LABELS = Object.freeze({
   "database-check": "Run Database Check",
   "full-health-check": "Run Full Health Check",
@@ -364,11 +365,13 @@ const SYSTEM_HEALTH_MANUAL_ACTION_LABELS = Object.freeze({
   "storage-check": "Run Storage Check",
 });
 const SYSTEM_HEALTH_API_ENDPOINTS = Object.freeze([
+  Object.freeze({ method: "GET", path: "/api/runtime/health", purpose: "Read public-safe Local API runtime health JSON." }),
   Object.freeze({ method: "GET", path: "/api/admin/system-health/status", purpose: "Read current deployment System Health status." }),
   Object.freeze({ method: "POST", path: "/api/admin/system-health/action", purpose: "Run current deployment manual health actions." }),
   Object.freeze({ method: "POST", path: "/api/admin/system-health/storage-connectivity-action", purpose: "Run current deployment R2 folder diagnostics." }),
 ]);
 const ADMIN_API_REGISTRY_ENTRIES = Object.freeze([
+  Object.freeze({ method: "GET", owner: "Team Charlie", path: "/api/runtime/health", purpose: "Runtime health JSON contract" }),
   Object.freeze({ method: "GET", owner: "Team Charlie", path: "/api/admin/system-health/status", purpose: "System Health status contract" }),
   Object.freeze({ method: "POST", owner: "Team Charlie", path: "/api/admin/system-health/action", purpose: "System Health manual actions" }),
   Object.freeze({ method: "POST", owner: "Team Charlie", path: "/api/admin/system-health/storage-connectivity-action", purpose: "System Health R2 diagnostics" }),
@@ -650,6 +653,63 @@ function databaseConfigStatus(env = process.env) {
   }
 }
 
+function systemHealthPostgresMetrics(databaseStatus = {}, checkedAt = new Date().toISOString()) {
+  const reason = databaseStatus.message || "Postgres metrics are reported only when the current environment database reader returns safe values.";
+  const tableCount = Number(databaseStatus.tableCount);
+  const metricRows = [
+    {
+      metric: "Connection status",
+      status: databaseStatus.connectivityStatus || databaseStatus.status || "WARN",
+      value: databaseStatus.connectivity || "Unavailable",
+    },
+    {
+      metric: "Database name",
+      status: databaseStatus.currentDatabaseNameStatus || databaseStatus.databaseNameStatus || "WARN",
+      value: databaseStatus.currentDatabaseName || databaseStatus.databaseName || "Unavailable",
+    },
+    {
+      metric: "Current schema",
+      status: databaseStatus.currentSchemaStatus || "WARN",
+      value: databaseStatus.currentSchema || "Unavailable",
+    },
+    {
+      metric: "Migration status",
+      status: databaseStatus.migrationStatus || "WARN",
+      value: databaseStatus.migrationStatus === "PASS"
+        ? `DDL=${databaseStatus.migrationCounts?.DDL || 0}; DML=${databaseStatus.migrationCounts?.DML || 0}`
+        : "Unavailable",
+    },
+    {
+      metric: "Last migration",
+      status: databaseStatus.lastMigrationStatus || "WARN",
+      value: databaseStatus.lastMigration?.name || "Unavailable",
+    },
+    {
+      metric: "Table count",
+      status: Number.isFinite(tableCount) ? "PASS" : "WARN",
+      value: Number.isFinite(tableCount) ? String(tableCount) : "Unavailable",
+    },
+    {
+      metric: "Database size",
+      status: databaseStatus.databaseSizeStatus || "WARN",
+      value: databaseStatus.databaseSize || "Unavailable",
+    },
+    {
+      metric: "Last checked",
+      status: databaseStatus.lastChecked ? "PASS" : "WARN",
+      value: databaseStatus.lastChecked || checkedAt || "Unavailable",
+    },
+  ];
+  return {
+    lastChecked: databaseStatus.lastChecked || checkedAt,
+    message: reason,
+    rows: metricRows,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    status: overallHealthStatus(metricRows),
+  };
+}
+
 function projectPackageReadinessStatus() {
   const decisionPath = path.join(process.cwd(), "docs_build", "codex", "decisions", "project-packages.md");
   const contract = projectPackageReadinessContract();
@@ -844,6 +904,13 @@ function localApiStartupUrlDisplay(value, fallback = "not configured") {
   }
 }
 
+function localApiStartupPortStatus(port) {
+  if (port === "invalid URL") {
+    return "FAIL";
+  }
+  return port === "not configured" ? "WARN" : "PASS";
+}
+
 function localApiStartupBindTarget(env = process.env) {
   const host = String(env.GAMEFOUNDRY_LOCAL_API_HOST || LOCAL_API_STARTUP_DEFAULT_HOST).trim() || LOCAL_API_STARTUP_DEFAULT_HOST;
   const port = String(env.GAMEFOUNDRY_LOCAL_API_PORT || LOCAL_API_STARTUP_DEFAULT_PORT).trim() || LOCAL_API_STARTUP_DEFAULT_PORT;
@@ -856,11 +923,57 @@ function localApiStartupBindTarget(env = process.env) {
   };
 }
 
+function localApiStartupDatabaseMode(env = process.env) {
+  const databaseStatus = databaseConfigStatus(env);
+  if (databaseStatus.hostStatus === "FAIL" || databaseStatus.databaseNameStatus === "FAIL") {
+    return {
+      reason: "GAMEFOUNDRY_DATABASE_URL is present but is not a valid Postgres URL.",
+      status: "FAIL",
+      value: "invalid database URL",
+    };
+  }
+  if (!databaseStatus.configured) {
+    return {
+      reason: "GAMEFOUNDRY_DATABASE_URL is not configured for the Local API startup report.",
+      status: "WARN",
+      value: "not configured",
+    };
+  }
+  return {
+    reason: "GAMEFOUNDRY_DATABASE_URL is configured with a Postgres protocol; credentials remain hidden.",
+    status: "PASS",
+    value: "Postgres",
+  };
+}
+
+function localApiStartupStorageStatus(env = process.env) {
+  const storageConfig = loadStorageConfig(env);
+  if (storageConfig.configured) {
+    return {
+      reason: `Cloudflare R2 configuration is present for bucket ${storageConfig.safe.bucket} and prefix ${storageConfig.safe.projectsPrefix}; credential values remain hidden.`,
+      status: "PASS",
+      value: "configured",
+    };
+  }
+  const issue = storageConfig.validationError
+    || `missing ${storageConfig.missingKeys?.join(", ") || "storage configuration"}`;
+  return {
+    reason: `Cloudflare R2 storage is not fully configured: ${issue}.`,
+    status: "WARN",
+    value: "not configured",
+  };
+}
+
 function systemHealthLocalApiStartupDiagnostics(env = process.env) {
   const bindTarget = localApiStartupBindTarget(env);
   const configuredApiUrl = String(env.GAMEFOUNDRY_API_URL || "").trim();
   const derivedApiUrl = `http://${bindTarget.value}/api`;
   const siteUrl = String(env.GAMEFOUNDRY_SITE_URL || "").trim();
+  const apiUrlDisplay = localApiStartupUrlDisplay(configuredApiUrl || derivedApiUrl);
+  const siteUrlDisplay = localApiStartupUrlDisplay(siteUrl);
+  const siteUrlPort = localApiStartupPortFromUrl(siteUrl);
+  const databaseMode = localApiStartupDatabaseMode(env);
+  const storageStatus = localApiStartupStorageStatus(env);
   const rows = [
     {
       field: "Approved diagnostics format",
@@ -875,12 +988,46 @@ function systemHealthLocalApiStartupDiagnostics(env = process.env) {
       value: "masked and redacted",
     },
     {
+      field: "Environment variable order",
+      reason: "Runtime .env keys are sorted alphabetically before startup diagnostics are printed.",
+      status: "PASS",
+      value: "alphabetical",
+    },
+    {
+      field: "Secret masking markers",
+      reason: "Startup diagnostics mask variables whose keys contain PASSWORD, SECRET, TOKEN, KEY, SERVICE_ROLE, or JWT.",
+      status: "PASS",
+      value: "PASSWORD, SECRET, TOKEN, KEY, SERVICE_ROLE, JWT",
+    },
+    {
       field: "Configured startup bind target",
       reason: bindTarget.status === "PASS"
         ? "Local API startup uses the configured or default host and port for the bind target."
         : "GAMEFOUNDRY_LOCAL_API_PORT must be a positive integer.",
       status: bindTarget.status,
       value: bindTarget.value,
+    },
+    {
+      field: "Local API URL",
+      reason: configuredApiUrl
+        ? "GAMEFOUNDRY_API_URL is configured and displayed without URL credentials."
+        : "GAMEFOUNDRY_API_URL is not configured; startup diagnostics derive /api from the bind target.",
+      status: apiUrlDisplay === "invalid URL" ? "FAIL" : "PASS",
+      value: apiUrlDisplay,
+    },
+    {
+      field: "Local site URL",
+      reason: siteUrl
+        ? "GAMEFOUNDRY_SITE_URL is available for startup diagnostics."
+        : "GAMEFOUNDRY_SITE_URL is not configured for the Local API startup report.",
+      status: siteUrl ? (siteUrlDisplay === "invalid URL" ? "FAIL" : "PASS") : "WARN",
+      value: siteUrlDisplay,
+    },
+    {
+      field: "Local site URL port",
+      reason: "Port is derived from GAMEFOUNDRY_SITE_URL for display only.",
+      status: localApiStartupPortStatus(siteUrlPort),
+      value: siteUrlPort,
     },
     {
       field: "Configured site URL",
@@ -896,13 +1043,25 @@ function systemHealthLocalApiStartupDiagnostics(env = process.env) {
         ? "GAMEFOUNDRY_API_URL is configured and displayed without URL credentials."
         : "GAMEFOUNDRY_API_URL is not configured; startup diagnostics derive /api from the bind target.",
       status: "PASS",
-      value: localApiStartupUrlDisplay(configuredApiUrl || derivedApiUrl),
+      value: apiUrlDisplay,
     },
     {
       field: "Configured API URL port",
       reason: "Port is derived from the configured or startup-derived API URL for display only.",
       status: "PASS",
       value: localApiStartupPortFromUrl(configuredApiUrl || derivedApiUrl),
+    },
+    {
+      field: "Database mode",
+      reason: databaseMode.reason,
+      status: databaseMode.status,
+      value: databaseMode.value,
+    },
+    {
+      field: "Storage status",
+      reason: storageStatus.reason,
+      status: storageStatus.status,
+      value: storageStatus.value,
     },
     {
       field: "Configurable multiple runtime ports",
@@ -923,6 +1082,80 @@ function systemHealthLocalApiStartupDiagnostics(env = process.env) {
 
 function systemHealthEnvironmentMap() {
   return SYSTEM_HEALTH_ENVIRONMENT_MODELS.map((model) => ({ ...model }));
+}
+
+function systemHealthEnvironmentComparison({ checkedAt = new Date().toISOString(), environmentIdentity = {} } = {}) {
+  const currentEnvironmentName = normalizeEnvironmentName(environmentIdentity.name);
+  const comparisonModels = [
+    {
+      canonicalName: "Local",
+      databaseModel: "Local Docker PostgreSQL",
+      displayName: "Local (VS Code)",
+      hostingModel: "VS Code + Local API",
+      runtimeExpectation: "Local static server + Local API + developer workstation",
+      storageFolder: "/local",
+    },
+    {
+      canonicalName: "DEV",
+      databaseModel: "Local Docker PostgreSQL",
+      displayName: "DEV",
+      hostingModel: "Local Docker",
+      runtimeExpectation: "Local Docker runtime + Local API",
+      storageFolder: "/dev",
+    },
+    {
+      canonicalName: "IST",
+      databaseModel: "Local Docker PostgreSQL",
+      displayName: "IST",
+      hostingModel: "Local Docker",
+      runtimeExpectation: "Local Docker runtime + Local API",
+      storageFolder: "/ist",
+    },
+    {
+      canonicalName: "UAT",
+      databaseModel: "Supabase PostgreSQL",
+      displayName: "UAT",
+      hostingModel: "Cloudflare",
+      runtimeExpectation: "Cloudflare deployment + server API contract",
+      storageFolder: "/uat",
+    },
+    {
+      canonicalName: "PRD",
+      databaseModel: "Supabase PostgreSQL",
+      displayName: "PROD",
+      hostingModel: "Cloudflare",
+      runtimeExpectation: "Cloudflare deployment + server API contract",
+      storageFolder: "/prd",
+    },
+  ];
+  const rows = comparisonModels.map((model) => {
+    const current = normalizeEnvironmentName(model.canonicalName) === currentEnvironmentName;
+    const state = current
+      ? "Current"
+      : model.canonicalName === "Local"
+        ? "Unavailable"
+        : "Not Configured";
+    return {
+      ...model,
+      activeCheck: current,
+      checkedAt: current ? checkedAt : "",
+      state,
+      status: current ? environmentIdentity.status || "PASS" : "WARN",
+      summary: current
+        ? `This deployment actively checks only ${environmentIdentity.name || model.displayName}.`
+        : `${model.displayName} is reference-only from this deployment; no active health check was run.`,
+    };
+  });
+  return {
+    currentEnvironment: environmentIdentity.name || "Unknown",
+    lastChecked: checkedAt,
+    message: "Environment Health Comparison is reference-only for peer environments; only the current deployment is actively checked.",
+    noCrossEnvironmentChecks: true,
+    rows,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    status: rows.some((row) => row.activeCheck) ? "PASS" : "WARN",
+  };
 }
 
 function topLevelStorageFolder(value) {
@@ -3989,43 +4222,75 @@ class ApiRuntimeDataSource {
 
   storageConnectivityConfigFailure(actionId, storage, scope = "project-prefix") {
     const missing = storage.config?.missingKeys?.join(", ") || storage.config?.validationError || "storage configuration incomplete";
+    const action = STORAGE_CONNECTIVITY_ACTIONS.find((candidate) => candidate.id === actionId);
     return {
       actionId,
+      cleanupStatus: "not-run",
+      durationMs: 0,
       environmentFolder: scope === "environment-folder" ? this.storageConnectivityEnvironmentFolder() : "",
       executed: false,
       lastChecked: new Date().toISOString(),
       message: `Storage connectivity requires configured storage and GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX before this action can run. Missing or invalid: ${missing}.`,
+      operation: action?.operation || "configuration",
+      operationLabel: action?.label || "Storage configuration",
+      permanentObjectCreated: false,
       projectsPrefix: String(storage.config?.projectsPrefix || "").trim(),
       secretEditingAllowed: false,
       secretsExposed: false,
       status: "FAIL",
       storageStatus: this.ownerStorageStatus(),
+      targetPrefix: scope === "environment-folder" ? this.storageConnectivityEnvironmentFolder() : String(storage.config?.projectsPrefix || "").trim(),
     };
   }
 
-  storageConnectivityResult({ actionId, environmentFolder = "", executed = true, keysListed = 0, message, objectKey, projectsPrefix, status }) {
+  storageConnectivityResult({
+    action,
+    actionId,
+    cleanupStatus = "not-applicable",
+    durationMs = 0,
+    environmentFolder = "",
+    executed = true,
+    keysListed = 0,
+    message,
+    objectKey,
+    permanentObjectCreated = false,
+    projectsPrefix,
+    status,
+    targetPrefix = "",
+  }) {
+    const resolvedAction = action || STORAGE_CONNECTIVITY_ACTIONS.find((candidate) => candidate.id === actionId) || {};
     return {
       actionId,
+      cleanupStatus,
+      durationMs,
       environmentFolder,
       executed,
       keysListed,
       lastChecked: new Date().toISOString(),
       message,
+      operation: resolvedAction.operation || "",
+      operationLabel: resolvedAction.label || actionId,
+      permanentObjectCreated,
       projectsPrefix,
       secretEditingAllowed: false,
       secretsExposed: false,
       status,
       storageStatus: this.ownerStorageStatus(),
+      targetPrefix,
       testObjectKey: objectKey,
     };
   }
 
   async runStorageConnectivityAction(actionId, options = {}) {
+    if (actionId === SYSTEM_HEALTH_STORAGE_EXPANDED_VALIDATION_ACTION_ID) {
+      return this.runStorageExpandedValidation(options);
+    }
     const action = STORAGE_CONNECTIVITY_ACTIONS.find((candidate) => candidate.id === actionId);
     if (!action) {
       throw new Error(`Unknown storage connectivity action: ${actionId || "missing actionId"}.`);
     }
 
+    const startedAt = Date.now();
     const scope = options.scope === "environment-folder" ? "environment-folder" : "project-prefix";
     const storage = createConfiguredProjectAssetStorage();
     const projectsPrefix = String(storage.config?.projectsPrefix || "").trim();
@@ -4041,7 +4306,9 @@ class ApiRuntimeDataSource {
         const result = await storage.listObjects(targetPrefix);
         const keysListed = Array.isArray(result.keys) ? result.keys.length : 0;
         return this.storageConnectivityResult({
+          action,
           actionId: action.id,
+          durationMs: Date.now() - startedAt,
           environmentFolder,
           keysListed,
           message: result.ok
@@ -4050,6 +4317,7 @@ class ApiRuntimeDataSource {
           objectKey,
           projectsPrefix,
           status: result.ok ? "PASS" : "FAIL",
+          targetPrefix,
         });
       }
 
@@ -4059,7 +4327,9 @@ class ApiRuntimeDataSource {
           : await storage.listProjectObjects();
         const keysListed = Array.isArray(result.keys) ? result.keys.length : 0;
         return this.storageConnectivityResult({
+          action,
           actionId: action.id,
+          durationMs: Date.now() - startedAt,
           environmentFolder,
           keysListed,
           message: result.ok
@@ -4068,6 +4338,7 @@ class ApiRuntimeDataSource {
           objectKey,
           projectsPrefix,
           status: result.ok ? "PASS" : "FAIL",
+          targetPrefix,
         });
       }
 
@@ -4078,14 +4349,19 @@ class ApiRuntimeDataSource {
           objectKey,
         });
         return this.storageConnectivityResult({
+          action,
           actionId: action.id,
+          cleanupStatus: result.ok ? "requires-delete-action" : "not-created",
+          durationMs: Date.now() - startedAt,
           environmentFolder,
           message: result.ok
             ? `Upload test object completed at ${objectKey}.`
             : `${result.message || "Storage upload failed."} Verify upload permission for ${targetPrefix}.`,
           objectKey,
+          permanentObjectCreated: result.ok === true,
           projectsPrefix,
           status: result.ok ? "PASS" : "FAIL",
+          targetPrefix,
         });
       }
 
@@ -4094,7 +4370,9 @@ class ApiRuntimeDataSource {
         const text = result.ok ? Buffer.from(result.bytes || []).toString("utf8") : "";
         const contentMatches = text === STORAGE_CONNECTIVITY_TEST_OBJECT_CONTENT;
         return this.storageConnectivityResult({
+          action,
           actionId: action.id,
+          durationMs: Date.now() - startedAt,
           environmentFolder,
           message: result.ok && contentMatches
             ? `Read test object completed from ${objectKey}.`
@@ -4102,30 +4380,75 @@ class ApiRuntimeDataSource {
           objectKey,
           projectsPrefix,
           status: result.ok && contentMatches ? "PASS" : "FAIL",
+          targetPrefix,
         });
       }
 
       const result = await storage.deleteObject(objectKey);
       return this.storageConnectivityResult({
+        action,
         actionId: action.id,
+        cleanupStatus: result.ok ? "completed" : "failed",
+        durationMs: Date.now() - startedAt,
         environmentFolder,
         message: result.ok
           ? `Delete test object completed at ${objectKey}.`
           : `${result.message || "Storage delete failed."} Verify delete permission for ${targetPrefix}.`,
         objectKey,
+        permanentObjectCreated: false,
         projectsPrefix,
         status: result.ok ? "PASS" : "FAIL",
+        targetPrefix,
       });
     } catch (error) {
       return this.storageConnectivityResult({
+        action,
         actionId: action.id,
+        durationMs: Date.now() - startedAt,
         environmentFolder,
         message: `Storage connectivity action failed: ${error instanceof Error ? error.message : String(error || "Unknown storage error.")}`,
         objectKey,
         projectsPrefix,
         status: "FAIL",
+        targetPrefix,
       });
     }
+  }
+
+  async runStorageExpandedValidation(options = {}) {
+    const startedAt = Date.now();
+    const scope = options.scope === "environment-folder" ? "environment-folder" : "project-prefix";
+    const storage = createConfiguredProjectAssetStorage();
+    const targetPrefix = this.storageConnectivityTargetPrefix(storage, scope);
+    const objectKey = this.storageConnectivityTestObjectKey(storage, scope);
+    const results = [];
+    for (const actionId of SYSTEM_HEALTH_STORAGE_ACTION_IDS) {
+      results.push(await this.runStorageConnectivityAction(actionId, { scope }));
+    }
+    const uploadResult = results.find((result) => result.actionId === "storage-upload-test-object");
+    const deleteResult = results.find((result) => result.actionId === "storage-delete-test-object");
+    const permanentObjectCreated = uploadResult?.status === "PASS" && deleteResult?.status !== "PASS";
+    const status = overallHealthStatus(results);
+    return {
+      actionId: SYSTEM_HEALTH_STORAGE_EXPANDED_VALIDATION_ACTION_ID,
+      cleanupStatus: permanentObjectCreated ? "failed" : "completed",
+      durationMs: Date.now() - startedAt,
+      environmentFolder: scope === "environment-folder" ? this.storageConnectivityEnvironmentFolder() : "",
+      executed: true,
+      lastChecked: new Date().toISOString(),
+      message: permanentObjectCreated
+        ? `Expanded R2 validation detected a cleanup failure for ${objectKey}; review storage credentials and delete permission.`
+        : `Expanded R2 validation completed against ${targetPrefix}; test object cleanup was attempted in the same validation run.`,
+      permanentObjectCreated,
+      projectsPrefix: String(storage.config?.projectsPrefix || "").trim(),
+      secretEditingAllowed: false,
+      secretsExposed: false,
+      status,
+      storageDiagnostics: results,
+      storageStatus: this.ownerStorageStatus(),
+      targetPrefix,
+      testObjectKey: objectKey,
+    };
   }
 
   ownerPromotionFoundation() {
@@ -4232,31 +4555,60 @@ class ApiRuntimeDataSource {
       migrationStatus: "WARN",
       responseTimeMs: null,
       status: "WARN",
+      currentDatabaseName: "",
+      currentDatabaseNameStatus: "WARN",
+      currentSchema: "",
+      currentSchemaStatus: "WARN",
+      databaseSize: "",
+      databaseSizeBytes: null,
+      databaseSizeStatus: "WARN",
+      tableCount: null,
       version: "",
       versionStatus: "WARN",
     };
     try {
       const adapter = this.supabaseDatabaseAdapter("Reading Admin System Health migration history");
-      const versionRows = await adapter.databaseClient().query("SELECT version() AS version;");
-      const countRows = await adapter.databaseClient().query(`
+      const databaseClient = adapter.databaseClient();
+      const versionRows = await databaseClient.query("SELECT version() AS version;");
+      const currentRows = await databaseClient.query("SELECT current_database() AS database_name, current_schema() AS schema_name;");
+      const countRows = await databaseClient.query(`
 SELECT "migrationType", count(*)::int AS count
 FROM schema_migrations
 GROUP BY "migrationType"
 ORDER BY "migrationType";
 `);
-      const lastRows = await adapter.databaseClient().query(`
+      const lastRows = await databaseClient.query(`
 SELECT "migrationType", "migrationName", "appliedAt"
 FROM schema_migrations
 ORDER BY "appliedAt" DESC, key DESC
 LIMIT 1;
 `);
+      const tableCountRows = await databaseClient.query(`
+SELECT count(*)::int AS table_count
+FROM information_schema.tables
+WHERE table_schema NOT IN ('pg_catalog', 'information_schema')
+  AND table_type = 'BASE TABLE';
+`);
+      const databaseSizeRows = await databaseClient.query(`
+SELECT pg_database_size(current_database()) AS database_size_bytes,
+       pg_size_pretty(pg_database_size(current_database())) AS database_size;
+`);
       const counts = new Map(countRows.map((row) => [String(row.migrationType || ""), Number(row.count || 0)]));
+      const currentRow = currentRows[0] || {};
       const lastRow = lastRows[0] || {};
-      const version = String(versionRows[0]?.version || "").trim();
-      return {
+      const tableCount = Number(tableCountRows[0]?.table_count);
+      const databaseSizeBytes = Number(databaseSizeRows[0]?.database_size_bytes);
+      const connectedStatus = {
         ...databaseStatus,
         connectivity: "connected",
         connectivityStatus: "PASS",
+        currentDatabaseName: String(currentRow.database_name || ""),
+        currentDatabaseNameStatus: currentRow.database_name ? "PASS" : "WARN",
+        currentSchema: String(currentRow.schema_name || ""),
+        currentSchemaStatus: currentRow.schema_name ? "PASS" : "WARN",
+        databaseSize: String(databaseSizeRows[0]?.database_size || ""),
+        databaseSizeBytes: Number.isFinite(databaseSizeBytes) ? databaseSizeBytes : null,
+        databaseSizeStatus: databaseSizeRows[0]?.database_size ? "PASS" : "WARN",
         lastMigration: {
           appliedAt: String(lastRow.appliedAt || ""),
           name: String(lastRow.migrationName || ""),
@@ -4268,20 +4620,29 @@ LIMIT 1;
           DML: counts.get("DML") || 0,
         },
         migrationStatus: "PASS",
-        message: "Current environment database connection responded through the safe Admin System Health API.",
+        message: "Current environment database connection and safe Postgres metrics responded through the Admin System Health API.",
         responseTimeMs: Date.now() - startedAt,
         status: databaseStatus.configured === true ? "PASS" : "WARN",
-        version: version || "not available",
-        versionStatus: version ? "PASS" : "WARN",
+        tableCount: Number.isFinite(tableCount) ? tableCount : null,
+        version: String(versionRows[0]?.version || "").trim() || "not available",
+        versionStatus: versionRows[0]?.version ? "PASS" : "WARN",
+      };
+      return {
+        ...connectedStatus,
+        postgresMetrics: systemHealthPostgresMetrics(connectedStatus, connectedStatus.lastChecked),
       };
     } catch (error) {
-      return {
+      const failedStatus = {
         ...databaseStatus,
         connectivity: "failed",
         connectivityStatus: "FAIL",
         message: `Current environment database health read failed: ${error instanceof Error ? error.message : String(error || "Unknown database error.")}`,
         responseTimeMs: Date.now() - startedAt,
         status: "FAIL",
+      };
+      return {
+        ...failedStatus,
+        postgresMetrics: systemHealthPostgresMetrics(failedStatus, failedStatus.lastChecked),
       };
     }
   }
@@ -4329,20 +4690,20 @@ LIMIT 1;
   }
 
   async adminSystemHealthStorageHealthCheck() {
-    const results = [];
-    for (const actionId of SYSTEM_HEALTH_STORAGE_ACTION_IDS) {
-      results.push(await this.runStorageConnectivityAction(actionId, { scope: "environment-folder" }));
-    }
+    const validation = await this.runStorageExpandedValidation({ scope: "environment-folder" });
+    const results = Array.isArray(validation.storageDiagnostics) ? validation.storageDiagnostics : [];
     return {
       actionId: "storage-check",
       checkedAt: new Date().toISOString(),
       label: SYSTEM_HEALTH_MANUAL_ACTION_LABELS["storage-check"],
-      message: "Storage health check executed bucket connectivity, list, upload, read, and delete through the current deployment API.",
+      message: validation.message || "Storage health check executed bucket connectivity, list, upload, read, and delete through the current deployment API.",
+      permanentObjectCreated: validation.permanentObjectCreated === true,
       secretEditingAllowed: false,
       secretsExposed: false,
-      status: overallHealthStatus(results.map((result) => ({ status: result.status }))),
+      status: validation.status || overallHealthStatus(results.map((result) => ({ status: result.status }))),
       storageDiagnostics: results,
       storageStatus: this.ownerStorageStatus(),
+      validationDurationMs: validation.durationMs,
     };
   }
 
@@ -4409,7 +4770,9 @@ LIMIT 1;
     const runtimeFeatureFlags = systemHealthRuntimeFeatureFlags(checkedAt);
     const environmentIdentity = systemHealthEnvironmentIdentity(process.env, checkedAt);
     const environmentMap = systemHealthEnvironmentMap();
+    const environmentComparison = systemHealthEnvironmentComparison({ checkedAt, environmentIdentity });
     const databaseStatus = await this.ownerDatabaseStatus(environmentIdentity);
+    const postgresMetrics = databaseStatus.postgresMetrics || systemHealthPostgresMetrics(databaseStatus, checkedAt);
     const storageStatus = this.ownerStorageStatus();
     const environmentStatus = storageProjectsPrefixStatus();
     const localApiStartup = systemHealthLocalApiStartupDiagnostics();
@@ -4576,11 +4939,13 @@ LIMIT 1;
       message: "Admin System Health loaded safe status only.",
       environmentIdentity,
       environmentMap,
+      environmentComparison,
       environmentCapabilities,
       healthCheckHistory,
       notificationsFoundation,
       operationsHealth,
       overview,
+      postgresMetrics,
       pressureLabels: SYSTEM_HEALTH_LIMIT_PRESSURE_LABELS,
       connectionSummary: this.ownerConnectionSummary(),
       databaseStatus,
@@ -4598,6 +4963,48 @@ LIMIT 1;
       storageStatus,
       summary: systemHealthSummary(overview),
       status: overallHealthStatus(overview),
+    };
+  }
+
+  async runtimeHealthJsonStatus() {
+    const checkedAt = new Date().toISOString();
+    const environmentIdentity = systemHealthEnvironmentIdentity(process.env, checkedAt);
+    const runtimeHealth = systemHealthRuntimeHealth(environmentIdentity, checkedAt);
+    const databaseStatus = await this.ownerDatabaseStatus(environmentIdentity);
+    const storageStatus = this.ownerStorageStatus();
+    return {
+      api: {
+        status: runtimeHealth.status || "WARN",
+        version: runtimeHealth.apiVersion || "not available",
+      },
+      database: {
+        connectivity: databaseStatus.connectivity || "not configured",
+        databaseType: databaseStatus.databaseType || environmentIdentity.databaseModel || "PostgreSQL",
+        lastChecked: databaseStatus.lastChecked || checkedAt,
+        responseTimeMs: Number.isFinite(databaseStatus.responseTimeMs) ? databaseStatus.responseTimeMs : null,
+        status: databaseStatus.connectivityStatus || databaseStatus.status || "WARN",
+        version: databaseStatus.version || "not available",
+      },
+      environment: {
+        hostingModel: environmentIdentity.hostingModel || "not configured",
+        name: environmentIdentity.name || "Unknown",
+        storageFolder: environmentIdentity.storageFolder || "not configured",
+      },
+      message: "Runtime health JSON is server-owned and safe for Local API status consumers.",
+      secretEditingAllowed: false,
+      secretsExposed: false,
+      status: overallHealthStatus([
+        { status: runtimeHealth.status || "WARN" },
+        { status: databaseStatus.connectivityStatus || databaseStatus.status || "WARN" },
+        { status: storageStatus.status || "WARN" },
+      ]),
+      storage: {
+        configured: storageStatus.configured === true,
+        environmentFolder: storageStatus.environmentFolder || environmentIdentity.storageFolder || "not configured",
+        lastChecked: storageStatus.lastChecked || checkedAt,
+        status: storageStatus.status || "WARN",
+      },
+      timestamp: checkedAt,
     };
   }
 
@@ -6459,6 +6866,10 @@ export function createLocalApiRouter({
         return true;
       }
       if (request.method === "GET" && await handleAdminNotesDirectoryApiRequest(requestUrl, response, { repoRoot })) {
+        return true;
+      }
+      if (parts[1] === "runtime" && request.method === "GET" && parts[2] === "health") {
+        ok(response, await dataSource.runtimeHealthJsonStatus());
         return true;
       }
       if (parts[1] === "session") {

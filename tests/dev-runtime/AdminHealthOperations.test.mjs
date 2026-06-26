@@ -142,6 +142,24 @@ test("Admin can view operational health while Creator sessions are blocked", asy
       assert.equal(typeof health.databaseStatus.lastChecked, "string");
       assert.equal(typeof health.databaseStatus.responseTimeMs === "number" || health.databaseStatus.responseTimeMs === null, true);
       assert.equal(typeof health.databaseStatus.version, "string");
+      assert.equal(health.postgresMetrics.secretEditingAllowed, false);
+      assert.equal(health.postgresMetrics.secretsExposed, false);
+      assert.deepEqual(
+        health.postgresMetrics.rows.map((row) => row.metric),
+        [
+          "Connection status",
+          "Database name",
+          "Current schema",
+          "Migration status",
+          "Last migration",
+          "Table count",
+          "Database size",
+          "Last checked",
+        ],
+      );
+      assert.equal(health.postgresMetrics.rows.every((row) => typeof row.value === "string"), true);
+      assert.equal(health.postgresMetrics.rows.some((row) => row.value === "Unavailable"), true);
+      assert.equal(health.databaseStatus.postgresMetrics.rows.length, health.postgresMetrics.rows.length);
       assert.equal(health.runtimeHealth.environmentName, "Local");
       assert.equal(health.runtimeHealth.appVersion, "1.0.0");
       assert.equal(health.runtimeHealth.apiVersion, "1.0.0");
@@ -208,6 +226,15 @@ test("Admin can view operational health while Creator sessions are blocked", asy
         health.environmentMap.map((row) => row.name),
         ["Local", "DEV", "IST", "UAT", "PRD"],
       );
+      assert.equal(health.environmentComparison.noCrossEnvironmentChecks, true);
+      assert.deepEqual(
+        health.environmentComparison.rows.map((row) => row.displayName),
+        ["Local (VS Code)", "DEV", "IST", "UAT", "PROD"],
+      );
+      assert.equal(health.environmentComparison.rows.filter((row) => row.activeCheck === true).length, 1);
+      assert.equal(health.environmentComparison.rows.find((row) => row.displayName === "Local (VS Code)").state, "Current");
+      assert.equal(health.environmentComparison.rows.find((row) => row.displayName === "DEV").state, "Not Configured");
+      assert.equal(health.environmentComparison.rows.find((row) => row.displayName === "PROD").storageFolder, "/prd");
       assert.equal(health.apiContract.contractVersion, "2026-06-24.system-health.v1");
       assert.equal(health.apiContract.currentDeploymentOnly, true);
       assert.equal(health.apiContract.noCrossEnvironmentChecks, true);
@@ -215,6 +242,7 @@ test("Admin can view operational health while Creator sessions are blocked", asy
       assert.deepEqual(
         health.apiContract.endpoints.map((endpoint) => `${endpoint.method} ${endpoint.path}`),
         [
+          "GET /api/runtime/health",
           "GET /api/admin/system-health/status",
           "POST /api/admin/system-health/action",
           "POST /api/admin/system-health/storage-connectivity-action",
@@ -223,6 +251,7 @@ test("Admin can view operational health while Creator sessions are blocked", asy
       assert.deepEqual(
         health.adminApiRegistry.rows.map((row) => `${row.method} ${row.path}`),
         [
+          "GET /api/runtime/health",
           "GET /api/admin/system-health/status",
           "POST /api/admin/system-health/action",
           "POST /api/admin/system-health/storage-connectivity-action",
@@ -233,6 +262,16 @@ test("Admin can view operational health while Creator sessions are blocked", asy
           "GET /api/navigation/admin-menu",
         ],
       );
+      const runtimeJson = await apiJson(server.baseUrl, "/api/runtime/health");
+      assert.equal(runtimeJson.environment.name, "Local");
+      assert.equal(runtimeJson.api.status, "PASS");
+      assert.ok(["PASS", "WARN", "FAIL"].includes(runtimeJson.database.status));
+      assert.ok(["PASS", "WARN", "FAIL"].includes(runtimeJson.storage.status));
+      assert.equal(typeof runtimeJson.timestamp, "string");
+      assert.equal(runtimeJson.secretEditingAllowed, false);
+      assert.equal(runtimeJson.secretsExposed, false);
+      assert.equal(JSON.stringify(runtimeJson).includes("api-secret"), false);
+      assert.equal(JSON.stringify(runtimeJson).includes("site-secret"), false);
       assert.deepEqual(
         health.runtimeFeatureFlags.rows.map((row) => `${row.flag}:${row.value}`),
         [
@@ -260,6 +299,13 @@ test("Admin can view operational health while Creator sessions are blocked", asy
         health.localApiStartup.rows.some((row) => row.field === "Configurable multiple runtime ports" && row.status === "PENDING" && row.value === "deferred/cancelled"),
         true,
       );
+      const startupRows = new Map(health.localApiStartup.rows.map((row) => [row.field, row]));
+      assert.equal(startupRows.get("Environment variable order")?.value, "alphabetical");
+      assert.equal(startupRows.get("Secret masking markers")?.value, "PASSWORD, SECRET, TOKEN, KEY, SERVICE_ROLE, JWT");
+      assert.equal(startupRows.get("Local API URL")?.status, "PASS");
+      assert.equal(startupRows.get("Local site URL port")?.value, "5500");
+      assert.ok(["Postgres", "not configured", "invalid database URL"].includes(startupRows.get("Database mode")?.value));
+      assert.equal(startupRows.get("Storage status")?.value, "not configured");
       const startupText = JSON.stringify(health.localApiStartup);
       assert.equal(startupText.includes("api-user"), false);
       assert.equal(startupText.includes("api-secret"), false);
@@ -293,6 +339,12 @@ test("Admin can view operational health while Creator sessions are blocked", asy
         ],
       );
       assert.equal(storageAction.storageDiagnostics.every((row) => row.environmentFolder === "/local"), true);
+      assert.equal(storageAction.permanentObjectCreated, false);
+      assert.equal(typeof storageAction.validationDurationMs, "number");
+      assert.equal(storageAction.storageDiagnostics.every((row) => typeof row.durationMs === "number"), true);
+      assert.equal(storageAction.storageDiagnostics.every((row) => typeof row.operationLabel === "string"), true);
+      assert.equal(storageAction.storageDiagnostics.every((row) => typeof row.cleanupStatus === "string"), true);
+      assert.equal(storageAction.storageDiagnostics.every((row) => row.permanentObjectCreated === false), true);
       const refreshAction = await apiJson(server.baseUrl, "/api/admin/system-health/action", {
         body: { actionId: "refresh" },
         method: "POST",
@@ -318,6 +370,8 @@ test("Admin can view operational health while Creator sessions are blocked", asy
       const healthText = JSON.stringify(health.operationsHealth);
       assert.equal(healthText.includes("monthlyPriceCents"), false);
       assert.equal(healthText.includes("priceCents"), false);
+      assert.equal(JSON.stringify(health.postgresMetrics).includes("postgres://"), false);
+      assert.equal(JSON.stringify(health.postgresMetrics).includes("postgresql://"), false);
       assert.equal(health.secretEditingAllowed, false);
     } finally {
       await server.close();

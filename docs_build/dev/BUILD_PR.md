@@ -63,6 +63,7 @@ This `BUILD_PR.md` and the user request are the source of truth for `PR_26177_OW
 Run exactly:
 
 ```powershell
+git status
 git diff --check
 ```
 

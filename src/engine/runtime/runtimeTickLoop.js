@@ -48,12 +48,16 @@ export function advanceRuntimeTick(tick) {
     });
   }
 
+  const deltaSeconds = Number.isFinite(tick.deltaSeconds) && tick.deltaSeconds > 0
+    ? tick.deltaSeconds
+    : tick.fixedDeltaMs / 1000;
+
   return createTickResult({
     tick: Object.freeze({
       frame: tick.frame + 1,
       elapsedMs: tick.elapsedMs + tick.fixedDeltaMs,
       fixedDeltaMs: tick.fixedDeltaMs,
-      deltaSeconds: tick.fixedDeltaMs / 1000,
+      deltaSeconds,
     }),
     errors: [],
   });

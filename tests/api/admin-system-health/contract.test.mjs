@@ -93,6 +93,15 @@ test("Admin System Health completion contract remains server-owned and current-e
   }, async () => {
     const server = await startApiServer();
     try {
+      const runtimeJson = await apiJson(server.baseUrl, "/api/runtime/health");
+      assert.equal(runtimeJson.environment.name, "DEV");
+      assert.equal(runtimeJson.environment.storageFolder, "/dev");
+      assert.equal(runtimeJson.api.status, "PASS");
+      assert.equal(Object.hasOwn(runtimeJson, "timestamp"), true);
+      assert.equal(runtimeJson.secretEditingAllowed, false);
+      assert.equal(runtimeJson.secretsExposed, false);
+      assert.equal(JSON.stringify(runtimeJson).includes("api-secret"), false);
+      assert.equal(JSON.stringify(runtimeJson).includes("site-secret"), false);
       await apiJson(server.baseUrl, "/api/session/user", {
         body: { userKey: SEED_DB_KEYS.users.admin },
         method: "POST",
@@ -107,22 +116,50 @@ test("Admin System Health completion contract remains server-owned and current-e
         [
           "apiContract",
           "adminApiRegistry",
+          "environmentComparison",
           "environmentCapabilities",
           "runtimeFeatureFlags",
           "serviceHealth",
           "configurationSummary",
+          "postgresMetrics",
           "scheduledMonitoring",
           "notificationsFoundation",
         ].filter((key) => Object.hasOwn(health, key)),
         [
           "apiContract",
           "adminApiRegistry",
+          "environmentComparison",
           "environmentCapabilities",
           "runtimeFeatureFlags",
           "serviceHealth",
           "configurationSummary",
+          "postgresMetrics",
           "scheduledMonitoring",
           "notificationsFoundation",
+        ],
+      );
+      assert.equal(health.environmentComparison.noCrossEnvironmentChecks, true);
+      assert.deepEqual(
+        health.environmentComparison.rows.map((row) => `${row.displayName}:${row.state}`),
+        [
+          "Local (VS Code):Unavailable",
+          "DEV:Current",
+          "IST:Not Configured",
+          "UAT:Not Configured",
+          "PROD:Not Configured",
+        ],
+      );
+      assert.deepEqual(
+        health.postgresMetrics.rows.map((row) => row.metric),
+        [
+          "Connection status",
+          "Database name",
+          "Current schema",
+          "Migration status",
+          "Last migration",
+          "Table count",
+          "Database size",
+          "Last checked",
         ],
       );
       const healthText = JSON.stringify(health);
@@ -131,6 +168,25 @@ test("Admin System Health completion contract remains server-owned and current-e
       assert.equal(healthText.includes("/uat/projects"), false);
       assert.equal(health.secretEditingAllowed, false);
       assert.equal(health.secretsExposed, false);
+      const expandedStorage = await apiJson(server.baseUrl, "/api/admin/system-health/storage-connectivity-action", {
+        body: { actionId: "storage-expanded-validation" },
+        method: "POST",
+      });
+      assert.deepEqual(
+        expandedStorage.storageDiagnostics.map((row) => row.actionId),
+        [
+          "storage-bucket-connectivity",
+          "storage-list",
+          "storage-upload-test-object",
+          "storage-read-test-object",
+          "storage-delete-test-object",
+        ],
+      );
+      assert.equal(expandedStorage.storageDiagnostics.every((row) => row.environmentFolder === "/dev"), true);
+      assert.equal(expandedStorage.storageDiagnostics.every((row) => typeof row.durationMs === "number"), true);
+      assert.equal(expandedStorage.permanentObjectCreated, false);
+      assert.equal(JSON.stringify(expandedStorage).includes("api-secret"), false);
+      assert.equal(JSON.stringify(expandedStorage).includes("site-secret"), false);
     } finally {
       await server.close();
     }

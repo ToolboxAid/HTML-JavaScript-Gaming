@@ -3,6 +3,7 @@
   "scripts": {
     "pretest": "node docs_build/dev/toolbox/checkSharedExtractionGuard.mjs",
     "test": "node ./scripts/run-node-tests.mjs",
+    "test:service:api": "node ./scripts/run-node-test-files.mjs tests/dev-runtime/ServerApiClientStandardization.test.mjs tests/dev-runtime/PublicApiUrlClient.test.mjs",
     "test:audit:locations": "node ./scripts/audit-playwright-test-locations.mjs",
     "test:playwright:structure": "node ./scripts/audit-playwright-test-locations.mjs",
     "test:playwright:zero-browser": "node ./scripts/run-targeted-test-lanes.mjs --zero-browser-only",
@@ -20,6 +21,7 @@
     "test:lane:game-hub": "node ./scripts/run-targeted-test-lanes.mjs --lane game-hub",
     "test:lane:tool-runtime": "node ./scripts/run-targeted-test-lanes.mjs --lane tool-runtime",
     "test:lane:game-runtime": "node ./scripts/run-targeted-test-lanes.mjs --lane game-runtime",
+    "test:service:runtime": "node ./scripts/run-node-test-files.mjs tests/engine/RuntimeTickLoop.test.mjs tests/engine/RuntimeConditionSystem.test.mjs tests/engine/RuntimeCollisionProcessing.test.mjs tests/engine/RuntimeMovementProcessing.test.mjs tests/engine/RuntimeCooldownProcessing.test.mjs tests/engine/RuntimeDamageProcessing.test.mjs tests/engine/RuntimeHealthModel.test.mjs tests/engine/RuntimeLivesAndRespawn.test.mjs tests/engine/RuntimeSpawnDespawnProcessing.test.mjs tests/engine/RuntimeScoringAndStateProcessing.test.mjs tests/engine/RuntimeOutcomeProcessing.test.mjs tests/engine/RuntimeInputPipeline.test.mjs tests/engine/RuntimeObjectInstantiation.test.mjs tests/engine/RuntimeObjectRecordFactory.test.mjs tests/engine/RuntimeBehaviorComposition.test.mjs tests/replay/ReplaySystem.test.mjs tests/replay/ReplayTimeline.test.mjs tests/events/EventBus.test.mjs tests/dev-runtime/ServerApiClientStandardization.test.mjs tests/engine/RuntimeEventSystem.test.mjs tests/engine/RuntimeTriggerProcessing.test.mjs tests/engine/RuntimeActionSystem.test.mjs tests/final/FinalSystems.test.mjs",
     "test:lane:integration": "node ./scripts/run-targeted-test-lanes.mjs --lane integration",
     "test:lane:engine-src": "node ./scripts/run-targeted-test-lanes.mjs --lane engine-src",
     "test:lane:samples": "node ./scripts/run-targeted-test-lanes.mjs --lane samples --include-samples",

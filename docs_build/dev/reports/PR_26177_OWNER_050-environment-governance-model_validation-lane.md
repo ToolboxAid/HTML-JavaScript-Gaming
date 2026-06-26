@@ -6,16 +6,23 @@ Documentation/governance lane.
 
 ## Commands
 
+- `git status`
 - `git diff --check`
 
 ## Skipped Lanes
 
-- Runtime validation skipped: no runtime files changed.
-- UI/browser validation skipped: no UI files changed.
-- Playwright skipped: no runtime files changed.
+- Runtime validation skipped: conflict resolution changed only docs/report/template files in the PR delta.
+- UI/browser validation skipped: conflict resolution changed only docs/report/template files in the PR delta.
+- Playwright skipped: no runtime files changed in the PR delta.
 - Engine validation skipped: no engine core files changed.
 - Database migration validation skipped: no DDL, migration, or runtime database implementation changed.
 - Storage runtime validation skipped: no storage implementation changed.
+
+## Conflict Resolution
+
+- `origin/main` was merged into the branch.
+- Conflicts were limited to `docs_build/dev/reports/codex_changed_files.txt` and `docs_build/dev/reports/codex_review.diff`.
+- Both generated artifacts were regenerated after the merge.
 
 ## Result
 

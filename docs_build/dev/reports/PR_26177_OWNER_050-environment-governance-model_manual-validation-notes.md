@@ -14,6 +14,9 @@ Manual validation was limited to governance/documentation review because this PR
 - Confirmed all environments receive approved guest seed data for all tools.
 - Confirmed SQLite is documented as deprecated/retired and not an active runtime database.
 - Confirmed `.env.example` comments/placeholders align to the official model.
+- Confirmed merge conflicts against `origin/main` were limited to generated Codex report artifacts.
+- Confirmed OWNER_050 environment governance decisions were preserved after conflict resolution.
+- Confirmed Playwright is not impacted because conflict resolution changed only docs/report/template files in the PR delta.
 
 ## Result
 

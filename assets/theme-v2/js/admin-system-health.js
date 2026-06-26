@@ -1,7 +1,7 @@
 import {
     readAdminSystemHealthStatus,
     runAdminSystemHealthAction,
-    runAdminSystemHealthStorageConnectivityAction,
+    runAdminSystemHealthStorageExpandedValidation,
 } from "../../../src/api/admin-system-health-api-client.js";
 import {
     applyStatusNode,
@@ -54,6 +54,10 @@ class AdminSystemHealthController {
             node.dataset.adminSystemHealthStorageStatus,
             node,
         ]));
+        this.storageTimings = new Map(Array.from(root.querySelectorAll("[data-admin-system-health-storage-timing]")).map((node) => [
+            node.dataset.adminSystemHealthStorageTiming,
+            node,
+        ]));
         this.runtimeHealthValues = new Map(Array.from(root.querySelectorAll("[data-admin-system-health-runtime-health-value]")).map((node) => [
             node.dataset.adminSystemHealthRuntimeHealthValue,
             node,
@@ -65,6 +69,7 @@ class AdminSystemHealthController {
         this.historyRows = root.querySelector("[data-admin-system-health-history-rows]");
         this.apiContractRows = root.querySelector("[data-admin-system-health-api-contract-rows]");
         this.apiRegistryRows = root.querySelector("[data-admin-system-health-api-registry-rows]");
+        this.environmentComparisonRows = root.querySelector("[data-admin-system-health-environment-comparison-rows]");
         this.capabilityRows = root.querySelector("[data-admin-system-health-capability-rows]");
         this.featureFlagRows = root.querySelector("[data-admin-system-health-feature-flag-rows]");
         this.actionRows = root.querySelector("[data-admin-system-health-action-rows]");
@@ -74,6 +79,7 @@ class AdminSystemHealthController {
         this.notificationRows = root.querySelector("[data-admin-system-health-notification-rows]");
         this.serviceCards = root.querySelector("[data-admin-system-health-service-cards]");
         this.startupRows = root.querySelector("[data-admin-system-health-startup-rows]");
+        this.postgresMetricRows = root.querySelector("[data-admin-system-health-postgres-metric-rows]");
         this.runtimeRows = root.querySelector("[data-admin-system-health-runtime-rows]");
     }
 
@@ -121,6 +127,13 @@ class AdminSystemHealthController {
         this.setStatusNode(node, status, reason);
     }
 
+    setStorageTiming(key, value, fallback) {
+        const node = this.storageTimings.get(key);
+        if (node) {
+            node.textContent = asText(value, fallback);
+        }
+    }
+
     setRuntimeHealthValue(key, value, fallback) {
         const node = this.runtimeHealthValues.get(key);
         if (node) {
@@ -145,8 +158,10 @@ class AdminSystemHealthController {
             this.setStatus(key, "PENDING", reason);
         });
         this.renderStartupPending(reason);
+        this.renderPostgresMetricsPending(reason);
         this.renderStoragePending(reason);
         this.renderRuntimeHealthPending(reason);
+        this.renderEnvironmentComparisonPending(reason);
         this.renderEnvironmentCapabilitiesPending(reason);
         this.renderApiContractPending(reason);
         this.renderAdminApiRegistryPending(reason);
@@ -190,9 +205,57 @@ class AdminSystemHealthController {
         this.setEnvironmentStatus("lastHealthCheck", environmentIdentity.lastHealthCheck ? "PASS" : "WARN", reason);
     }
 
+    renderEnvironmentComparisonPending(reason) {
+        if (!this.environmentComparisonRows) {
+            return;
+        }
+        const row = document.createElement("tr");
+        row.append(
+            this.createCell("Environment comparison"),
+            this.createCell("Reference-only"),
+            this.createCell("not available"),
+            this.createCell("Reference-only"),
+            this.createCell("Reference-only"),
+            this.createCell("Unavailable"),
+            this.createStatusCell("PENDING", reason),
+        );
+        this.environmentComparisonRows.replaceChildren(row);
+    }
+
+    renderEnvironmentComparison(environmentComparison = {}) {
+        if (!this.environmentComparisonRows) {
+            return;
+        }
+        if (environmentComparison?.secretsExposed === true || environmentComparison?.secretEditingAllowed === true) {
+            this.renderEnvironmentComparisonPending("Safe environment comparison response was blocked because it exposed secret controls.");
+            return;
+        }
+        const rows = Array.isArray(environmentComparison.rows) ? environmentComparison.rows : [];
+        if (!rows.length) {
+            this.renderEnvironmentComparisonPending("Safe Admin System Health API returned no environment comparison rows.");
+            return;
+        }
+        const fragment = document.createDocumentFragment();
+        rows.forEach((comparisonRow) => {
+            const row = document.createElement("tr");
+            row.append(
+                this.createCell(comparisonRow.displayName),
+                this.createCell(comparisonRow.hostingModel),
+                this.createCell(comparisonRow.runtimeExpectation),
+                this.createCell(comparisonRow.databaseModel),
+                this.createCell(comparisonRow.storageFolder),
+                this.createCell(comparisonRow.state),
+                this.createStatusCell(comparisonRow.status, comparisonRow.summary || environmentComparison.message),
+            );
+            fragment.append(row);
+        });
+        this.environmentComparisonRows.replaceChildren(fragment);
+    }
+
     renderStoragePending(reason) {
         ["bucket", "list", "upload", "read", "delete", "lastChecked"].forEach((key) => {
             this.setStorageStatus(key, "PENDING", reason);
+            this.setStorageTiming(key, "not available");
         });
         this.renderRuntimePending(reason);
     }
@@ -213,14 +276,56 @@ class AdminSystemHealthController {
         this.setStatus("version", databaseStatus.versionStatus, reason);
         this.setValue("lastChecked", databaseStatus.lastChecked, "not available");
         this.setStatus("lastChecked", databaseStatus.lastChecked ? "PASS" : "WARN", reason);
+        this.renderPostgresMetrics(databaseStatus.postgresMetrics || {});
+    }
+
+    renderPostgresMetricsPending(reason) {
+        if (!this.postgresMetricRows) {
+            return;
+        }
+        const row = document.createElement("tr");
+        row.append(
+            this.createCell("Postgres metrics"),
+            this.createCell("Unavailable"),
+            this.createStatusCell("PENDING", reason),
+        );
+        this.postgresMetricRows.replaceChildren(row);
+    }
+
+    renderPostgresMetrics(postgresMetrics = {}) {
+        if (!this.postgresMetricRows) {
+            return;
+        }
+        if (postgresMetrics?.secretsExposed === true || postgresMetrics?.secretEditingAllowed === true) {
+            this.renderPostgresMetricsPending("Safe Postgres metrics response was blocked because it exposed secret controls.");
+            return;
+        }
+        const rows = Array.isArray(postgresMetrics.rows) ? postgresMetrics.rows : [];
+        if (!rows.length) {
+            this.renderPostgresMetricsPending("Safe Admin System Health API returned no Postgres metric rows.");
+            return;
+        }
+        const fragment = document.createDocumentFragment();
+        rows.forEach((metricRow) => {
+            const row = document.createElement("tr");
+            row.append(
+                this.createCell(metricRow.metric),
+                this.createCell(metricRow.value),
+                this.createStatusCell(metricRow.status, postgresMetrics.message),
+            );
+            fragment.append(row);
+        });
+        this.postgresMetricRows.replaceChildren(fragment);
     }
 
     renderStorageStatus(storageStatus = {}) {
         const reason = storageStatus.message || "Cloudflare R2 configuration status returned by the safe Admin System Health API.";
         this.setStorageValue("bucket", storageStatus.environmentFolder ? `${storageStatus.bucket || "not configured"} ${storageStatus.environmentFolder}` : storageStatus.bucket, "not configured");
         this.setStorageStatus("bucket", storageStatus.bucketStatus || storageStatus.status, reason);
+        this.setStorageTiming("bucket", storageStatus.lastChecked ? "configuration status" : "not available");
         this.setStorageValue("lastChecked", storageStatus.lastChecked, "not available");
         this.setStorageStatus("lastChecked", storageStatus.lastChecked ? "PASS" : "WARN", reason);
+        this.setStorageTiming("lastChecked", storageStatus.lastChecked ? "configuration status" : "not available");
     }
 
     renderRuntimeHealthPending(reason) {
@@ -642,9 +747,11 @@ class AdminSystemHealthController {
         }
         this.setStorageValue(key, this.storageResultTarget(result));
         this.setStorageStatus(key, result.status, result.message || "R2 diagnostic returned without a message.");
+        this.setStorageTiming(key, Number.isFinite(Number(result.durationMs)) ? `${result.durationMs} ms` : "not available");
         if (result.lastChecked) {
             this.setStorageValue("lastChecked", result.lastChecked);
             this.setStorageStatus("lastChecked", "PASS", "Most recent current-environment R2 health check timestamp.");
+            this.setStorageTiming("lastChecked", Number.isFinite(Number(result.durationMs)) ? `${result.durationMs} ms` : "not available");
         }
     }
 
@@ -690,15 +797,24 @@ class AdminSystemHealthController {
     runStorageDiagnostics() {
         STORAGE_DIAGNOSTIC_ACTIONS.forEach(({ key }) => {
             this.setStorageStatus(key, "PENDING", "R2 diagnostic is running through the safe Admin System Health API.");
+            this.setStorageTiming(key, "running");
         });
-        STORAGE_DIAGNOSTIC_ACTIONS.forEach(({ actionId, key }) => {
-            try {
-                this.renderStorageResult(key, runAdminSystemHealthStorageConnectivityAction(actionId));
-            } catch (error) {
-                const message = error instanceof Error ? error.message : "Safe R2 diagnostic API is unavailable.";
+        try {
+            const validation = runAdminSystemHealthStorageExpandedValidation();
+            const diagnostics = Array.isArray(validation.storageDiagnostics) ? validation.storageDiagnostics : [];
+            diagnostics.forEach((storageResult) => {
+                const key = STORAGE_DIAGNOSTIC_ACTION_KEY_BY_ID.get(storageResult.actionId);
+                if (key) {
+                    this.renderStorageResult(key, storageResult);
+                }
+            });
+        } catch (error) {
+            const message = error instanceof Error ? error.message : "Safe R2 diagnostic API is unavailable.";
+            STORAGE_DIAGNOSTIC_ACTIONS.forEach(({ key }) => {
                 this.setStorageStatus(key, "PENDING", message);
-            }
-        });
+                this.setStorageTiming(key, "not available");
+            });
+        }
     }
 
     createCell(text) {
@@ -826,6 +942,7 @@ class AdminSystemHealthController {
             return;
         }
         this.renderEnvironmentIdentity(data?.environmentIdentity || {});
+        this.renderEnvironmentComparison(data?.environmentComparison || {});
         this.renderPostgresStatus(data?.databaseStatus || {});
         this.renderStartupDiagnostics(data?.localApiStartup || {});
         this.renderStorageStatus(data?.storageStatus || {});

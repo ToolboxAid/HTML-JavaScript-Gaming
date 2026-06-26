@@ -7,9 +7,10 @@ ReplayModel.js
 import {
   SHARED_REPLAY_MODEL_CONTRACT_VERSION,
 } from "../../shared/contracts/replayContracts.js";
+import { cloneRuntimeValue } from "../../shared/runtime/snapshotClone.js";
 
 function cloneOrNull(value) {
-  return value === undefined || value === null ? null : structuredClone(value);
+  return cloneRuntimeValue(value);
 }
 
 function cloneFrames(frames) {
@@ -18,7 +19,7 @@ function cloneFrames(frames) {
   }
   const out = [];
   for (let i = 0; i < frames.length; i += 1) {
-    out.push(structuredClone(frames[i]));
+    out.push(cloneRuntimeValue(frames[i]));
   }
   return out;
 }

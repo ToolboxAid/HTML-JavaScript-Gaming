@@ -6,7 +6,7 @@ import { SEED_DB_KEYS, makeSeedUlid } from "../seed/seed-db-keys.mjs";
 
 export const GAME_JOURNEY_COMPLETION_METRICS_TABLE = "game_journey_completion_metrics";
 
-const GAME_JOURNEY_COMPLETION_METRICS_SCHEMA_SQL = `
+export const GAME_JOURNEY_COMPLETION_METRICS_SCHEMA_SQL = `
 CREATE TABLE IF NOT EXISTS game_journey_completion_metrics (
   key text PRIMARY KEY,
   "bucketKey" text NOT NULL UNIQUE,
