@@ -1,7 +1,28 @@
-docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership.md
-docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_branch-validation.md
-docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_validation-checklist.md
-docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/codex_review.diff
+# git status --short
+M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+ M docs_build/dev/reports/playwright_v8_coverage_report.txt
+ M src/dev-runtime/server/local-api-router.mjs
+ M src/shared/toolbox/tool-metadata-inventory.js
+ M tests/playwright/tools/ToolNavigationPrevNext.spec.mjs
+ M tests/playwright/tools/ToolboxRoutePages.spec.mjs
+?? docs_build/dev/reports/PR_26177_CHARLIE_017-sprites-toolbox-entry-active.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_017-sprites-toolbox-entry-active_branch-validation.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_017-sprites-toolbox-entry-active_manual-validation-notes.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_017-sprites-toolbox-entry-active_requirements-checklist.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_017-sprites-toolbox-entry-active_validation-lane.md
+
+# git ls-files --others --exclude-standard
+docs_build/dev/reports/PR_26177_CHARLIE_017-sprites-toolbox-entry-active.md
+docs_build/dev/reports/PR_26177_CHARLIE_017-sprites-toolbox-entry-active_branch-validation.md
+docs_build/dev/reports/PR_26177_CHARLIE_017-sprites-toolbox-entry-active_manual-validation-notes.md
+docs_build/dev/reports/PR_26177_CHARLIE_017-sprites-toolbox-entry-active_requirements-checklist.md
+docs_build/dev/reports/PR_26177_CHARLIE_017-sprites-toolbox-entry-active_validation-lane.md
+
+# git diff --stat
+.../dev/reports/coverage_changed_js_guardrail.txt  |  6 ++--
+ .../dev/reports/playwright_v8_coverage_report.txt  | 33 +++++++++++-----------
+ src/dev-runtime/server/local-api-router.mjs        |  2 +-
+ src/shared/toolbox/tool-metadata-inventory.js      |  5 ++--
+ .../tools/ToolNavigationPrevNext.spec.mjs          | 13 +++++++++
+ tests/playwright/tools/ToolboxRoutePages.spec.mjs  | 23 ++++++++-------
+ 6 files changed, 51 insertions(+), 31 deletions(-)

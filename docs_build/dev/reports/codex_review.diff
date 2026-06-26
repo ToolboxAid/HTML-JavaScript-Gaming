@@ -1,140 +1,368 @@
-diff --git a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-index de7ad4681..37fe942aa 100644
---- a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-+++ b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-@@ -72,7 +72,7 @@
- 
- - [ ] Alfa - Controls
- - [ ] Alfa - Input Mapping
--- [ ] Alfa - Hitboxes
-+- [ ] Delta - Hitboxes
- 
- ### Rules
- 
-@@ -252,5 +252,6 @@ Current OWNER clarification:
- - [x] Delta - Event system audit
-   - Completed by PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup.
- - [ ] Delta - Controls runtime framework audit
-+- [ ] Delta - Hitboxes
- - [ ] Delta - Object runtime framework audit
- - [ ] Delta - World runtime framework audit
-diff --git a/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md b/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-index bc548346d..1e2e47843 100644
---- a/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-+++ b/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-@@ -49,6 +49,7 @@ Team Charlie System Health owns:
- - Shared JS
- - API clients
- - Event systems
-+- Hitboxes
- - Performance
- - Technical debt remediation
- - Runtime test coverage
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership.md b/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership.md
-new file mode 100644
-index 000000000..aecd58bab
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership.md
-@@ -0,0 +1,33 @@
-+# PR_26177_DELTA_001-hitboxes-team-ownership
+diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+index 7b1c51f19..857c5684a 100644
+--- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+@@ -6,7 +6,9 @@ Missing changed runtime JS files are WARN, not FAIL.
+ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+
+ Changed runtime JS files considered:
+-(100%) none changed - no changed runtime JS files
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+
+ Guardrail warnings:
+-(100%) none changed - no changed runtime JS files
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
+diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+index f2363d3bf..38f3c5916 100644
+--- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
++++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+@@ -12,31 +12,32 @@ Note: entry percentages use function coverage when available, otherwise line cov
+ Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+
+ Exercised tool entry points detected:
+-(76%) Toolbox Index - exercised 1 runtime JS files
++(18%) Toolbox Index - exercised 1 runtime JS files
+ (0%) Tool Template V2 - not exercised by this Playwright run
+-(72%) Theme V2 Shared JS - exercised 4 runtime JS files
++(51%) Theme V2 Shared JS - exercised 4 runtime JS files
+
+ Changed runtime JS files covered:
+-(100%) none changed - no changed runtime JS files
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+
+ Files with executed line/function counts where available:
+-(36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2041/2041; executed functions 12/33
+-(53%) src/api/server-api-client.js - executed lines 168/168; executed functions 10/19
++(7%) assets/theme-v2/js/tool-display-mode.js - executed lines 304/304; executed functions 2/27
++(17%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 1/6
++(18%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 4/22
++(20%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 2/10
++(22%) admin/tool-votes.js - executed lines 406/406; executed functions 8/37
++(25%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 1/4
++(36%) src/api/server-api-client.js - executed lines 168/168; executed functions 5/14
+ (64%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 63/98
+ (65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
+-(67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
+-(73%) assets/toolbox/game-journey/js/index.js - executed lines 1662/1662; executed functions 108/148
+-(76%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 22/29
+-(77%) assets/theme-v2/js/tool-display-mode.js - executed lines 304/304; executed functions 23/30
+ (80%) assets/theme-v2/js/theme-icons.js - executed lines 69/69; executed functions 4/5
+-(89%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 32/36
+-(100%) assets/js/shared/game-journey-api-client.js - executed lines 19/19; executed functions 2/2
+
+ Uncovered or low-coverage changed JS files:
+-(100%) none changed - no changed runtime JS files
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
+
+ Changed JS files considered:
+-(0%) scripts/validate-browser-env-agnostic.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/GameJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
++(0%) src/shared/toolbox/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/ToolNavigationPrevNext.spec.mjs - changed JS file not collected as browser runtime coverage
+diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
+index 913163236..2a8ee2e8a 100644
+--- a/src/dev-runtime/server/local-api-router.mjs
++++ b/src/dev-runtime/server/local-api-router.mjs
+@@ -2555,7 +2555,7 @@ function normalizedToolKey(row) {
+   return String(row?.toolKey || row?.toolId || row?.id || "").trim();
+ }
+
+-const SOURCE_CONTROLLED_TOOLBOX_TOOL_IDS = new Set(["game-hub", "idea-board", "messages", "tags", "text-to-speech", "users"]);
++const SOURCE_CONTROLLED_TOOLBOX_TOOL_IDS = new Set(["game-hub", "idea-board", "messages", "sprites", "tags", "text-to-speech", "users"]);
+ const SOURCE_CONTROLLED_TOOLBOX_METADATA_FIELDS = Object.freeze([
+   "active",
+   "adminOnly",
+diff --git a/src/shared/toolbox/tool-metadata-inventory.js b/src/shared/toolbox/tool-metadata-inventory.js
+index 955f54d8a..8ea3f7373 100644
+--- a/src/shared/toolbox/tool-metadata-inventory.js
++++ b/src/shared/toolbox/tool-metadata-inventory.js
+@@ -472,9 +472,10 @@ export const TOOL_REGISTRY = Object.freeze([
+     "requiredForPublish": true,
+     "requires": [],
+     "status": "Wireframe",
++    "releaseChannel": "wireframe",
+     "progressChecklist": [
+-      "Review readiness",
+-      "Static planned text only"
++      "Toolbox entry opens Sprites route",
++      "Sprites asset management shell available"
+     ],
+     "deferred": false,
+     "hidden": false,
+diff --git a/tests/playwright/tools/ToolNavigationPrevNext.spec.mjs b/tests/playwright/tools/ToolNavigationPrevNext.spec.mjs
+index d2aab4f10..0b44ad0c3 100644
+--- a/tests/playwright/tools/ToolNavigationPrevNext.spec.mjs
++++ b/tests/playwright/tools/ToolNavigationPrevNext.spec.mjs
+@@ -102,7 +102,20 @@ test("Toolbox card names link to registered tool routes without duplicating laun
+     await expect(gameDesignCard.locator("[data-toolbox-tile-action-row] a.btn")).toHaveAttribute("href", "../toolbox/game-design/index.html");
+     await gameDesignCard.locator("h3 > a[data-toolbox-tool-name-link]").click();
+     await page.waitForURL(/\/toolbox\/game-design\/index\.html$/);
++    await page.waitForLoadState("networkidle");
+     await expect(page.locator(".page-title h1")).toHaveText("Game Design");
 +
-+Team: Delta
-+Branch: PR_26177_DELTA_001-hitboxes-team-ownership
-+Base: main
-+Scope: Project Instructions ownership/backlog documentation only
++    await page.goto(`${failures.server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
++    const spritesCard = page.locator("[data-toolbox-tool-card='Sprites']");
++    await expect(spritesCard).toBeVisible();
++    await expect(spritesCard).toHaveAttribute("data-toolbox-release-channel", "wireframe");
++    await expect(spritesCard.locator("[data-toolbox-readiness]")).toHaveText("Wireframe");
++    await expect(spritesCard.locator("[data-toolbox-tile-action-row='Sprites'] a.btn")).toHaveText("Open Tool");
++    await expect(spritesCard.locator("[data-toolbox-tile-action-row='Sprites'] a.btn")).toHaveAttribute("href", "../toolbox/sprites/index.html");
++    await spritesCard.locator("h3 > a[data-toolbox-tool-name-link]").click();
++    await page.waitForURL(/\/toolbox\/sprites\/index\.html$/);
++    await page.waitForLoadState("networkidle");
++    await expect(page.locator(".page-title h1")).toHaveText("Sprites");
+     await expectNoPageFailures(failures);
+   } finally {
+     await workspaceV2CoverageReporter.stop(page);
+diff --git a/tests/playwright/tools/ToolboxRoutePages.spec.mjs b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
+index 243f413d0..f47a3dac2 100644
+--- a/tests/playwright/tools/ToolboxRoutePages.spec.mjs
++++ b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
+@@ -562,12 +562,15 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
+     await expect(page.locator("[data-toolbox-tool-name-link='Game Design']")).toBeVisible();
+     await expect(page.locator("[data-toolbox-tool-name-link='Game Journey']")).toBeVisible();
+     await expect(page.locator("[data-toolbox-tool-name-link='Game Hub']")).toHaveAttribute("href", "/toolbox/game-hub/index.html");
++    await expect(page.locator("[data-toolbox-tool-name-link='Sprites']")).toHaveAttribute("href", "/toolbox/sprites/index.html");
++    await expect(page.locator("[data-toolbox-tool-card='Sprites']")).toHaveAttribute("data-toolbox-release-channel", "wireframe");
++    await expect(page.locator("[data-toolbox-tool-card='Sprites'] [data-toolbox-tile-action-row='Sprites'] a.btn")).toHaveText("Open Tool");
+     await expect(page.locator("[data-toolbox-tool-name-link='Text To Speech']")).toHaveAttribute("href", "/toolbox/text-to-speech/index.html");
+     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toHaveCount(0);
+-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 15/43");
++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 16/43");
+     await page.locator("[data-toolbox-status-filter='planned']").click();
+     await expect(page.locator("[data-toolbox-status-filter='planned']")).toHaveAttribute("aria-pressed", "true");
+-    await expect(page.locator("[data-toolbox-tool-card][data-toolbox-release-channel='planned']")).toHaveCount(27);
++    await expect(page.locator("[data-toolbox-tool-card][data-toolbox-release-channel='planned']")).toHaveCount(26);
+     await expect(page.locator("[data-toolbox-tool-card]")).toHaveCount(42);
+     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 42/43");
+     await expect(page.locator("[data-toolbox-tool-name-link='AI Command Center']")).toBeVisible();
+@@ -641,8 +644,8 @@ test("toolbox status kickers, filters, card order, and voting controls work from
+     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+
+     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
+-      "Planned (27)",
+-      "Wireframe (4)",
++      "Planned (26)",
++      "Wireframe (5)",
+       "Beta (8)",
+       "Complete (3)",
+       "Deprecated (1)",
+@@ -658,8 +661,8 @@ test("toolbox status kickers, filters, card order, and voting controls work from
+
+     await page.locator("[data-tools-view='build-path']").click();
+     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
+-      "Planned (27)",
+-      "Wireframe (4)",
++      "Planned (26)",
++      "Wireframe (5)",
+       "Beta (8)",
+       "Complete (3)",
+       "Deprecated (1)",
+@@ -1378,8 +1381,8 @@ test("toolbox Build Path status filters support multi-select registry-matched to
+     await expect(page.locator("[data-tools-sort='grouped']")).not.toHaveClass(/primary/);
+
+     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
+-      "Planned (27)",
+-      "Wireframe (4)",
++      "Planned (26)",
++      "Wireframe (5)",
+       "Beta (8)",
+       "Complete (3)",
+       "Deprecated (1)",
+@@ -1391,14 +1394,14 @@ test("toolbox Build Path status filters support multi-select registry-matched to
+
+     await page.locator("[data-toolbox-status-filter='planned']").click();
+     await expectActiveFilters(["planned", "complete"]);
+-    await expectBuildPathChannels(["planned", "complete"], 30);
++    await expectBuildPathChannels(["planned", "complete"], 29);
+     await expect(page.locator("[data-build-path-tool='AI Command Center']")).toBeVisible();
+     await expectBuildPathOrder("AI Command Center", registryById.get("ai-assistant").order);
+     await expectBuildPathOrder("Colors", registryById.get("colors").order);
+
+     await page.locator("[data-toolbox-status-filter='complete']").click();
+     await expectActiveFilters(["planned"]);
+-    await expectBuildPathChannels(["planned"], 27);
++    await expectBuildPathChannels(["planned"], 26);
+     await expect(page.locator("[data-build-path-tool='Colors']")).toHaveCount(0);
+     await expect(page.locator("[data-build-path-tool='AI Command Center']")).toBeVisible();
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_017-sprites-toolbox-entry-active.md b/docs_build/dev/reports/PR_26177_CHARLIE_017-sprites-toolbox-entry-active.md
+new file mode 100644
+index 000000000..bf747ea8c
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_017-sprites-toolbox-entry-active.md
+@@ -0,0 +1,56 @@
++# PR_26177_CHARLIE_017-sprites-toolbox-entry-active
 +
 +## Summary
 +
-+Team Delta is now the sole documented owner of Hitboxes in the Project Instructions ownership and backlog routing files.
++Team Charlie activated the Sprites entry on the Toolbox landing page.
 +
-+## Changes
++This PR keeps the change scoped to Toolbox entry state and targeted coverage:
 +
-+- Updated `docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md` to add Hitboxes to Team Delta ownership.
-+- Updated `docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md` to change the Game Journey MVP Hitboxes item from Alfa to Delta.
-+- Added Hitboxes to the Team Delta backlog alignment list.
++- Sprites now publishes the source-controlled Toolbox release channel as `wireframe`.
++- The Local API Toolbox metadata sync now treats Sprites as source-controlled so the API-backed landing page receives the active state.
++- Toolbox landing coverage verifies Sprites is visible, not planned, and links to `/toolbox/sprites/index.html`.
++- Toolbox route coverage verifies the Sprites card opens the Sprites route.
++- No Sprites API, database, CRUD, import, preview, palette, tags, or reference behavior changed.
 +
-+## Scope Guard
++## Changed Files
 +
-+- No implementation code changed.
-+- No engine core files changed.
-+- No `start_of_day` files changed.
-+- No other team ownership assignments changed.
-+- Existing unrelated untracked file `docs_build/dev/ProjectInstructions (2).zip` was left untouched.
++- `src/dev-runtime/server/local-api-router.mjs`
++- `src/shared/toolbox/tool-metadata-inventory.js`
++- `tests/playwright/tools/ToolNavigationPrevNext.spec.mjs`
++- `tests/playwright/tools/ToolboxRoutePages.spec.mjs`
++- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
++- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- `docs_build/dev/reports/PR_26177_CHARLIE_017-sprites-toolbox-entry-active.md`
++- `docs_build/dev/reports/PR_26177_CHARLIE_017-sprites-toolbox-entry-active_branch-validation.md`
++- `docs_build/dev/reports/PR_26177_CHARLIE_017-sprites-toolbox-entry-active_manual-validation-notes.md`
++- `docs_build/dev/reports/PR_26177_CHARLIE_017-sprites-toolbox-entry-active_requirements-checklist.md`
++- `docs_build/dev/reports/PR_26177_CHARLIE_017-sprites-toolbox-entry-active_validation-lane.md`
++- `docs_build/dev/reports/codex_changed_files.txt`
++- `docs_build/dev/reports/codex_review.diff`
++
++## Implementation Notes
++
++- `/toolbox/index.html` required no direct markup edit because the landing page renders cards from the API-backed Toolbox registry contract.
++- Added `releaseChannel: "wireframe"` to the Sprites registry entry so it is active/clickable while still labeled as a wireframe.
++- Added Sprites to the Local API source-controlled Toolbox metadata set so stale persisted metadata rows cannot keep the card in the planned bucket.
++- Preserved existing Toolbox card order, routes, Theme V2 rendering, and Sprites route behavior.
 +
 +## Validation
 +
-+- PASS: Current branch before PR branch creation was `main`.
-+- PASS: PR branch created and work remained on `PR_26177_DELTA_001-hitboxes-team-ownership`.
-+- PASS: `rg -n "Alfa - Hitboxes" docs_build/dev/ProjectInstructions` returned no matches.
-+- PASS: `rg -n "Delta - Hitboxes|Hitboxes" docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md` found only Delta ownership entries for Hitboxes in target files.
-+- PASS: `git diff --name-only` showed only Project Instructions ownership/backlog files before report generation.
++- PASS: `node --check src/dev-runtime/server/local-api-router.mjs`
++- PASS: `node --check src/shared/toolbox/tool-metadata-inventory.js`
++- PASS: `node --check tests/playwright/tools/ToolNavigationPrevNext.spec.mjs`
++- PASS: `node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs`
++- PASS: `npx playwright test tests/playwright/tools/ToolNavigationPrevNext.spec.mjs -g "Toolbox card names link" --workers=1 --reporter=list`
++- PASS: `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs -g "toolbox index|toolbox status kickers|Build Path status" --workers=1 --reporter=list`
++- PASS: direct Local API `/api/toolbox/registry/snapshot` probe confirmed Sprites route `toolbox/sprites/index.html` and release channel `wireframe`.
++- PASS: `git diff --check`
++- PASS: no `start_of_day` files changed.
 +
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_branch-validation.md b/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_branch-validation.md
++## Validation Note
++
++- BLOCKED unrelated adjacent check: `npx playwright test tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs -g "share the same DB-backed metadata" --workers=1 --reporter=list` fails before Toolbox assertions because `GET /api/local-db/snapshot` returns `Unknown API route`. The failure is outside this PR's Sprites Toolbox entry scope.
++
++## ZIP
++
++- `tmp/PR_26177_CHARLIE_017-sprites-toolbox-entry-active_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_017-sprites-toolbox-entry-active_branch-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_017-sprites-toolbox-entry-active_branch-validation.md
 new file mode 100644
-index 000000000..4dcb5c321
+index 000000000..01225abbd
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_branch-validation.md
-@@ -0,0 +1,17 @@
-+# PR_26177_DELTA_001 Hitboxes Team Ownership Branch Validation
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_017-sprites-toolbox-entry-active_branch-validation.md
+@@ -0,0 +1,24 @@
++# PR_26177_CHARLIE_017 Branch Validation
 +
-+Branch: PR_26177_DELTA_001-hitboxes-team-ownership
-+Base: main
++## Branch
 +
-+Result: PASS
++- Branch: `PR_26177_CHARLIE_017-sprites-toolbox-entry-active`
++- Start branch: `main`
++- Main start commit: `1b49270c469d12a107823e9b0a85c9300c09fea5`
 +
-+| Check | Status | Notes |
-+|---|---|---|
-+| Start branch was main | PASS | `git branch --show-current` returned `main` before branch creation. |
-+| PR branch created | PASS | Current branch is `PR_26177_DELTA_001-hitboxes-team-ownership`. |
-+| Branch starts from current main | PASS | Starting commit was `f237619cf7aea710a32b9d5141115fb02dbd3293`; `HEAD...origin/main` was `0 0` before edits. |
-+| Scope is documentation/reporting only | PASS | No implementation code changed. |
-+| Engine core untouched | PASS | No engine core files changed. |
-+| start_of_day untouched | PASS | No `start_of_day` files changed. |
-+| Unrelated work preserved | PASS | Existing untracked `docs_build/dev/ProjectInstructions (2).zip` left untouched. |
++## Checks
 +
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_validation-checklist.md b/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_validation-checklist.md
++| Check | Result | Notes |
++| --- | --- | --- |
++| Started from `main` | PASS | Main was fetched and fast-forwarded before branch recreation. |
++| Main/local sync before branch work | PASS | `git rev-list --left-right --count main...origin/main` returned `0 0`. |
++| Worktree clean before branch work | PASS | Startup status check returned no changes. |
++| One PR purpose only | PASS | Only the Sprites Toolbox entry state and targeted coverage changed. |
++| No `start_of_day` changes | PASS | Changed-file list contains no `start_of_day` paths. |
++| No Sprites API/DB/CRUD behavior change | PASS | No Sprites implementation files were changed. |
++| Theme V2 patterns preserved | PASS | Existing Toolbox registry and landing page rendering remain in use. |
++| Repo-structured ZIP created | PASS | `tmp/PR_26177_CHARLIE_017-sprites-toolbox-entry-active_delta.zip`. |
++
++## Result
++
++PASS
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_017-sprites-toolbox-entry-active_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_CHARLIE_017-sprites-toolbox-entry-active_manual-validation-notes.md
 new file mode 100644
-index 000000000..9d801e2e9
+index 000000000..bf8d0c388
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_validation-checklist.md
-@@ -0,0 +1,15 @@
-+# PR_26177_DELTA_001 Hitboxes Team Ownership Validation Checklist
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_017-sprites-toolbox-entry-active_manual-validation-notes.md
+@@ -0,0 +1,16 @@
++# PR_26177_CHARLIE_017 Manual Validation Notes
 +
-+| Requirement | Status | Notes |
-+|---|---|---|
-+| Hard stop unless current branch is main | PASS | Start branch was verified as `main` before creating the PR branch. |
-+| Create and switch to PR branch | PASS | Created and switched to `PR_26177_DELTA_001-hitboxes-team-ownership`. |
-+| Team Delta sole owner of Hitboxes | PASS | Team ownership map lists Hitboxes under Team Delta. |
-+| Remove Hitboxes from Team Alfa ownership | PASS | Backlog item changed from `Alfa - Hitboxes` to `Delta - Hitboxes`; no `Alfa - Hitboxes` matches remain in ProjectInstructions. |
-+| Do not modify implementation code | PASS | Only Project Instructions and report artifacts changed. |
-+| Do not change other team ownership | PASS | Diff changes only Hitboxes ownership/routing. |
-+| Regenerate Codex review diff | PASS | `docs_build/dev/reports/codex_review.diff` generated from the working diff. |
-+| Regenerate Codex changed files | PASS | `docs_build/dev/reports/codex_changed_files.txt` generated from changed files. |
-+| PR-specific report | PASS | `docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership.md` added. |
-+| Branch validation | PASS | `docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_branch-validation.md` added. |
++## Manual Checks
 +
-diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 9bbcdda40..0172ab7b9 100644
---- a/docs_build/dev/reports/codex_changed_files.txt
-+++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,12 +1,7 @@
--# git status --short
--M docs_build/dev/reports/PR_26175_DELTA_010-final-team-delta-completion-report.md
-- M docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout.md
--?? docs_build/dev/reports/PR_26175_DELTA_EOD_final_report.md
--
--# git ls-files --others --exclude-standard
--docs_build/dev/reports/PR_26175_DELTA_EOD_final_report.md
--
--# git diff --stat
--.../PR_26175_DELTA_010-final-team-delta-completion-report.md        | 6 +++++-
-- .../dev/reports/PR_26175_DELTA_010-runtime-testability-closeout.md  | 3 ++-
-- 2 files changed, 7 insertions(+), 2 deletions(-)
-\ No newline at end of file
-+docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-+docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-+docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership.md
-+docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_branch-validation.md
-+docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_validation-checklist.md
-+docs_build/dev/reports/codex_changed_files.txt
-+docs_build/dev/reports/codex_review.diff
++- PASS: Confirmed the Local API Toolbox registry snapshot returns Sprites with `releaseChannel: "wireframe"`.
++- PASS: Confirmed the Local API Toolbox registry snapshot returns Sprites route `toolbox/sprites/index.html`.
++- PASS: Confirmed the Toolbox landing page renders a visible Sprites card in the default active set.
++- PASS: Confirmed the Sprites card action label is `Open Tool`, not `Planned Details`.
++- PASS: Confirmed targeted Playwright clicks the Sprites card from `/toolbox/index.html` and lands on `/toolbox/sprites/index.html`.
++- PASS: Confirmed `toolbox/index.html` static markup did not require a direct edit because the page is registry/API-driven.
++- PASS: Confirmed no `start_of_day` paths were changed.
++
++## Notes
++
++- Sprites remains a wireframe tool; this PR only activates the Toolbox landing entry and route clickability.
++- No Sprites implementation behavior changed.
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_017-sprites-toolbox-entry-active_requirements-checklist.md b/docs_build/dev/reports/PR_26177_CHARLIE_017-sprites-toolbox-entry-active_requirements-checklist.md
+new file mode 100644
+index 000000000..b180e257d
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_017-sprites-toolbox-entry-active_requirements-checklist.md
+@@ -0,0 +1,16 @@
++# PR_26177_CHARLIE_017 Requirement Checklist
++
++| Requirement | Result | Notes |
++| --- | --- | --- |
++| Use main branch only for startup | PASS | Main was checked out, fetched, fast-forwarded, and verified synced before branch creation. |
++| Hard stop if worktree not clean | PASS | Worktree was clean before branch work. |
++| Recreate `PR_26177_CHARLIE_017-sprites-toolbox-entry-active` from updated main | PASS | Stale empty local branch was deleted and recreated from updated main. |
++| Update `/toolbox/index.html` only as needed | PASS | No direct static edit was needed because the page is registry/API-driven. |
++| Change Sprites from planned/inactive to active/clickable | PASS | Sprites now resolves to `wireframe`, appears in default Toolbox results, and renders `Open Tool`. |
++| Link Sprites to `toolbox/sprites/index.html` | PASS | API snapshot and Playwright assert the route. |
++| Preserve Toolbox card/menu order and Theme V2 patterns | PASS | Existing registry order and card rendering remain unchanged. |
++| Do not change Sprites API, DB, CRUD, import, preview, palette, tags, or reference behavior | PASS | No Sprites tool files or Sprites service contracts changed. |
++| Add targeted Playwright coverage for clickable Sprites entry | PASS | `ToolNavigationPrevNext` clicks the Sprites card; `ToolboxRoutePages` asserts the active landing card. |
++| No unrelated cleanup | PASS | Changes are scoped to Toolbox metadata sync, registry state, tests, and reports. |
++| Do not modify `start_of_day` folders | PASS | No changed paths under `start_of_day`. |
++| Create required reports and ZIP | PASS | Required report set and delta ZIP were generated. |
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_017-sprites-toolbox-entry-active_validation-lane.md b/docs_build/dev/reports/PR_26177_CHARLIE_017-sprites-toolbox-entry-active_validation-lane.md
+new file mode 100644
+index 000000000..10676b044
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_017-sprites-toolbox-entry-active_validation-lane.md
+@@ -0,0 +1,31 @@
++# PR_26177_CHARLIE_017 Validation Lane
++
++## Commands
++
++| Command | Result |
++| --- | --- |
++| `node --check src/dev-runtime/server/local-api-router.mjs` | PASS |
++| `node --check src/shared/toolbox/tool-metadata-inventory.js` | PASS |
++| `node --check tests/playwright/tools/ToolNavigationPrevNext.spec.mjs` | PASS |
++| `node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs` | PASS |
++| `npx playwright test tests/playwright/tools/ToolNavigationPrevNext.spec.mjs -g "Toolbox card names link" --workers=1 --reporter=list` | PASS, 1 test |
++| `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs -g "toolbox index\|toolbox status kickers\|Build Path status" --workers=1 --reporter=list` | PASS, 3 tests |
++| Direct Local API `/api/toolbox/registry/snapshot` probe | PASS, Sprites route and `wireframe` release channel returned |
++| `git diff --check` | PASS |
++| `git ls-files --modified --others --exclude-standard \| Select-String -Pattern '(^\|/)start_of_day(/\|$)'` | PASS, no output |
++
++## Playwright
++
++Impacted: Yes, Toolbox landing page and Sprites route clickability changed.
++
++Result: PASS for targeted Toolbox landing and route coverage.
++
++## Adjacent Validation
++
++`npx playwright test tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs -g "share the same DB-backed metadata" --workers=1 --reporter=list`
++
++Result: BLOCKED by unrelated `Unknown API route: GET /api/local-db/snapshot` before Toolbox assertions.
++
++## Full Samples Smoke
++
++Not run. Not required for this targeted Toolbox entry PR.

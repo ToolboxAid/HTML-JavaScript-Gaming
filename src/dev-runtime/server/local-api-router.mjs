@@ -2555,7 +2555,7 @@ function normalizedToolKey(row) {
   return String(row?.toolKey || row?.toolId || row?.id || "").trim();
 }
 
-const SOURCE_CONTROLLED_TOOLBOX_TOOL_IDS = new Set(["game-hub", "idea-board", "messages", "tags", "text-to-speech", "users"]);
+const SOURCE_CONTROLLED_TOOLBOX_TOOL_IDS = new Set(["game-hub", "idea-board", "messages", "sprites", "tags", "text-to-speech", "users"]);
 const SOURCE_CONTROLLED_TOOLBOX_METADATA_FIELDS = Object.freeze([
   "active",
   "adminOnly",
