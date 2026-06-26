@@ -1,7 +1,11 @@
-docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership.md
-docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_branch-validation.md
-docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_validation-checklist.md
-docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/codex_review.diff
+# git status --short
+M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+ M docs_build/dev/reports/playwright_v8_coverage_report.txt
+
+# git ls-files --others --exclude-standard
+(no output)
+
+# git diff --stat
+.../dev/reports/coverage_changed_js_guardrail.txt  |  4 +--
+ .../dev/reports/playwright_v8_coverage_report.txt  | 32 +++++++++++++---------
+ 2 files changed, 21 insertions(+), 15 deletions(-)

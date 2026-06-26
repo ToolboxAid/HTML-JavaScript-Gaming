@@ -472,9 +472,10 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPublish": true,
     "requires": [],
     "status": "Wireframe",
+    "releaseChannel": "wireframe",
     "progressChecklist": [
-      "Review readiness",
-      "Static planned text only"
+      "Toolbox entry opens Sprites route",
+      "Sprites asset management shell available"
     ],
     "deferred": false,
     "hidden": false,

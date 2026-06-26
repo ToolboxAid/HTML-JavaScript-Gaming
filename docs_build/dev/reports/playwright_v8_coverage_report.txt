@@ -12,31 +12,38 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(76%) Toolbox Index - exercised 1 runtime JS files
+(88%) Toolbox Index - exercised 3 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
-(72%) Theme V2 Shared JS - exercised 4 runtime JS files
+(81%) Theme V2 Shared JS - exercised 5 runtime JS files
 
 Changed runtime JS files covered:
-(100%) none changed - no changed runtime JS files
+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2042/2042; executed functions 12/33
 
 Files with executed line/function counts where available:
-(36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2041/2041; executed functions 12/33
+(25%) src/api/session-api-client.js - executed lines 67/67; executed functions 3/12
+(36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2042/2042; executed functions 12/33
+(50%) toolbox/game-hub/game-hub-api-client.js - executed lines 26/26; executed functions 2/4
 (53%) src/api/server-api-client.js - executed lines 168/168; executed functions 10/19
-(64%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 63/98
 (65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
+(65%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 17/26
 (67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
-(73%) assets/toolbox/game-journey/js/index.js - executed lines 1662/1662; executed functions 108/148
-(76%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 22/29
+(74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 75/102
 (77%) assets/theme-v2/js/tool-display-mode.js - executed lines 304/304; executed functions 23/30
 (80%) assets/theme-v2/js/theme-icons.js - executed lines 69/69; executed functions 4/5
-(89%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 32/36
-(100%) assets/js/shared/game-journey-api-client.js - executed lines 19/19; executed functions 2/2
+(80%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 4/5
+(83%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 5/6
+(91%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 10/11
+(93%) admin/tool-votes.js - executed lines 406/406; executed functions 53/57
+(94%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 112/119
+(100%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 37/37
 
 Uncovered or low-coverage changed JS files:
-(100%) none changed - no changed runtime JS files
+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+(36%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: advisory low coverage; executed lines 2042/2042
 
 Changed JS files considered:
-(0%) scripts/validate-browser-env-agnostic.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/GameJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/ToolNavigationPrevNext.spec.mjs - changed JS file not collected as browser runtime coverage
+(36%) src/shared/toolbox/tool-metadata-inventory.js - changed JS file with browser V8 coverage

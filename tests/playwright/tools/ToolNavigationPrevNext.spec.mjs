@@ -102,7 +102,20 @@ test("Toolbox card names link to registered tool routes without duplicating laun
     await expect(gameDesignCard.locator("[data-toolbox-tile-action-row] a.btn")).toHaveAttribute("href", "../toolbox/game-design/index.html");
     await gameDesignCard.locator("h3 > a[data-toolbox-tool-name-link]").click();
     await page.waitForURL(/\/toolbox\/game-design\/index\.html$/);
+    await page.waitForLoadState("networkidle");
     await expect(page.locator(".page-title h1")).toHaveText("Game Design");
+
+    await page.goto(`${failures.server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+    const spritesCard = page.locator("[data-toolbox-tool-card='Sprites']");
+    await expect(spritesCard).toBeVisible();
+    await expect(spritesCard).toHaveAttribute("data-toolbox-release-channel", "wireframe");
+    await expect(spritesCard.locator("[data-toolbox-readiness]")).toHaveText("Wireframe");
+    await expect(spritesCard.locator("[data-toolbox-tile-action-row='Sprites'] a.btn")).toHaveText("Open Tool");
+    await expect(spritesCard.locator("[data-toolbox-tile-action-row='Sprites'] a.btn")).toHaveAttribute("href", "../toolbox/sprites/index.html");
+    await spritesCard.locator("h3 > a[data-toolbox-tool-name-link]").click();
+    await page.waitForURL(/\/toolbox\/sprites\/index\.html$/);
+    await page.waitForLoadState("networkidle");
+    await expect(page.locator(".page-title h1")).toHaveText("Sprites");
     await expectNoPageFailures(failures);
   } finally {
     await workspaceV2CoverageReporter.stop(page);

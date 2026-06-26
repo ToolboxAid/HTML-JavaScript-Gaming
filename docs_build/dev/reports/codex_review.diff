@@ -1,140 +1,71 @@
-diff --git a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-index de7ad4681..37fe942aa 100644
---- a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-+++ b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-@@ -72,7 +72,7 @@
- 
- - [ ] Alfa - Controls
- - [ ] Alfa - Input Mapping
--- [ ] Alfa - Hitboxes
-+- [ ] Delta - Hitboxes
- 
- ### Rules
- 
-@@ -252,5 +252,6 @@ Current OWNER clarification:
- - [x] Delta - Event system audit
-   - Completed by PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup.
- - [ ] Delta - Controls runtime framework audit
-+- [ ] Delta - Hitboxes
- - [ ] Delta - Object runtime framework audit
- - [ ] Delta - World runtime framework audit
-diff --git a/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md b/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-index bc548346d..1e2e47843 100644
---- a/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-+++ b/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-@@ -49,6 +49,7 @@ Team Charlie System Health owns:
- - Shared JS
- - API clients
- - Event systems
-+- Hitboxes
- - Performance
- - Technical debt remediation
- - Runtime test coverage
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership.md b/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership.md
-new file mode 100644
-index 000000000..aecd58bab
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership.md
-@@ -0,0 +1,33 @@
-+# PR_26177_DELTA_001-hitboxes-team-ownership
-+
-+Team: Delta
-+Branch: PR_26177_DELTA_001-hitboxes-team-ownership
-+Base: main
-+Scope: Project Instructions ownership/backlog documentation only
-+
-+## Summary
-+
-+Team Delta is now the sole documented owner of Hitboxes in the Project Instructions ownership and backlog routing files.
-+
-+## Changes
-+
-+- Updated `docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md` to add Hitboxes to Team Delta ownership.
-+- Updated `docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md` to change the Game Journey MVP Hitboxes item from Alfa to Delta.
-+- Added Hitboxes to the Team Delta backlog alignment list.
-+
-+## Scope Guard
-+
-+- No implementation code changed.
-+- No engine core files changed.
-+- No `start_of_day` files changed.
-+- No other team ownership assignments changed.
-+- Existing unrelated untracked file `docs_build/dev/ProjectInstructions (2).zip` was left untouched.
-+
-+## Validation
-+
-+- PASS: Current branch before PR branch creation was `main`.
-+- PASS: PR branch created and work remained on `PR_26177_DELTA_001-hitboxes-team-ownership`.
-+- PASS: `rg -n "Alfa - Hitboxes" docs_build/dev/ProjectInstructions` returned no matches.
-+- PASS: `rg -n "Delta - Hitboxes|Hitboxes" docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md` found only Delta ownership entries for Hitboxes in target files.
-+- PASS: `git diff --name-only` showed only Project Instructions ownership/backlog files before report generation.
-+
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_branch-validation.md b/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_branch-validation.md
-new file mode 100644
-index 000000000..4dcb5c321
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_branch-validation.md
-@@ -0,0 +1,17 @@
-+# PR_26177_DELTA_001 Hitboxes Team Ownership Branch Validation
-+
-+Branch: PR_26177_DELTA_001-hitboxes-team-ownership
-+Base: main
-+
-+Result: PASS
-+
-+| Check | Status | Notes |
-+|---|---|---|
-+| Start branch was main | PASS | `git branch --show-current` returned `main` before branch creation. |
-+| PR branch created | PASS | Current branch is `PR_26177_DELTA_001-hitboxes-team-ownership`. |
-+| Branch starts from current main | PASS | Starting commit was `f237619cf7aea710a32b9d5141115fb02dbd3293`; `HEAD...origin/main` was `0 0` before edits. |
-+| Scope is documentation/reporting only | PASS | No implementation code changed. |
-+| Engine core untouched | PASS | No engine core files changed. |
-+| start_of_day untouched | PASS | No `start_of_day` files changed. |
-+| Unrelated work preserved | PASS | Existing untracked `docs_build/dev/ProjectInstructions (2).zip` left untouched. |
-+
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_validation-checklist.md b/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_validation-checklist.md
-new file mode 100644
-index 000000000..9d801e2e9
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_validation-checklist.md
-@@ -0,0 +1,15 @@
-+# PR_26177_DELTA_001 Hitboxes Team Ownership Validation Checklist
-+
-+| Requirement | Status | Notes |
-+|---|---|---|
-+| Hard stop unless current branch is main | PASS | Start branch was verified as `main` before creating the PR branch. |
-+| Create and switch to PR branch | PASS | Created and switched to `PR_26177_DELTA_001-hitboxes-team-ownership`. |
-+| Team Delta sole owner of Hitboxes | PASS | Team ownership map lists Hitboxes under Team Delta. |
-+| Remove Hitboxes from Team Alfa ownership | PASS | Backlog item changed from `Alfa - Hitboxes` to `Delta - Hitboxes`; no `Alfa - Hitboxes` matches remain in ProjectInstructions. |
-+| Do not modify implementation code | PASS | Only Project Instructions and report artifacts changed. |
-+| Do not change other team ownership | PASS | Diff changes only Hitboxes ownership/routing. |
-+| Regenerate Codex review diff | PASS | `docs_build/dev/reports/codex_review.diff` generated from the working diff. |
-+| Regenerate Codex changed files | PASS | `docs_build/dev/reports/codex_changed_files.txt` generated from changed files. |
-+| PR-specific report | PASS | `docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership.md` added. |
-+| Branch validation | PASS | `docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_branch-validation.md` added. |
-+
-diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 9bbcdda40..0172ab7b9 100644
---- a/docs_build/dev/reports/codex_changed_files.txt
-+++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,12 +1,7 @@
--# git status --short
--M docs_build/dev/reports/PR_26175_DELTA_010-final-team-delta-completion-report.md
-- M docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout.md
--?? docs_build/dev/reports/PR_26175_DELTA_EOD_final_report.md
--
--# git ls-files --others --exclude-standard
--docs_build/dev/reports/PR_26175_DELTA_EOD_final_report.md
--
--# git diff --stat
--.../PR_26175_DELTA_010-final-team-delta-completion-report.md        | 6 +++++-
-- .../dev/reports/PR_26175_DELTA_010-runtime-testability-closeout.md  | 3 ++-
-- 2 files changed, 7 insertions(+), 2 deletions(-)
-\ No newline at end of file
-+docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-+docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-+docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership.md
-+docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_branch-validation.md
-+docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_validation-checklist.md
-+docs_build/dev/reports/codex_changed_files.txt
-+docs_build/dev/reports/codex_review.diff
+diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+index 857c5684a..e8bbedc38 100644
+--- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+@@ -7,8 +7,8 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+
+ Changed runtime JS files considered:
+ (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2042/2042; executed functions 12/33
+
+ Guardrail warnings:
+ (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(36%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: advisory low coverage below 50%; executed lines 2042/2042; executed functions 12/33
+diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+index 38f3c5916..597875581 100644
+--- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
++++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+@@ -12,32 +12,38 @@ Note: entry percentages use function coverage when available, otherwise line cov
+ Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+
+ Exercised tool entry points detected:
+-(18%) Toolbox Index - exercised 1 runtime JS files
++(88%) Toolbox Index - exercised 3 runtime JS files
+ (0%) Tool Template V2 - not exercised by this Playwright run
+-(51%) Theme V2 Shared JS - exercised 4 runtime JS files
++(81%) Theme V2 Shared JS - exercised 5 runtime JS files
+
+ Changed runtime JS files covered:
+ (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2042/2042; executed functions 12/33
+
+ Files with executed line/function counts where available:
+-(7%) assets/theme-v2/js/tool-display-mode.js - executed lines 304/304; executed functions 2/27
+-(17%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 1/6
+-(18%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 4/22
+-(20%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 2/10
+-(22%) admin/tool-votes.js - executed lines 406/406; executed functions 8/37
+-(25%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 1/4
+-(36%) src/api/server-api-client.js - executed lines 168/168; executed functions 5/14
+-(64%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 63/98
++(25%) src/api/session-api-client.js - executed lines 67/67; executed functions 3/12
++(36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2042/2042; executed functions 12/33
++(50%) toolbox/game-hub/game-hub-api-client.js - executed lines 26/26; executed functions 2/4
++(53%) src/api/server-api-client.js - executed lines 168/168; executed functions 10/19
+ (65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
++(65%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 17/26
++(67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
++(74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 75/102
++(77%) assets/theme-v2/js/tool-display-mode.js - executed lines 304/304; executed functions 23/30
+ (80%) assets/theme-v2/js/theme-icons.js - executed lines 69/69; executed functions 4/5
++(80%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 4/5
++(83%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 5/6
++(91%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 10/11
++(93%) admin/tool-votes.js - executed lines 406/406; executed functions 53/57
++(94%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 112/119
++(100%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 37/37
+
+ Uncovered or low-coverage changed JS files:
+ (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
++(36%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: advisory low coverage; executed lines 2042/2042
+
+ Changed JS files considered:
+ (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+-(0%) src/shared/toolbox/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/ToolNavigationPrevNext.spec.mjs - changed JS file not collected as browser runtime coverage
++(36%) src/shared/toolbox/tool-metadata-inventory.js - changed JS file with browser V8 coverage
