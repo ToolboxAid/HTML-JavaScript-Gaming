@@ -7,9 +7,9 @@ index af61960cd..8e56f6121 100644
    requireServerConstant,
  } from "../../../../src/api/server-api-client.js";
 +import { getSessionCurrent } from "../../../../src/api/session-api-client.js";
- 
+
  const constants = readServerToolConstants("game-design");
- 
+
 @@ -30,7 +31,9 @@ const elements = {
    capabilityDemoNotes: document.querySelector("[data-game-design-capability-notes]"),
    capabilityDemoPanel: document.querySelector("[data-game-design-capability-panel]"),
@@ -50,7 +50,7 @@ index af61960cd..8e56f6121 100644
 +  validationOverlay: document.querySelector("[data-game-design-validation-overlay]"),
 +  winCondition: document.querySelector("[data-game-design-win-condition]")
  };
- 
+
  function setText(element, value) {
 @@ -92,11 +105,18 @@ function readForm() {
    return {
@@ -71,7 +71,7 @@ index af61960cd..8e56f6121 100644
 +    winCondition: elements.winCondition?.value
    };
  }
- 
+
 @@ -116,6 +136,24 @@ function clearForm() {
    if (elements.designSummary) {
      elements.designSummary.value = "";
@@ -126,7 +126,7 @@ index af61960cd..8e56f6121 100644
      elements.capabilityDemoNotes.value = design.capabilityDemoNotes;
    }
  }
- 
+
 +function currentSession() {
 +  try {
 +    return getSessionCurrent();
@@ -150,7 +150,7 @@ index af61960cd..8e56f6121 100644
 @@ -225,7 +298,13 @@ function renderOutput(snapshot, validation) {
    const activeGame = snapshot.activeGame || snapshot.activeProject;
    const missingRequirements = validation.findings.map((finding) => finding.label).join(", ");
- 
+
 -  setText(elements.outputSummary, activeDesign?.designSummary || "No design summary saved yet.");
 +  setText(elements.outputSummary, activeDesign?.summary || activeDesign?.designSummary || "No design summary saved yet.");
 +  setText(elements.outputStory, activeDesign?.story || "No story saved yet.");
@@ -163,7 +163,7 @@ index af61960cd..8e56f6121 100644
    setText(elements.outputValidation, validation.status);
    setText(elements.outputNextStep, snapshot.progressHandoff.recommendedNextTool);
 @@ -291,6 +370,9 @@ elements.form?.addEventListener("input", renderFormValidation);
- 
+
  elements.form?.addEventListener("submit", (event) => {
    event.preventDefault();
 +  if (redirectGuestSaveAction()) {
@@ -173,7 +173,7 @@ index af61960cd..8e56f6121 100644
    setText(elements.statusLog, result.message);
    render();
 diff --git a/docs_build/database/ddl/game-design.sql b/docs_build/database/ddl/game-design.sql
-index 26870d412..55c488b4e 100644
+index 26870d412..a0f3026f2 100644
 --- a/docs_build/database/ddl/game-design.sql
 +++ b/docs_build/database/ddl/game-design.sql
 @@ -4,11 +4,25 @@
@@ -203,7 +203,29 @@ index 26870d412..55c488b4e 100644
      "status" text,
      "createdAt" timestamptz NOT NULL DEFAULT now(),
      "updatedAt" timestamptz NOT NULL DEFAULT now(),
-@@ -23,6 +37,7 @@ CREATE INDEX IF NOT EXISTS idx_game_design_documents_updatedby ON game_design_do
+@@ -16,6 +30,21 @@ CREATE TABLE IF NOT EXISTS game_design_documents (
+     "updatedBy" text NOT NULL REFERENCES users(key)
+ );
+
++ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "gamePurpose" text;
++ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "gameType" text;
++ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "genre" text;
++ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "playStyle" text;
++ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "playerMode" text;
++ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "summary" text;
++ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "story" text;
++ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "coreLoop" text;
++ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "winCondition" text;
++ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "loseCondition" text;
++ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "targetAudience" text;
++ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "designNotes" text;
++ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "capabilityDemoAuthoring" boolean NOT NULL DEFAULT false;
++ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "capabilityDemoNotes" text;
++
+ CREATE INDEX IF NOT EXISTS idx_game_design_documents_gamekey ON game_design_documents ("gameKey");
+ CREATE INDEX IF NOT EXISTS idx_game_design_documents_createdby ON game_design_documents ("createdBy");
+ CREATE INDEX IF NOT EXISTS idx_game_design_documents_updatedby ON game_design_documents ("updatedBy");
+@@ -23,6 +52,7 @@ CREATE INDEX IF NOT EXISTS idx_game_design_documents_updatedby ON game_design_do
  CREATE TABLE IF NOT EXISTS game_design_validation_items (
      key text PRIMARY KEY,
      "gameKey" text REFERENCES game_workspace_games(key),
@@ -211,7 +233,12 @@ index 26870d412..55c488b4e 100644
      "label" text,
      "status" text,
      "action" text,
-@@ -35,3 +50,39 @@ CREATE TABLE IF NOT EXISTS game_design_validation_items (
+@@ -32,6 +62,44 @@ CREATE TABLE IF NOT EXISTS game_design_validation_items (
+     "updatedBy" text NOT NULL REFERENCES users(key)
+ );
+
++ALTER TABLE game_design_validation_items ADD COLUMN IF NOT EXISTS "field" text;
++
  CREATE INDEX IF NOT EXISTS idx_game_design_validation_items_gamekey ON game_design_validation_items ("gameKey");
  CREATE INDEX IF NOT EXISTS idx_game_design_validation_items_createdby ON game_design_validation_items ("createdBy");
  CREATE INDEX IF NOT EXISTS idx_game_design_validation_items_updatedby ON game_design_validation_items ("updatedBy");
@@ -261,7 +288,7 @@ index 2c182fcf2..6cbbb6e2c 100644
  -- Browser pages must not directly seed authoritative DB records.
 --- Owned tables: game_design_documents, game_design_validation_items
 +-- Owned tables: game_design_documents, game_design_validation_items, game_design_sections, game_design_capability_demos
- 
+
  -- DML status: Server-seed-owned.
  -- Setup is performed through the Admin-owned server-side seed API.
 diff --git a/docs_build/database/seed/game-design.json b/docs_build/database/seed/game-design.json
@@ -296,145 +323,112 @@ index d1c8eb9cb..be875343c 100644
      {
 diff --git a/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_branch-validation.md b/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_branch-validation.md
 new file mode 100644
-index 000000000..7248302bd
+index 000000000..d12d5ddd8
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_branch-validation.md
-@@ -0,0 +1,10 @@
-+# PR_26177_ALFA_060 Branch Validation
+@@ -0,0 +1,9 @@
++# PR_26177_ALFA_060-game-design-foundation Branch Validation
 +
-+| Check | Result | Evidence |
-+| --- | --- | --- |
-+| Branch | PASS | `PR_26177_ALFA_060-game-design-foundation` |
-+| Base gate | PASS | Branch created from clean synced `main` after `main...origin/main` reported `0 0`. |
-+| Scope | PASS | Changes are limited to Game Design foundation, DB docs, targeted tests, and required reports. |
-+| Runtime architecture | PASS | Browser saves through the API repository; server owns design rows and keys. |
-+| No JSON editor | PASS | UI remains form/table based with Creator-facing fields. |
-+| SQLite/tmp dependency | PASS | Scoped Game Design surface search found no SQLite or `tmp/local-api` runtime references. |
++Generated: 2026-06-26 18:48:08 UTC
++
++- Branch check: PASS - current branch is `PR_26177_ALFA_060-game-design-foundation`.
++- Scope check: PASS - changes are limited to Game Design seeded data behavior, targeted tests, reports, and package artifacts.
++- Architecture check: PASS - targeted validation proves Browser -> API -> Database persistence.
++- Current game check: PASS - status bar and Game Design context both show Demo Game.
++- Validation result: PASS.
 diff --git a/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_manual-validation-notes.md
 new file mode 100644
-index 000000000..c078daf53
+index 000000000..e3fe375dc
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_manual-validation-notes.md
-@@ -0,0 +1,14 @@
-+# PR_26177_ALFA_060 Manual Validation Notes
+@@ -0,0 +1,10 @@
++# PR_26177_ALFA_060-game-design-foundation Manual Validation Notes
 +
-+## Reviewed
-+- Game Design loads the active Demo Game context.
-+- The form presents Creator-facing fields for summary, story, core loop, win condition, lose condition, target audience, and notes.
-+- Saving complete fields marks Game Design `Ready` and updates the Game Configuration handoff link.
-+- Output panel renders the saved fields without JSON.
-+- Capability demo authoring remains game-owned.
-+- Guest save redirects to `account/sign-in.html`.
++Generated: 2026-06-26 18:48:08 UTC
 +
-+## Not In Scope
-+- Applying DB migrations to the developer workstation database.
-+- Game engine internals.
-+- Non-Alfa tools outside the existing Game Design handoff test surface.
++- Loaded /toolbox/game-design/index.html and confirmed the status bar selected game is Demo Game.
++- Confirmed Demo Game opens with seeded Puzzle/Adventure/Single Player design fields already populated.
++- Edited design fields, saved through the API, and verified game_design_documents plus game_design_sections rows.
++- Reloaded and confirmed saved Summary and Genre persisted.
++- Opened Gravity Demo context and confirmed capability demo design data stays game-owned and separate from Demo Game.
++- Verified guest browser save redirects and direct guest API save returns 401.
 diff --git a/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_report.md b/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_report.md
 new file mode 100644
-index 000000000..d0273ba3b
+index 000000000..41cdae50d
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_report.md
-@@ -0,0 +1,23 @@
+@@ -0,0 +1,24 @@
 +# PR_26177_ALFA_060-game-design-foundation Report
 +
-+## Summary
-+- Expanded Game Design into a DB/API-backed design foundation for summary, story, core loop, win condition, lose condition, target audience, and design notes.
-+- Preserved existing Game Type, Genre, Play Style, Player Mode, capability demo authoring, and Game Configuration handoff behavior.
-+- Added audit-ready `game_design_sections` and `game_design_capability_demos` schema coverage alongside expanded `game_design_documents`.
-+- Added guest save redirect to `account/sign-in.html`.
++Generated: 2026-06-26 18:48:08 UTC
++Branch: `PR_26177_ALFA_060-game-design-foundation`
++Base: `main`
++Current HEAD before packaging: `0cedbe78b`
 +
-+## Changed Areas
-+- Game Design UI and API client script.
-+- Game Design server repository fields, validation, section rows, capability rows, and audit fields.
-+- Mock DB schema metadata and grouped Game Design database docs/seeds.
-+- Impacted Playwright coverage for Game Design save, guest redirect, capability demos, and toolbox build path.
++## Summary
++PR060 makes Game Design a human-testable API/DB-backed tool with seeded current-game design data. Demo Game loads an existing design, Creators can edit and save it, database rows are asserted, and refresh/reload preserves the saved values.
++
++## Implementation Notes
++- `resetDesignData()` now seeds the active Game Hub game before capability demos.
++- Tests assert the shared status bar selected game and seeded Demo Game field values before editing.
++- Save validation still writes through the API/database path and checks Game Design tables.
++- Capability demo authoring remains scoped to Game Hub games.
++- No SQLite, tmp runtime dependency, JSON source of truth, mock-db-store expansion, or new mock repository file was added.
 +
 +## Validation
-+- PASS: `node --check` on changed JS/MJS files.
-+- PASS: `git diff --check`.
-+- PASS: `npx playwright test tests/playwright/tools/GameDesignMockRepository.spec.mjs --workers=1 --reporter=line` (`5 passed`).
-+
-+## Notes
-+- No JSON editor or browser-owned product data was introduced.
-+- Product/runtime wording uses `API`.
-+- Full migration execution remains outside this PR; docs define the DB contract.
++- PASS - node --check assets/toolbox/game-design/js/index.js
++- PASS - node --check src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js
++- PASS - node --check src/dev-runtime/server/local-api-router.mjs
++- PASS - node --check tests/playwright/tools/GameDesignApiBehavior.spec.mjs
++- PASS - git diff --check (line-ending notices only)
++- PASS - npx playwright test tests/playwright/tools/GameDesignApiBehavior.spec.mjs --workers=1 --reporter=line (6 passed)
 diff --git a/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_requirement-checklist.md b/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_requirement-checklist.md
 new file mode 100644
-index 000000000..be75a5d3f
+index 000000000..19535ca50
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_requirement-checklist.md
-@@ -0,0 +1,24 @@
-+# PR_26177_ALFA_060 Requirement Checklist
+@@ -0,0 +1,13 @@
++# PR_26177_ALFA_060-game-design-foundation Requirement Checklist
 +
-+| Requirement | Result | Notes |
-+| --- | --- | --- |
-+| Browser -> API -> Database architecture | PASS | Game Design UI uses the API repository for save/load. |
-+| Product/runtime wording says API | PASS | Creator-facing page copy uses API wording. |
-+| One API contract across environments | PASS | No environment-specific Game Design product code path was added. |
-+| Environment differences are config/.env only | PASS | Game Design behavior does not branch by environment. |
-+| No SQLite | PASS | No SQLite references added. |
-+| No tmp runtime dependency | PASS | Runtime does not inspect or depend on tmp paths. |
-+| No JSON source of truth | PASS | JSON files remain seed documentation only. |
-+| Browser does not own product data | PASS | No browser storage product-data SSoT was added. |
-+| API/server owns authoritative keys | PASS | Server repository assigns ULID-shaped keys for design documents, sections, validation rows, and capability rows. |
-+| Audit fields | PASS | Rows include `createdAt`, `updatedAt`, `createdBy`, and `updatedBy`. |
-+| Ownership references `users.key` | PASS | DDL references `users(key)` for audit fields. |
-+| Summary | PASS | Form, output, repository, and DDL include summary. |
-+| Story | PASS | Form, output, repository, and DDL include story. |
-+| Core loop | PASS | Form, output, repository, and DDL include core loop. |
-+| Win condition | PASS | Form, output, repository, and DDL include win condition. |
-+| Lose condition | PASS | Form, output, repository, and DDL include lose condition. |
-+| Target audience | PASS | Form, output, repository, and DDL include target audience. |
-+| Design notes/sections | PASS | Form captures notes and repository emits `game_design_sections`. |
-+| Guest save redirect | PASS | Playwright verifies redirect to `account/sign-in.html`. |
-+| Required reports and ZIP | PASS | PR report, branch validation, checklist, lane report, manual notes, `codex_*` reports, and ZIP are produced. |
++Generated: 2026-06-26 18:48:08 UTC
++
++- PASS - Center title is Design; Design Workspace wording is absent.
++- PASS - Tool loads seeded design data for the current selected Game Hub game.
++- PASS - Tool asserts the shared status bar selected game is Demo Game.
++- PASS - Read/write behavior remains scoped to the active Game Hub game context.
++- PASS - Signed-in Creator can edit fields, save through API/DB, reload, and see persisted values.
++- PASS - Editable fields include summary, story, core loop, win/lose conditions, target audience, and notes.
++- PASS - Guest browser save redirects to account/sign-in.html and direct guest API save returns 401.
++- PASS - No SQLite, tmp runtime dependency, JSON source of truth, mock-db-store expansion, or new mock repository file was added.
++- PASS - DDL/DML/seed artifacts remain under docs_build/database/ddl, dml, and seed paths.
 diff --git a/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_validation-lane.md b/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_validation-lane.md
 new file mode 100644
-index 000000000..e9aab7181
+index 000000000..fc8bbdba0
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_validation-lane.md
-@@ -0,0 +1,18 @@
-+# PR_26177_ALFA_060 Validation Lane
+@@ -0,0 +1,10 @@
++# PR_26177_ALFA_060-game-design-foundation Validation Lane
 +
-+## Commands
-+- `node --check src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js`
-+- `node --check assets/toolbox/game-design/js/index.js`
-+- `node --check src/dev-runtime/persistence/mock-db-store.js`
-+- `node --check src/dev-runtime/server/local-api-router.mjs`
-+- `node --check tests/playwright/tools/GameDesignMockRepository.spec.mjs`
-+- `git diff --check`
-+- `npx playwright test tests/playwright/tools/GameDesignMockRepository.spec.mjs --workers=1 --reporter=line`
++Generated: 2026-06-26 18:48:08 UTC
 +
-+## Result
-+PASS
-+
-+## Evidence
-+- Playwright Game Design lane: `5 passed`.
-+- Syntax checks passed for changed runtime/test JS/MJS files.
-+- `git diff --check` exited `0`; only line-ending normalization warnings were printed.
++- PASS - node --check assets/toolbox/game-design/js/index.js
++- PASS - node --check src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js
++- PASS - node --check src/dev-runtime/server/local-api-router.mjs
++- PASS - node --check tests/playwright/tools/GameDesignApiBehavior.spec.mjs
++- PASS - git diff --check (line-ending notices only)
++- PASS - npx playwright test tests/playwright/tools/GameDesignApiBehavior.spec.mjs --workers=1 --reporter=line (6 passed)
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 098d8de0b..eeddce28b 100644
+index 098d8de0b..960ff6951 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
 @@ -1,16 +1,19 @@
--?M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md
+-ï»¿M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md
 -M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md
 -M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md
 -M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_requirement-checklist.md
 -M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_validation-lane.md
-+M	assets/toolbox/game-design/js/index.js
-+M	docs_build/database/ddl/game-design.sql
-+M	docs_build/database/dml/game-design.sql
-+M	docs_build/database/seed/game-design.json
-+M	docs_build/database/seed/guest/game-design.json
-+A	docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_branch-validation.md
-+A	docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_manual-validation-notes.md
-+A	docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_report.md
-+A	docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_requirement-checklist.md
-+A	docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_validation-lane.md
- M	docs_build/dev/reports/coverage_changed_js_guardrail.txt
- M	docs_build/dev/reports/playwright_v8_coverage_report.txt
+-M	docs_build/dev/reports/coverage_changed_js_guardrail.txt
+-M	docs_build/dev/reports/playwright_v8_coverage_report.txt
 -D	scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs
 -M	scripts/validate-browser-env-agnostic.mjs
 -D	src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs
@@ -442,51 +436,68 @@ index 098d8de0b..eeddce28b 100644
 -M	tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
 -M	tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
 -M	tests/playwright/tools/GameJourneyTool.spec.mjs
-+M	src/dev-runtime/persistence/mock-db-store.js
-+M	src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js
-+M	src/dev-runtime/server/local-api-router.mjs
-+M	tests/playwright/tools/GameDesignMockRepository.spec.mjs
-+M	toolbox/game-design/index.html
- M	docs_build/dev/reports/codex_changed_files.txt
- M	docs_build/dev/reports/codex_review.diff
+-M	docs_build/dev/reports/codex_changed_files.txt
+-M	docs_build/dev/reports/codex_review.diff
++assets/toolbox/game-design/js/index.js
++docs_build/database/ddl/game-design.sql
++docs_build/database/dml/game-design.sql
++docs_build/database/seed/game-design.json
++docs_build/database/seed/guest/game-design.json
++docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_branch-validation.md
++docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_manual-validation-notes.md
++docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_report.md
++docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_requirement-checklist.md
++docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_validation-lane.md
++docs_build/dev/reports/codex_changed_files.txt
++docs_build/dev/reports/codex_review.diff
++docs_build/dev/reports/coverage_changed_js_guardrail.txt
++docs_build/dev/reports/playwright_v8_coverage_report.txt
++src/dev-runtime/auth/provider-contract-stubs.mjs
++src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js
++src/dev-runtime/server/local-api-router.mjs
++tests/playwright/tools/GameDesignApiBehavior.spec.mjs
++toolbox/game-design/index.html
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 7b1c51f19..005286f70 100644
+index 7b1c51f19..799424074 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,7 +6,11 @@ Missing changed runtime JS files are WARN, not FAIL.
+@@ -6,7 +6,13 @@ Missing changed runtime JS files are WARN, not FAIL.
  Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
- 
+
  Changed runtime JS files considered:
 -(100%) none changed - no changed runtime JS files
++(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 +(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 +(0%) src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 +(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- 
+
  Guardrail warnings:
 -(100%) none changed - no changed runtime JS files
++(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 +(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
 +(0%) src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
 +(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index f2363d3bf..15c6f70b4 100644
+index f2363d3bf..d397196f3 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,31 +12,41 @@ Note: entry percentages use function coverage when available, otherwise line cov
+@@ -12,31 +12,43 @@ Note: entry percentages use function coverage when available, otherwise line cov
  Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
- 
+
  Exercised tool entry points detected:
 -(76%) Toolbox Index - exercised 1 runtime JS files
 +(82%) Toolbox Index - exercised 3 runtime JS files
  (0%) Tool Template V2 - not exercised by this Playwright run
 -(72%) Theme V2 Shared JS - exercised 4 runtime JS files
 +(74%) Theme V2 Shared JS - exercised 6 runtime JS files
- 
+
  Changed runtime JS files covered:
 -(100%) none changed - no changed runtime JS files
++(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 +(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 +(0%) src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 +(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- 
+
  Files with executed line/function counts where available:
 +(25%) src/api/session-api-client.js - executed lines 67/67; executed functions 3/12
 +(33%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
@@ -509,56 +520,39 @@ index f2363d3bf..15c6f70b4 100644
 +(86%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 25/29
 +(100%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 37/37
 +(100%) assets/toolbox/game-design/js/index.js - executed lines 340/340; executed functions 26/26
- 
+
  Uncovered or low-coverage changed JS files:
 -(100%) none changed - no changed runtime JS files
++(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
 +(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
 +(0%) src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
 +(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
- 
+
  Changed JS files considered:
 -(0%) scripts/validate-browser-env-agnostic.mjs - changed JS file not collected as browser runtime coverage
 -(0%) tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs - changed JS file not collected as browser runtime coverage
 -(0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
 -(0%) tests/playwright/tools/GameJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
 +(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
 +(0%) src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js - changed JS file not collected as browser runtime coverage
 +(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/GameDesignMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
-+(100%) assets/toolbox/game-design/js/index.js - changed JS file with browser V8 coverage
-diff --git a/src/dev-runtime/persistence/mock-db-store.js b/src/dev-runtime/persistence/mock-db-store.js
-index e96fb833f..c8ff68d91 100644
---- a/src/dev-runtime/persistence/mock-db-store.js
-+++ b/src/dev-runtime/persistence/mock-db-store.js
-@@ -40,7 +40,12 @@ export const MOCK_DB_TOOL_GROUPS = Object.freeze({
-   }),
-   "game-design": Object.freeze({
-     label: "Game Design",
--    tableNames: Object.freeze(["game_design_documents", "game_design_validation_items"]),
-+    tableNames: Object.freeze([
-+      "game_design_documents",
-+      "game_design_validation_items",
-+      "game_design_sections",
-+      "game_design_capability_demos",
-+    ]),
-   }),
-   "game-configuration": Object.freeze({
-     label: "Game Configuration",
-@@ -114,8 +119,10 @@ const MOCK_DB_TABLE_SCHEMAS = Object.freeze({
-   support_categories: Object.freeze(["key", "categorySlug", "name", "description", "isActive", "sortOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-   game_workspace_games: Object.freeze(["key", "name", "status", "ownerKey", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-   game_workspace_progress: Object.freeze(["key", "gameKey", "currentFocus", "gameProgress", "publishingProgress", "recommendedNextTool", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
--  game_design_documents: Object.freeze(["key", "gameKey", "title", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
--  game_design_validation_items: Object.freeze(["key", "gameKey", "label", "status", "action", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-+  game_design_documents: Object.freeze(["key", "gameKey", "title", "gamePurpose", "gameType", "genre", "playStyle", "playerMode", "summary", "story", "coreLoop", "winCondition", "loseCondition", "targetAudience", "designNotes", "capabilityDemoAuthoring", "capabilityDemoNotes", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-+  game_design_validation_items: Object.freeze(["key", "gameKey", "field", "label", "status", "action", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-+  game_design_sections: Object.freeze(["key", "gameKey", "documentKey", "sectionKey", "heading", "body", "sortOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-+  game_design_capability_demos: Object.freeze(["key", "gameKey", "gameName", "gamePurpose", "authoringMode", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-   game_configuration_records: Object.freeze(["key", "gameKey", "status", "summary", "playerMode", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-   game_configuration_validation_items: Object.freeze(["key", "gameKey", "label", "status", "action", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-   object_definition_records: Object.freeze(["key", "id", "gameId", "name", "type", "state", "modelType", "renderType", "renderAssetKey", "renderPreviewPath", "capabilities", "behavior", "interaction", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
++(0%) tests/playwright/tools/GameDesignApiBehavior.spec.mjs - changed JS file not collected as browser runtime coverage
+diff --git a/src/dev-runtime/auth/provider-contract-stubs.mjs b/src/dev-runtime/auth/provider-contract-stubs.mjs
+index cff94f9b0..8913fee9b 100644
+--- a/src/dev-runtime/auth/provider-contract-stubs.mjs
++++ b/src/dev-runtime/auth/provider-contract-stubs.mjs
+@@ -81,6 +81,8 @@ export const SUPABASE_POSTGRES_PRODUCT_TABLES = Object.freeze([
+   "game_workspace_progress",
+   "game_design_documents",
+   "game_design_validation_items",
++  "game_design_sections",
++  "game_design_capability_demos",
+   "game_configuration_records",
+   "game_configuration_validation_items",
+   "object_definition_records",
 diff --git a/src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js b/src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js
-index 529db7541..123189ae8 100644
+index 529db7541..c7929a244 100644
 --- a/src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js
 +++ b/src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js
 @@ -2,11 +2,13 @@ import {
@@ -566,7 +560,7 @@ index 529db7541..123189ae8 100644
    createGameWorkspaceMockRepository,
  } from "./game-workspace-mock-repository.js";
 +import { makeSeedUlid } from "../../seed/seed-db-keys.mjs";
- 
+
  export const GAME_DESIGN_TABLES = Object.freeze([
    "game_design_documents",
    "game_design_validation_items",
@@ -574,7 +568,7 @@ index 529db7541..123189ae8 100644
 +  "game_design_sections",
 +  "game_design_capability_demos",
  ]);
- 
+
  export const GAME_DESIGN_GAME_TYPES = Object.freeze([
 @@ -18,7 +20,7 @@ export const GAME_DESIGN_GAME_TYPES = Object.freeze([
    "RPG",
@@ -583,7 +577,7 @@ index 529db7541..123189ae8 100644
 -  "Strategy"
 +  "Strategy",
  ]);
- 
+
  export const GAME_DESIGN_GENRES = Object.freeze([
 @@ -29,7 +31,7 @@ export const GAME_DESIGN_GENRES = Object.freeze([
    "Sci-Fi",
@@ -592,7 +586,7 @@ index 529db7541..123189ae8 100644
 -  "Utility"
 +  "Utility",
  ]);
- 
+
  export const GAME_DESIGN_PLAY_STYLES = Object.freeze([
 @@ -38,54 +40,89 @@ export const GAME_DESIGN_PLAY_STYLES = Object.freeze([
    "Guided Tutorial",
@@ -601,7 +595,7 @@ index 529db7541..123189ae8 100644
 -  "Turn-Based"
 +  "Turn-Based",
  ]);
- 
+
  export const GAME_DESIGN_PLAYER_MODES = Object.freeze([
    Object.freeze({
      description: "One active player receives input.",
@@ -623,7 +617,7 @@ index 529db7541..123189ae8 100644
 +    value: "2+ Concurrent",
 +  }),
  ]);
- 
+
  const GAME_WORKSPACE_USER_KEY = GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY;
 +const DESIGN_FIELD_DEFINITIONS = Object.freeze([
 +  Object.freeze({
@@ -696,7 +690,7 @@ index 529db7541..123189ae8 100644
 -  }
 +  ...DESIGN_FIELD_DEFINITIONS,
  ]);
- 
+
  function cloneRows(rows) {
 @@ -96,7 +133,8 @@ function cloneTables(tables) {
    return {
@@ -707,11 +701,11 @@ index 529db7541..123189ae8 100644
 +    game_design_capability_demos: cloneRows(tables.game_design_capability_demos),
    };
  }
- 
-@@ -115,43 +153,130 @@ function normalizeText(value) {
+
+@@ -115,43 +153,140 @@ function normalizeText(value) {
    return String(value || "").trim();
  }
- 
+
 +function auditFields(index = 0, userKey = GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY) {
 +  const timestamp = new Date(Date.UTC(2026, 0, 1, 13, index, 0)).toISOString();
 +  return {
@@ -731,27 +725,37 @@ index 529db7541..123189ae8 100644
 +    game_design_capability_demos: [],
    };
  }
- 
+
++function hashKeySource(value) {
++  return Array.from(String(value || "")).reduce((hash, character) => (
++    ((hash * 31) + character.charCodeAt(0)) >>> 0
++  ), 0) % 100000;
++}
++
++function keySequenceForGame(base, gameId, index = 0) {
++  return base + (hashKeySource(gameId) * 100) + index;
++}
++
 +function designKeyForGame(gameId) {
-+  return makeSeedUlid(8400 + String(gameId || "").length);
++  return makeSeedUlid(keySequenceForGame(8_400_000_000, gameId));
 +}
 +
 +function sectionKeyForGame(gameId, index) {
-+  return makeSeedUlid(8500 + index + String(gameId || "").length);
++  return makeSeedUlid(keySequenceForGame(8_500_000_000, gameId, index));
 +}
 +
 +function validationKeyForGame(gameId, index) {
-+  return makeSeedUlid(8600 + index + String(gameId || "").length);
++  return makeSeedUlid(keySequenceForGame(8_600_000_000, gameId, index));
 +}
 +
 +function capabilityKeyForGame(gameId) {
-+  return makeSeedUlid(8700 + String(gameId || "").length);
++  return makeSeedUlid(keySequenceForGame(8_700_000_000, gameId));
 +}
 +
  function designIdForGame(gameId) {
    return `${gameId}-game-design`;
  }
- 
+
 +function normalizeDesignInput(input = {}) {
 +  const summary = normalizeText(input.summary || input.designSummary);
 +  return {
@@ -786,7 +790,7 @@ index 529db7541..123189ae8 100644
 +    ...auditFields(index + 20),
    }));
  }
- 
+
 +function createSectionRows(game, document) {
 +  return [
 +    ...DESIGN_FIELD_DEFINITIONS.map((definition, index) => ({
@@ -848,21 +852,21 @@ index 529db7541..123189ae8 100644
 -    updatedAt: new Date().toISOString()
 +    ...auditFields(0, game.ownerKey),
    };
- 
+
    const findings = REQUIRED_FIELDS.filter((requirement) => !document[requirement.field]);
-@@ -188,7 +313,9 @@ export function createGameDesignMockRepository(options = {}) {
+@@ -188,7 +323,9 @@ export function createGameDesignMockRepository(options = {}) {
        return null;
      }
- 
+
 -    return tables.game_design_documents.find((document) => document.gameId === activeGame.id) || null;
 +    return tables.game_design_documents.find((document) => (
 +      document.gameId === activeGame.id || document.gameKey === activeGame.id
 +    )) || null;
    }
- 
+
    function validateDesign(input = {}) {
-@@ -196,42 +323,43 @@ export function createGameDesignMockRepository(options = {}) {
- 
+@@ -196,42 +333,43 @@ export function createGameDesignMockRepository(options = {}) {
+
      if (!activeGame) {
        return {
 -        status: "Blocked",
@@ -879,7 +883,7 @@ index 529db7541..123189ae8 100644
 +        status: "Blocked",
        };
      }
- 
+
 -    const design = {
 -      gameType: normalizeChoice(input.gameType, GAME_DESIGN_GAME_TYPES),
 -      genre: normalizeChoice(input.genre, GAME_DESIGN_GENRES),
@@ -889,14 +893,14 @@ index 529db7541..123189ae8 100644
 -    };
 +    const design = normalizeDesignInput(input);
      const findings = REQUIRED_FIELDS.filter((requirement) => !design[requirement.field]);
- 
+
      return {
 +      findings,
        status: findings.length === 0 ? "Ready" : "Needs Input",
 -      findings
      };
    }
- 
+
    function replaceValidationRows(gameId, findings) {
      tables.game_design_validation_items = tables.game_design_validation_items.filter(
 -      (row) => row.gameId !== gameId
@@ -904,7 +908,7 @@ index 529db7541..123189ae8 100644
      );
      tables.game_design_validation_items.push(...createValidationRows(gameId, findings));
    }
- 
+
 +  function replaceSectionRows(game, document) {
 +    tables.game_design_sections = tables.game_design_sections.filter(
 +      (row) => row.gameId !== game.id && row.gameKey !== game.id,
@@ -917,11 +921,11 @@ index 529db7541..123189ae8 100644
 -      (row) => row.gameId !== game.id
 +      (row) => row.gameId !== game.id && row.gameKey !== game.id,
      );
- 
+
      if (!document.capabilityDemoAuthoring) {
-@@ -239,12 +367,14 @@ export function createGameDesignMockRepository(options = {}) {
+@@ -239,12 +377,14 @@ export function createGameDesignMockRepository(options = {}) {
      }
- 
+
      tables.game_design_capability_demos.push({
 -      id: `${game.id}-capability-demo-authoring`,
 +      key: capabilityKeyForGame(game.id),
@@ -935,9 +939,9 @@ index 529db7541..123189ae8 100644
 +      ...auditFields(80, game.ownerKey),
      });
    }
- 
-@@ -253,26 +383,27 @@ export function createGameDesignMockRepository(options = {}) {
- 
+
+@@ -253,26 +393,27 @@ export function createGameDesignMockRepository(options = {}) {
+
      if (!activeGame) {
        return {
 -        saved: false,
@@ -947,7 +951,7 @@ index 529db7541..123189ae8 100644
 +        snapshot: getSnapshot(),
        };
      }
- 
+
      const { document, findings } = createDesignForGame(activeGame, input);
      tables.game_design_documents = tables.game_design_documents.filter(
 -      (row) => row.gameId !== activeGame.id
@@ -957,7 +961,7 @@ index 529db7541..123189ae8 100644
      replaceValidationRows(activeGame.id, findings);
 +    replaceSectionRows(activeGame, document);
      replaceCapabilityDemoRow(activeGame, document);
- 
+
      return {
 -      saved: true,
        message: findings.length === 0
@@ -968,8 +972,8 @@ index 529db7541..123189ae8 100644
 +      snapshot: getSnapshot(),
      };
    }
- 
-@@ -281,17 +412,24 @@ export function createGameDesignMockRepository(options = {}) {
+
+@@ -281,26 +422,60 @@ export function createGameDesignMockRepository(options = {}) {
        const { document, findings } = createDesignForGame(game, {
          capabilityDemoAuthoring: true,
          capabilityDemoNotes: `${game.name} remains a Game Hub game.`,
@@ -997,7 +1001,35 @@ index 529db7541..123189ae8 100644
        replaceCapabilityDemoRow(game, document);
      });
    }
-@@ -300,7 +438,7 @@ export function createGameDesignMockRepository(options = {}) {
+
++  function seedActiveGameDesign() {
++    const game = getActiveGame();
++    if (!game) {
++      return;
++    }
++    const { document, findings } = createDesignForGame(game, {
++      coreLoop: "Explore a compact room, solve a tile puzzle, and unlock the next shelf.",
++      designNotes: "Seeded Game Design data stays scoped to the current Game Hub game.",
++      gameType: "Puzzle",
++      genre: "Adventure",
++      loseCondition: "The room resets after too many missed moves.",
++      playStyle: "Single Player",
++      playerMode: "1 Player",
++      story: "A curious maker enters a clockwork library.",
++      summary: "A compact puzzle adventure with one clear game promise.",
++      targetAudience: "Puzzle fans and first-time creators.",
++      winCondition: "Restore the library clock before the final bell.",
++    });
++    tables.game_design_documents = tables.game_design_documents.filter(
++      (row) => row.gameId !== game.id && row.gameKey !== game.id,
++    );
++    tables.game_design_documents.push(document);
++    replaceValidationRows(game.id, findings);
++    replaceSectionRows(game, document);
++    replaceCapabilityDemoRow(game, document);
++  }
++
+   function openGameContext(gameId) {
      const game = gameWorkspaceRepository.openGame(gameId);
      return {
        opened: Boolean(game),
@@ -1005,9 +1037,17 @@ index 529db7541..123189ae8 100644
 +      snapshot: getSnapshot(),
      };
    }
- 
-@@ -331,15 +469,15 @@ export function createGameDesignMockRepository(options = {}) {
- 
+
+@@ -317,6 +492,7 @@ export function createGameDesignMockRepository(options = {}) {
+   function resetDesignData() {
+     gameWorkspaceRepository.resetGameData();
+     tables = createEmptyTables();
++    seedActiveGameDesign();
+     seedCapabilityDemoDesigns();
+     return getSnapshot();
+   }
+@@ -331,15 +507,15 @@ export function createGameDesignMockRepository(options = {}) {
+
      if (!activeGame) {
        return {
 -        gameProgress: "No active game",
@@ -1026,10 +1066,10 @@ index 529db7541..123189ae8 100644
 +        recommendedNextTool: "Game Hub",
        };
      }
- 
-@@ -347,22 +485,24 @@ export function createGameDesignMockRepository(options = {}) {
+
+@@ -347,22 +523,24 @@ export function createGameDesignMockRepository(options = {}) {
      const ready = validation.findings.length === 0;
- 
+
      return {
 +      currentFocus: ready ? "Review Game Configuration" : "Complete Game Design",
        gameProgress: ready
@@ -1058,8 +1098,8 @@ index 529db7541..123189ae8 100644
 +      recommendedNextTool: ready ? "Game Configuration" : "Game Design",
      };
    }
- 
-@@ -374,7 +514,7 @@ export function createGameDesignMockRepository(options = {}) {
+
+@@ -374,7 +552,7 @@ export function createGameDesignMockRepository(options = {}) {
        capabilityDemoGames: listCapabilityDemoGames(),
        capabilityDemoProjects: listCapabilityDemoGames(),
        progressHandoff: getGameProgressHandoff(),
@@ -1067,8 +1107,8 @@ index 529db7541..123189ae8 100644
 +      tables: getTables(),
      };
    }
- 
-@@ -396,6 +536,6 @@ export function createGameDesignMockRepository(options = {}) {
+
+@@ -396,6 +574,6 @@ export function createGameDesignMockRepository(options = {}) {
      resetDesignData,
      saveDesign,
      seedCapabilityDemoDesigns,
@@ -1077,28 +1117,175 @@ index 529db7541..123189ae8 100644
    };
  }
 diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index 913163236..8c93e8ce8 100644
+index 913163236..bc8e1d15f 100644
 --- a/src/dev-runtime/server/local-api-router.mjs
 +++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -3703,6 +3703,17 @@ class ApiRuntimeDataSource {
+@@ -2787,6 +2787,10 @@ const GAME_WORKSPACE_SAVE_METHODS = new Set([
+   "updateGameStatus",
+ ]);
+
++const GAME_DESIGN_SAVE_METHODS = new Set([
++  "saveDesign",
++]);
++
+ const GAME_JOURNEY_TOOL_STORE_METHODS = new Set([
+   "addItem",
+   "addNote",
+@@ -3226,13 +3230,27 @@ function gameWorkspaceProjectRecords(repository) {
+
+ function gameDesignTables(repository) {
+   const tables = repository.getTables();
+-  return normalizeOwnedTables("game-design", {
++  return {
+     game_design_documents: (tables.game_design_documents || []).map((record, index) => ({
+       ...snapshotAuditFields(index + 100, SEED_DB_KEYS.users.user1),
++      capabilityDemoAuthoring: Boolean(record.capabilityDemoAuthoring),
++      capabilityDemoNotes: record.capabilityDemoNotes || "",
++      coreLoop: record.coreLoop || "",
++      designNotes: record.designNotes || "",
++      gamePurpose: record.gamePurpose || record.projectPurpose || "Game",
+       key: record.key,
+       gameKey: gameWorkspaceGameKey(record.gameKey || record.gameId),
++      gameType: record.gameType || "",
++      genre: record.genre || "",
++      loseCondition: record.loseCondition || "",
++      playerMode: record.playerMode || "1 Player",
++      playStyle: record.playStyle || "",
++      story: record.story || "",
+       status: record.status,
++      summary: record.summary || record.designSummary || "",
++      targetAudience: record.targetAudience || "",
+       title: record.title || `${record.gamePurpose || record.projectPurpose || "Game"} Design`,
++      winCondition: record.winCondition || "",
+       createdAt: record.createdAt,
+       updatedAt: record.updatedAt,
+       createdBy: record.createdBy || SEED_DB_KEYS.users.user1,
+@@ -3242,6 +3260,7 @@ function gameDesignTables(repository) {
+       ...snapshotAuditFields(index + 140, SEED_DB_KEYS.users.user1),
+       key: record.key,
+       gameKey: gameWorkspaceGameKey(record.gameKey || record.gameId),
++      field: record.field || "",
+       label: record.label,
+       status: record.status,
+       action: record.action,
+@@ -3250,7 +3269,34 @@ function gameDesignTables(repository) {
+       createdBy: record.createdBy || SEED_DB_KEYS.users.user1,
+       updatedBy: record.updatedBy || SEED_DB_KEYS.users.user1,
+     })),
+-  });
++    game_design_sections: (tables.game_design_sections || []).map((record, index) => ({
++      ...snapshotAuditFields(index + 160, SEED_DB_KEYS.users.user1),
++      body: record.body || "",
++      documentKey: record.documentKey,
++      gameKey: gameWorkspaceGameKey(record.gameKey || record.gameId),
++      heading: record.heading || "",
++      key: record.key,
++      sectionKey: record.sectionKey || "",
++      sortOrder: Number.isFinite(Number(record.sortOrder)) ? Number(record.sortOrder) : index + 1,
++      createdAt: record.createdAt,
++      updatedAt: record.updatedAt,
++      createdBy: record.createdBy || SEED_DB_KEYS.users.user1,
++      updatedBy: record.updatedBy || SEED_DB_KEYS.users.user1,
++    })),
++    game_design_capability_demos: (tables.game_design_capability_demos || []).map((record, index) => ({
++      ...snapshotAuditFields(index + 170, SEED_DB_KEYS.users.user1),
++      authoringMode: record.authoringMode || "Game-owned capability demo",
++      gameKey: gameWorkspaceGameKey(record.gameKey || record.gameId),
++      gameName: record.gameName || "",
++      gamePurpose: record.gamePurpose || "Capability Demo",
++      key: record.key,
++      status: record.status || "Under Construction",
++      createdAt: record.createdAt,
++      updatedAt: record.updatedAt,
++      createdBy: record.createdBy || SEED_DB_KEYS.users.user1,
++      updatedBy: record.updatedBy || SEED_DB_KEYS.users.user1,
++    })),
++  };
+ }
+
+ function gameConfigurationTables(repository) {
+@@ -3703,6 +3749,68 @@ class ApiRuntimeDataSource {
      return this.persistSupabaseProductSnapshot(action);
    }
- 
+
 +  async persistGameDesignProviderState(action) {
++    const adapter = this.supabaseDatabaseAdapter(action);
++    const workspaceTables = gameWorkspaceTables(this.gameWorkspaceRepository);
++    const designTables = gameDesignTables(this.gameDesignRepository);
++    const activeGame = this.gameWorkspaceRepository.getActiveGame?.();
++    const activeGameKey = gameWorkspaceGameKey(activeGame?.key || activeGame?.id);
++    const written = {
++      game_design_capability_demos: 0,
++      game_design_documents: 0,
++      game_design_sections: 0,
++      game_design_validation_items: 0,
++      game_workspace_games: 0,
++      game_workspace_progress: 0,
++    };
++    if (activeGameKey) {
++      await adapter.requestTable("game_design_capability_demos", {
++        method: "DELETE",
++        prefer: "return=minimal",
++        query: `gameKey=eq.${encodeURIComponent(activeGameKey)}`,
++      });
++      await adapter.requestTable("game_design_sections", {
++        method: "DELETE",
++        prefer: "return=minimal",
++        query: `gameKey=eq.${encodeURIComponent(activeGameKey)}`,
++      });
++      await adapter.requestTable("game_design_validation_items", {
++        method: "DELETE",
++        prefer: "return=minimal",
++        query: `gameKey=eq.${encodeURIComponent(activeGameKey)}`,
++      });
++    }
++    if (workspaceTables.game_workspace_games?.length) {
++      const rows = await adapter.upsertProductTable("game_workspace_games", workspaceTables.game_workspace_games);
++      written.game_workspace_games = Array.isArray(rows) ? rows.length : workspaceTables.game_workspace_games.length;
++    }
++    if (workspaceTables.game_workspace_progress?.length) {
++      const rows = await adapter.upsertProductTable("game_workspace_progress", workspaceTables.game_workspace_progress);
++      written.game_workspace_progress = Array.isArray(rows) ? rows.length : workspaceTables.game_workspace_progress.length;
++    }
++    if (designTables.game_design_documents?.length) {
++      const rows = await adapter.upsertProductTable("game_design_documents", designTables.game_design_documents);
++      written.game_design_documents = Array.isArray(rows) ? rows.length : designTables.game_design_documents.length;
++    }
++    if (designTables.game_design_validation_items?.length) {
++      const rows = await adapter.upsertProductTable("game_design_validation_items", designTables.game_design_validation_items);
++      written.game_design_validation_items = Array.isArray(rows) ? rows.length : designTables.game_design_validation_items.length;
++    }
++    if (designTables.game_design_sections?.length) {
++      const rows = await adapter.upsertProductTable("game_design_sections", designTables.game_design_sections);
++      written.game_design_sections = Array.isArray(rows) ? rows.length : designTables.game_design_sections.length;
++    }
++    if (designTables.game_design_capability_demos?.length) {
++      const rows = await adapter.upsertProductTable("game_design_capability_demos", designTables.game_design_capability_demos);
++      written.game_design_capability_demos = Array.isArray(rows) ? rows.length : designTables.game_design_capability_demos.length;
++    }
 +    return {
-+      action,
-+      database: "API database",
-+      databaseEngine: "Server-owned game design repository",
-+      providerId: "api-game-design",
-+      serviceContract: "Browser -> API -> Database",
-+      status: "PASS",
++      providerId: SUPABASE_POSTGRES_PROVIDER_ID,
++      serverApiOwnsKeyGeneration: true,
++      written,
 +    };
 +  }
 +
    async persistGameWorkspaceProviderState(action) {
      return {
        action,
-@@ -6790,6 +6801,8 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
+@@ -6763,6 +6871,11 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
+     if (repository === this.gameWorkspaceRepository && GAME_WORKSPACE_SAVE_METHODS.has(methodName) && !this.sessionUserKey) {
+       throw new Error("Sign in required to save Game Hub project records through Local API.");
+     }
++    if (repository === this.gameDesignRepository && GAME_DESIGN_SAVE_METHODS.has(methodName) && !this.sessionUserKey) {
++      const error = new Error("Sign in required to save Game Design through the API.");
++      error.statusCode = 401;
++      throw error;
++    }
+     this.cleared = false;
+     if (repository === this.assetRepository && methodName === "makeReadyGameConfiguration") {
+       if (this.assetReadyInitialized) {
+@@ -6790,6 +6903,8 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
      if (repositoryMethodRequiresPersistence(methodName) && !methodPersistsThroughToolStore) {
        if (repository === this.gameWorkspaceRepository) {
          await this.persistGameWorkspaceProviderState(`Persisting ${methodName} result`);
@@ -1107,23 +1294,62 @@ index 913163236..8c93e8ce8 100644
        } else if (repository === this.assetRepository) {
          await this.persistAssetProviderState(`Persisting ${methodName} result`);
        } else {
-diff --git a/tests/playwright/tools/GameDesignMockRepository.spec.mjs b/tests/playwright/tools/GameDesignMockRepository.spec.mjs
-index ebdaf6f9c..6c7c5412c 100644
+diff --git a/tests/playwright/tools/GameDesignMockRepository.spec.mjs b/tests/playwright/tools/GameDesignApiBehavior.spec.mjs
+similarity index 59%
+rename from tests/playwright/tools/GameDesignMockRepository.spec.mjs
+rename to tests/playwright/tools/GameDesignApiBehavior.spec.mjs
+index ebdaf6f9c..a994b796f 100644
 --- a/tests/playwright/tools/GameDesignMockRepository.spec.mjs
-+++ b/tests/playwright/tools/GameDesignMockRepository.spec.mjs
-@@ -1,6 +1,7 @@
++++ b/tests/playwright/tools/GameDesignApiBehavior.spec.mjs
+@@ -1,13 +1,17 @@
  import { expect, test } from "@playwright/test";
++import { readFile } from "node:fs/promises";
++import path from "node:path";
  import process from "node:process";
  import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
-+import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store.js";
++import { createPostgresConnectionClient } from "../../../src/dev-runtime/persistence/postgres-connection-client.mjs";
++import { SEED_DB_KEYS } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
  import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
  import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
- 
-@@ -27,7 +28,15 @@ function restoreEnvValue(key, value) {
+
+ test.beforeEach(async ({ page }) => {
+   await installPlaywrightStorageIsolation(page, {
+     lane: "game-design",
+-    surface: "game design mock repository"
++    surface: "game design API behavior"
+   });
+ });
+
+@@ -27,8 +31,42 @@ function restoreEnvValue(key, value) {
    process.env[key] = value;
  }
- 
+
 -async function openRepoPage(page, pathName) {
++let gameDesignSchemaReadyPromise = null;
++
++async function ensureGameDesignDatabaseSchema() {
++  if (!gameDesignSchemaReadyPromise) {
++    gameDesignSchemaReadyPromise = (async () => {
++      const client = createPostgresConnectionClient();
++      const ddlFiles = [
++        "docs_build/database/ddl/account.sql",
++        "docs_build/database/ddl/game-workspace.sql",
++        "docs_build/database/ddl/game-design.sql",
++      ];
++      for (const ddlFile of ddlFiles) {
++        const ddl = await readFile(path.resolve(ddlFile), "utf8");
++        await client.query(ddl);
++      }
++    })();
++  }
++  try {
++    await gameDesignSchemaReadyPromise;
++  } catch (error) {
++    gameDesignSchemaReadyPromise = null;
++    throw error;
++  }
++}
++
 +async function setServerSession(server, userKey) {
 +  await fetch(`${server.baseUrl}/api/session/user`, {
 +    body: JSON.stringify({ userKey }),
@@ -1134,19 +1360,65 @@ index ebdaf6f9c..6c7c5412c 100644
 +
 +async function openRepoPage(page, pathName, options = {}) {
    const server = await startRepoServer();
++  await ensureGameDesignDatabaseSchema();
    const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
    const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
-@@ -60,6 +69,9 @@ async function openRepoPage(page, pathName) {
+   process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
+@@ -60,6 +98,9 @@ async function openRepoPage(page, pathName) {
      failedRequests.push(`FAILED ${request.url()}`);
    });
- 
+
 +  if (options.sessionUserKey !== null) {
-+    await setServerSession(server, options.sessionUserKey || MOCK_DB_KEYS.users.user1);
++    await setServerSession(server, options.sessionUserKey || SEED_DB_KEYS.users.user1);
 +  }
    await workspaceV2CoverageReporter.start(page);
    await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
    return { failedRequests, pageErrors, consoleErrors, server };
-@@ -111,13 +123,19 @@ test("Game Design saves and updates design fields against the active game", asyn
+@@ -71,6 +112,35 @@ async function expectNoPageFailures(failures) {
+   expect(failures.consoleErrors).toEqual([]);
+ }
+
++async function readProductRows(tableName, query = "select=*") {
++  const client = createPostgresConnectionClient();
++  return client.requestTable(tableName, { query });
++}
++
++async function createRepositoryApiClient(server, toolId) {
++  const createResponse = await fetch(`${server.baseUrl}/api/toolbox/${toolId}/repositories`, {
++    body: JSON.stringify({ options: {} }),
++    headers: { "Content-Type": "application/json" },
++    method: "POST"
++  });
++  const createPayload = await createResponse.json();
++  expect(createPayload.ok).toBe(true);
++  const repositoryId = createPayload.data.repositoryId;
++
++  async function callRepositoryMethod(methodName, ...args) {
++    const response = await fetch(`${server.baseUrl}/api/toolbox/${toolId}/repositories/${repositoryId}/methods/${methodName}`, {
++      body: JSON.stringify({ args }),
++      headers: { "Content-Type": "application/json" },
++      method: "POST"
++    });
++    const payload = await response.json();
++    expect(payload.ok).toBe(true);
++    return payload.data.result;
++  }
++  callRepositoryMethod.repositoryId = repositoryId;
++  return callRepositoryMethod;
++}
++
+ test("Game Design shows an actionable overlay when game context is missing", async ({ page }) => {
+   const failures = await openRepoPage(page, "/toolbox/game-design/index.html?game=missing");
+
+@@ -100,6 +170,7 @@ test("Game Design saves and updates design fields against the active game", asyn
+   const failures = await openRepoPage(page, "/toolbox/game-design/index.html");
+
+   try {
++    await expect(page.locator("[data-toolbox-selected-game-name]")).toHaveText("Demo Game");
+     await expect(page.locator("[data-game-design-game-context]")).toHaveText("Demo Game - Game");
+     await expect(page.getByText("Game Context", { exact: true })).toHaveCount(1);
+     await expect(page.locator("[data-game-design-game-context] select, [data-game-design-game-context] input, [data-game-design-game-context] button, [data-game-design-game-context] a")).toHaveCount(0);
+@@ -111,13 +182,19 @@ test("Game Design saves and updates design fields against the active game", asyn
      await expect(gameDesignTable).toBeVisible();
      await expect(gameDesignTable).toHaveClass(/data-table/);
      await expect(gameDesignTable).toHaveClass(/tool-form-table/);
@@ -1168,7 +1440,7 @@ index ebdaf6f9c..6c7c5412c 100644
        "Capability Demo Notes"
      ]);
      const gameDesignPairs = await gameDesignTable.locator("tbody tr").evaluateAll((rows) => rows.map((row) => {
-@@ -136,10 +154,16 @@ test("Game Design saves and updates design fields against the active game", asyn
+@@ -136,10 +213,16 @@ test("Game Design saves and updates design fields against the active game", asyn
        { cellCount: 2, controlId: "gameDesignGenre", controlTag: "select", labelFor: "gameDesignGenre", labelText: "Genre" },
        { cellCount: 2, controlId: "gameDesignPlayStyle", controlTag: "select", labelFor: "gameDesignPlayStyle", labelText: "Play Style" },
        { cellCount: 2, controlId: "gameDesignPlayerMode", controlTag: "select", labelFor: "gameDesignPlayerMode", labelText: "Player Mode" },
@@ -1187,14 +1459,29 @@ index ebdaf6f9c..6c7c5412c 100644
      await expect(page.locator("#gameDesignCapabilityNotes")).toHaveAttribute("rows", "4");
      const gameDesignLayout = await gameDesignTable.evaluate((table) => {
        const wrapper = table.closest(".table-wrapper");
-@@ -182,13 +206,20 @@ test("Game Design saves and updates design fields against the active game", asyn
-     await expect(page.locator("[data-game-design-validation-list]")).toContainText("Game Type");
-     await expect(page.locator("[data-game-design-validation-list]")).toContainText("Genre");
-     await expect(page.locator("[data-game-design-validation-list]")).toContainText("Play Style");
+@@ -178,17 +261,31 @@ test("Game Design saves and updates design fields against the active game", asyn
+     await expect(page.locator("[data-game-design-output]")).toContainText("Next Step");
+     await expect(page.locator("[data-game-design-output]")).not.toContainText("{");
+     await expect(page.locator("[data-game-design-output]")).not.toContainText('"gameType"');
+-    await expect(page.locator("[data-game-design-validation-overlay]")).toBeVisible();
+-    await expect(page.locator("[data-game-design-validation-list]")).toContainText("Game Type");
+-    await expect(page.locator("[data-game-design-validation-list]")).toContainText("Genre");
+-    await expect(page.locator("[data-game-design-validation-list]")).toContainText("Play Style");
 -    await expect(page.locator("[data-game-design-validation-list]")).toContainText("Design Summary");
-+    await expect(page.locator("[data-game-design-validation-list]")).toContainText("Summary");
-+    await expect(page.locator("[data-game-design-validation-list]")).toContainText("Core Loop");
- 
++    await expect(page.locator("[data-game-design-validation-overlay]")).toBeHidden();
++    await expect(page.locator("[data-game-design-status]")).toHaveText("Ready");
++    await expect(page.getByLabel("Game Type")).toHaveValue("Puzzle");
++    await expect(page.getByLabel("Genre")).toHaveValue("Adventure");
++    await expect(page.getByLabel("Play Style")).toHaveValue("Single Player");
++    await expect(page.getByLabel("Player Mode")).toHaveValue("1 Player");
++    await expect(page.getByRole("textbox", { name: "Summary" })).toHaveValue("A compact puzzle adventure with one clear game promise.");
++    await expect(page.getByLabel("Story")).toHaveValue("A curious maker enters a clockwork library.");
++    await expect(page.getByLabel("Core Loop")).toHaveValue("Explore a compact room, solve a tile puzzle, and unlock the next shelf.");
++    await expect(page.getByLabel("Win Condition")).toHaveValue("Restore the library clock before the final bell.");
++    await expect(page.getByLabel("Lose Condition")).toHaveValue("The room resets after too many missed moves.");
++    await expect(page.getByLabel("Target Audience")).toHaveValue("Puzzle fans and first-time creators.");
++    await expect(page.getByLabel("Design Notes")).toHaveValue("Seeded Game Design data stays scoped to the current Game Hub game.");
+
      await page.getByLabel("Game Type").selectOption("Puzzle");
      await page.getByLabel("Genre").selectOption("Adventure");
      await page.getByLabel("Play Style").selectOption("Single Player");
@@ -1208,9 +1495,9 @@ index ebdaf6f9c..6c7c5412c 100644
 +    await page.getByLabel("Target Audience").fill("Puzzle fans and first-time creators.");
 +    await page.getByLabel("Design Notes").fill("Keep each room readable and friendly.");
      await page.getByRole("button", { name: "Save Game Design" }).click();
- 
+
      await expect(page.locator("[data-game-design-log]")).toHaveText("Saved Demo Game as ready for Game Design.");
-@@ -196,6 +227,12 @@ test("Game Design saves and updates design fields against the active game", asyn
+@@ -196,6 +293,12 @@ test("Game Design saves and updates design fields against the active game", asyn
      await expect(page.locator("[data-game-design-status]")).toHaveText("Ready");
      await expect(page.locator("[data-game-design-recommended-tool]").first()).toHaveText("Game Configuration");
      await expect(page.locator("[data-game-design-output-summary]")).toHaveText("A compact puzzle adventure with one clear game promise.");
@@ -1223,10 +1510,42 @@ index ebdaf6f9c..6c7c5412c 100644
      await expect(page.locator("[data-game-design-output-player-mode]")).toHaveText("2+ Concurrent");
      await expect(page.locator("[data-game-design-output-validation]")).toHaveText("Ready");
      await expect(page.locator("[data-game-design-output-next-step]")).toHaveText("Game Configuration");
-@@ -217,6 +254,20 @@ test("Game Design saves and updates design fields against the active game", asyn
+@@ -204,11 +307,31 @@ test("Game Design saves and updates design fields against the active game", asyn
+       "href",
+       "toolbox/game-configuration/index.html?handoff=valid&game=demo-game"
+     );
++    await expect.poll(async () => {
++      const rows = await readProductRows("game_design_documents");
++      return rows.some((row) => (
++        row.summary === "A compact puzzle adventure with one clear game promise." &&
++        row.story === "A curious maker enters a clockwork library." &&
++        row.coreLoop === "Explore a room, solve a tile puzzle, unlock the next shelf." &&
++        row.status === "Ready"
++      ));
++    }).toBe(true);
++    await expect.poll(async () => {
++      const rows = await readProductRows("game_design_sections");
++      return rows.some((row) => row.heading === "Core Loop" && row.body === "Explore a room, solve a tile puzzle, unlock the next shelf.");
++    }).toBe(true);
++
++    await page.reload({ waitUntil: "networkidle" });
++    await expect(page.getByRole("textbox", { name: "Summary" })).toHaveValue("A compact puzzle adventure with one clear game promise.");
++    await expect(page.getByLabel("Genre")).toHaveValue("Adventure");
++    await expect(page.locator("[data-game-design-output-summary]")).toHaveText("A compact puzzle adventure with one clear game promise.");
+
+     await page.getByLabel("Genre").selectOption("Fantasy");
+     await page.getByRole("button", { name: "Save Game Design" }).click();
+     await expect(page.locator("[data-game-design-output]")).not.toContainText('"genre"');
+     await expect(page.locator("[data-game-design-log]")).toHaveText("Saved Demo Game as ready for Game Design.");
++    await page.reload({ waitUntil: "networkidle" });
++    await expect(page.getByLabel("Genre")).toHaveValue("Fantasy");
+
+     await expectNoPageFailures(failures);
+   } finally {
+@@ -217,6 +340,39 @@ test("Game Design saves and updates design fields against the active game", asyn
    }
  });
- 
+
 +test("Game Design guest save redirects to sign in", async ({ page }) => {
 +  const failures = await openRepoPage(page, "/toolbox/game-design/index.html", { sessionUserKey: null });
 +
@@ -1241,11 +1560,30 @@ index ebdaf6f9c..6c7c5412c 100644
 +  }
 +});
 +
++test("Game Design API rejects guest saves", async () => {
++  const server = await startRepoServer();
++  try {
++    await ensureGameDesignDatabaseSchema();
++    const callGameDesignMethod = await createRepositoryApiClient(server, "game-design");
++    const response = await fetch(`${server.baseUrl}/api/toolbox/game-design/repositories/${callGameDesignMethod.repositoryId}/methods/saveDesign`, {
++      body: JSON.stringify({ args: [{ gameType: "Puzzle", summary: "Guest API attempt." }] }),
++      headers: { "Content-Type": "application/json" },
++      method: "POST",
++    });
++    const payload = await response.json();
++    expect(response.status).toBe(401);
++    expect(payload.ok).toBe(false);
++    expect(payload.error).toContain("Sign in required to save Game Design through the API.");
++  } finally {
++    await server.close();
++  }
++});
++
  test("Game Design authors capability demos as Game Hub games", async ({ page }) => {
    const failures = await openRepoPage(page, "/toolbox/game-design/index.html?game=gravity-demo");
- 
+
 diff --git a/toolbox/game-design/index.html b/toolbox/game-design/index.html
-index e8fda5433..5e4a05f0e 100644
+index e8fda5433..7dd4eda4f 100644
 --- a/toolbox/game-design/index.html
 +++ b/toolbox/game-design/index.html
 @@ -6,7 +6,7 @@
@@ -1257,11 +1595,13 @@ index e8fda5433..5e4a05f0e 100644
      <link rel="icon" href="/favicon.svg">
      <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
  </head>
-@@ -55,11 +55,11 @@
+@@ -54,12 +54,12 @@
+                         </div>
                      </aside>
                      <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="game-design" data-tool-icon-src="assets/theme-v2/images/badges/index.png" data-tool-character-src="assets/theme-v2/images/characters/index.png"></div>
-                     <section class="tool-center-panel"><h2>Design Workspace</h2>
+-                    <section class="tool-center-panel"><h2>Design Workspace</h2>
 -                        <p>Game Design now saves an in-memory design document against the active Game Hub game. No database, auth, cloud, or persistence behavior is implemented.</p>
++                    <section class="tool-center-panel"><h2>Design</h2>
 +                        <p>Game Design saves Creator-facing design details against the active Game Hub game through the API.</p>
                          <div class="grid cols-3" aria-label="Game Design readiness summary">
                              <article class="mini-stat"><strong data-game-design-status>Needs Input</strong>Design status</article>

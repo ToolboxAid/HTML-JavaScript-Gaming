@@ -30,6 +30,21 @@ CREATE TABLE IF NOT EXISTS game_design_documents (
     "updatedBy" text NOT NULL REFERENCES users(key)
 );
 
+ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "gamePurpose" text;
+ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "gameType" text;
+ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "genre" text;
+ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "playStyle" text;
+ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "playerMode" text;
+ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "summary" text;
+ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "story" text;
+ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "coreLoop" text;
+ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "winCondition" text;
+ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "loseCondition" text;
+ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "targetAudience" text;
+ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "designNotes" text;
+ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "capabilityDemoAuthoring" boolean NOT NULL DEFAULT false;
+ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "capabilityDemoNotes" text;
+
 CREATE INDEX IF NOT EXISTS idx_game_design_documents_gamekey ON game_design_documents ("gameKey");
 CREATE INDEX IF NOT EXISTS idx_game_design_documents_createdby ON game_design_documents ("createdBy");
 CREATE INDEX IF NOT EXISTS idx_game_design_documents_updatedby ON game_design_documents ("updatedBy");
@@ -46,6 +61,8 @@ CREATE TABLE IF NOT EXISTS game_design_validation_items (
     "createdBy" text NOT NULL REFERENCES users(key),
     "updatedBy" text NOT NULL REFERENCES users(key)
 );
+
+ALTER TABLE game_design_validation_items ADD COLUMN IF NOT EXISTS "field" text;
 
 CREATE INDEX IF NOT EXISTS idx_game_design_validation_items_gamekey ON game_design_validation_items ("gameKey");
 CREATE INDEX IF NOT EXISTS idx_game_design_validation_items_createdby ON game_design_validation_items ("createdBy");

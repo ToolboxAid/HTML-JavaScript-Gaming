@@ -17,6 +17,7 @@ Exercised tool entry points detected:
 (74%) Theme V2 Shared JS - exercised 6 runtime JS files
 
 Changed runtime JS files covered:
+(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
@@ -40,13 +41,14 @@ Files with executed line/function counts where available:
 (100%) assets/toolbox/game-design/js/index.js - executed lines 340/340; executed functions 26/26
 
 Uncovered or low-coverage changed JS files:
+(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
+(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/GameDesignMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
-(100%) assets/toolbox/game-design/js/index.js - changed JS file with browser V8 coverage
+(0%) tests/playwright/tools/GameDesignApiBehavior.spec.mjs - changed JS file not collected as browser runtime coverage

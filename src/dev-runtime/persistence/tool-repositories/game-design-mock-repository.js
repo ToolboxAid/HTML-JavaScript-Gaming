@@ -172,20 +172,30 @@ function createEmptyTables() {
   };
 }
 
+function hashKeySource(value) {
+  return Array.from(String(value || "")).reduce((hash, character) => (
+    ((hash * 31) + character.charCodeAt(0)) >>> 0
+  ), 0) % 100000;
+}
+
+function keySequenceForGame(base, gameId, index = 0) {
+  return base + (hashKeySource(gameId) * 100) + index;
+}
+
 function designKeyForGame(gameId) {
-  return makeSeedUlid(8400 + String(gameId || "").length);
+  return makeSeedUlid(keySequenceForGame(8_400_000_000, gameId));
 }
 
 function sectionKeyForGame(gameId, index) {
-  return makeSeedUlid(8500 + index + String(gameId || "").length);
+  return makeSeedUlid(keySequenceForGame(8_500_000_000, gameId, index));
 }
 
 function validationKeyForGame(gameId, index) {
-  return makeSeedUlid(8600 + index + String(gameId || "").length);
+  return makeSeedUlid(keySequenceForGame(8_600_000_000, gameId, index));
 }
 
 function capabilityKeyForGame(gameId) {
-  return makeSeedUlid(8700 + String(gameId || "").length);
+  return makeSeedUlid(keySequenceForGame(8_700_000_000, gameId));
 }
 
 function designIdForGame(gameId) {
@@ -434,6 +444,33 @@ export function createGameDesignMockRepository(options = {}) {
     });
   }
 
+  function seedActiveGameDesign() {
+    const game = getActiveGame();
+    if (!game) {
+      return;
+    }
+    const { document, findings } = createDesignForGame(game, {
+      coreLoop: "Explore a compact room, solve a tile puzzle, and unlock the next shelf.",
+      designNotes: "Seeded Game Design data stays scoped to the current Game Hub game.",
+      gameType: "Puzzle",
+      genre: "Adventure",
+      loseCondition: "The room resets after too many missed moves.",
+      playStyle: "Single Player",
+      playerMode: "1 Player",
+      story: "A curious maker enters a clockwork library.",
+      summary: "A compact puzzle adventure with one clear game promise.",
+      targetAudience: "Puzzle fans and first-time creators.",
+      winCondition: "Restore the library clock before the final bell.",
+    });
+    tables.game_design_documents = tables.game_design_documents.filter(
+      (row) => row.gameId !== game.id && row.gameKey !== game.id,
+    );
+    tables.game_design_documents.push(document);
+    replaceValidationRows(game.id, findings);
+    replaceSectionRows(game, document);
+    replaceCapabilityDemoRow(game, document);
+  }
+
   function openGameContext(gameId) {
     const game = gameWorkspaceRepository.openGame(gameId);
     return {
@@ -455,6 +492,7 @@ export function createGameDesignMockRepository(options = {}) {
   function resetDesignData() {
     gameWorkspaceRepository.resetGameData();
     tables = createEmptyTables();
+    seedActiveGameDesign();
     seedCapabilityDemoDesigns();
     return getSnapshot();
   }
