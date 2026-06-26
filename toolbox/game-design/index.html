@@ -6,7 +6,7 @@
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Game Design - GameFoundryStudio</title>
-    <meta name="description" content="Game Design Toolbox runtime for game purpose, game type, genre, play style, capability demos, and configuration readiness.">
+    <meta name="description" content="Game Design toolbox for summary, story, loop, win and lose conditions, audience, notes, and configuration readiness.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -55,11 +55,11 @@
                     </aside>
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="game-design" data-tool-icon-src="assets/theme-v2/images/badges/index.png" data-tool-character-src="assets/theme-v2/images/characters/index.png"></div>
                     <section class="tool-center-panel"><h2>Design Workspace</h2>
-                        <p>Game Design now saves an in-memory design document against the active Game Hub game. No database, auth, cloud, or persistence behavior is implemented.</p>
+                        <p>Game Design saves Creator-facing design details against the active Game Hub game through the API.</p>
                         <div class="grid cols-3" aria-label="Game Design readiness summary">
                             <article class="mini-stat"><strong data-game-design-status>Needs Input</strong>Design status</article>
                             <article class="mini-stat"><strong data-game-design-recommended-tool>Game Design</strong>Next tool</article>
-                            <article class="mini-stat"><strong>Mock</strong>Repository only</article>
+                            <article class="mini-stat"><strong>API</strong>Persistence</article>
                         </div>
                         <article class="card">
                             <div class="card-body content-stack">
@@ -91,8 +91,32 @@
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <th scope="row"><label for="gameDesignSummary">Design Summary</label></th>
-                                                    <td><textarea id="gameDesignSummary" rows="4" data-game-design-summary placeholder="Describe the game promise, core loop, and player goal."></textarea></td>
+                                                    <th scope="row"><label for="gameDesignSummary">Summary</label></th>
+                                                    <td><textarea id="gameDesignSummary" rows="3" data-game-design-summary placeholder="Describe the game promise."></textarea></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="gameDesignStory">Story</label></th>
+                                                    <td><textarea id="gameDesignStory" rows="3" data-game-design-story placeholder="Describe the situation, world, or premise players enter."></textarea></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="gameDesignCoreLoop">Core Loop</label></th>
+                                                    <td><textarea id="gameDesignCoreLoop" rows="3" data-game-design-core-loop placeholder="Describe what players repeatedly do."></textarea></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="gameDesignWinCondition">Win Condition</label></th>
+                                                    <td><textarea id="gameDesignWinCondition" rows="3" data-game-design-win-condition placeholder="Describe how players win."></textarea></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="gameDesignLoseCondition">Lose Condition</label></th>
+                                                    <td><textarea id="gameDesignLoseCondition" rows="3" data-game-design-lose-condition placeholder="Describe how players lose or fail."></textarea></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="gameDesignAudience">Target Audience</label></th>
+                                                    <td><textarea id="gameDesignAudience" rows="3" data-game-design-target-audience placeholder="Describe the intended players."></textarea></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="gameDesignNotes">Design Notes</label></th>
+                                                    <td><textarea id="gameDesignNotes" rows="4" data-game-design-notes placeholder="Capture extra design notes, constraints, and section details."></textarea></td>
                                                 </tr>
                                                 <tr>
                                                     <th scope="row"><label for="gameDesignCapabilityNotes">Capability Demo Notes</label></th>
@@ -125,6 +149,12 @@
                                 <summary>Output</summary>
                                 <div class="accordion-body content-stack" data-game-design-output>
                                     <p>Design Summary: <span data-game-design-output-summary>No design summary yet.</span></p>
+                                    <p>Story: <span data-game-design-output-story>No story yet.</span></p>
+                                    <p>Core Loop: <span data-game-design-output-core-loop>No core loop yet.</span></p>
+                                    <p>Win Condition: <span data-game-design-output-win>No win condition yet.</span></p>
+                                    <p>Lose Condition: <span data-game-design-output-lose>No lose condition yet.</span></p>
+                                    <p>Target Audience: <span data-game-design-output-audience>No audience yet.</span></p>
+                                    <p>Design Notes: <span data-game-design-output-notes>No notes yet.</span></p>
                                     <p>Player Mode: <span data-game-design-output-player-mode>1 Player</span></p>
                                     <p>Validation Status: <span data-game-design-output-validation>Needs Input</span></p>
                                     <p>Next Step: <span data-game-design-output-next-step>Complete Game Design</span></p>
@@ -183,7 +213,7 @@
                             <details class="vertical-accordion" open>
                                 <summary>Status Log</summary>
                                 <div class="accordion-body">
-                                    <div class="status" role="status" data-game-design-log>Game Design mock repository ready.</div>
+                                    <div class="status" role="status" data-game-design-log>Game Design API repository ready.</div>
                                 </div>
                             </details>
                         </div>

@@ -4,7 +4,7 @@
 -- Runtime setup/seed operations for this group must run through server-side APIs.
 -- Temporary scope: DEV/review artifact only until Admin Site Setup/server seed APIs fully own grouped setup.
 -- Browser pages must not directly seed authoritative DB records.
--- Owned tables: game_design_documents, game_design_validation_items
+-- Owned tables: game_design_documents, game_design_validation_items, game_design_sections, game_design_capability_demos
 
 -- DML status: Server-seed-owned.
 -- Setup is performed through the Admin-owned server-side seed API.

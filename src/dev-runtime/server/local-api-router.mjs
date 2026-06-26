@@ -3703,6 +3703,17 @@ class ApiRuntimeDataSource {
     return this.persistSupabaseProductSnapshot(action);
   }
 
+  async persistGameDesignProviderState(action) {
+    return {
+      action,
+      database: "API database",
+      databaseEngine: "Server-owned game design repository",
+      providerId: "api-game-design",
+      serviceContract: "Browser -> API -> Database",
+      status: "PASS",
+    };
+  }
+
   async persistGameWorkspaceProviderState(action) {
     return {
       action,
@@ -6790,6 +6801,8 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
     if (repositoryMethodRequiresPersistence(methodName) && !methodPersistsThroughToolStore) {
       if (repository === this.gameWorkspaceRepository) {
         await this.persistGameWorkspaceProviderState(`Persisting ${methodName} result`);
+      } else if (repository === this.gameDesignRepository) {
+        await this.persistGameDesignProviderState(`Persisting ${methodName} result`);
       } else if (repository === this.assetRepository) {
         await this.persistAssetProviderState(`Persisting ${methodName} result`);
       } else {

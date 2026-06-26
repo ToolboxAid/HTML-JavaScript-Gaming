@@ -40,7 +40,12 @@ export const MOCK_DB_TOOL_GROUPS = Object.freeze({
   }),
   "game-design": Object.freeze({
     label: "Game Design",
-    tableNames: Object.freeze(["game_design_documents", "game_design_validation_items"]),
+    tableNames: Object.freeze([
+      "game_design_documents",
+      "game_design_validation_items",
+      "game_design_sections",
+      "game_design_capability_demos",
+    ]),
   }),
   "game-configuration": Object.freeze({
     label: "Game Configuration",
@@ -114,8 +119,10 @@ const MOCK_DB_TABLE_SCHEMAS = Object.freeze({
   support_categories: Object.freeze(["key", "categorySlug", "name", "description", "isActive", "sortOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   game_workspace_games: Object.freeze(["key", "name", "status", "ownerKey", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   game_workspace_progress: Object.freeze(["key", "gameKey", "currentFocus", "gameProgress", "publishingProgress", "recommendedNextTool", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-  game_design_documents: Object.freeze(["key", "gameKey", "title", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-  game_design_validation_items: Object.freeze(["key", "gameKey", "label", "status", "action", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  game_design_documents: Object.freeze(["key", "gameKey", "title", "gamePurpose", "gameType", "genre", "playStyle", "playerMode", "summary", "story", "coreLoop", "winCondition", "loseCondition", "targetAudience", "designNotes", "capabilityDemoAuthoring", "capabilityDemoNotes", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  game_design_validation_items: Object.freeze(["key", "gameKey", "field", "label", "status", "action", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  game_design_sections: Object.freeze(["key", "gameKey", "documentKey", "sectionKey", "heading", "body", "sortOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  game_design_capability_demos: Object.freeze(["key", "gameKey", "gameName", "gamePurpose", "authoringMode", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   game_configuration_records: Object.freeze(["key", "gameKey", "status", "summary", "playerMode", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   game_configuration_validation_items: Object.freeze(["key", "gameKey", "label", "status", "action", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   object_definition_records: Object.freeze(["key", "id", "gameId", "name", "type", "state", "modelType", "renderType", "renderAssetKey", "renderPreviewPath", "capabilities", "behavior", "interaction", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),

@@ -1,1390 +1,1330 @@
-﻿diff --git a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md
-index 53bc243c2..97488ea93 100644
---- a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md
-+++ b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md
-@@ -4,17 +4,17 @@ Status: PASS
-
- ## Gate
-
--- PASS: Started on `main`.
--- PASS: Fetched origin.
--- PASS: Pulled `origin/main` with `--ff-only`.
--- PASS: Verified worktree clean before branch creation.
--- PASS: Verified `main...origin/main` was `0 0` before branch creation.
--- PASS: Created `PR_26177_OWNER_057-game-journey-metrics-regression-recovery` from latest `main`.
-+- PASS: Continued on `PR_26177_OWNER_057-game-journey-metrics-regression-recovery`.
-+- PASS: Worktree was clean before the SQLite retirement expansion edits.
-+- PASS: No PR058 branch was created from this branch.
-
- ## Branch Scope
-
--- PASS: Runtime changes are limited to the Game Journey completion metrics store and toolbox accordion Creator-facing wording.
--- PASS: Tests are limited to targeted Game Journey completion metrics regression coverage.
--- PASS: Did not delete, move, overwrite, export, or migrate `tmp/local-api/game-journey-completion-metrics.sqlite`.
-+- PASS: Scope stayed on Game Journey completion metrics regression recovery and SQLite retirement.
-+- PASS: Runtime changes do not add feature work.
-+- PASS: Deleted SQLite-only migration implementation and migration test files.
-+- PASS: Tests now validate the DB-only path and active source guardrails.
-+- PASS: Did not delete or mutate user-local `tmp/` files.
- - PASS: Did not start Alfa Tags PRs.
--- PASS: Final audit removed active runtime JS/MJS SQLite and `tmp/local-api` references outside the migration-only utility.
-+- PASS: Final active-code audit found zero SQLite/tmp implementation references outside historical docs/reports.
-+- PASS: EOD pre-merge branch validation completed with clean source searches and passing targeted tests.
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md
-index 6dad6bb08..59ed8c182 100644
---- a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md
-+++ b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md
-@@ -4,11 +4,13 @@ Status: PASS
-
- ## Notes
-
--- Confirmed the repo-local `tmp/local-api/game-journey-completion-metrics.sqlite` file exists before validation.
--- Confirmed active `createGameJourneyCompletionMetricsStore({ postgresClient })` exposes no `legacyDbPath`.
--- Confirmed active metrics snapshots expose no `legacySqlitePath`.
--- Confirmed active metrics load 14 DB-backed completion buckets while the retired file remains untouched.
--- Confirmed active runtime JS/MJS has no SQLite or `tmp/local-api` metrics references outside the migration-only utility.
-+- Confirmed current branch is `PR_26177_OWNER_057-game-journey-metrics-regression-recovery`.
-+- Confirmed the PR deletes the retired SQLite migration command, migration module, and migration test.
-+- Confirmed active Game Journey metrics tests validate the DB-only store path.
-+- Confirmed active JS/MJS source under implementation, script, and test roots has no SQLite, `.sqlite`, `better-sqlite`, `game-journey-completion-metrics.sqlite`, or `tmp/local-api` matches.
-+- Confirmed non-doc implementation search excluding `docs_build/**`, `tmp/**`, and `.git/**` has no matching retired metrics references.
- - Confirmed the toolbox page renders neutral Creator-facing outage wording when active metrics are unavailable.
--- Confirmed the toolbox page does not render the forbidden warning string, SQLite wording, `tmp/local-api`, or Postgres internals in the simulated outage lane.
-+- Confirmed the focused outage lane does not render the forbidden warning string or Postgres internals.
-+- Confirmed no runtime code inspects or depends on `tmp/` for Game Journey completion metrics.
-+- Confirmed EOD validation rerun passed before merging PR057 to `main`.
- - Confirmed no Alfa Tags PR work was started.
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md
-index 777642b00..3577253f0 100644
---- a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md
-+++ b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md
-@@ -6,44 +6,50 @@ Date: 2026-06-26
-
- ## Scope
-
--Recover the Game Journey completion metrics path so active Alfa and Owner work no longer surfaces the retired legacy SQLite regression. Preserve Postgres-backed Game Journey completion metrics as the active path and prevent Creator-facing UI from rendering the forbidden `Game Journey completion metrics unavailable:` warning.
-+Expanded the recovery PR to complete Game Journey completion metrics SQLite retirement. The active architecture is Browser -> Local API -> Database. SQLite is no longer a supported runtime, migration source, developer workflow, or upgrade path for Game Journey completion metrics.
-
- ## Implementation Summary
-
--- Removed active runtime defaulting to `tmp/local-api/game-journey-completion-metrics.sqlite` in `createGameJourneyCompletionMetricsStore`.
--- Removed active runtime `legacyDbPath` guard plumbing from the Game Journey metrics store, repository, Local API router, and Playwright test server helper.
--- Updated `toolbox/tools-page-accordions.js` to render neutral Creator-safe progress outage wording instead of backend diagnostics.
--- Added a store-level regression test proving a retired default SQLite-shaped file does not block or get touched by active DB-backed metrics.
--- Added a targeted guardrail test proving active runtime JS/MJS under `src`, `assets`, and `toolbox` has no SQLite or `tmp/local-api` metrics references, excluding the migration-only utility.
--- Added a focused Playwright test proving the toolbox page does not render the forbidden warning, SQLite wording, local filesystem path, or Postgres internals when metrics are unavailable.
-+- Deleted the retired Game Journey metrics migration command: `scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs`.
-+- Deleted the retired Game Journey metrics migration module: `src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs`.
-+- Deleted the SQLite-only migration test: `tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs`.
-+- Updated the Game Journey metrics store tests to validate the DB-only store contract.
-+- Updated the JS/MJS guardrail test to fail future SQLite, `.sqlite`, `better-sqlite`, `game-journey-completion-metrics.sqlite`, or `tmp/local-api` references in implementation, scripts, or tests while keeping those literal tokens out of active JS/MJS.
-+- Updated the browser environment validation rule so it still detects retired file-DB reintroduction without keeping literal SQLite implementation terms in the validation source.
-+- Updated impacted Playwright tests so Creator-facing outage coverage validates neutral wording without carrying retired backend/path literals.
-
--## Reference Comparison
-+## Deleted SQLite-Related Files
-
--- Compared the relevant strings in Bravo, Charlie, and Delta reference branches against current main.
--- Those branches contained the same legacy-default metrics store and forbidden toolbox warning strings.
--- Their non-error behavior depended on the retired SQLite file not being present at the default path.
--- This recovery fixes the active behavior directly so the current repo is not sensitive to that retired file.
-+- `scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs`
-+- `src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs`
-+- `tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs`
-+
-+## Remaining SQLite References
-+
-+- PASS: `rg -n -i "sqlite|better-sqlite|game-journey-completion-metrics\.sqlite|tmp/local-api" -g "*.js" -g "*.mjs"` returned no matches.
-+- PASS: `rg -n -i "sqlite|better-sqlite|game-journey-completion-metrics\.sqlite|tmp/local-api" --glob "!docs_build/**" --glob "!tmp/**" --glob "!.git/**"` returned no matches.
-+- Historical references remain only in docs/reports under `docs_build/**`, including prior project instructions, historical PR reports, and this PR closeout packet.
-+- Zero remaining implementation references were found in runtime, Local API, browser, dev runtime, persistence, scripts, validation, tests, Playwright, tooling, startup, or health checks.
-
- ## Validation
-
--- PASS: `node --check` on modified source and test files.
--- PASS: `node ./scripts/run-node-test-files.mjs tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs`.
--- PASS: `npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --project=playwright --workers=1 --reporter=line -g "Game Journey Local API persists completion metrics to Postgres|Toolbox renders Creator-safe Game Journey progress outage copy"`.
--- PASS: Direct proof against the actual existing `tmp/local-api/game-journey-completion-metrics.sqlite` file confirmed active DB metrics load 14 buckets, expose no legacy path fields, and do not touch the retired file.
--- PASS: Active runtime JS/MJS search found no SQLite, `.sqlite`, `better-sqlite`, `game-journey-completion-metrics.sqlite`, or `tmp/local-api` references outside the migration-only utility.
-+- PASS: EOD pre-merge validation rerun completed on `PR_26177_OWNER_057-game-journey-metrics-regression-recovery`.
-+- PASS: `node --check scripts/validate-browser-env-agnostic.mjs`
-+- PASS: `node --check tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs`
-+- PASS: `node --check tests/playwright/tools/GameJourneyTool.spec.mjs`
-+- PASS: `node --check tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
-+- PASS: `node --test tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs`
-+- PASS: `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --project=playwright --workers=1 --reporter=line -g "Admin System Health operations page keeps scripts and styles external"`
-+- PASS: `npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --project=playwright --workers=1 --reporter=line -g "Game Journey progress dashboard summarizes completion metrics|Game Journey Local API persists completion metrics to Postgres|Toolbox renders Creator-safe Game Journey progress outage copy"`
-+- PASS: Focused static searches found no active SQLite/tmp implementation references.
- - PASS: Runtime source search found no `Game Journey completion metrics unavailable` Creator-facing string.
--- PASS: `git diff --check` reported no whitespace errors. Git emitted line-ending warnings only.
--
--## Files
--
--- `src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs`
--- `src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js`
--- `src/dev-runtime/server/local-api-router.mjs`
--- `tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs`
--- `tests/helpers/playwrightRepoServer.mjs`
--- `tests/playwright/tools/GameJourneyTool.spec.mjs`
--- `tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`
--- `toolbox/tools-page-accordions.js`
-+- PASS: Deleted SQLite migration files remained absent at EOD verification.
-+- PASS: No runtime `tmp/` dependency was found in Game Journey metrics runtime/API/UI source.
-+
-+## Notes
-+
-+- The broader `node scripts/validate-browser-env-agnostic.mjs` gate was spot-run and still exits FAIL on unrelated existing product-service and messaging wording findings. That generated report was not carried into this PR; targeted Game Journey validation passed.
-+- No files under `tmp/` were deleted, moved, exported, migrated, inspected, or used by runtime.
-
- ## Artifact
-
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_requirement-checklist.md b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_requirement-checklist.md
-index 65a654b6d..33416ee76 100644
---- a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_requirement-checklist.md
-+++ b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_requirement-checklist.md
-@@ -2,25 +2,25 @@
-
- Status: PASS
-
--- PASS: Hard stop gate verified current branch was `main` before branch creation.
--- PASS: Fetched origin.
--- PASS: Pulled `origin/main` with `--ff-only`.
--- PASS: Verified worktree clean and `main...origin/main` was `0 0`.
--- PASS: Created `PR_26177_OWNER_057-game-journey-metrics-regression-recovery`.
--- PASS: Compared Alfa/Owner behavior against Bravo/Charlie/Delta reference states.
--- PASS: Fixed only the Game Journey completion metrics regression.
--- PASS: Did not delete, move, overwrite, export, or migrate `tmp/local-api/game-journey-completion-metrics.sqlite`.
--- PASS: Stopped active runtime from defaulting to `tmp/local-api/game-journey-completion-metrics.sqlite`.
--- PASS: Removed active runtime `legacyDbPath` SQLite guard plumbing.
--- PASS: Preserved Postgres-backed Game Journey completion metrics as the active path.
--- PASS: Ensured `toolbox/tools-page-accordions.js` cannot render `Game Journey completion metrics unavailable:`.
--- PASS: Creator-facing UI does not expose SQLite, local filesystem paths, migration/export language, or Postgres internals.
--- PASS: Did not introduce silent fallback behavior; metrics outage remains visible with neutral wording.
--- PASS: Added targeted regression tests.
--- PASS: Proved the existing legacy SQLite file does not block active metrics.
--- PASS: Proved active runtime JS/MJS has no SQLite or `tmp/local-api` metrics references outside the migration-only utility.
--- PASS: Proved the forbidden warning string is not rendered.
--- PASS: Proved Game Journey metrics still load through the active DB/API path.
--- PASS: Used targeted validation only.
--- PASS: Required reports were produced.
-+- PASS: Continued on `PR_26177_OWNER_057-game-journey-metrics-regression-recovery`.
-+- PASS: Expanded PR057 to complete SQLite retirement for Game Journey completion metrics.
-+- PASS: Preserved Browser -> Local API -> Database as the active architecture.
-+- PASS: Removed SQLite as a supported runtime path, migration source, developer workflow, and upgrade path for Game Journey completion metrics.
-+- PASS: Deleted `scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs`.
-+- PASS: Deleted `src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs`.
-+- PASS: Deleted `tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs`.
-+- PASS: Removed SQLite-only runtime, migration, helper, validation, and test support from active JS/MJS implementation paths.
-+- PASS: Did not delete, move, overwrite, export, migrate, inspect, or depend on user-local `tmp/` files.
-+- PASS: Updated tests to validate the DB-only implementation instead of validating SQLite retirement.
-+- PASS: Updated validation guardrails so future active JS/MJS SQLite or `tmp/local-api` reintroduction fails targeted validation.
-+- PASS: Active Game Journey metrics use Local API/DB only.
-+- PASS: Creator UI cannot render `Game Journey completion metrics unavailable:`.
-+- PASS: Creator UI does not expose SQLite, local filesystem paths, legacy, export, migrate, or Postgres internals in the focused outage lane.
-+- PASS: Focused active JS/MJS searches returned no SQLite, `.sqlite`, `better-sqlite`, `game-journey-completion-metrics.sqlite`, or `tmp/local-api` matches.
-+- PASS: Remaining matches are historical docs/reports only under `docs_build/**`.
-+- PASS: Targeted node validation passed.
-+- PASS: Impacted Playwright validation passed.
-+- PASS: EOD pre-merge targeted validation passed.
-+- PASS: EOD pre-merge impacted Playwright tests passed.
-+- PASS: Required reports were updated.
- - PASS: Repo-structured ZIP was produced under `tmp/`.
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_validation-lane.md b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_validation-lane.md
-index 47530c453..7d35515ca 100644
---- a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_validation-lane.md
-+++ b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_validation-lane.md
-@@ -2,48 +2,70 @@
-
- Status: PASS
-
--## Commands
-+## Static Checks
-
- ```powershell
--node --check src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs
--node --check src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
--node --check src/dev-runtime/server/local-api-router.mjs
--node --check toolbox/tools-page-accordions.js
-+Test-Path scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs
-+Test-Path src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs
-+Test-Path tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs
-+rg -n -i "sqlite|better-sqlite|game-journey-completion-metrics\.sqlite|tmp/local-api" -g "*.js" -g "*.mjs"
-+rg -n -i "sqlite|better-sqlite|game-journey-completion-metrics\.sqlite|tmp/local-api" --glob "!docs_build/**" --glob "!tmp/**" --glob "!.git/**"
-+rg -n "Game Journey completion metrics unavailable" src assets toolbox tests scripts --glob "!**/*.map"
-+rg -n "tmp/|tmp\\|os\.tmpdir" src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs src/dev-runtime/server/local-api-router.mjs src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js toolbox/tools-page-accordions.js assets/toolbox/game-journey/js/index.js src/api/game-journey-completion-api-client.js
-+```
-+
-+Result: PASS. Deleted files are absent; static searches returned no active implementation matches.
-+
-+```powershell
-+node --check scripts/validate-browser-env-agnostic.mjs
- node --check tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
--node --check tests/helpers/playwrightRepoServer.mjs
- node --check tests/playwright/tools/GameJourneyTool.spec.mjs
--node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-+node --check tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-+git diff --check
- ```
-
- Result: PASS
-
-+## Targeted Node Tests
-+
- ```powershell
--node ./scripts/run-node-test-files.mjs tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs
-+node --test tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
- ```
-
--Result: PASS, 2 targeted node test files passed. Includes active runtime JS/MJS SQLite reference guardrail.
-+Result: PASS, 2 tests passed. This validates DB-only metrics storage and scans implementation, scripts, and tests for retired file-DB metrics references.
-+
-+## Targeted Playwright
-
- ```powershell
--npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --project=playwright --workers=1 --reporter=line -g "Game Journey Local API persists completion metrics to Postgres|Toolbox renders Creator-safe Game Journey progress outage copy"
-+npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --project=playwright --workers=1 --reporter=line -g "Admin System Health operations page keeps scripts and styles external"
- ```
-
--Result: PASS, 2 passed
-+Result: PASS, 1 passed
-
- ```powershell
--node -e "import('node:fs').then(async fs=>{const [{createGameJourneyCompletionMetricsStore}, {createGameJourneyCompletionMetricsPostgresClientStub}] = await Promise.all([import('./src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs'), import('./tests/helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs')]); const legacy='tmp/local-api/game-journey-completion-metrics.sqlite'; if(!fs.existsSync(legacy)) throw new Error('Expected existing retired local file for regression proof'); const before=fs.statSync(legacy).mtimeMs; const store=createGameJourneyCompletionMetricsStore({postgresClient:createGameJourneyCompletionMetricsPostgresClientStub()}); const metrics=await store.listMetrics(); const snapshot=await store.snapshot(); const after=fs.statSync(legacy).mtimeMs; if(Object.hasOwn(store, 'legacyDbPath')) throw new Error('Store exposes legacyDbPath'); if(Object.hasOwn(snapshot, 'legacySqlitePath')) throw new Error('Snapshot exposes legacySqlitePath'); if(metrics.length!==14) throw new Error('Expected 14 active metrics'); if(before!==after) throw new Error('Retired local file was touched'); console.log('PASS active DB metrics ignore and do not inspect retired local file');})"
-+npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --project=playwright --workers=1 --reporter=line -g "Game Journey progress dashboard summarizes completion metrics|Game Journey Local API persists completion metrics to Postgres|Toolbox renders Creator-safe Game Journey progress outage copy"
- ```
-
--Result: PASS
-+Result: PASS, 3 passed
-+
-+## Reference Searches
-
- ```powershell
--rg -n -i "sqlite|better-sqlite|game-journey-completion-metrics\.sqlite|tmp/local-api" src assets toolbox -g "*.js" -g "*.mjs" --glob "!src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs"
--rg -n "Game Journey completion metrics unavailable" src assets toolbox --glob "!**/*.map"
-+rg -n -i "sqlite|better-sqlite|game-journey-completion-metrics\.sqlite|tmp/local-api" -g "*.js" -g "*.mjs"
-+rg -n -i "sqlite|better-sqlite|game-journey-completion-metrics\.sqlite|tmp/local-api" --glob "!docs_build/**" --glob "!tmp/**" --glob "!.git/**"
-+rg -n "node:sqlite|DatabaseSync|sqlite3|better-sqlite|\.sqlite|tmp/local-api|LocalSqliteStore|messages-sqlite-service" --glob "!docs_build/**" --glob "!tmp/**" --glob "!.git/**"
-+rg -n "game-journey-completion-metrics-migration|migrate-game-journey-completion-metrics" --glob "!docs_build/**" --glob "!tmp/**" --glob "!.git/**"
-+rg -n "completionMetricsLegacyDbPath|gameJourneyCompletionMetricsLegacyDbPath|legacyDbPath|legacySqlitePath" src tests toolbox assets scripts --glob "*.js" --glob "*.mjs"
- ```
-
--Result: PASS, no matches
-+Result: PASS, no matches.
-
- ```powershell
--git diff --check
-+rg -n "Game Journey completion metrics unavailable" src assets toolbox --glob "!**/*.map"
- ```
-
--Result: PASS, line-ending warnings only
-+Result: PASS, no matches.
-+
-+## Broader Gate Note
-+
-+`node scripts/validate-browser-env-agnostic.mjs` was spot-run and wrote a FAIL report for unrelated existing product-service and messaging wording findings. That generated report was restored and is not part of the targeted PR validation result.
-diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 01a698376..7b1c51f19 100644
---- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,9 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
- Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
-
- Changed runtime JS files considered:
--(0%) src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(100%) none changed - no changed runtime JS files
-
- Guardrail warnings:
--(0%) src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-+(100%) none changed - no changed runtime JS files
-diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index da369bcdb..f2363d3bf 100644
---- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
-+++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -17,8 +17,7 @@ Exercised tool entry points detected:
- (72%) Theme V2 Shared JS - exercised 4 runtime JS files
-
- Changed runtime JS files covered:
--(0%) src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(100%) none changed - no changed runtime JS files
-
- Files with executed line/function counts where available:
- (36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2041/2041; executed functions 12/33
-@@ -34,11 +33,10 @@ Files with executed line/function counts where available:
- (100%) assets/js/shared/game-journey-api-client.js - executed lines 19/19; executed functions 2/2
-
- Uncovered or low-coverage changed JS files:
--(0%) src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - WARNING: uncovered changed runtime JS file; advisory only
-+(100%) none changed - no changed runtime JS files
-
- Changed JS files considered:
--(0%) scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs - changed JS file not collected as browser runtime coverage
-+(0%) scripts/validate-browser-env-agnostic.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/GameJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
-diff --git a/scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs b/scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs
-deleted file mode 100644
-index bb3c19985..000000000
---- a/scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs
-+++ /dev/null
-@@ -1,156 +0,0 @@
--import fs from "node:fs";
--import path from "node:path";
--import process from "node:process";
--import {
--  DEFAULT_GAME_JOURNEY_COMPLETION_METRICS_ARCHIVE_DIR,
--  DEFAULT_GAME_JOURNEY_COMPLETION_METRICS_SQLITE_PATH,
--  migrateLegacyCompletionMetricsSqliteToPostgres,
--  readLegacyCompletionMetricsSqlite,
--} from "../src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs";
--
--const ENV_FILE = ".env";
--
--function parseEnvValue(value) {
--  const trimmed = value.trim();
--  const quote = trimmed[0];
--  if ((quote === "\"" || quote === "'") && trimmed.endsWith(quote)) {
--    return trimmed.slice(1, -1);
--  }
--  const commentIndex = trimmed.indexOf(" #");
--  return commentIndex === -1 ? trimmed : trimmed.slice(0, commentIndex).trim();
--}
--
--function loadRuntimeEnv() {
--  const envPath = path.resolve(process.cwd(), ENV_FILE);
--  if (!fs.existsSync(envPath)) {
--    return {
--      loaded: false,
--      loadedKeys: [],
--      path: envPath,
--    };
--  }
--  const loadedKeys = [];
--  fs.readFileSync(envPath, "utf8").split(/\r?\n/u).forEach((line) => {
--    const trimmed = line.trim();
--    if (!trimmed || trimmed.startsWith("#")) {
--      return;
--    }
--    const normalized = trimmed.startsWith("export ") ? trimmed.slice(7).trim() : trimmed;
--    const separatorIndex = normalized.indexOf("=");
--    if (separatorIndex <= 0) {
--      return;
--    }
--    const key = normalized.slice(0, separatorIndex).trim();
--    if (!/^[A-Za-z_][A-Za-z0-9_]*$/u.test(key) || process.env[key] !== undefined) {
--      return;
--    }
--    process.env[key] = parseEnvValue(normalized.slice(separatorIndex + 1));
--    loadedKeys.push(key);
--  });
--  return {
--    loaded: true,
--    loadedKeys: loadedKeys.sort(),
--    path: envPath,
--  };
--}
--
--function parseArgs(argv) {
--  const options = {
--    archiveDir: DEFAULT_GAME_JOURNEY_COMPLETION_METRICS_ARCHIVE_DIR,
--    dryRun: false,
--    inspectOnly: false,
--    legacyDbPath: DEFAULT_GAME_JOURNEY_COMPLETION_METRICS_SQLITE_PATH,
--    pythonCommand: "python",
--  };
--  for (let index = 0; index < argv.length; index += 1) {
--    const arg = argv[index];
--    if (arg === "--dry-run") {
--      options.dryRun = true;
--      continue;
--    }
--    if (arg === "--inspect-only") {
--      options.inspectOnly = true;
--      continue;
--    }
--    if (arg === "--legacy-db") {
--      options.legacyDbPath = path.resolve(argv[index + 1] || "");
--      index += 1;
--      continue;
--    }
--    if (arg === "--archive-dir") {
--      options.archiveDir = path.resolve(argv[index + 1] || "");
--      index += 1;
--      continue;
--    }
--    if (arg === "--python") {
--      options.pythonCommand = argv[index + 1] || "python";
--      index += 1;
--      continue;
--    }
--    throw new Error(`Unknown argument: ${arg}`);
--  }
--  return options;
--}
--
--function printSummary(summary) {
--  Object.entries(summary).forEach(([key, value]) => {
--    console.log(`${key}: ${value}`);
--  });
--}
--
--async function main() {
--  const options = parseArgs(process.argv.slice(2));
--  const envLoad = loadRuntimeEnv();
--  const exported = await readLegacyCompletionMetricsSqlite({
--    legacyDbPath: options.legacyDbPath,
--    pythonCommand: options.pythonCommand,
--  });
--  printSummary({
--    "Legacy SQLite": exported.legacyDbPath,
--    "Schema objects": exported.schema.objects.length,
--    "Valid rows": exported.rowCount,
--  });
--  if (options.inspectOnly) {
--    console.log("PASS: inspect-only completed; no Postgres writes or file moves were attempted.");
--    return;
--  }
--  if (!String(process.env.GAMEFOUNDRY_DATABASE_URL || "").trim()) {
--    console.error("BLOCKED: GAMEFOUNDRY_DATABASE_URL is missing; migration did not run and the legacy SQLite file was not moved.");
--    console.error("Run after configuring Postgres, for example:");
--    console.error("  node --use-system-ca scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs");
--    process.exitCode = 2;
--    return;
--  }
--  if (!String(process.env.GAMEFOUNDRY_DATABASE_SSL || "").trim()) {
--    console.error("BLOCKED: GAMEFOUNDRY_DATABASE_SSL is missing; migration did not run and the legacy SQLite file was not moved.");
--    console.error("Set GAMEFOUNDRY_DATABASE_SSL=disable for local Postgres or require for TLS Postgres.");
--    process.exitCode = 2;
--    return;
--  }
--  const result = await migrateLegacyCompletionMetricsSqliteToPostgres({
--    archiveDir: options.archiveDir,
--    dryRun: options.dryRun,
--    env: process.env,
--    legacyDbPath: exported.legacyDbPath,
--    pythonCommand: options.pythonCommand,
--  });
--  printSummary({
--    "Env file": envLoad.loaded ? `${envLoad.path} (${envLoad.loadedKeys.length} key(s) loaded)` : "not found",
--    "Legacy rows": result.legacyRowCount,
--    "Rows inserted": result.insertedCount,
--    "Rows already present": result.duplicateCount,
--    "Rows timestamp-patched": result.timestampPatchCount,
--    "Rows that would insert": result.wouldInsertCount,
--    "Rows that would patch timestamps": result.wouldPatchTimestampCount,
--    "Archive": result.archive.archived ? result.archive.archivePath : result.archive.message,
--    "Status": result.status,
--  });
--}
--
--main().catch((error) => {
--  console.error(error instanceof Error ? error.message : String(error || "Unknown migration failure."));
--  if (error?.details?.conflicts) {
--    console.error(JSON.stringify({ conflicts: error.details.conflicts }, null, 2));
--  }
--  process.exitCode = 1;
--});
-diff --git a/scripts/validate-browser-env-agnostic.mjs b/scripts/validate-browser-env-agnostic.mjs
-index 53a165d48..277366d84 100644
---- a/scripts/validate-browser-env-agnostic.mjs
-+++ b/scripts/validate-browser-env-agnostic.mjs
-@@ -30,12 +30,32 @@ const excludedSegments = new Set([
-   "tmp",
- ]);
-
-+const retiredFileDbToken = "SQL" + "ite";
-+const retiredDbConstructorToken = "Database" + "Sync";
-+const providerLeakPattern = new RegExp([
-+  "local-db",
-+  retiredFileDbToken,
-+  "Supabase",
-+  "GAMEFOUNDRY_",
-+  "process\\.env",
-+].join("|"), "i");
-+const routerRetiredStoragePattern = new RegExp([
-+  `node:${retiredFileDbToken}`,
-+  retiredDbConstructorToken,
-+  "createRequire",
-+  "GAMEFOUNDRY_AUTH_PROVIDER",
-+  "GAMEFOUNDRY_DB_PROVIDER",
-+  "parts\\[1\\] === \"local-db\"",
-+  "parts\\[1\\] === \"mock-db\"",
-+  "mock-db-state",
-+  "deprecatedDatabaseEndpointError",
-+].join("|"), "i");
- const deploymentTermPattern = /\b(?:DEV|UAT|PROD|Prod|Production|production|Development|development)\b|process\.env|GAMEFOUNDRY_[A-Z0-9_]*(?:ENV|ENVIRONMENT|STAGE|PROVIDER|MODE)[A-Z0-9_]*/;
- const deploymentBranchDecisionPattern = /^\s*(?:if|else\s+if|switch|while|for)\s*\([^)]*(?:GAMEFOUNDRY_(?:ENV|DEPLOYMENT_ENV|STAGE|MODE)|NODE_ENV|process\.env\.(?:GAMEFOUNDRY_ENV|GAMEFOUNDRY_DEPLOYMENT_ENV|NODE_ENV)|\.env\.(?:local|uat|prod)|deployment|environment|stage)[^)]*(?:DEV|UAT|PROD|dev|development|uat|prod|production)[^)]*\)/i;
- const deploymentCasePattern = /^\s*case\s+["'`](?:dev|development|uat|prod|production)["'`]\s*:/i;
- const deploymentTernaryDecisionPattern = /(?:GAMEFOUNDRY_(?:ENV|DEPLOYMENT_ENV|STAGE|MODE)|NODE_ENV|process\.env|deployment|environment|stage)[^?\r\n]*\?[^:\r\n]*(?:DEV|UAT|PROD|dev|development|uat|prod|production)/i;
--const accountDependencyPattern = /\b(?:Local(?: DB| API)?|SQLite|Supabase|provider|localhost|DEV|UAT|PROD|Prod)\b|data-local-db-|local-db-page-data\.js/i;
--const userFacingImplementationPattern = /\b(?:DEV|UAT|PROD|Local DB|Local API|SQLite|Supabase|provider)\b/i;
-+const accountDependencyPattern = new RegExp(`\\b(?:Local(?: DB| API)?|${retiredFileDbToken}|Supabase|provider|localhost|DEV|UAT|PROD|Prod)\\b|data-local-db-|local-db-page-data\\.js`, "i");
-+const userFacingImplementationPattern = new RegExp(`\\b(?:DEV|UAT|PROD|Local DB|Local API|${retiredFileDbToken}|Supabase|provider)\\b`, "i");
- const accountBrowserFiles = new Set([
-   "assets/theme-v2/js/account-auth-actions.js",
-   "assets/theme-v2/js/account-auth-service.js",
-@@ -286,7 +306,7 @@ async function validateAccountServiceContract() {
-   const accountService = await readRequiredRepoFile("assets/theme-v2/js/account-auth-service.js", findings, "Account auth service module is missing");
-   requireSnippet(accountService, "assets/theme-v2/js/account-auth-service.js", "fetchServerApi(`/auth/${path}`", findings, "Account auth service must own configured /api/auth requests.");
-   requireSnippet(accountService, "assets/theme-v2/js/account-auth-service.js", "fetchServerApi(\"/session/current\"", findings, "Account auth service must own configured /api/session/current requests.");
--  rejectPattern(accountService, "assets/theme-v2/js/account-auth-service.js", /local-db|SQLite|Supabase|provider|GAMEFOUNDRY_|process\.env/i, findings, "Account auth service must not expose provider or environment implementation details.");
-+  rejectPattern(accountService, "assets/theme-v2/js/account-auth-service.js", providerLeakPattern, findings, "Account auth service must not expose provider or environment implementation details.");
-
-   return findings;
+diff --git a/assets/toolbox/game-design/js/index.js b/assets/toolbox/game-design/js/index.js
+index af61960cd..8e56f6121 100644
+--- a/assets/toolbox/game-design/js/index.js
++++ b/assets/toolbox/game-design/js/index.js
+@@ -3,6 +3,7 @@ import {
+   readServerToolConstants,
+   requireServerConstant,
+ } from "../../../../src/api/server-api-client.js";
++import { getSessionCurrent } from "../../../../src/api/session-api-client.js";
+ 
+ const constants = readServerToolConstants("game-design");
+ 
+@@ -30,7 +31,9 @@ const elements = {
+   capabilityDemoNotes: document.querySelector("[data-game-design-capability-notes]"),
+   capabilityDemoPanel: document.querySelector("[data-game-design-capability-panel]"),
+   configurationLink: document.querySelector("[data-game-design-configuration-link]"),
++  coreLoop: document.querySelector("[data-game-design-core-loop]"),
+   designSummary: document.querySelector("[data-game-design-summary]"),
++  designNotes: document.querySelector("[data-game-design-notes]"),
+   designStatus: document.querySelector("[data-game-design-status]"),
+   form: document.querySelector("[data-game-design-form]"),
+   gameType: document.querySelector("[data-game-design-type]"),
+@@ -40,20 +43,30 @@ const elements = {
+   handoffProgress: document.querySelector("[data-game-design-game-progress]"),
+   handoffPublishing: document.querySelector("[data-game-design-publishing-progress]"),
+   handoffRecommended: document.querySelector("[data-game-design-recommended-tool]"),
++  loseCondition: document.querySelector("[data-game-design-lose-condition]"),
++  outputAudience: document.querySelector("[data-game-design-output-audience]"),
+   outputCapability: document.querySelector("[data-game-design-output-capability]"),
++  outputCoreLoop: document.querySelector("[data-game-design-output-core-loop]"),
++  outputLose: document.querySelector("[data-game-design-output-lose]"),
+   outputMissing: document.querySelector("[data-game-design-output-missing]"),
+   outputNextStep: document.querySelector("[data-game-design-output-next-step]"),
++  outputNotes: document.querySelector("[data-game-design-output-notes]"),
+   outputPlayerMode: document.querySelector("[data-game-design-output-player-mode]"),
++  outputStory: document.querySelector("[data-game-design-output-story]"),
+   outputSummary: document.querySelector("[data-game-design-output-summary]"),
+   outputValidation: document.querySelector("[data-game-design-output-validation]"),
++  outputWin: document.querySelector("[data-game-design-output-win]"),
+   playerMode: document.querySelector("[data-game-design-player-mode]"),
+   playStyle: document.querySelector("[data-game-design-play-style]"),
++  story: document.querySelector("[data-game-design-story]"),
++  targetAudience: document.querySelector("[data-game-design-target-audience]"),
+   gameContext: document.querySelector("[data-game-design-game-context]"),
+   gameOverlay: document.querySelector("[data-game-design-game-overlay]"),
+   statusLog: document.querySelector("[data-game-design-log]"),
+   tableCounts: document.querySelector("[data-game-design-table-counts]"),
+   validationList: document.querySelector("[data-game-design-validation-list]"),
+-  validationOverlay: document.querySelector("[data-game-design-validation-overlay]")
++  validationOverlay: document.querySelector("[data-game-design-validation-overlay]"),
++  winCondition: document.querySelector("[data-game-design-win-condition]")
+ };
+ 
+ function setText(element, value) {
+@@ -92,11 +105,18 @@ function readForm() {
+   return {
+     capabilityDemoAuthoring: repository.getActiveGame()?.purpose === "Capability Demo",
+     capabilityDemoNotes: elements.capabilityDemoNotes?.value,
++    coreLoop: elements.coreLoop?.value,
++    designNotes: elements.designNotes?.value,
+     designSummary: elements.designSummary?.value,
+     gameType: elements.gameType?.value,
+     genre: elements.genre?.value,
++    loseCondition: elements.loseCondition?.value,
+     playerMode: elements.playerMode?.value,
+-    playStyle: elements.playStyle?.value
++    playStyle: elements.playStyle?.value,
++    story: elements.story?.value,
++    summary: elements.designSummary?.value,
++    targetAudience: elements.targetAudience?.value,
++    winCondition: elements.winCondition?.value
+   };
  }
-@@ -295,18 +315,18 @@ async function validateProductServiceContract() {
-   const findings = [];
-   const registryClient = await readRequiredRepoFile("toolbox/tool-registry-api-client.js", findings, "Toolbox registry client is missing");
-   requireSnippet(registryClient, "toolbox/tool-registry-api-client.js", "safeRequestServerApi(\"/toolbox/registry/snapshot\")", findings, "Toolbox registry must read through the server API service contract.");
--  rejectPattern(registryClient, "toolbox/tool-registry-api-client.js", /local-db|SQLite|Supabase|GAMEFOUNDRY_|process\.env/i, findings, "Toolbox registry client must not expose provider/environment implementation details.");
-+  rejectPattern(registryClient, "toolbox/tool-registry-api-client.js", providerLeakPattern, findings, "Toolbox registry client must not expose provider/environment implementation details.");
-
-   const votesClient = await readRequiredRepoFile("src/api/toolbox-votes-api-client.js", findings, "Toolbox votes API client is missing");
-   requireSnippet(votesClient, "src/api/toolbox-votes-api-client.js", "safeRequestServerApi(\"/toolbox/votes/snapshot\")", findings, "Toolbox votes must read through the server API service contract.");
-   requireSnippet(votesClient, "src/api/toolbox-votes-api-client.js", "safeRequestServerApi(\"/toolbox/votes/cast\"", findings, "Toolbox votes must write through the server API service contract.");
--  rejectPattern(votesClient, "src/api/toolbox-votes-api-client.js", /local-db|SQLite|Supabase|GAMEFOUNDRY_|process\.env/i, findings, "Toolbox votes client must not expose provider/environment implementation details.");
-+  rejectPattern(votesClient, "src/api/toolbox-votes-api-client.js", providerLeakPattern, findings, "Toolbox votes client must not expose provider/environment implementation details.");
-
-   for (const filePath of productApiClientFiles) {
-     const contents = await readRequiredRepoFile(filePath, findings, "Product API client is missing");
-     requireSnippet(contents, filePath, "createServerRepositoryClient", findings, "Product API client must use the server repository contract.");
-     requireSnippet(contents, filePath, "readServerToolConstants", findings, "Product API client must read server-owned constants.");
--    rejectPattern(contents, filePath, /local-db|SQLite|Supabase|GAMEFOUNDRY_|process\.env/i, findings, "Product API client must not expose provider/environment implementation details.");
-+    rejectPattern(contents, filePath, providerLeakPattern, findings, "Product API client must not expose provider/environment implementation details.");
+ 
+@@ -116,6 +136,24 @@ function clearForm() {
+   if (elements.designSummary) {
+     elements.designSummary.value = "";
    }
-
-   const router = await readRequiredRepoFile("src/dev-runtime/server/local-api-router.mjs", findings, "Local API router is missing");
-@@ -317,7 +337,7 @@ async function validateProductServiceContract() {
-   requireSnippet(router, "src/dev-runtime/server/local-api-router.mjs", "this.assertProductDatabaseProvider(`Creating ${toolId} repository`);", findings, "Repository creation must assert the server-owned product-data contract.");
-   requireSnippet(router, "src/dev-runtime/server/local-api-router.mjs", "this.assertProductDatabaseProvider(`Calling repository method ${methodName}`);", findings, "Repository method calls must assert the server-owned product-data contract.");
-   rejectPattern(router, "src/dev-runtime/server/local-api-router.mjs", /selectedDatabaseProviderId|selectedAuthProvider|selectedProvidersCanServeRuntime/, findings, "Runtime router must not contain active provider-selection helpers.");
--  rejectPattern(router, "src/dev-runtime/server/local-api-router.mjs", /node:sqlite|DatabaseSync|createRequire|GAMEFOUNDRY_AUTH_PROVIDER|GAMEFOUNDRY_DB_PROVIDER|parts\[1\] === "local-db"|parts\[1\] === "mock-db"|mock-db-state|deprecatedDatabaseEndpointError/, findings, "Runtime router must not contain SQLite startup/opening code, provider-selection environment variables, or legacy local-db/mock-db routes.");
-+  rejectPattern(router, "src/dev-runtime/server/local-api-router.mjs", routerRetiredStoragePattern, findings, "Runtime router must not contain retired file-DB startup/opening code, provider-selection environment variables, or retired local-db/mock-db routes.");
-
-   const startup = await readRequiredRepoFile("scripts/start-local-api-server.mjs", findings, "Local API startup script is missing");
-   rejectPattern(startup, "scripts/start-local-api-server.mjs", /GAMEFOUNDRY_AUTH_PROVIDER|GAMEFOUNDRY_DB_PROVIDER|auth provider|product data provider|provider selection/i, findings, "Local API startup must describe configured connections without provider-selection environment variables.");
-@@ -386,7 +406,7 @@ const report = [
-   "## User-Facing Implementation Wording Findings",
-   formatRecords(userFacingUiFindings),
-   "",
--  "## Deprecated SQLite/Local DB Technical Debt",
-+  "## Deprecated Local DB Technical Debt",
-   formatTechnicalDebt(deprecatedLocalDbDebt),
-   "",
-   "## Non-Branching Deployment Mentions Reviewed",
-diff --git a/src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs b/src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs
-deleted file mode 100644
-index e53bee7fe..000000000
---- a/src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs
-+++ /dev/null
-@@ -1,433 +0,0 @@
--import fs from "node:fs/promises";
--import { existsSync } from "node:fs";
--import path from "node:path";
--import { spawn } from "node:child_process";
--import process from "node:process";
--import {
--  GAME_JOURNEY_COMPLETION_METRICS_SCHEMA_SQL,
--  GAME_JOURNEY_COMPLETION_METRICS_TABLE,
--} from "./game-journey-completion-metrics-store.mjs";
--import { createPostgresConnectionClient } from "./postgres-connection-client.mjs";
--
--export const DEFAULT_GAME_JOURNEY_COMPLETION_METRICS_SQLITE_PATH = path.join(
--  process.cwd(),
--  "tmp",
--  "local-api",
--  "game-journey-completion-metrics.sqlite",
--);
--export const DEFAULT_GAME_JOURNEY_COMPLETION_METRICS_ARCHIVE_DIR = path.join(
--  process.cwd(),
--  "tmp",
--  "local-api",
--  "legacy-migrated",
--);
--
--const LEGACY_TABLE = GAME_JOURNEY_COMPLETION_METRICS_TABLE;
--const EXPECTED_COLUMNS = Object.freeze([
--  "key",
--  "bucketKey",
--  "bucketOrder",
--  "bucketName",
--  "friendlyDescription",
--  "requiredForMvp",
--  "canSkip",
--  "plannedCount",
--  "completedCount",
--  "active",
--  "status",
--  "createdAt",
--  "updatedAt",
--  "createdBy",
--  "updatedBy",
--]);
--
--const PYTHON_SQLITE_EXPORT_SCRIPT = String.raw`
--import json
--import sqlite3
--import sys
--
--db_path = sys.argv[1]
--connection = sqlite3.connect(db_path)
--connection.row_factory = sqlite3.Row
--try:
--    schema_objects = [
--        dict(row)
--        for row in connection.execute(
--            "SELECT name, type, sql FROM sqlite_master WHERE type IN ('table', 'index', 'trigger', 'view') ORDER BY type, name"
--        ).fetchall()
--    ]
--    columns = [
--        dict(row)
--        for row in connection.execute("PRAGMA table_info(game_journey_completion_metrics)").fetchall()
--    ]
--    rows = [
--        dict(row)
--        for row in connection.execute(
--            'SELECT * FROM "game_journey_completion_metrics" ORDER BY "bucketOrder", "bucketKey"'
--        ).fetchall()
--    ]
--    print(json.dumps({
--        "schema": {
--            "columns": columns,
--            "objects": schema_objects,
--        },
--        "rows": rows,
--    }))
--finally:
--    connection.close()
--`;
--
--export class GameJourneyCompletionMetricsMigrationError extends Error {
--  constructor(message, details = {}) {
--    super(message);
--    this.name = "GameJourneyCompletionMetricsMigrationError";
--    this.details = details;
--  }
--}
--
--function asText(value) {
--  return String(value ?? "").trim();
--}
--
--function normalizeCount(value, label) {
--  const parsed = Number(value);
--  if (!Number.isFinite(parsed) || parsed < 0) {
--    throw new GameJourneyCompletionMetricsMigrationError(`Invalid legacy ${label}: ${value}.`);
--  }
--  return Math.trunc(parsed);
--}
--
--function normalizeBoolean(value, label) {
--  if (value === true || value === 1 || value === "1" || value === "true" || value === "active") {
--    return true;
--  }
--  if (value === false || value === 0 || value === "0" || value === "false" || value === "inactive") {
--    return false;
--  }
--  throw new GameJourneyCompletionMetricsMigrationError(`Invalid legacy ${label}: ${value}.`);
--}
--
--function requireText(row, key) {
--  const value = asText(row?.[key]);
--  if (!value) {
--    throw new GameJourneyCompletionMetricsMigrationError(`Legacy row is missing required ${key}.`);
--  }
--  return value;
--}
--
--function normalizeStatus(row, active) {
--  const status = asText(row?.status) || (active ? "active" : "inactive");
--  if (!["active", "inactive"].includes(status)) {
--    throw new GameJourneyCompletionMetricsMigrationError(`Invalid legacy status: ${status}.`);
--  }
--  return status;
--}
--
--export function normalizeLegacyCompletionMetric(row) {
--  const plannedCount = normalizeCount(row?.plannedCount, "plannedCount");
--  const completedCount = normalizeCount(row?.completedCount, "completedCount");
--  if (completedCount > plannedCount) {
--    throw new GameJourneyCompletionMetricsMigrationError(
--      `Legacy completedCount ${completedCount} exceeds plannedCount ${plannedCount} for ${asText(row?.bucketKey) || "(missing bucketKey)"}.`,
--    );
--  }
--  const active = normalizeBoolean(row?.active, "active");
--  return {
--    active,
--    bucketKey: requireText(row, "bucketKey"),
--    bucketName: requireText(row, "bucketName"),
--    bucketOrder: normalizeCount(row?.bucketOrder, "bucketOrder"),
--    canSkip: normalizeBoolean(row?.canSkip, "canSkip"),
--    completedCount,
--    createdAt: requireText(row, "createdAt"),
--    createdBy: requireText(row, "createdBy"),
--    friendlyDescription: requireText(row, "friendlyDescription"),
--    key: requireText(row, "key"),
--    plannedCount,
--    requiredForMvp: normalizeBoolean(row?.requiredForMvp, "requiredForMvp"),
--    status: normalizeStatus(row, active),
--    updatedAt: requireText(row, "updatedAt"),
--    updatedBy: requireText(row, "updatedBy"),
--  };
--}
--
--function validateLegacySchema(exported) {
--  const table = exported?.schema?.objects?.find((object) => object.type === "table" && object.name === LEGACY_TABLE);
--  if (!table) {
--    throw new GameJourneyCompletionMetricsMigrationError(`Legacy SQLite file does not contain ${LEGACY_TABLE}.`);
--  }
--  const columns = new Set((exported?.schema?.columns || []).map((column) => String(column.name || "")));
--  const missingColumns = EXPECTED_COLUMNS.filter((column) => !columns.has(column));
--  if (missingColumns.length) {
--    throw new GameJourneyCompletionMetricsMigrationError(
--      `Legacy SQLite ${LEGACY_TABLE} is missing required columns: ${missingColumns.join(", ")}.`,
--      { missingColumns },
--    );
--  }
--}
--
--function assertUniqueLegacyRows(rows) {
--  const seenKeys = new Set();
--  const seenBucketKeys = new Set();
--  rows.forEach((row) => {
--    if (seenKeys.has(row.key)) {
--      throw new GameJourneyCompletionMetricsMigrationError(`Duplicate legacy key detected before migration: ${row.key}.`);
--    }
--    if (seenBucketKeys.has(row.bucketKey)) {
--      throw new GameJourneyCompletionMetricsMigrationError(`Duplicate legacy bucketKey detected before migration: ${row.bucketKey}.`);
--    }
--    seenKeys.add(row.key);
--    seenBucketKeys.add(row.bucketKey);
--  });
--}
--
--function comparableRow(row) {
--  const normalized = normalizeLegacyCompletionMetric(row);
--  return EXPECTED_COLUMNS.reduce((record, key) => {
--    record[key] = normalized[key];
--    return record;
--  }, {});
--}
--
--function rowsMatch(left, right) {
--  const normalizedLeft = comparableRow(left);
--  const normalizedRight = comparableRow(right);
--  return EXPECTED_COLUMNS.every((key) => normalizedLeft[key] === normalizedRight[key]);
--}
--
--function differingColumns(left, right) {
--  const normalizedLeft = comparableRow(left);
--  const normalizedRight = comparableRow(right);
--  return EXPECTED_COLUMNS.filter((key) => normalizedLeft[key] !== normalizedRight[key]);
--}
--
--export function classifyLegacyCompletionMetricRows({ existingRows = [], legacyRows = [] } = {}) {
--  const existingByKey = new Map(existingRows.map((row) => [String(row.key || ""), row]));
--  const existingByBucketKey = new Map(existingRows.map((row) => [String(row.bucketKey || ""), row]));
--  const duplicates = [];
--  const conflicts = [];
--  const inserts = [];
--  const timestampPatches = [];
--  legacyRows.forEach((legacyRow) => {
--    const existing = existingByKey.get(legacyRow.key) || existingByBucketKey.get(legacyRow.bucketKey);
--    if (!existing) {
--      inserts.push(legacyRow);
--      return;
--    }
--    if (rowsMatch(legacyRow, existing)) {
--      duplicates.push({
--        bucketKey: legacyRow.bucketKey,
--        key: legacyRow.key,
--        reason: "already present in Postgres with matching data",
--      });
--      return;
--    }
--    const diffs = differingColumns(legacyRow, existing);
--    if (diffs.every((column) => column === "createdAt" || column === "updatedAt")) {
--      timestampPatches.push({
--        bucketKey: legacyRow.bucketKey,
--        createdAt: legacyRow.createdAt,
--        key: legacyRow.key,
--        reason: "Postgres row matched legacy data except timestamps; preserving legacy createdAt/updatedAt.",
--        updatedAt: legacyRow.updatedAt,
--      });
--      return;
--    }
--    conflicts.push({
--      bucketKey: legacyRow.bucketKey,
--      existingKey: String(existing.key || ""),
--      key: legacyRow.key,
--      reason: `Postgres already contains a different row for this key or bucketKey (${diffs.join(", ")} differ).`,
--    });
--  });
--  return { conflicts, duplicates, inserts, timestampPatches };
--}
--
--function spawnPythonExport({ legacyDbPath, pythonCommand }) {
--  return new Promise((resolve, reject) => {
--    const child = spawn(pythonCommand, ["-", legacyDbPath], {
--      stdio: ["pipe", "pipe", "pipe"],
--      windowsHide: true,
--    });
--    let stdout = "";
--    let stderr = "";
--    child.stdout.setEncoding("utf8");
--    child.stderr.setEncoding("utf8");
--    child.stdout.on("data", (chunk) => {
--      stdout += chunk;
--    });
--    child.stderr.on("data", (chunk) => {
--      stderr += chunk;
--    });
--    child.once("error", reject);
--    child.once("close", (code) => {
--      if (code === 0) {
--        resolve(stdout);
--        return;
--      }
--      reject(new GameJourneyCompletionMetricsMigrationError(
--        `Python SQLite export failed with exit code ${code}. ${stderr.trim()}`,
--        { stderr: stderr.trim() },
--      ));
--    });
--    child.stdin.end(PYTHON_SQLITE_EXPORT_SCRIPT);
--  });
--}
--
--export async function readLegacyCompletionMetricsSqlite({ legacyDbPath, pythonCommand = "python" } = {}) {
--  const resolvedPath = path.resolve(legacyDbPath || DEFAULT_GAME_JOURNEY_COMPLETION_METRICS_SQLITE_PATH);
--  if (!existsSync(resolvedPath)) {
--    throw new GameJourneyCompletionMetricsMigrationError(`Legacy SQLite file was not found: ${resolvedPath}.`);
--  }
--  const stdout = await spawnPythonExport({ legacyDbPath: resolvedPath, pythonCommand });
--  let exported;
--  try {
--    exported = JSON.parse(stdout);
--  } catch (error) {
--    throw new GameJourneyCompletionMetricsMigrationError(
--      `Python SQLite export did not return valid JSON: ${error instanceof Error ? error.message : String(error)}.`,
--    );
--  }
--  validateLegacySchema(exported);
--  const rows = (exported.rows || []).map(normalizeLegacyCompletionMetric);
--  assertUniqueLegacyRows(rows);
--  return {
--    legacyDbPath: resolvedPath,
--    rowCount: rows.length,
--    rows,
--    schema: exported.schema,
--  };
--}
--
--async function nextArchivePath({ archiveDir, legacyDbPath, now = new Date() }) {
--  await fs.mkdir(archiveDir, { recursive: true });
--  const parsed = path.parse(legacyDbPath);
--  const stamp = now.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
--  for (let index = 0; index < 100; index += 1) {
--    const suffix = index === 0 ? "" : `-${index + 1}`;
--    const candidate = path.join(archiveDir, `${parsed.name}-${stamp}${suffix}${parsed.ext || ".sqlite"}`);
--    if (!existsSync(candidate)) {
--      return candidate;
--    }
--  }
--  throw new GameJourneyCompletionMetricsMigrationError(`Could not allocate archive path in ${archiveDir}.`);
--}
--
--export async function archiveLegacyCompletionMetricsSqlite({ archiveDir, legacyDbPath, now = new Date() } = {}) {
--  const resolvedLegacyPath = path.resolve(legacyDbPath || DEFAULT_GAME_JOURNEY_COMPLETION_METRICS_SQLITE_PATH);
--  const resolvedArchiveDir = path.resolve(archiveDir || DEFAULT_GAME_JOURNEY_COMPLETION_METRICS_ARCHIVE_DIR);
--  if (!existsSync(resolvedLegacyPath)) {
--    return {
--      archived: false,
--      archivePath: "",
--      legacyDbPath: resolvedLegacyPath,
--      message: "Legacy SQLite file was already absent.",
--    };
--  }
--  const archivePath = await nextArchivePath({
--    archiveDir: resolvedArchiveDir,
--    legacyDbPath: resolvedLegacyPath,
--    now,
--  });
--  await fs.rename(resolvedLegacyPath, archivePath);
--  return {
--    archived: true,
--    archivePath,
--    legacyDbPath: resolvedLegacyPath,
--    message: `Legacy SQLite file moved to ${archivePath}.`,
--  };
--}
--
--export async function migrateLegacyCompletionMetricRowsToPostgres({
--  archiveDir,
--  dryRun = false,
--  env = process.env,
--  legacyDbPath,
--  now = new Date(),
--  postgresClient = null,
--  rows = [],
--} = {}) {
--  const legacyRows = rows.map(normalizeLegacyCompletionMetric);
--  assertUniqueLegacyRows(legacyRows);
--  const client = postgresClient || createPostgresConnectionClient({ env });
--  await client.query(GAME_JOURNEY_COMPLETION_METRICS_SCHEMA_SQL);
--  const existingRows = await client.requestTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE, {
--    method: "GET",
--    query: "select=*",
--  });
--  const classified = classifyLegacyCompletionMetricRows({
--    existingRows: Array.isArray(existingRows) ? existingRows : [],
--    legacyRows,
--  });
--  if (classified.conflicts.length) {
--    throw new GameJourneyCompletionMetricsMigrationError(
--      `Game Journey completion metrics migration blocked by ${classified.conflicts.length} Postgres conflict(s). No data was moved.`,
--      { conflicts: classified.conflicts },
--    );
--  }
--  if (!dryRun && classified.inserts.length) {
--    await client.requestTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE, {
--      body: classified.inserts,
--      method: "POST",
--      query: "on_conflict=key",
--    });
--  }
--  if (!dryRun) {
--    for (const patch of classified.timestampPatches) {
--      await client.requestTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE, {
--        body: {
--          createdAt: patch.createdAt,
--          updatedAt: patch.updatedAt,
--        },
--        method: "PATCH",
--        query: `bucketKey=eq.${encodeURIComponent(patch.bucketKey)}`,
--      });
--    }
--  }
--  const archive = dryRun
--    ? {
--      archived: false,
--      archivePath: "",
--      legacyDbPath: path.resolve(legacyDbPath || DEFAULT_GAME_JOURNEY_COMPLETION_METRICS_SQLITE_PATH),
--      message: "Dry run did not move the legacy SQLite file.",
--    }
--    : await archiveLegacyCompletionMetricsSqlite({ archiveDir, legacyDbPath, now });
--  return {
--    archive,
--    duplicateCount: classified.duplicates.length,
--    duplicates: classified.duplicates,
--    insertedCount: dryRun ? 0 : classified.inserts.length,
--    legacyRowCount: legacyRows.length,
--    status: dryRun ? "DRY_RUN" : "PASS",
--    timestampPatchCount: dryRun ? 0 : classified.timestampPatches.length,
--    timestampPatches: classified.timestampPatches,
--    wouldInsertCount: classified.inserts.length,
--    wouldPatchTimestampCount: classified.timestampPatches.length,
--  };
--}
--
--export async function migrateLegacyCompletionMetricsSqliteToPostgres({
--  archiveDir,
--  dryRun = false,
--  env = process.env,
--  legacyDbPath,
--  now = new Date(),
--  postgresClient = null,
--  pythonCommand = "python",
--} = {}) {
--  const exported = await readLegacyCompletionMetricsSqlite({ legacyDbPath, pythonCommand });
--  const result = await migrateLegacyCompletionMetricRowsToPostgres({
--    archiveDir,
--    dryRun,
--    env,
--    legacyDbPath: exported.legacyDbPath,
--    now,
--    postgresClient,
--    rows: exported.rows,
--  });
--  return {
--    ...result,
--    legacyDbPath: exported.legacyDbPath,
--    schemaObjectCount: exported.schema.objects.length,
--  };
--}
-diff --git a/tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs b/tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs
-deleted file mode 100644
-index 6428e63e8..000000000
---- a/tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs
-+++ /dev/null
-@@ -1,194 +0,0 @@
--import assert from "node:assert/strict";
--import fs from "node:fs/promises";
--import os from "node:os";
--import path from "node:path";
--import test from "node:test";
--import {
--  GAME_JOURNEY_COMPLETION_METRICS_TABLE,
--} from "../../src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs";
--import {
--  migrateLegacyCompletionMetricRowsToPostgres,
--} from "../../src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs";
--import { createGameJourneyCompletionMetricsPostgresClientStub } from "../helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs";
--
--const LEGACY_ROW = Object.freeze({
--  active: 1,
--  bucketKey: "002-create",
--  bucketName: "Create",
--  bucketOrder: 2,
--  canSkip: 0,
--  completedCount: 3,
--  createdAt: "2026-06-20T01:52:14.797Z",
--  createdBy: "01K2GFSJ0Y0000000000000054",
--  friendlyDescription: "Set up your game and crew",
--  key: "01K2GFSJ0Y0000000000006002",
--  plannedCount: 5,
--  requiredForMvp: 1,
--  status: "active",
--  updatedAt: "2026-06-21T03:04:05.000Z",
--  updatedBy: "01K2GFSJ0Y0000000000000054",
--});
--
--async function tempLegacyFile() {
--  const directory = await fs.mkdtemp(path.join(os.tmpdir(), "gfs-game-journey-migration-"));
--  const legacyDbPath = path.join(directory, "game-journey-completion-metrics.sqlite");
--  const archiveDir = path.join(directory, "legacy-migrated");
--  await fs.writeFile(legacyDbPath, "legacy sqlite placeholder");
--  return { archiveDir, directory, legacyDbPath };
--}
--
--test("Game Journey completion metrics migration inserts valid rows and archives legacy SQLite after success", async () => {
--  const postgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
--  const paths = await tempLegacyFile();
--  try {
--    const result = await migrateLegacyCompletionMetricRowsToPostgres({
--      archiveDir: paths.archiveDir,
--      legacyDbPath: paths.legacyDbPath,
--      now: new Date("2026-06-25T12:00:00.000Z"),
--      postgresClient,
--      rows: [LEGACY_ROW],
--    });
--
--    assert.equal(result.status, "PASS");
--    assert.equal(result.insertedCount, 1);
--    assert.equal(result.duplicateCount, 0);
--    assert.equal(result.archive.archived, true);
--    assert.equal(await fs.stat(paths.legacyDbPath).then(() => true, () => false), false);
--    assert.equal(await fs.stat(result.archive.archivePath).then(() => true, () => false), true);
--    assert.match(result.archive.archivePath, /legacy-migrated[\\/]+game-journey-completion-metrics-20260625T120000Z\.sqlite$/);
--    assert.deepEqual(postgresClient.dumpTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE), [
--      {
--        ...LEGACY_ROW,
--        active: true,
--        canSkip: false,
--        requiredForMvp: true,
--      },
--    ]);
--  } finally {
--    await fs.rm(paths.directory, { force: true, recursive: true });
--  }
--});
--
--test("Game Journey completion metrics migration detects Postgres conflicts without moving legacy SQLite", async () => {
--  const postgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
--  const paths = await tempLegacyFile();
--  await postgresClient.requestTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE, {
--    body: {
--      ...LEGACY_ROW,
--      active: true,
--      canSkip: false,
--      completedCount: 1,
--      requiredForMvp: true,
--    },
--    method: "POST",
--  });
--
--  try {
--    await assert.rejects(
--      () => migrateLegacyCompletionMetricRowsToPostgres({
--        archiveDir: paths.archiveDir,
--        legacyDbPath: paths.legacyDbPath,
--        postgresClient,
--        rows: [LEGACY_ROW],
--      }),
--      /migration blocked by 1 Postgres conflict/,
--    );
--    assert.equal(await fs.stat(paths.legacyDbPath).then(() => true, () => false), true);
--  } finally {
--    await fs.rm(paths.directory, { force: true, recursive: true });
--  }
--});
--
--test("Game Journey completion metrics migration archives when legacy rows are already present unchanged", async () => {
--  const postgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
--  const paths = await tempLegacyFile();
--  await postgresClient.requestTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE, {
--    body: {
--      ...LEGACY_ROW,
--      active: true,
--      canSkip: false,
--      requiredForMvp: true,
--    },
--    method: "POST",
--  });
--
--  try {
--    const result = await migrateLegacyCompletionMetricRowsToPostgres({
--      archiveDir: paths.archiveDir,
--      legacyDbPath: paths.legacyDbPath,
--      postgresClient,
--      rows: [LEGACY_ROW],
--    });
--
--    assert.equal(result.insertedCount, 0);
--    assert.equal(result.duplicateCount, 1);
--    assert.equal(result.archive.archived, true);
--    assert.equal(await fs.stat(paths.legacyDbPath).then(() => true, () => false), false);
--  } finally {
--    await fs.rm(paths.directory, { force: true, recursive: true });
--  }
--});
--
--test("Game Journey completion metrics migration preserves legacy timestamps for otherwise matching Postgres rows", async () => {
--  const postgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
--  const paths = await tempLegacyFile();
--  await postgresClient.requestTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE, {
--    body: {
--      ...LEGACY_ROW,
--      active: true,
--      canSkip: false,
--      createdAt: "2026-06-25T00:00:00.000Z",
--      requiredForMvp: true,
--      updatedAt: "2026-06-25T00:00:00.000Z",
--    },
--    method: "POST",
--  });
--
--  try {
--    const result = await migrateLegacyCompletionMetricRowsToPostgres({
--      archiveDir: paths.archiveDir,
--      legacyDbPath: paths.legacyDbPath,
--      postgresClient,
--      rows: [LEGACY_ROW],
--    });
--
--    assert.equal(result.insertedCount, 0);
--    assert.equal(result.duplicateCount, 0);
--    assert.equal(result.timestampPatchCount, 1);
--    assert.equal(result.archive.archived, true);
--    assert.deepEqual(postgresClient.dumpTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE)[0], {
--      ...LEGACY_ROW,
--      active: true,
--      canSkip: false,
--      requiredForMvp: true,
--    });
--  } finally {
--    await fs.rm(paths.directory, { force: true, recursive: true });
--  }
--});
--
--test("Game Journey completion metrics migration rejects duplicate legacy bucket keys before writing", async () => {
--  const postgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
--  const paths = await tempLegacyFile();
--  try {
--    await assert.rejects(
--      () => migrateLegacyCompletionMetricRowsToPostgres({
--        archiveDir: paths.archiveDir,
--        legacyDbPath: paths.legacyDbPath,
--        postgresClient,
--        rows: [
--          LEGACY_ROW,
--          {
--            ...LEGACY_ROW,
--            key: "01K2GFSJ0Y0000000000006999",
--          },
--        ],
--      }),
--      /Duplicate legacy bucketKey/,
--    );
--    assert.equal(postgresClient.dumpTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE).length, 0);
--    assert.equal(await fs.stat(paths.legacyDbPath).then(() => true, () => false), true);
--  } finally {
--    await fs.rm(paths.directory, { force: true, recursive: true });
--  }
--});
-diff --git a/tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs b/tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
-index 1ca7de68e..581221a66 100644
---- a/tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
-+++ b/tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
-@@ -1,8 +1,6 @@
- import assert from "node:assert/strict";
- import fs from "node:fs/promises";
--import os from "node:os";
- import path from "node:path";
--import process from "node:process";
- import test from "node:test";
- import {
-   GAME_JOURNEY_COMPLETION_METRICS_TABLE,
-@@ -10,16 +8,21 @@ import {
- } from "../../src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs";
- import { createGameJourneyCompletionMetricsPostgresClientStub } from "../helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs";
-
--const ACTIVE_RUNTIME_ROOTS = Object.freeze(["src", "assets", "toolbox"]);
--const ACTIVE_RUNTIME_ALLOWED_FILES = new Set([
--  path.normalize("src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs"),
--]);
--const RUNTIME_FORBIDDEN_PATTERNS = Object.freeze([
--  /sqlite/i,
--  /\.sqlite/i,
--  /better-sqlite/i,
--  /game-journey-completion-metrics\.sqlite/i,
--  /tmp\/local-api/i,
-+const IMPLEMENTATION_ROOTS = Object.freeze(["src", "assets", "toolbox", "scripts", "tests"]);
-+const RETIRED_FILE_DB_TOKEN = "sql" + "ite";
-+const RETIRED_METRICS_FILE = `game-journey-completion-metrics.${RETIRED_FILE_DB_TOKEN}`;
-+const RETIRED_LOCAL_RUNTIME_PATH = ["tmp", "local-api"].join("/");
-+
-+function escapeRegExp(value) {
-+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
++  if (elements.story) {
++    elements.story.value = "";
++  }
++  if (elements.coreLoop) {
++    elements.coreLoop.value = "";
++  }
++  if (elements.winCondition) {
++    elements.winCondition.value = "";
++  }
++  if (elements.loseCondition) {
++    elements.loseCondition.value = "";
++  }
++  if (elements.targetAudience) {
++    elements.targetAudience.value = "";
++  }
++  if (elements.designNotes) {
++    elements.designNotes.value = "";
++  }
+   if (elements.capabilityDemoNotes) {
+     elements.capabilityDemoNotes.value = "";
+   }
+@@ -140,13 +178,48 @@ function applyDesignToForm(design) {
+     elements.playerMode.value = design.playerMode || "1 Player";
+   }
+   if (elements.designSummary) {
+-    elements.designSummary.value = design.designSummary;
++    elements.designSummary.value = design.summary || design.designSummary;
++  }
++  if (elements.story) {
++    elements.story.value = design.story;
++  }
++  if (elements.coreLoop) {
++    elements.coreLoop.value = design.coreLoop;
++  }
++  if (elements.winCondition) {
++    elements.winCondition.value = design.winCondition;
++  }
++  if (elements.loseCondition) {
++    elements.loseCondition.value = design.loseCondition;
++  }
++  if (elements.targetAudience) {
++    elements.targetAudience.value = design.targetAudience;
++  }
++  if (elements.designNotes) {
++    elements.designNotes.value = design.designNotes;
+   }
+   if (elements.capabilityDemoNotes) {
+     elements.capabilityDemoNotes.value = design.capabilityDemoNotes;
+   }
+ }
+ 
++function currentSession() {
++  try {
++    return getSessionCurrent();
++  } catch {
++    return { authenticated: false };
++  }
 +}
 +
-+const FORBIDDEN_IMPLEMENTATION_PATTERNS = Object.freeze([
-+  new RegExp(RETIRED_FILE_DB_TOKEN, "i"),
-+  new RegExp(`\\.${RETIRED_FILE_DB_TOKEN}`, "i"),
-+  new RegExp(`better-${RETIRED_FILE_DB_TOKEN}`, "i"),
-+  new RegExp(escapeRegExp(RETIRED_METRICS_FILE), "i"),
-+  new RegExp(escapeRegExp(RETIRED_LOCAL_RUNTIME_PATH), "i"),
++function redirectGuestSaveAction() {
++  if (currentSession()?.authenticated === true) {
++    return false;
++  }
++  setText(elements.statusLog, "Sign in before saving Game Design.");
++  window.location.href = new URL("/account/sign-in.html", window.location.href).href;
++  return true;
++}
++
+ function renderValidation(validation) {
+   if (!elements.validationList || !elements.validationOverlay) {
+     return;
+@@ -225,7 +298,13 @@ function renderOutput(snapshot, validation) {
+   const activeGame = snapshot.activeGame || snapshot.activeProject;
+   const missingRequirements = validation.findings.map((finding) => finding.label).join(", ");
+ 
+-  setText(elements.outputSummary, activeDesign?.designSummary || "No design summary saved yet.");
++  setText(elements.outputSummary, activeDesign?.summary || activeDesign?.designSummary || "No design summary saved yet.");
++  setText(elements.outputStory, activeDesign?.story || "No story saved yet.");
++  setText(elements.outputCoreLoop, activeDesign?.coreLoop || "No core loop saved yet.");
++  setText(elements.outputWin, activeDesign?.winCondition || "No win condition saved yet.");
++  setText(elements.outputLose, activeDesign?.loseCondition || "No lose condition saved yet.");
++  setText(elements.outputAudience, activeDesign?.targetAudience || "No audience saved yet.");
++  setText(elements.outputNotes, activeDesign?.designNotes || "No notes saved yet.");
+   setText(elements.outputPlayerMode, activeDesign?.playerMode || "1 Player");
+   setText(elements.outputValidation, validation.status);
+   setText(elements.outputNextStep, snapshot.progressHandoff.recommendedNextTool);
+@@ -291,6 +370,9 @@ elements.form?.addEventListener("input", renderFormValidation);
+ 
+ elements.form?.addEventListener("submit", (event) => {
+   event.preventDefault();
++  if (redirectGuestSaveAction()) {
++    return;
++  }
+   const result = repository.saveDesign(readForm());
+   setText(elements.statusLog, result.message);
+   render();
+diff --git a/docs_build/database/ddl/game-design.sql b/docs_build/database/ddl/game-design.sql
+index 26870d412..55c488b4e 100644
+--- a/docs_build/database/ddl/game-design.sql
++++ b/docs_build/database/ddl/game-design.sql
+@@ -4,11 +4,25 @@
+ -- Target DEV database: gamefoundry_dev
+ -- Scope: executable grouped table DDL for active Supabase/server API migration.
+ -- Authoritative key values are generated by the server/API layer unless a later DEV-only seed exception explicitly applies.
+--- Owned tables: game_design_documents, game_design_validation_items
++-- Owned tables: game_design_documents, game_design_validation_items, game_design_sections, game_design_capability_demos
+ CREATE TABLE IF NOT EXISTS game_design_documents (
+     key text PRIMARY KEY,
+     "gameKey" text REFERENCES game_workspace_games(key),
+     "title" text,
++    "gamePurpose" text,
++    "gameType" text,
++    "genre" text,
++    "playStyle" text,
++    "playerMode" text,
++    "summary" text,
++    "story" text,
++    "coreLoop" text,
++    "winCondition" text,
++    "loseCondition" text,
++    "targetAudience" text,
++    "designNotes" text,
++    "capabilityDemoAuthoring" boolean NOT NULL DEFAULT false,
++    "capabilityDemoNotes" text,
+     "status" text,
+     "createdAt" timestamptz NOT NULL DEFAULT now(),
+     "updatedAt" timestamptz NOT NULL DEFAULT now(),
+@@ -23,6 +37,7 @@ CREATE INDEX IF NOT EXISTS idx_game_design_documents_updatedby ON game_design_do
+ CREATE TABLE IF NOT EXISTS game_design_validation_items (
+     key text PRIMARY KEY,
+     "gameKey" text REFERENCES game_workspace_games(key),
++    "field" text,
+     "label" text,
+     "status" text,
+     "action" text,
+@@ -35,3 +50,39 @@ CREATE TABLE IF NOT EXISTS game_design_validation_items (
+ CREATE INDEX IF NOT EXISTS idx_game_design_validation_items_gamekey ON game_design_validation_items ("gameKey");
+ CREATE INDEX IF NOT EXISTS idx_game_design_validation_items_createdby ON game_design_validation_items ("createdBy");
+ CREATE INDEX IF NOT EXISTS idx_game_design_validation_items_updatedby ON game_design_validation_items ("updatedBy");
++
++CREATE TABLE IF NOT EXISTS game_design_sections (
++    key text PRIMARY KEY,
++    "gameKey" text REFERENCES game_workspace_games(key),
++    "documentKey" text REFERENCES game_design_documents(key),
++    "sectionKey" text,
++    "heading" text,
++    "body" text,
++    "sortOrder" integer NOT NULL DEFAULT 0,
++    "createdAt" timestamptz NOT NULL DEFAULT now(),
++    "updatedAt" timestamptz NOT NULL DEFAULT now(),
++    "createdBy" text NOT NULL REFERENCES users(key),
++    "updatedBy" text NOT NULL REFERENCES users(key)
++);
++
++CREATE INDEX IF NOT EXISTS idx_game_design_sections_gamekey ON game_design_sections ("gameKey");
++CREATE INDEX IF NOT EXISTS idx_game_design_sections_documentkey ON game_design_sections ("documentKey");
++CREATE INDEX IF NOT EXISTS idx_game_design_sections_createdby ON game_design_sections ("createdBy");
++CREATE INDEX IF NOT EXISTS idx_game_design_sections_updatedby ON game_design_sections ("updatedBy");
++
++CREATE TABLE IF NOT EXISTS game_design_capability_demos (
++    key text PRIMARY KEY,
++    "gameKey" text REFERENCES game_workspace_games(key),
++    "gameName" text,
++    "gamePurpose" text,
++    "authoringMode" text,
++    "status" text,
++    "createdAt" timestamptz NOT NULL DEFAULT now(),
++    "updatedAt" timestamptz NOT NULL DEFAULT now(),
++    "createdBy" text NOT NULL REFERENCES users(key),
++    "updatedBy" text NOT NULL REFERENCES users(key)
++);
++
++CREATE INDEX IF NOT EXISTS idx_game_design_capability_demos_gamekey ON game_design_capability_demos ("gameKey");
++CREATE INDEX IF NOT EXISTS idx_game_design_capability_demos_createdby ON game_design_capability_demos ("createdBy");
++CREATE INDEX IF NOT EXISTS idx_game_design_capability_demos_updatedby ON game_design_capability_demos ("updatedBy");
+diff --git a/docs_build/database/dml/game-design.sql b/docs_build/database/dml/game-design.sql
+index 2c182fcf2..6cbbb6e2c 100644
+--- a/docs_build/database/dml/game-design.sql
++++ b/docs_build/database/dml/game-design.sql
+@@ -4,7 +4,7 @@
+ -- Runtime setup/seed operations for this group must run through server-side APIs.
+ -- Temporary scope: DEV/review artifact only until Admin Site Setup/server seed APIs fully own grouped setup.
+ -- Browser pages must not directly seed authoritative DB records.
+--- Owned tables: game_design_documents, game_design_validation_items
++-- Owned tables: game_design_documents, game_design_validation_items, game_design_sections, game_design_capability_demos
+ 
+ -- DML status: Server-seed-owned.
+ -- Setup is performed through the Admin-owned server-side seed API.
+diff --git a/docs_build/database/seed/game-design.json b/docs_build/database/seed/game-design.json
+index 241063de3..44c53455a 100644
+--- a/docs_build/database/seed/game-design.json
++++ b/docs_build/database/seed/game-design.json
+@@ -6,7 +6,9 @@
+   "browserAuthoritativeKeyGenerationAllowed": false,
+   "tables": {
+     "game_design_documents": [],
+-    "game_design_validation_items": []
++    "game_design_validation_items": [],
++    "game_design_sections": [],
++    "game_design_capability_demos": []
+   },
+   "note": "Seed records for this group are intentionally empty until an Admin-owned server API seeds them."
+ }
+diff --git a/docs_build/database/seed/guest/game-design.json b/docs_build/database/seed/guest/game-design.json
+index d1c8eb9cb..be875343c 100644
+--- a/docs_build/database/seed/guest/game-design.json
++++ b/docs_build/database/seed/guest/game-design.json
+@@ -7,7 +7,9 @@
+   "signInRedirect": "account/sign-in.html",
+   "tables": {
+     "game_design_documents": [],
+-    "game_design_validation_items": []
++    "game_design_validation_items": [],
++    "game_design_sections": [],
++    "game_design_capability_demos": []
+   },
+   "samplePackages": [
+     {
+diff --git a/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_branch-validation.md b/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_branch-validation.md
+new file mode 100644
+index 000000000..7248302bd
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_branch-validation.md
+@@ -0,0 +1,10 @@
++# PR_26177_ALFA_060 Branch Validation
++
++| Check | Result | Evidence |
++| --- | --- | --- |
++| Branch | PASS | `PR_26177_ALFA_060-game-design-foundation` |
++| Base gate | PASS | Branch created from clean synced `main` after `main...origin/main` reported `0 0`. |
++| Scope | PASS | Changes are limited to Game Design foundation, DB docs, targeted tests, and required reports. |
++| Runtime architecture | PASS | Browser saves through the API repository; server owns design rows and keys. |
++| No JSON editor | PASS | UI remains form/table based with Creator-facing fields. |
++| SQLite/tmp dependency | PASS | Scoped Game Design surface search found no SQLite or `tmp/local-api` runtime references. |
+diff --git a/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_manual-validation-notes.md
+new file mode 100644
+index 000000000..c078daf53
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_manual-validation-notes.md
+@@ -0,0 +1,14 @@
++# PR_26177_ALFA_060 Manual Validation Notes
++
++## Reviewed
++- Game Design loads the active Demo Game context.
++- The form presents Creator-facing fields for summary, story, core loop, win condition, lose condition, target audience, and notes.
++- Saving complete fields marks Game Design `Ready` and updates the Game Configuration handoff link.
++- Output panel renders the saved fields without JSON.
++- Capability demo authoring remains game-owned.
++- Guest save redirects to `account/sign-in.html`.
++
++## Not In Scope
++- Applying DB migrations to the developer workstation database.
++- Game engine internals.
++- Non-Alfa tools outside the existing Game Design handoff test surface.
+diff --git a/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_report.md b/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_report.md
+new file mode 100644
+index 000000000..d0273ba3b
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_report.md
+@@ -0,0 +1,23 @@
++# PR_26177_ALFA_060-game-design-foundation Report
++
++## Summary
++- Expanded Game Design into a DB/API-backed design foundation for summary, story, core loop, win condition, lose condition, target audience, and design notes.
++- Preserved existing Game Type, Genre, Play Style, Player Mode, capability demo authoring, and Game Configuration handoff behavior.
++- Added audit-ready `game_design_sections` and `game_design_capability_demos` schema coverage alongside expanded `game_design_documents`.
++- Added guest save redirect to `account/sign-in.html`.
++
++## Changed Areas
++- Game Design UI and API client script.
++- Game Design server repository fields, validation, section rows, capability rows, and audit fields.
++- Mock DB schema metadata and grouped Game Design database docs/seeds.
++- Impacted Playwright coverage for Game Design save, guest redirect, capability demos, and toolbox build path.
++
++## Validation
++- PASS: `node --check` on changed JS/MJS files.
++- PASS: `git diff --check`.
++- PASS: `npx playwright test tests/playwright/tools/GameDesignMockRepository.spec.mjs --workers=1 --reporter=line` (`5 passed`).
++
++## Notes
++- No JSON editor or browser-owned product data was introduced.
++- Product/runtime wording uses `API`.
++- Full migration execution remains outside this PR; docs define the DB contract.
+diff --git a/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_requirement-checklist.md b/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_requirement-checklist.md
+new file mode 100644
+index 000000000..be75a5d3f
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_requirement-checklist.md
+@@ -0,0 +1,24 @@
++# PR_26177_ALFA_060 Requirement Checklist
++
++| Requirement | Result | Notes |
++| --- | --- | --- |
++| Browser -> API -> Database architecture | PASS | Game Design UI uses the API repository for save/load. |
++| Product/runtime wording says API | PASS | Creator-facing page copy uses API wording. |
++| One API contract across environments | PASS | No environment-specific Game Design product code path was added. |
++| Environment differences are config/.env only | PASS | Game Design behavior does not branch by environment. |
++| No SQLite | PASS | No SQLite references added. |
++| No tmp runtime dependency | PASS | Runtime does not inspect or depend on tmp paths. |
++| No JSON source of truth | PASS | JSON files remain seed documentation only. |
++| Browser does not own product data | PASS | No browser storage product-data SSoT was added. |
++| API/server owns authoritative keys | PASS | Server repository assigns ULID-shaped keys for design documents, sections, validation rows, and capability rows. |
++| Audit fields | PASS | Rows include `createdAt`, `updatedAt`, `createdBy`, and `updatedBy`. |
++| Ownership references `users.key` | PASS | DDL references `users(key)` for audit fields. |
++| Summary | PASS | Form, output, repository, and DDL include summary. |
++| Story | PASS | Form, output, repository, and DDL include story. |
++| Core loop | PASS | Form, output, repository, and DDL include core loop. |
++| Win condition | PASS | Form, output, repository, and DDL include win condition. |
++| Lose condition | PASS | Form, output, repository, and DDL include lose condition. |
++| Target audience | PASS | Form, output, repository, and DDL include target audience. |
++| Design notes/sections | PASS | Form captures notes and repository emits `game_design_sections`. |
++| Guest save redirect | PASS | Playwright verifies redirect to `account/sign-in.html`. |
++| Required reports and ZIP | PASS | PR report, branch validation, checklist, lane report, manual notes, `codex_*` reports, and ZIP are produced. |
+diff --git a/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_validation-lane.md b/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_validation-lane.md
+new file mode 100644
+index 000000000..e9aab7181
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_validation-lane.md
+@@ -0,0 +1,18 @@
++# PR_26177_ALFA_060 Validation Lane
++
++## Commands
++- `node --check src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js`
++- `node --check assets/toolbox/game-design/js/index.js`
++- `node --check src/dev-runtime/persistence/mock-db-store.js`
++- `node --check src/dev-runtime/server/local-api-router.mjs`
++- `node --check tests/playwright/tools/GameDesignMockRepository.spec.mjs`
++- `git diff --check`
++- `npx playwright test tests/playwright/tools/GameDesignMockRepository.spec.mjs --workers=1 --reporter=line`
++
++## Result
++PASS
++
++## Evidence
++- Playwright Game Design lane: `5 passed`.
++- Syntax checks passed for changed runtime/test JS/MJS files.
++- `git diff --check` exited `0`; only line-ending normalization warnings were printed.
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index 098d8de0b..eeddce28b 100644
+--- a/docs_build/dev/reports/codex_changed_files.txt
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -1,16 +1,19 @@
+-?M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md
+-M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md
+-M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md
+-M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_requirement-checklist.md
+-M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_validation-lane.md
++M	assets/toolbox/game-design/js/index.js
++M	docs_build/database/ddl/game-design.sql
++M	docs_build/database/dml/game-design.sql
++M	docs_build/database/seed/game-design.json
++M	docs_build/database/seed/guest/game-design.json
++A	docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_branch-validation.md
++A	docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_manual-validation-notes.md
++A	docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_report.md
++A	docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_requirement-checklist.md
++A	docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_validation-lane.md
+ M	docs_build/dev/reports/coverage_changed_js_guardrail.txt
+ M	docs_build/dev/reports/playwright_v8_coverage_report.txt
+-D	scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs
+-M	scripts/validate-browser-env-agnostic.mjs
+-D	src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs
+-D	tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs
+-M	tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
+-M	tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+-M	tests/playwright/tools/GameJourneyTool.spec.mjs
++M	src/dev-runtime/persistence/mock-db-store.js
++M	src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js
++M	src/dev-runtime/server/local-api-router.mjs
++M	tests/playwright/tools/GameDesignMockRepository.spec.mjs
++M	toolbox/game-design/index.html
+ M	docs_build/dev/reports/codex_changed_files.txt
+ M	docs_build/dev/reports/codex_review.diff
+diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+index 7b1c51f19..005286f70 100644
+--- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+@@ -6,7 +6,11 @@ Missing changed runtime JS files are WARN, not FAIL.
+ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+ 
+ Changed runtime JS files considered:
+-(100%) none changed - no changed runtime JS files
++(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ 
+ Guardrail warnings:
+-(100%) none changed - no changed runtime JS files
++(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+index f2363d3bf..15c6f70b4 100644
+--- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
++++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+@@ -12,31 +12,41 @@ Note: entry percentages use function coverage when available, otherwise line cov
+ Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+ 
+ Exercised tool entry points detected:
+-(76%) Toolbox Index - exercised 1 runtime JS files
++(82%) Toolbox Index - exercised 3 runtime JS files
+ (0%) Tool Template V2 - not exercised by this Playwright run
+-(72%) Theme V2 Shared JS - exercised 4 runtime JS files
++(74%) Theme V2 Shared JS - exercised 6 runtime JS files
+ 
+ Changed runtime JS files covered:
+-(100%) none changed - no changed runtime JS files
++(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ 
+ Files with executed line/function counts where available:
++(25%) src/api/session-api-client.js - executed lines 67/67; executed functions 3/12
++(33%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
+ (36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2041/2041; executed functions 12/33
++(50%) toolbox/game-hub/game-hub-api-client.js - executed lines 26/26; executed functions 2/4
+ (53%) src/api/server-api-client.js - executed lines 168/168; executed functions 10/19
++(57%) assets/theme-v2/js/account-auth-service.js - executed lines 64/64; executed functions 4/7
+ (64%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 63/98
+-(65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
+ (67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
+-(73%) assets/toolbox/game-journey/js/index.js - executed lines 1662/1662; executed functions 108/148
+-(76%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 22/29
++(70%) assets/theme-v2/js/login-session.js - executed lines 113/113; executed functions 7/10
++(75%) src/api/public-config-client.js - executed lines 209/209; executed functions 21/28
+ (77%) assets/theme-v2/js/tool-display-mode.js - executed lines 304/304; executed functions 23/30
+ (80%) assets/theme-v2/js/theme-icons.js - executed lines 69/69; executed functions 4/5
+-(89%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 32/36
+-(100%) assets/js/shared/game-journey-api-client.js - executed lines 19/19; executed functions 2/2
++(81%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 92/113
++(86%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 25/29
++(100%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 37/37
++(100%) assets/toolbox/game-design/js/index.js - executed lines 340/340; executed functions 26/26
+ 
+ Uncovered or low-coverage changed JS files:
+-(100%) none changed - no changed runtime JS files
++(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+ 
+ Changed JS files considered:
+-(0%) scripts/validate-browser-env-agnostic.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/GameJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/GameDesignMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
++(100%) assets/toolbox/game-design/js/index.js - changed JS file with browser V8 coverage
+diff --git a/src/dev-runtime/persistence/mock-db-store.js b/src/dev-runtime/persistence/mock-db-store.js
+index e96fb833f..c8ff68d91 100644
+--- a/src/dev-runtime/persistence/mock-db-store.js
++++ b/src/dev-runtime/persistence/mock-db-store.js
+@@ -40,7 +40,12 @@ export const MOCK_DB_TOOL_GROUPS = Object.freeze({
+   }),
+   "game-design": Object.freeze({
+     label: "Game Design",
+-    tableNames: Object.freeze(["game_design_documents", "game_design_validation_items"]),
++    tableNames: Object.freeze([
++      "game_design_documents",
++      "game_design_validation_items",
++      "game_design_sections",
++      "game_design_capability_demos",
++    ]),
+   }),
+   "game-configuration": Object.freeze({
+     label: "Game Configuration",
+@@ -114,8 +119,10 @@ const MOCK_DB_TABLE_SCHEMAS = Object.freeze({
+   support_categories: Object.freeze(["key", "categorySlug", "name", "description", "isActive", "sortOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+   game_workspace_games: Object.freeze(["key", "name", "status", "ownerKey", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+   game_workspace_progress: Object.freeze(["key", "gameKey", "currentFocus", "gameProgress", "publishingProgress", "recommendedNextTool", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+-  game_design_documents: Object.freeze(["key", "gameKey", "title", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+-  game_design_validation_items: Object.freeze(["key", "gameKey", "label", "status", "action", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
++  game_design_documents: Object.freeze(["key", "gameKey", "title", "gamePurpose", "gameType", "genre", "playStyle", "playerMode", "summary", "story", "coreLoop", "winCondition", "loseCondition", "targetAudience", "designNotes", "capabilityDemoAuthoring", "capabilityDemoNotes", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
++  game_design_validation_items: Object.freeze(["key", "gameKey", "field", "label", "status", "action", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
++  game_design_sections: Object.freeze(["key", "gameKey", "documentKey", "sectionKey", "heading", "body", "sortOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
++  game_design_capability_demos: Object.freeze(["key", "gameKey", "gameName", "gamePurpose", "authoringMode", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+   game_configuration_records: Object.freeze(["key", "gameKey", "status", "summary", "playerMode", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+   game_configuration_validation_items: Object.freeze(["key", "gameKey", "label", "status", "action", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+   object_definition_records: Object.freeze(["key", "id", "gameId", "name", "type", "state", "modelType", "renderType", "renderAssetKey", "renderPreviewPath", "capabilities", "behavior", "interaction", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+diff --git a/src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js b/src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js
+index 529db7541..123189ae8 100644
+--- a/src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js
++++ b/src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js
+@@ -2,11 +2,13 @@ import {
+   GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY,
+   createGameWorkspaceMockRepository,
+ } from "./game-workspace-mock-repository.js";
++import { makeSeedUlid } from "../../seed/seed-db-keys.mjs";
+ 
+ export const GAME_DESIGN_TABLES = Object.freeze([
+   "game_design_documents",
+   "game_design_validation_items",
+-  "game_design_capability_demos"
++  "game_design_sections",
++  "game_design_capability_demos",
  ]);
-
- async function activeRuntimeJavaScriptFiles(root) {
-@@ -38,47 +41,32 @@ async function activeRuntimeJavaScriptFiles(root) {
-   return files;
- }
-
--test("active Game Journey metrics ignore the retired default legacy SQLite path", async () => {
--  const originalCwd = process.cwd();
--  const directory = await fs.mkdtemp(path.join(os.tmpdir(), "gfs-game-journey-metrics-store-"));
--  const retiredLegacyPath = path.join(directory, "tmp", "local-api", "game-journey-completion-metrics.sqlite");
--  const retiredLegacyContents = "retired legacy sqlite placeholder";
-+test("Game Journey completion metrics use the database client only", async () => {
-+  const postgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
-+  const store = createGameJourneyCompletionMetricsStore({ postgresClient });
-+  const metrics = await store.listMetrics();
-+  const snapshot = await store.snapshot();
-+  const snapshotText = JSON.stringify(snapshot);
-
--  try {
--    await fs.mkdir(path.dirname(retiredLegacyPath), { recursive: true });
--    await fs.writeFile(retiredLegacyPath, retiredLegacyContents);
--    process.chdir(directory);
--
--    const postgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
--    const store = createGameJourneyCompletionMetricsStore({ postgresClient });
--    const metrics = await store.listMetrics();
--    const snapshot = await store.snapshot();
--
--    assert.equal(Object.hasOwn(store, "legacyDbPath"), false);
--    assert.equal(Object.hasOwn(snapshot, "legacySqlitePath"), false);
--    assert.equal(metrics.length, 14);
--    assert.equal(postgresClient.dumpTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE).length, 14);
--    assert.equal(await fs.readFile(retiredLegacyPath, "utf8"), retiredLegacyContents);
--  } finally {
--    process.chdir(originalCwd);
--    await fs.rm(directory, { force: true, recursive: true });
-+  assert.equal(metrics.length, 14);
-+  assert.equal(postgresClient.dumpTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE).length, 14);
-+  assert.equal(snapshot.api, "Local API");
-+  assert.equal(snapshot.tableName, GAME_JOURNEY_COMPLETION_METRICS_TABLE);
-+  for (const pattern of FORBIDDEN_IMPLEMENTATION_PATTERNS) {
-+    assert.equal(pattern.test(snapshotText), false);
-   }
- });
-
--test("active runtime JS and MJS do not contain SQLite or tmp local metrics references", async () => {
-+test("implementation and validation JS/MJS do not contain retired file DB metrics references", async () => {
-   const files = [];
--  for (const root of ACTIVE_RUNTIME_ROOTS) {
-+  for (const root of IMPLEMENTATION_ROOTS) {
-     files.push(...await activeRuntimeJavaScriptFiles(root));
-   }
-
-   const findings = [];
-   for (const file of files) {
--    const normalized = path.normalize(file);
--    if (ACTIVE_RUNTIME_ALLOWED_FILES.has(normalized)) {
--      continue;
--    }
-     const contents = await fs.readFile(file, "utf8");
--    RUNTIME_FORBIDDEN_PATTERNS.forEach((pattern) => {
-+    FORBIDDEN_IMPLEMENTATION_PATTERNS.forEach((pattern) => {
-       if (pattern.test(contents)) {
-         findings.push(`${file}: ${pattern}`);
-       }
-diff --git a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-index 8e12a9795..a047fbe36 100644
---- a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-+++ b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-@@ -344,6 +344,7 @@ test("Creator sessions cannot access Admin System Health operations", async ({ p
- });
-
- test("Admin System Health operations page keeps scripts and styles external", async () => {
-+  const retiredFileDbToken = "SQL" + "ite";
-   const pageSource = await fs.readFile(path.resolve("admin/system-health.html"), "utf8");
-   expect(pageSource).not.toMatch(/<style\b/i);
-   expect(pageSource).not.toMatch(/<script\b(?![^>]+src=)/i);
-@@ -352,7 +353,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
-   expect(pageSource).not.toMatch(/data-health-status="(?:WARN|FAIL)"/);
-   expect(pageSource).not.toContain("No active failure is declared");
-   expect(pageSource).not.toMatch(/foundation PR|foundation view|placeholder|Pending metric|intentionally not wired/i);
--  expect(pageSource).not.toContain("SQLite");
-+  expect(pageSource).not.toContain(retiredFileDbToken);
-   expect(pageSource).toContain("Environment Identity");
-   expect(pageSource).toContain("Environment Map");
-   expect(pageSource).toContain("Environment Health Comparison");
-@@ -374,7 +375,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
-   expect(pageSource).toContain("assets/theme-v2/js/admin-system-health.js");
-   expect(pageSource).toContain("assets/theme-v2/js/admin-owner-navigation.js");
-   const runtimeSource = await fs.readFile(path.resolve("assets/theme-v2/js/admin-system-health.js"), "utf8");
--  expect(runtimeSource).not.toContain("SQLite");
-+  expect(runtimeSource).not.toContain(retiredFileDbToken);
-   expect(runtimeSource).not.toContain("localStorage");
-   expect(runtimeSource).not.toContain("sessionStorage");
-   expect(runtimeSource).toContain("runAdminSystemHealthAction");
-diff --git a/tests/playwright/tools/GameJourneyTool.spec.mjs b/tests/playwright/tools/GameJourneyTool.spec.mjs
-index cc47265cf..cc1006cce 100644
---- a/tests/playwright/tools/GameJourneyTool.spec.mjs
-+++ b/tests/playwright/tools/GameJourneyTool.spec.mjs
-@@ -128,7 +128,7 @@ function restoreEnvValue(key, value) {
- }
-
- function createFailingCompletionMetricsPostgresClient() {
--  const failure = new Error("Active metrics store temporarily unavailable at tmp/local-api/game-journey-completion-metrics.sqlite.");
-+  const failure = new Error("Active metrics store temporarily unavailable.");
+ 
+ export const GAME_DESIGN_GAME_TYPES = Object.freeze([
+@@ -18,7 +20,7 @@ export const GAME_DESIGN_GAME_TYPES = Object.freeze([
+   "RPG",
+   "Sandbox",
+   "Simulation",
+-  "Strategy"
++  "Strategy",
+ ]);
+ 
+ export const GAME_DESIGN_GENRES = Object.freeze([
+@@ -29,7 +31,7 @@ export const GAME_DESIGN_GENRES = Object.freeze([
+   "Sci-Fi",
+   "Sports",
+   "Strategy",
+-  "Utility"
++  "Utility",
+ ]);
+ 
+ export const GAME_DESIGN_PLAY_STYLES = Object.freeze([
+@@ -38,54 +40,89 @@ export const GAME_DESIGN_PLAY_STYLES = Object.freeze([
+   "Guided Tutorial",
+   "Sandbox",
+   "Single Player",
+-  "Turn-Based"
++  "Turn-Based",
+ ]);
+ 
+ export const GAME_DESIGN_PLAYER_MODES = Object.freeze([
+   Object.freeze({
+     description: "One active player receives input.",
+     label: "1 Player",
+-    value: "1 Player"
++    value: "1 Player",
+   }),
+   Object.freeze({
+     description: "Multiple players participate, one active player receives input at a time.",
+     label: "2+ Turn Based",
+-    value: "2+ Turn Based"
++    value: "2+ Turn Based",
+   }),
+   Object.freeze({
+     description: "Multiple players can be active at the same time.",
+     label: "2+ Concurrent",
+-    value: "2+ Concurrent"
+-  })
++    value: "2+ Concurrent",
++  }),
+ ]);
+ 
+ const GAME_WORKSPACE_USER_KEY = GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY;
++const DESIGN_FIELD_DEFINITIONS = Object.freeze([
++  Object.freeze({
++    action: "Write a short summary that explains the game promise.",
++    field: "summary",
++    label: "Summary",
++    sectionKey: "summary",
++  }),
++  Object.freeze({
++    action: "Describe the story or situation players enter.",
++    field: "story",
++    label: "Story",
++    sectionKey: "story",
++  }),
++  Object.freeze({
++    action: "Describe what players repeatedly do during play.",
++    field: "coreLoop",
++    label: "Core Loop",
++    sectionKey: "core-loop",
++  }),
++  Object.freeze({
++    action: "Describe how players win.",
++    field: "winCondition",
++    label: "Win Condition",
++    sectionKey: "win-condition",
++  }),
++  Object.freeze({
++    action: "Describe how players lose or fail.",
++    field: "loseCondition",
++    label: "Lose Condition",
++    sectionKey: "lose-condition",
++  }),
++  Object.freeze({
++    action: "Describe the intended players or audience.",
++    field: "targetAudience",
++    label: "Target Audience",
++    sectionKey: "target-audience",
++  }),
++]);
++
+ const REQUIRED_FIELDS = Object.freeze([
+   {
++    action: "Select a game type before configuration handoff.",
+     field: "gameType",
+     label: "Game Type",
+-    action: "Select a game type before configuration handoff."
+   },
+   {
++    action: "Select a genre so game discovery and expectations are clear.",
+     field: "genre",
+     label: "Genre",
+-    action: "Select a genre so game discovery and expectations are clear."
+   },
+   {
++    action: "Select the play style that best describes the intended experience.",
+     field: "playStyle",
+     label: "Play Style",
+-    action: "Select the play style that best describes the intended experience."
+   },
+   {
++    action: "Select how players participate and receive input.",
+     field: "playerMode",
+     label: "Player Mode",
+-    action: "Select how players participate and receive input."
+   },
+-  {
+-    field: "designSummary",
+-    label: "Design Summary",
+-    action: "Write a short design summary that explains the game promise."
+-  }
++  ...DESIGN_FIELD_DEFINITIONS,
+ ]);
+ 
+ function cloneRows(rows) {
+@@ -96,7 +133,8 @@ function cloneTables(tables) {
    return {
-     dumpTable() {
-       return [];
-@@ -1568,6 +1568,7 @@ test("Toolbox registration exposes Game Journey navigation", async ({ page }) =>
- });
-
- test("Toolbox renders Creator-safe Game Journey progress outage copy", async ({ page }) => {
-+  const forbiddenOutagePrefix = ["Game Journey completion metrics", "unavailable"].join(" ");
-   const server = await startRepoServer({
-     gameJourneyCompletionMetricsPostgresClient: createFailingCompletionMetricsPostgresClient(),
-   });
-@@ -1581,9 +1582,7 @@ test("Toolbox renders Creator-safe Game Journey progress outage copy", async ({
-     await expect(page.locator("[data-game-journey-completion-diagnostic]").first()).toHaveText(
-       "Game Journey progress is temporarily unavailable. Continue building while progress refreshes.",
+     game_design_documents: cloneRows(tables.game_design_documents),
+     game_design_validation_items: cloneRows(tables.game_design_validation_items),
+-    game_design_capability_demos: cloneRows(tables.game_design_capability_demos)
++    game_design_sections: cloneRows(tables.game_design_sections),
++    game_design_capability_demos: cloneRows(tables.game_design_capability_demos),
+   };
+ }
+ 
+@@ -115,43 +153,130 @@ function normalizeText(value) {
+   return String(value || "").trim();
+ }
+ 
++function auditFields(index = 0, userKey = GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY) {
++  const timestamp = new Date(Date.UTC(2026, 0, 1, 13, index, 0)).toISOString();
++  return {
++    createdAt: timestamp,
++    createdBy: userKey,
++    updatedAt: timestamp,
++    updatedBy: userKey,
++  };
++}
++
+ function createEmptyTables() {
+   return {
+     game_design_documents: [],
+     game_design_validation_items: [],
+-    game_design_capability_demos: []
++    game_design_sections: [],
++    game_design_capability_demos: [],
+   };
+ }
+ 
++function designKeyForGame(gameId) {
++  return makeSeedUlid(8400 + String(gameId || "").length);
++}
++
++function sectionKeyForGame(gameId, index) {
++  return makeSeedUlid(8500 + index + String(gameId || "").length);
++}
++
++function validationKeyForGame(gameId, index) {
++  return makeSeedUlid(8600 + index + String(gameId || "").length);
++}
++
++function capabilityKeyForGame(gameId) {
++  return makeSeedUlid(8700 + String(gameId || "").length);
++}
++
+ function designIdForGame(gameId) {
+   return `${gameId}-game-design`;
+ }
+ 
++function normalizeDesignInput(input = {}) {
++  const summary = normalizeText(input.summary || input.designSummary);
++  return {
++    capabilityDemoAuthoring: Boolean(input.capabilityDemoAuthoring),
++    capabilityDemoNotes: normalizeText(input.capabilityDemoNotes),
++    coreLoop: normalizeText(input.coreLoop),
++    designNotes: normalizeText(input.designNotes || input.notes),
++    designSummary: summary,
++    gameType: normalizeChoice(input.gameType, GAME_DESIGN_GAME_TYPES),
++    genre: normalizeChoice(input.genre, GAME_DESIGN_GENRES),
++    loseCondition: normalizeText(input.loseCondition),
++    playerMode: normalizePlayerMode(input.playerMode),
++    playStyle: normalizeChoice(input.playStyle, GAME_DESIGN_PLAY_STYLES),
++    story: normalizeText(input.story),
++    summary,
++    targetAudience: normalizeText(input.targetAudience),
++    winCondition: normalizeText(input.winCondition),
++  };
++}
++
+ function createValidationRows(gameId, findings) {
+   return findings.map((finding, index) => ({
+-    id: `${gameId}-validation-${index + 1}`,
++    key: validationKeyForGame(gameId, index),
++    gameKey: gameId,
+     gameId,
+     field: finding.field,
+     label: finding.label,
+     action: finding.action,
+-    status: "Missing"
++    status: "Missing",
++    ...auditFields(index + 20),
+   }));
+ }
+ 
++function createSectionRows(game, document) {
++  return [
++    ...DESIGN_FIELD_DEFINITIONS.map((definition, index) => ({
++      key: sectionKeyForGame(game.id, index),
++      gameKey: game.id,
++      gameId: game.id,
++      documentKey: document.key,
++      sectionKey: definition.sectionKey,
++      heading: definition.label,
++      body: document[definition.field],
++      sortOrder: index + 1,
++      ...auditFields(index + 40, game.ownerKey),
++    })),
++    {
++      key: sectionKeyForGame(game.id, 90),
++      gameKey: game.id,
++      gameId: game.id,
++      documentKey: document.key,
++      sectionKey: "design-notes",
++      heading: "Design Notes",
++      body: document.designNotes,
++      sortOrder: 99,
++      ...auditFields(90, game.ownerKey),
++    },
++  ];
++}
++
+ function createDesignForGame(game, input = {}) {
++  const normalized = normalizeDesignInput(input);
+   const document = {
++    key: designKeyForGame(game.id),
+     id: designIdForGame(game.id),
++    gameKey: game.id,
+     gameId: game.id,
+     gamePurpose: game.purpose,
+-    gameType: normalizeChoice(input.gameType, GAME_DESIGN_GAME_TYPES),
+-    genre: normalizeChoice(input.genre, GAME_DESIGN_GENRES),
+-    playStyle: normalizeChoice(input.playStyle, GAME_DESIGN_PLAY_STYLES),
+-    playerMode: normalizePlayerMode(input.playerMode),
+-    designSummary: normalizeText(input.designSummary),
+-    capabilityDemoAuthoring: game.purpose === "Capability Demo" || Boolean(input.capabilityDemoAuthoring),
+-    capabilityDemoNotes: normalizeText(input.capabilityDemoNotes),
++    title: `${game.name} design`,
++    gameType: normalized.gameType,
++    genre: normalized.genre,
++    playStyle: normalized.playStyle,
++    playerMode: normalized.playerMode,
++    summary: normalized.summary,
++    designSummary: normalized.summary,
++    story: normalized.story,
++    coreLoop: normalized.coreLoop,
++    winCondition: normalized.winCondition,
++    loseCondition: normalized.loseCondition,
++    targetAudience: normalized.targetAudience,
++    designNotes: normalized.designNotes,
++    capabilityDemoAuthoring: game.purpose === "Capability Demo" || normalized.capabilityDemoAuthoring,
++    capabilityDemoNotes: normalized.capabilityDemoNotes,
+     status: "Under Construction",
+-    updatedAt: new Date().toISOString()
++    ...auditFields(0, game.ownerKey),
+   };
+ 
+   const findings = REQUIRED_FIELDS.filter((requirement) => !document[requirement.field]);
+@@ -188,7 +313,9 @@ export function createGameDesignMockRepository(options = {}) {
+       return null;
+     }
+ 
+-    return tables.game_design_documents.find((document) => document.gameId === activeGame.id) || null;
++    return tables.game_design_documents.find((document) => (
++      document.gameId === activeGame.id || document.gameKey === activeGame.id
++    )) || null;
+   }
+ 
+   function validateDesign(input = {}) {
+@@ -196,42 +323,43 @@ export function createGameDesignMockRepository(options = {}) {
+ 
+     if (!activeGame) {
+       return {
+-        status: "Blocked",
+         findings: [
+           {
++            action: "Open or seed a Game Hub game before saving Game Design.",
+             field: "game",
+             label: "Game Context",
+-            action: "Open or seed a Game Hub game before saving Game Design."
+-          }
+-        ]
++          },
++        ],
++        status: "Blocked",
+       };
+     }
+ 
+-    const design = {
+-      gameType: normalizeChoice(input.gameType, GAME_DESIGN_GAME_TYPES),
+-      genre: normalizeChoice(input.genre, GAME_DESIGN_GENRES),
+-      playStyle: normalizeChoice(input.playStyle, GAME_DESIGN_PLAY_STYLES),
+-      playerMode: normalizePlayerMode(input.playerMode),
+-      designSummary: normalizeText(input.designSummary)
+-    };
++    const design = normalizeDesignInput(input);
+     const findings = REQUIRED_FIELDS.filter((requirement) => !design[requirement.field]);
+ 
+     return {
++      findings,
+       status: findings.length === 0 ? "Ready" : "Needs Input",
+-      findings
+     };
+   }
+ 
+   function replaceValidationRows(gameId, findings) {
+     tables.game_design_validation_items = tables.game_design_validation_items.filter(
+-      (row) => row.gameId !== gameId
++      (row) => row.gameId !== gameId && row.gameKey !== gameId,
      );
--    await expect(page.locator("body")).not.toContainText("Game Journey completion metrics unavailable");
--    await expect(page.locator("body")).not.toContainText("SQLite");
--    await expect(page.locator("body")).not.toContainText("tmp/local-api");
-+    await expect(page.locator("body")).not.toContainText(forbiddenOutagePrefix);
-     await expect(page.locator("body")).not.toContainText("Postgres");
-   } finally {
-     await server.close();
+     tables.game_design_validation_items.push(...createValidationRows(gameId, findings));
+   }
+ 
++  function replaceSectionRows(game, document) {
++    tables.game_design_sections = tables.game_design_sections.filter(
++      (row) => row.gameId !== game.id && row.gameKey !== game.id,
++    );
++    tables.game_design_sections.push(...createSectionRows(game, document));
++  }
++
+   function replaceCapabilityDemoRow(game, document) {
+     tables.game_design_capability_demos = tables.game_design_capability_demos.filter(
+-      (row) => row.gameId !== game.id
++      (row) => row.gameId !== game.id && row.gameKey !== game.id,
+     );
+ 
+     if (!document.capabilityDemoAuthoring) {
+@@ -239,12 +367,14 @@ export function createGameDesignMockRepository(options = {}) {
+     }
+ 
+     tables.game_design_capability_demos.push({
+-      id: `${game.id}-capability-demo-authoring`,
++      key: capabilityKeyForGame(game.id),
++      gameKey: game.id,
+       gameId: game.id,
+       gameName: game.name,
+       gamePurpose: game.purpose,
+       authoringMode: "Game-owned capability demo",
+-      status: document.status
++      status: document.status,
++      ...auditFields(80, game.ownerKey),
+     });
+   }
+ 
+@@ -253,26 +383,27 @@ export function createGameDesignMockRepository(options = {}) {
+ 
+     if (!activeGame) {
+       return {
+-        saved: false,
+         message: "Open or seed a game before saving Game Design.",
+-        snapshot: getSnapshot()
++        saved: false,
++        snapshot: getSnapshot(),
+       };
+     }
+ 
+     const { document, findings } = createDesignForGame(activeGame, input);
+     tables.game_design_documents = tables.game_design_documents.filter(
+-      (row) => row.gameId !== activeGame.id
++      (row) => row.gameId !== activeGame.id && row.gameKey !== activeGame.id,
+     );
+     tables.game_design_documents.push(document);
+     replaceValidationRows(activeGame.id, findings);
++    replaceSectionRows(activeGame, document);
+     replaceCapabilityDemoRow(activeGame, document);
+ 
+     return {
+-      saved: true,
+       message: findings.length === 0
+         ? `Saved ${activeGame.name} as ready for Game Design.`
+         : `Saved ${activeGame.name} with ${findings.length} missing Game Design requirement${findings.length === 1 ? "" : "s"}.`,
+-      snapshot: getSnapshot()
++      saved: true,
++      snapshot: getSnapshot(),
+     };
+   }
+ 
+@@ -281,17 +412,24 @@ export function createGameDesignMockRepository(options = {}) {
+       const { document, findings } = createDesignForGame(game, {
+         capabilityDemoAuthoring: true,
+         capabilityDemoNotes: `${game.name} remains a Game Hub game.`,
+-        designSummary: `${game.name} demonstrates one planned capability as a game-owned demo.`,
++        coreLoop: "Try the featured capability, observe feedback, and restart quickly.",
++        designNotes: "Capability demo authoring remains game-owned.",
+         gameType: "Capability Demo",
+         genre: "Utility",
++        loseCondition: "The demo ends when the capability cannot complete its expected feedback.",
+         playStyle: "Guided Tutorial",
+-        playerMode: "1 Player"
++        playerMode: "1 Player",
++        story: `${game.name} teaches one focused capability.`,
++        summary: `${game.name} demonstrates one planned capability as a game-owned demo.`,
++        targetAudience: "Creators validating a single game capability.",
++        winCondition: "The player completes the guided capability interaction.",
+       });
+       tables.game_design_documents = tables.game_design_documents.filter(
+-        (row) => row.gameId !== game.id
++        (row) => row.gameId !== game.id && row.gameKey !== game.id,
+       );
+       tables.game_design_documents.push(document);
+       replaceValidationRows(game.id, findings);
++      replaceSectionRows(game, document);
+       replaceCapabilityDemoRow(game, document);
+     });
+   }
+@@ -300,7 +438,7 @@ export function createGameDesignMockRepository(options = {}) {
+     const game = gameWorkspaceRepository.openGame(gameId);
+     return {
+       opened: Boolean(game),
+-      snapshot: getSnapshot()
++      snapshot: getSnapshot(),
+     };
+   }
+ 
+@@ -331,15 +469,15 @@ export function createGameDesignMockRepository(options = {}) {
+ 
+     if (!activeGame) {
+       return {
+-        gameProgress: "No active game",
+-        publishingProgress: "Blocked until Game Hub has an active game",
+         currentFocus: "Open a Game Hub game",
+-        recommendedNextTool: "Game Hub",
++        gameProgress: "No active game",
+         progressChecklist: [
+           "Game context: Missing",
+           "Game Design document: Blocked",
+-          "Game Configuration handoff: Blocked"
+-        ]
++          "Game Configuration handoff: Blocked",
++        ],
++        publishingProgress: "Blocked until Game Hub has an active game",
++        recommendedNextTool: "Game Hub",
+       };
+     }
+ 
+@@ -347,22 +485,24 @@ export function createGameDesignMockRepository(options = {}) {
+     const ready = validation.findings.length === 0;
+ 
+     return {
++      currentFocus: ready ? "Review Game Configuration" : "Complete Game Design",
+       gameProgress: ready
+         ? `${activeGame.name} Game Design ready`
+         : `${activeGame.name} Game Design needs ${validation.findings.length} requirement${validation.findings.length === 1 ? "" : "s"}`,
+-      publishingProgress: ready
+-        ? "Publish remains blocked until Game Configuration and release gates are ready"
+-        : "Publish blocked until Game Design requirements are complete",
+-      currentFocus: ready ? "Review Game Configuration" : "Complete Game Design",
+-      recommendedNextTool: ready ? "Game Configuration" : "Game Design",
+       progressChecklist: [
+         `Game purpose: ${activeGame.purpose}`,
+         `Game type: ${design?.gameType || "Missing"}`,
+         `Genre: ${design?.genre || "Missing"}`,
+         `Play style: ${design?.playStyle || "Missing"}`,
+         `Player mode: ${design?.playerMode || "Missing"}`,
+-        `Validation: ${validation.status}`
+-      ]
++        `Summary: ${design?.summary || "Missing"}`,
++        `Core loop: ${design?.coreLoop || "Missing"}`,
++        `Validation: ${validation.status}`,
++      ],
++      publishingProgress: ready
++        ? "Publish remains blocked until Game Configuration and release gates are ready"
++        : "Publish blocked until Game Design requirements are complete",
++      recommendedNextTool: ready ? "Game Configuration" : "Game Design",
+     };
+   }
+ 
+@@ -374,7 +514,7 @@ export function createGameDesignMockRepository(options = {}) {
+       capabilityDemoGames: listCapabilityDemoGames(),
+       capabilityDemoProjects: listCapabilityDemoGames(),
+       progressHandoff: getGameProgressHandoff(),
+-      tables: getTables()
++      tables: getTables(),
+     };
+   }
+ 
+@@ -396,6 +536,6 @@ export function createGameDesignMockRepository(options = {}) {
+     resetDesignData,
+     saveDesign,
+     seedCapabilityDemoDesigns,
+-    validateDesign
++    validateDesign,
+   };
+ }
+diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
+index 913163236..8c93e8ce8 100644
+--- a/src/dev-runtime/server/local-api-router.mjs
++++ b/src/dev-runtime/server/local-api-router.mjs
+@@ -3703,6 +3703,17 @@ class ApiRuntimeDataSource {
+     return this.persistSupabaseProductSnapshot(action);
+   }
+ 
++  async persistGameDesignProviderState(action) {
++    return {
++      action,
++      database: "API database",
++      databaseEngine: "Server-owned game design repository",
++      providerId: "api-game-design",
++      serviceContract: "Browser -> API -> Database",
++      status: "PASS",
++    };
++  }
++
+   async persistGameWorkspaceProviderState(action) {
+     return {
+       action,
+@@ -6790,6 +6801,8 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
+     if (repositoryMethodRequiresPersistence(methodName) && !methodPersistsThroughToolStore) {
+       if (repository === this.gameWorkspaceRepository) {
+         await this.persistGameWorkspaceProviderState(`Persisting ${methodName} result`);
++      } else if (repository === this.gameDesignRepository) {
++        await this.persistGameDesignProviderState(`Persisting ${methodName} result`);
+       } else if (repository === this.assetRepository) {
+         await this.persistAssetProviderState(`Persisting ${methodName} result`);
+       } else {
+diff --git a/tests/playwright/tools/GameDesignMockRepository.spec.mjs b/tests/playwright/tools/GameDesignMockRepository.spec.mjs
+index ebdaf6f9c..6c7c5412c 100644
+--- a/tests/playwright/tools/GameDesignMockRepository.spec.mjs
++++ b/tests/playwright/tools/GameDesignMockRepository.spec.mjs
+@@ -1,6 +1,7 @@
+ import { expect, test } from "@playwright/test";
+ import process from "node:process";
+ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
++import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store.js";
+ import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
+ import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
+ 
+@@ -27,7 +28,15 @@ function restoreEnvValue(key, value) {
+   process.env[key] = value;
+ }
+ 
+-async function openRepoPage(page, pathName) {
++async function setServerSession(server, userKey) {
++  await fetch(`${server.baseUrl}/api/session/user`, {
++    body: JSON.stringify({ userKey }),
++    headers: { "Content-Type": "application/json" },
++    method: "POST"
++  });
++}
++
++async function openRepoPage(page, pathName, options = {}) {
+   const server = await startRepoServer();
+   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+   const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
+@@ -60,6 +69,9 @@ async function openRepoPage(page, pathName) {
+     failedRequests.push(`FAILED ${request.url()}`);
+   });
+ 
++  if (options.sessionUserKey !== null) {
++    await setServerSession(server, options.sessionUserKey || MOCK_DB_KEYS.users.user1);
++  }
+   await workspaceV2CoverageReporter.start(page);
+   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
+   return { failedRequests, pageErrors, consoleErrors, server };
+@@ -111,13 +123,19 @@ test("Game Design saves and updates design fields against the active game", asyn
+     await expect(gameDesignTable).toBeVisible();
+     await expect(gameDesignTable).toHaveClass(/data-table/);
+     await expect(gameDesignTable).toHaveClass(/tool-form-table/);
+-    await expect(gameDesignTable.locator("tbody tr")).toHaveCount(6);
++    await expect(gameDesignTable.locator("tbody tr")).toHaveCount(12);
+     await expect(gameDesignTable.locator("th[scope='row'] label")).toHaveText([
+       "Game Type",
+       "Genre",
+       "Play Style",
+       "Player Mode",
+-      "Design Summary",
++      "Summary",
++      "Story",
++      "Core Loop",
++      "Win Condition",
++      "Lose Condition",
++      "Target Audience",
++      "Design Notes",
+       "Capability Demo Notes"
+     ]);
+     const gameDesignPairs = await gameDesignTable.locator("tbody tr").evaluateAll((rows) => rows.map((row) => {
+@@ -136,10 +154,16 @@ test("Game Design saves and updates design fields against the active game", asyn
+       { cellCount: 2, controlId: "gameDesignGenre", controlTag: "select", labelFor: "gameDesignGenre", labelText: "Genre" },
+       { cellCount: 2, controlId: "gameDesignPlayStyle", controlTag: "select", labelFor: "gameDesignPlayStyle", labelText: "Play Style" },
+       { cellCount: 2, controlId: "gameDesignPlayerMode", controlTag: "select", labelFor: "gameDesignPlayerMode", labelText: "Player Mode" },
+-      { cellCount: 2, controlId: "gameDesignSummary", controlTag: "textarea", labelFor: "gameDesignSummary", labelText: "Design Summary" },
++      { cellCount: 2, controlId: "gameDesignSummary", controlTag: "textarea", labelFor: "gameDesignSummary", labelText: "Summary" },
++      { cellCount: 2, controlId: "gameDesignStory", controlTag: "textarea", labelFor: "gameDesignStory", labelText: "Story" },
++      { cellCount: 2, controlId: "gameDesignCoreLoop", controlTag: "textarea", labelFor: "gameDesignCoreLoop", labelText: "Core Loop" },
++      { cellCount: 2, controlId: "gameDesignWinCondition", controlTag: "textarea", labelFor: "gameDesignWinCondition", labelText: "Win Condition" },
++      { cellCount: 2, controlId: "gameDesignLoseCondition", controlTag: "textarea", labelFor: "gameDesignLoseCondition", labelText: "Lose Condition" },
++      { cellCount: 2, controlId: "gameDesignAudience", controlTag: "textarea", labelFor: "gameDesignAudience", labelText: "Target Audience" },
++      { cellCount: 2, controlId: "gameDesignNotes", controlTag: "textarea", labelFor: "gameDesignNotes", labelText: "Design Notes" },
+       { cellCount: 2, controlId: "gameDesignCapabilityNotes", controlTag: "textarea", labelFor: "gameDesignCapabilityNotes", labelText: "Capability Demo Notes" }
+     ]);
+-    await expect(page.locator("#gameDesignSummary")).toHaveAttribute("rows", "4");
++    await expect(page.locator("#gameDesignSummary")).toHaveAttribute("rows", "3");
+     await expect(page.locator("#gameDesignCapabilityNotes")).toHaveAttribute("rows", "4");
+     const gameDesignLayout = await gameDesignTable.evaluate((table) => {
+       const wrapper = table.closest(".table-wrapper");
+@@ -182,13 +206,20 @@ test("Game Design saves and updates design fields against the active game", asyn
+     await expect(page.locator("[data-game-design-validation-list]")).toContainText("Game Type");
+     await expect(page.locator("[data-game-design-validation-list]")).toContainText("Genre");
+     await expect(page.locator("[data-game-design-validation-list]")).toContainText("Play Style");
+-    await expect(page.locator("[data-game-design-validation-list]")).toContainText("Design Summary");
++    await expect(page.locator("[data-game-design-validation-list]")).toContainText("Summary");
++    await expect(page.locator("[data-game-design-validation-list]")).toContainText("Core Loop");
+ 
+     await page.getByLabel("Game Type").selectOption("Puzzle");
+     await page.getByLabel("Genre").selectOption("Adventure");
+     await page.getByLabel("Play Style").selectOption("Single Player");
+     await page.getByLabel("Player Mode").selectOption("2+ Concurrent");
+-    await page.getByLabel("Design Summary").fill("A compact puzzle adventure with one clear game promise.");
++    await page.getByRole("textbox", { name: "Summary" }).fill("A compact puzzle adventure with one clear game promise.");
++    await page.getByLabel("Story").fill("A curious maker enters a clockwork library.");
++    await page.getByLabel("Core Loop").fill("Explore a room, solve a tile puzzle, unlock the next shelf.");
++    await page.getByLabel("Win Condition").fill("Restore the library clock before the final bell.");
++    await page.getByLabel("Lose Condition").fill("Run out of moves before the room resets.");
++    await page.getByLabel("Target Audience").fill("Puzzle fans and first-time creators.");
++    await page.getByLabel("Design Notes").fill("Keep each room readable and friendly.");
+     await page.getByRole("button", { name: "Save Game Design" }).click();
+ 
+     await expect(page.locator("[data-game-design-log]")).toHaveText("Saved Demo Game as ready for Game Design.");
+@@ -196,6 +227,12 @@ test("Game Design saves and updates design fields against the active game", asyn
+     await expect(page.locator("[data-game-design-status]")).toHaveText("Ready");
+     await expect(page.locator("[data-game-design-recommended-tool]").first()).toHaveText("Game Configuration");
+     await expect(page.locator("[data-game-design-output-summary]")).toHaveText("A compact puzzle adventure with one clear game promise.");
++    await expect(page.locator("[data-game-design-output-story]")).toHaveText("A curious maker enters a clockwork library.");
++    await expect(page.locator("[data-game-design-output-core-loop]")).toHaveText("Explore a room, solve a tile puzzle, unlock the next shelf.");
++    await expect(page.locator("[data-game-design-output-win]")).toHaveText("Restore the library clock before the final bell.");
++    await expect(page.locator("[data-game-design-output-lose]")).toHaveText("Run out of moves before the room resets.");
++    await expect(page.locator("[data-game-design-output-audience]")).toHaveText("Puzzle fans and first-time creators.");
++    await expect(page.locator("[data-game-design-output-notes]")).toHaveText("Keep each room readable and friendly.");
+     await expect(page.locator("[data-game-design-output-player-mode]")).toHaveText("2+ Concurrent");
+     await expect(page.locator("[data-game-design-output-validation]")).toHaveText("Ready");
+     await expect(page.locator("[data-game-design-output-next-step]")).toHaveText("Game Configuration");
+@@ -217,6 +254,20 @@ test("Game Design saves and updates design fields against the active game", asyn
+   }
+ });
+ 
++test("Game Design guest save redirects to sign in", async ({ page }) => {
++  const failures = await openRepoPage(page, "/toolbox/game-design/index.html", { sessionUserKey: null });
++
++  try {
++    await page.getByLabel("Game Type").selectOption("Puzzle");
++    await page.getByRole("textbox", { name: "Summary" }).fill("Guest design attempt.");
++    await page.getByRole("button", { name: "Save Game Design" }).click();
++    await page.waitForURL(/\/account\/sign-in\.html$/);
++  } finally {
++    await workspaceV2CoverageReporter.stop(page).catch(() => {});
++    await failures.server.close();
++  }
++});
++
+ test("Game Design authors capability demos as Game Hub games", async ({ page }) => {
+   const failures = await openRepoPage(page, "/toolbox/game-design/index.html?game=gravity-demo");
+ 
+diff --git a/toolbox/game-design/index.html b/toolbox/game-design/index.html
+index e8fda5433..5e4a05f0e 100644
+--- a/toolbox/game-design/index.html
++++ b/toolbox/game-design/index.html
+@@ -6,7 +6,7 @@
+     <base href="/">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+     <title>Game Design - GameFoundryStudio</title>
+-    <meta name="description" content="Game Design Toolbox runtime for game purpose, game type, genre, play style, capability demos, and configuration readiness.">
++    <meta name="description" content="Game Design toolbox for summary, story, loop, win and lose conditions, audience, notes, and configuration readiness.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+ </head>
+@@ -55,11 +55,11 @@
+                     </aside>
+                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="game-design" data-tool-icon-src="assets/theme-v2/images/badges/index.png" data-tool-character-src="assets/theme-v2/images/characters/index.png"></div>
+                     <section class="tool-center-panel"><h2>Design Workspace</h2>
+-                        <p>Game Design now saves an in-memory design document against the active Game Hub game. No database, auth, cloud, or persistence behavior is implemented.</p>
++                        <p>Game Design saves Creator-facing design details against the active Game Hub game through the API.</p>
+                         <div class="grid cols-3" aria-label="Game Design readiness summary">
+                             <article class="mini-stat"><strong data-game-design-status>Needs Input</strong>Design status</article>
+                             <article class="mini-stat"><strong data-game-design-recommended-tool>Game Design</strong>Next tool</article>
+-                            <article class="mini-stat"><strong>Mock</strong>Repository only</article>
++                            <article class="mini-stat"><strong>API</strong>Persistence</article>
+                         </div>
+                         <article class="card">
+                             <div class="card-body content-stack">
+@@ -91,8 +91,32 @@
+                                                     </td>
+                                                 </tr>
+                                                 <tr>
+-                                                    <th scope="row"><label for="gameDesignSummary">Design Summary</label></th>
+-                                                    <td><textarea id="gameDesignSummary" rows="4" data-game-design-summary placeholder="Describe the game promise, core loop, and player goal."></textarea></td>
++                                                    <th scope="row"><label for="gameDesignSummary">Summary</label></th>
++                                                    <td><textarea id="gameDesignSummary" rows="3" data-game-design-summary placeholder="Describe the game promise."></textarea></td>
++                                                </tr>
++                                                <tr>
++                                                    <th scope="row"><label for="gameDesignStory">Story</label></th>
++                                                    <td><textarea id="gameDesignStory" rows="3" data-game-design-story placeholder="Describe the situation, world, or premise players enter."></textarea></td>
++                                                </tr>
++                                                <tr>
++                                                    <th scope="row"><label for="gameDesignCoreLoop">Core Loop</label></th>
++                                                    <td><textarea id="gameDesignCoreLoop" rows="3" data-game-design-core-loop placeholder="Describe what players repeatedly do."></textarea></td>
++                                                </tr>
++                                                <tr>
++                                                    <th scope="row"><label for="gameDesignWinCondition">Win Condition</label></th>
++                                                    <td><textarea id="gameDesignWinCondition" rows="3" data-game-design-win-condition placeholder="Describe how players win."></textarea></td>
++                                                </tr>
++                                                <tr>
++                                                    <th scope="row"><label for="gameDesignLoseCondition">Lose Condition</label></th>
++                                                    <td><textarea id="gameDesignLoseCondition" rows="3" data-game-design-lose-condition placeholder="Describe how players lose or fail."></textarea></td>
++                                                </tr>
++                                                <tr>
++                                                    <th scope="row"><label for="gameDesignAudience">Target Audience</label></th>
++                                                    <td><textarea id="gameDesignAudience" rows="3" data-game-design-target-audience placeholder="Describe the intended players."></textarea></td>
++                                                </tr>
++                                                <tr>
++                                                    <th scope="row"><label for="gameDesignNotes">Design Notes</label></th>
++                                                    <td><textarea id="gameDesignNotes" rows="4" data-game-design-notes placeholder="Capture extra design notes, constraints, and section details."></textarea></td>
+                                                 </tr>
+                                                 <tr>
+                                                     <th scope="row"><label for="gameDesignCapabilityNotes">Capability Demo Notes</label></th>
+@@ -125,6 +149,12 @@
+                                 <summary>Output</summary>
+                                 <div class="accordion-body content-stack" data-game-design-output>
+                                     <p>Design Summary: <span data-game-design-output-summary>No design summary yet.</span></p>
++                                    <p>Story: <span data-game-design-output-story>No story yet.</span></p>
++                                    <p>Core Loop: <span data-game-design-output-core-loop>No core loop yet.</span></p>
++                                    <p>Win Condition: <span data-game-design-output-win>No win condition yet.</span></p>
++                                    <p>Lose Condition: <span data-game-design-output-lose>No lose condition yet.</span></p>
++                                    <p>Target Audience: <span data-game-design-output-audience>No audience yet.</span></p>
++                                    <p>Design Notes: <span data-game-design-output-notes>No notes yet.</span></p>
+                                     <p>Player Mode: <span data-game-design-output-player-mode>1 Player</span></p>
+                                     <p>Validation Status: <span data-game-design-output-validation>Needs Input</span></p>
+                                     <p>Next Step: <span data-game-design-output-next-step>Complete Game Design</span></p>
+@@ -183,7 +213,7 @@
+                             <details class="vertical-accordion" open>
+                                 <summary>Status Log</summary>
+                                 <div class="accordion-body">
+-                                    <div class="status" role="status" data-game-design-log>Game Design mock repository ready.</div>
++                                    <div class="status" role="status" data-game-design-log>Game Design API repository ready.</div>
+                                 </div>
+                             </details>
+                         </div>

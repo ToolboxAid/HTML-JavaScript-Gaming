@@ -7,7 +7,9 @@
   "signInRedirect": "account/sign-in.html",
   "tables": {
     "game_design_documents": [],
-    "game_design_validation_items": []
+    "game_design_validation_items": [],
+    "game_design_sections": [],
+    "game_design_capability_demos": []
   },
   "samplePackages": [
     {
