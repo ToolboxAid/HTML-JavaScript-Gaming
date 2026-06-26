@@ -48,4 +48,8 @@ Team Delta runtime testability work through DELTA_009 is complete on main. PR_26
 
 ## Open Hygiene Note
 
-GitHub still has obsolete draft PR #188 for the earlier rejected Delta-specific harness approach. It is not part of the active DELTA_001 through DELTA_010 path and was not modified by this closeout.
+Obsolete draft Delta implementation PRs #188, #190, #192, and #193 were closed as superseded during final EOD closeout. Source branches were retained. No open Delta implementation PRs remain.
+
+## Remaining Work
+
+None.

@@ -1,18 +1,12 @@
 # git status --short
-?? docs_build/dev/reports/PR_26175_DELTA_010-final-team-delta-completion-report.md
-?? docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout.md
-?? docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout_branch-validation.md
-?? docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout_manual-validation-notes.md
-?? docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout_requirements-checklist.md
-?? docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout_validation-lane.md
+M docs_build/dev/reports/PR_26175_DELTA_010-final-team-delta-completion-report.md
+ M docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout.md
+?? docs_build/dev/reports/PR_26175_DELTA_EOD_final_report.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26175_DELTA_010-final-team-delta-completion-report.md
-docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout.md
-docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout_branch-validation.md
-docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout_manual-validation-notes.md
-docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout_requirements-checklist.md
-docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout_validation-lane.md
+docs_build/dev/reports/PR_26175_DELTA_EOD_final_report.md
 
 # git diff --stat
-(no output)
+.../PR_26175_DELTA_010-final-team-delta-completion-report.md        | 6 +++++-
+ .../dev/reports/PR_26175_DELTA_010-runtime-testability-closeout.md  | 3 ++-
+ 2 files changed, 7 insertions(+), 2 deletions(-)
