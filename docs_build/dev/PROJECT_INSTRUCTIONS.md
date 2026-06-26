@@ -497,8 +497,9 @@ Environment invariance rule:
 Shared API/service contract:
 - One shared API/service contract is required across Local (VS Code), DEV, IST, UAT, and PROD.
 - Browser/UI/runtime code must consume the same contract in every environment.
-- Environment-specific endpoints, keys, buckets, and prefixes are configuration values only.
+- Environment-specific URLs, endpoints, keys, buckets, and prefixes are `.env` or environment-managed secret/config values only.
 - Do not create environment-specific API/service contracts.
+- Do not split Local API and Public API contracts. Local and shared environments use the same API/service contract; URLs may differ by `.env` only.
 
 Required services in every environment:
 - Supabase Auth
@@ -519,11 +520,37 @@ Required Cloudflare R2 top-level prefixes:
 
 Derived R2 paths for projects, backups, exports, or future storage lanes must stay under the matching top-level prefix for the active environment.
 
-The following files are copy-source files only:
+Only `.env.example` is committed to the repository.
+
+Real `.env` files are user/environment-owned and must live outside the repo clone or be injected by deployment.
+
+Official external environment file names when a copy-source file is used outside the repo clone:
+- `.env.local`
 - `.env.dev`
 - `.env.ist`
 - `.env.uat`
-- `.env.prd` is the legacy copy-source filename for PROD values; new environment governance uses the `PROD` environment name.
+- `.env.prod`
+
+Example external layout:
+- `/env/local/.env`
+- `/env/dev/.env`
+- `/env/ist/.env`
+- `/env/uat/.env`
+- `/env/prod/.env`
+- `/GFS/` repo clone
+
+The app/runtime reads `.env` values supplied by the target environment. It must not require real `.env` files to be committed inside the repo clone.
+
+`.env.prd` is legacy technical debt only. New environment governance uses `.env.prod` for external PROD copy-source naming and the `PROD` environment name.
+
+Allowed `GAMEFOUNDRY_ENVIRONMENT` values:
+- `local`
+- `dev`
+- `ist`
+- `uat`
+- `prod`
+
+`GAMEFOUNDRY_ENVIRONMENT_LABEL` is display-only and must not drive runtime behavior, API/service selection, database selection, storage selection, or feature behavior.
 
 Valid environment stages are:
 - `Local (VS Code)`
@@ -551,6 +578,16 @@ Do not introduce runtime parameters such as:
 `Local (VS Code)`, `DEV`, `IST`, `UAT`, and `PROD` are environment stages, not application behaviors.
 
 Application code, runtime code, API/service code, and DB runtime scripts must not branch behavior by deployment target name.
+
+Host/domain configuration:
+- Local (VS Code) uses `127.0.0.1` hostnames.
+- DEV, IST, UAT, and PROD use configured `*.gamefoundrystudio.com` hostnames.
+- Host/domain differences are configuration values only and must not create separate deployable artifacts or environment-specific code.
+
+Feature flag governance:
+- Feature flags must not create permanent environment-specific behavior.
+- Feature flags may be used only for staged rollout, testing, or emergency mitigation.
+- Feature flags must be removed, promoted to normal behavior, or documented as active temporary controls when the rollout, test, or mitigation ends.
 
 ## RUNTIME SCRIPT NAMING GOVERNANCE
 

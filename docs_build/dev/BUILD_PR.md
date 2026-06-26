@@ -1,29 +1,40 @@
-# PR_26177_OWNER_050-environment-governance-model
+# PR_26177_OWNER_051-environment-configuration-standards
 
 ## Purpose
 
-Establish the official Game Foundry Studio environment governance model and align the active configuration example comments/placeholders with that model.
+Define the official Game Foundry Studio environment configuration standards that build on the OWNER_050 environment model.
 
 ## Source Of Truth
 
-This `BUILD_PR.md` and the user request are the source of truth for `PR_26177_OWNER_050-environment-governance-model`.
+This `BUILD_PR.md` and the user request are the source of truth for `PR_26177_OWNER_051-environment-configuration-standards`.
 
 ## Exact Scope
 
-- Documentation/governance only unless `.env.example` comment or placeholder updates are required.
-- Establish `Local (VS Code) -> DEV -> IST -> UAT -> PROD` as the official environment model.
-- Define the environment invariance rule: the deployable artifact is identical across all environments; only `.env` values and environment-managed secret values differ.
-- Define one shared API/service contract across all environments.
-- Define Supabase Auth, Supabase Postgres, and Cloudflare R2 as required for every environment.
-- Define R2 top-level prefixes:
-  - `/local/`
-  - `/dev/`
-  - `/ist/`
-  - `/uat/`
-  - `/prod/`
-- Define that all environments receive approved guest seed data for all tools.
-- State SQLite is deprecated/retired and is not an active runtime database.
-- Review `.env.example` and update comments/placeholders to match the official model.
+- Governance/documentation only.
+- Build on OWNER_050 environment model.
+- Standardize environment file names:
+  - `.env.local`
+  - `.env.dev`
+  - `.env.ist`
+  - `.env.uat`
+  - `.env.prod`
+- Treat `.env.prd` as legacy technical debt only.
+- Add `GAMEFOUNDRY_ENVIRONMENT` allowed values:
+  - `local`
+  - `dev`
+  - `ist`
+  - `uat`
+  - `prod`
+- Keep `GAMEFOUNDRY_ENVIRONMENT_LABEL` display-only.
+- Document that only `.env` values and environment-managed secrets differ.
+- Document that the deployable artifact must remain identical.
+- Document one shared API/service contract.
+- Document feature flags cannot create permanent environment-specific behavior.
+- Review `.env.example` comments/placeholders only.
+- Clarify that only `.env.example` is committed to the repository.
+- Clarify that real `.env` files are user/environment-owned and must live outside the repo clone or be injected by deployment.
+- Document the external `/env/<target>/.env` layout next to the `/GFS/` repo clone.
+- Do not change runtime behavior.
 - Create required Codex reports under `docs_build/dev/reports/`.
 - Create repo-structured delta ZIP under `tmp/`.
 
@@ -33,17 +44,16 @@ This `BUILD_PR.md` and the user request are the source of truth for `PR_26177_OW
 - `docs_build/dev/PROJECT_INSTRUCTIONS.md`
 - `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
 - `docs_build/dev/ProjectInstructions/README.txt`
+- `docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md`
 - `docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md`
-- `docs_build/dev/ProjectInstructions/addendums/postgres_only.md`
 - `docs_build/dev/ProjectInstructions/addendums/release_gate.md`
-- `docs_build/dev/admin-notes/index.txt`
 - `.env.example`
-- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model.md`
-- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_branch-validation.md`
-- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_requirement-checklist.md`
-- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_validation-lane.md`
-- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_manual-validation-notes.md`
-- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_instruction-compliance-checklist.md`
+- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards.md`
+- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_branch-validation.md`
+- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_requirement-checklist.md`
+- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_validation-lane.md`
+- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_manual-validation-notes.md`
+- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_instruction-compliance-checklist.md`
 - `docs_build/dev/reports/codex_review.diff`
 - `docs_build/dev/reports/codex_changed_files.txt`
 
@@ -53,24 +63,27 @@ This `BUILD_PR.md` and the user request are the source of truth for `PR_26177_OW
 - No UI changes.
 - No engine core changes.
 - No `start_of_day` folder changes.
-- No `.env`, `.env.dev`, `.env.ist`, `.env.uat`, or `.env.prd` secret/value edits.
+- No actual `.env`, `.env.local`, `.env.dev`, `.env.ist`, `.env.uat`, `.env.prod`, or `.env.prd` secret/value file edits.
+- No committed real `.env.*` copy-source files.
 - No API implementation changes.
 - No storage implementation changes.
 - No database migration or DDL changes.
+- No feature flag implementation changes.
 
 ## Validation
 
 Run exactly:
 
 ```powershell
-git status
 git diff --check
 ```
+
+Playwright is not required unless runtime files change.
 
 ## Artifact
 
 Create repo-structured delta ZIP:
 
 ```text
-tmp/PR_26177_OWNER_050-environment-governance-model_delta.zip
+tmp/PR_26177_OWNER_051-environment-configuration-standards_delta.zip
 ```

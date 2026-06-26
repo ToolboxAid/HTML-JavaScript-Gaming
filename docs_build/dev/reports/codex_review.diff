@@ -1,466 +1,355 @@
 diff --git a/.env.example b/.env.example
-index 9d5e4301b..e4fd3594e 100644
+index e4fd3594e..ce6b0bd7c 100644
 --- a/.env.example
 +++ b/.env.example
-@@ -1,7 +1,22 @@
--# Game Foundry Studio local development environment
-+# Game Foundry Studio environment-managed configuration example
- # ENVIRONMENT
-
--# Configure the runtime auth and database connections here.
-+# Official environment model:
-+# Local (VS Code) -> DEV -> IST -> UAT -> PROD
+@@ -4,6 +4,29 @@
+ # Official environment model:
+ # Local (VS Code) -> DEV -> IST -> UAT -> PROD
+ #
++# Only this .env.example file is committed to the repository.
++# Real .env files are user/environment-owned and must live outside
++# the repo clone or be injected by deployment.
 +#
-+# Environment invariance:
-+# Use an identical deployable artifact in every environment.
-+# Only .env values and environment-managed secret values differ.
++# Official external copy-source names when a copy-source file is used:
++# - .env.local
++# - .env.dev
++# - .env.ist
++# - .env.uat
++# - .env.prod
++# Legacy technical debt only:
++# - .env.prd
 +#
-+# Approved guest seed data for all tools belongs in every environment.
-+# Do not store guest seed payloads in .env.
++# Example external layout:
++# - /env/local/.env
++# - /env/dev/.env
++# - /env/ist/.env
++# - /env/uat/.env
++# - /env/prod/.env
++# - /GFS/ repo clone
 +#
-+# Required services in every environment:
-+# - Supabase Auth
-+# - Supabase Postgres
-+# - Cloudflare R2
++# The app/runtime reads .env values supplied by the target environment.
 +#
-+# Configure runtime auth, database, and storage connections here.
+ # Environment invariance:
+ # Use an identical deployable artifact in every environment.
+ # Only .env values and environment-managed secret values differ.
+@@ -19,10 +42,21 @@
+ # Configure runtime auth, database, and storage connections here.
  # Missing connection configuration reports diagnostics instead of falling back.
 
- # Browser-safe public site configuration exposed through the server API.
-@@ -9,11 +24,12 @@
+-# Browser-safe public site configuration exposed through the server API.
++# Required environment identity.
++# Allowed values: local, dev, ist, uat, prod.
++GAMEFOUNDRY_ENVIRONMENT=local
++
++# Browser-safe public site/API configuration exposed through the server API.
+ # These values may be sent to browser pages. Do not place secrets here.
++# Local uses 127.0.0.1 hostnames.
++# DEV/IST/UAT/PROD use configured *.gamefoundrystudio.com hostnames.
++# One shared API/service contract is used everywhere; URLs may differ by .env only.
++# Do not split Local API and Public API contracts.
  GAMEFOUNDRY_SITE_URL=
  GAMEFOUNDRY_API_URL=
++
++# Display-only environment label.
++# Do not use this value for runtime behavior, API/service selection, storage selection, or feature behavior.
  # Valid environment banner labels:
-+# - Local Development Environment
+ # - Local Development Environment
  # - Development Environment
- # - Integration Testing Environment
- # - User Acceptance Testing Environment
- # - Production
--GAMEFOUNDRY_ENVIRONMENT_LABEL="Development Environment"
-+GAMEFOUNDRY_ENVIRONMENT_LABEL="Local Development Environment"
-
- # Database SSL mode is required and authoritative.
- # Supported values:
-@@ -33,13 +49,14 @@ GAMEFOUNDRY_DATABASE_URL=
-
- # Server-only Postgres backup storage.
- # Copy this file to .env and keep the active deployment target's prefix:
-+# LOCAL /local/backups/postgres/
- # DEV /dev/backups/postgres/
- # IST /ist/backups/postgres/
- # UAT /uat/backups/postgres/
--# PRD /prd/backups/postgres/
-+# PROD /prod/backups/postgres/
- # R2 object prefixes are created by object upload; no manual folder creation is required.
- GAMEFOUNDRY_DB_BACKUP_STORAGE_PROVIDER=r2
--GAMEFOUNDRY_DB_BACKUP_PREFIX=/dev/backups/postgres/
-+GAMEFOUNDRY_DB_BACKUP_PREFIX=/local/backups/postgres/
-
- # Optional temporary server-side pg_dump staging override.
- # Leave blank to use the OS temp directory. Do not point this at repo tmp/.
-@@ -50,17 +67,25 @@ GAMEFOUNDRY_DB_BACKUP_DIR=
-
- # Server-only project asset storage configuration.
- # Browser uploads must go through the server API and must not receive these secrets.
-+# Official Cloudflare R2 top-level prefixes:
-+# LOCAL /local/
-+# DEV /dev/
-+# IST /ist/
-+# UAT /uat/
-+# PROD /prod/
-+#
- # Approved GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX values:
-+# LOCAL /local/projects/
- # DEV /dev/projects/
- # IST /ist/projects/
- # UAT /uat/projects/
--# PRD /prod/projects/
-+# PROD /prod/projects/
- GAMEFOUNDRY_STORAGE_ENDPOINT=
- GAMEFOUNDRY_STORAGE_ACCESS_KEY_ID=
-
- GAMEFOUNDRY_STORAGE_SECRET_ACCESS_KEY=
- GAMEFOUNDRY_STORAGE_BUCKET=
--GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX=
-+GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX=/local/projects/
-
- # Environment-specific service limit placeholders.
- # Leave empty when live usage/limit reporting is not configured.
 diff --git a/docs_build/dev/BUILD_PR.md b/docs_build/dev/BUILD_PR.md
-index 0a9dd074a..73ffaa35e 100644
+index 73ffaa35e..f6deb6aab 100644
 --- a/docs_build/dev/BUILD_PR.md
 +++ b/docs_build/dev/BUILD_PR.md
-@@ -1,109 +1,76 @@
--# PR_26175_ALFA_047-theme-v2-svg-icon-registry
-+# PR_26177_OWNER_050-environment-governance-model
+@@ -1,29 +1,40 @@
+-# PR_26177_OWNER_050-environment-governance-model
++# PR_26177_OWNER_051-environment-configuration-standards
 
  ## Purpose
--Create a shared Theme V2 SVG icon asset registry and authoritative validation specification so toolbox and platform UI can use approved standalone SVG files from one repo-owned source instead of page-local SVG, ad hoc CSS drawings, Font Awesome glyphs, conversation screenshots, vague row references, CSS-only generation, or a JS-only registry.
-+
-+Establish the official Game Foundry Studio environment governance model and align the active configuration example comments/placeholders with that model.
+
+-Establish the official Game Foundry Studio environment governance model and align the active configuration example comments/placeholders with that model.
++Define the official Game Foundry Studio environment configuration standards that build on the OWNER_050 environment model.
 
  ## Source Of Truth
--This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_047-theme-v2-svg-icon-registry`.
-+
-+This `BUILD_PR.md` and the user request are the source of truth for `PR_26177_OWNER_050-environment-governance-model`.
+
+-This `BUILD_PR.md` and the user request are the source of truth for `PR_26177_OWNER_050-environment-governance-model`.
++This `BUILD_PR.md` and the user request are the source of truth for `PR_26177_OWNER_051-environment-configuration-standards`.
 
  ## Exact Scope
--- Remove the incorrect JS-only icon registry implementation from the ALFA_047 delta.
--- Use the user-authored SVG files already present under `assets/theme-v2/svg/` as the authoritative source.
--- Do not regenerate, redesign, simplify, optimize, or redraw any SVG icon artwork in this PR.
--- Required SVG files:
--  - `gfs-chevron-left.svg`
--  - `gfs-chevron-right.svg`
--  - `gfs-chevron-up.svg`
--  - `gfs-chevron-down.svg`
--  - `gfs-add.svg`
--  - `gfs-subtract.svg`
--  - `gfs-trash.svg`
--  - `gfs-close.svg`
--  - `gfs-warning.svg`
--  - `gfs-error.svg`
--  - `gfs-success.svg`
--  - `gfs-info.svg`
--  - `gfs-fullscreen.svg`
--  - `gfs-exit-fullscreen.svg`
--  - `gfs-menu.svg`
--  - `gfs-search.svg`
--  - `gfs-settings.svg`
--- Validate each required SVG is well-formed XML.
--- Validate each SVG uses `viewBox="0 0 24 24"`, `fill="none"`, `stroke="currentColor"`, `stroke-linecap="round"`, and `stroke-linejoin="round"`.
--- Do not create `expand` or `collapse` icon naming.
--- Do not create `delete` icon naming.
--- Do not replace the standalone SVG assets with a JS-only icon registry.
--- Do not replace the standalone SVG assets with CSS-only icon generation.
--- Create `docs_build/design/theme-v2-icons/theme-v2-icon-style-guide.md` as the authoritative specification for all future Theme V2 SVG icons.
--- Create or update `assets/theme-v2/svg/README.md` as the registry documentation for the authoritative SVG asset pack.
--- Document the approved validation rules and the no-regeneration/no-redesign policy.
--- If any required SVG is missing, report validation failure instead of generating a replacement.
--- Do not convert existing UI controls in this PR.
-+
-+- Documentation/governance only unless `.env.example` comment or placeholder updates are required.
-+- Establish `Local (VS Code) -> DEV -> IST -> UAT -> PROD` as the official environment model.
-+- Define the environment invariance rule: the deployable artifact is identical across all environments; only `.env` values and environment-managed secret values differ.
-+- Define one shared API/service contract across all environments.
-+- Define Supabase Auth, Supabase Postgres, and Cloudflare R2 as required for every environment.
-+- Define R2 top-level prefixes:
-+  - `/local/`
-+  - `/dev/`
-+  - `/ist/`
-+  - `/uat/`
-+  - `/prod/`
-+- Define that all environments receive approved guest seed data for all tools.
-+- State SQLite is deprecated/retired and is not an active runtime database.
-+- Review `.env.example` and update comments/placeholders to match the official model.
-+- Create required Codex reports under `docs_build/dev/reports/`.
-+- Create repo-structured delta ZIP under `tmp/`.
 
- ## Exact Targets
-+
- - `docs_build/dev/BUILD_PR.md`
--- `assets/theme-v2/svg/gfs-chevron-left.svg`
--- `assets/theme-v2/svg/gfs-chevron-right.svg`
--- `assets/theme-v2/svg/gfs-chevron-up.svg`
--- `assets/theme-v2/svg/gfs-chevron-down.svg`
--- `assets/theme-v2/svg/gfs-add.svg`
--- `assets/theme-v2/svg/gfs-subtract.svg`
--- `assets/theme-v2/svg/gfs-trash.svg`
--- `assets/theme-v2/svg/gfs-close.svg`
--- `assets/theme-v2/svg/gfs-warning.svg`
--- `assets/theme-v2/svg/gfs-error.svg`
--- `assets/theme-v2/svg/gfs-success.svg`
--- `assets/theme-v2/svg/gfs-info.svg`
--- `assets/theme-v2/svg/gfs-fullscreen.svg`
--- `assets/theme-v2/svg/gfs-exit-fullscreen.svg`
--- `assets/theme-v2/svg/gfs-menu.svg`
--- `assets/theme-v2/svg/gfs-search.svg`
--- `assets/theme-v2/svg/gfs-settings.svg`
--- `assets/theme-v2/svg/README.md`
--- `docs_build/design/theme-v2-icons/theme-v2-icon-style-guide.md`
--- `tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs`
--- `docs_build/dev/reports/PR_26175_ALFA_047-theme-v2-svg-icon-registry_report.md`
--- `docs_build/dev/reports/PR_26175_ALFA_047-theme-v2-svg-icon-registry_validation-lane.md`
--- `docs_build/dev/reports/PR_26175_ALFA_047-theme-v2-svg-icon-registry_requirements-checklist.md`
--- `docs_build/dev/reports/PR_26175_ALFA_047-theme-v2-svg-icon-registry_manual-validation-notes.md`
-+- `docs_build/dev/PROJECT_INSTRUCTIONS.md`
-+- `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
-+- `docs_build/dev/ProjectInstructions/README.txt`
-+- `docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md`
-+- `docs_build/dev/ProjectInstructions/addendums/postgres_only.md`
-+- `docs_build/dev/ProjectInstructions/addendums/release_gate.md`
-+- `docs_build/dev/admin-notes/index.txt`
-+- `.env.example`
-+- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_branch-validation.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_requirement-checklist.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_validation-lane.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_manual-validation-notes.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_instruction-compliance-checklist.md`
+-- Documentation/governance only unless `.env.example` comment or placeholder updates are required.
+-- Establish `Local (VS Code) -> DEV -> IST -> UAT -> PROD` as the official environment model.
+-- Define the environment invariance rule: the deployable artifact is identical across all environments; only `.env` values and environment-managed secret values differ.
+-- Define one shared API/service contract across all environments.
+-- Define Supabase Auth, Supabase Postgres, and Cloudflare R2 as required for every environment.
+-- Define R2 top-level prefixes:
+-  - `/local/`
+-  - `/dev/`
+-  - `/ist/`
+-  - `/uat/`
+-  - `/prod/`
+-- Define that all environments receive approved guest seed data for all tools.
+-- State SQLite is deprecated/retired and is not an active runtime database.
+-- Review `.env.example` and update comments/placeholders to match the official model.
++- Governance/documentation only.
++- Build on OWNER_050 environment model.
++- Standardize environment file names:
++  - `.env.local`
++  - `.env.dev`
++  - `.env.ist`
++  - `.env.uat`
++  - `.env.prod`
++- Treat `.env.prd` as legacy technical debt only.
++- Add `GAMEFOUNDRY_ENVIRONMENT` allowed values:
++  - `local`
++  - `dev`
++  - `ist`
++  - `uat`
++  - `prod`
++- Keep `GAMEFOUNDRY_ENVIRONMENT_LABEL` display-only.
++- Document that only `.env` values and environment-managed secrets differ.
++- Document that the deployable artifact must remain identical.
++- Document one shared API/service contract.
++- Document feature flags cannot create permanent environment-specific behavior.
++- Review `.env.example` comments/placeholders only.
++- Clarify that only `.env.example` is committed to the repository.
++- Clarify that real `.env` files are user/environment-owned and must live outside the repo clone or be injected by deployment.
++- Document the external `/env/<target>/.env` layout next to the `/GFS/` repo clone.
++- Do not change runtime behavior.
+ - Create required Codex reports under `docs_build/dev/reports/`.
+ - Create repo-structured delta ZIP under `tmp/`.
+
+@@ -33,17 +44,16 @@ This `BUILD_PR.md` and the user request are the source of truth for `PR_26177_OW
+ - `docs_build/dev/PROJECT_INSTRUCTIONS.md`
+ - `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
+ - `docs_build/dev/ProjectInstructions/README.txt`
++- `docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md`
+ - `docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md`
+-- `docs_build/dev/ProjectInstructions/addendums/postgres_only.md`
+ - `docs_build/dev/ProjectInstructions/addendums/release_gate.md`
+-- `docs_build/dev/admin-notes/index.txt`
+ - `.env.example`
+-- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model.md`
+-- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_branch-validation.md`
+-- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_requirement-checklist.md`
+-- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_validation-lane.md`
+-- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_manual-validation-notes.md`
+-- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_instruction-compliance-checklist.md`
++- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards.md`
++- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_branch-validation.md`
++- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_requirement-checklist.md`
++- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_validation-lane.md`
++- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_manual-validation-notes.md`
++- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_instruction-compliance-checklist.md`
  - `docs_build/dev/reports/codex_review.diff`
  - `docs_build/dev/reports/codex_changed_files.txt`
 
--## Evidence Sources
--- `docs_build/pr/PLAN_PR_26175_ALFA_047-theme-v2-svg-icon-registry.md`
--- `assets/theme-v2/images/gfs-chevron-down.svg`
--- `assets/theme-v2/images/gfs-chevron-up.svg`
--
- ## Out Of Scope
--- No chevron conversion.
--- No status/action icon conversion.
--- No layout utility icon conversion.
--- No JS-only icon registry.
--- No CSS-only icon generation.
--- No Theme V2 CSS changes.
--- No runtime UI conversion.
--- No accordion conversion.
--- No Font Awesome removal.
--- No broad visual redesign.
--- No page-local CSS.
--- No inline styles.
--- No style blocks.
--- No browser-owned product data as source of truth.
--- No API/service/repository contract changes.
-+
-+- No runtime code changes.
-+- No UI changes.
+@@ -53,24 +63,27 @@ This `BUILD_PR.md` and the user request are the source of truth for `PR_26177_OW
+ - No UI changes.
  - No engine core changes.
  - No `start_of_day` folder changes.
-+- No `.env`, `.env.dev`, `.env.ist`, `.env.uat`, or `.env.prd` secret/value edits.
-+- No API implementation changes.
-+- No storage implementation changes.
-+- No database migration or DDL changes.
+-- No `.env`, `.env.dev`, `.env.ist`, `.env.uat`, or `.env.prd` secret/value edits.
++- No actual `.env`, `.env.local`, `.env.dev`, `.env.ist`, `.env.uat`, `.env.prod`, or `.env.prd` secret/value file edits.
++- No committed real `.env.*` copy-source files.
+ - No API implementation changes.
+ - No storage implementation changes.
+ - No database migration or DDL changes.
++- No feature flag implementation changes.
 
  ## Validation
-+
+
  Run exactly:
 
  ```powershell
--npx playwright test tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs --workers=1
--rg -n "<[s]tyle|[s]tyle=" docs_build/design/theme-v2-icons/theme-v2-icon-style-guide.md tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs
-+git status
-+git diff --check
+-git status
+ git diff --check
  ```
 
- ## Artifact
++Playwright is not required unless runtime files change.
 +
+ ## Artifact
+
  Create repo-structured delta ZIP:
 
  ```text
--tmp/PR_26175_ALFA_047-theme-v2-svg-icon-registry_delta.zip
-+tmp/PR_26177_OWNER_050-environment-governance-model_delta.zip
+-tmp/PR_26177_OWNER_050-environment-governance-model_delta.zip
++tmp/PR_26177_OWNER_051-environment-configuration-standards_delta.zip
  ```
 diff --git a/docs_build/dev/PROJECT_INSTRUCTIONS.md b/docs_build/dev/PROJECT_INSTRUCTIONS.md
-index 1fdd9fc64..2eee7be67 100644
+index 2eee7be67..af9e9e2db 100644
 --- a/docs_build/dev/PROJECT_INSTRUCTIONS.md
 +++ b/docs_build/dev/PROJECT_INSTRUCTIONS.md
-@@ -441,12 +441,13 @@ Toolbox and Admin tool metadata must use a shared DB-backed tool metadata source
+@@ -497,8 +497,9 @@ Environment invariance rule:
+ Shared API/service contract:
+ - One shared API/service contract is required across Local (VS Code), DEV, IST, UAT, and PROD.
+ - Browser/UI/runtime code must consume the same contract in every environment.
+-- Environment-specific endpoints, keys, buckets, and prefixes are configuration values only.
++- Environment-specific URLs, endpoints, keys, buckets, and prefixes are `.env` or environment-managed secret/config values only.
+ - Do not create environment-specific API/service contracts.
++- Do not split Local API and Public API contracts. Local and shared environments use the same API/service contract; URLs may differ by `.env` only.
 
- ## DATABASE DIRECTION
+ Required services in every environment:
+ - Supabase Auth
+@@ -519,11 +520,37 @@ Required Cloudflare R2 top-level prefixes:
 
--SQLite is deprecated.
--Postgres is authoritative.
-+Postgres is the authoritative active runtime database.
-+
-+SQLite is deprecated/retired and is not an active runtime database for Local (VS Code), DEV, IST, UAT, or PROD.
+ Derived R2 paths for projects, backups, exports, or future storage lanes must stay under the matching top-level prefix for the active environment.
 
- Rules:
- - New database work must target Postgres.
--- Local API -> Postgres is the required direction.
-+- Local (VS Code) API -> Postgres is the required direction.
- - New PRs must not introduce SQLite persistence.
- - Do not add new SQLite services.
- - Do not add new SQLite DDL.
-@@ -478,17 +479,58 @@ Rules:
-
- Runtime startup loads `.env` only.
-
-+Official environment model:
-+- `Local (VS Code)`
-+- `DEV`
-+- `IST`
-+- `UAT`
-+- `PROD`
+-The following files are copy-source files only:
++Only `.env.example` is committed to the repository.
 +
-+Promotion order:
-+- `Local (VS Code) -> DEV -> IST -> UAT -> PROD`
++Real `.env` files are user/environment-owned and must live outside the repo clone or be injected by deployment.
 +
-+Environment invariance rule:
-+- The deployable artifact is identical across every environment.
-+- Only `.env` values and environment-managed secret values differ between environments.
-+- Application code, runtime code, API/service code, database runtime scripts, migrations, and bundles must not fork by environment name.
-+
-+Shared API/service contract:
-+- One shared API/service contract is required across Local (VS Code), DEV, IST, UAT, and PROD.
-+- Browser/UI/runtime code must consume the same contract in every environment.
-+- Environment-specific endpoints, keys, buckets, and prefixes are configuration values only.
-+- Do not create environment-specific API/service contracts.
-+
-+Required services in every environment:
-+- Supabase Auth
-+- Supabase Postgres
-+- Cloudflare R2
-+
-+Guest seed data rule:
-+- All environments receive approved guest seed data for all tools.
-+- Guest seed data is shared environment setup data, not an environment-specific behavior fork.
-+- Guest seed data must be applied through the shared data/service contract and must not require per-environment application code.
-+
-+Required Cloudflare R2 top-level prefixes:
-+- Local (VS Code): `/local/`
-+- DEV: `/dev/`
-+- IST: `/ist/`
-+- UAT: `/uat/`
-+- PROD: `/prod/`
-+
-+Derived R2 paths for projects, backups, exports, or future storage lanes must stay under the matching top-level prefix for the active environment.
-+
- The following files are copy-source files only:
++Official external environment file names when a copy-source file is used outside the repo clone:
++- `.env.local`
  - `.env.dev`
  - `.env.ist`
  - `.env.uat`
--- `.env.prd`
-+- `.env.prd` is the legacy copy-source filename for PROD values; new environment governance uses the `PROD` environment name.
+-- `.env.prd` is the legacy copy-source filename for PROD values; new environment governance uses the `PROD` environment name.
++- `.env.prod`
++
++Example external layout:
++- `/env/local/.env`
++- `/env/dev/.env`
++- `/env/ist/.env`
++- `/env/uat/.env`
++- `/env/prod/.env`
++- `/GFS/` repo clone
++
++The app/runtime reads `.env` values supplied by the target environment. It must not require real `.env` files to be committed inside the repo clone.
++
++`.env.prd` is legacy technical debt only. New environment governance uses `.env.prod` for external PROD copy-source naming and the `PROD` environment name.
++
++Allowed `GAMEFOUNDRY_ENVIRONMENT` values:
++- `local`
++- `dev`
++- `ist`
++- `uat`
++- `prod`
++
++`GAMEFOUNDRY_ENVIRONMENT_LABEL` is display-only and must not drive runtime behavior, API/service selection, database selection, storage selection, or feature behavior.
 
--Valid deployment targets are:
-+Valid environment stages are:
-+- `Local (VS Code)`
- - `DEV`
- - `IST`
- - `UAT`
--- `PRD`
-+- `PROD`
-
- Manual deployment-target flow:
- 1. Copy the selected `.env.<target>` file to `.env`.
-@@ -501,11 +543,12 @@ Runtime environment parameters are prohibited.
- Do not introduce runtime parameters such as:
- - `--env`
- - `--environment`
-+- `ENVIRONMENT=LOCAL`
- - `ENVIRONMENT=DEV`
- - `ENVIRONMENT=UAT`
--- `ENVIRONMENT=PRD`
-+- `ENVIRONMENT=PROD`
-
--`DEV`, `IST`, `UAT`, and `PRD` are deployment targets, not application behaviors.
-+`Local (VS Code)`, `DEV`, `IST`, `UAT`, and `PROD` are environment stages, not application behaviors.
+ Valid environment stages are:
+ - `Local (VS Code)`
+@@ -552,6 +579,16 @@ Do not introduce runtime parameters such as:
 
  Application code, runtime code, API/service code, and DB runtime scripts must not branch behavior by deployment target name.
 
++Host/domain configuration:
++- Local (VS Code) uses `127.0.0.1` hostnames.
++- DEV, IST, UAT, and PROD use configured `*.gamefoundrystudio.com` hostnames.
++- Host/domain differences are configuration values only and must not create separate deployable artifacts or environment-specific code.
++
++Feature flag governance:
++- Feature flags must not create permanent environment-specific behavior.
++- Feature flags may be used only for staged rollout, testing, or emergency mitigation.
++- Feature flags must be removed, promoted to normal behavior, or documented as active temporary controls when the rollout, test, or mitigation ends.
++
+ ## RUNTIME SCRIPT NAMING GOVERNANCE
+
+ Active runtime script names should describe capability rather than vendor/provider.
 diff --git a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-index 640ca6792..16238a317 100644
+index 16238a317..d2a84ecbe 100644
 --- a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 +++ b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-@@ -16,6 +16,7 @@ The Project Instructions operating system provides additive governance for:
- - deprecation workflow
- - archive and history preservation
- - recognized project instruction/reference files
-+- environment governance
+@@ -39,6 +39,8 @@ Existing Project Instructions remain preserved in their current locations. This
 
- ## Preservation
+ `docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md` defines the official environment model, environment invariance rule, shared API/service contract rule, required Supabase/Postgres/R2 services, required R2 prefixes, and SQLite retired status.
 
-@@ -34,6 +35,10 @@ Existing Project Instructions remain preserved in their current locations. This
-
- `docs_build/dev/ProjectInstructions/addendums/project_reference_files.md` defines additional valid project instruction/reference files that must be included in future Project Instructions reviews when present in `ProjectInstructions.zip`, the active project instruction directory, or `docs_build/dev/admin-notes/`.
-
-+## Environment Governance
-+
-+`docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md` defines the official environment model, environment invariance rule, shared API/service contract rule, required Supabase/Postgres/R2 services, required R2 prefixes, and SQLite retired status.
++`docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md` defines official `.env` file names, environment variable values, host/domain configuration, API URL configuration, R2 prefix configuration, and feature flag governance.
 +
  ## Merge Control
 
  No PR in this operating system is merged without explicit owner approval.
 diff --git a/docs_build/dev/ProjectInstructions/README.txt b/docs_build/dev/ProjectInstructions/README.txt
-index 262b216e7..0e4f9b470 100644
+index 0e4f9b470..a48becf05 100644
 --- a/docs_build/dev/ProjectInstructions/README.txt
 +++ b/docs_build/dev/ProjectInstructions/README.txt
-@@ -49,3 +49,4 @@ Addendum index:
- - Codex Artifact and Reporting Standard: project-instructions/addendums/codex-artifact-and-reporting-standard.md
+@@ -50,3 +50,4 @@ Addendum index:
  - Codex Project Instructions Startup: project-instructions/addendums/codex-project-instructions-startup.md
  - Project Reference Files Governance: docs_build/dev/ProjectInstructions/addendums/project_reference_files.md
-+- Environment Governance Model: docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md
-diff --git a/docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md b/docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md
+ - Environment Governance Model: docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md
++- Environment Configuration Standards: docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md
+diff --git a/docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md b/docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md
 new file mode 100644
-index 000000000..ef3c0e1cd
+index 000000000..d08f4317b
 --- /dev/null
-+++ b/docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md
-@@ -0,0 +1,114 @@
-+# Environment Governance Model
++++ b/docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md
+@@ -0,0 +1,112 @@
++# Environment Configuration Standards
 +
 +Status: Approved
 +Owner: OWNER
 +
 +## Purpose
 +
-+Define the official Game Foundry Studio environment model and the invariance rules that keep promotion, deployment, API/service contracts, auth, database, and storage consistent from local development through production.
++Define the official environment configuration standards that build on the OWNER_050 environment model.
 +
-+## Official Environment Model
++This addendum is governance/documentation only. It does not change runtime behavior, API implementation, storage implementation, database DDL, or secret values.
 +
-+The official environment model is:
++## Source Model
++
++This standard builds on:
 +
 +```text
 +Local (VS Code) -> DEV -> IST -> UAT -> PROD
 +```
 +
-+Environment stages:
++The deployable artifact must remain identical across all environments.
 +
-+- `Local (VS Code)`
-+- `DEV`
-+- `IST`
-+- `UAT`
-+- `PROD`
++Only `.env` values and environment-managed secret values may differ by environment.
 +
-+The old three-letter production abbreviation is not an official environment name for new governance text. Existing `.env.prd` file naming is treated only as a legacy copy-source filename for PROD values until a separately scoped rename is approved.
++Deployable artifacts must not contain environment-specific application code, runtime code, API/service code, database code, storage code, or feature behavior.
 +
-+## Environment Invariance Rule
++## Official Environment Files
 +
-+The deployable artifact must be identical across Local (VS Code), DEV, IST, UAT, and PROD.
++Only `.env.example` is committed to the repository.
 +
-+Only `.env` values and environment-managed secret values may differ between environments.
++Real `.env` files are user/environment-owned and must live outside the repo clone or be injected by deployment.
 +
-+Do not vary these by environment name:
++Official external environment copy-source file names when a copy-source file is used outside the repo clone:
 +
-+- application code
-+- runtime code
-+- API/service code
-+- API/service contract shape
-+- database runtime scripts
-+- migration shape
-+- bundles
-+- product behavior
++- `.env.local`
++- `.env.dev`
++- `.env.ist`
++- `.env.uat`
++- `.env.prod`
 +
-+## Shared API/Service Contract
++Example external layout:
 +
-+One shared API/service contract is required across all environments.
++- `/env/local/.env`
++- `/env/dev/.env`
++- `/env/ist/.env`
++- `/env/uat/.env`
++- `/env/prod/.env`
++- `/GFS/` repo clone
 +
-+Rules:
++The app/runtime reads `.env` values supplied by the target environment.
 +
-+- Browser/UI/runtime code must consume the same API/service contract in Local (VS Code), DEV, IST, UAT, and PROD.
-+- Environment-specific endpoints, keys, buckets, credentials, and prefixes are configuration values only.
-+- Do not create environment-specific API/service contracts.
-+- Do not branch API/service behavior by environment name.
++Runtime startup still reads `.env` values only. The official flow is for each environment to supply those values from outside the repo clone or through deployment injection before validation/startup.
 +
-+## Required Services
++`.env.prd` is legacy technical debt only. Do not introduce new references to `.env.prd` except when documenting migration or historical compatibility.
 +
-+Every environment requires:
++## Environment Identity
 +
-+- Supabase Auth
-+- Supabase Postgres
-+- Cloudflare R2
++Allowed `GAMEFOUNDRY_ENVIRONMENT` values:
 +
-+Mock, memory, fixture, or legacy database adapters may be used only when separately scoped as test/dev tooling. They are not the official runtime service model.
++- `local`
++- `dev`
++- `ist`
++- `uat`
++- `prod`
 +
-+## Guest Seed Data
++`GAMEFOUNDRY_ENVIRONMENT` identifies the active configuration lane. It must not cause application, runtime, API/service, database, storage, or feature behavior forks.
 +
-+All environments receive approved guest seed data for all tools.
++`GAMEFOUNDRY_ENVIRONMENT_LABEL` is display-only. It may be used for visual labels and diagnostics, but must not drive runtime behavior, API/service selection, database selection, storage selection, or feature behavior.
 +
-+Rules:
++## Host And Domain Configuration
 +
-+- Guest seed data is shared environment setup data, not an environment-specific behavior fork.
-+- Guest seed data must be applied through the shared data/service contract.
-+- Guest seed data must not require per-environment application code.
++Local (VS Code) uses `127.0.0.1` hostnames.
 +
-+## R2 Prefixes
++DEV, IST, UAT, and PROD use configured `*.gamefoundrystudio.com` hostnames.
++
++Host/domain differences are configuration values only. They must not create separate deployable artifacts or environment-specific code.
++
++## R2 Prefix Configuration
 +
 +Required Cloudflare R2 top-level prefixes:
 +
@@ -470,133 +359,98 @@ index 000000000..ef3c0e1cd
 +- UAT: `/uat/`
 +- PROD: `/prod/`
 +
-+Derived paths must stay under the matching top-level prefix. Examples:
++R2 project, backup, export, import, or future storage paths must stay under the matching environment prefix.
 +
-+- Local project assets: `/local/projects/`
-+- DEV project assets: `/dev/projects/`
-+- IST project assets: `/ist/projects/`
-+- UAT project assets: `/uat/projects/`
-+- PROD project assets: `/prod/projects/`
-+- Local Postgres backups: `/local/backups/postgres/`
-+- DEV Postgres backups: `/dev/backups/postgres/`
-+- IST Postgres backups: `/ist/backups/postgres/`
-+- UAT Postgres backups: `/uat/backups/postgres/`
-+- PROD Postgres backups: `/prod/backups/postgres/`
++## API/Service Contract Configuration
 +
-+## Database Direction
-+
-+Postgres is the authoritative active runtime database for the official environment model.
-+
-+SQLite is deprecated/retired and is not an active runtime database for Local (VS Code), DEV, IST, UAT, or PROD.
++One shared API/service contract is required across Local (VS Code), DEV, IST, UAT, and PROD.
 +
 +Rules:
 +
-+- New database work must target Postgres.
-+- Do not introduce new SQLite runtime persistence.
-+- Do not introduce new SQLite services, DDL, or seed data.
-+- Existing SQLite references may remain only as documented technical debt when already present.
++- API URLs may differ by `.env` only.
++- Do not split Local API and Public API contracts.
++- Do not create environment-specific API/service contracts.
++- Browser/UI/runtime code must use the same API/service contract shape in every environment.
 +
-+## Scope Boundary
++## Feature Flag Governance
 +
-+This governance addendum defines documentation and configuration contract rules only. It does not change runtime code, API implementation code, storage implementation code, database DDL, or secret values.
-diff --git a/docs_build/dev/ProjectInstructions/addendums/postgres_only.md b/docs_build/dev/ProjectInstructions/addendums/postgres_only.md
-index 55af64381..369ce2006 100644
---- a/docs_build/dev/ProjectInstructions/addendums/postgres_only.md
-+++ b/docs_build/dev/ProjectInstructions/addendums/postgres_only.md
-@@ -1,4 +1,4 @@
--SQLite is deprecated.
-+SQLite is deprecated/retired and is not an active runtime database.
++Feature flags must not create permanent environment-specific behavior.
++
++Allowed feature flag uses:
++
++- staged rollout
++- testing
++- emergency mitigation
++
++Feature flags must be removed, promoted to normal behavior, or documented as active temporary controls when the rollout, test, or mitigation ends.
++
++Feature flags must not become a substitute for the environment invariance rule.
+diff --git a/docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md b/docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md
+index ef3c0e1cd..de7c90331 100644
+--- a/docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md
++++ b/docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md
+@@ -112,3 +112,7 @@ Rules:
+ ## Scope Boundary
 
- Game Foundry Studio standard database:
- PostgreSQL
-@@ -7,5 +7,6 @@ Rules:
- - No new SQLite implementations
- - No new SQLite dependencies
- - Existing SQLite references are technical debt
--- New persistence work targets PostgreSQL
-+- New persistence work targets PostgreSQL/Postgres
-+- Local (VS Code), DEV, IST, UAT, and PROD runtime database work targets Postgres
- - PRs introducing SQLite should be rejected
+ This governance addendum defines documentation and configuration contract rules only. It does not change runtime code, API implementation code, storage implementation code, database DDL, or secret values.
++
++## Related Configuration Standard
++
++`docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md` defines the official `.env` file names, allowed `GAMEFOUNDRY_ENVIRONMENT` values, display-only environment label rule, host/domain configuration, API URL configuration, and feature flag governance.
 diff --git a/docs_build/dev/ProjectInstructions/addendums/release_gate.md b/docs_build/dev/ProjectInstructions/addendums/release_gate.md
-index a509f1791..79af94858 100644
+index 79af94858..c45a2c49d 100644
 --- a/docs_build/dev/ProjectInstructions/addendums/release_gate.md
 +++ b/docs_build/dev/ProjectInstructions/addendums/release_gate.md
-@@ -37,6 +37,7 @@ The release gate should confirm these files when relevant to the PR:
- - `docs_build/dev/ProjectInstructions/addendums/governance_phase1_complete.md`
+@@ -38,6 +38,7 @@ The release gate should confirm these files when relevant to the PR:
  - `docs_build/dev/ProjectInstructions/addendums/pr_workflow.md`
  - `docs_build/dev/ProjectInstructions/addendums/project_reference_files.md`
-+- `docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md`
+ - `docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md`
++- `docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md`
  - `docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md`
  - `docs_build/dev/admin-notes/Installs required.txt` when present
  - `docs_build/dev/admin-notes/Table layout.txt` when present
-diff --git a/docs_build/dev/admin-notes/index.txt b/docs_build/dev/admin-notes/index.txt
-index 93654fa6e..4744bea93 100644
---- a/docs_build/dev/admin-notes/index.txt
-+++ b/docs_build/dev/admin-notes/index.txt
-@@ -2,7 +2,7 @@
- [.] Start the server
- npm run dev:local-api
-
--[x] Deploy DEV, IST, UAT, PRD
-+[x] Deploy Local (VS Code), DEV, IST, UAT, PROD
- node .\scripts\validate-supabase-dev.mjs
- node .\scripts\apply-supabase-dev-ddl.mjs
- node .\scripts\validate-supabase-dev.mjs
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model.md b/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model.md
+diff --git a/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards.md b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards.md
 new file mode 100644
-index 000000000..fff326ad4
+index 000000000..5006840aa
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model.md
-@@ -0,0 +1,92 @@
-+# PR_26177_OWNER_050-environment-governance-model
++++ b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards.md
+@@ -0,0 +1,76 @@
++# PR_26177_OWNER_051-environment-configuration-standards
 +
-+Date: 2026-06-25
++Date: 2026-06-26
 +Team: OWNER
-+Scope: Documentation/governance only, plus `.env.example` comment/placeholders
++Scope: Governance/documentation only, plus `.env.example` comments/placeholders
 +Status: PASS
 +
 +## Summary
 +
-+- Established `Local (VS Code) -> DEV -> IST -> UAT -> PROD` as the official environment model.
-+- Defined the environment invariance rule: the deployable artifact is identical across environments; only `.env` values and environment-managed secret values differ.
-+- Defined one shared API/service contract across Local (VS Code), DEV, IST, UAT, and PROD.
-+- Defined Supabase Auth, Supabase Postgres, and Cloudflare R2 as required services in every environment.
-+- Defined required Cloudflare R2 top-level prefixes: `/local/`, `/dev/`, `/ist/`, `/uat/`, and `/prod/`.
-+- Documented that all environments receive approved guest seed data for all tools.
-+- Clarified that SQLite is deprecated/retired and is not an active runtime database.
-+- Updated `.env.example` comments/placeholders to use the official model and local R2 prefixes.
-+- No runtime code, UI, engine core, secret, DDL, or storage implementation changes were made.
-+
-+## Conflict Resolution
-+
-+- Resolved merge conflicts against `origin/main` only.
-+- Conflicts were limited to generated Codex artifacts:
-+  - `docs_build/dev/reports/codex_changed_files.txt`
-+  - `docs_build/dev/reports/codex_review.diff`
-+- Regenerated both Codex artifacts from the final PR delta after the `origin/main` merge.
-+- Preserved the OWNER_050 environment governance purpose and decisions.
-+- Final PR delta remains documentation/governance plus `.env.example` comments/placeholders.
-+
-+## Latest Mainline Check
-+
-+- Rechecked PR #202 against `origin/main` at `f237619cf`.
-+- Current branch was `PR_26177_OWNER_050-environment-governance-model`: PASS.
-+- `git merge origin/main` reported `Already up to date.`: PASS.
-+- No new merge conflicts were present: PASS.
-+- OWNER_050 environment governance decisions remain preserved: PASS.
-+- No OWNER_051 scope was added: PASS.
++- Built on OWNER_050 by adding official environment configuration standards.
++- Clarified that only `.env.example` is committed to the repository.
++- Clarified that real `.env` files are user/environment-owned and must live outside the repo clone or be injected by deployment.
++- Documented external environment layout: `/env/local/.env`, `/env/dev/.env`, `/env/ist/.env`, `/env/uat/.env`, `/env/prod/.env`, and `/GFS/` repo clone.
++- Standardized official external copy-source file names: `.env.local`, `.env.dev`, `.env.ist`, `.env.uat`, and `.env.prod`.
++- Documented `.env.prd` as legacy technical debt only.
++- Clarified that `.env.prod` remains the official PROD naming when a copy-source file is used outside the repo.
++- Added allowed `GAMEFOUNDRY_ENVIRONMENT` values: `local`, `dev`, `ist`, `uat`, and `prod`.
++- Clarified that `GAMEFOUNDRY_ENVIRONMENT_LABEL` is display-only.
++- Preserved the identical deployable artifact rule and the rule that only `.env` values and environment-managed secret values may differ.
++- Preserved one shared API/service contract and documented that URLs may differ by `.env` only.
++- Documented local hostnames use `127.0.0.1`, while shared environments use configured `*.gamefoundrystudio.com` hostnames.
++- Documented feature flags cannot create permanent environment-specific behavior.
++- Updated `.env.example` comments/placeholders only.
++- No runtime behavior, UI behavior, engine core, DDL, storage implementation, API implementation, or feature flag implementation changed.
 +
 +## Branch Validation
 +
-+PASS. Current branch is `PR_26177_OWNER_050-environment-governance-model`, created from clean `main` at `0c0f2ebc0`.
++PASS. Current branch is `PR_26177_OWNER_051-environment-configuration-standards`, created from clean synchronized `main` at `62ebb318b`.
 +
 +## Instruction Compliance
 +
 +- PASS: Current branch was `main` before branch creation.
 +- PASS: PR name includes OWNER team token.
 +- PASS: Team OWNER owns environment strategy and governance.
-+- PASS: Scope is documentation/governance only except approved `.env.example` comments/placeholders.
-+- PASS: No runtime, UI, engine core, `start_of_day`, migration, DDL, or secret files changed.
++- PASS: Scope is governance/documentation only except `.env.example` comments/placeholders.
++- PASS: No runtime, UI, engine core, `start_of_day`, migration, DDL, API implementation, storage implementation, or feature flag implementation files changed.
 +- PASS: Required reports and ZIP artifact are produced for the BUILD.
 +
 +## Changed Files
@@ -606,16 +460,15 @@ index 000000000..fff326ad4
 +- `docs_build/dev/PROJECT_INSTRUCTIONS.md`
 +- `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
 +- `docs_build/dev/ProjectInstructions/README.txt`
++- `docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md`
 +- `docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md`
-+- `docs_build/dev/ProjectInstructions/addendums/postgres_only.md`
 +- `docs_build/dev/ProjectInstructions/addendums/release_gate.md`
-+- `docs_build/dev/admin-notes/index.txt`
-+- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_branch-validation.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_requirement-checklist.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_validation-lane.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_manual-validation-notes.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_instruction-compliance-checklist.md`
++- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards.md`
++- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_branch-validation.md`
++- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_requirement-checklist.md`
++- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_validation-lane.md`
++- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_manual-validation-notes.md`
++- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_instruction-compliance-checklist.md`
 +- `docs_build/dev/reports/codex_changed_files.txt`
 +- `docs_build/dev/reports/codex_review.diff`
 +
@@ -623,157 +476,160 @@ index 000000000..fff326ad4
 +
 +- `docs_build/dev/reports/codex_review.diff`
 +- `docs_build/dev/reports/codex_changed_files.txt`
-+- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_branch-validation.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_requirement-checklist.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_validation-lane.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_manual-validation-notes.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_instruction-compliance-checklist.md`
++- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards.md`
++- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_branch-validation.md`
++- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_requirement-checklist.md`
++- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_validation-lane.md`
++- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_manual-validation-notes.md`
++- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_instruction-compliance-checklist.md`
 +
 +## Validation
 +
-+- PASS: `git status`.
 +- PASS: `git diff --check`.
-+- PASS: Documentation review confirmed the official environment model, invariance rule, shared API/service contract, required services, R2 prefixes, guest seed data rule, and SQLite retired status.
-+- SKIP: Playwright was not run because the final PR delta contains only docs/template/report files and `.env.example` comments/placeholders.
++- SKIP: Playwright was not run because no runtime files changed.
 +
 +## Artifact
 +
-+- `tmp/PR_26177_OWNER_050-environment-governance-model_delta.zip`
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_branch-validation.md b/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_branch-validation.md
++- `tmp/PR_26177_OWNER_051-environment-configuration-standards_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_branch-validation.md b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_branch-validation.md
 new file mode 100644
-index 000000000..767c0b5a8
+index 000000000..daa6e152b
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_branch-validation.md
-@@ -0,0 +1,30 @@
-+# PR_26177_OWNER_050-environment-governance-model Branch Validation
++++ b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_branch-validation.md
+@@ -0,0 +1,27 @@
++# PR_26177_OWNER_051-environment-configuration-standards Branch Validation
 +
 +## Branch
 +
-+`PR_26177_OWNER_050-environment-governance-model`
++`PR_26177_OWNER_051-environment-configuration-standards`
 +
 +## Base
 +
 +- Base branch: `main`
-+- Base commit at branch creation: `0c0f2ebc0`
++- Base commit at branch creation: `62ebb318b`
 +
 +## Checks
 +
 +- Current branch was `main` before branch creation: PASS.
-+- Worktree before BUILD was clean: PASS.
-+- Current branch is the scoped OWNER_050 branch: PASS.
-+- Conflict resolution was performed against `origin/main` only: PASS.
-+- Merge conflicts were limited to generated Codex report artifacts: PASS.
-+- Latest `origin/main` recheck reported `Already up to date.`: PASS.
-+- No OWNER_051 scope was added: PASS.
-+- Scope is limited to environment governance, `.env.example` comments/placeholders, reports, and Codex review artifacts: PASS.
++- Worktree before branch creation was clean and synced with `origin/main`: PASS.
++- Current branch is the scoped OWNER_051 branch: PASS.
++- Scope is limited to environment configuration governance, `.env.example` comments/placeholders, reports, and Codex review artifacts: PASS.
++- OWNER_050 environment model remains the base model: PASS.
 +- No runtime files changed: PASS.
 +- No UI files changed: PASS.
 +- No engine core files changed: PASS.
-+- No `start_of_day` files changed: PASS.
-+- No `.env`, `.env.dev`, `.env.ist`, `.env.uat`, or `.env.prd` secret/value files changed: PASS.
++- Only `.env.example` was changed; no actual `.env.*` secret/value files changed: PASS.
++- Real `.env` files are documented as external or deployment-injected, not repo-owned: PASS.
 +
 +## Result
 +
 +PASS
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_instruction-compliance-checklist.md
+diff --git a/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_instruction-compliance-checklist.md
 new file mode 100644
-index 000000000..29aa4800a
+index 000000000..1579566f0
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_instruction-compliance-checklist.md
-@@ -0,0 +1,29 @@
-+# PR_26177_OWNER_050-environment-governance-model Instruction Compliance Checklist
++++ b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_instruction-compliance-checklist.md
+@@ -0,0 +1,24 @@
++# PR_26177_OWNER_051-environment-configuration-standards Instruction Compliance Checklist
 +
 +- [x] Read repo BUILD instructions before task actions.
-+- [x] Hard-stopped condition checked: current branch was `main` before branch creation.
-+- [x] Created branch `PR_26177_OWNER_050-environment-governance-model` from `main`.
-+- [x] Continued on existing branch `PR_26177_OWNER_050-environment-governance-model` without switching branches.
-+- [x] Read active `docs_build/dev/BUILD_PR.md`; it was for an older unrelated PR.
-+- [x] Replaced active `docs_build/dev/BUILD_PR.md` with this PR's source-of-truth scope.
-+- [x] Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
-+- [x] Read `docs_build/dev/PROJECT_MULTI_PC.txt`.
++- [x] Confirmed current branch was `main` before creating OWNER_051.
++- [x] Created branch `PR_26177_OWNER_051-environment-configuration-standards` from `main`.
++- [x] Read active `docs_build/dev/BUILD_PR.md`.
++- [x] Replaced active `docs_build/dev/BUILD_PR.md` with OWNER_051 scope.
++- [x] Read active OWNER_050 environment governance surfaces.
 +- [x] Confirmed OWNER owns environment strategy and governance.
-+- [x] Kept the PR to one purpose: environment governance model.
++- [x] Kept the PR to one purpose: environment configuration standards.
 +- [x] Avoided runtime code changes.
 +- [x] Avoided UI changes.
 +- [x] Avoided engine core changes.
 +- [x] Avoided `start_of_day` changes.
++- [x] Avoided actual `.env.*` secret/value file edits.
++- [x] Clarified only `.env.example` is committed.
++- [x] Clarified real `.env` files are external or deployment-injected.
 +- [x] Did not run Playwright because no runtime files changed.
-+- [x] Avoided persisted `imageDataUrl` contract changes.
 +- [x] Created required Codex reports under `docs_build/dev/reports/`.
 +- [x] Created repo-structured delta ZIP under `tmp/`.
-+- [x] Merged `origin/main` only for conflict resolution.
-+- [x] Resolved only generated Codex artifact conflicts.
-+- [x] Refreshed reports and ZIP after conflict resolution.
-+- [x] Rechecked PR #202 against latest `origin/main`; Git reported `Already up to date.`.
-+- [x] Added no OWNER_051 scope.
 +
 +## Result
 +
 +PASS
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_manual-validation-notes.md
+diff --git a/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_manual-validation-notes.md
 new file mode 100644
-index 000000000..5fa971bb3
+index 000000000..841089ce0
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_manual-validation-notes.md
-@@ -0,0 +1,25 @@
-+# PR_26177_OWNER_050-environment-governance-model Manual Validation Notes
++++ b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_manual-validation-notes.md
+@@ -0,0 +1,27 @@
++# PR_26177_OWNER_051-environment-configuration-standards Manual Validation Notes
 +
-+Manual validation was limited to governance/documentation review because this PR establishes environment governance and updates `.env.example` comments/placeholders only.
++Manual validation was limited to governance/documentation review because this PR establishes environment configuration standards and updates `.env.example` comments/placeholders only.
 +
 +## Notes
 +
-+- Confirmed the active Project Instructions define `Local (VS Code) -> DEV -> IST -> UAT -> PROD`.
-+- Confirmed the new addendum defines the same environment model.
-+- Confirmed the environment invariance rule states the deployable artifact is identical across environments.
-+- Confirmed only `.env` values and environment-managed secret values differ by environment.
-+- Confirmed one shared API/service contract is required across all environments.
-+- Confirmed Supabase Auth, Supabase Postgres, and Cloudflare R2 are required in every environment.
-+- Confirmed R2 top-level prefixes are `/local/`, `/dev/`, `/ist/`, `/uat/`, and `/prod/`.
-+- Confirmed all environments receive approved guest seed data for all tools.
-+- Confirmed SQLite is documented as deprecated/retired and not an active runtime database.
-+- Confirmed `.env.example` comments/placeholders align to the official model.
-+- Confirmed merge conflicts against `origin/main` were limited to generated Codex report artifacts.
-+- Confirmed OWNER_050 environment governance decisions were preserved after conflict resolution.
-+- Confirmed latest `origin/main` recheck reported `Already up to date.` with no new conflicts.
-+- Confirmed no OWNER_051 scope was added.
-+- Confirmed Playwright is not impacted because the final PR delta contains only docs/template/report files and `.env.example` comments/placeholders.
++- Confirmed only `.env.example` is committed to the repository.
++- Confirmed real `.env` files are user/environment-owned and must live outside the repo clone or be injected by deployment.
++- Confirmed external layout documents `/env/local/.env`, `/env/dev/.env`, `/env/ist/.env`, `/env/uat/.env`, `/env/prod/.env`, and `/GFS/` repo clone.
++- Confirmed official external copy-source names are `.env.local`, `.env.dev`, `.env.ist`, `.env.uat`, and `.env.prod`.
++- Confirmed `.env.prd` is documented as legacy technical debt only.
++- Confirmed `.env.prod` remains the official PROD naming when a copy-source file is used outside the repo.
++- Confirmed allowed `GAMEFOUNDRY_ENVIRONMENT` values are `local`, `dev`, `ist`, `uat`, and `prod`.
++- Confirmed `GAMEFOUNDRY_ENVIRONMENT_LABEL` is display-only.
++- Confirmed only `.env` values and environment-managed secret values may differ by environment.
++- Confirmed deployable artifacts must remain identical.
++- Confirmed one shared API/service contract is required.
++- Confirmed local hostnames use `127.0.0.1`.
++- Confirmed shared environments use configured `*.gamefoundrystudio.com` hostnames.
++- Confirmed R2 prefixes remain `/local/`, `/dev/`, `/ist/`, `/uat/`, and `/prod/`.
++- Confirmed API URLs may differ by `.env` only and there is no Local API vs Public API split.
++- Confirmed feature flags cannot create permanent environment-specific behavior.
++- Confirmed no runtime behavior changed.
 +
 +## Result
 +
 +PASS
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_requirement-checklist.md b/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_requirement-checklist.md
+diff --git a/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_requirement-checklist.md b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_requirement-checklist.md
 new file mode 100644
-index 000000000..8059b0047
+index 000000000..b65f2abe5
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_requirement-checklist.md
-@@ -0,0 +1,43 @@
-+# PR_26177_OWNER_050-environment-governance-model Requirement Checklist
++++ b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_requirement-checklist.md
+@@ -0,0 +1,49 @@
++# PR_26177_OWNER_051-environment-configuration-standards Requirement Checklist
 +
-+- [x] Establish `Local (VS Code) -> DEV -> IST -> UAT -> PROD` as the official environment model.
-+- [x] Define the environment invariance rule.
-+- [x] State the deployable artifact is identical across all environments.
-+- [x] State only `.env` values and environment-managed secret values differ.
-+- [x] Define one shared API/service contract across all environments.
-+- [x] Define Supabase Auth as required for every environment.
-+- [x] Define Postgres as required for every environment.
-+- [x] Define Cloudflare R2 as required for every environment.
-+- [x] Define R2 top-level prefix `/local/`.
-+- [x] Define R2 top-level prefix `/dev/`.
-+- [x] Define R2 top-level prefix `/ist/`.
-+- [x] Define R2 top-level prefix `/uat/`.
-+- [x] Define R2 top-level prefix `/prod/`.
-+- [x] Document that all environments receive approved guest seed data for all tools.
-+- [x] State SQLite is deprecated/retired.
-+- [x] State SQLite is not an active runtime database.
-+- [x] Review `.env.example`.
-+- [x] Update `.env.example` comments/placeholders to match the official model.
-+- [x] Keep scope documentation/governance only except `.env.example` comments/placeholders.
-+- [x] Make no runtime code changes.
-+- [x] Make no UI changes.
-+- [x] Make no engine core changes.
-+- [x] Make no `start_of_day` folder changes.
-+- [x] Do not run Playwright because no runtime files changed.
++- [x] Keep scope governance/documentation only.
++- [x] Build on OWNER_050 environment model.
++- [x] Clarify only `.env.example` is committed to the repository.
++- [x] Clarify real `.env` files are user/environment-owned and must live outside the repo clone or be injected by deployment.
++- [x] Document `/env/local/.env`.
++- [x] Document `/env/dev/.env`.
++- [x] Document `/env/ist/.env`.
++- [x] Document `/env/uat/.env`.
++- [x] Document `/env/prod/.env`.
++- [x] Document `/GFS/` repo clone layout.
++- [x] Standardize external copy-source `.env.local`.
++- [x] Standardize external copy-source `.env.dev`.
++- [x] Standardize external copy-source `.env.ist`.
++- [x] Standardize external copy-source `.env.uat`.
++- [x] Standardize external copy-source `.env.prod`.
++- [x] Treat `.env.prd` as legacy technical debt only.
++- [x] Keep `.env.prod` as the official PROD naming when a copy-source file is used outside the repo.
++- [x] Define `GAMEFOUNDRY_ENVIRONMENT=local`.
++- [x] Define `GAMEFOUNDRY_ENVIRONMENT=dev`.
++- [x] Define `GAMEFOUNDRY_ENVIRONMENT=ist`.
++- [x] Define `GAMEFOUNDRY_ENVIRONMENT=uat`.
++- [x] Define `GAMEFOUNDRY_ENVIRONMENT=prod`.
++- [x] Keep `GAMEFOUNDRY_ENVIRONMENT_LABEL` display-only.
++- [x] Document that only `.env` values and environment-managed secret values differ.
++- [x] Document that the deployable artifact must remain identical.
++- [x] Document one shared API/service contract.
++- [x] Document local host/domain uses `127.0.0.1`.
++- [x] Document shared environments use configured `*.gamefoundrystudio.com` hostnames.
++- [x] Document R2 prefixes `/local/`, `/dev/`, `/ist/`, `/uat/`, `/prod/`.
++- [x] Document API URLs may differ by `.env` only.
++- [x] Document no Local API vs Public API split.
++- [x] Document feature flags cannot create permanent environment-specific behavior.
++- [x] Review and update `.env.example` comments/placeholders only.
++- [x] Remove wording that implies `.env.local`, `.env.dev`, `.env.ist`, `.env.uat`, or `.env.prod` are repo files.
++- [x] Do not change runtime behavior.
 +- [x] Produce PR-specific report.
 +- [x] Produce branch validation report.
 +- [x] Produce validation lane report.
@@ -782,22 +638,17 @@ index 000000000..8059b0047
 +- [x] Produce `codex_review.diff`.
 +- [x] Produce `codex_changed_files.txt`.
 +- [x] Produce repo-structured ZIP under `tmp/`.
-+- [x] Resolve merge conflicts against `origin/main` only.
-+- [x] Preserve OWNER_050 environment governance decisions after conflict resolution.
-+- [x] Refresh repo-structured ZIP after conflict resolution.
-+- [x] Recheck PR #202 against latest `origin/main`.
-+- [x] Add no OWNER_051 scope.
 +
 +## Result
 +
 +PASS
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_validation-lane.md b/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_validation-lane.md
+diff --git a/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_validation-lane.md b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_validation-lane.md
 new file mode 100644
-index 000000000..3637d7dd0
+index 000000000..5d9e12580
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_validation-lane.md
-@@ -0,0 +1,31 @@
-+# PR_26177_OWNER_050-environment-governance-model Validation Lane
++++ b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_validation-lane.md
+@@ -0,0 +1,24 @@
++# PR_26177_OWNER_051-environment-configuration-standards Validation Lane
 +
 +## Lane
 +
@@ -805,25 +656,18 @@ index 000000000..3637d7dd0
 +
 +## Commands
 +
-+- `git status`
 +- `git diff --check`
 +
 +## Skipped Lanes
 +
-+- Runtime validation skipped: conflict resolution changed only docs/report/template files in the PR delta.
-+- UI/browser validation skipped: conflict resolution changed only docs/report/template files in the PR delta.
-+- Playwright skipped: no runtime files changed in the PR delta.
++- Runtime validation skipped: no runtime files changed.
++- UI/browser validation skipped: no UI files changed.
++- Playwright skipped: no runtime files changed.
 +- Engine validation skipped: no engine core files changed.
 +- Database migration validation skipped: no DDL, migration, or runtime database implementation changed.
 +- Storage runtime validation skipped: no storage implementation changed.
-+
-+## Conflict Resolution
-+
-+- `origin/main` was merged into the branch.
-+- Conflicts were limited to `docs_build/dev/reports/codex_changed_files.txt` and `docs_build/dev/reports/codex_review.diff`.
-+- Both generated artifacts were regenerated after the merge.
-+- Latest `origin/main` recheck reported `Already up to date.`.
-+- No new merge conflicts were present.
++- Feature flag runtime validation skipped: no feature flag implementation changed.
++- External environment file layout validation is documentation-only: no filesystem or deployment changes were made.
 +
 +## Result
 +
