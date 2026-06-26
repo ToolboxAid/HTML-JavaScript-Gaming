@@ -1,9 +1,10 @@
-docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract.md
-docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_branch-validation.md
-docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_manual-validation-notes.md
-docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_requirement-checklist.md
-docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_validation-lane.md
-src/engine/collision/hitboxCollision.js
-tests/engine/HitboxCollisionContract.test.mjs
+assets/toolbox/hitboxes/js/index.js
+docs_build/dev/reports/PR_26177_DELTA_004-hitboxes-real-object-source.md
+docs_build/dev/reports/PR_26177_DELTA_004-hitboxes-real-object-source_branch-validation.md
+docs_build/dev/reports/PR_26177_DELTA_004-hitboxes-real-object-source_manual-validation-notes.md
+docs_build/dev/reports/PR_26177_DELTA_004-hitboxes-real-object-source_requirement-checklist.md
+docs_build/dev/reports/PR_26177_DELTA_004-hitboxes-real-object-source_validation-lane.md
+tests/playwright/tools/HitboxesTool.spec.mjs
+toolbox/hitboxes/index.html
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff

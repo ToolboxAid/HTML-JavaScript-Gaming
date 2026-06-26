@@ -6,7 +6,7 @@
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Hitboxes - GameFoundryStudio</title>
-    <meta name="description" content="Hitboxes toolbox foundation for Team Delta-owned collision, hurtbox, and interaction region setup.">
+    <meta name="description" content="Hitboxes toolbox for selecting real Objects with assigned visual assets before editing collision regions.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -18,7 +18,7 @@
             <div class="container">
                 <div class="kicker">Toolbox / Hitboxes</div>
                 <h1>Hitboxes</h1>
-                <p class="lede">Review the Team Delta hitbox foundation for collision, hurtbox, and interaction region workflows.</p>
+                <p class="lede">Select a real Object with an assigned sprite or vector before editing collision, hurtbox, trigger, or sensor regions.</p>
             </div>
         </section>
         <section class="section">
@@ -30,45 +30,49 @@
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Setup</summary>
+                                <summary>Object A Source</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Status: <span data-hitboxes-foundation-status>Foundation ready</span></p>
-                                    <p>Owner: <span data-hitboxes-owner>Team Delta</span></p>
-                                    <p>Persistence: <span data-hitboxes-persistence>Local API contract pending</span></p>
+                                    <p>Source: <span data-hitboxes-source-status>Loading Objects.</span></p>
+                                    <div class="table-wrapper">
+                                        <table class="data-table" aria-label="Object A source objects">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Object</th>
+                                                    <th scope="col">Key</th>
+                                                    <th scope="col">Visual Asset</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody data-hitboxes-object-list>
+                                                <tr><td colspan="3">Loading Objects.</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </details>
                         </div>
                     </aside>
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="hitboxes" data-tool-icon-src="assets/theme-v2/images/badges/hitboxes.png" data-tool-character-src="assets/theme-v2/images/tools/hitboxes.png"></div>
                     <section class="tool-center-panel">
-                        <h2>Hitbox Foundation</h2>
-                        <p>Establish the tool shell and contract surface before drawing, editing, binding, validation, and preview work begins.</p>
-                        <div class="grid cols-3" aria-label="Hitboxes foundation summary">
-                            <article class="mini-stat"><strong data-hitboxes-contract-count>3</strong>Contracts</article>
-                            <article class="mini-stat"><strong data-hitboxes-scope-count>0</strong>Editable Regions</article>
-                            <article class="mini-stat"><strong data-hitboxes-tool-state>Foundation</strong>Status</article>
+                        <h2>Object A Preview</h2>
+                        <p data-hitboxes-preview-summary>Select an Object with assigned visual metadata to prepare hitbox editing.</p>
+                        <div class="grid cols-3" aria-label="Hitboxes object source summary">
+                            <article class="mini-stat"><strong data-hitboxes-object-count>0</strong>Eligible Objects</article>
+                            <article class="mini-stat"><strong data-hitboxes-selected-key>None</strong>Selected Object</article>
+                            <article class="mini-stat"><strong data-hitboxes-visual-type>None</strong>Visual Type</article>
                         </div>
                         <article class="card">
                             <div class="card-body content-stack">
                                 <div class="surface-header">
                                     <div>
-                                        <div class="kicker">MVP Sequence</div>
-                                        <h3>Foundation Scope</h3>
+                                        <div class="kicker">Object A</div>
+                                        <h3 data-hitboxes-preview-title>No Object selected</h3>
                                     </div>
                                 </div>
-                                <div class="table-wrapper">
-                                    <table class="data-table" aria-label="Hitboxes foundation milestones">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Milestone</th>
-                                                <th scope="col">Status</th>
-                                                <th scope="col">Notes</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody data-hitboxes-foundation-table>
-                                            <tr><td colspan="3">Loading Hitboxes foundation.</td></tr>
-                                        </tbody>
-                                    </table>
+                                <div class="tool-preview-frame" data-hitboxes-preview-frame>
+                                    <img alt="" hidden data-hitboxes-preview-image>
+                                    <div class="status" role="status" data-hitboxes-preview-fallback>Select an Object to preview assigned visual metadata.</div>
+                                    <div class="status" data-hitboxes-bounding-box>Bounding box: none</div>
+                                    <div class="status" data-hitboxes-origin-marker>Origin: none</div>
                                 </div>
                             </div>
                         </article>
@@ -81,9 +85,12 @@
                             <details class="vertical-accordion" open>
                                 <summary>Output</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Service: <span data-hitboxes-service>placeholder</span></p>
-                                    <p>Mode: <span data-hitboxes-mode>read-only foundation</span></p>
-                                    <div class="status" role="status" data-hitboxes-log>Loading Hitboxes foundation.</div>
+                                    <p>Name: <span data-hitboxes-meta-name>None</span></p>
+                                    <p>Key: <span data-hitboxes-meta-key>None</span></p>
+                                    <p>Visual: <span data-hitboxes-meta-visual>None</span></p>
+                                    <p>Bounds: <span data-hitboxes-meta-bounds>None</span></p>
+                                    <p>Origin: <span data-hitboxes-meta-origin>None</span></p>
+                                    <div class="status" role="status" data-hitboxes-log>Loading Objects from the Local API.</div>
                                 </div>
                             </details>
                         </div>
