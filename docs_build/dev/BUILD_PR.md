@@ -1,25 +1,23 @@
-# PR_26177_002-shared-noise-foundation
+# PR_26177_003-shared-geometry-foundation
 
 ## Purpose
 
-Add a small shared deterministic noise foundation.
+Add a small shared geometry foundation.
 
 ## Source Of Truth
 
-This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth for `PR_26177_002-shared-noise-foundation`.
+This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth for `PR_26177_003-shared-geometry-foundation`.
 
 ## Stack
 
-- Base branch: `PR_26177_001-shared-hash-foundation`
-- This PR builds on PR_001 hash utilities.
+- Base branch: `PR_26177_002-shared-noise-foundation`
 
 ## Exact Scope
 
-- Add `src/shared/noise/` foundation.
-- Build on existing `Random`/`RandomSeed` and PR_001 hash utilities.
-- Include deterministic Value, Perlin-style, Simplex-style, and Fractal-style helpers only where practical.
-- Keep API small and documented.
-- Add targeted tests for the shared noise area.
+- Add `src/shared/geometry/` foundation.
+- Include small reusable primitives/helpers such as vectors, rectangles, bounds, distance, clamp/intersection basics.
+- Add targeted tests for the shared geometry area.
+- No engine refactor.
 - Create required Codex reports under `docs_build/dev/reports/`.
 - Create repo-structured delta ZIP under `tmp/`.
 
@@ -27,23 +25,23 @@ This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth f
 
 - `docs_build/dev/PLAN_PR.md`
 - `docs_build/dev/BUILD_PR.md`
-- `src/shared/noise/noise.js`
-- `tests/shared/NoiseFoundation.test.mjs`
-- `docs_build/dev/reports/PR_26177_002-shared-noise-foundation.md`
-- `docs_build/dev/reports/PR_26177_002-shared-noise-foundation_branch-validation.md`
-- `docs_build/dev/reports/PR_26177_002-shared-noise-foundation_requirement-checklist.md`
-- `docs_build/dev/reports/PR_26177_002-shared-noise-foundation_validation-lane.md`
-- `docs_build/dev/reports/PR_26177_002-shared-noise-foundation_manual-validation-notes.md`
+- `src/shared/geometry/geometry.js`
+- `tests/shared/GeometryFoundation.test.mjs`
+- `docs_build/dev/reports/PR_26177_003-shared-geometry-foundation.md`
+- `docs_build/dev/reports/PR_26177_003-shared-geometry-foundation_branch-validation.md`
+- `docs_build/dev/reports/PR_26177_003-shared-geometry-foundation_requirement-checklist.md`
+- `docs_build/dev/reports/PR_26177_003-shared-geometry-foundation_validation-lane.md`
+- `docs_build/dev/reports/PR_26177_003-shared-geometry-foundation_manual-validation-notes.md`
 - `docs_build/dev/reports/codex_review.diff`
 - `docs_build/dev/reports/codex_changed_files.txt`
 
 ## Out Of Scope
 
+- No engine refactor.
 - No browser-owned product data.
 - No runtime UI changes.
 - No browser storage changes.
 - No API/database changes.
-- No engine refactor.
 - No `start_of_day` folder changes.
 - No unrelated cleanup.
 - No full samples smoke by default.
@@ -53,9 +51,9 @@ This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth f
 Run exactly:
 
 ```powershell
-node ./scripts/run-node-test-files.mjs tests/shared/NoiseFoundation.test.mjs tests/shared/HashFoundation.test.mjs
-node --check src/shared/noise/noise.js
-node --check tests/shared/NoiseFoundation.test.mjs
+node ./scripts/run-node-test-files.mjs tests/shared/GeometryFoundation.test.mjs
+node --check src/shared/geometry/geometry.js
+node --check tests/shared/GeometryFoundation.test.mjs
 git diff --check
 ```
 
@@ -64,5 +62,5 @@ git diff --check
 Create repo-structured delta ZIP:
 
 ```text
-tmp/PR_26177_002-shared-noise-foundation_delta.zip
+tmp/PR_26177_003-shared-geometry-foundation_delta.zip
 ```

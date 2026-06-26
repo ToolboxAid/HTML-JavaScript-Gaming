@@ -1,447 +1,406 @@
 diff --git a/docs_build/dev/BUILD_PR.md b/docs_build/dev/BUILD_PR.md
-index 466f9ca28..747703cbf 100644
+index 747703cbf..cc725fb0f 100644
 --- a/docs_build/dev/BUILD_PR.md
 +++ b/docs_build/dev/BUILD_PR.md
-@@ -1,20 +1,25 @@
--# PR_26177_001-shared-hash-foundation
-+# PR_26177_002-shared-noise-foundation
+@@ -1,25 +1,23 @@
+-# PR_26177_002-shared-noise-foundation
++# PR_26177_003-shared-geometry-foundation
 
  ## Purpose
 
--Add a small shared non-cryptographic hash foundation.
-+Add a small shared deterministic noise foundation.
+-Add a small shared deterministic noise foundation.
++Add a small shared geometry foundation.
 
  ## Source Of Truth
 
--This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth for `PR_26177_001-shared-hash-foundation`.
-+This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth for `PR_26177_002-shared-noise-foundation`.
-+
-+## Stack
-+
-+- Base branch: `PR_26177_001-shared-hash-foundation`
-+- This PR builds on PR_001 hash utilities.
+-This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth for `PR_26177_002-shared-noise-foundation`.
++This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth for `PR_26177_003-shared-geometry-foundation`.
+
+ ## Stack
+
+-- Base branch: `PR_26177_001-shared-hash-foundation`
+-- This PR builds on PR_001 hash utilities.
++- Base branch: `PR_26177_002-shared-noise-foundation`
 
  ## Exact Scope
 
--- Add `src/shared/hash/` foundation.
--- Include deterministic non-crypto hash helpers.
--- No browser-owned product data.
--- No runtime UI changes.
--- Add targeted tests for the shared hash area.
-+- Add `src/shared/noise/` foundation.
-+- Build on existing `Random`/`RandomSeed` and PR_001 hash utilities.
-+- Include deterministic Value, Perlin-style, Simplex-style, and Fractal-style helpers only where practical.
-+- Keep API small and documented.
-+- Add targeted tests for the shared noise area.
+-- Add `src/shared/noise/` foundation.
+-- Build on existing `Random`/`RandomSeed` and PR_001 hash utilities.
+-- Include deterministic Value, Perlin-style, Simplex-style, and Fractal-style helpers only where practical.
+-- Keep API small and documented.
+-- Add targeted tests for the shared noise area.
++- Add `src/shared/geometry/` foundation.
++- Include small reusable primitives/helpers such as vectors, rectangles, bounds, distance, clamp/intersection basics.
++- Add targeted tests for the shared geometry area.
++- No engine refactor.
  - Create required Codex reports under `docs_build/dev/reports/`.
  - Create repo-structured delta ZIP under `tmp/`.
 
-@@ -22,19 +27,18 @@ This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth f
+@@ -27,23 +25,23 @@ This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth f
 
  - `docs_build/dev/PLAN_PR.md`
  - `docs_build/dev/BUILD_PR.md`
--- `src/shared/hash/hash.js`
--- `tests/shared/HashFoundation.test.mjs`
--- `docs_build/dev/reports/PR_26177_001-shared-hash-foundation.md`
--- `docs_build/dev/reports/PR_26177_001-shared-hash-foundation_branch-validation.md`
--- `docs_build/dev/reports/PR_26177_001-shared-hash-foundation_requirement-checklist.md`
--- `docs_build/dev/reports/PR_26177_001-shared-hash-foundation_validation-lane.md`
--- `docs_build/dev/reports/PR_26177_001-shared-hash-foundation_manual-validation-notes.md`
-+- `src/shared/noise/noise.js`
-+- `tests/shared/NoiseFoundation.test.mjs`
-+- `docs_build/dev/reports/PR_26177_002-shared-noise-foundation.md`
-+- `docs_build/dev/reports/PR_26177_002-shared-noise-foundation_branch-validation.md`
-+- `docs_build/dev/reports/PR_26177_002-shared-noise-foundation_requirement-checklist.md`
-+- `docs_build/dev/reports/PR_26177_002-shared-noise-foundation_validation-lane.md`
-+- `docs_build/dev/reports/PR_26177_002-shared-noise-foundation_manual-validation-notes.md`
+-- `src/shared/noise/noise.js`
+-- `tests/shared/NoiseFoundation.test.mjs`
+-- `docs_build/dev/reports/PR_26177_002-shared-noise-foundation.md`
+-- `docs_build/dev/reports/PR_26177_002-shared-noise-foundation_branch-validation.md`
+-- `docs_build/dev/reports/PR_26177_002-shared-noise-foundation_requirement-checklist.md`
+-- `docs_build/dev/reports/PR_26177_002-shared-noise-foundation_validation-lane.md`
+-- `docs_build/dev/reports/PR_26177_002-shared-noise-foundation_manual-validation-notes.md`
++- `src/shared/geometry/geometry.js`
++- `tests/shared/GeometryFoundation.test.mjs`
++- `docs_build/dev/reports/PR_26177_003-shared-geometry-foundation.md`
++- `docs_build/dev/reports/PR_26177_003-shared-geometry-foundation_branch-validation.md`
++- `docs_build/dev/reports/PR_26177_003-shared-geometry-foundation_requirement-checklist.md`
++- `docs_build/dev/reports/PR_26177_003-shared-geometry-foundation_validation-lane.md`
++- `docs_build/dev/reports/PR_26177_003-shared-geometry-foundation_manual-validation-notes.md`
  - `docs_build/dev/reports/codex_review.diff`
  - `docs_build/dev/reports/codex_changed_files.txt`
 
  ## Out Of Scope
 
--- No cryptographic hashing.
++- No engine refactor.
  - No browser-owned product data.
  - No runtime UI changes.
  - No browser storage changes.
-@@ -49,9 +53,9 @@ This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth f
+ - No API/database changes.
+-- No engine refactor.
+ - No `start_of_day` folder changes.
+ - No unrelated cleanup.
+ - No full samples smoke by default.
+@@ -53,9 +51,9 @@ This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth f
  Run exactly:
 
  ```powershell
--node ./scripts/run-node-test-files.mjs tests/shared/HashFoundation.test.mjs
--node --check src/shared/hash/hash.js
--node --check tests/shared/HashFoundation.test.mjs
-+node ./scripts/run-node-test-files.mjs tests/shared/NoiseFoundation.test.mjs tests/shared/HashFoundation.test.mjs
-+node --check src/shared/noise/noise.js
-+node --check tests/shared/NoiseFoundation.test.mjs
+-node ./scripts/run-node-test-files.mjs tests/shared/NoiseFoundation.test.mjs tests/shared/HashFoundation.test.mjs
+-node --check src/shared/noise/noise.js
+-node --check tests/shared/NoiseFoundation.test.mjs
++node ./scripts/run-node-test-files.mjs tests/shared/GeometryFoundation.test.mjs
++node --check src/shared/geometry/geometry.js
++node --check tests/shared/GeometryFoundation.test.mjs
  git diff --check
  ```
 
-@@ -60,5 +64,5 @@ git diff --check
+@@ -64,5 +62,5 @@ git diff --check
  Create repo-structured delta ZIP:
 
  ```text
--tmp/PR_26177_001-shared-hash-foundation_delta.zip
-+tmp/PR_26177_002-shared-noise-foundation_delta.zip
+-tmp/PR_26177_002-shared-noise-foundation_delta.zip
++tmp/PR_26177_003-shared-geometry-foundation_delta.zip
  ```
 diff --git a/docs_build/dev/PLAN_PR.md b/docs_build/dev/PLAN_PR.md
-index 835b7009a..9a9a80336 100644
+index 9a9a80336..b9bb1a6d3 100644
 --- a/docs_build/dev/PLAN_PR.md
 +++ b/docs_build/dev/PLAN_PR.md
-@@ -1,28 +1,23 @@
--# PLAN_PR: PR_26177_001-shared-hash-foundation
-+# PLAN_PR: PR_26177_002-shared-noise-foundation
+@@ -1,23 +1,22 @@
+-# PLAN_PR: PR_26177_002-shared-noise-foundation
++# PLAN_PR: PR_26177_003-shared-geometry-foundation
 
  ## Purpose
 
--Add a small shared non-cryptographic hash foundation.
-+Add a small shared deterministic noise foundation.
+-Add a small shared deterministic noise foundation.
++Add a small shared geometry foundation.
 
  ## Scope
 
--- Add `src/shared/hash/` foundation.
--- Include deterministic non-crypto hash helpers.
--- Add targeted unit tests.
-+- Add `src/shared/noise/` foundation.
-+- Build on existing `RandomSeed` and PR_001 hash utilities.
-+- Include deterministic Value, Perlin-style, Simplex-style, and Fractal-style helpers where practical.
-+- Keep API small and documented.
-+- Add targeted tests.
+-- Add `src/shared/noise/` foundation.
+-- Build on existing `RandomSeed` and PR_001 hash utilities.
+-- Include deterministic Value, Perlin-style, Simplex-style, and Fractal-style helpers where practical.
+-- Keep API small and documented.
++- Add `src/shared/geometry/` foundation.
++- Include reusable primitives/helpers for vectors, rectangles, bounds, distance, clamp, containment, and intersection basics.
+ - Add targeted tests.
++- No engine refactor.
  - No browser-owned product data.
  - No runtime UI changes.
  - No unrelated cleanup.
 
  ## Implementation Plan
 
--1. Add `src/shared/hash/hash.js` with deterministic stable string and FNV-1a based helpers.
--2. Add `tests/shared/HashFoundation.test.mjs`.
--3. Validate determinism, object key ordering, seed variation, combination, and normalized hash output.
-+1. Add `src/shared/noise/noise.js`.
-+2. Add `tests/shared/NoiseFoundation.test.mjs`.
-+3. Validate deterministic output, seed variation, practical ranges, and permutation determinism.
+-1. Add `src/shared/noise/noise.js`.
+-2. Add `tests/shared/NoiseFoundation.test.mjs`.
+-3. Validate deterministic output, seed variation, practical ranges, and permutation determinism.
++1. Add `src/shared/geometry/geometry.js`.
++2. Add `tests/shared/GeometryFoundation.test.mjs`.
++3. Validate vector, rectangle, bounds, distance, clamp, containment, and intersection behavior.
  4. Produce required Codex reports and repo-structured ZIP.
--
--## Acceptance Criteria
--
--- Hash helpers are deterministic for identical values.
--- Object hashing is stable regardless of property insertion order.
--- Helpers are documented as non-cryptographic.
--- No browser storage, UI, API, database, or sample smoke changes are introduced.
-diff --git a/docs_build/dev/reports/PR_26177_002-shared-noise-foundation.md b/docs_build/dev/reports/PR_26177_002-shared-noise-foundation.md
+diff --git a/docs_build/dev/reports/PR_26177_003-shared-geometry-foundation.md b/docs_build/dev/reports/PR_26177_003-shared-geometry-foundation.md
 new file mode 100644
-index 000000000..283ce4b9f
+index 000000000..7c6562688
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_002-shared-noise-foundation.md
-@@ -0,0 +1,24 @@
-+# PR_26177_002-shared-noise-foundation
++++ b/docs_build/dev/reports/PR_26177_003-shared-geometry-foundation.md
+@@ -0,0 +1,23 @@
++# PR_26177_003-shared-geometry-foundation
 +
 +Date: 2026-06-26
-+Scope: Shared deterministic noise foundation
++Scope: Shared geometry foundation
 +Status: PASS
 +
 +## Summary
 +
-+- Added `src/shared/noise/noise.js`.
-+- Added deterministic value, Perlin-style, Simplex-style, fractal, and seeded permutation helpers.
-+- Built on PR_001 hash utilities and existing `RandomSeed`.
-+- Added targeted tests in `tests/shared/NoiseFoundation.test.mjs`.
-+- No browser-owned product data, runtime UI, API, database, or unrelated cleanup changes were made.
++- Added `src/shared/geometry/geometry.js`.
++- Added small vector, rectangle, bounds, distance, clamp, containment, and intersection helpers.
++- Added targeted tests in `tests/shared/GeometryFoundation.test.mjs`.
++- No engine refactor, runtime UI, API, database, or unrelated cleanup changes were made.
 +
 +## Validation
 +
-+- PASS: `node ./scripts/run-node-test-files.mjs tests/shared/NoiseFoundation.test.mjs tests/shared/HashFoundation.test.mjs`.
-+- PASS: `node --check src/shared/noise/noise.js`.
-+- PASS: `node --check tests/shared/NoiseFoundation.test.mjs`.
++- PASS: `node ./scripts/run-node-test-files.mjs tests/shared/GeometryFoundation.test.mjs`.
++- PASS: `node --check src/shared/geometry/geometry.js`.
++- PASS: `node --check tests/shared/GeometryFoundation.test.mjs`.
 +- PASS: `git diff --check`.
 +
 +## Artifact
 +
-+- `tmp/PR_26177_002-shared-noise-foundation_delta.zip`
-diff --git a/docs_build/dev/reports/PR_26177_002-shared-noise-foundation_branch-validation.md b/docs_build/dev/reports/PR_26177_002-shared-noise-foundation_branch-validation.md
++- `tmp/PR_26177_003-shared-geometry-foundation_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26177_003-shared-geometry-foundation_branch-validation.md b/docs_build/dev/reports/PR_26177_003-shared-geometry-foundation_branch-validation.md
 new file mode 100644
-index 000000000..3ee3ed634
+index 000000000..795d42b33
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_002-shared-noise-foundation_branch-validation.md
++++ b/docs_build/dev/reports/PR_26177_003-shared-geometry-foundation_branch-validation.md
 @@ -0,0 +1,8 @@
-+# PR_26177_002-shared-noise-foundation Branch Validation
++# PR_26177_003-shared-geometry-foundation Branch Validation
 +
 +Status: PASS
 +
-+- PASS: Branch `PR_26177_002-shared-noise-foundation` was created from `PR_26177_001-shared-hash-foundation`.
++- PASS: Branch `PR_26177_003-shared-geometry-foundation` was created from `PR_26177_002-shared-noise-foundation`.
 +- PASS: Stack base was clean before branch creation.
-+- PASS: One PR purpose only: shared noise foundation.
++- PASS: One PR purpose only: shared geometry foundation.
 +- PASS: No `start_of_day` files changed.
-diff --git a/docs_build/dev/reports/PR_26177_002-shared-noise-foundation_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_002-shared-noise-foundation_manual-validation-notes.md
+diff --git a/docs_build/dev/reports/PR_26177_003-shared-geometry-foundation_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_003-shared-geometry-foundation_manual-validation-notes.md
 new file mode 100644
-index 000000000..389348d27
+index 000000000..cf721901a
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_002-shared-noise-foundation_manual-validation-notes.md
++++ b/docs_build/dev/reports/PR_26177_003-shared-geometry-foundation_manual-validation-notes.md
 @@ -0,0 +1,5 @@
-+# PR_26177_002-shared-noise-foundation Manual Validation Notes
++# PR_26177_003-shared-geometry-foundation Manual Validation Notes
 +
 +Status: PASS
 +
-+Manual review confirmed the noise helpers are deterministic, small, documented, stacked on the hash foundation, and isolated from UI, browser product-data ownership, API, and database behavior.
-diff --git a/docs_build/dev/reports/PR_26177_002-shared-noise-foundation_requirement-checklist.md b/docs_build/dev/reports/PR_26177_002-shared-noise-foundation_requirement-checklist.md
++Manual review confirmed this PR only adds shared geometry primitives/helpers and targeted tests. It does not refactor engine code or change runtime UI behavior.
+diff --git a/docs_build/dev/reports/PR_26177_003-shared-geometry-foundation_requirement-checklist.md b/docs_build/dev/reports/PR_26177_003-shared-geometry-foundation_requirement-checklist.md
 new file mode 100644
-index 000000000..640ae8fcb
+index 000000000..1710b7abe
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_002-shared-noise-foundation_requirement-checklist.md
-@@ -0,0 +1,13 @@
-+# PR_26177_002-shared-noise-foundation Requirement Checklist
++++ b/docs_build/dev/reports/PR_26177_003-shared-geometry-foundation_requirement-checklist.md
+@@ -0,0 +1,12 @@
++# PR_26177_003-shared-geometry-foundation Requirement Checklist
 +
 +| Requirement | Status | Notes |
 +|---|---:|---|
-+| Add `src/shared/noise/` foundation | PASS | Added `src/shared/noise/noise.js`. |
-+| Build on Random/RandomSeed and PR_001 hash utilities | PASS | Uses `RandomSeed` and hash helpers. |
-+| Include deterministic Value helpers where practical | PASS | Added `valueNoise2D`. |
-+| Include deterministic Perlin helpers where practical | PASS | Added `perlinNoise2D`. |
-+| Include deterministic Simplex helpers where practical | PASS | Added `simplexNoise2D`. |
-+| Include deterministic Fractal helpers where practical | PASS | Added `fractalNoise2D`. |
-+| Keep API small and documented | PASS | Added a compact documented helper set. |
-+| Add targeted tests | PASS | Added `tests/shared/NoiseFoundation.test.mjs`. |
++| Add `src/shared/geometry/` foundation | PASS | Added `src/shared/geometry/geometry.js`. |
++| Include vector helpers | PASS | Added vector creation and vector arithmetic helpers. |
++| Include rectangles and bounds helpers | PASS | Added rectangle and bounds helpers. |
++| Include distance helper | PASS | Added `distance`. |
++| Include clamp/intersection basics | PASS | Added `clamp`, containment, intersection checks, and intersection rectangle. |
++| No engine refactor | PASS | No engine files changed. |
++| Add targeted tests | PASS | Added `tests/shared/GeometryFoundation.test.mjs`. |
 +| No runtime UI changes | PASS | No UI files changed. |
-diff --git a/docs_build/dev/reports/PR_26177_002-shared-noise-foundation_validation-lane.md b/docs_build/dev/reports/PR_26177_002-shared-noise-foundation_validation-lane.md
+diff --git a/docs_build/dev/reports/PR_26177_003-shared-geometry-foundation_validation-lane.md b/docs_build/dev/reports/PR_26177_003-shared-geometry-foundation_validation-lane.md
 new file mode 100644
-index 000000000..b923b482f
+index 000000000..554ef4700
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_002-shared-noise-foundation_validation-lane.md
++++ b/docs_build/dev/reports/PR_26177_003-shared-geometry-foundation_validation-lane.md
 @@ -0,0 +1,22 @@
-+# PR_26177_002-shared-noise-foundation Validation Lane
++# PR_26177_003-shared-geometry-foundation Validation Lane
 +
 +Status: PASS
 +
 +## Commands
 +
 +```powershell
-+node ./scripts/run-node-test-files.mjs tests/shared/NoiseFoundation.test.mjs tests/shared/HashFoundation.test.mjs
-+node --check src/shared/noise/noise.js
-+node --check tests/shared/NoiseFoundation.test.mjs
++node ./scripts/run-node-test-files.mjs tests/shared/GeometryFoundation.test.mjs
++node --check src/shared/geometry/geometry.js
++node --check tests/shared/GeometryFoundation.test.mjs
 +git diff --check
 +```
 +
 +## Results
 +
-+- PASS: Targeted noise and hash tests.
++- PASS: Targeted geometry foundation test.
 +- PASS: Changed JS syntax checks.
 +- PASS: `git diff --check`.
 +
 +## Not Run
 +
 +- Full samples smoke was not run by default.
-diff --git a/src/shared/noise/noise.js b/src/shared/noise/noise.js
+diff --git a/src/shared/geometry/geometry.js b/src/shared/geometry/geometry.js
 new file mode 100644
-index 000000000..8908d847a
+index 000000000..af02ed464
 --- /dev/null
-+++ b/src/shared/noise/noise.js
-@@ -0,0 +1,163 @@
-+import { hashToUnitInterval, hashValue32 } from "../hash/hash.js";
-+import { RandomSeed } from "../math/RandomSeed.js";
-+
-+const SQRT3 = Math.sqrt(3);
-+const SIMPLEX_F2 = 0.5 * (SQRT3 - 1);
-+const SIMPLEX_G2 = (3 - SQRT3) / 6;
-+
-+function fade(value) {
-+  return value * value * value * (value * (value * 6 - 15) + 10);
++++ b/src/shared/geometry/geometry.js
+@@ -0,0 +1,112 @@
++function finiteOrZero(value) {
++  const number = Number(value);
++  return Number.isFinite(number) ? number : 0;
 +}
 +
-+function lerp(a, b, amount) {
-+  return a + (b - a) * amount;
++/**
++ * Clamps a number between inclusive bounds.
++ *
++ * @param {number} value Value to clamp.
++ * @param {number} min Inclusive minimum.
++ * @param {number} max Inclusive maximum.
++ * @returns {number} Clamped value.
++ */
++export function clamp(value, min, max) {
++  const low = Math.min(finiteOrZero(min), finiteOrZero(max));
++  const high = Math.max(finiteOrZero(min), finiteOrZero(max));
++  return Math.max(low, Math.min(finiteOrZero(value), high));
 +}
 +
-+function gradientDot(seed, ix, iy, x, y) {
-+  const angle = hashToUnitInterval([seed, ix, iy, "gradient"]) * Math.PI * 2;
-+  return Math.cos(angle) * x + Math.sin(angle) * y;
++/**
++ * Creates a 2D vector.
++ *
++ * @param {number} x X coordinate.
++ * @param {number} y Y coordinate.
++ * @returns {{x: number, y: number}} Vector.
++ */
++export function vector2(x = 0, y = 0) {
++  return { x: finiteOrZero(x), y: finiteOrZero(y) };
 +}
 +
-+function simplexCorner(seed, i, j, x, y) {
-+  const t = 0.5 - x * x - y * y;
-+  if (t < 0) {
-+    return 0;
++export function addVectors(a, b) {
++  return vector2(finiteOrZero(a?.x) + finiteOrZero(b?.x), finiteOrZero(a?.y) + finiteOrZero(b?.y));
++}
++
++export function subtractVectors(a, b) {
++  return vector2(finiteOrZero(a?.x) - finiteOrZero(b?.x), finiteOrZero(a?.y) - finiteOrZero(b?.y));
++}
++
++export function scaleVector(vector, scale = 1) {
++  return vector2(finiteOrZero(vector?.x) * finiteOrZero(scale), finiteOrZero(vector?.y) * finiteOrZero(scale));
++}
++
++export function distance(a, b) {
++  const dx = finiteOrZero(a?.x) - finiteOrZero(b?.x);
++  const dy = finiteOrZero(a?.y) - finiteOrZero(b?.y);
++  return Math.sqrt(dx * dx + dy * dy);
++}
++
++/**
++ * Creates a normalized rectangle with non-negative dimensions.
++ *
++ * @param {number} x Left coordinate.
++ * @param {number} y Top coordinate.
++ * @param {number} width Width.
++ * @param {number} height Height.
++ * @returns {{x: number, y: number, width: number, height: number, right: number, bottom: number}} Rectangle.
++ */
++export function rectangle(x = 0, y = 0, width = 0, height = 0) {
++  const startX = finiteOrZero(x);
++  const startY = finiteOrZero(y);
++  const resolvedWidth = finiteOrZero(width);
++  const resolvedHeight = finiteOrZero(height);
++  const left = resolvedWidth < 0 ? startX + resolvedWidth : startX;
++  const top = resolvedHeight < 0 ? startY + resolvedHeight : startY;
++  const normalizedWidth = Math.abs(resolvedWidth);
++  const normalizedHeight = Math.abs(resolvedHeight);
++  return {
++    x: left,
++    y: top,
++    width: normalizedWidth,
++    height: normalizedHeight,
++    right: left + normalizedWidth,
++    bottom: top + normalizedHeight,
++  };
++}
++
++export function containsPoint(rect, point) {
++  const box = rectangle(rect?.x, rect?.y, rect?.width, rect?.height);
++  const x = finiteOrZero(point?.x);
++  const y = finiteOrZero(point?.y);
++  return x >= box.x && x <= box.right && y >= box.y && y <= box.bottom;
++}
++
++export function rectanglesIntersect(a, b) {
++  const first = rectangle(a?.x, a?.y, a?.width, a?.height);
++  const second = rectangle(b?.x, b?.y, b?.width, b?.height);
++  return first.x <= second.right && first.right >= second.x && first.y <= second.bottom && first.bottom >= second.y;
++}
++
++export function rectangleIntersection(a, b) {
++  if (!rectanglesIntersect(a, b)) {
++    return null;
 +  }
 +
-+  const influence = t * t;
-+  return influence * influence * gradientDot(seed, i, j, x, y);
++  const first = rectangle(a?.x, a?.y, a?.width, a?.height);
++  const second = rectangle(b?.x, b?.y, b?.width, b?.height);
++  const x = Math.max(first.x, second.x);
++  const y = Math.max(first.y, second.y);
++  return rectangle(x, y, Math.min(first.right, second.right) - x, Math.min(first.bottom, second.bottom) - y);
 +}
 +
-+function normalizeFrequency(frequency) {
-+  const normalized = Number(frequency);
-+  return Number.isFinite(normalized) && normalized > 0 ? normalized : 1;
-+}
-+
-+/**
-+ * Creates a deterministic shuffled permutation from a seed.
-+ *
-+ * @param {*} seed Seed value.
-+ * @param {number} size Permutation size.
-+ * @returns {number[]} Deterministic permutation.
-+ */
-+export function createNoisePermutation(seed = "noise", size = 256) {
-+  const normalizedSize = Math.max(1, Math.floor(Number(size) || 256));
-+  return new RandomSeed(seed).shuffle(Array.from({ length: normalizedSize }, (_, index) => index));
-+}
-+
-+/**
-+ * Returns deterministic value noise in the range [0, 1].
-+ *
-+ * @param {number} x X coordinate.
-+ * @param {number} y Y coordinate.
-+ * @param {{seed?: *, frequency?: number}} options Noise options.
-+ * @returns {number} Value noise.
-+ */
-+export function valueNoise2D(x, y, options = {}) {
-+  const frequency = normalizeFrequency(options.frequency);
-+  const nx = Number(x) * frequency;
-+  const ny = Number(y) * frequency;
-+  const x0 = Math.floor(nx);
-+  const y0 = Math.floor(ny);
-+  const tx = fade(nx - x0);
-+  const ty = fade(ny - y0);
-+  const seed = options.seed ?? "value";
-+
-+  const v00 = hashToUnitInterval([seed, x0, y0]);
-+  const v10 = hashToUnitInterval([seed, x0 + 1, y0]);
-+  const v01 = hashToUnitInterval([seed, x0, y0 + 1]);
-+  const v11 = hashToUnitInterval([seed, x0 + 1, y0 + 1]);
-+
-+  return lerp(lerp(v00, v10, tx), lerp(v01, v11, tx), ty);
-+}
-+
-+/**
-+ * Returns deterministic Perlin-style gradient noise, approximately in [-1, 1].
-+ *
-+ * @param {number} x X coordinate.
-+ * @param {number} y Y coordinate.
-+ * @param {{seed?: *, frequency?: number}} options Noise options.
-+ * @returns {number} Perlin-style noise.
-+ */
-+export function perlinNoise2D(x, y, options = {}) {
-+  const frequency = normalizeFrequency(options.frequency);
-+  const nx = Number(x) * frequency;
-+  const ny = Number(y) * frequency;
-+  const x0 = Math.floor(nx);
-+  const y0 = Math.floor(ny);
-+  const dx = nx - x0;
-+  const dy = ny - y0;
-+  const tx = fade(dx);
-+  const ty = fade(dy);
-+  const seed = options.seed ?? "perlin";
-+
-+  const n00 = gradientDot(seed, x0, y0, dx, dy);
-+  const n10 = gradientDot(seed, x0 + 1, y0, dx - 1, dy);
-+  const n01 = gradientDot(seed, x0, y0 + 1, dx, dy - 1);
-+  const n11 = gradientDot(seed, x0 + 1, y0 + 1, dx - 1, dy - 1);
-+
-+  return Math.max(-1, Math.min(1, lerp(lerp(n00, n10, tx), lerp(n01, n11, tx), ty)));
-+}
-+
-+/**
-+ * Returns deterministic Simplex-style 2D noise, approximately in [-1, 1].
-+ *
-+ * @param {number} x X coordinate.
-+ * @param {number} y Y coordinate.
-+ * @param {{seed?: *, frequency?: number}} options Noise options.
-+ * @returns {number} Simplex-style noise.
-+ */
-+export function simplexNoise2D(x, y, options = {}) {
-+  const frequency = normalizeFrequency(options.frequency);
-+  const nx = Number(x) * frequency;
-+  const ny = Number(y) * frequency;
-+  const seed = options.seed ?? "simplex";
-+  const skew = (nx + ny) * SIMPLEX_F2;
-+  const i = Math.floor(nx + skew);
-+  const j = Math.floor(ny + skew);
-+  const unskew = (i + j) * SIMPLEX_G2;
-+  const x0 = nx - (i - unskew);
-+  const y0 = ny - (j - unskew);
-+  const i1 = x0 > y0 ? 1 : 0;
-+  const j1 = x0 > y0 ? 0 : 1;
-+  const x1 = x0 - i1 + SIMPLEX_G2;
-+  const y1 = y0 - j1 + SIMPLEX_G2;
-+  const x2 = x0 - 1 + 2 * SIMPLEX_G2;
-+  const y2 = y0 - 1 + 2 * SIMPLEX_G2;
-+
-+  const value = 70 * (
-+    simplexCorner(seed, i, j, x0, y0) +
-+    simplexCorner(seed, i + i1, j + j1, x1, y1) +
-+    simplexCorner(seed, i + 1, j + 1, x2, y2)
-+  );
-+  return Math.max(-1, Math.min(1, value));
-+}
-+
-+/**
-+ * Combines octaves of a deterministic noise function.
-+ *
-+ * @param {number} x X coordinate.
-+ * @param {number} y Y coordinate.
-+ * @param {{seed?: *, octaves?: number, frequency?: number, lacunarity?: number, persistence?: number, noise?: Function}} options Fractal options.
-+ * @returns {number} Weighted fractal noise.
-+ */
-+export function fractalNoise2D(x, y, options = {}) {
-+  const octaves = Math.max(1, Math.floor(Number(options.octaves) || 4));
-+  const lacunarity = Number.isFinite(options.lacunarity) ? options.lacunarity : 2;
-+  const persistence = Number.isFinite(options.persistence) ? options.persistence : 0.5;
-+  const noise = typeof options.noise === "function" ? options.noise : valueNoise2D;
-+  let frequency = normalizeFrequency(options.frequency);
-+  let amplitude = 1;
-+  let total = 0;
-+  let amplitudeTotal = 0;
-+
-+  for (let octave = 0; octave < octaves; octave += 1) {
-+    const seed = hashValue32([options.seed ?? "fractal", octave]);
-+    total += noise(x, y, { ...options, seed, frequency }) * amplitude;
-+    amplitudeTotal += amplitude;
-+    amplitude *= persistence;
-+    frequency *= lacunarity;
++export function boundsFromPoints(points) {
++  if (!Array.isArray(points) || points.length === 0) {
++    return rectangle(0, 0, 0, 0);
 +  }
 +
-+  return amplitudeTotal === 0 ? 0 : total / amplitudeTotal;
++  const xs = points.map((point) => finiteOrZero(point?.x));
++  const ys = points.map((point) => finiteOrZero(point?.y));
++  const minX = Math.min(...xs);
++  const minY = Math.min(...ys);
++  return rectangle(minX, minY, Math.max(...xs) - minX, Math.max(...ys) - minY);
 +}
-diff --git a/tests/shared/NoiseFoundation.test.mjs b/tests/shared/NoiseFoundation.test.mjs
+diff --git a/tests/shared/GeometryFoundation.test.mjs b/tests/shared/GeometryFoundation.test.mjs
 new file mode 100644
-index 000000000..7bee4586b
+index 000000000..86ac41c92
 --- /dev/null
-+++ b/tests/shared/NoiseFoundation.test.mjs
-@@ -0,0 +1,44 @@
++++ b/tests/shared/GeometryFoundation.test.mjs
+@@ -0,0 +1,58 @@
 +/*
 +Toolbox Aid
 +David Quesenberry
 +06/26/2026
-+NoiseFoundation.test.mjs
++GeometryFoundation.test.mjs
 +*/
 +import assert from "node:assert/strict";
 +import {
-+  createNoisePermutation,
-+  fractalNoise2D,
-+  perlinNoise2D,
-+  simplexNoise2D,
-+  valueNoise2D,
-+} from "../../src/shared/noise/noise.js";
-+
-+function assertInRange(value, min, max) {
-+  assert.equal(Number.isFinite(value), true);
-+  assert.equal(value >= min && value <= max, true, `${value} was outside ${min}..${max}`);
-+}
++  addVectors,
++  boundsFromPoints,
++  clamp,
++  containsPoint,
++  distance,
++  rectangle,
++  rectangleIntersection,
++  rectanglesIntersect,
++  scaleVector,
++  subtractVectors,
++  vector2,
++} from "../../src/shared/geometry/geometry.js";
 +
 +export function run() {
-+  assert.equal(valueNoise2D(1.25, 2.5, { seed: "a" }), valueNoise2D(1.25, 2.5, { seed: "a" }));
-+  assert.notEqual(valueNoise2D(1.25, 2.5, { seed: "a" }), valueNoise2D(1.25, 2.5, { seed: "b" }));
-+  assertInRange(valueNoise2D(3.5, -2, { seed: "range" }), 0, 1);
++  assert.equal(clamp(12, 0, 10), 10);
++  assert.equal(clamp(-2, 0, 10), 0);
++  assert.equal(clamp(4, 10, 0), 4);
 +
-+  const perlinValue = perlinNoise2D(0.25, 0.75, { seed: "perlin", frequency: 2 });
-+  const simplexValue = simplexNoise2D(0.25, 0.75, { seed: "simplex", frequency: 2 });
-+  assert.equal(perlinValue, perlinNoise2D(0.25, 0.75, { seed: "perlin", frequency: 2 }));
-+  assert.equal(simplexValue, simplexNoise2D(0.25, 0.75, { seed: "simplex", frequency: 2 }));
-+  assertInRange(perlinValue, -1, 1);
-+  assertInRange(simplexValue, -1, 1);
++  assert.deepEqual(vector2("2", 3), { x: 2, y: 3 });
++  assert.deepEqual(addVectors({ x: 1, y: 2 }, { x: 3, y: 4 }), { x: 4, y: 6 });
++  assert.deepEqual(subtractVectors({ x: 5, y: 6 }, { x: 2, y: 3 }), { x: 3, y: 3 });
++  assert.deepEqual(scaleVector({ x: 2, y: -3 }, 4), { x: 8, y: -12 });
++  assert.equal(distance({ x: 0, y: 0 }, { x: 3, y: 4 }), 5);
 +
-+  const fractalValue = fractalNoise2D(0.5, 0.75, { seed: "fractal", octaves: 3 });
-+  assert.equal(fractalValue, fractalNoise2D(0.5, 0.75, { seed: "fractal", octaves: 3 }));
-+  assertInRange(fractalValue, 0, 1);
++  assert.deepEqual(rectangle(10, 20, -5, -10), {
++    x: 5,
++    y: 10,
++    width: 5,
++    height: 10,
++    right: 10,
++    bottom: 20,
++  });
 +
-+  assert.deepEqual(createNoisePermutation("perm", 8), createNoisePermutation("perm", 8));
-+  assert.notDeepEqual(createNoisePermutation("perm", 8), createNoisePermutation("other", 8));
-+  assert.deepEqual(createNoisePermutation("size", 4).sort((a, b) => a - b), [0, 1, 2, 3]);
++  const a = rectangle(0, 0, 10, 10);
++  const b = rectangle(5, 5, 10, 10);
++  const c = rectangle(20, 20, 5, 5);
++  assert.equal(containsPoint(a, { x: 10, y: 10 }), true);
++  assert.equal(containsPoint(a, { x: 11, y: 10 }), false);
++  assert.equal(rectanglesIntersect(a, b), true);
++  assert.equal(rectanglesIntersect(a, c), false);
++  assert.deepEqual(rectangleIntersection(a, b), rectangle(5, 5, 5, 5));
++  assert.equal(rectangleIntersection(a, c), null);
++
++  assert.deepEqual(boundsFromPoints([{ x: 2, y: 3 }, { x: -1, y: 8 }, { x: 4, y: 1 }]), rectangle(-1, 1, 5, 7));
++  assert.deepEqual(boundsFromPoints([]), rectangle(0, 0, 0, 0));
 +}
 +
 +if (import.meta.url === `file://${process.argv[1]}`) {
