@@ -1,7 +1,5 @@
 # Assistant Execution Modes
 
-> Deprecated reference notice: this file is preserved for history only. The active copy is `docs_build/dev/ProjectInstructions/addendums/assistant_execution_modes.md`.
-
 ## Purpose
 
 Standardize request interpretation and expected outputs for Review, Owner, Build PR, Continue, Challenge, and Stop Gate workflows.

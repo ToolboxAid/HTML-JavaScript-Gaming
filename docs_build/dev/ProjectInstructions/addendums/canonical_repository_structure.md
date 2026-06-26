@@ -1,7 +1,5 @@
 # Canonical Repository Structure
 
-> Deprecated reference notice: this file is preserved for history only. The active copy is `docs_build/dev/ProjectInstructions/addendums/canonical_repository_structure.md`.
-
 ## Purpose
 
 Establish the canonical repository structure for future development and reduce technical debt.

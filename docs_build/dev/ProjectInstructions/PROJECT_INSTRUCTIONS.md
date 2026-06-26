@@ -4,6 +4,12 @@ Read `README.txt` first.
 
 This file is the root index for the append-first Project Instructions operating system under `docs_build/dev/ProjectInstructions/`.
 
+## Active Source
+
+`docs_build/dev/ProjectInstructions/` is the only active Project Instructions source.
+
+Historical Project Instructions material outside this folder is deprecated reference material only and must not be used as an active source of governance.
+
 ## Purpose
 
 The Project Instructions operating system provides additive governance for:
@@ -20,7 +26,7 @@ The Project Instructions operating system provides additive governance for:
 
 ## Preservation
 
-Existing Project Instructions remain preserved in their current locations. This operating system adds structure without deleting or rewriting existing documentation.
+Existing Project Instructions outside `docs_build/dev/ProjectInstructions/` remain preserved only as deprecated reference material. When guidance conflicts, active files under `docs_build/dev/ProjectInstructions/` win unless OWNER explicitly approves a newer governance change.
 
 ## Folders
 
@@ -40,6 +46,10 @@ Existing Project Instructions remain preserved in their current locations. This 
 `docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md` defines the official environment model, environment invariance rule, shared API/service contract rule, required Supabase/Postgres/R2 services, required R2 prefixes, and SQLite retired status.
 
 `docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md` defines official `.env` file names, environment variable values, host/domain configuration, API URL configuration, R2 prefix configuration, and feature flag governance.
+
+## Single Source and Main Lock Governance
+
+`docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md` defines the single active Project Instructions source, EOD main lock, next-day reset, and team branch creation gate.
 
 ## Merge Control
 

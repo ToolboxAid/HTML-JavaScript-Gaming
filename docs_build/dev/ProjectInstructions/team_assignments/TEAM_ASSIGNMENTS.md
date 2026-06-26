@@ -211,3 +211,44 @@ Commit/push during the day is allowed only on assigned team/OWNER/PR branches.
 
 Merge to main is EOD-only and owner-approved, unless the owner explicitly says:
 "Merge this PR now."
+
+## EOD Main Lock And Next Day Reset
+
+End of Day:
+
+```text
+git checkout main
+git fetch origin
+git pull --ff-only origin main
+git status
+git rev-list --left-right --count main...origin/main
+```
+
+Required:
+
+```text
+On branch main
+nothing to commit, working tree clean
+0 0
+```
+
+Next Day Start:
+
+```text
+git checkout main
+git fetch origin
+git pull --ff-only origin main
+git status
+git rev-list --left-right --count main...origin/main
+git rev-parse HEAD
+```
+
+Team rule:
+No team creates a PR branch until:
+- Current branch: `main`
+- Worktree: clean
+- `main...origin/main`: `0 0`
+- `HEAD` SHA matches published EOD SHA
+
+Active source rule:
+Teams must use only `docs_build/dev/ProjectInstructions/` as the active Project Instructions source.

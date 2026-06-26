@@ -1,7 +1,5 @@
 # Codex Artifact and Reporting Standard
 
-> Deprecated reference notice: this file is preserved for history only. The active copy is `docs_build/dev/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md`.
-
 ## Purpose
 
 Standardize Codex deliverables, completion reporting, and artifact generation.
@@ -43,15 +41,15 @@ When a ZIP is uploaded, report executable code changes only.
 Report format:
 
 ```text
-{relative path} — {added|updated|deleted}
+{relative path} - {added|updated|deleted}
 ```
 
 Examples:
 
 ```text
-toolbox/text-to-speech/index.html — updated
-assets/toolbox/text-to-speech/js/index.js — added
-tests/toolbox/text-to-speech/functional.spec.mjs — updated
+toolbox/text-to-speech/index.html - updated
+assets/toolbox/text-to-speech/js/index.js - added
+tests/toolbox/text-to-speech/functional.spec.mjs - updated
 ```
 
 Do not report:

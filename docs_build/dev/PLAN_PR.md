@@ -1,22 +1,28 @@
-# PLAN_PR: PR_26177_006-shared-time-foundation
+# PLAN_PR: PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 
 ## Purpose
 
-Add a small shared time foundation.
+Make `docs_build/dev/ProjectInstructions/` the only active Project Instructions source and add EOD main lock plus next-day reset governance.
 
 ## Scope
 
-- Add `src/shared/time/` foundation.
-- Include duration formatting, timestamp helpers, sleep, debounce, and throttle helpers.
-- Add targeted tests.
-- No scheduler/runtime behavior changes.
-- No browser-owned product data.
-- No runtime UI changes.
-- No unrelated cleanup.
+- Audit ProjectInstructions and project instructions duplicates.
+- Mark legacy ProjectInstructions-style sources as deprecated reference material.
+- Move active legacy addendums into `docs_build/dev/ProjectInstructions/addendums/`.
+- Update active team start and governance docs to reference only `docs_build/dev/ProjectInstructions/`.
+- Add EOD main lock, next-day reset, and team PR branch creation gate.
+- Add required Codex reports under `docs_build/dev/reports/`.
 
-## Implementation Plan
+## Out Of Scope
 
-1. Add `src/shared/time/time.js`.
-2. Add `tests/shared/TimeFoundation.test.mjs`.
-3. Validate duration, timestamp, sleep, debounce, and throttle helpers.
-4. Produce required Codex reports and repo-structured ZIP.
+- No product/runtime changes.
+- No feature work.
+- No `start_of_day` changes.
+- No legacy SQLite file changes.
+
+## Validation Plan
+
+1. Run targeted grep/search proving no active duplicate ProjectInstructions source remains.
+2. Confirm EOD/Next Day rule appears in active governance docs.
+3. Confirm no product/runtime files changed.
+4. Run `git diff --check`.

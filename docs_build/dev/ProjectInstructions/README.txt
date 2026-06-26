@@ -1,10 +1,10 @@
 Read this file first.
 
 Folder purpose:
-This folder is the append-first Project Instructions operating system for Game Foundry Studio. It organizes active governance, backlog, team assignment, deprecation, and history material without deleting or rewriting the existing Project Instructions files elsewhere in the repository.
+This folder is the only active Project Instructions source for Game Foundry Studio. It organizes active governance, backlog, team assignment, deprecation, and history material under `docs_build/dev/ProjectInstructions/`.
 
 Preservation rules:
-Preserve all existing documentation. Add new files or append explicit references unless the owner explicitly approves deletion or rewrite. When a conflict appears, stop, explain the conflict, and request owner approval before changing existing instruction text.
+Preserve historical Project Instructions material as deprecated reference only. Do not treat `docs_build/dev/PROJECT_INSTRUCTIONS.md`, `project-instructions/`, or archived snapshots as active instruction sources. When a conflict appears, `docs_build/dev/ProjectInstructions/` wins unless OWNER explicitly approves a newer governance change.
 
 Backlog workflow:
 Backlog work is tracked under backlog/. BACKLOG_MASTER.md is the planned source for backlog item status, notes, and references. Backlog item text is treated as immutable once created; status and notes may change under the governance addendums.
@@ -29,9 +29,9 @@ Do not rewrite history snapshots after creation unless the owner explicitly appr
 
 READ THIS FIRST
 
-1. Read Project Instructions before making changes.
-2. Project Instructions are append-only.
-3. Existing approved guidance may not be removed.
+1. Read `docs_build/dev/ProjectInstructions/README.txt` before making changes.
+2. Treat `docs_build/dev/ProjectInstructions/` as the only active Project Instructions source.
+3. Historical Project Instructions files outside this folder are deprecated references only.
 4. Team ownership must be respected.
 5. BACKLOG_MASTER.md is the authoritative backlog.
 6. Build Path status derives from backlog status.
@@ -42,12 +42,13 @@ READ THIS FIRST
 11. Batch Governance Mode is the default for governance, documentation, and administrative work.
 
 Addendum index:
-- Canonical Repository Structure: project-instructions/addendums/canonical-repository-structure.md
-- Test Structure Standardization: project-instructions/addendums/test-structure-standardization.md
-- Legacy Migration Policy: project-instructions/addendums/legacy-migration-policy.md
-- Assistant Execution Modes: project-instructions/addendums/assistant-execution-modes.md
-- Codex Artifact and Reporting Standard: project-instructions/addendums/codex-artifact-and-reporting-standard.md
-- Codex Project Instructions Startup: project-instructions/addendums/codex-project-instructions-startup.md
+- Single Source and EOD Main Lock: docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
+- Canonical Repository Structure: docs_build/dev/ProjectInstructions/addendums/canonical_repository_structure.md
+- Test Structure Standardization: docs_build/dev/ProjectInstructions/addendums/test_structure_standardization.md
+- Legacy Migration Policy: docs_build/dev/ProjectInstructions/addendums/legacy_migration_policy.md
+- Assistant Execution Modes: docs_build/dev/ProjectInstructions/addendums/assistant_execution_modes.md
+- Codex Artifact and Reporting Standard: docs_build/dev/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
+- Codex Project Instructions Startup: docs_build/dev/ProjectInstructions/addendums/codex_project_instructions_startup.md
 - Project Reference Files Governance: docs_build/dev/ProjectInstructions/addendums/project_reference_files.md
 - Environment Governance Model: docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md
 - Environment Configuration Standards: docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md

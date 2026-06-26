@@ -23,6 +23,7 @@ Keep active work attached to the correct assigned team, branch, and OWNER decisi
 
 - Start from current `main`.
 - Pull latest `origin/main` before creating a work branch.
+- Do not create a PR branch unless current branch is `main`, worktree is clean, `main...origin/main` is `0 0`, and `HEAD` SHA matches the published EOD SHA.
 - Keep work on the active branch until the PR is merged, the branch is retired, or OWNER says to return to `main`.
 - Do not commit directly to `main` unless OWNER explicitly approves.
 - Do not merge stale historical branches directly unless they are current, clean, still needed, and OWNER-approved.
@@ -54,3 +55,36 @@ Protected guidance includes:
 - Governance Phase 1 completion guidance
 
 If protected guidance must change, OWNER approval is required.
+
+## End Of Day Main Lock
+
+End of Day:
+
+```text
+git checkout main
+git fetch origin
+git pull --ff-only origin main
+git status
+git rev-list --left-right --count main...origin/main
+```
+
+Required:
+
+```text
+On branch main
+nothing to commit, working tree clean
+0 0
+```
+
+Next Day Start:
+
+```text
+git checkout main
+git fetch origin
+git pull --ff-only origin main
+git status
+git rev-list --left-right --count main...origin/main
+git rev-parse HEAD
+```
+
+The next-day `HEAD` SHA must match the published EOD SHA before any team creates a PR branch.

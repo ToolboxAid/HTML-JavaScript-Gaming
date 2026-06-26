@@ -1,465 +1,1168 @@
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md
-index c5ced6d1b..53bc243c2 100644
---- a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md
-+++ b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md
-@@ -17,3 +17,4 @@ Status: PASS
- - PASS: Tests are limited to targeted Game Journey completion metrics regression coverage.
- - PASS: Did not delete, move, overwrite, export, or migrate `tmp/local-api/game-journey-completion-metrics.sqlite`.
- - PASS: Did not start Alfa Tags PRs.
-+- PASS: Final audit removed active runtime JS/MJS SQLite and `tmp/local-api` references outside the migration-only utility.
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md
-index 9a952fb7b..6dad6bb08 100644
---- a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md
-+++ b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md
-@@ -5,9 +5,10 @@ Status: PASS
- ## Notes
+diff --git a/docs_build/dev/BUILD_PR.md b/docs_build/dev/BUILD_PR.md
+index 30700e9cd..50b1b27fa 100644
+--- a/docs_build/dev/BUILD_PR.md
++++ b/docs_build/dev/BUILD_PR.md
+@@ -1,66 +1,52 @@
+-# PR_26177_006-shared-time-foundation
++# PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 
- - Confirmed the repo-local `tmp/local-api/game-journey-completion-metrics.sqlite` file exists before validation.
--- Confirmed active `createGameJourneyCompletionMetricsStore({ postgresClient })` no longer resolves that retired path by default.
--- Confirmed active metrics load 14 Postgres-backed completion buckets while the retired file remains untouched.
--- Confirmed explicit `legacyDbPath` protection remains covered by the existing migration/regression test file.
-+- Confirmed active `createGameJourneyCompletionMetricsStore({ postgresClient })` exposes no `legacyDbPath`.
-+- Confirmed active metrics snapshots expose no `legacySqlitePath`.
-+- Confirmed active metrics load 14 DB-backed completion buckets while the retired file remains untouched.
-+- Confirmed active runtime JS/MJS has no SQLite or `tmp/local-api` metrics references outside the migration-only utility.
- - Confirmed the toolbox page renders neutral Creator-facing outage wording when active metrics are unavailable.
- - Confirmed the toolbox page does not render the forbidden warning string, SQLite wording, `tmp/local-api`, or Postgres internals in the simulated outage lane.
- - Confirmed no Alfa Tags PR work was started.
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md
-index 1940890cf..777642b00 100644
---- a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md
-+++ b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md
-@@ -11,9 +11,10 @@ Recover the Game Journey completion metrics path so active Alfa and Owner work n
- ## Implementation Summary
+ ## Purpose
 
- - Removed active runtime defaulting to `tmp/local-api/game-journey-completion-metrics.sqlite` in `createGameJourneyCompletionMetricsStore`.
--- Kept the explicit `legacyDbPath` guard intact for recovery/migration callers so legacy data is still protected from silent overwrite or deletion.
-+- Removed active runtime `legacyDbPath` guard plumbing from the Game Journey metrics store, repository, Local API router, and Playwright test server helper.
- - Updated `toolbox/tools-page-accordions.js` to render neutral Creator-safe progress outage wording instead of backend diagnostics.
--- Added a store-level regression test proving a retired default SQLite-shaped file does not block active Postgres-backed metrics.
-+- Added a store-level regression test proving a retired default SQLite-shaped file does not block or get touched by active DB-backed metrics.
-+- Added a targeted guardrail test proving active runtime JS/MJS under `src`, `assets`, and `toolbox` has no SQLite or `tmp/local-api` metrics references, excluding the migration-only utility.
- - Added a focused Playwright test proving the toolbox page does not render the forbidden warning, SQLite wording, local filesystem path, or Postgres internals when metrics are unavailable.
+-Add a small shared time foundation.
++Make `docs_build/dev/ProjectInstructions/` the only active Project Instructions source and add EOD main lock plus next-day reset governance.
 
- ## Reference Comparison
-@@ -28,16 +29,20 @@ Recover the Game Journey completion metrics path so active Alfa and Owner work n
- - PASS: `node --check` on modified source and test files.
- - PASS: `node ./scripts/run-node-test-files.mjs tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs`.
- - PASS: `npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --project=playwright --workers=1 --reporter=line -g "Game Journey Local API persists completion metrics to Postgres|Toolbox renders Creator-safe Game Journey progress outage copy"`.
--- PASS: Direct proof against the actual existing `tmp/local-api/game-journey-completion-metrics.sqlite` file confirmed active Postgres metrics load 14 buckets and do not resolve a legacy path.
--- PASS: Runtime source search found no `Game Journey completion metrics unavailable` string.
--- PASS: Runtime source search found no active metrics-store default reference to `game-journey-completion-metrics.sqlite`, `GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH`, or `defaultLegacySqlitePath`.
-+- PASS: Direct proof against the actual existing `tmp/local-api/game-journey-completion-metrics.sqlite` file confirmed active DB metrics load 14 buckets, expose no legacy path fields, and do not touch the retired file.
-+- PASS: Active runtime JS/MJS search found no SQLite, `.sqlite`, `better-sqlite`, `game-journey-completion-metrics.sqlite`, or `tmp/local-api` references outside the migration-only utility.
-+- PASS: Runtime source search found no `Game Journey completion metrics unavailable` Creator-facing string.
- - PASS: `git diff --check` reported no whitespace errors. Git emitted line-ending warnings only.
+ ## Source Of Truth
 
- ## Files
+-This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth for `PR_26177_006-shared-time-foundation`.
+-
+-## Stack
+-
+-- Base branch: `PR_26177_005-shared-text-foundation`
++This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth for `PR_26177_OWNER_007-project-instructions-single-source-eod-lock`.
 
- - `src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs`
-+- `src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js`
-+- `src/dev-runtime/server/local-api-router.mjs`
- - `tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs`
-+- `tests/helpers/playwrightRepoServer.mjs`
- - `tests/playwright/tools/GameJourneyTool.spec.mjs`
-+- `tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`
- - `toolbox/tools-page-accordions.js`
+ ## Exact Scope
 
- ## Artifact
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_requirement-checklist.md b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_requirement-checklist.md
-index 544b7057f..65a654b6d 100644
---- a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_requirement-checklist.md
-+++ b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_requirement-checklist.md
-@@ -11,12 +11,14 @@ Status: PASS
- - PASS: Fixed only the Game Journey completion metrics regression.
- - PASS: Did not delete, move, overwrite, export, or migrate `tmp/local-api/game-journey-completion-metrics.sqlite`.
- - PASS: Stopped active runtime from defaulting to `tmp/local-api/game-journey-completion-metrics.sqlite`.
-+- PASS: Removed active runtime `legacyDbPath` SQLite guard plumbing.
- - PASS: Preserved Postgres-backed Game Journey completion metrics as the active path.
- - PASS: Ensured `toolbox/tools-page-accordions.js` cannot render `Game Journey completion metrics unavailable:`.
- - PASS: Creator-facing UI does not expose SQLite, local filesystem paths, migration/export language, or Postgres internals.
- - PASS: Did not introduce silent fallback behavior; metrics outage remains visible with neutral wording.
- - PASS: Added targeted regression tests.
- - PASS: Proved the existing legacy SQLite file does not block active metrics.
-+- PASS: Proved active runtime JS/MJS has no SQLite or `tmp/local-api` metrics references outside the migration-only utility.
- - PASS: Proved the forbidden warning string is not rendered.
- - PASS: Proved Game Journey metrics still load through the active DB/API path.
- - PASS: Used targeted validation only.
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_validation-lane.md b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_validation-lane.md
-index fe5ba4768..47530c453 100644
---- a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_validation-lane.md
-+++ b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_validation-lane.md
-@@ -6,9 +6,13 @@ Status: PASS
+-- Add `src/shared/time/` foundation.
+-- Include duration formatting, timestamp helpers, debounce/throttle/sleep helpers where safe for shared runtime.
+-- Add targeted tests for the shared time area.
+-- No scheduler/runtime behavior changes.
+-- Create required Codex reports under `docs_build/dev/reports/`.
+-- Create repo-structured delta ZIP under `tmp/`.
++- Audit repo for ProjectInstructions / project instructions duplicates.
++- Establish `docs_build/dev/ProjectInstructions/` as the only active source.
++- Mark all other ProjectInstructions-style sources changed by this PR as deprecated references.
++- Update active team start/governance docs to reference only `docs_build/dev/ProjectInstructions/`.
++- Add EOD main lock and next-day reset governance.
++- Add required reports under `docs_build/dev/reports/`.
+
+ ## Exact Targets
+
+ - `docs_build/dev/PLAN_PR.md`
+ - `docs_build/dev/BUILD_PR.md`
+-- `src/shared/time/time.js`
+-- `tests/shared/TimeFoundation.test.mjs`
+-- `docs_build/dev/reports/PR_26177_006-shared-time-foundation.md`
+-- `docs_build/dev/reports/PR_26177_006-shared-time-foundation_branch-validation.md`
+-- `docs_build/dev/reports/PR_26177_006-shared-time-foundation_requirement-checklist.md`
+-- `docs_build/dev/reports/PR_26177_006-shared-time-foundation_validation-lane.md`
+-- `docs_build/dev/reports/PR_26177_006-shared-time-foundation_manual-validation-notes.md`
++- `docs_build/dev/PROJECT_INSTRUCTIONS.md`
++- `docs_build/dev/ProjectInstructions/README.txt`
++- `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
++- `docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md`
++- `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md`
++- `docs_build/dev/ProjectInstructions/addendums/*.md`
++- `project-instructions/README.md`
++- `project-instructions/addendums/*.md`
++- `docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock*.md`
+ - `docs_build/dev/reports/codex_review.diff`
+ - `docs_build/dev/reports/codex_changed_files.txt`
+
+ ## Out Of Scope
+
+-- No scheduler/runtime behavior changes.
+-- No browser-owned product data.
+-- No runtime UI changes.
+-- No browser storage changes.
+-- No API/database changes.
+-- No `start_of_day` folder changes.
+-- No unrelated cleanup.
+-- No full samples smoke by default.
++- No product/runtime changes.
++- No feature work.
++- No `start_of_day` changes.
++- No legacy SQLite file changes.
+
+ ## Validation
+
+-Run exactly:
++Run:
 
  ```powershell
- node --check src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs
-+node --check src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
-+node --check src/dev-runtime/server/local-api-router.mjs
- node --check toolbox/tools-page-accordions.js
- node --check tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
-+node --check tests/helpers/playwrightRepoServer.mjs
- node --check tests/playwright/tools/GameJourneyTool.spec.mjs
-+node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+-node ./scripts/run-node-test-files.mjs tests/shared/TimeFoundation.test.mjs
+-node --check src/shared/time/time.js
+-node --check tests/shared/TimeFoundation.test.mjs
++rg -n 'project-instructions/addendums|docs_build/dev/PROJECT_INSTRUCTIONS.md.*source of truth|Codex must always read `docs_build/dev/PROJECT_INSTRUCTIONS.md`|Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`' docs_build/dev/ProjectInstructions docs_build/dev/PROJECT_INSTRUCTIONS.md project-instructions
++rg -n "End of Day:|Next Day Start:|HEAD.*published EOD SHA|only active Project Instructions source" docs_build/dev/ProjectInstructions
++git diff --name-only -- src assets toolbox games api serverside package.json package-lock.json docs_build/dev/start_of_day
+ git diff --check
  ```
+-
+-## Artifact
+-
+-Create repo-structured delta ZIP:
+-
+-```text
+-tmp/PR_26177_006-shared-time-foundation_delta.zip
+-```
+diff --git a/docs_build/dev/PLAN_PR.md b/docs_build/dev/PLAN_PR.md
+index 907936aee..39fa03385 100644
+--- a/docs_build/dev/PLAN_PR.md
++++ b/docs_build/dev/PLAN_PR.md
+@@ -1,22 +1,28 @@
+-# PLAN_PR: PR_26177_006-shared-time-foundation
++# PLAN_PR: PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 
- Result: PASS
-@@ -17,7 +21,7 @@ Result: PASS
- node ./scripts/run-node-test-files.mjs tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs
+ ## Purpose
+
+-Add a small shared time foundation.
++Make `docs_build/dev/ProjectInstructions/` the only active Project Instructions source and add EOD main lock plus next-day reset governance.
+
+ ## Scope
+
+-- Add `src/shared/time/` foundation.
+-- Include duration formatting, timestamp helpers, sleep, debounce, and throttle helpers.
+-- Add targeted tests.
+-- No scheduler/runtime behavior changes.
+-- No browser-owned product data.
+-- No runtime UI changes.
+-- No unrelated cleanup.
++- Audit ProjectInstructions and project instructions duplicates.
++- Mark legacy ProjectInstructions-style sources as deprecated reference material.
++- Move active legacy addendums into `docs_build/dev/ProjectInstructions/addendums/`.
++- Update active team start and governance docs to reference only `docs_build/dev/ProjectInstructions/`.
++- Add EOD main lock, next-day reset, and team PR branch creation gate.
++- Add required Codex reports under `docs_build/dev/reports/`.
+
+-## Implementation Plan
++## Out Of Scope
+
+-1. Add `src/shared/time/time.js`.
+-2. Add `tests/shared/TimeFoundation.test.mjs`.
+-3. Validate duration, timestamp, sleep, debounce, and throttle helpers.
+-4. Produce required Codex reports and repo-structured ZIP.
++- No product/runtime changes.
++- No feature work.
++- No `start_of_day` changes.
++- No legacy SQLite file changes.
++
++## Validation Plan
++
++1. Run targeted grep/search proving no active duplicate ProjectInstructions source remains.
++2. Confirm EOD/Next Day rule appears in active governance docs.
++3. Confirm no product/runtime files changed.
++4. Run `git diff --check`.
+diff --git a/docs_build/dev/PROJECT_INSTRUCTIONS.md b/docs_build/dev/PROJECT_INSTRUCTIONS.md
+index af9e9e2db..c1136fdbe 100644
+--- a/docs_build/dev/PROJECT_INSTRUCTIONS.md
++++ b/docs_build/dev/PROJECT_INSTRUCTIONS.md
+@@ -1,5 +1,7 @@
+ # PROJECT INSTRUCTIONS
+
++> Deprecated active-source notice: this file is preserved as historical reference only. The only active Project Instructions source is `docs_build/dev/ProjectInstructions/`. If this file conflicts with `docs_build/dev/ProjectInstructions/`, the active folder wins unless OWNER explicitly approves a newer governance change.
++
+ You are working in a docs-first repo workflow.
+
+ Workflow:
+@@ -864,7 +866,7 @@ Controls must remain copy-friendly and human-readable.
+
+ ### ChatGPT Workflow Governance Consistency
+
+-ChatGPT repo workflow responses are governed by `docs_build/dev/PROJECT_INSTRUCTIONS.md` as the source of truth.
++Deprecated note: this historical section no longer defines the active source of truth. ChatGPT repo workflow responses are governed by `docs_build/dev/ProjectInstructions/`.
+
+ ChatGPT must not drift from the required response ordering.
+
+@@ -1716,13 +1718,13 @@ Do not compact:
+
+ Do not change JSON contracts or semantics while applying array formatting.
+
+-## PROJECT INSTRUCTIONS LOCATION
++## DEPRECATED PROJECT INSTRUCTIONS LOCATION
+
+-PROJECT_INSTRUCTIONS.md lives at:
++Historical PROJECT_INSTRUCTIONS.md is preserved at:
+
+ `docs_build/dev/PROJECT_INSTRUCTIONS.md`
+
+-Codex must always read `docs_build/dev/PROJECT_INSTRUCTIONS.md` from this path as the source of truth before executing repository workflow instructions.
++This file is not the active source of truth. Codex must read `docs_build/dev/ProjectInstructions/README.txt` first and use `docs_build/dev/ProjectInstructions/` as the active Project Instructions source before executing repository workflow instructions.
+
+ ## CODEX COMMAND FORMATTING RULE
+
+@@ -2384,9 +2386,9 @@ Treat these files the same as existing instruction documents for read-set, revie
+ Codex must run this gate before every PR execution and before any file changes.
+
+ Required instruction reads:
+-- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
++- Read `docs_build/dev/ProjectInstructions/README.txt`.
+ - Read `docs_build/dev/PROJECT_MULTI_PC.txt`.
+-- Treat the newest applicable section in `PROJECT_INSTRUCTIONS.md` as authoritative when rules overlap.
++- Treat the newest applicable section in `docs_build/dev/ProjectInstructions/` as authoritative when rules overlap.
+ - Treat the current team ownership section in `PROJECT_MULTI_PC.txt` as authoritative for TEAM routing.
+
+ Required pre-change report:
+diff --git a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+index d2a84ecbe..99ddd0f42 100644
+--- a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
++++ b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+@@ -4,6 +4,12 @@ Read `README.txt` first.
+
+ This file is the root index for the append-first Project Instructions operating system under `docs_build/dev/ProjectInstructions/`.
+
++## Active Source
++
++`docs_build/dev/ProjectInstructions/` is the only active Project Instructions source.
++
++Historical Project Instructions material outside this folder is deprecated reference material only and must not be used as an active source of governance.
++
+ ## Purpose
+
+ The Project Instructions operating system provides additive governance for:
+@@ -20,7 +26,7 @@ The Project Instructions operating system provides additive governance for:
+
+ ## Preservation
+
+-Existing Project Instructions remain preserved in their current locations. This operating system adds structure without deleting or rewriting existing documentation.
++Existing Project Instructions outside `docs_build/dev/ProjectInstructions/` remain preserved only as deprecated reference material. When guidance conflicts, active files under `docs_build/dev/ProjectInstructions/` win unless OWNER explicitly approves a newer governance change.
+
+ ## Folders
+
+@@ -41,6 +47,10 @@ Existing Project Instructions remain preserved in their current locations. This
+
+ `docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md` defines official `.env` file names, environment variable values, host/domain configuration, API URL configuration, R2 prefix configuration, and feature flag governance.
+
++## Single Source and Main Lock Governance
++
++`docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md` defines the single active Project Instructions source, EOD main lock, next-day reset, and team branch creation gate.
++
+ ## Merge Control
+
+ No PR in this operating system is merged without explicit owner approval.
+diff --git a/docs_build/dev/ProjectInstructions/README.txt b/docs_build/dev/ProjectInstructions/README.txt
+index a48becf05..631fd3918 100644
+--- a/docs_build/dev/ProjectInstructions/README.txt
++++ b/docs_build/dev/ProjectInstructions/README.txt
+@@ -1,10 +1,10 @@
+ Read this file first.
+
+ Folder purpose:
+-This folder is the append-first Project Instructions operating system for Game Foundry Studio. It organizes active governance, backlog, team assignment, deprecation, and history material without deleting or rewriting the existing Project Instructions files elsewhere in the repository.
++This folder is the only active Project Instructions source for Game Foundry Studio. It organizes active governance, backlog, team assignment, deprecation, and history material under `docs_build/dev/ProjectInstructions/`.
+
+ Preservation rules:
+-Preserve all existing documentation. Add new files or append explicit references unless the owner explicitly approves deletion or rewrite. When a conflict appears, stop, explain the conflict, and request owner approval before changing existing instruction text.
++Preserve historical Project Instructions material as deprecated reference only. Do not treat `docs_build/dev/PROJECT_INSTRUCTIONS.md`, `project-instructions/`, or archived snapshots as active instruction sources. When a conflict appears, `docs_build/dev/ProjectInstructions/` wins unless OWNER explicitly approves a newer governance change.
+
+ Backlog workflow:
+ Backlog work is tracked under backlog/. BACKLOG_MASTER.md is the planned source for backlog item status, notes, and references. Backlog item text is treated as immutable once created; status and notes may change under the governance addendums.
+@@ -29,9 +29,9 @@ Do not rewrite history snapshots after creation unless the owner explicitly appr
+
+ READ THIS FIRST
+
+-1. Read Project Instructions before making changes.
+-2. Project Instructions are append-only.
+-3. Existing approved guidance may not be removed.
++1. Read `docs_build/dev/ProjectInstructions/README.txt` before making changes.
++2. Treat `docs_build/dev/ProjectInstructions/` as the only active Project Instructions source.
++3. Historical Project Instructions files outside this folder are deprecated references only.
+ 4. Team ownership must be respected.
+ 5. BACKLOG_MASTER.md is the authoritative backlog.
+ 6. Build Path status derives from backlog status.
+@@ -42,12 +42,13 @@ READ THIS FIRST
+ 11. Batch Governance Mode is the default for governance, documentation, and administrative work.
+
+ Addendum index:
+-- Canonical Repository Structure: project-instructions/addendums/canonical-repository-structure.md
+-- Test Structure Standardization: project-instructions/addendums/test-structure-standardization.md
+-- Legacy Migration Policy: project-instructions/addendums/legacy-migration-policy.md
+-- Assistant Execution Modes: project-instructions/addendums/assistant-execution-modes.md
+-- Codex Artifact and Reporting Standard: project-instructions/addendums/codex-artifact-and-reporting-standard.md
+-- Codex Project Instructions Startup: project-instructions/addendums/codex-project-instructions-startup.md
++- Single Source and EOD Main Lock: docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
++- Canonical Repository Structure: docs_build/dev/ProjectInstructions/addendums/canonical_repository_structure.md
++- Test Structure Standardization: docs_build/dev/ProjectInstructions/addendums/test_structure_standardization.md
++- Legacy Migration Policy: docs_build/dev/ProjectInstructions/addendums/legacy_migration_policy.md
++- Assistant Execution Modes: docs_build/dev/ProjectInstructions/addendums/assistant_execution_modes.md
++- Codex Artifact and Reporting Standard: docs_build/dev/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
++- Codex Project Instructions Startup: docs_build/dev/ProjectInstructions/addendums/codex_project_instructions_startup.md
+ - Project Reference Files Governance: docs_build/dev/ProjectInstructions/addendums/project_reference_files.md
+ - Environment Governance Model: docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md
+ - Environment Configuration Standards: docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md
+diff --git a/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md b/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
+index d0118f63a..c446a4b33 100644
+--- a/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
++++ b/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
+@@ -1,5 +1,16 @@
+ # TEAM_START_COMMANDS
+
++## Required Main Reset Gate For Every Team
++
++No team creates a PR branch until all checks pass:
++
++- Current branch: `main`
++- Worktree: clean
++- `main...origin/main`: `0 0`
++- `HEAD` SHA matches the published EOD SHA
++
++Use `docs_build/dev/ProjectInstructions/` as the only active Project Instructions source.
++
+ ## Start Team Alfa
+
+ Ready-to-copy command:
+@@ -123,4 +134,24 @@ Merge to main is EOD-only and owner-approved, unless the owner explicitly says:
+ "Merge this PR now."
+
+ Do not treat sequential PR completion as merge approval.
++
++End of Day:
++git checkout main
++git fetch origin
++git pull --ff-only origin main
++git status
++git rev-list --left-right --count main...origin/main
++
++Required:
++On branch main
++nothing to commit, working tree clean
++0 0
++
++Next Day Start:
++git checkout main
++git fetch origin
++git pull --ff-only origin main
++git status
++git rev-list --left-right --count main...origin/main
++git rev-parse HEAD
  ```
+diff --git a/docs_build/dev/ProjectInstructions/addendums/branch_lock_governance.md b/docs_build/dev/ProjectInstructions/addendums/branch_lock_governance.md
+index 518f8c943..d6c8e4cf7 100644
+--- a/docs_build/dev/ProjectInstructions/addendums/branch_lock_governance.md
++++ b/docs_build/dev/ProjectInstructions/addendums/branch_lock_governance.md
+@@ -23,6 +23,7 @@ Keep active work attached to the correct assigned team, branch, and OWNER decisi
 
--Result: PASS, 2 targeted node test files passed
-+Result: PASS, 2 targeted node test files passed. Includes active runtime JS/MJS SQLite reference guardrail.
+ - Start from current `main`.
+ - Pull latest `origin/main` before creating a work branch.
++- Do not create a PR branch unless current branch is `main`, worktree is clean, `main...origin/main` is `0 0`, and `HEAD` SHA matches the published EOD SHA.
+ - Keep work on the active branch until the PR is merged, the branch is retired, or OWNER says to return to `main`.
+ - Do not commit directly to `main` unless OWNER explicitly approves.
+ - Do not merge stale historical branches directly unless they are current, clean, still needed, and OWNER-approved.
+@@ -54,3 +55,36 @@ Protected guidance includes:
+ - Governance Phase 1 completion guidance
 
- ```powershell
- npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --project=playwright --workers=1 --reporter=line -g "Game Journey Local API persists completion metrics to Postgres|Toolbox renders Creator-safe Game Journey progress outage copy"
-@@ -26,14 +30,14 @@ npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --project=pl
- Result: PASS, 2 passed
+ If protected guidance must change, OWNER approval is required.
++
++## End Of Day Main Lock
++
++End of Day:
++
++```text
++git checkout main
++git fetch origin
++git pull --ff-only origin main
++git status
++git rev-list --left-right --count main...origin/main
++```
++
++Required:
++
++```text
++On branch main
++nothing to commit, working tree clean
++0 0
++```
++
++Next Day Start:
++
++```text
++git checkout main
++git fetch origin
++git pull --ff-only origin main
++git status
++git rev-list --left-right --count main...origin/main
++git rev-parse HEAD
++```
++
++The next-day `HEAD` SHA must match the published EOD SHA before any team creates a PR branch.
+diff --git a/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md b/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
+index f8a4acb6e..7c1cd8275 100644
+--- a/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
++++ b/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
+@@ -129,3 +129,40 @@ Stop only for:
+ - Merge conflict
+ - Validation failure
+ - OWNER decision
++
++## EOD Main Lock
++
++End of Day:
++
++```text
++git checkout main
++git fetch origin
++git pull --ff-only origin main
++git status
++git rev-list --left-right --count main...origin/main
++```
++
++Required:
++
++```text
++On branch main
++nothing to commit, working tree clean
++0 0
++```
++
++## Next Day Start
++
++```text
++git checkout main
++git fetch origin
++git pull --ff-only origin main
++git status
++git rev-list --left-right --count main...origin/main
++git rev-parse HEAD
++```
++
++No team creates a PR branch until:
++- Current branch: `main`
++- Worktree: clean
++- `main...origin/main`: `0 0`
++- `HEAD` SHA matches published EOD SHA
+diff --git a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
+index 9735b4bd4..9a104b4f9 100644
+--- a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
++++ b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
+@@ -211,3 +211,44 @@ Commit/push during the day is allowed only on assigned team/OWNER/PR branches.
 
- ```powershell
--node -e "import('node:fs').then(async fs=>{const [{createGameJourneyCompletionMetricsStore}, {createGameJourneyCompletionMetricsPostgresClientStub}] = await Promise.all([import('./src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs'), import('./tests/helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs')]); const legacy='tmp/local-api/game-journey-completion-metrics.sqlite'; if(!fs.existsSync(legacy)) throw new Error('Expected existing legacy SQLite file for regression proof'); const store=createGameJourneyCompletionMetricsStore({postgresClient:createGameJourneyCompletionMetricsPostgresClientStub()}); const metrics=await store.listMetrics(); if(store.legacyDbPath) throw new Error('Active store resolved a legacy path'); if(metrics.length!==14) throw new Error('Expected 14 active metrics'); console.log('PASS active Postgres metrics ignore existing retired legacy SQLite file');})"
-+node -e "import('node:fs').then(async fs=>{const [{createGameJourneyCompletionMetricsStore}, {createGameJourneyCompletionMetricsPostgresClientStub}] = await Promise.all([import('./src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs'), import('./tests/helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs')]); const legacy='tmp/local-api/game-journey-completion-metrics.sqlite'; if(!fs.existsSync(legacy)) throw new Error('Expected existing retired local file for regression proof'); const before=fs.statSync(legacy).mtimeMs; const store=createGameJourneyCompletionMetricsStore({postgresClient:createGameJourneyCompletionMetricsPostgresClientStub()}); const metrics=await store.listMetrics(); const snapshot=await store.snapshot(); const after=fs.statSync(legacy).mtimeMs; if(Object.hasOwn(store, 'legacyDbPath')) throw new Error('Store exposes legacyDbPath'); if(Object.hasOwn(snapshot, 'legacySqlitePath')) throw new Error('Snapshot exposes legacySqlitePath'); if(metrics.length!==14) throw new Error('Expected 14 active metrics'); if(before!==after) throw new Error('Retired local file was touched'); console.log('PASS active DB metrics ignore and do not inspect retired local file');})"
- ```
-
- Result: PASS
-
- ```powershell
-+rg -n -i "sqlite|better-sqlite|game-journey-completion-metrics\.sqlite|tmp/local-api" src assets toolbox -g "*.js" -g "*.mjs" --glob "!src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs"
- rg -n "Game Journey completion metrics unavailable" src assets toolbox --glob "!**/*.map"
--rg -n "game-journey-completion-metrics\.sqlite|GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH|defaultLegacySqlitePath" src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs toolbox/tools-page-accordions.js assets/toolbox/game-journey/js/index.js
- ```
-
- Result: PASS, no matches
+ Merge to main is EOD-only and owner-approved, unless the owner explicitly says:
+ "Merge this PR now."
++
++## EOD Main Lock And Next Day Reset
++
++End of Day:
++
++```text
++git checkout main
++git fetch origin
++git pull --ff-only origin main
++git status
++git rev-list --left-right --count main...origin/main
++```
++
++Required:
++
++```text
++On branch main
++nothing to commit, working tree clean
++0 0
++```
++
++Next Day Start:
++
++```text
++git checkout main
++git fetch origin
++git pull --ff-only origin main
++git status
++git rev-list --left-right --count main...origin/main
++git rev-parse HEAD
++```
++
++Team rule:
++No team creates a PR branch until:
++- Current branch: `main`
++- Worktree: clean
++- `main...origin/main`: `0 0`
++- `HEAD` SHA matches published EOD SHA
++
++Active source rule:
++Teams must use only `docs_build/dev/ProjectInstructions/` as the active Project Instructions source.
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 585a10850..8e34972a1 100644
+index 8e34972a1..85beb7824 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -6,6 +6,9 @@ docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recove
+@@ -1,14 +1,30 @@
+-docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md
+-docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md
+-docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md
+-docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_requirement-checklist.md
+-docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_validation-lane.md
++docs_build/dev/BUILD_PR.md
++docs_build/dev/PLAN_PR.md
++docs_build/dev/PROJECT_INSTRUCTIONS.md
++docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
++docs_build/dev/ProjectInstructions/README.txt
++docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
++docs_build/dev/ProjectInstructions/addendums/assistant_execution_modes.md
++docs_build/dev/ProjectInstructions/addendums/branch_lock_governance.md
++docs_build/dev/ProjectInstructions/addendums/canonical_repository_structure.md
++docs_build/dev/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
++docs_build/dev/ProjectInstructions/addendums/codex_project_instructions_startup.md
++docs_build/dev/ProjectInstructions/addendums/legacy_migration_policy.md
++docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
++docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
++docs_build/dev/ProjectInstructions/addendums/test_structure_standardization.md
++docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
++docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock.md
++docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_branch-validation.md
++docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_manual-validation-notes.md
++docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_requirement-checklist.md
++docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_validation-lane.md
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
- src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs
-+src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
-+src/dev-runtime/server/local-api-router.mjs
- tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
-+tests/helpers/playwrightRepoServer.mjs
- tests/playwright/tools/GameJourneyTool.spec.mjs
--toolbox/tools-page-accordions.js
-+tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-diff --git a/src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs b/src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs
-index 6c202c8a2..eea6294e7 100644
---- a/src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs
-+++ b/src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs
-@@ -1,5 +1,3 @@
--import { existsSync } from "node:fs";
--import path from "node:path";
- import { createPostgresConnectionClient } from "./postgres-connection-client.mjs";
- import { SEED_DB_KEYS, makeSeedUlid } from "../seed/seed-db-keys.mjs";
+-src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs
+-src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
+-src/dev-runtime/server/local-api-router.mjs
+-tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
+-tests/helpers/playwrightRepoServer.mjs
+-tests/playwright/tools/GameJourneyTool.spec.mjs
+-tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
++project-instructions/README.md
++project-instructions/addendums/assistant-execution-modes.md
++project-instructions/addendums/canonical-repository-structure.md
++project-instructions/addendums/codex-artifact-and-reporting-standard.md
++project-instructions/addendums/codex-project-instructions-startup.md
++project-instructions/addendums/legacy-migration-policy.md
++project-instructions/addendums/test-structure-standardization.md
+diff --git a/project-instructions/addendums/assistant-execution-modes.md b/project-instructions/addendums/assistant-execution-modes.md
+index 6d7928669..4c5637d0d 100644
+--- a/project-instructions/addendums/assistant-execution-modes.md
++++ b/project-instructions/addendums/assistant-execution-modes.md
+@@ -1,5 +1,7 @@
+ # Assistant Execution Modes
 
-@@ -59,24 +57,6 @@ function clone(value) {
-   return JSON.parse(JSON.stringify(value));
- }
-
--function resolveLegacySqlitePath(legacyDbPath) {
--  if (legacyDbPath === null || legacyDbPath === undefined) {
--    return "";
--  }
--  const value = String(legacyDbPath || "").trim();
--  if (!value) {
--    return "";
--  }
--  return path.resolve(value);
--}
--
--function assertNoUnmigratedLegacySqlite(legacyDbPath) {
--  if (!legacyDbPath || !existsSync(legacyDbPath)) {
--    return;
--  }
--  throw new Error(`Legacy Game Journey completion metrics SQLite data exists at ${legacyDbPath}. No data was removed or overwritten. Export or migrate that data into Postgres, then move the legacy file before using the Postgres metrics store.`);
--}
--
- function normalizeCount(value, fallback = 0) {
-   const parsed = Number(value);
-   if (!Number.isFinite(parsed)) {
-@@ -158,7 +138,6 @@ function bucketSeedRow(bucket, now) {
- export function createGameJourneyCompletionMetricsStore(options = {}) {
-   const env = options.env || process.env;
-   const bucketSeeds = Object.freeze((options.buckets || GAME_JOURNEY_COMPLETION_BUCKETS).map(clone));
--  const legacyDbPath = resolveLegacySqlitePath(options.legacyDbPath);
-   let postgresClient = options.postgresClient || null;
-   let readyPromise = null;
-
-@@ -230,7 +209,6 @@ export function createGameJourneyCompletionMetricsStore(options = {}) {
-   async function ensureReady() {
-     if (!readyPromise) {
-       readyPromise = (async () => {
--        assertNoUnmigratedLegacySqlite(legacyDbPath);
-         await client().query(GAME_JOURNEY_COMPLETION_METRICS_SCHEMA_SQL);
-         await seedDefaultBuckets();
-       })();
-@@ -298,7 +276,6 @@ export function createGameJourneyCompletionMetricsStore(options = {}) {
-       databaseConfigKey: "GAMEFOUNDRY_DATABASE_URL",
-       databaseEngine: "Postgres",
-       databasePath: "GAMEFOUNDRY_DATABASE_URL",
--      legacySqlitePath: legacyDbPath,
-       serviceContract: "Web UI -> Local API/Service Contract -> Postgres",
-       source: GAME_JOURNEY_COMPLETION_METRICS_TABLE,
-       tableName: GAME_JOURNEY_COMPLETION_METRICS_TABLE,
-@@ -312,7 +289,6 @@ export function createGameJourneyCompletionMetricsStore(options = {}) {
-   }
-
-   return {
--    legacyDbPath,
-     listMetrics,
-     snapshot,
-     updateMetric,
-diff --git a/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js b/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
-index 73b409c42..8e0ddc92b 100644
---- a/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
-+++ b/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
-@@ -627,7 +627,6 @@ export function createGameJourneyMockRepository(options = {}) {
-   const completionMetricsStore =
-     options.completionMetricsStore || createGameJourneyCompletionMetricsStore({
-       dbPath: options.completionMetricsDbPath,
--      legacyDbPath: options.completionMetricsLegacyDbPath,
-       postgresClient: options.completionMetricsPostgresClient,
-     });
-   const tables = loadMockDbTables(GAME_JOURNEY_DB_OWNER, getSeedTables(), options).tables;
-diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index f2f927aff..2cb9a66f1 100644
---- a/src/dev-runtime/server/local-api-router.mjs
-+++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -3304,14 +3304,12 @@ function productTablesFromSnapshot(snapshot) {
-
- class ApiRuntimeDataSource {
-   constructor({
--    gameJourneyCompletionMetricsLegacyDbPath = undefined,
-     gameJourneyCompletionMetricsPostgresClient = null,
-     messagesPostgresClient = null,
-     messagesService = null,
-     repoRoot = process.cwd(),
-   } = {}) {
-     this.messagesService = messagesService || createMessagesPostgresService({ postgresClient: messagesPostgresClient });
--    this.gameJourneyCompletionMetricsLegacyDbPath = gameJourneyCompletionMetricsLegacyDbPath;
-     this.gameJourneyCompletionMetricsPostgresClient = gameJourneyCompletionMetricsPostgresClient;
-     this.repositoryCounter = 1;
-     this.repositoryById = new Map();
-@@ -3556,7 +3554,6 @@ class ApiRuntimeDataSource {
-       this.standaloneTables.invitations = [];
-     }
-     this.sharedOptions = {
--      completionMetricsLegacyDbPath: this.gameJourneyCompletionMetricsLegacyDbPath,
-       completionMetricsPostgresClient: this.gameJourneyCompletionMetricsPostgresClient,
-       memoryDbTables: this.standaloneTables,
-       sessionMode: this.sessionModeId,
-@@ -6839,14 +6836,12 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
-  * The router itself serves the configured server API contract.
-  */
- export function createLocalApiRouter({
--  gameJourneyCompletionMetricsLegacyDbPath = undefined,
-   gameJourneyCompletionMetricsPostgresClient = null,
-   messagesPostgresClient = null,
-   messagesService = null,
-   repoRoot = process.cwd(),
- } = {}) {
-   const dataSource = new ApiRuntimeDataSource({
--    gameJourneyCompletionMetricsLegacyDbPath,
-     gameJourneyCompletionMetricsPostgresClient,
-     messagesPostgresClient,
-     messagesService,
-diff --git a/tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs b/tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
-index edbc0333e..1ca7de68e 100644
---- a/tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
-+++ b/tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
-@@ -10,6 +10,34 @@ import {
- } from "../../src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs";
- import { createGameJourneyCompletionMetricsPostgresClientStub } from "../helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs";
-
-+const ACTIVE_RUNTIME_ROOTS = Object.freeze(["src", "assets", "toolbox"]);
-+const ACTIVE_RUNTIME_ALLOWED_FILES = new Set([
-+  path.normalize("src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs"),
-+]);
-+const RUNTIME_FORBIDDEN_PATTERNS = Object.freeze([
-+  /sqlite/i,
-+  /\.sqlite/i,
-+  /better-sqlite/i,
-+  /game-journey-completion-metrics\.sqlite/i,
-+  /tmp\/local-api/i,
-+]);
++> Deprecated reference notice: this file is preserved for history only. The active copy is `docs_build/dev/ProjectInstructions/addendums/assistant_execution_modes.md`.
 +
-+async function activeRuntimeJavaScriptFiles(root) {
-+  const entries = await fs.readdir(root, { withFileTypes: true });
-+  const files = [];
-+  for (const entry of entries) {
-+    const child = path.join(root, entry.name);
-+    if (entry.isDirectory()) {
-+      files.push(...await activeRuntimeJavaScriptFiles(child));
-+      continue;
-+    }
-+    if (entry.isFile() && /\.(?:mjs|js)$/i.test(entry.name)) {
-+      files.push(child);
-+    }
-+  }
-+  return files;
-+}
+ ## Purpose
+
+ Standardize request interpretation and expected outputs for Review, Owner, Build PR, Continue, Challenge, and Stop Gate workflows.
+diff --git a/project-instructions/addendums/canonical-repository-structure.md b/project-instructions/addendums/canonical-repository-structure.md
+index e26939469..6b9dcb242 100644
+--- a/project-instructions/addendums/canonical-repository-structure.md
++++ b/project-instructions/addendums/canonical-repository-structure.md
+@@ -1,5 +1,7 @@
+ # Canonical Repository Structure
+
++> Deprecated reference notice: this file is preserved for history only. The active copy is `docs_build/dev/ProjectInstructions/addendums/canonical_repository_structure.md`.
 +
- test("active Game Journey metrics ignore the retired default legacy SQLite path", async () => {
-   const originalCwd = process.cwd();
-   const directory = await fs.mkdtemp(path.join(os.tmpdir(), "gfs-game-journey-metrics-store-"));
-@@ -24,8 +52,10 @@ test("active Game Journey metrics ignore the retired default legacy SQLite path"
-     const postgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
-     const store = createGameJourneyCompletionMetricsStore({ postgresClient });
-     const metrics = await store.listMetrics();
-+    const snapshot = await store.snapshot();
+ ## Purpose
 
--    assert.equal(store.legacyDbPath, "");
-+    assert.equal(Object.hasOwn(store, "legacyDbPath"), false);
-+    assert.equal(Object.hasOwn(snapshot, "legacySqlitePath"), false);
-     assert.equal(metrics.length, 14);
-     assert.equal(postgresClient.dumpTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE).length, 14);
-     assert.equal(await fs.readFile(retiredLegacyPath, "utf8"), retiredLegacyContents);
-@@ -34,3 +64,26 @@ test("active Game Journey metrics ignore the retired default legacy SQLite path"
-     await fs.rm(directory, { force: true, recursive: true });
-   }
- });
+ Establish the canonical repository structure for future development and reduce technical debt.
+diff --git a/project-instructions/addendums/codex-artifact-and-reporting-standard.md b/project-instructions/addendums/codex-artifact-and-reporting-standard.md
+index 3f16a3641..8d1327886 100644
+--- a/project-instructions/addendums/codex-artifact-and-reporting-standard.md
++++ b/project-instructions/addendums/codex-artifact-and-reporting-standard.md
+@@ -1,5 +1,7 @@
+ # Codex Artifact and Reporting Standard
+
++> Deprecated reference notice: this file is preserved for history only. The active copy is `docs_build/dev/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md`.
 +
-+test("active runtime JS and MJS do not contain SQLite or tmp local metrics references", async () => {
-+  const files = [];
-+  for (const root of ACTIVE_RUNTIME_ROOTS) {
-+    files.push(...await activeRuntimeJavaScriptFiles(root));
-+  }
+ ## Purpose
+
+ Standardize Codex deliverables, completion reporting, and artifact generation.
+diff --git a/project-instructions/addendums/codex-project-instructions-startup.md b/project-instructions/addendums/codex-project-instructions-startup.md
+index 94744f06e..135498b42 100644
+--- a/project-instructions/addendums/codex-project-instructions-startup.md
++++ b/project-instructions/addendums/codex-project-instructions-startup.md
+@@ -1,5 +1,7 @@
+ # Codex Project Instructions Startup
+
++> Deprecated reference notice: this file is preserved for history only. The active copy is `docs_build/dev/ProjectInstructions/addendums/codex_project_instructions_startup.md`.
 +
-+  const findings = [];
-+  for (const file of files) {
-+    const normalized = path.normalize(file);
-+    if (ACTIVE_RUNTIME_ALLOWED_FILES.has(normalized)) {
-+      continue;
-+    }
-+    const contents = await fs.readFile(file, "utf8");
-+    RUNTIME_FORBIDDEN_PATTERNS.forEach((pattern) => {
-+      if (pattern.test(contents)) {
-+        findings.push(`${file}: ${pattern}`);
-+      }
-+    });
-+  }
+ ## Purpose
+
+ Ensure Codex uses the current approved governance before making repository changes.
+diff --git a/project-instructions/addendums/legacy-migration-policy.md b/project-instructions/addendums/legacy-migration-policy.md
+index 5e43679f4..5515a1728 100644
+--- a/project-instructions/addendums/legacy-migration-policy.md
++++ b/project-instructions/addendums/legacy-migration-policy.md
+@@ -1,5 +1,7 @@
+ # Legacy Migration Policy
+
++> Deprecated reference notice: this file is preserved for history only. The active copy is `docs_build/dev/ProjectInstructions/addendums/legacy_migration_policy.md`.
 +
-+  assert.deepEqual(findings, []);
-+});
-diff --git a/tests/helpers/playwrightRepoServer.mjs b/tests/helpers/playwrightRepoServer.mjs
-index 9bc8e8f07..71c7853aa 100644
---- a/tests/helpers/playwrightRepoServer.mjs
-+++ b/tests/helpers/playwrightRepoServer.mjs
-@@ -91,13 +91,11 @@ function resolveBrowserRoutePath(decodedPath) {
- }
+ ## Purpose
 
- export async function startRepoServer({
--  gameJourneyCompletionMetricsLegacyDbPath = undefined,
-   gameJourneyCompletionMetricsPostgresClient = null,
-   messagesPostgresClient = null,
- } = {}) {
-   await loadRuntimeEnv();
-   const handleLocalApiRequest = createLocalApiRouter({
--    gameJourneyCompletionMetricsLegacyDbPath,
-     gameJourneyCompletionMetricsPostgresClient,
-     messagesPostgresClient,
-     repoRoot,
-diff --git a/tests/playwright/tools/GameJourneyTool.spec.mjs b/tests/playwright/tools/GameJourneyTool.spec.mjs
-index 75a913d96..cc47265cf 100644
---- a/tests/playwright/tools/GameJourneyTool.spec.mjs
-+++ b/tests/playwright/tools/GameJourneyTool.spec.mjs
-@@ -40,7 +40,6 @@ test.afterAll(async () => {
- async function openRepoPage(page, pathName, options = {}) {
-   const gameJourneyCompletionMetricsPostgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
-   const server = await startRepoServer({
--    gameJourneyCompletionMetricsLegacyDbPath: null,
-     gameJourneyCompletionMetricsPostgresClient,
-   });
-   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
-@@ -238,7 +237,6 @@ test("Game Journey exposes static tool ownership areas without automatic counts"
+ Reduce technical debt incrementally during normal development.
+diff --git a/project-instructions/addendums/test-structure-standardization.md b/project-instructions/addendums/test-structure-standardization.md
+index 997b16730..eeb62d561 100644
+--- a/project-instructions/addendums/test-structure-standardization.md
++++ b/project-instructions/addendums/test-structure-standardization.md
+@@ -1,5 +1,7 @@
+ # Test Structure Standardization
 
-   const gameJourneyCompletionMetricsPostgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
-   const server = await startRepoServer({
--    gameJourneyCompletionMetricsLegacyDbPath: null,
-     gameJourneyCompletionMetricsPostgresClient,
-   });
-   try {
-@@ -262,7 +260,6 @@ test("Game Journey progress dashboard summarizes completion metrics", async ({ p
-   process.env.GAMEFOUNDRY_LOCAL_DB_PATH = localDbPath;
-   const gameJourneyCompletionMetricsPostgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
-   const server = await startRepoServer({
--    gameJourneyCompletionMetricsLegacyDbPath: null,
-     gameJourneyCompletionMetricsPostgresClient,
-   });
-   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
-@@ -1285,7 +1282,6 @@ test("Game Journey displays system template diagnostics", async ({ page }) => {
++> Deprecated reference notice: this file is preserved for history only. The active copy is `docs_build/dev/ProjectInstructions/addendums/test_structure_standardization.md`.
++
+ ## Purpose
 
- test("Game Journey mock data keeps system guidance template-owned", async () => {
-   const repository = createGameJourneyMockRepository({
--    completionMetricsLegacyDbPath: null,
-     completionMetricsPostgresClient: createGameJourneyCompletionMetricsPostgresClientStub(),
-     memoryDbTables: standaloneSeedTables,
-     persist: false,
-@@ -1452,7 +1448,6 @@ test("Game Journey mock data keeps system guidance template-owned", async () =>
- test("Game Journey Local API persists completion metrics to Postgres", async () => {
-   const gameJourneyCompletionMetricsPostgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
-   const server = await startRepoServer({
--    gameJourneyCompletionMetricsLegacyDbPath: null,
-     gameJourneyCompletionMetricsPostgresClient,
-   });
-   try {
-@@ -1511,29 +1506,11 @@ test("Game Journey Local API persists completion metrics to Postgres", async ()
- test("Game Journey completion metrics fail visibly when Postgres is not configured", async () => {
-   const store = createGameJourneyCompletionMetricsStore({
-     env: {},
--    legacyDbPath: null,
-   });
-
-   await expect(store.listMetrics()).rejects.toThrow(/GAMEFOUNDRY_DATABASE_URL/);
- });
-
--test("Game Journey completion metrics protect legacy SQLite data from silent drop", async () => {
--  const legacyDbPath = path.join(process.cwd(), "tmp", "local-api", `game-journey-legacy-guard-${process.pid}-${Date.now()}.sqlite`);
--  await fs.mkdir(path.dirname(legacyDbPath), { recursive: true });
--  await fs.writeFile(legacyDbPath, "legacy metrics placeholder");
--
--  const store = createGameJourneyCompletionMetricsStore({
--    legacyDbPath,
--    postgresClient: createGameJourneyCompletionMetricsPostgresClientStub(),
--  });
--
--  try {
--    await expect(store.listMetrics()).rejects.toThrow(/Legacy Game Journey completion metrics SQLite data exists/);
--  } finally {
--    await fs.rm(legacyDbPath, { force: true });
--  }
--});
--
- test("Game Journey requires an active game before editing", async ({ page }) => {
-   const failures = await openRepoPage(page, "/toolbox/game-journey/index.html?game=none");
-
-diff --git a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-index 6d626f03b..be8c88698 100644
---- a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-+++ b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-@@ -115,7 +115,6 @@ async function expectNoNavigationFallbackUi(page) {
-
- test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-   const server = await startRepoServer({
--    gameJourneyCompletionMetricsLegacyDbPath: null,
-     gameJourneyCompletionMetricsPostgresClient: createGameJourneyCompletionMetricsPostgresClientStub(),
-   });
-   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
-@@ -478,7 +477,6 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-
- test("Idea Board gates Create Project to Ready ideas and locks converted projects", async ({ page }) => {
-   const server = await startRepoServer({
--    gameJourneyCompletionMetricsLegacyDbPath: null,
-     gameJourneyCompletionMetricsPostgresClient: createGameJourneyCompletionMetricsPostgresClientStub(),
-   });
-   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
-@@ -595,7 +593,6 @@ test("Idea Board gates Create Project to Ready ideas and locks converted project
-
- test("Idea Board guest write actions redirect to sign in before saving data", async ({ page }) => {
-   const server = await startRepoServer({
--    gameJourneyCompletionMetricsLegacyDbPath: null,
-     gameJourneyCompletionMetricsPostgresClient: createGameJourneyCompletionMetricsPostgresClientStub(),
-   });
-   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+ Standardize testing locations and ensure independent tool validation.
+diff --git a/docs_build/dev/ProjectInstructions/addendums/assistant_execution_modes.md b/docs_build/dev/ProjectInstructions/addendums/assistant_execution_modes.md
+new file mode 100644
+index 000000000..6d7928669
+--- /dev/null
++++ b/docs_build/dev/ProjectInstructions/addendums/assistant_execution_modes.md
+@@ -0,0 +1,120 @@
++# Assistant Execution Modes
++
++## Purpose
++
++Standardize request interpretation and expected outputs for Review, Owner, Build PR, Continue, Challenge, and Stop Gate workflows.
++
++## Command Modes
++
++### Review
++
++Expected Output:
++- Findings
++- Risks
++- Recommendations
++
++Do Not Output:
++- PRs
++- Implementation plans
++
++### Owner
++
++Expected Output:
++- Decisions
++- Governance direction
++- Standards
++
++Do Not Output:
++- Detailed implementation
++
++### Build PR
++
++Expected Output:
++- Single Codex work order
++- May contain multiple sequential PRs belonging to the same workstream
++- Copy/paste ready for execution
++
++Should Include:
++- Start gates
++- Changes
++- Validation
++- Commit names
++- Stop point
++
++Do Not Output:
++- Design discussion
++- Alternatives
++- Rationale
++- Architecture brainstorming
++
++### Continue
++
++Expected Output:
++- Next sequential executable PR
++- Next sequential work order
++
++Do Not Output:
++- New ideas
++- Re-analysis
++- Additional brainstorming
++
++### Challenge
++
++Expected Output:
++- Risks
++- Contradictions
++- Better alternatives
++
++Do Not Output:
++- Immediate implementation
++
++### Stop Gate
++
++Expected Output:
++- Why work should stop
++- Required corrections
++
++Allowed Reasons:
++- Governance conflict
++- Architecture conflict
++- Security risk
++- Data loss risk
++- Major technical debt increase
++
++## Additional Definitions
++
++### Follow Project Instructions
++
++Meaning:
++- Use existing governance
++- Do not redesign process
++
++### Build the PR
++
++Meaning:
++- Produce Codex executable work order immediately
++
++### Continue
++
++Meaning:
++- Produce next sequential work item
++
++### No zip file
++
++Meaning:
++- Generate instructions only
++- Do not expect artifact review
++
++### You are owner
++
++Meaning:
++- Make decisions
++- Do not ask for direction unless blocked
++
++### Done for the day
++
++Meaning:
++- Finish commits
++- Merge
++- Push
++- Create next-day start document
+diff --git a/docs_build/dev/ProjectInstructions/addendums/canonical_repository_structure.md b/docs_build/dev/ProjectInstructions/addendums/canonical_repository_structure.md
+new file mode 100644
+index 000000000..e26939469
+--- /dev/null
++++ b/docs_build/dev/ProjectInstructions/addendums/canonical_repository_structure.md
+@@ -0,0 +1,39 @@
++# Canonical Repository Structure
++
++## Purpose
++
++Establish the canonical repository structure for future development and reduce technical debt.
++
++## Canonical Structure
++
++Tools:
++- toolbox/{tool-name}/index.html
++
++Tool assets:
++- assets/toolbox/{tool-name}/js/index.js
++- assets/toolbox/{tool-name}/css/index.css
++
++Themes:
++- assets/theme-v1/
++- assets/theme-v2/
++
++Shared JavaScript:
++- assets/js/shared/
++
++Engine:
++- src/engine/{feature-name}/
++
++API:
++- api/{feature-name}/
++
++Serverside:
++- serverside/{feature-name}/
++
++## Rules
++
++- Theme first.
++- Tool CSS second.
++- Shared functionality belongs in assets/js/shared/.
++- No new scattered JS folders.
++- No new scattered CSS folders.
++- New development follows the canonical structure.
+diff --git a/docs_build/dev/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md b/docs_build/dev/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
+new file mode 100644
+index 000000000..498e3895e
+--- /dev/null
++++ b/docs_build/dev/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
+@@ -0,0 +1,66 @@
++# Codex Artifact and Reporting Standard
++
++## Purpose
++
++Standardize Codex deliverables, completion reporting, and artifact generation.
++
++## ZIP Artifact Requirement
++
++Every Codex task must produce a ZIP artifact.
++
++Applies to:
++- Success
++- Failure
++- Stop Gate
++- Partial Completion
++- Review Deliverables
++- Governance Deliverables
++
++Minimum ZIP contents:
++- summary.md
++
++Optional:
++- changed-files.txt
++- findings.md
++- validation.txt
++- generated artifacts
++
++## Completion Reporting
++
++Codex responses must include:
++- ZIP filename
++- ZIP location
++- PR number(s)
++- Merge commit(s)
++- Validation results
++
++## Code Change Reporting
++
++When a ZIP is uploaded, report executable code changes only.
++
++Report format:
++
++```text
++{relative path} - {added|updated|deleted}
++```
++
++Examples:
++
++```text
++toolbox/text-to-speech/index.html - updated
++assets/toolbox/text-to-speech/js/index.js - added
++tests/toolbox/text-to-speech/functional.spec.mjs - updated
++```
++
++Do not report:
++- markdown
++- documentation
++- reports
++- notes
++- README updates
++
++unless explicitly requested.
++
++## No ZIP Means Incomplete
++
++A task is not considered complete until the ZIP artifact is generated and reported.
+diff --git a/docs_build/dev/ProjectInstructions/addendums/codex_project_instructions_startup.md b/docs_build/dev/ProjectInstructions/addendums/codex_project_instructions_startup.md
+new file mode 100644
+index 000000000..e0abb9db0
+--- /dev/null
++++ b/docs_build/dev/ProjectInstructions/addendums/codex_project_instructions_startup.md
+@@ -0,0 +1,65 @@
++# Codex Project Instructions Startup
++
++## Purpose
++
++Ensure Codex uses the current approved governance before making repository changes.
++
++## Startup Requirement
++
++Before performing work, Codex must review and use:
++
++```text
++docs_build/dev/ProjectInstructions/
++```
++
++Codex must use this as the only active source of truth for:
++- Governance rules
++- Repository standards
++- Ownership rules
++- Workflow rules
++- Addendums
++- Execution modes
++- Artifact requirements
++
++Deprecated Project Instructions material outside `docs_build/dev/ProjectInstructions/` is reference-only and must not override active governance.
++
++## Project Reference File Review
++
++When present in `ProjectInstructions.zip`, the active project instruction directory, or `docs_build/dev/admin-notes/`, Codex must include these recognized project instruction/reference files in the Project Instructions read set:
++
++- `Installs required.txt`
++- `Table layout.txt`
++
++Chat instructions may supplement Project Instructions but must not override approved governance without explicit OWNER approval.
++
++## Conflict Handling
++
++If a chat instruction conflicts with Project Instructions:
++- Stop
++- Do not continue the PR
++- Produce the required ZIP artifact
++- Document the conflict in summary.md
++- Ask for OWNER direction
++
++## Execution Mode Validation
++
++When a request contains:
++- Build PR
++- Continue
++- Follow Project Instructions
++- Next PR
++
++Codex must treat the request as Execution Mode.
++
++Execution Mode means:
++- Execute the requested work order
++- Do not redesign the process
++- Do not provide alternatives unless a Stop Gate condition exists
++
++## Validation
++
++Before completing the PR:
++- Verify this addendum appears in the Project Instructions index
++- Verify markdown is valid
++- Verify all indexed addendums exist
++- Verify the required ZIP artifact is produced
+diff --git a/docs_build/dev/ProjectInstructions/addendums/legacy_migration_policy.md b/docs_build/dev/ProjectInstructions/addendums/legacy_migration_policy.md
+new file mode 100644
+index 000000000..5e43679f4
+--- /dev/null
++++ b/docs_build/dev/ProjectInstructions/addendums/legacy_migration_policy.md
+@@ -0,0 +1,33 @@
++# Legacy Migration Policy
++
++## Purpose
++
++Reduce technical debt incrementally during normal development.
++
++## Migration Trigger
++
++Migration review is required when any of these actions touch legacy files:
++
++- File modified
++- File renamed
++- Bug fix
++- Enhancement
++- Test modification
++
++## Migration Process
++
++1. Review JS location.
++2. Review CSS location.
++3. Review test location.
++4. Move touched files into canonical structure.
++5. Update imports.
++6. Update tests.
++7. Remove legacy references.
++
++## Rules
++
++- Legacy files may only be deleted when no active references remain.
++- Temporary bridge code must contain `TEMPORARY_MIGRATION` and a removal plan.
++- No new scattered JS locations.
++- No new scattered CSS locations.
++- No new scattered test locations.
+diff --git a/docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md b/docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
+new file mode 100644
+index 000000000..9ea3824e0
+--- /dev/null
++++ b/docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
+@@ -0,0 +1,61 @@
++# Project Instructions Single Source And EOD Main Lock
++
++Status: Approved
++Owner: OWNER
++
++## Active Source
++
++`docs_build/dev/ProjectInstructions/` is the only active Project Instructions source for Game Foundry Studio.
++
++Deprecated reference locations must not be used as active instruction sources:
++- `docs_build/dev/PROJECT_INSTRUCTIONS.md`
++- `project-instructions/`
++- archived Project Instructions snapshots
++- generated PR reports
++
++If deprecated reference material conflicts with `docs_build/dev/ProjectInstructions/`, the active folder wins unless OWNER explicitly approves a newer governance change.
++
++## End Of Day
++
++```text
++git checkout main
++git fetch origin
++git pull --ff-only origin main
++git status
++git rev-list --left-right --count main...origin/main
++```
++
++Required:
++
++```text
++On branch main
++nothing to commit, working tree clean
++0 0
++```
++
++The EOD report must record the final `HEAD` SHA as the published EOD SHA.
++
++## Next Day Start
++
++```text
++git checkout main
++git fetch origin
++git pull --ff-only origin main
++git status
++git rev-list --left-right --count main...origin/main
++git rev-parse HEAD
++```
++
++## Team Branch Creation Gate
++
++No team creates a PR branch until:
++- Current branch: `main`
++- Worktree: clean
++- `main...origin/main`: `0 0`
++- `HEAD` SHA matches published EOD SHA
++
++If any check fails, stop before branch creation and restore main to the published EOD state or request OWNER direction.
++
++## Start Of Day Boundary
++
++`docs_build/dev/start_of_day/` may point to `docs_build/dev/ProjectInstructions/`, but it must not become a second active Project Instructions source.
+diff --git a/docs_build/dev/ProjectInstructions/addendums/test_structure_standardization.md b/docs_build/dev/ProjectInstructions/addendums/test_structure_standardization.md
+new file mode 100644
+index 000000000..997b16730
+--- /dev/null
++++ b/docs_build/dev/ProjectInstructions/addendums/test_structure_standardization.md
+@@ -0,0 +1,33 @@
++# Test Structure Standardization
++
++## Purpose
++
++Standardize testing locations and ensure independent tool validation.
++
++## Canonical Test Structure
++
++Tool tests:
++- tests/toolbox/{tool-name}/
++
++Engine tests:
++- tests/engine/{feature-name}/
++
++API tests:
++- tests/api/{feature-name}/
++
++Server tests:
++- tests/server/{feature-name}/
++
++Shared JavaScript tests:
++- tests/js/shared/
++
++Regression tests:
++- tests/regression/
++
++## Rules
++
++- Every tool must be independently testable.
++- Regression tests do not replace tool tests.
++- Tool tests validate tool functionality.
++- Regression tests validate platform behavior.
++- New tests follow the canonical structure.
+diff --git a/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock.md b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock.md
+new file mode 100644
+index 000000000..5c7927f17
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock.md
+@@ -0,0 +1,25 @@
++# PR_26177_OWNER_007-project-instructions-single-source-eod-lock
++
++Date: 2026-06-26
++Scope: Project Instructions single-source and EOD main lock governance
++Status: PASS
++
++## Summary
++
++- Established `docs_build/dev/ProjectInstructions/` as the only active Project Instructions source.
++- Migrated legacy root `project-instructions/addendums/` content into active `docs_build/dev/ProjectInstructions/addendums/` files.
++- Marked legacy `docs_build/dev/PROJECT_INSTRUCTIONS.md` and `project-instructions/` material as deprecated reference only.
++- Added EOD main lock, next-day reset, and team branch creation gate governance.
++- Updated active team start and governance docs to reference only `docs_build/dev/ProjectInstructions/`.
++- No product/runtime, `start_of_day`, feature, or legacy SQLite file changes were made.
++
++## Validation
++
++- PASS: targeted grep found no active duplicate ProjectInstructions source-of-truth claim outside the active source.
++- PASS: targeted grep confirmed EOD/Next Day governance appears in active governance docs.
++- PASS: product/runtime and `start_of_day` changed-file check returned no files.
++- PASS: `git diff --check`.
++
++## Artifact
++
++- `tmp/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_branch-validation.md b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_branch-validation.md
+new file mode 100644
+index 000000000..17e0bfc39
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_branch-validation.md
+@@ -0,0 +1,7 @@
++# PR_26177_OWNER_007-project-instructions-single-source-eod-lock Branch Validation
++
++- PASS: Started from `main`.
++- PASS: Start gate confirmed worktree clean before branch creation.
++- PASS: Start gate confirmed `main...origin/main` was `0 0` before branch creation.
++- PASS: Current branch is `PR_26177_OWNER_007-project-instructions-single-source-eod-lock`.
++- PASS: No `.vscode/settings.json` change is staged or included.
+diff --git a/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_manual-validation-notes.md
+new file mode 100644
+index 000000000..10cbb4170
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_manual-validation-notes.md
+@@ -0,0 +1,8 @@
++# PR_26177_OWNER_007-project-instructions-single-source-eod-lock Manual Validation Notes
++
++- Reviewed ProjectInstructions path and text references.
++- Confirmed active source declarations live under `docs_build/dev/ProjectInstructions/`.
++- Confirmed legacy locations are preserved as deprecated reference material rather than active sources.
++- Confirmed `docs_build/dev/start_of_day/` was not modified.
++- Confirmed no product/runtime files were modified.
++- Confirmed ZIP artifact path: `tmp/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_delta.zip`.
+diff --git a/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_requirement-checklist.md b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_requirement-checklist.md
+new file mode 100644
+index 000000000..99ab45345
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_requirement-checklist.md
+@@ -0,0 +1,16 @@
++# PR_26177_OWNER_007-project-instructions-single-source-eod-lock Requirement Checklist
++
++- PASS: Audited repo for ProjectInstructions / project instructions duplicates.
++- PASS: Active source is `docs_build/dev/ProjectInstructions/`.
++- PASS: Legacy `docs_build/dev/PROJECT_INSTRUCTIONS.md` is marked deprecated.
++- PASS: Legacy root `project-instructions/` folder is marked deprecated.
++- PASS: Legacy root addendums are migrated into the active addendum tree.
++- PASS: Active team start/governance docs reference only `docs_build/dev/ProjectInstructions/`.
++- PASS: Added EOD command sequence.
++- PASS: Added required EOD output: `On branch main`, clean worktree, `0 0`.
++- PASS: Added Next Day Start command sequence.
++- PASS: Added team branch creation rule requiring main, clean worktree, `0 0`, and matching published EOD SHA.
++- PASS: Did not modify `start_of_day` folders.
++- PASS: Did not modify product/runtime files.
++- PASS: Did not remove, move, or overwrite legacy SQLite files.
++- PASS: Did not start feature work.
+diff --git a/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_validation-lane.md b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_validation-lane.md
+new file mode 100644
+index 000000000..8a1b82360
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_validation-lane.md
+@@ -0,0 +1,17 @@
++# PR_26177_OWNER_007-project-instructions-single-source-eod-lock Validation Lane
++
++- PASS: duplicate-source grep returned no matches for old active source claims.
++- PASS: EOD/Next Day governance grep returned active governance matches.
++- PASS: product/runtime/start_of_day changed-file check returned no files.
++- PASS: git diff --check.
++
++Commands used:
++
++~~~text
++rg -n 'project-instructions/addendums|docs_build/dev/PROJECT_INSTRUCTIONS.md.*source of truth|Codex must always read `docs_build/dev/PROJECT_INSTRUCTIONS.md`|Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`' docs_build/dev/ProjectInstructions docs_build/dev/PROJECT_INSTRUCTIONS.md project-instructions
++rg -n "End of Day:|Next Day Start:|HEAD.*published EOD SHA|only active Project Instructions source" docs_build/dev/ProjectInstructions
++git diff --name-only -- src assets toolbox games api serverside package.json package-lock.json docs_build/dev/start_of_day
++git diff --check
++~~~
++
++Full product/runtime tests were not run because this PR changes governance documentation only.
+diff --git a/project-instructions/README.md b/project-instructions/README.md
+new file mode 100644
+index 000000000..af401852e
+--- /dev/null
++++ b/project-instructions/README.md
+@@ -0,0 +1,11 @@
++# Deprecated Project Instructions Reference
++
++This folder is preserved as historical reference only.
++
++The only active Project Instructions source is:
++
++```text
++docs_build/dev/ProjectInstructions/
++```
++
++Do not use files under `project-instructions/` as active governance. If a file here conflicts with `docs_build/dev/ProjectInstructions/`, the active folder wins unless OWNER explicitly approves a newer governance change.

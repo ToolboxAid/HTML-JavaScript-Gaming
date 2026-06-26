@@ -129,3 +129,40 @@ Stop only for:
 - Merge conflict
 - Validation failure
 - OWNER decision
+
+## EOD Main Lock
+
+End of Day:
+
+```text
+git checkout main
+git fetch origin
+git pull --ff-only origin main
+git status
+git rev-list --left-right --count main...origin/main
+```
+
+Required:
+
+```text
+On branch main
+nothing to commit, working tree clean
+0 0
+```
+
+## Next Day Start
+
+```text
+git checkout main
+git fetch origin
+git pull --ff-only origin main
+git status
+git rev-list --left-right --count main...origin/main
+git rev-parse HEAD
+```
+
+No team creates a PR branch until:
+- Current branch: `main`
+- Worktree: clean
+- `main...origin/main`: `0 0`
+- `HEAD` SHA matches published EOD SHA

@@ -1,5 +1,7 @@
 # PROJECT INSTRUCTIONS
 
+> Deprecated active-source notice: this file is preserved as historical reference only. The only active Project Instructions source is `docs_build/dev/ProjectInstructions/`. If this file conflicts with `docs_build/dev/ProjectInstructions/`, the active folder wins unless OWNER explicitly approves a newer governance change.
+
 You are working in a docs-first repo workflow.
 
 Workflow:
@@ -864,7 +866,7 @@ Controls must remain copy-friendly and human-readable.
 
 ### ChatGPT Workflow Governance Consistency
 
-ChatGPT repo workflow responses are governed by `docs_build/dev/PROJECT_INSTRUCTIONS.md` as the source of truth.
+Deprecated note: this historical section no longer defines the active source of truth. ChatGPT repo workflow responses are governed by `docs_build/dev/ProjectInstructions/`.
 
 ChatGPT must not drift from the required response ordering.
 
@@ -1716,13 +1718,13 @@ Do not compact:
 
 Do not change JSON contracts or semantics while applying array formatting.
 
-## PROJECT INSTRUCTIONS LOCATION
+## DEPRECATED PROJECT INSTRUCTIONS LOCATION
 
-PROJECT_INSTRUCTIONS.md lives at:
+Historical PROJECT_INSTRUCTIONS.md is preserved at:
 
 `docs_build/dev/PROJECT_INSTRUCTIONS.md`
 
-Codex must always read `docs_build/dev/PROJECT_INSTRUCTIONS.md` from this path as the source of truth before executing repository workflow instructions.
+This file is not the active source of truth. Codex must read `docs_build/dev/ProjectInstructions/README.txt` first and use `docs_build/dev/ProjectInstructions/` as the active Project Instructions source before executing repository workflow instructions.
 
 ## CODEX COMMAND FORMATTING RULE
 
@@ -2384,9 +2386,9 @@ Treat these files the same as existing instruction documents for read-set, revie
 Codex must run this gate before every PR execution and before any file changes.
 
 Required instruction reads:
-- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Read `docs_build/dev/ProjectInstructions/README.txt`.
 - Read `docs_build/dev/PROJECT_MULTI_PC.txt`.
-- Treat the newest applicable section in `PROJECT_INSTRUCTIONS.md` as authoritative when rules overlap.
+- Treat the newest applicable section in `docs_build/dev/ProjectInstructions/` as authoritative when rules overlap.
 - Treat the current team ownership section in `PROJECT_MULTI_PC.txt` as authoritative for TEAM routing.
 
 Required pre-change report:

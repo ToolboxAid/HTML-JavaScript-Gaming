@@ -1,5 +1,16 @@
 # TEAM_START_COMMANDS
 
+## Required Main Reset Gate For Every Team
+
+No team creates a PR branch until all checks pass:
+
+- Current branch: `main`
+- Worktree: clean
+- `main...origin/main`: `0 0`
+- `HEAD` SHA matches the published EOD SHA
+
+Use `docs_build/dev/ProjectInstructions/` as the only active Project Instructions source.
+
 ## Start Team Alfa
 
 Ready-to-copy command:
@@ -123,4 +134,24 @@ Merge to main is EOD-only and owner-approved, unless the owner explicitly says:
 "Merge this PR now."
 
 Do not treat sequential PR completion as merge approval.
+
+End of Day:
+git checkout main
+git fetch origin
+git pull --ff-only origin main
+git status
+git rev-list --left-right --count main...origin/main
+
+Required:
+On branch main
+nothing to commit, working tree clean
+0 0
+
+Next Day Start:
+git checkout main
+git fetch origin
+git pull --ff-only origin main
+git status
+git rev-list --left-right --count main...origin/main
+git rev-parse HEAD
 ```

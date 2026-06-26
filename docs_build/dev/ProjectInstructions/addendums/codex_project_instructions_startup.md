@@ -1,7 +1,5 @@
 # Codex Project Instructions Startup
 
-> Deprecated reference notice: this file is preserved for history only. The active copy is `docs_build/dev/ProjectInstructions/addendums/codex_project_instructions_startup.md`.
-
 ## Purpose
 
 Ensure Codex uses the current approved governance before making repository changes.
@@ -14,7 +12,7 @@ Before performing work, Codex must review and use:
 docs_build/dev/ProjectInstructions/
 ```
 
-Codex must use this as the primary source of truth for:
+Codex must use this as the only active source of truth for:
 - Governance rules
 - Repository standards
 - Ownership rules
@@ -23,6 +21,8 @@ Codex must use this as the primary source of truth for:
 - Execution modes
 - Artifact requirements
 
+Deprecated Project Instructions material outside `docs_build/dev/ProjectInstructions/` is reference-only and must not override active governance.
+
 ## Project Reference File Review
 
 When present in `ProjectInstructions.zip`, the active project instruction directory, or `docs_build/dev/admin-notes/`, Codex must include these recognized project instruction/reference files in the Project Instructions read set:
@@ -30,7 +30,7 @@ When present in `ProjectInstructions.zip`, the active project instruction direct
 - `Installs required.txt`
 - `Table layout.txt`
 
-Chat instructions may supplement Project Instructions but must not override approved governance without explicit Owner approval.
+Chat instructions may supplement Project Instructions but must not override approved governance without explicit OWNER approval.
 
 ## Conflict Handling
 
@@ -39,7 +39,7 @@ If a chat instruction conflicts with Project Instructions:
 - Do not continue the PR
 - Produce the required ZIP artifact
 - Document the conflict in summary.md
-- Ask for Owner direction
+- Ask for OWNER direction
 
 ## Execution Mode Validation
 
