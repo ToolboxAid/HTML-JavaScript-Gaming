@@ -16,7 +16,7 @@ const COVERAGE_PAGES = Object.freeze([
   Object.freeze({ family: "account", path: "/account/sign-in.html" }),
   Object.freeze({ family: "admin", path: "/admin/system-health.html" }),
   Object.freeze({ family: "owner", path: "/owner/memberships.html" }),
-  Object.freeze({ family: "legal", path: "/legal/disclaimer.html" }),
+  Object.freeze({ family: "legal", path: "/legal/privacy-policy.html" }),
   Object.freeze({ family: "memberships", path: "/memberships/index.html" }),
 ]);
 
@@ -114,6 +114,7 @@ test("environment banner renders across shared-layout page families", async ({ p
         const diagnostics = await page.evaluate(() => window.GameFoundryEnvironmentBannerDiagnostics);
         expect(diagnostics.environmentBannerActive).toBe(true);
         expect(diagnostics.environmentLabelConfigured).toBe(true);
+        expect(diagnostics.environmentSafeguard).toBe("non-production-banner-visible");
         expect(diagnostics.secretsExposed).toBe(false);
       }
     } finally {
@@ -152,6 +153,7 @@ test("production label hides the environment banner by default", async ({ page }
       const diagnostics = await page.evaluate(() => window.GameFoundryEnvironmentBannerDiagnostics);
       expect(diagnostics.environmentBannerActive).toBe(false);
       expect(diagnostics.environmentLabelConfigured).toBe(true);
+      expect(diagnostics.environmentSafeguard).toBe("production-banner-hidden");
       expect(diagnostics.secretsExposed).toBe(false);
     } finally {
       await closeBannerPage(page, server);

@@ -296,7 +296,7 @@ test("Admin can view operational health while Creator sessions are blocked", asy
         true,
       );
       assert.equal(
-        health.localApiStartup.rows.some((row) => row.field === "Configurable multiple runtime ports" && row.status === "PENDING" && row.value === "deferred/cancelled"),
+        health.localApiStartup.rows.some((row) => row.field === "Configurable multiple runtime ports" && row.status === "PASS" && row.value === "deprecated/superseded"),
         true,
       );
       const startupRows = new Map(health.localApiStartup.rows.map((row) => [row.field, row]));

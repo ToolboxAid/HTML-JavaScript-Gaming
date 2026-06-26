@@ -225,7 +225,7 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Database mode");
     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Storage status");
     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Configurable multiple runtime ports");
-    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("deferred/cancelled");
+    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("deprecated/superseded");
     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).not.toContainText("secret");
     await expect(page.getByRole("table", { name: "Database health" })).toContainText("Postgres");
     await expect(page.locator("[data-admin-system-health-db-value='type']")).toHaveText("Local Docker PostgreSQL");

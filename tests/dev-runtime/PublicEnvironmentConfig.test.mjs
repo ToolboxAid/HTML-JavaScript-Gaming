@@ -99,6 +99,10 @@ test("public config exposes only browser-safe environment values", async () => {
       assert.equal(payload.environmentBanner.active, true);
       assert.equal(payload.environmentBanner.message, "Development Environment");
       assert.equal(payload.environmentBanner.tone, "warning");
+      assert.equal(payload.diagnostics.environmentBannerSource, "environment-config");
+      assert.equal(payload.diagnostics.environmentBannerTone, "warning");
+      assert.equal(payload.diagnostics.environmentLabelNormalized, "CUSTOM");
+      assert.equal(payload.diagnostics.environmentSafeguard, "non-production-banner-visible");
       const serialized = JSON.stringify(payload);
       for (const key of Object.keys(SECRET_ENV)) {
         assert.equal(serialized.includes(key), false);
@@ -127,6 +131,28 @@ test("production environment label hides the environment banner by default", asy
       assert.equal(payload.environmentBanner.active, false);
       assert.equal(payload.environmentBanner.message, "");
       assert.equal(payload.diagnostics.environmentLabelConfigured, true);
+      assert.equal(payload.diagnostics.environmentLabelNormalized, "PROD");
+      assert.equal(payload.diagnostics.environmentSafeguard, "production-banner-hidden");
+    } finally {
+      await server.close();
+    }
+  });
+});
+
+test("UAT environment label keeps visible non-production safeguard banner", async () => {
+  await withEnv({
+    GAMEFOUNDRY_API_URL: "https://uat.gamefoundrystudio.example",
+    GAMEFOUNDRY_ENVIRONMENT_LABEL: "UAT",
+    GAMEFOUNDRY_SITE_URL: "https://uat.gamefoundrystudio.example",
+  }, async () => {
+    const server = await startApiServer();
+    try {
+      const payload = await apiJson(server.baseUrl, "/api/public/config");
+      assert.equal(payload.environmentBanner.active, true);
+      assert.equal(payload.environmentBanner.message, "UAT");
+      assert.equal(payload.environmentBanner.tone, "warning");
+      assert.equal(payload.diagnostics.environmentLabelNormalized, "UAT");
+      assert.equal(payload.diagnostics.environmentSafeguard, "non-production-banner-visible");
     } finally {
       await server.close();
     }
@@ -147,6 +173,8 @@ test("missing local environment label returns an actionable diagnostic banner", 
       assert.match(payload.environmentBanner.message, /\.env/);
       assert.equal(payload.environmentBanner.tone, "danger");
       assert.equal(payload.diagnostics.environmentLabelConfigured, false);
+      assert.equal(payload.diagnostics.environmentLabelNormalized, "UNCONFIGURED");
+      assert.equal(payload.diagnostics.environmentSafeguard, "missing-label-diagnostic");
     } finally {
       await server.close();
     }
