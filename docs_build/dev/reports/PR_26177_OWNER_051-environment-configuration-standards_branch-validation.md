@@ -19,7 +19,8 @@
 - No runtime files changed: PASS.
 - No UI files changed: PASS.
 - No engine core files changed: PASS.
-- No actual `.env.*` secret/value files changed: PASS.
+- Only `.env.example` was changed; no actual `.env.*` secret/value files changed: PASS.
+- Real `.env` files are documented as external or deployment-injected, not repo-owned: PASS.
 
 ## Result
 

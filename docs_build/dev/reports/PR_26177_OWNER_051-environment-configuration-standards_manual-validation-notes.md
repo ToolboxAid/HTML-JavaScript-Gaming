@@ -4,8 +4,12 @@ Manual validation was limited to governance/documentation review because this PR
 
 ## Notes
 
-- Confirmed official environment file names are `.env.local`, `.env.dev`, `.env.ist`, `.env.uat`, and `.env.prod`.
+- Confirmed only `.env.example` is committed to the repository.
+- Confirmed real `.env` files are user/environment-owned and must live outside the repo clone or be injected by deployment.
+- Confirmed external layout documents `/env/local/.env`, `/env/dev/.env`, `/env/ist/.env`, `/env/uat/.env`, `/env/prod/.env`, and `/GFS/` repo clone.
+- Confirmed official external copy-source names are `.env.local`, `.env.dev`, `.env.ist`, `.env.uat`, and `.env.prod`.
 - Confirmed `.env.prd` is documented as legacy technical debt only.
+- Confirmed `.env.prod` remains the official PROD naming when a copy-source file is used outside the repo.
 - Confirmed allowed `GAMEFOUNDRY_ENVIRONMENT` values are `local`, `dev`, `ist`, `uat`, and `prod`.
 - Confirmed `GAMEFOUNDRY_ENVIRONMENT_LABEL` is display-only.
 - Confirmed only `.env` values and environment-managed secret values may differ by environment.

@@ -17,6 +17,7 @@ Documentation/governance lane.
 - Database migration validation skipped: no DDL, migration, or runtime database implementation changed.
 - Storage runtime validation skipped: no storage implementation changed.
 - Feature flag runtime validation skipped: no feature flag implementation changed.
+- External environment file layout validation is documentation-only: no filesystem or deployment changes were made.
 
 ## Result
 

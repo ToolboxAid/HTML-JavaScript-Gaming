@@ -25,7 +25,11 @@ Deployable artifacts must not contain environment-specific application code, run
 
 ## Official Environment Files
 
-Official environment copy-source file names:
+Only `.env.example` is committed to the repository.
+
+Real `.env` files are user/environment-owned and must live outside the repo clone or be injected by deployment.
+
+Official external environment copy-source file names when a copy-source file is used outside the repo clone:
 
 - `.env.local`
 - `.env.dev`
@@ -33,7 +37,18 @@ Official environment copy-source file names:
 - `.env.uat`
 - `.env.prod`
 
-Runtime startup still loads `.env` only. The official flow is to copy the selected source file to `.env` before validation/startup.
+Example external layout:
+
+- `/env/local/.env`
+- `/env/dev/.env`
+- `/env/ist/.env`
+- `/env/uat/.env`
+- `/env/prod/.env`
+- `/GFS/` repo clone
+
+The app/runtime reads `.env` values supplied by the target environment.
+
+Runtime startup still reads `.env` values only. The official flow is for each environment to supply those values from outside the repo clone or through deployment injection before validation/startup.
 
 `.env.prd` is legacy technical debt only. Do not introduce new references to `.env.prd` except when documenting migration or historical compatibility.
 

@@ -2,12 +2,21 @@
 
 - [x] Keep scope governance/documentation only.
 - [x] Build on OWNER_050 environment model.
-- [x] Standardize `.env.local`.
-- [x] Standardize `.env.dev`.
-- [x] Standardize `.env.ist`.
-- [x] Standardize `.env.uat`.
-- [x] Standardize `.env.prod`.
+- [x] Clarify only `.env.example` is committed to the repository.
+- [x] Clarify real `.env` files are user/environment-owned and must live outside the repo clone or be injected by deployment.
+- [x] Document `/env/local/.env`.
+- [x] Document `/env/dev/.env`.
+- [x] Document `/env/ist/.env`.
+- [x] Document `/env/uat/.env`.
+- [x] Document `/env/prod/.env`.
+- [x] Document `/GFS/` repo clone layout.
+- [x] Standardize external copy-source `.env.local`.
+- [x] Standardize external copy-source `.env.dev`.
+- [x] Standardize external copy-source `.env.ist`.
+- [x] Standardize external copy-source `.env.uat`.
+- [x] Standardize external copy-source `.env.prod`.
 - [x] Treat `.env.prd` as legacy technical debt only.
+- [x] Keep `.env.prod` as the official PROD naming when a copy-source file is used outside the repo.
 - [x] Define `GAMEFOUNDRY_ENVIRONMENT=local`.
 - [x] Define `GAMEFOUNDRY_ENVIRONMENT=dev`.
 - [x] Define `GAMEFOUNDRY_ENVIRONMENT=ist`.
@@ -24,6 +33,7 @@
 - [x] Document no Local API vs Public API split.
 - [x] Document feature flags cannot create permanent environment-specific behavior.
 - [x] Review and update `.env.example` comments/placeholders only.
+- [x] Remove wording that implies `.env.local`, `.env.dev`, `.env.ist`, `.env.uat`, or `.env.prod` are repo files.
 - [x] Do not change runtime behavior.
 - [x] Produce PR-specific report.
 - [x] Produce branch validation report.

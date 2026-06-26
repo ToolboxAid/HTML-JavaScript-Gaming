@@ -8,8 +8,12 @@ Status: PASS
 ## Summary
 
 - Built on OWNER_050 by adding official environment configuration standards.
-- Standardized official copy-source file names: `.env.local`, `.env.dev`, `.env.ist`, `.env.uat`, and `.env.prod`.
+- Clarified that only `.env.example` is committed to the repository.
+- Clarified that real `.env` files are user/environment-owned and must live outside the repo clone or be injected by deployment.
+- Documented external environment layout: `/env/local/.env`, `/env/dev/.env`, `/env/ist/.env`, `/env/uat/.env`, `/env/prod/.env`, and `/GFS/` repo clone.
+- Standardized official external copy-source file names: `.env.local`, `.env.dev`, `.env.ist`, `.env.uat`, and `.env.prod`.
 - Documented `.env.prd` as legacy technical debt only.
+- Clarified that `.env.prod` remains the official PROD naming when a copy-source file is used outside the repo.
 - Added allowed `GAMEFOUNDRY_ENVIRONMENT` values: `local`, `dev`, `ist`, `uat`, and `prod`.
 - Clarified that `GAMEFOUNDRY_ENVIRONMENT_LABEL` is display-only.
 - Preserved the identical deployable artifact rule and the rule that only `.env` values and environment-managed secret values may differ.

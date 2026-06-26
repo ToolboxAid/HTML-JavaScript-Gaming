@@ -520,14 +520,28 @@ Required Cloudflare R2 top-level prefixes:
 
 Derived R2 paths for projects, backups, exports, or future storage lanes must stay under the matching top-level prefix for the active environment.
 
-The following files are copy-source files only:
+Only `.env.example` is committed to the repository.
+
+Real `.env` files are user/environment-owned and must live outside the repo clone or be injected by deployment.
+
+Official external environment file names when a copy-source file is used outside the repo clone:
 - `.env.local`
 - `.env.dev`
 - `.env.ist`
 - `.env.uat`
 - `.env.prod`
 
-`.env.prd` is legacy technical debt only. New environment governance uses `.env.prod` and the `PROD` environment name.
+Example external layout:
+- `/env/local/.env`
+- `/env/dev/.env`
+- `/env/ist/.env`
+- `/env/uat/.env`
+- `/env/prod/.env`
+- `/GFS/` repo clone
+
+The app/runtime reads `.env` values supplied by the target environment. It must not require real `.env` files to be committed inside the repo clone.
+
+`.env.prd` is legacy technical debt only. New environment governance uses `.env.prod` for external PROD copy-source naming and the `PROD` environment name.
 
 Allowed `GAMEFOUNDRY_ENVIRONMENT` values:
 - `local`

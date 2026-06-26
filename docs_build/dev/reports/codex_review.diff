@@ -1,12 +1,16 @@
 diff --git a/.env.example b/.env.example
-index e4fd3594e..7475915df 100644
+index e4fd3594e..ce6b0bd7c 100644
 --- a/.env.example
 +++ b/.env.example
-@@ -4,6 +4,15 @@
+@@ -4,6 +4,29 @@
  # Official environment model:
  # Local (VS Code) -> DEV -> IST -> UAT -> PROD
  #
-+# Official copy-source file names:
++# Only this .env.example file is committed to the repository.
++# Real .env files are user/environment-owned and must live outside
++# the repo clone or be injected by deployment.
++#
++# Official external copy-source names when a copy-source file is used:
 +# - .env.local
 +# - .env.dev
 +# - .env.ist
@@ -15,10 +19,20 @@ index e4fd3594e..7475915df 100644
 +# Legacy technical debt only:
 +# - .env.prd
 +#
++# Example external layout:
++# - /env/local/.env
++# - /env/dev/.env
++# - /env/ist/.env
++# - /env/uat/.env
++# - /env/prod/.env
++# - /GFS/ repo clone
++#
++# The app/runtime reads .env values supplied by the target environment.
++#
  # Environment invariance:
  # Use an identical deployable artifact in every environment.
  # Only .env values and environment-managed secret values differ.
-@@ -19,10 +28,21 @@
+@@ -19,10 +42,21 @@
  # Configure runtime auth, database, and storage connections here.
  # Missing connection configuration reports diagnostics instead of falling back.
 
@@ -42,10 +56,10 @@ index e4fd3594e..7475915df 100644
  # - Local Development Environment
  # - Development Environment
 diff --git a/docs_build/dev/BUILD_PR.md b/docs_build/dev/BUILD_PR.md
-index 73ffaa35e..5f7ba61cb 100644
+index 73ffaa35e..f6deb6aab 100644
 --- a/docs_build/dev/BUILD_PR.md
 +++ b/docs_build/dev/BUILD_PR.md
-@@ -1,29 +1,37 @@
+@@ -1,29 +1,40 @@
 -# PR_26177_OWNER_050-environment-governance-model
 +# PR_26177_OWNER_051-environment-configuration-standards
 
@@ -96,11 +110,14 @@ index 73ffaa35e..5f7ba61cb 100644
 +- Document one shared API/service contract.
 +- Document feature flags cannot create permanent environment-specific behavior.
 +- Review `.env.example` comments/placeholders only.
++- Clarify that only `.env.example` is committed to the repository.
++- Clarify that real `.env` files are user/environment-owned and must live outside the repo clone or be injected by deployment.
++- Document the external `/env/<target>/.env` layout next to the `/GFS/` repo clone.
 +- Do not change runtime behavior.
  - Create required Codex reports under `docs_build/dev/reports/`.
  - Create repo-structured delta ZIP under `tmp/`.
 
-@@ -33,17 +41,16 @@ This `BUILD_PR.md` and the user request are the source of truth for `PR_26177_OW
+@@ -33,17 +44,16 @@ This `BUILD_PR.md` and the user request are the source of truth for `PR_26177_OW
  - `docs_build/dev/PROJECT_INSTRUCTIONS.md`
  - `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
  - `docs_build/dev/ProjectInstructions/README.txt`
@@ -125,12 +142,13 @@ index 73ffaa35e..5f7ba61cb 100644
  - `docs_build/dev/reports/codex_review.diff`
  - `docs_build/dev/reports/codex_changed_files.txt`
 
-@@ -53,24 +60,26 @@ This `BUILD_PR.md` and the user request are the source of truth for `PR_26177_OW
+@@ -53,24 +63,27 @@ This `BUILD_PR.md` and the user request are the source of truth for `PR_26177_OW
  - No UI changes.
  - No engine core changes.
  - No `start_of_day` folder changes.
 -- No `.env`, `.env.dev`, `.env.ist`, `.env.uat`, or `.env.prd` secret/value edits.
 +- No actual `.env`, `.env.local`, `.env.dev`, `.env.ist`, `.env.uat`, `.env.prod`, or `.env.prd` secret/value file edits.
++- No committed real `.env.*` copy-source files.
  - No API implementation changes.
  - No storage implementation changes.
  - No database migration or DDL changes.
@@ -156,7 +174,7 @@ index 73ffaa35e..5f7ba61cb 100644
 +tmp/PR_26177_OWNER_051-environment-configuration-standards_delta.zip
  ```
 diff --git a/docs_build/dev/PROJECT_INSTRUCTIONS.md b/docs_build/dev/PROJECT_INSTRUCTIONS.md
-index 2eee7be67..6d67a6260 100644
+index 2eee7be67..af9e9e2db 100644
 --- a/docs_build/dev/PROJECT_INSTRUCTIONS.md
 +++ b/docs_build/dev/PROJECT_INSTRUCTIONS.md
 @@ -497,8 +497,9 @@ Environment invariance rule:
@@ -170,10 +188,16 @@ index 2eee7be67..6d67a6260 100644
 
  Required services in every environment:
  - Supabase Auth
-@@ -520,10 +521,22 @@ Required Cloudflare R2 top-level prefixes:
+@@ -519,11 +520,37 @@ Required Cloudflare R2 top-level prefixes:
+
  Derived R2 paths for projects, backups, exports, or future storage lanes must stay under the matching top-level prefix for the active environment.
 
- The following files are copy-source files only:
+-The following files are copy-source files only:
++Only `.env.example` is committed to the repository.
++
++Real `.env` files are user/environment-owned and must live outside the repo clone or be injected by deployment.
++
++Official external environment file names when a copy-source file is used outside the repo clone:
 +- `.env.local`
  - `.env.dev`
  - `.env.ist`
@@ -181,7 +205,17 @@ index 2eee7be67..6d67a6260 100644
 -- `.env.prd` is the legacy copy-source filename for PROD values; new environment governance uses the `PROD` environment name.
 +- `.env.prod`
 +
-+`.env.prd` is legacy technical debt only. New environment governance uses `.env.prod` and the `PROD` environment name.
++Example external layout:
++- `/env/local/.env`
++- `/env/dev/.env`
++- `/env/ist/.env`
++- `/env/uat/.env`
++- `/env/prod/.env`
++- `/GFS/` repo clone
++
++The app/runtime reads `.env` values supplied by the target environment. It must not require real `.env` files to be committed inside the repo clone.
++
++`.env.prd` is legacy technical debt only. New environment governance uses `.env.prod` for external PROD copy-source naming and the `PROD` environment name.
 +
 +Allowed `GAMEFOUNDRY_ENVIRONMENT` values:
 +- `local`
@@ -194,7 +228,7 @@ index 2eee7be67..6d67a6260 100644
 
  Valid environment stages are:
  - `Local (VS Code)`
-@@ -552,6 +565,16 @@ Do not introduce runtime parameters such as:
+@@ -552,6 +579,16 @@ Do not introduce runtime parameters such as:
 
  Application code, runtime code, API/service code, and DB runtime scripts must not branch behavior by deployment target name.
 
@@ -233,36 +267,12 @@ index 0e4f9b470..a48becf05 100644
  - Project Reference Files Governance: docs_build/dev/ProjectInstructions/addendums/project_reference_files.md
  - Environment Governance Model: docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md
 +- Environment Configuration Standards: docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md
-diff --git a/docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md b/docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md
-index ef3c0e1cd..de7c90331 100644
---- a/docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md
-+++ b/docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md
-@@ -112,3 +112,7 @@ Rules:
- ## Scope Boundary
-
- This governance addendum defines documentation and configuration contract rules only. It does not change runtime code, API implementation code, storage implementation code, database DDL, or secret values.
-+
-+## Related Configuration Standard
-+
-+`docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md` defines the official `.env` file names, allowed `GAMEFOUNDRY_ENVIRONMENT` values, display-only environment label rule, host/domain configuration, API URL configuration, and feature flag governance.
-diff --git a/docs_build/dev/ProjectInstructions/addendums/release_gate.md b/docs_build/dev/ProjectInstructions/addendums/release_gate.md
-index 79af94858..c45a2c49d 100644
---- a/docs_build/dev/ProjectInstructions/addendums/release_gate.md
-+++ b/docs_build/dev/ProjectInstructions/addendums/release_gate.md
-@@ -38,6 +38,7 @@ The release gate should confirm these files when relevant to the PR:
- - `docs_build/dev/ProjectInstructions/addendums/pr_workflow.md`
- - `docs_build/dev/ProjectInstructions/addendums/project_reference_files.md`
- - `docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md`
-+- `docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md`
- - `docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md`
- - `docs_build/dev/admin-notes/Installs required.txt` when present
- - `docs_build/dev/admin-notes/Table layout.txt` when present
 diff --git a/docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md b/docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md
 new file mode 100644
-index 000000000..000000000
+index 000000000..d08f4317b
 --- /dev/null
 +++ b/docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md
-@@ -0,0 +1,97 @@
+@@ -0,0 +1,112 @@
 +# Environment Configuration Standards
 +
 +Status: Approved
@@ -290,7 +300,11 @@ index 000000000..000000000
 +
 +## Official Environment Files
 +
-+Official environment copy-source file names:
++Only `.env.example` is committed to the repository.
++
++Real `.env` files are user/environment-owned and must live outside the repo clone or be injected by deployment.
++
++Official external environment copy-source file names when a copy-source file is used outside the repo clone:
 +
 +- `.env.local`
 +- `.env.dev`
@@ -298,7 +312,18 @@ index 000000000..000000000
 +- `.env.uat`
 +- `.env.prod`
 +
-+Runtime startup still loads `.env` only. The official flow is to copy the selected source file to `.env` before validation/startup.
++Example external layout:
++
++- `/env/local/.env`
++- `/env/dev/.env`
++- `/env/ist/.env`
++- `/env/uat/.env`
++- `/env/prod/.env`
++- `/GFS/` repo clone
++
++The app/runtime reads `.env` values supplied by the target environment.
++
++Runtime startup still reads `.env` values only. The official flow is for each environment to supply those values from outside the repo clone or through deployment injection before validation/startup.
 +
 +`.env.prd` is legacy technical debt only. Do not introduce new references to `.env.prd` except when documenting migration or historical compatibility.
 +
@@ -360,12 +385,36 @@ index 000000000..000000000
 +Feature flags must be removed, promoted to normal behavior, or documented as active temporary controls when the rollout, test, or mitigation ends.
 +
 +Feature flags must not become a substitute for the environment invariance rule.
+diff --git a/docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md b/docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md
+index ef3c0e1cd..de7c90331 100644
+--- a/docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md
++++ b/docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md
+@@ -112,3 +112,7 @@ Rules:
+ ## Scope Boundary
+
+ This governance addendum defines documentation and configuration contract rules only. It does not change runtime code, API implementation code, storage implementation code, database DDL, or secret values.
++
++## Related Configuration Standard
++
++`docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md` defines the official `.env` file names, allowed `GAMEFOUNDRY_ENVIRONMENT` values, display-only environment label rule, host/domain configuration, API URL configuration, and feature flag governance.
+diff --git a/docs_build/dev/ProjectInstructions/addendums/release_gate.md b/docs_build/dev/ProjectInstructions/addendums/release_gate.md
+index 79af94858..c45a2c49d 100644
+--- a/docs_build/dev/ProjectInstructions/addendums/release_gate.md
++++ b/docs_build/dev/ProjectInstructions/addendums/release_gate.md
+@@ -38,6 +38,7 @@ The release gate should confirm these files when relevant to the PR:
+ - `docs_build/dev/ProjectInstructions/addendums/pr_workflow.md`
+ - `docs_build/dev/ProjectInstructions/addendums/project_reference_files.md`
+ - `docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md`
++- `docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md`
+ - `docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md`
+ - `docs_build/dev/admin-notes/Installs required.txt` when present
+ - `docs_build/dev/admin-notes/Table layout.txt` when present
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards.md b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards.md
 new file mode 100644
-index 000000000..000000000
+index 000000000..5006840aa
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards.md
-@@ -0,0 +1,72 @@
+@@ -0,0 +1,76 @@
 +# PR_26177_OWNER_051-environment-configuration-standards
 +
 +Date: 2026-06-26
@@ -376,8 +425,12 @@ index 000000000..000000000
 +## Summary
 +
 +- Built on OWNER_050 by adding official environment configuration standards.
-+- Standardized official copy-source file names: `.env.local`, `.env.dev`, `.env.ist`, `.env.uat`, and `.env.prod`.
++- Clarified that only `.env.example` is committed to the repository.
++- Clarified that real `.env` files are user/environment-owned and must live outside the repo clone or be injected by deployment.
++- Documented external environment layout: `/env/local/.env`, `/env/dev/.env`, `/env/ist/.env`, `/env/uat/.env`, `/env/prod/.env`, and `/GFS/` repo clone.
++- Standardized official external copy-source file names: `.env.local`, `.env.dev`, `.env.ist`, `.env.uat`, and `.env.prod`.
 +- Documented `.env.prd` as legacy technical debt only.
++- Clarified that `.env.prod` remains the official PROD naming when a copy-source file is used outside the repo.
 +- Added allowed `GAMEFOUNDRY_ENVIRONMENT` values: `local`, `dev`, `ist`, `uat`, and `prod`.
 +- Clarified that `GAMEFOUNDRY_ENVIRONMENT_LABEL` is display-only.
 +- Preserved the identical deployable artifact rule and the rule that only `.env` values and environment-managed secret values may differ.
@@ -440,10 +493,10 @@ index 000000000..000000000
 +- `tmp/PR_26177_OWNER_051-environment-configuration-standards_delta.zip`
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_branch-validation.md b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_branch-validation.md
 new file mode 100644
-index 000000000..000000000
+index 000000000..daa6e152b
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_branch-validation.md
-@@ -0,0 +1,26 @@
+@@ -0,0 +1,27 @@
 +# PR_26177_OWNER_051-environment-configuration-standards Branch Validation
 +
 +## Branch
@@ -465,17 +518,18 @@ index 000000000..000000000
 +- No runtime files changed: PASS.
 +- No UI files changed: PASS.
 +- No engine core files changed: PASS.
-+- No actual `.env.*` secret/value files changed: PASS.
++- Only `.env.example` was changed; no actual `.env.*` secret/value files changed: PASS.
++- Real `.env` files are documented as external or deployment-injected, not repo-owned: PASS.
 +
 +## Result
 +
 +PASS
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_instruction-compliance-checklist.md
 new file mode 100644
-index 000000000..000000000
+index 000000000..1579566f0
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_instruction-compliance-checklist.md
-@@ -0,0 +1,22 @@
+@@ -0,0 +1,24 @@
 +# PR_26177_OWNER_051-environment-configuration-standards Instruction Compliance Checklist
 +
 +- [x] Read repo BUILD instructions before task actions.
@@ -491,6 +545,8 @@ index 000000000..000000000
 +- [x] Avoided engine core changes.
 +- [x] Avoided `start_of_day` changes.
 +- [x] Avoided actual `.env.*` secret/value file edits.
++- [x] Clarified only `.env.example` is committed.
++- [x] Clarified real `.env` files are external or deployment-injected.
 +- [x] Did not run Playwright because no runtime files changed.
 +- [x] Created required Codex reports under `docs_build/dev/reports/`.
 +- [x] Created repo-structured delta ZIP under `tmp/`.
@@ -500,18 +556,22 @@ index 000000000..000000000
 +PASS
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_manual-validation-notes.md
 new file mode 100644
-index 000000000..000000000
+index 000000000..841089ce0
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_manual-validation-notes.md
-@@ -0,0 +1,23 @@
+@@ -0,0 +1,27 @@
 +# PR_26177_OWNER_051-environment-configuration-standards Manual Validation Notes
 +
 +Manual validation was limited to governance/documentation review because this PR establishes environment configuration standards and updates `.env.example` comments/placeholders only.
 +
 +## Notes
 +
-+- Confirmed official environment file names are `.env.local`, `.env.dev`, `.env.ist`, `.env.uat`, and `.env.prod`.
++- Confirmed only `.env.example` is committed to the repository.
++- Confirmed real `.env` files are user/environment-owned and must live outside the repo clone or be injected by deployment.
++- Confirmed external layout documents `/env/local/.env`, `/env/dev/.env`, `/env/ist/.env`, `/env/uat/.env`, `/env/prod/.env`, and `/GFS/` repo clone.
++- Confirmed official external copy-source names are `.env.local`, `.env.dev`, `.env.ist`, `.env.uat`, and `.env.prod`.
 +- Confirmed `.env.prd` is documented as legacy technical debt only.
++- Confirmed `.env.prod` remains the official PROD naming when a copy-source file is used outside the repo.
 +- Confirmed allowed `GAMEFOUNDRY_ENVIRONMENT` values are `local`, `dev`, `ist`, `uat`, and `prod`.
 +- Confirmed `GAMEFOUNDRY_ENVIRONMENT_LABEL` is display-only.
 +- Confirmed only `.env` values and environment-managed secret values may differ by environment.
@@ -529,20 +589,29 @@ index 000000000..000000000
 +PASS
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_requirement-checklist.md b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_requirement-checklist.md
 new file mode 100644
-index 000000000..000000000
+index 000000000..b65f2abe5
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_requirement-checklist.md
-@@ -0,0 +1,39 @@
+@@ -0,0 +1,49 @@
 +# PR_26177_OWNER_051-environment-configuration-standards Requirement Checklist
 +
 +- [x] Keep scope governance/documentation only.
 +- [x] Build on OWNER_050 environment model.
-+- [x] Standardize `.env.local`.
-+- [x] Standardize `.env.dev`.
-+- [x] Standardize `.env.ist`.
-+- [x] Standardize `.env.uat`.
-+- [x] Standardize `.env.prod`.
++- [x] Clarify only `.env.example` is committed to the repository.
++- [x] Clarify real `.env` files are user/environment-owned and must live outside the repo clone or be injected by deployment.
++- [x] Document `/env/local/.env`.
++- [x] Document `/env/dev/.env`.
++- [x] Document `/env/ist/.env`.
++- [x] Document `/env/uat/.env`.
++- [x] Document `/env/prod/.env`.
++- [x] Document `/GFS/` repo clone layout.
++- [x] Standardize external copy-source `.env.local`.
++- [x] Standardize external copy-source `.env.dev`.
++- [x] Standardize external copy-source `.env.ist`.
++- [x] Standardize external copy-source `.env.uat`.
++- [x] Standardize external copy-source `.env.prod`.
 +- [x] Treat `.env.prd` as legacy technical debt only.
++- [x] Keep `.env.prod` as the official PROD naming when a copy-source file is used outside the repo.
 +- [x] Define `GAMEFOUNDRY_ENVIRONMENT=local`.
 +- [x] Define `GAMEFOUNDRY_ENVIRONMENT=dev`.
 +- [x] Define `GAMEFOUNDRY_ENVIRONMENT=ist`.
@@ -559,6 +628,7 @@ index 000000000..000000000
 +- [x] Document no Local API vs Public API split.
 +- [x] Document feature flags cannot create permanent environment-specific behavior.
 +- [x] Review and update `.env.example` comments/placeholders only.
++- [x] Remove wording that implies `.env.local`, `.env.dev`, `.env.ist`, `.env.uat`, or `.env.prod` are repo files.
 +- [x] Do not change runtime behavior.
 +- [x] Produce PR-specific report.
 +- [x] Produce branch validation report.
@@ -574,10 +644,10 @@ index 000000000..000000000
 +PASS
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_validation-lane.md b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_validation-lane.md
 new file mode 100644
-index 000000000..000000000
+index 000000000..5d9e12580
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_validation-lane.md
-@@ -0,0 +1,23 @@
+@@ -0,0 +1,24 @@
 +# PR_26177_OWNER_051-environment-configuration-standards Validation Lane
 +
 +## Lane
@@ -597,6 +667,7 @@ index 000000000..000000000
 +- Database migration validation skipped: no DDL, migration, or runtime database implementation changed.
 +- Storage runtime validation skipped: no storage implementation changed.
 +- Feature flag runtime validation skipped: no feature flag implementation changed.
++- External environment file layout validation is documentation-only: no filesystem or deployment changes were made.
 +
 +## Result
 +

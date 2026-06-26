@@ -31,6 +31,9 @@ This `BUILD_PR.md` and the user request are the source of truth for `PR_26177_OW
 - Document one shared API/service contract.
 - Document feature flags cannot create permanent environment-specific behavior.
 - Review `.env.example` comments/placeholders only.
+- Clarify that only `.env.example` is committed to the repository.
+- Clarify that real `.env` files are user/environment-owned and must live outside the repo clone or be injected by deployment.
+- Document the external `/env/<target>/.env` layout next to the `/GFS/` repo clone.
 - Do not change runtime behavior.
 - Create required Codex reports under `docs_build/dev/reports/`.
 - Create repo-structured delta ZIP under `tmp/`.
@@ -61,6 +64,7 @@ This `BUILD_PR.md` and the user request are the source of truth for `PR_26177_OW
 - No engine core changes.
 - No `start_of_day` folder changes.
 - No actual `.env`, `.env.local`, `.env.dev`, `.env.ist`, `.env.uat`, `.env.prod`, or `.env.prd` secret/value file edits.
+- No committed real `.env.*` copy-source files.
 - No API implementation changes.
 - No storage implementation changes.
 - No database migration or DDL changes.
