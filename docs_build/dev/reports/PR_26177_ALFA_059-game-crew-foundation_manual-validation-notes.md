@@ -6,3 +6,4 @@
 - Tags support add, assign to current game, remove from current game, refresh/reload persistence, edit, delete, and guest redirect on this branch.
 - Active runtime no longer imports retired Tags/Game Design/Game Configuration mock repository files.
 - The PR no longer changes `mock-db-store.js` or Admin DB viewer table wiring for the new Alfa tools.
+- EOD rerun confirmed Game Crew and Tags remain human-testable through the API/database path.
