@@ -105,3 +105,151 @@ test("Sprites shell shows unavailable state when API contract is missing", async
     await server.close();
   }
 });
+
+test("Sprites shell validates and creates records through API without browser-owned keys", async ({ page }) => {
+  const createdBodies = [];
+  let sprites = [];
+  const server = await openSpritesPage(page, async (currentPage) => {
+    await currentPage.route("**/api/sprites/records", async (route) => {
+      const request = route.request();
+      if (request.method() === "POST") {
+        const body = request.postDataJSON();
+        createdBodies.push(body);
+        const sprite = {
+          ...body,
+          key: "01J1SPRITECREATEDBYAPI0000",
+          updatedAt: "2026-06-26T12:10:00.000Z",
+          usageCount: 0,
+        };
+        sprites = [sprite];
+        await route.fulfill({
+          body: JSON.stringify({ data: { sprite }, ok: true }),
+          contentType: "application/json",
+          status: 200,
+        });
+        return;
+      }
+      await route.fulfill({
+        body: JSON.stringify({ data: { sprites }, ok: true }),
+        contentType: "application/json",
+        status: 200,
+      });
+    });
+  });
+
+  try {
+    await page.getByRole("button", { name: "Add Sprite" }).click();
+    await page.getByRole("button", { name: "Save" }).click();
+    await expect(page.locator("[data-sprites-validation]")).toContainText("Sprite name is required.");
+    await page.getByLabel("Sprite name").fill("  Hero Idle  ");
+    await page.getByLabel("Sprite status").selectOption("ready");
+    await page.getByLabel("Sprite category").fill("  Player   Characters  ");
+    await page.getByLabel("Sprite source reference").fill("assets/sprites/hero-idle.png");
+    await page.getByRole("button", { name: "Save" }).click();
+    await expect(page.locator("[data-sprites-table-body]")).toContainText("Hero Idle");
+    expect(createdBodies).toHaveLength(1);
+    expect(createdBodies[0]).toEqual({
+      category: "Player Characters",
+      name: "Hero Idle",
+      source: "assets/sprites/hero-idle.png",
+      status: "ready",
+    });
+    expect(createdBodies[0].key).toBeUndefined();
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await server.close();
+  }
+});
+
+test("Sprites shell redirects guest save attempts to sign-in", async ({ page }) => {
+  const server = await openSpritesPage(page, async (currentPage) => {
+    await currentPage.route("**/api/sprites/records", async (route) => {
+      if (route.request().method() === "POST") {
+        await route.fulfill({
+          body: JSON.stringify({ error: "Sign in is required to save Sprites.", ok: false }),
+          contentType: "application/json",
+          status: 401,
+        });
+        return;
+      }
+      await route.fulfill({
+        body: JSON.stringify({ data: { sprites: [] }, ok: true }),
+        contentType: "application/json",
+        status: 200,
+      });
+    });
+  });
+
+  try {
+    await page.getByRole("button", { name: "Add Sprite" }).click();
+    await page.getByLabel("Sprite name").fill("Guest Sprite");
+    await page.getByLabel("Sprite status").selectOption("draft");
+    await page.getByRole("button", { name: "Save" }).click();
+    await page.waitForURL(/\/account\/sign-in\.html$/);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await server.close();
+  }
+});
+
+test("Sprites shell archives referenced records and deletes only unreferenced records", async ({ page }) => {
+  const postedPaths = [];
+  let sprites = [
+    {
+      key: "01J1SPRITEUSED00000000000000",
+      name: "Used Sprite",
+      status: "ready",
+      updatedAt: "2026-06-26T12:20:00.000Z",
+      usageCount: 2,
+    },
+    {
+      key: "01J1SPRITEFREE00000000000000",
+      name: "Free Sprite",
+      status: "draft",
+      updatedAt: "2026-06-26T12:15:00.000Z",
+      usageCount: 0,
+    },
+  ];
+  const server = await openSpritesPage(page, async (currentPage) => {
+    await currentPage.route("**/api/sprites/records**", async (route) => {
+      const url = new URL(route.request().url());
+      if (route.request().method() === "POST") {
+        postedPaths.push(url.pathname);
+        if (url.pathname.endsWith("/archive")) {
+          sprites = sprites.map((sprite) => (
+            url.pathname.includes(sprite.key)
+              ? { ...sprite, archived: true, status: "archived" }
+              : sprite
+          ));
+        }
+        if (url.pathname.endsWith("/delete")) {
+          sprites = sprites.filter((sprite) => !url.pathname.includes(sprite.key));
+        }
+        await route.fulfill({
+          body: JSON.stringify({ data: { sprite: sprites[0] || null }, ok: true }),
+          contentType: "application/json",
+          status: 200,
+        });
+        return;
+      }
+      await route.fulfill({
+        body: JSON.stringify({ data: { sprites }, ok: true }),
+        contentType: "application/json",
+        status: 200,
+      });
+    });
+  });
+
+  try {
+    await expect(page.getByRole("button", { name: "Delete blocked for Used Sprite" })).toBeDisabled();
+    await page.getByRole("button", { name: "Archive Used Sprite" }).click();
+    await expect(page.locator("[data-sprites-table-body]")).toContainText("archived");
+    await page.getByRole("button", { name: "Delete Free Sprite" }).click();
+    await expect(page.locator("[data-sprites-table-body]")).not.toContainText("Free Sprite");
+    expect(postedPaths).toContain("/api/sprites/records/01J1SPRITEUSED00000000000000/archive");
+    expect(postedPaths).toContain("/api/sprites/records/01J1SPRITEFREE00000000000000/delete");
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await server.close();
+  }
+});

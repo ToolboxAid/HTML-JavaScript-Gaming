@@ -1,6 +1,10 @@
 const SPRITES_API_PATH = "/api/sprites/records";
+const SIGN_IN_PATH = "account/sign-in.html";
+const SPRITE_STATUSES = Object.freeze(["draft", "ready", "published", "archived"]);
 
 const elements = {
+  actionStatus: document.querySelector("[data-sprites-action-status]"),
+  add: document.querySelector("[data-sprites-add]"),
   apiStatus: document.querySelector("[data-sprites-api-status]"),
   count: document.querySelector("[data-sprites-count]"),
   emptyState: document.querySelector("[data-sprites-empty-state]"),
@@ -13,7 +17,11 @@ const elements = {
   refresh: document.querySelector("[data-sprites-refresh]"),
   tableBody: document.querySelector("[data-sprites-table-body]"),
   updated: document.querySelector("[data-sprites-updated]"),
+  validation: document.querySelector("[data-sprites-validation]"),
 };
+
+let currentSprites = [];
+let editingKey = "";
 
 function setText(target, value) {
   if (target) {
@@ -40,9 +48,63 @@ function createHeaderCell(value) {
   return cell;
 }
 
+function createButton(label, datasetName, value, options = {}) {
+  const button = document.createElement("button");
+  button.className = options.primary ? "btn btn--compact primary" : "btn btn--compact";
+  button.type = "button";
+  button.dataset[datasetName] = value;
+  button.textContent = label;
+  if (options.disabled) {
+    button.disabled = true;
+  }
+  if (options.label) {
+    button.setAttribute("aria-label", options.label);
+  }
+  if (options.title) {
+    button.title = options.title;
+  }
+  return button;
+}
+
+function createInput(value, label, datasetName) {
+  const input = document.createElement("input");
+  input.type = "text";
+  input.value = value || "";
+  input.setAttribute("aria-label", label);
+  input.dataset[datasetName] = "true";
+  return input;
+}
+
+function createStatusSelect(value) {
+  const select = document.createElement("select");
+  select.setAttribute("aria-label", "Sprite status");
+  select.dataset.spritesStatusInput = "true";
+  const placeholder = document.createElement("option");
+  placeholder.value = "";
+  placeholder.textContent = "Select status";
+  select.append(placeholder);
+  SPRITE_STATUSES.forEach((status) => {
+    const option = document.createElement("option");
+    option.value = status;
+    option.textContent = status;
+    select.append(option);
+  });
+  select.value = SPRITE_STATUSES.includes(value) ? value : "";
+  return select;
+}
+
 function normalizeText(value, fallback = "Unavailable") {
   const text = String(value ?? "").trim();
   return text || fallback;
+}
+
+function normalizeCategory(value) {
+  return String(value ?? "").trim().replace(/\s+/g, " ");
+}
+
+function setActionStatus(value) {
+  setText(elements.actionStatus, value);
+  setText(elements.validation, value);
 }
 
 function formatTimestamp(value) {
@@ -85,6 +147,11 @@ function usageCountFor(sprite) {
   return Number.isFinite(count) && count >= 0 ? String(count) : "0";
 }
 
+function numericUsageCount(sprite) {
+  const count = Number(sprite?.usageCount ?? sprite?.usage_count ?? sprite?.references?.length);
+  return Number.isFinite(count) && count >= 0 ? count : 0;
+}
+
 function spriteRowsFromPayload(payload) {
   if (Array.isArray(payload?.data?.sprites)) {
     return payload.data.sprites;
@@ -100,6 +167,7 @@ function renderLoading() {
   setText(elements.libraryStatus, "Loading");
   setText(elements.outputStatus, "Loading");
   setText(elements.outputSummary, "Waiting for Sprites API response.");
+  setActionStatus("Loading Sprites records.");
   setText(elements.emptyState, "Loading Sprites records.");
   setText(elements.updated, "Checking");
   setHidden(elements.emptyState, false);
@@ -107,7 +175,7 @@ function renderLoading() {
   if (elements.tableBody) {
     const row = document.createElement("tr");
     const cell = createCell("Loading Sprites records.");
-    cell.colSpan = 8;
+    cell.colSpan = 9;
     row.append(cell);
     elements.tableBody.replaceChildren(row);
   }
@@ -119,6 +187,7 @@ function renderUnavailable(message) {
   setText(elements.libraryStatus, "Unavailable");
   setText(elements.outputStatus, "Unavailable");
   setText(elements.outputSummary, detail);
+  setActionStatus(detail);
   setText(elements.emptyState, "Sprites records cannot be loaded from the API yet.");
   setText(elements.errorState, detail);
   setText(elements.metadata, "Sprite metadata unavailable until the Sprites API responds.");
@@ -129,7 +198,7 @@ function renderUnavailable(message) {
   if (elements.tableBody) {
     const row = document.createElement("tr");
     const cell = createCell("Sprites API unavailable.");
-    cell.colSpan = 8;
+    cell.colSpan = 9;
     row.append(cell);
     elements.tableBody.replaceChildren(row);
   }
@@ -154,16 +223,86 @@ function renderRows(sprites) {
   if (sprites.length === 0) {
     const row = document.createElement("tr");
     const cell = createCell("No Sprites records returned by the API.");
-    cell.colSpan = 8;
+    cell.colSpan = 9;
     row.append(cell);
-    elements.tableBody.replaceChildren(row);
+    elements.tableBody.replaceChildren(...(editingKey === "__new__" ? [createEditRow(), row] : [row]));
     return;
   }
 
-  const rows = sprites.map((sprite) => {
+  const rows = [
+    ...(editingKey === "__new__" ? [createEditRow()] : []),
+    ...sprites.map((sprite) => {
+      if (editingKey === sprite.key) {
+        return createEditRow(sprite);
+      }
+      return createSpriteRow(sprite);
+    }),
+  ];
+  elements.tableBody.replaceChildren(...rows);
+}
+
+function createEditRow(sprite = null) {
+  const row = document.createElement("tr");
+  row.dataset.spritesEditingRow = sprite?.key || "__new__";
+
+  const nameCell = document.createElement("td");
+  nameCell.append(createInput(sprite?.name || "", "Sprite name", "spritesNameInput"));
+
+  const statusCell = document.createElement("td");
+  statusCell.append(createStatusSelect(sprite?.status || ""));
+
+  const categoryCell = document.createElement("td");
+  categoryCell.append(createInput(sprite?.category || "", "Sprite category", "spritesCategoryInput"));
+
+  const sourceCell = document.createElement("td");
+  sourceCell.append(createInput(sprite?.source || sprite?.sourceName || sprite?.storagePath || "", "Sprite source reference", "spritesSourceInput"));
+
+  const actionsCell = document.createElement("td");
+  const actions = document.createElement("div");
+  actions.className = "action-group action-group--tight";
+  actions.append(
+    createButton("Save", "spritesSave", sprite?.key || "__new__", { primary: true }),
+    createButton("Cancel", "spritesCancel", sprite?.key || "__new__")
+  );
+  actionsCell.append(actions);
+
+  row.append(
+    nameCell,
+    statusCell,
+    categoryCell,
+    sourceCell,
+    createCell(formatDimensions(sprite || {})),
+    createCell(sprite ? paletteKeysFor(sprite).join(", ") || "None" : "None"),
+    createCell(sprite ? formatTimestamp(sprite.updatedAt ?? sprite.updated_at) : "Server-owned"),
+    createCell(sprite ? usageCountFor(sprite) : "0"),
+    actionsCell
+  );
+  return row;
+}
+
+function createSpriteRow(sprite) {
     const row = document.createElement("tr");
     const paletteKeys = paletteKeysFor(sprite);
     row.dataset.spritesRowKey = normalizeText(sprite?.key, "");
+    const actionsCell = document.createElement("td");
+    const actions = document.createElement("div");
+    const usageCount = numericUsageCount(sprite);
+    const name = normalizeText(sprite?.name);
+    const archived = sprite?.archived === true || sprite?.status === "archived";
+    actions.className = "action-group action-group--tight";
+    actions.append(
+      createButton("Edit", "spritesEdit", sprite?.key || "", { label: `Edit ${name}` }),
+      createButton(archived ? "Archived" : "Archive", "spritesArchive", sprite?.key || "", {
+        disabled: archived,
+        label: archived ? `${name} is already archived` : `Archive ${name}`,
+      }),
+      createButton(usageCount > 0 ? "Delete Blocked" : "Delete", "spritesDelete", sprite?.key || "", {
+        disabled: usageCount > 0,
+        label: usageCount > 0 ? `Delete blocked for ${name}` : `Delete ${name}`,
+        title: usageCount > 0 ? "Sprite is referenced. Archive it instead of deleting it." : "",
+      })
+    );
+    actionsCell.append(actions);
     row.append(
       createHeaderCell(normalizeText(sprite?.name)),
       createCell(normalizeText(sprite?.status)),
@@ -172,7 +311,8 @@ function renderRows(sprites) {
       createCell(formatDimensions(sprite)),
       createCell(paletteKeys.length ? paletteKeys.join(", ") : "None"),
       createCell(formatTimestamp(sprite?.updatedAt ?? sprite?.updated_at)),
-      createCell(usageCountFor(sprite))
+      createCell(usageCountFor(sprite)),
+      actionsCell
     );
     row.addEventListener("click", () => {
       const key = normalizeText(sprite?.key, "Unavailable");
@@ -181,12 +321,11 @@ function renderRows(sprites) {
       setText(elements.metadata, `${normalizeText(sprite?.name)} (${key}) | ${mimeType} | ${formatDimensions(sprite)} | ${sizeBytes} bytes`);
     });
     return row;
-  });
-  elements.tableBody.replaceChildren(...rows);
 }
 
 function renderSprites(payload) {
   const sprites = spriteRowsFromPayload(payload);
+  currentSprites = sprites;
   const count = sprites.length;
   setText(elements.apiStatus, "Ready");
   setText(elements.libraryStatus, count > 0 ? "Ready" : "Empty");
@@ -196,10 +335,125 @@ function renderSprites(payload) {
   setText(elements.emptyState, count > 0 ? "" : "No Sprites records returned by the API.");
   setText(elements.updated, new Date().toLocaleTimeString());
   setText(elements.metadata, count > 0 ? "Select a sprite row to review its metadata." : "No sprite metadata available yet.");
+  setActionStatus("Ready for API-backed edits.");
   setHidden(elements.emptyState, count > 0);
   setHidden(elements.errorState, true);
   renderPaletteStatus(sprites);
   renderRows(sprites);
+}
+
+function collectEditingValues(row) {
+  return {
+    category: normalizeCategory(row.querySelector("[data-sprites-category-input]")?.value),
+    name: String(row.querySelector("[data-sprites-name-input]")?.value ?? "").trim(),
+    source: String(row.querySelector("[data-sprites-source-input]")?.value ?? "").trim(),
+    status: String(row.querySelector("[data-sprites-status-input]")?.value ?? "").trim(),
+  };
+}
+
+function validateSpriteValues(values) {
+  const issues = [];
+  if (!values.name) {
+    issues.push("Sprite name is required.");
+  }
+  if (!SPRITE_STATUSES.includes(values.status)) {
+    issues.push(`Sprite status must be one of: ${SPRITE_STATUSES.join(", ")}.`);
+  }
+  return issues;
+}
+
+function redirectGuestToSignIn() {
+  window.location.href = SIGN_IN_PATH;
+}
+
+async function readJsonResponse(response) {
+  try {
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
+async function writeSprite(path, body = {}) {
+  const response = await fetch(path, {
+    body: JSON.stringify(body),
+    headers: {
+      accept: "application/json",
+      "content-type": "application/json",
+    },
+    method: "POST",
+  });
+  const payload = await readJsonResponse(response);
+  if (response.status === 401 || response.status === 403) {
+    redirectGuestToSignIn();
+    return null;
+  }
+  if (!response.ok || payload?.ok === false) {
+    const message = payload?.error?.message || payload?.error || payload?.message || `Sprites API returned ${response.status}.`;
+    throw new Error(message);
+  }
+  return payload;
+}
+
+async function saveEditingRow(row, key) {
+  const values = collectEditingValues(row);
+  const issues = validateSpriteValues(values);
+  if (issues.length) {
+    setActionStatus(issues.join(" "));
+    return;
+  }
+  const body = {
+    category: values.category,
+    name: values.name,
+    source: values.source,
+    status: values.status,
+  };
+  try {
+    setActionStatus("Saving sprite record.");
+    const path = key === "__new__" ? SPRITES_API_PATH : `${SPRITES_API_PATH}/${encodeURIComponent(key)}`;
+    const payload = await writeSprite(path, body);
+    if (!payload) {
+      return;
+    }
+    editingKey = "";
+    setActionStatus("Sprite record saved.");
+    await loadSprites();
+  } catch (error) {
+    setActionStatus(error instanceof Error ? error.message : "Sprite save failed.");
+  }
+}
+
+async function archiveSprite(key) {
+  try {
+    setActionStatus("Archiving sprite record.");
+    const payload = await writeSprite(`${SPRITES_API_PATH}/${encodeURIComponent(key)}/archive`);
+    if (!payload) {
+      return;
+    }
+    setActionStatus("Sprite record archived.");
+    await loadSprites();
+  } catch (error) {
+    setActionStatus(error instanceof Error ? error.message : "Sprite archive failed.");
+  }
+}
+
+async function deleteSprite(key) {
+  const sprite = currentSprites.find((item) => item.key === key);
+  if (sprite && numericUsageCount(sprite) > 0) {
+    setActionStatus("Sprite is referenced. Archive it instead of deleting it.");
+    return;
+  }
+  try {
+    setActionStatus("Deleting sprite record.");
+    const payload = await writeSprite(`${SPRITES_API_PATH}/${encodeURIComponent(key)}/delete`);
+    if (!payload) {
+      return;
+    }
+    setActionStatus("Sprite record deleted.");
+    await loadSprites();
+  } catch (error) {
+    setActionStatus(error instanceof Error ? error.message : "Sprite delete failed.");
+  }
 }
 
 async function loadSprites() {
@@ -228,6 +482,50 @@ async function loadSprites() {
 
 elements.refresh?.addEventListener("click", () => {
   void loadSprites();
+});
+
+elements.add?.addEventListener("click", () => {
+  editingKey = "__new__";
+  renderRows(currentSprites);
+  setActionStatus("New sprite row ready. Name and status are required.");
+});
+
+elements.tableBody?.addEventListener("click", (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLElement)) {
+    return;
+  }
+  const editKey = target.dataset.spritesEdit;
+  const cancelKey = target.dataset.spritesCancel;
+  const saveKey = target.dataset.spritesSave;
+  const archiveKey = target.dataset.spritesArchive;
+  const deleteKey = target.dataset.spritesDelete;
+  if (editKey !== undefined) {
+    editingKey = editKey;
+    renderRows(currentSprites);
+    setActionStatus("Editing sprite row. Name and status are required.");
+    return;
+  }
+  if (cancelKey !== undefined) {
+    editingKey = "";
+    renderRows(currentSprites);
+    setActionStatus("Sprite edit cancelled.");
+    return;
+  }
+  if (saveKey !== undefined) {
+    const row = target.closest("[data-sprites-editing-row]");
+    if (row) {
+      void saveEditingRow(row, saveKey);
+    }
+    return;
+  }
+  if (archiveKey !== undefined) {
+    void archiveSprite(archiveKey);
+    return;
+  }
+  if (deleteKey !== undefined) {
+    void deleteSprite(deleteKey);
+  }
 });
 
 void loadSprites();

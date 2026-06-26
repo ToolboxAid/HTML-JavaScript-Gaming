@@ -1,28 +1,24 @@
 # git status --short
-M docs_build/dev/reports/codex_changed_files.txt
- M docs_build/dev/reports/codex_review.diff
+M assets/toolbox/sprites/js/index.js
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
+ M tests/playwright/tools/SpritesToolShell.spec.mjs
  M toolbox/sprites/index.html
-?? assets/toolbox/sprites/
-?? docs_build/dev/reports/PR_26177_CHARLIE_011-sprites-tool-shell-branch-validation.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_011-sprites-tool-shell-manual-validation-notes.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_011-sprites-tool-shell-requirements-checklist.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_011-sprites-tool-shell-validation-lane.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_011-sprites-tool-shell.md
-?? tests/playwright/tools/SpritesToolShell.spec.mjs
+?? docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-branch-validation.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-manual-validation-notes.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-requirements-checklist.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-validation-lane.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud.md
 
 # git ls-files --others --exclude-standard
-assets/toolbox/sprites/js/index.js
-docs_build/dev/reports/PR_26177_CHARLIE_011-sprites-tool-shell-branch-validation.md
-docs_build/dev/reports/PR_26177_CHARLIE_011-sprites-tool-shell-manual-validation-notes.md
-docs_build/dev/reports/PR_26177_CHARLIE_011-sprites-tool-shell-requirements-checklist.md
-docs_build/dev/reports/PR_26177_CHARLIE_011-sprites-tool-shell-validation-lane.md
-docs_build/dev/reports/PR_26177_CHARLIE_011-sprites-tool-shell.md
-tests/playwright/tools/SpritesToolShell.spec.mjs
+docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-branch-validation.md
+docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-manual-validation-notes.md
+docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-requirements-checklist.md
+docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-validation-lane.md
+docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud.md
 
 # git diff --stat
-docs_build/dev/reports/codex_changed_files.txt     |   40 +-
- docs_build/dev/reports/codex_review.diff           | 2052 +++++++-------------
- .../dev/reports/playwright_v8_coverage_report.txt  |   15 +-
- toolbox/sprites/index.html                         |   74 +-
- 4 files changed, 770 insertions(+), 1411 deletions(-)
+assets/toolbox/sprites/js/index.js                 | 314 ++++++++++++++++++++-
+ .../dev/reports/playwright_v8_coverage_report.txt  |  10 +-
+ tests/playwright/tools/SpritesToolShell.spec.mjs   | 148 ++++++++++
+ toolbox/sprites/index.html                         |   6 +-
+ 4 files changed, 465 insertions(+), 13 deletions(-)
