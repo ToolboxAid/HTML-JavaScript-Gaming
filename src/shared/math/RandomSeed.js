@@ -1,3 +1,12 @@
+import {
+  chance as randomChance,
+  nextFloat as randomNextFloat,
+  nextInt as randomNextInt,
+  pick as randomPick,
+  shuffle as randomShuffle,
+  weightedPick as randomWeightedPick,
+} from "./randomHelpers.js";
+
 const UINT32_RANGE = 0x100000000;
 const FNV_OFFSET_BASIS = 0x811c9dc5;
 const FNV_PRIME = 0x01000193;
@@ -12,21 +21,6 @@ function normalizeSeedValue(value) {
   }
 
   return hash >>> 0;
-}
-
-function assertFiniteNumber(value, name) {
-  if (!Number.isFinite(value)) {
-    throw new TypeError(`${name} must be a finite number.`);
-  }
-}
-
-function assertOrderedRange(min, max) {
-  assertFiniteNumber(min, "min");
-  assertFiniteNumber(max, "max");
-
-  if (max < min) {
-    throw new RangeError("max must be greater than or equal to min.");
-  }
 }
 
 /**
@@ -76,15 +70,7 @@ export class RandomSeed {
    * @returns {number} A deterministic integer inside the requested range.
    */
   nextInt(min, max) {
-    assertOrderedRange(min, max);
-    const lower = Math.ceil(min);
-    const upper = Math.floor(max);
-
-    if (upper < lower) {
-      throw new RangeError("integer range must include at least one integer.");
-    }
-
-    return Math.floor(this.next() * (upper - lower + 1)) + lower;
+    return randomNextInt(() => this.next(), min, max);
   }
 
   /**
@@ -95,8 +81,7 @@ export class RandomSeed {
    * @returns {number} A deterministic floating-point number inside the range.
    */
   nextFloat(min, max) {
-    assertOrderedRange(min, max);
-    return min + this.next() * (max - min);
+    return randomNextFloat(() => this.next(), min, max);
   }
 
   /**
@@ -107,15 +92,65 @@ export class RandomSeed {
    * @returns {T} The selected array item.
    */
   pick(array) {
-    if (!Array.isArray(array)) {
-      throw new TypeError("array must be an array.");
+    return randomPick(() => this.next(), array);
+  }
+
+  /**
+   * Returns a deterministically shuffled copy of an array.
+   *
+   * @template T
+   * @param {T[]} array Source array to shuffle.
+   * @returns {T[]} Shuffled copy.
+   */
+  shuffle(array) {
+    return randomShuffle(() => this.next(), array);
+  }
+
+  /**
+   * Returns true when the deterministic roll falls within the percent chance.
+   *
+   * @param {number} percent Percent chance from 0 through 100.
+   * @returns {boolean} Whether the chance roll succeeds.
+   */
+  chance(percent) {
+    return randomChance(() => this.next(), percent);
+  }
+
+  /**
+   * Selects one deterministic weighted item.
+   *
+   * @template T
+   * @param {{item?: T, value?: T, weight: number}[]} weightedItems Weighted item entries.
+   * @returns {T} Selected item.
+   */
+  weightedPick(weightedItems) {
+    return randomWeightedPick(() => this.next(), weightedItems);
+  }
+
+  /**
+   * Captures the current generator state for later restoration.
+   *
+   * @returns {{state: number}} Serializable generator state.
+   */
+  saveState() {
+    return { state: this._state >>> 0 };
+  }
+
+  /**
+   * Restores a generator state previously returned by `saveState()`.
+   *
+   * @param {{state: number}} state Saved generator state.
+   * @returns {RandomSeed} This generator instance for chaining.
+   */
+  restoreState(state) {
+    const stateValue = Number(state?.state);
+
+    if (!Number.isInteger(stateValue) || stateValue < 0 || stateValue > 0xffffffff) {
+      throw new RangeError("state.state must be an unsigned 32-bit integer.");
     }
 
-    if (array.length === 0) {
-      throw new RangeError("array must contain at least one item.");
-    }
-
-    return array[this.nextInt(0, array.length - 1)];
+    this._state = stateValue >>> 0;
+    return this;
   }
 }
 
