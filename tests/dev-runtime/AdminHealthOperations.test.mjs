@@ -172,9 +172,10 @@ test("Admin can view operational health while Creator sessions are blocked", asy
         ["Runtime", "API", "Database", "Storage", "Authentication", "Email", "Background Jobs"],
       );
       assert.equal(
-        health.serviceHealth.services.every((service) => ["Healthy", "Warning", "Failed", "Not Configured"].includes(service.status)),
+        health.serviceHealth.services.every((service) => ["PASS", "WARN", "FAIL", "NOT CONFIGURED"].includes(service.status)),
         true,
       );
+      assert.equal(health.serviceHealth.services.some((service) => service.status === "PASS"), true);
       assert.equal(health.serviceHealth.services.every((service) => typeof service.summary === "string"), true);
       assert.equal(JSON.stringify(health.serviceHealth).includes("/uat"), false);
       assert.deepEqual(

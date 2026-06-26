@@ -1416,16 +1416,16 @@ function systemHealthRuntimeHealth(environmentIdentity = {}, checkedAt = new Dat
 
 function systemHealthServiceDisplayStatus(status, configured = true) {
   if (configured === false) {
-    return { healthStatus: "PENDING", status: "Not Configured" };
+    return { healthStatus: "PENDING", status: "NOT CONFIGURED" };
   }
   const normalized = normalizeHealthStatus(status);
   if (normalized === "PASS") {
-    return { healthStatus: "PASS", status: "Healthy" };
+    return { healthStatus: "PASS", status: "PASS" };
   }
   if (normalized === "FAIL") {
-    return { healthStatus: "FAIL", status: "Failed" };
+    return { healthStatus: "FAIL", status: "FAIL" };
   }
-  return { healthStatus: "WARN", status: "Warning" };
+  return { healthStatus: "WARN", status: "WARN" };
 }
 
 function systemHealthServiceCard({ configured = true, id, label, lastChecked, status = "WARN", summary }) {
@@ -1694,7 +1694,7 @@ function systemHealthNotificationsFoundation(checkedAt = new Date().toISOString(
   ];
   return {
     lastChecked: checkedAt,
-    message: "Notifications and alerts are placeholders only; no alert sending contract is configured for this deployment.",
+    message: "Notifications and alerts are Not Configured; no alert sending contract is configured for this deployment.",
     rows,
     secretEditingAllowed: false,
     secretsExposed: false,

@@ -6,7 +6,7 @@
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>System Health - Game Foundry Studio LLC</title>
-    <meta name="description" content="Admin system health foundation for environment, Postgres, R2, runtime, limits, and diagnostics planning.">
+    <meta name="description" content="Admin system health dashboard for environment, Postgres, R2, runtime, limits, and diagnostics.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -18,7 +18,7 @@
             <div class="container">
                 <div class="kicker">Admin</div>
                 <h1>System Health</h1>
-                <p class="lede">Review the foundation view for environment, Postgres, Cloudflare R2, runtime configuration, capacity, and diagnostics.</p>
+                <p class="lede">Review current deployment health for environment, Postgres, Cloudflare R2, runtime configuration, capacity, and diagnostics.</p>
             </div>
         </section>
         <section class="section">
@@ -67,7 +67,7 @@
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="admin-system-health" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
                     <section class="tool-center-panel content-stack" aria-labelledby="admin-system-health-title">
                         <div>
-                            <div class="kicker">Foundation</div>
+                            <div class="kicker">Current Deployment</div>
                             <h2 id="admin-system-health-title">System Health Tables</h2>
                         </div>
                         <div class="table-wrapper">
@@ -400,7 +400,7 @@
                                 </thead>
                                 <tbody data-admin-system-health-runtime-rows>
                                     <tr><td>CLOUDFLARE_R2_ACCESS_KEY_ID</td><td>********</td><td data-health-status="PASS">PASS</td></tr>
-                                    <tr><td>CLOUDFLARE_R2_BUCKET</td><td>Configured bucket placeholder</td><td data-health-status="PENDING" title="Reason: R2 bucket value reader is intentionally not wired in this foundation PR." aria-label="PENDING: R2 bucket value reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
+                                    <tr><td>CLOUDFLARE_R2_BUCKET</td><td>Loading</td><td data-health-status="PENDING" title="Reason: Runtime environment diagnostics have not loaded the safe R2 bucket status yet." aria-label="PENDING: Runtime environment diagnostics have not loaded the safe R2 bucket status yet.">PENDING</td></tr>
                                     <tr><td>CLOUDFLARE_R2_SECRET_ACCESS_KEY</td><td>********</td><td data-health-status="PASS">PASS</td></tr>
                                     <tr><td>DATABASE_URL</td><td>********</td><td data-health-status="PASS">PASS</td></tr>
                                     <tr><td>GAMEFOUNDRY_ENVIRONMENT</td><td>DEV / IST / UAT / PRD</td><td data-health-status="PASS">PASS</td></tr>
@@ -419,11 +419,11 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr><td>DB Size</td><td>Pending metric</td><td>Threshold not connected</td><td data-health-status="PENDING" title="Reason: DB size metric is intentionally not wired in this foundation PR." aria-label="PENDING: DB size metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
-                                    <tr><td>Connections</td><td>Pending metric</td><td>Pool usage not connected</td><td data-health-status="PENDING" title="Reason: connection pool metric is intentionally not wired in this foundation PR." aria-label="PENDING: connection pool metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
-                                    <tr><td>Storage</td><td>Pending metric</td><td>Bucket usage not connected</td><td data-health-status="PENDING" title="Reason: R2 storage usage metric is intentionally not wired in this foundation PR." aria-label="PENDING: R2 storage usage metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
-                                    <tr><td>Class A Ops</td><td>Pending metric</td><td>R2 write/list budget not connected</td><td data-health-status="PENDING" title="Reason: R2 Class A operation metric is intentionally not wired in this foundation PR." aria-label="PENDING: R2 Class A operation metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
-                                    <tr><td>Class B Ops</td><td>Pending metric</td><td>R2 read budget not connected</td><td data-health-status="PENDING" title="Reason: R2 Class B operation metric is intentionally not wired in this foundation PR." aria-label="PENDING: R2 Class B operation metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
+                                    <tr><td>DB Size</td><td>Unavailable</td><td>Provider telemetry not configured</td><td data-health-status="PENDING" title="Reason: DB size is unavailable until safe Postgres provider telemetry is configured." aria-label="PENDING: DB size is unavailable until safe Postgres provider telemetry is configured.">PENDING</td></tr>
+                                    <tr><td>Connections</td><td>Unavailable</td><td>Pool telemetry not configured</td><td data-health-status="PENDING" title="Reason: Connection pool usage is unavailable until safe Postgres provider telemetry is configured." aria-label="PENDING: Connection pool usage is unavailable until safe Postgres provider telemetry is configured.">PENDING</td></tr>
+                                    <tr><td>Storage</td><td>Unavailable</td><td>Bucket usage telemetry not configured</td><td data-health-status="PENDING" title="Reason: R2 storage usage is unavailable until safe provider telemetry is configured." aria-label="PENDING: R2 storage usage is unavailable until safe provider telemetry is configured.">PENDING</td></tr>
+                                    <tr><td>Class A Ops</td><td>Unavailable</td><td>R2 write/list telemetry not configured</td><td data-health-status="PENDING" title="Reason: R2 Class A operation usage is unavailable until safe provider telemetry is configured." aria-label="PENDING: R2 Class A operation usage is unavailable until safe provider telemetry is configured.">PENDING</td></tr>
+                                    <tr><td>Class B Ops</td><td>Unavailable</td><td>R2 read telemetry not configured</td><td data-health-status="PENDING" title="Reason: R2 Class B operation usage is unavailable until safe provider telemetry is configured." aria-label="PENDING: R2 Class B operation usage is unavailable until safe provider telemetry is configured.">PENDING</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -439,15 +439,15 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr><td>Postgres Connection</td><td>Connection success, latency, and actionable failure detail</td><td>Server-owned Postgres health reader</td><td data-health-status="PENDING" title="Reason: live Postgres connection diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: live Postgres connection diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
-                                    <tr><td>Postgres Migration Reader</td><td>Current migration version and pending migration signal</td><td>Server-owned Postgres migration reader</td><td data-health-status="PENDING" title="Reason: Postgres migration diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: Postgres migration diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
-                                    <tr><td>R2 Bucket Configured</td><td>Configured bucket name presence without exposing secrets</td><td>Server-owned Cloudflare R2 configuration reader</td><td data-health-status="PENDING" title="Reason: R2 bucket configuration diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 bucket configuration diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
-                                    <tr><td>R2 List</td><td>List operation availability and scoped prefix result</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 list diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 list diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
-                                    <tr><td>R2 Read</td><td>Health object read availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 read diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 read diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
-                                    <tr><td>R2 Write</td><td>Health object write availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 write diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 write diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
-                                    <tr><td>R2 Delete</td><td>Health object cleanup availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 delete diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 delete diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
-                                    <tr><td>Runtime Environment Masking</td><td>Masked display verification for secret-bearing variables</td><td>Server-owned runtime environment diagnostic</td><td data-health-status="PENDING" title="Reason: automated runtime masking diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: automated runtime masking diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
-                                    <tr><td>Limits/Capacity Metrics</td><td>DB size, connections, storage usage, and R2 Class A/Class B operation signals</td><td>Server-owned metrics diagnostic</td><td data-health-status="PENDING" title="Reason: limits and capacity diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: limits and capacity diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
+                                    <tr><td>Postgres Connection</td><td>Connection success, latency, and actionable failure detail</td><td>Server-owned Postgres health reader</td><td data-health-status="PENDING" title="Reason: Postgres connection diagnostics load through the safe Admin System Health API." aria-label="PENDING: Postgres connection diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
+                                    <tr><td>Postgres Migration Reader</td><td>Current migration version and migration signal</td><td>Server-owned Postgres migration reader</td><td data-health-status="PENDING" title="Reason: Postgres migration diagnostics load through the safe Admin System Health API." aria-label="PENDING: Postgres migration diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
+                                    <tr><td>R2 Bucket Configured</td><td>Configured bucket name presence without exposing secrets</td><td>Server-owned Cloudflare R2 configuration reader</td><td data-health-status="PENDING" title="Reason: R2 bucket configuration diagnostics load through the safe Admin System Health API." aria-label="PENDING: R2 bucket configuration diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
+                                    <tr><td>R2 List</td><td>List operation availability and scoped prefix result</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 list diagnostics load through the safe Admin System Health API." aria-label="PENDING: R2 list diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
+                                    <tr><td>R2 Read</td><td>Diagnostic object read availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 read diagnostics load through the safe Admin System Health API." aria-label="PENDING: R2 read diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
+                                    <tr><td>R2 Write</td><td>Diagnostic object write availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 write diagnostics load through the safe Admin System Health API." aria-label="PENDING: R2 write diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
+                                    <tr><td>R2 Delete</td><td>Diagnostic object cleanup availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 delete diagnostics load through the safe Admin System Health API." aria-label="PENDING: R2 delete diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
+                                    <tr><td>Runtime Environment Masking</td><td>Masked display verification for secret-bearing variables</td><td>Server-owned runtime environment diagnostic</td><td data-health-status="PENDING" title="Reason: Runtime masking diagnostics load through the safe Admin System Health API." aria-label="PENDING: Runtime masking diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
+                                    <tr><td>Limits/Capacity Metrics</td><td>DB size, connections, storage usage, and R2 Class A/Class B operation signals</td><td>Server-owned metrics diagnostic</td><td data-health-status="PENDING" title="Reason: Limits and capacity diagnostics are unavailable until safe provider telemetry is configured." aria-label="PENDING: Limits and capacity diagnostics are unavailable until safe provider telemetry is configured.">PENDING</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -472,8 +472,8 @@
                                             </thead>
                                             <tbody>
                                                 <tr><td data-health-status="PASS">PASS</td><td>Database Health</td><td>Postgres is the only planned database provider.</td></tr>
-                                                <tr><td data-health-status="PASS">PASS</td><td>Runtime Environment</td><td>Secret values are masked in the foundation view.</td></tr>
-                                                <tr><td data-health-status="PENDING" title="Reason: live diagnostics log wiring is intentionally not active in this foundation PR." aria-label="PENDING: live diagnostics log wiring is intentionally not active in this foundation PR.">PENDING</td><td>Diagnostics</td><td>Live diagnostics log wiring is intentionally deferred.</td></tr>
+                                                <tr><td data-health-status="PASS">PASS</td><td>Runtime Environment</td><td>Secret values are masked in System Health.</td></tr>
+                                                <tr><td data-health-status="PENDING" title="Reason: expanded diagnostics streaming is not configured for this deployment." aria-label="PENDING: expanded diagnostics streaming is not configured for this deployment.">PENDING</td><td>Diagnostics</td><td>Expanded diagnostics streaming is not configured.</td></tr>
                                             </tbody>
                                         </table>
                                     </div>
