@@ -84,11 +84,6 @@ import {
   createGameWorkspaceMockRepository,
 } from "../persistence/tool-repositories/game-workspace-mock-repository.js";
 import {
-  GAME_CREW_MEMBER_ROLES,
-  GAME_CREW_TABLES,
-  createGameCrewMockRepository,
-} from "../persistence/tool-repositories/game-crew-mock-repository.js";
-import {
   createMockDbAuditFields,
   getMockDbTableSchemas,
   getMockDbToolGroups,
@@ -224,6 +219,18 @@ const DB_VIEWER_GROUP_ORDER = Object.freeze([
 ]);
 const TOOLBOX_DEFAULT_RELEASE_CHANNELS = Object.freeze(["wireframe", "beta", "complete"]);
 const BUILD_PATH_DEFAULT_RELEASE_CHANNELS = Object.freeze(["complete"]);
+const GAME_CREW_TABLES = Object.freeze(["project_members"]);
+const GAME_CREW_MEMBER_ROLES = Object.freeze([
+  "Owner",
+  "Member",
+]);
+const GAME_CREW_KNOWN_USERS = Object.freeze({
+  [SEED_DB_KEYS.users.user1]: "User 1",
+  [SEED_DB_KEYS.users.user2]: "User 2",
+  [SEED_DB_KEYS.users.user3]: "User 3",
+  [SEED_DB_KEYS.users.admin]: "DavidQ",
+});
+const GAME_CREW_TEST_MEMBER_KEY = SEED_DB_KEYS.users.user2;
 const TOOLBOX_RELEASE_CHANNEL_SWATCHES = Object.freeze({
   planned: "swatch-gray",
   wireframe: "swatch-blue",
@@ -2792,6 +2799,11 @@ const GAME_WORKSPACE_SAVE_METHODS = new Set([
   "updateGameStatus",
 ]);
 
+const GAME_CREW_SAVE_METHODS = new Set([
+  "addMember",
+  "removeMember",
+]);
+
 const GAME_JOURNEY_TOOL_STORE_METHODS = new Set([
   "addItem",
   "addNote",
@@ -3229,6 +3241,244 @@ function gameWorkspaceProjectRecords(repository) {
   }));
 }
 
+function normalizeGameCrewRole(role) {
+  if (role === "Owner") {
+    return "Owner";
+  }
+  return "Member";
+}
+
+function projectMemberRecord(project, member, index = 0) {
+  const projectKey = gameWorkspaceGameKey(project?.id || project?.key);
+  const userKey = String(member?.userKey || "").trim();
+  const audit = snapshotAuditFields(120 + index, project?.ownerKey || SEED_DB_KEYS.users.user1);
+  const isOwner = userKey === project?.ownerKey;
+  return {
+    ...audit,
+    invitedAt: null,
+    invitedBy: null,
+    joinedAt: audit.createdAt,
+    key: runtimeGeneratedKeyForSource(`game-crew-member:${projectKey}:${userKey || index}`),
+    projectKey,
+    removedAt: null,
+    role: isOwner ? "Owner" : "Member",
+    status: "active",
+    userKey,
+  };
+}
+
+function gameCrewMemberRows(gameWorkspaceRepository) {
+  const project = gameWorkspaceRepository.getActiveGame();
+  if (!project) {
+    return [];
+  }
+  return (project.members || []).map((member, index) => projectMemberRecord(project, member, index));
+}
+
+function gameCrewDisplayName(project, userKey) {
+  const sourceMember = (project?.members || []).find((member) => member.userKey === userKey) || {};
+  return sourceMember.displayName || GAME_CREW_KNOWN_USERS[userKey] || userKey;
+}
+
+function gameCrewSnapshot(gameWorkspaceRepository, stateRows = null) {
+  const project = gameWorkspaceRepository.getActiveGame();
+  const rows = Array.isArray(stateRows) ? stateRows : gameCrewMemberRows(gameWorkspaceRepository);
+  const activeRows = rows.filter((row) => row.status !== "removed");
+  const members = activeRows.map((row) => ({
+    ...row,
+    displayName: gameCrewDisplayName(project, row.userKey),
+  }));
+  const owner = members.find((member) => member.role === "Owner") || null;
+  return {
+    activeProject: project
+      ? {
+          key: gameWorkspaceGameKey(project.id),
+          localRecordId: project.id,
+          name: project.name,
+          ownerDisplayName: project.ownerDisplayName,
+          ownerKey: project.ownerKey,
+          status: project.status,
+        }
+      : null,
+    guidance: "Project crew membership is ready for owner and member planning. Invitations and permissions are planned for a later pass.",
+    memberRoles: GAME_CREW_MEMBER_ROLES.slice(),
+    members,
+    owner,
+    status: project ? "Ready" : "Needs Project",
+    tableCounts: GAME_CREW_TABLES.map((table) => ({
+      rows: activeRows.length,
+      table,
+    })),
+    tables: {
+      project_members: rows,
+    },
+  };
+}
+
+function createGameCrewApiRepository({
+  gameWorkspaceRepository,
+  sessionUserKey = () => "",
+} = {}) {
+  let memberRows = null;
+
+  function currentProject() {
+    return gameWorkspaceRepository.getActiveGame();
+  }
+
+  function ensureMemberRows() {
+    const project = currentProject();
+    const projectKey = gameWorkspaceGameKey(project?.id || project?.key);
+    if (!memberRows || !memberRows.some((row) => row.projectKey === projectKey)) {
+      memberRows = gameCrewMemberRows(gameWorkspaceRepository);
+    }
+    return memberRows;
+  }
+
+  function getSnapshot() {
+    return gameCrewSnapshot(gameWorkspaceRepository, ensureMemberRows());
+  }
+
+  function getTables() {
+    return getSnapshot().tables;
+  }
+
+  function listMembers() {
+    return getSnapshot().members;
+  }
+
+  function addMember(userKey = GAME_CREW_TEST_MEMBER_KEY) {
+    const signedIn = Boolean(typeof sessionUserKey === "function" ? sessionUserKey() : sessionUserKey);
+    const project = currentProject();
+    const projectKey = gameWorkspaceGameKey(project?.id || project?.key);
+    const targetUserKey = String(userKey || GAME_CREW_TEST_MEMBER_KEY).trim();
+    const rows = ensureMemberRows();
+    const existing = rows.find((row) => row.projectKey === projectKey && row.userKey === targetUserKey);
+    if (!signedIn) {
+      return {
+        added: false,
+        message: "Sign in before changing project crew membership.",
+        requiresSignIn: true,
+        status: "Sign In Required",
+      };
+    }
+    if (!project || !projectKey) {
+      return {
+        added: false,
+        message: "Create or select a project before adding crew members.",
+        snapshot: getSnapshot(),
+        status: "Needs Project",
+      };
+    }
+    if (existing && existing.status !== "removed") {
+      return {
+        added: false,
+        member: { ...existing, displayName: gameCrewDisplayName(project, targetUserKey) },
+        message: `${gameCrewDisplayName(project, targetUserKey)} is already on the project crew.`,
+        snapshot: getSnapshot(),
+        status: "Already Added",
+      };
+    }
+    const audit = snapshotAuditFields(150 + rows.length, signedIn ? sessionUserKey() : SEED_DB_KEYS.users.user1);
+    const row = existing || {
+      key: runtimeGeneratedKeyForSource(`game-crew-member:${projectKey}:${targetUserKey}`),
+      projectKey,
+      userKey: targetUserKey,
+    };
+    Object.assign(row, {
+      ...audit,
+      invitedAt: null,
+      invitedBy: null,
+      joinedAt: audit.createdAt,
+      removedAt: null,
+      role: "Member",
+      status: "active",
+    });
+    if (!existing) {
+      rows.push(row);
+    }
+    return {
+      added: true,
+      member: { ...row, displayName: gameCrewDisplayName(project, targetUserKey) },
+      message: `Added ${gameCrewDisplayName(project, targetUserKey)} as a Member.`,
+      snapshot: getSnapshot(),
+      status: "Ready",
+    };
+  }
+
+  function removeMember(userKey = "") {
+    return {
+      ...removeMemberResult(userKey),
+    };
+  }
+
+  function removeMemberResult(userKey = "") {
+    const signedIn = Boolean(typeof sessionUserKey === "function" ? sessionUserKey() : sessionUserKey);
+    const project = currentProject();
+    const targetUserKey = String(userKey || "").trim();
+    const rows = ensureMemberRows();
+    const member = rows.find((row) => row.userKey === targetUserKey && row.status !== "removed") || null;
+    if (!signedIn) {
+      return {
+        member,
+        message: "Sign in before changing project crew membership.",
+        removed: false,
+        requiresSignIn: true,
+        status: "Sign In Required",
+      };
+    }
+    if (!member) {
+      return {
+        member: null,
+        message: "Choose an active crew member before removing.",
+        removed: false,
+        snapshot: getSnapshot(),
+        status: "Needs Member",
+      };
+    }
+    if (member.role === "Owner") {
+      return {
+        member: { ...member, displayName: gameCrewDisplayName(project, member.userKey) },
+        message: "Project owners stay on the crew while owner transfer is planned.",
+        removed: false,
+        snapshot: getSnapshot(),
+        status: "Owner Locked",
+      };
+    }
+    const audit = snapshotAuditFields(180 + rows.length, sessionUserKey());
+    member.status = "removed";
+    member.removedAt = audit.updatedAt;
+    member.updatedAt = audit.updatedAt;
+    member.updatedBy = audit.updatedBy;
+    return {
+      member: { ...member, displayName: gameCrewDisplayName(project, member.userKey) },
+      message: `Removed ${gameCrewDisplayName(project, member.userKey)} from the project crew.`,
+      removed: true,
+      snapshot: getSnapshot(),
+      status: "Ready",
+    };
+  }
+
+  function readAddMemberPlaceholder() {
+    return addMember();
+  }
+
+  function readRemoveMemberPlaceholder(userKey = "") {
+    return removeMemberResult(userKey);
+  }
+
+  return {
+    GAME_CREW_MEMBER_ROLES,
+    GAME_CREW_TABLES,
+    addMember,
+    getSnapshot,
+    getTables,
+    listMembers,
+    removeMember,
+    readAddMemberPlaceholder,
+    readRemoveMemberPlaceholder,
+  };
+}
+
 function gameDesignTables(repository) {
   const tables = repository.getTables();
   return normalizeOwnedTables("game-design", {
@@ -3306,7 +3556,7 @@ async function gameJourneyTables(repository) {
 }
 
 function gameCrewTables(repository) {
-  return normalizeOwnedTables("game-crew", repository.getTables());
+  return repository.getTables();
 }
 
 function paletteTables(repository) {
@@ -3702,7 +3952,7 @@ class ApiRuntimeDataSource {
       ...this.sharedOptions,
       sessionUserKey: () => this.sessionUserKey,
     });
-    this.gameCrewRepository = createGameCrewMockRepository({
+    this.gameCrewRepository = createGameCrewApiRepository({
       gameWorkspaceRepository: this.gameWorkspaceRepository,
       sessionUserKey: () => this.sessionUserKey,
     });
@@ -3714,6 +3964,34 @@ class ApiRuntimeDataSource {
 
   async persistProductProviderState(action) {
     return this.persistSupabaseProductSnapshot(action);
+  }
+
+  async persistGameCrewProviderState(action) {
+    const adapter = this.supabaseDatabaseAdapter(action);
+    const workspaceTables = gameWorkspaceTables(this.gameWorkspaceRepository);
+    const crewTables = gameCrewTables(this.gameCrewRepository);
+    const written = {
+      game_workspace_games: 0,
+      game_workspace_progress: 0,
+      project_members: 0,
+    };
+    if (workspaceTables.game_workspace_games?.length) {
+      const rows = await adapter.upsertProductTable("game_workspace_games", workspaceTables.game_workspace_games);
+      written.game_workspace_games = Array.isArray(rows) ? rows.length : workspaceTables.game_workspace_games.length;
+    }
+    if (workspaceTables.game_workspace_progress?.length) {
+      const rows = await adapter.upsertProductTable("game_workspace_progress", workspaceTables.game_workspace_progress);
+      written.game_workspace_progress = Array.isArray(rows) ? rows.length : workspaceTables.game_workspace_progress.length;
+    }
+    if (crewTables.project_members?.length) {
+      const rows = await adapter.upsertProductTable("project_members", crewTables.project_members);
+      written.project_members = Array.isArray(rows) ? rows.length : crewTables.project_members.length;
+    }
+    return {
+      providerId: SUPABASE_POSTGRES_PROVIDER_ID,
+      serverApiOwnsKeyGeneration: true,
+      written,
+    };
   }
 
   async persistGameWorkspaceProviderState(action) {
@@ -6783,6 +7061,11 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
     if (repository === this.gameWorkspaceRepository && GAME_WORKSPACE_SAVE_METHODS.has(methodName) && !this.sessionUserKey) {
       throw new Error("Sign in required to save Game Hub project records through Local API.");
     }
+    if (repository === this.gameCrewRepository && GAME_CREW_SAVE_METHODS.has(methodName) && !this.sessionUserKey) {
+      const error = new Error("Sign in required to save project crew membership through the API.");
+      error.statusCode = 401;
+      throw error;
+    }
     this.cleared = false;
     if (repository === this.assetRepository && methodName === "makeReadyGameConfiguration") {
       if (this.assetReadyInitialized) {
@@ -6810,6 +7093,8 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
     if (repositoryMethodRequiresPersistence(methodName) && !methodPersistsThroughToolStore) {
       if (repository === this.gameWorkspaceRepository) {
         await this.persistGameWorkspaceProviderState(`Persisting ${methodName} result`);
+      } else if (repository === this.gameCrewRepository) {
+        await this.persistGameCrewProviderState(`Persisting ${methodName} result`);
       } else if (repository === this.assetRepository) {
         await this.persistAssetProviderState(`Persisting ${methodName} result`);
       } else {

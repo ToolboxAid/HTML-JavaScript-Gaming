@@ -46,10 +46,6 @@ export const MOCK_DB_TOOL_GROUPS = Object.freeze({
     label: "Game Configuration",
     tableNames: Object.freeze(["game_configuration_records", "game_configuration_validation_items"]),
   }),
-  "game-crew": Object.freeze({
-    label: "Game Crew",
-    tableNames: Object.freeze(["project_members"]),
-  }),
   objects: Object.freeze({
     label: "Objects",
     tableNames: Object.freeze(["object_definition_records"]),

@@ -1,10 +1,9 @@
-# PR_26177_ALFA_059 Branch Validation
+# PR_26177_ALFA_059-game-crew-foundation Branch Validation
 
-| Check | Result | Evidence |
-| --- | --- | --- |
-| Branch | PASS | `PR_26177_ALFA_059-game-crew-foundation` |
-| Base gate | PASS | Branch created from clean synced `main` after `main...origin/main` reported `0 0`. |
-| Scope | PASS | Changes are limited to Game Crew foundation, DB docs, targeted tests, and required reports. |
-| Runtime architecture | PASS | Browser reads Game Crew through the API repository; server owns member rows. |
-| No full invitations/permissions | PASS | Add/remove controls return Creator-safe planned-state guidance only. |
-| SQLite/tmp dependency | PASS | Scoped Game Crew surface search found no SQLite or `tmp/local-api` runtime references. |
+Generated: 2026-06-26 18:44:40 UTC
+
+- Branch check: PASS - current branch is `PR_26177_ALFA_059-game-crew-foundation`.
+- Scope check: PASS - changes are limited to Game Crew UI/API tests/reports/package artifacts.
+- Architecture check: PASS - targeted validation proves Browser -> API -> Database membership persistence.
+- Current game check: PASS - status bar and Game Crew project context both show Demo Game.
+- Validation result: PASS.

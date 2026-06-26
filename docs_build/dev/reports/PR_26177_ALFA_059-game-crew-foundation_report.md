@@ -1,23 +1,22 @@
 # PR_26177_ALFA_059-game-crew-foundation Report
 
-## Summary
-- Replaced the static Game Crew wireframe with an API-backed project crew foundation.
-- Added a server-owned Game Crew repository that exposes `project_members` rows with ULID-shaped keys and audit-field readiness.
-- Rendered the active project, owner, member count, member table, table counts, and Creator-safe guidance in the Theme V2 tool surface.
-- Added placeholder add/remove member behavior without implementing invitations, permission changes, or full membership workflows.
+Generated: 2026-06-26 18:44:40 UTC
+Branch: `PR_26177_ALFA_059-game-crew-foundation`
+Base: `main`
+Current HEAD before packaging: `3e48789a9`
 
-## Changed Areas
-- Game Crew UI: `toolbox/game-crew/index.html`, `assets/toolbox/game-crew/js/index.js`.
-- API/dev-runtime: Game Crew repository, server repository routing/constants, mock DB tool grouping.
-- Database docs: `project_members` DDL/DML/seed entrypoints under `docs_build/database`.
-- Targeted Playwright: `tests/playwright/tools/GameCrewFoundation.spec.mjs`.
+## Summary
+PR059 makes Game Crew a human-testable API/DB-backed tool. It displays the current Game Hub game, owner, and member list, supports a simple Add Member and Remove Member flow, persists membership rows, and survives refresh/reload.
+
+## Implementation Notes
+- The Playwright lane asserts the shared status bar selected game and the Game Crew project context are both Demo Game.
+- Member roles stay limited to Owner and Member.
+- Guest browser add/remove actions redirect to sign-in, and direct guest API writes return 401.
+- No invitation, permission, SQLite, tmp, mock-db-store, or new mock repository scope was added.
 
 ## Validation
-- PASS: `node --check` on changed JS/MJS files.
-- PASS: `git diff --check`.
-- PASS: `npx playwright test tests/playwright/tools/GameCrewFoundation.spec.mjs --workers=1 --reporter=line` (`3 passed`).
-
-## Notes
-- Invitations, ownership transfer, and permission enforcement remain intentionally out of scope.
-- Guest member-change actions redirect to `account/sign-in.html`.
-- Product/runtime wording uses `API`; the only local-server mechanics are in test setup.
+- PASS - node --check assets/toolbox/game-crew/js/index.js
+- PASS - node --check src/dev-runtime/server/local-api-router.mjs
+- PASS - node --check tests/playwright/tools/GameCrewFoundation.spec.mjs
+- PASS - git diff --check (line-ending notices only)
+- PASS - npx playwright test tests/playwright/tools/GameCrewFoundation.spec.mjs --workers=1 --reporter=line (5 passed)

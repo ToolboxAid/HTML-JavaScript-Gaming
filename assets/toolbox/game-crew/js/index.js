@@ -154,9 +154,10 @@ elements.add?.addEventListener("click", () => {
   if (redirectGuestWriteAction()) {
     return;
   }
-  const result = repository.readAddMemberPlaceholder();
+  const result = repository.addMember();
   setText(elements.action, result.message);
   setText(elements.log, result.message);
+  render();
 });
 
 elements.refresh?.addEventListener("click", () => {
@@ -172,10 +173,11 @@ elements.table?.addEventListener("click", (event) => {
   if (redirectGuestWriteAction()) {
     return;
   }
-  const result = repository.readRemoveMemberPlaceholder(remove.dataset.gameCrewRemove);
+  const result = repository.removeMember(remove.dataset.gameCrewRemove);
   setText(elements.selected, result.member?.displayName || "Selected member");
   setText(elements.action, result.message);
   setText(elements.log, result.message);
+  render();
 });
 
 render();
