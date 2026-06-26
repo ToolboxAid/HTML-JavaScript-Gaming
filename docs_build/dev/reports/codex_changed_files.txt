@@ -1,11 +1,4 @@
-M	docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_branch-validation.md
-M	docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_manual-validation-notes.md
-M	docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_report.md
-M	docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_validation-lane.md
-M	docs_build/dev/reports/codex_changed_files.txt
-M	docs_build/dev/reports/codex_review.diff
-M	docs_build/dev/reports/coverage_changed_js_guardrail.txt
-M	docs_build/dev/reports/playwright_v8_coverage_report.txt
-M	src/dev-runtime/server/local-api-router.mjs
-M	tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs
-M	tests/playwright/tools/GameDesignApiBehavior.spec.mjs
+docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/codex_review.diff
+docs_build/dev/reports/PR_26177_BRAVO_015-final-eod-closeout.md
+docs_build/dev/reports/PR_26177_BRAVO_EOD-closeout.md

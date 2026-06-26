@@ -1,0 +1,26 @@
+{
+  "group": "Message Studio",
+  "groupKey": "messages",
+  "owner": "docs_build/database/seed/guest",
+  "readOnly": true,
+  "writableByGuest": false,
+  "signInRedirect": "account/sign-in.html",
+  "tables": {},
+  "samplePackages": [
+    {
+      "key": "guest-messages-starter",
+      "audience": "guest",
+      "createdBy": "01K2GFSJ0Y0000000000000054",
+      "groupKey": "messages",
+      "label": "Guest Message Studio starter",
+      "loadablePath": "toolbox/messages/index.html",
+      "readOnly": true,
+      "sampleKind": "toolSeed",
+      "signInRedirect": "account/sign-in.html",
+      "source": "docs_build/database/seed/guest/messages.json",
+      "toolKey": "messages",
+      "toolName": "Message Studio",
+      "writableByGuest": false
+    }
+  ]
+}

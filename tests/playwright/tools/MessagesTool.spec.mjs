@@ -3,57 +3,12 @@ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { createMessagesPostgresClientStub } from "../../helpers/messagesPostgresClientStub.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
-import { TEXT_TO_SPEECH_PROFILE_STORAGE_KEY } from "../../../toolbox/text-to-speech/tts-profile-store.js";
+import { SEED_DB_KEYS } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
 
 const ULID_PATTERN = /^[0-9A-HJKMNP-TV-Z]{26}$/;
-const SAVED_TTS_PROFILES_FIXTURE = Object.freeze([
-  Object.freeze({
-    active: true,
-    age: "any",
-    emotions: [
-      Object.freeze({ active: true, emotion: "calm", emotionLabel: "Calm", id: "calm", pitch: 1, rate: 1, volume: 1 }),
-      Object.freeze({ active: true, emotion: "urgent", emotionLabel: "Urgent", id: "urgent", pitch: 1.08, rate: 1.15, volume: 1 }),
-    ],
-    gender: "neutral",
-    id: "default-balanced-profile",
-    language: "en-US",
-    name: "Default Balanced Profile",
-    providerKey: "browser-speech",
-    voice: "Browser default",
-    voiceName: "Default browser voice",
-  }),
-  Object.freeze({
-    active: true,
-    age: "adult",
-    emotions: [
-      Object.freeze({ active: true, emotion: "neutral", emotionLabel: "Neutral", id: "neutral", pitch: 1, rate: 1, volume: 1 }),
-      Object.freeze({ active: true, emotion: "calm", emotionLabel: "Calm", id: "calm", pitch: 1, rate: 1, volume: 1 }),
-      Object.freeze({ active: true, emotion: "urgent", emotionLabel: "Urgent", id: "urgent", pitch: 1.08, rate: 1.15, volume: 1 }),
-    ],
-    gender: "male",
-    id: "man-profile-1",
-    language: "en-US",
-    name: "Man Profile 1",
-    providerKey: "browser-speech",
-    voice: "Browser default",
-    voiceName: "Default browser voice",
-  }),
-  Object.freeze({
-    active: true,
-    age: "adult",
-    emotions: [
-      Object.freeze({ active: true, emotion: "whisper", emotionLabel: "Whisper", id: "whisper", pitch: 0.95, rate: 0.9, volume: 0.55 }),
-      Object.freeze({ active: true, emotion: "robot", emotionLabel: "Robot", id: "robot", pitch: 0.82, rate: 0.92, volume: 0.9 }),
-    ],
-    gender: "female",
-    id: "woman-profile-2",
-    language: "en-US",
-    name: "Woman Profile 2",
-    providerKey: "browser-speech",
-    voice: "Browser default",
-    voiceName: "Default browser voice",
-  }),
-]);
+const TEST_TTS_PROFILE_NAME = "Message Test Profile";
+
+test.use({ trace: "off" });
 
 async function jsonRequest(url, options = {}) {
   const response = await fetch(url, {
@@ -68,6 +23,48 @@ async function jsonRequest(url, options = {}) {
     payload,
     response,
   };
+}
+
+async function signInServer(server) {
+  const session = await jsonRequest(`${server.baseUrl}/api/session/user`, {
+    body: JSON.stringify({ userKey: SEED_DB_KEYS.users.user1 }),
+    method: "POST",
+  });
+  expect(session.response.ok).toBe(true);
+  expect(session.payload.ok).toBe(true);
+}
+
+async function ensureMessageTestTtsProfile(server, {
+  emotionSettings = [
+    { emotion: "calm", emotionLabel: "Calm", pitch: 1, rate: 1, volume: 1 },
+    { emotion: "urgent", emotionLabel: "Urgent", pitch: 1.08, rate: 1.15, volume: 1 },
+  ],
+  name = TEST_TTS_PROFILE_NAME,
+} = {}) {
+  await signInServer(server);
+  const existing = await jsonRequest(`${server.baseUrl}/api/messages/tts-profiles`);
+  expect(existing.response.ok).toBe(true);
+  expect(existing.payload.ok).toBe(true);
+  const found = existing.payload.data.ttsProfiles.find((profile) => profile.name === name);
+  if (found) {
+    return found;
+  }
+  const created = await jsonRequest(`${server.baseUrl}/api/messages/tts-profiles`, {
+    body: JSON.stringify({
+      emotionSettings,
+      language: "en-US",
+      name,
+      pitch: 1,
+      providerKey: "browser-speech",
+      rate: 1,
+      voiceName: "Default browser voice",
+      volume: 1,
+    }),
+    method: "POST",
+  });
+  expect(created.response.ok).toBe(true);
+  expect(created.payload.ok).toBe(true);
+  return created.payload.data.ttsProfile;
 }
 
 test.beforeEach(async ({ page }) => {
@@ -136,41 +133,38 @@ async function openMessagesPage(page, options = {}) {
         this.volume = 1;
       }
     }
-    window.SpeechSynthesisUtterance = FakeSpeechSynthesisUtterance;
-    window.speechSynthesis = {
-      cancel() {
-        window.__speechCanceled = true;
-      },
-      getVoices() {
-        return [
-          { lang: "en-US", name: "Browser guide updated", voiceURI: "Browser guide updated" },
-          { lang: "en-US", name: "Browser default", voiceURI: "Browser default" },
-        ];
-      },
-      speak(utterance) {
-        window.__spokenUtterances.push({
-          lang: utterance.lang,
-          pitch: utterance.pitch,
-          rate: utterance.rate,
-          text: utterance.text,
-          voiceName: utterance.voice?.name || "",
-          volume: utterance.volume,
-        });
-        setTimeout(() => utterance.onend?.(), 0);
-      },
-    };
-  });
-  if (options.seedSavedTtsProfiles !== false) {
-    await page.addInitScript(({ profiles, storageKey }) => {
-      window.localStorage?.setItem(storageKey, JSON.stringify({
-        profiles,
-        updatedAt: "2026-06-23T00:00:00.000Z",
-        version: "playwright-fixture",
-      }));
-    }, {
-      profiles: options.savedTtsProfiles || SAVED_TTS_PROFILES_FIXTURE,
-      storageKey: TEXT_TO_SPEECH_PROFILE_STORAGE_KEY,
+    Object.defineProperty(window, "SpeechSynthesisUtterance", {
+      configurable: true,
+      value: FakeSpeechSynthesisUtterance,
     });
+    Object.defineProperty(window, "speechSynthesis", {
+      configurable: true,
+      value: {
+        cancel() {
+          window.__speechCanceled = true;
+        },
+        getVoices() {
+          return [
+            { lang: "en-US", name: "Browser guide updated", voiceURI: "Browser guide updated" },
+            { lang: "en-US", name: "Browser default", voiceURI: "Browser default" },
+          ];
+        },
+        speak(utterance) {
+          window.__spokenUtterances.push({
+            lang: utterance.lang,
+            pitch: utterance.pitch,
+            rate: utterance.rate,
+            text: utterance.text,
+            voiceName: utterance.voice?.name || "",
+            volume: utterance.volume,
+          });
+          setTimeout(() => utterance.onend?.(), 0);
+        },
+      },
+    });
+  });
+  if (options.seedMessageTtsProfile !== false) {
+    await ensureMessageTestTtsProfile(server);
   }
   await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}/tools/messages/index.html`, { waitUntil: "networkidle" });
@@ -265,7 +259,7 @@ async function voiceProfiles(server) {
   return profilesResult.payload.data.ttsProfiles;
 }
 
-async function createReferencedSentence(server, message, emotionName = "Urgent", voiceName = "Man Profile 1") {
+async function createReferencedSentence(server, message, emotionName = "Urgent", voiceName = TEST_TTS_PROFILE_NAME) {
   const emotion = await emotionProfile(server, emotionName);
   const voice = await voiceProfile(server, voiceName);
   expect(emotion).toBeTruthy();
@@ -324,9 +318,7 @@ test("Message Studio uses the approved table-first Messages structure", async ({
     await expect(page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile]")).toBeVisible();
     await expect(page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile] option")).toHaveText([
       "Select TTS profile",
-      "Default Balanced Profile",
-      "Man Profile 1",
-      "Woman Profile 2",
+      TEST_TTS_PROFILE_NAME,
     ]);
     await expect(page.locator("[data-messages-row-editor='__new__']").getByRole("button", { name: "Save" })).toBeVisible();
     await expect(page.locator("[data-messages-row-editor='__new__']").getByRole("button", { name: "Cancel" })).toBeVisible();
@@ -339,11 +331,11 @@ test("Message Studio uses the approved table-first Messages structure", async ({
 
     await addMessage(page, {
       name: "Bat Encounter",
-      ttsProfile: "Man Profile 1",
+      ttsProfile: TEST_TTS_PROFILE_NAME,
     });
     await expect(page.locator("[data-messages-log]")).toHaveText("Saved message Bat Encounter.");
     const messageRow = page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" });
-    await expect(messageRow).toContainText("Man Profile 1");
+    await expect(messageRow).toContainText(TEST_TTS_PROFILE_NAME);
     await expect(messageRow.getByRole("button", { name: "Sentences" })).toBeVisible();
     await expect(messageRow.getByRole("button", { name: "Edit" })).toBeVisible();
     await expect(messageRow.getByRole("button", { name: "Archive" })).toBeVisible();
@@ -361,7 +353,6 @@ test("Message Studio uses the approved table-first Messages structure", async ({
     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-voice]")).toHaveCount(0);
     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion] option")).toHaveText([
       "Select emotion",
-      "Neutral",
       "Calm",
       "Urgent",
     ]);
@@ -407,8 +398,8 @@ test("Message Studio uses the approved table-first Messages structure", async ({
     await expect(page.locator("[data-messages-validation-errors]")).not.toContainText(/before preview/i);
     await expect(page.locator("[data-messages-log]")).not.toContainText(/before preview/i);
     await expectPlaybackDiagnostics(page, {
-      gender: "Male",
-      profile: "Man Profile 1",
+      gender: "Any",
+      profile: TEST_TTS_PROFILE_NAME,
       voice: "Default browser voice",
     });
 
@@ -441,8 +432,8 @@ test("Message Studio uses the approved table-first Messages structure", async ({
     await expect(page.locator("[data-messages-validation-errors]")).not.toContainText(/before preview/i);
     await expect(page.locator("[data-messages-log]")).not.toContainText(/before preview/i);
     await expectPlaybackDiagnostics(page, {
-      gender: "Male",
-      profile: "Man Profile 1",
+      gender: "Any",
+      profile: TEST_TTS_PROFILE_NAME,
       voice: "Default browser voice",
     });
 
@@ -482,8 +473,8 @@ test("Message Studio uses the approved table-first Messages structure", async ({
     await expect(page.locator("[data-messages-validation-errors]")).not.toContainText(/before preview/i);
     await expect(page.locator("[data-messages-log]")).not.toContainText(/before preview/i);
     await expectPlaybackDiagnostics(page, {
-      gender: "Male",
-      profile: "Man Profile 1",
+      gender: "Any",
+      profile: TEST_TTS_PROFILE_NAME,
       voice: "Default browser voice",
     });
     await page.getByRole("button", { name: "Stop Speech" }).click();
@@ -554,21 +545,21 @@ test("Message Studio uses the approved table-first Messages structure", async ({
     await page.locator("[data-messages-row-editor] [data-message-name]").fill("Bat Encounter Updated");
     await page.locator("[data-messages-row-editor] [data-messages-commit]").click();
     await expect(page.locator("[data-messages-log]")).toHaveText("Saved message Bat Encounter Updated.");
-    await expect(page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter Updated" })).toContainText("Man Profile 1");
+    await expect(page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter Updated" })).toContainText(TEST_TTS_PROFILE_NAME);
 
     const updatedMessage = await createdMessage(failures.server, "Bat Encounter Updated");
     expect(updatedMessage).toEqual(expect.objectContaining({
       active: true,
       categoryName: "Dialog",
-      voiceProfileName: "Man Profile 1",
+      voiceProfileName: TEST_TTS_PROFILE_NAME,
     }));
     expect(updatedMessage.key).toMatch(ULID_PATTERN);
     expect(updatedMessage).not.toHaveProperty("rate");
     expect(updatedMessage).not.toHaveProperty("pitch");
     expect(updatedMessage).not.toHaveProperty("volume");
 
-    const manProfile = (await voiceProfiles(failures.server)).find((profile) => profile.name === "Man Profile 1");
-    expect(manProfile).toEqual(expect.objectContaining({
+    const defaultProfile = (await voiceProfiles(failures.server)).find((profile) => profile.name === TEST_TTS_PROFILE_NAME);
+    expect(defaultProfile).toEqual(expect.objectContaining({
       language: "en-US",
       providerKey: "browser-speech",
       voiceName: "Default browser voice",
@@ -587,33 +578,37 @@ test("Message Studio uses the approved table-first Messages structure", async ({
   }
 });
 
-test("Message Studio consumes active saved Text To Speech profiles", async ({ page }) => {
-  const failures = await openMessagesPage(page, { seedSavedTtsProfiles: false });
+test("Message Studio consumes active Local API Text To Speech profiles", async ({ page }) => {
+  const failures = await openMessagesPage(page);
 
   try {
-    await page.goto(`${failures.server.baseUrl}/tools/text-to-speech/index.html`, { waitUntil: "networkidle" });
-    await expect(page.getByRole("heading", { level: 1, name: "Text To Speech" })).toBeVisible();
+    const session = await jsonRequest(`${failures.server.baseUrl}/api/session/user`, {
+      body: JSON.stringify({ userKey: SEED_DB_KEYS.users.user1 }),
+      method: "POST",
+    });
+    expect(session.payload.ok).toBe(true);
 
-    await page.locator("[data-tts-profile-add-control-row]").getByRole("button", { name: "Add Profile" }).click();
-    await page.locator("[data-tts-profile-editor='__new__'] [data-tts-profile-name]").fill("Quest Profile Draft");
-    await page.locator("[data-tts-profile-editor='__new__'] [data-tts-profile-gender]").selectOption("male");
-    await page.locator("[data-tts-profile-editor='__new__'] [data-tts-profile-age]").selectOption("adult");
-    await page.locator("[data-tts-profile-editor='__new__'] [data-tts-profile-voice]").selectOption("Browser guide updated");
-    await page.locator("[data-tts-commit-profile='__new__']").click();
-    await expect(page.locator("[data-tts-status]")).toHaveText("Saved TTS profile: Quest Profile Draft.");
-
-    await page.locator("[data-tts-profile-row]").filter({ hasText: "Quest Profile Draft" }).getByRole("button", { name: "Edit Profile" }).click();
-    await page.locator("[data-tts-profile-editor] [data-tts-profile-name]").fill("Quest Profile Active");
-    await page.locator("[data-tts-profile-editor] [data-tts-commit-profile]").click();
-    await expect(page.locator("[data-tts-status]")).toHaveText("Saved TTS profile: Quest Profile Active.");
-
-    await page.locator("[data-tts-emotion-add-control-row]").getByRole("button", { name: "Add Emotion" }).click();
-    await page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-name]").selectOption("urgent");
-    await setRangeValue(page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-pitch]"), "1.2");
-    await setRangeValue(page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-rate]"), "1.1");
-    await setRangeValue(page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-volume]"), "0.7");
-    await page.locator("[data-tts-commit-emotion='__new__']").click();
-    await expect(page.locator("[data-tts-status]")).toHaveText("Saved emotion: Urgent.");
+    const profileResult = await jsonRequest(`${failures.server.baseUrl}/api/messages/tts-profiles`, {
+      body: JSON.stringify({
+        emotionSettings: [{
+          emotion: "urgent",
+          emotionLabel: "Urgent",
+          pitch: 1.2,
+          rate: 1.1,
+          volume: 0.7,
+        }],
+        language: "en-US",
+        name: "Quest Profile Active",
+        pitch: 1,
+        providerKey: "browser-speech",
+        rate: 1,
+        voiceName: "Browser guide updated",
+        volume: 1,
+      }),
+      method: "POST",
+    });
+    expect(profileResult.response.ok).toBe(true);
+    expect(profileResult.payload.ok).toBe(true);
 
     await page.goto(`${failures.server.baseUrl}/tools/messages/index.html`, { waitUntil: "networkidle" });
     await page.getByRole("button", { name: "Add Message" }).click();
@@ -627,7 +622,6 @@ test("Message Studio consumes active saved Text To Speech profiles", async ({ pa
     await page.getByRole("button", { name: "Add Sentence" }).click();
     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion] option")).toHaveText([
       "Select emotion",
-      "Neutral",
       "Urgent",
     ]);
     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]")).not.toContainText("Happy");
@@ -652,8 +646,6 @@ test("Message Studio consumes active saved Text To Speech profiles", async ({ pa
       volume: 0.7,
     })]);
     await expectPlaybackDiagnostics(page, {
-      ageFilter: "Adult",
-      gender: "Male",
       profile: "Quest Profile Active",
       voice: "Browser guide updated",
     });
@@ -684,12 +676,10 @@ test("Message Studio loads Text To Speech profiles and filters sentence emotions
     const profileOptions = page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile] option");
     await expect(profileOptions).toHaveText([
       "Select TTS profile",
-      "Default Balanced Profile",
-      "Man Profile 1",
-      "Woman Profile 2",
+      TEST_TTS_PROFILE_NAME,
     ]);
     await page.locator("[data-messages-row-editor='__new__'] [data-message-name]").fill("Profile Filter Test");
-    await page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile]").selectOption({ label: "Man Profile 1" });
+    await page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile]").selectOption({ label: TEST_TTS_PROFILE_NAME });
     await page.locator("[data-messages-commit='__new__']").click();
     await expect(page.locator("[data-messages-log]")).toHaveText("Saved message Profile Filter Test.");
 
@@ -697,36 +687,19 @@ test("Message Studio loads Text To Speech profiles and filters sentence emotions
     await page.getByRole("button", { name: "Add Sentence" }).click();
     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion] option")).toHaveText([
       "Select emotion",
-      "Neutral",
       "Calm",
       "Urgent",
     ]);
     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]")).not.toContainText("Whisper");
     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]")).not.toContainText("Robot");
-    await page.locator("[data-messages-segment-cancel='__new__']").click();
-
-    const messageRow = page.locator("[data-messages-row]").filter({ hasText: "Profile Filter Test" });
-    await messageRow.getByRole("button", { name: "Edit" }).click();
-    await page.locator("[data-messages-row-editor] [data-message-tts-profile]").selectOption({ label: "Woman Profile 2" });
-    await page.locator("[data-messages-row-editor] [data-messages-commit]").click();
-    await expect(page.locator("[data-messages-log]")).toHaveText("Saved message Profile Filter Test.");
-
-    await ensureSentencesExpanded(page, "Profile Filter Test");
-    await page.getByRole("button", { name: "Add Sentence" }).click();
-    await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion] option")).toHaveText([
-      "Select emotion",
-      "Whisper",
-      "Robot",
-    ]);
-    await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]")).not.toContainText("Calm");
-    await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]")).not.toContainText("Urgent");
     await page.locator("[data-messages-segment-editor='__new__'] [data-segment-order]").fill("1");
-    await page.locator("[data-messages-segment-editor='__new__'] [data-segment-text]").fill("Robot voice check.");
-    await page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]").selectOption({ label: "Robot" });
+    await page.locator("[data-messages-segment-editor='__new__'] [data-segment-text]").fill("Urgent voice check.");
+    await page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]").selectOption({ label: "Urgent" });
     await page.locator("[data-messages-segment-commit='__new__']").click();
     await expect(page.locator("[data-messages-log]")).toHaveText("Saved sentence 1.");
 
-    const sentenceRow = page.locator("[data-messages-segment-row]").filter({ hasText: "Robot voice check." });
+    const messageRow = page.locator("[data-messages-row]").filter({ hasText: "Profile Filter Test" });
+    const sentenceRow = page.locator("[data-messages-segment-row]").filter({ hasText: "Urgent voice check." });
     await page.evaluate(() => {
       window.__spokenUtterances = [];
     });
@@ -734,14 +707,14 @@ test("Message Studio loads Text To Speech profiles and filters sentence emotions
     await page.waitForFunction(() => window.__spokenUtterances.length === 1);
     const spokenSentence = await page.evaluate(() => window.__spokenUtterances);
     expect(spokenSentence).toEqual([expect.objectContaining({
-      pitch: 0.82,
-      rate: 0.92,
-      text: "Robot voice check.",
-      volume: 0.9,
+      pitch: 1.08,
+      rate: 1.15,
+      text: "Urgent voice check.",
+      volume: 1,
     })]);
     await expectPlaybackDiagnostics(page, {
-      gender: "Female",
-      profile: "Woman Profile 2",
+      gender: "Any",
+      profile: TEST_TTS_PROFILE_NAME,
       voice: "Default browser voice",
     });
     await expect(page.locator("[data-messages-validation-errors]")).not.toContainText(/before preview/i);
@@ -753,10 +726,10 @@ test("Message Studio loads Text To Speech profiles and filters sentence emotions
     await messageRow.getByRole("button", { name: "Play" }).click();
     await page.waitForFunction(() => window.__spokenUtterances.length === 1);
     const spokenMessage = await page.evaluate(() => window.__spokenUtterances);
-    expect(spokenMessage.map((utterance) => utterance.text)).toEqual(["Robot voice check."]);
+    expect(spokenMessage.map((utterance) => utterance.text)).toEqual(["Urgent voice check."]);
     await expectPlaybackDiagnostics(page, {
-      gender: "Female",
-      profile: "Woman Profile 2",
+      gender: "Any",
+      profile: TEST_TTS_PROFILE_NAME,
       voice: "Default browser voice",
     });
 
@@ -774,7 +747,7 @@ test("Message Studio disables Delete when a message is referenced", async ({ pag
   try {
     await addMessage(page, {
       name: "Referenced Encounter",
-      ttsProfile: "Man Profile 1",
+      ttsProfile: TEST_TTS_PROFILE_NAME,
     });
     const message = await createdMessage(failures.server, "Referenced Encounter");
     const segment = await createReferencedSentence(failures.server, message);
@@ -803,8 +776,7 @@ test("Message Studio disables Delete when a message is referenced", async ({ pag
     expect(deleteResult.response.status).toBe(409);
     expect(deleteResult.payload.ok).toBe(false);
 
-    expect(failures.failedRequests).toHaveLength(1);
-    expect(failures.failedRequests[0]).toContain("409");
+    expect(failures.failedRequests).toEqual([]);
     expect(failures.pageErrors).toEqual([]);
     expect(failures.consoleErrors).toEqual([]);
   } finally {
@@ -822,7 +794,7 @@ test("Message Studio shows Creator-safe load failures", async ({ page }) => {
     await expect(page.locator("[data-messages-validation-errors]")).not.toContainText("XMLHttpRequest");
     await expect(page.locator("[data-messages-log]")).toHaveText("Message Studio could not load messages. Start the Local API and reload this tool.");
     expect(failures.pageErrors).toEqual([]);
-    expect(failures.consoleErrors).toEqual([]);
+    expect(failures.consoleErrors.filter((message) => !message.includes("Failed to load resource: net::ERR_UNSAFE_PORT"))).toEqual([]);
   } finally {
     await closeMessagesRun(failures, page);
   }

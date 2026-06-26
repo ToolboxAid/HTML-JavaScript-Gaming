@@ -24,12 +24,9 @@
       "Sad",
       "Mysterious"
     ],
-    "messages_tts_profiles": [
-      "Browser Speech Default",
-      "Narration Preview"
-    ],
+    "messages_tts_profiles": [],
     "messages_records": [],
     "messages_segments": []
   },
-  "note": "Seed names are applied by the server-side Messages Postgres service. Browser pages must not seed authoritative records."
+  "note": "Seed names are applied by the server-side Messages Postgres service. Browser pages must not seed authoritative records. Retired TTS parent profiles Default Balanced Profile, Hero, Merchant, Neutral, and Robot are pruned server-side and must not be reintroduced as seed records. Empty TTS parent profiles without child emotion settings are also pruned instead of repaired with fallback children."
 }

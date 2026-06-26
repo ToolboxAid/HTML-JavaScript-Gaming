@@ -145,7 +145,9 @@ Rules:
 - Each PR must be committed, pushed, and opened as a draft PR.
 - Each PR starts at PR Open after the branch and PR identity are named.
 - Each PR plans and builds on the same source branch after PR Open.
-- Each PR reaches Closed only after main-return, clean-worktree, local/origin `0/0`, no-untracked-files, required-report, required-ZIP, backlog, applicable tool-state, and retained-branch-disposition gates pass.
+- During assigned team-day work, sequential PRs must remain on the assigned team branch until EOD or an owner-approved merge checkpoint.
+- Returning to `main` between sequential team PRs is prohibited.
+- Each PR reaches Closed only after clean-worktree, local/origin sync for the active source branch, no-untracked-files, required-report, required-ZIP, backlog, applicable tool-state, retained-branch-disposition gates, and the applicable EOD/main-verification gate pass.
 - A team must not begin another PR until its previous PR is Closed unless OWNER documented an explicit stacked PR chain.
 - Do not commit directly to main.
 - Do not merge without explicit owner approval.
@@ -174,6 +176,7 @@ Rules:
 - Each PR may be committed and pushed during active work.
 - Each PR may be opened as a draft PR during active work.
 - Each PR must move through PR Open, Plan, Build, Validation, Approved, Merged, Main Verified, and Closed in order.
+- For assigned team-day work, Main Verified occurs only at EOD or an owner-approved merge checkpoint; it is not permission to return to `main` between sequential PRs.
 - Plan, Build, validation, reports, ZIP packaging, and closeout must stay tied to the same PR identity and source branch.
 - Source branches are retained by default after merge and closeout.
 - A team must not begin another PR until its previous PR is Closed unless OWNER documented an explicit stacked PR chain.
@@ -188,6 +191,7 @@ Rules:
 Conflict note:
 - Older wording that says each PR must create its own branch remains preserved.
 - This all-team clarification allows an approved existing team, OWNER, or scoped PR branch when the owner assigns that dependency model.
+- The Day Work / EOD Merge Rule below overrides older main-return wording during assigned team-day sequences.
 - If a branch model is unclear, owner approval is required before continuing.
 
 ## Day Work / EOD Merge Rule
@@ -198,7 +202,11 @@ During active work:
 - Pushes are allowed and expected.
 - Draft PRs are allowed and expected.
 - Direct commits to main are prohibited.
+- Codex must stay on the assigned team branch until EOD or an owner-approved merge checkpoint.
+- Returning to `main` between sequential PRs in the same assigned team-day workstream is prohibited.
 - Merges to main are prohibited unless explicitly approved by the owner.
+- Any staged changes, unstaged changes, unmerged state, or direct commit on `main` during team work is a governance failure.
+- If that failure occurs, Codex must hard-stop, move the scoped work to the active team branch, restore `main` to a clean state, document the correction, and continue only from the team branch.
 
 At end of day:
 - Owner reviews ready PRs.
