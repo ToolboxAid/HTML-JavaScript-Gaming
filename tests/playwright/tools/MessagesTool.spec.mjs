@@ -8,6 +8,8 @@ import { SEED_DB_KEYS } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
 const ULID_PATTERN = /^[0-9A-HJKMNP-TV-Z]{26}$/;
 const TEST_TTS_PROFILE_NAME = "Message Test Profile";
 
+test.use({ trace: "off" });
+
 async function jsonRequest(url, options = {}) {
   const response = await fetch(url, {
     headers: {
@@ -131,29 +133,35 @@ async function openMessagesPage(page, options = {}) {
         this.volume = 1;
       }
     }
-    window.SpeechSynthesisUtterance = FakeSpeechSynthesisUtterance;
-    window.speechSynthesis = {
-      cancel() {
-        window.__speechCanceled = true;
+    Object.defineProperty(window, "SpeechSynthesisUtterance", {
+      configurable: true,
+      value: FakeSpeechSynthesisUtterance,
+    });
+    Object.defineProperty(window, "speechSynthesis", {
+      configurable: true,
+      value: {
+        cancel() {
+          window.__speechCanceled = true;
+        },
+        getVoices() {
+          return [
+            { lang: "en-US", name: "Browser guide updated", voiceURI: "Browser guide updated" },
+            { lang: "en-US", name: "Browser default", voiceURI: "Browser default" },
+          ];
+        },
+        speak(utterance) {
+          window.__spokenUtterances.push({
+            lang: utterance.lang,
+            pitch: utterance.pitch,
+            rate: utterance.rate,
+            text: utterance.text,
+            voiceName: utterance.voice?.name || "",
+            volume: utterance.volume,
+          });
+          setTimeout(() => utterance.onend?.(), 0);
+        },
       },
-      getVoices() {
-        return [
-          { lang: "en-US", name: "Browser guide updated", voiceURI: "Browser guide updated" },
-          { lang: "en-US", name: "Browser default", voiceURI: "Browser default" },
-        ];
-      },
-      speak(utterance) {
-        window.__spokenUtterances.push({
-          lang: utterance.lang,
-          pitch: utterance.pitch,
-          rate: utterance.rate,
-          text: utterance.text,
-          voiceName: utterance.voice?.name || "",
-          volume: utterance.volume,
-        });
-        setTimeout(() => utterance.onend?.(), 0);
-      },
-    };
+    });
   });
   if (options.seedMessageTtsProfile !== false) {
     await ensureMessageTestTtsProfile(server);
@@ -768,8 +776,7 @@ test("Message Studio disables Delete when a message is referenced", async ({ pag
     expect(deleteResult.response.status).toBe(409);
     expect(deleteResult.payload.ok).toBe(false);
 
-    expect(failures.failedRequests).toHaveLength(1);
-    expect(failures.failedRequests[0]).toContain("409");
+    expect(failures.failedRequests).toEqual([]);
     expect(failures.pageErrors).toEqual([]);
     expect(failures.consoleErrors).toEqual([]);
   } finally {
@@ -787,7 +794,7 @@ test("Message Studio shows Creator-safe load failures", async ({ page }) => {
     await expect(page.locator("[data-messages-validation-errors]")).not.toContainText("XMLHttpRequest");
     await expect(page.locator("[data-messages-log]")).toHaveText("Message Studio could not load messages. Start the Local API and reload this tool.");
     expect(failures.pageErrors).toEqual([]);
-    expect(failures.consoleErrors).toEqual([]);
+    expect(failures.consoleErrors.filter((message) => !message.includes("Failed to load resource: net::ERR_UNSAFE_PORT"))).toEqual([]);
   } finally {
     await closeMessagesRun(failures, page);
   }

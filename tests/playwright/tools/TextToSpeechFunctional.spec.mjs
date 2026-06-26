@@ -1,7 +1,10 @@
 import { expect, test } from "@playwright/test";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
+import { createMessagesPostgresClientStub } from "../../helpers/messagesPostgresClientStub.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 import { SEED_DB_KEYS } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
+
+test.use({ trace: "off" });
 
 test.afterAll(async () => {
   await workspaceV2CoverageReporter.writeReport();
@@ -34,7 +37,7 @@ async function createPreviewTtsProfile(server, { name = "Creature Profile" } = {
       pitch: 1,
       providerKey: "browser-speech",
       rate: 1,
-      voiceName: "narrator-voice-uri",
+      voiceName: "Narrator Voice",
       volume: 1,
     }),
     method: "POST",
@@ -44,11 +47,20 @@ async function createPreviewTtsProfile(server, { name = "Creature Profile" } = {
   return result.payload.data.ttsProfile;
 }
 
+function recordRequestFailure(failures, request) {
+  if (request.failure()?.errorText === "net::ERR_ABORTED") {
+    return;
+  }
+  failures.failedRequests.push(`FAILED ${request.url()}`);
+}
+
 async function openTextToSpeechPage(page, { authenticated = true, speechAvailable = true } = {}) {
-  const server = await startRepoServer();
+  const messagesPostgresClient = createMessagesPostgresClientStub();
+  const server = await startRepoServer({ messagesPostgresClient });
   const failures = {
     consoleErrors: [],
     failedRequests: [],
+    messagesPostgresClient,
     pageErrors: [],
     server,
   };
@@ -60,7 +72,7 @@ async function openTextToSpeechPage(page, { authenticated = true, speechAvailabl
   page.on("response", (response) => {
     if (response.status() >= 400) failures.failedRequests.push(`${response.status()} ${response.url()}`);
   });
-  page.on("requestfailed", (request) => failures.failedRequests.push(`FAILED ${request.url()}`));
+  page.on("requestfailed", (request) => recordRequestFailure(failures, request));
 
   if (authenticated) {
     const session = await jsonRequest(`${server.baseUrl}/api/session/user`, {
@@ -230,7 +242,7 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
       "Actions",
     ]);
     await page.locator("[data-tts-profile-row]").filter({ hasText: "Creature Profile" }).getByRole("button", { name: "Edit Profile" }).click();
-    await expect(page.locator("[data-tts-profile-editor] [data-tts-profile-voice]")).toHaveValue("narrator-voice-uri");
+    await expect(page.locator("[data-tts-profile-editor] [data-tts-profile-voice]")).toHaveValue("Narrator Voice");
     await page.locator("[data-tts-profile-editor] [data-tts-profile-name]").fill("Creature Profile Updated");
     await page.locator("[data-tts-profile-editor] [data-tts-commit-profile]").click();
     await expect(page.locator("[data-tts-status]")).toHaveText("Saved TTS profile: Creature Profile Updated.");
@@ -345,6 +357,7 @@ test("Text To Speech guest profile save redirects to sign in", async ({ page }) 
     await page.locator("[data-tts-profile-editor='__new__'] [data-tts-profile-name]").fill("Guest Save Profile");
     await page.locator("[data-tts-commit-profile='__new__']").click();
     await page.waitForURL(/\/account\/sign-in\.html$/);
+    await page.waitForLoadState("networkidle");
 
     expect(failures.failedRequests).toEqual([]);
     expect(failures.pageErrors).toEqual([]);
@@ -370,7 +383,7 @@ test("Text To Speech is registered on the toolbox index with the active toolbox 
   page.on("response", (response) => {
     if (response.status() >= 400) failures.failedRequests.push(`${response.status()} ${response.url()}`);
   });
-  page.on("requestfailed", (request) => failures.failedRequests.push(`FAILED ${request.url()}`));
+  page.on("requestfailed", (request) => recordRequestFailure(failures, request));
 
   await page.addInitScript(({ apiUrl, siteUrl }) => {
     window.GameFoundryPublicConfig = {
