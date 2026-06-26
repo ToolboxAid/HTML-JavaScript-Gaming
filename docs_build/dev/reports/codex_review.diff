@@ -1,340 +1,414 @@
-diff --git a/assets/toolbox/hitboxes/js/index.js b/assets/toolbox/hitboxes/js/index.js
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract.md b/docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract.md
 new file mode 100644
-index 000000000..d5030997a
+index 000000000..ec0a1246a
 --- /dev/null
-+++ b/assets/toolbox/hitboxes/js/index.js
-@@ -0,0 +1,66 @@
-+const FOUNDATION_MILESTONES = Object.freeze([
-+  Object.freeze({
-+    milestone: "Tool shell",
-+    notes: "Theme V2 page shell is available from the toolbox.",
-+    status: "Ready",
-+  }),
-+  Object.freeze({
-+    milestone: "Local API contract",
-+    notes: "Placeholder service boundary is reserved for later persistence work.",
-+    status: "Placeholder",
-+  }),
-+  Object.freeze({
-+    milestone: "Editor",
-+    notes: "Drawing and editing start in a later focused PR.",
-+    status: "Deferred",
-+  }),
-+]);
-+
-+const elements = {
-+  contractCount: document.querySelector("[data-hitboxes-contract-count]"),
-+  foundationStatus: document.querySelector("[data-hitboxes-foundation-status]"),
-+  log: document.querySelector("[data-hitboxes-log]"),
-+  mode: document.querySelector("[data-hitboxes-mode]"),
-+  owner: document.querySelector("[data-hitboxes-owner]"),
-+  persistence: document.querySelector("[data-hitboxes-persistence]"),
-+  scopeCount: document.querySelector("[data-hitboxes-scope-count]"),
-+  service: document.querySelector("[data-hitboxes-service]"),
-+  table: document.querySelector("[data-hitboxes-foundation-table]"),
-+  toolState: document.querySelector("[data-hitboxes-tool-state]"),
-+};
-+
-+function setText(element, value) {
-+  if (element) {
-+    element.textContent = value;
-+  }
-+}
-+
-+function createCell(text) {
-+  const cell = document.createElement("td");
-+  cell.textContent = text;
-+  return cell;
-+}
-+
-+function createRow(milestone) {
-+  const row = document.createElement("tr");
-+  const heading = document.createElement("th");
-+  heading.scope = "row";
-+  heading.textContent = milestone.milestone;
-+  row.append(heading, createCell(milestone.status), createCell(milestone.notes));
-+  return row;
-+}
-+
-+function renderFoundation() {
-+  elements.table?.replaceChildren(...FOUNDATION_MILESTONES.map(createRow));
-+  setText(elements.contractCount, String(FOUNDATION_MILESTONES.length));
-+  setText(elements.scopeCount, "0");
-+  setText(elements.foundationStatus, "Foundation ready");
-+  setText(elements.owner, "Team Delta");
-+  setText(elements.persistence, "Local API contract pending");
-+  setText(elements.service, "hitboxes-service-placeholder");
-+  setText(elements.mode, "read-only foundation");
-+  setText(elements.toolState, "Foundation");
-+  setText(elements.log, "Hitboxes foundation loaded. Drawing and editing are intentionally deferred.");
-+}
-+
-+renderFoundation();
-diff --git a/docs_build/dev/admin-notes/tools/index.txt b/docs_build/dev/admin-notes/tools/index.txt
-index a684299bf..a5087bc89 100644
---- a/docs_build/dev/admin-notes/tools/index.txt
-+++ b/docs_build/dev/admin-notes/tools/index.txt
-@@ -20,7 +20,7 @@ Order,Tool,Group,Status,Complete
- 19,Build Game,Build/Create,Wireframe,No
- 20,Game Testing,Play,Wireframe,No
- 21,Controls,Platform,Wireframe,No
--22,Hitboxes,Platform,Wireframe,No
-+22,Hitboxes,Platform,Under Construction,No
- 23,Saved Data,Platform,Wireframe,No
- 24,Debug,Platform,Wireframe,No
- 25,Performance,Platform,Wireframe,No
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation.md b/docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation.md
-new file mode 100644
-index 000000000..870f60e23
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation.md
++++ b/docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract.md
 @@ -0,0 +1,31 @@
-+# PR_26177_DELTA_002-hitboxes-foundation
++# PR_26177_DELTA_003-hitboxes-engine-collision-contract
 +
 +Team: Delta
-+Branch: PR_26177_DELTA_002-hitboxes-foundation
-+Base: main
-+Scope: Hitboxes MVP foundation only
++Branch: PR_26177_DELTA_003-hitboxes-engine-collision-contract
++Base: PR_26177_DELTA_002-hitboxes-foundation
++Scope: Shared engine collision contract only
 +
 +## Summary
 +
-+Hitboxes now has a Team Delta-owned MVP foundation surface. The tool is launchable from Toolbox metadata, uses the existing Theme V2 page structure, and loads a dedicated external JavaScript module for foundation-only status rendering.
++Added an engine-owned Hitboxes collision contract for future Hitboxes preview/testing and runtime reuse. The logic is shared under `src/engine/collision/` and is not page-local.
 +
 +## Changes
 +
-+- Updated Hitboxes metadata from planned/wireframe launch behavior to `Under Construction` with beta release-channel routing.
-+- Replaced the static Hitboxes wireframe copy with a Theme V2 foundation shell.
-+- Added `assets/toolbox/hitboxes/js/index.js` for external-only page behavior.
-+- Updated admin notes tool status for Hitboxes to `Under Construction`.
++- Added `src/engine/collision/hitboxCollision.js`.
++- Added AABB normalization and overlap helpers.
++- Added swept AABB collision calculation with collision time, impact normal, impact point, and before/after/impact positions.
++- Added focused unit tests in `tests/engine/HitboxCollisionContract.test.mjs`.
 +
 +## Deferred
 +
-+- Drawing and editing are not implemented in this PR.
-+- Object binding is not implemented in this PR.
-+- Hitbox type validation is not implemented in this PR.
-+- Preview rendering is not implemented in this PR.
++- No Hitboxes editor UI.
++- No object source selection.
++- No two-object preview UI.
++- No swept-motion preview UI.
++- No Hitboxes persistence changes.
 +
-+## Scope Guard
++## Validation
 +
-+- No unrelated tools changed.
-+- No `start_of_day` files changed.
-+- No engine core changes.
-+- No inline scripts, styles, or event handlers were added.
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation_branch-validation.md b/docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation_branch-validation.md
++- PASS: `node --check src/engine/collision/hitboxCollision.js`
++- PASS: `node --check tests/engine/HitboxCollisionContract.test.mjs`
++- PASS: `node ./scripts/run-node-test-files.mjs tests/engine/HitboxCollisionContract.test.mjs`
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_branch-validation.md b/docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_branch-validation.md
 new file mode 100644
-index 000000000..c94006062
+index 000000000..812d21423
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation_branch-validation.md
++++ b/docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_branch-validation.md
 @@ -0,0 +1,16 @@
-+# PR_26177_DELTA_002 Hitboxes Foundation Branch Validation
++# PR_26177_DELTA_003 Hitboxes Engine Collision Contract Branch Validation
 +
-+Branch: PR_26177_DELTA_002-hitboxes-foundation
-+Base: main
++Branch: PR_26177_DELTA_003-hitboxes-engine-collision-contract
++Base: PR_26177_DELTA_002-hitboxes-foundation
 +
 +Result: PASS
 +
 +| Check | Status | Notes |
 +|---|---|---|
-+| Ownership baseline completed first | PASS | `main` includes `PR_26177_DELTA_001-hitboxes-team-ownership`. |
-+| Main branch clean before PR branch | PASS | `git status` reported a clean main after ownership merge. |
-+| Main synced before PR branch | PASS | `git rev-list --left-right --count main...origin/main` returned `0 0`. |
-+| PR branch created from main | PASS | Work is on `PR_26177_DELTA_002-hitboxes-foundation`. |
-+| Scope is Hitboxes foundation only | PASS | Changed Hitboxes page, Hitboxes JS, toolbox metadata, admin status, and reports only. |
++| Current branch inside Delta Hitboxes chain | PASS | Started from `PR_26177_DELTA_002-hitboxes-foundation`. |
++| Working tree clean before branch | PASS | No dirty files before branch creation. |
++| Stacked branch created | PASS | Work is on `PR_26177_DELTA_003-hitboxes-engine-collision-contract`. |
++| No return to main | PASS | This PR was stacked from the active Delta Hitboxes branch. |
++| Scope is engine collision contract only | PASS | Changed shared engine collision module, unit test, and reports only. |
++| No Hitboxes editor UI | PASS | No `toolbox/hitboxes` or `assets/toolbox/hitboxes` files changed. |
 +| start_of_day untouched | PASS | No `start_of_day` files changed. |
-+| No implementation drawing/editing | PASS | Foundation status rendering only; no drawing, editing, binding, validation, or preview implementation. |
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation_manual-validation-notes.md
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_manual-validation-notes.md
 new file mode 100644
-index 000000000..9ea386972
+index 000000000..f24c14910
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation_manual-validation-notes.md
-@@ -0,0 +1,9 @@
-+# PR_26177_DELTA_002 Hitboxes Foundation Manual Validation Notes
++++ b/docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_manual-validation-notes.md
+@@ -0,0 +1,8 @@
++# PR_26177_DELTA_003 Hitboxes Engine Collision Contract Manual Validation Notes
 +
-+- Confirmed ownership baseline on `main` before creating the foundation branch.
-+- Confirmed Hitboxes is Team Delta-owned in Project Instructions.
-+- Reviewed `toolbox/hitboxes/index.html` for Theme V2 shell structure.
-+- Confirmed the page links only external scripts.
-+- Confirmed the foundation UI does not expose drawing, editing, object binding, type validation, or preview controls.
-+- Confirmed the toolbox metadata route remains `toolbox/hitboxes/index.html`.
-+- Broader registry baseline test failure is pre-existing and unrelated to this PR: missing `physics-sandbox`.
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation_requirement-checklist.md b/docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation_requirement-checklist.md
++- Confirmed this PR is stacked from `PR_26177_DELTA_002-hitboxes-foundation`, not from `main`.
++- Confirmed the implementation is engine-owned shared collision logic under `src/engine/collision/`.
++- Confirmed no Hitboxes editor UI files were modified.
++- Confirmed the high-speed vertical swept AABB regression detects impact at time `0.4`.
++- Confirmed impact normal for downward motion is `{ x: 0, y: -1 }`.
++- Confirmed before, after, and impact positions are exposed by the contract result.
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_requirement-checklist.md b/docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_requirement-checklist.md
 new file mode 100644
-index 000000000..f3b90dc26
+index 000000000..36e244272
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation_requirement-checklist.md
-@@ -0,0 +1,18 @@
-+# PR_26177_DELTA_002 Hitboxes Foundation Requirement Checklist
++++ b/docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_requirement-checklist.md
+@@ -0,0 +1,19 @@
++# PR_26177_DELTA_003 Hitboxes Engine Collision Contract Requirement Checklist
 +
 +| Requirement | Status | Notes |
 +|---|---|---|
-+| Use ownership PR as baseline | PASS | Ownership PR merged to `main` before branch creation. |
-+| Move Hitboxes out of Planned | PASS | Hitboxes metadata now uses `status: "Under Construction"` and `releaseChannel: "beta"`. |
-+| Team Delta MVP/tool ownership status | PASS | Existing Project Instructions ownership places Hitboxes under Team Delta; this PR keeps that baseline. |
-+| Foundation only | PASS | Page shell and external JS foundation status only. |
-+| Toolbox navigation/metadata clickable | PASS | Hitboxes route remains `toolbox/hitboxes/index.html` and beta-channel launch is not planned-blocked. |
-+| Theme V2 page shell only | PASS | Hitboxes page uses existing Theme V2 CSS and tool workspace classes. |
-+| External JS only | PASS | Added `assets/toolbox/hitboxes/js/index.js`; no inline script behavior added. |
-+| No inline scripts/styles/handlers | PASS | Focused grep checks found no inline style or handler attributes; script tags all use `src`. |
-+| Local API/service placeholders only | PASS | Foundation UI exposes placeholder service/contract status without persistence implementation. |
-+| Do not implement drawing/editing | PASS | Editable region count remains `0`; milestones defer editor work. |
-+| Do not modify unrelated tools | PASS | No unrelated tool page or tool JS changed. |
-+| Do not modify start_of_day folders | PASS | No `start_of_day` files changed. |
-+| Required reports | PASS | PR report, branch validation, requirement checklist, validation lane, manual notes, Codex diff, and changed-file manifest produced. |
-+| Repo-structured ZIP | PASS | `tmp/PR_26177_DELTA_002-hitboxes-foundation_delta.zip` produced. |
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation_validation-lane.md b/docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation_validation-lane.md
++| Add shared collision module | PASS | Added `src/engine/collision/hitboxCollision.js`. |
++| Collision logic not page-local | PASS | Logic lives under engine collision source, not Hitboxes page JS. |
++| AABB overlap contract | PASS | `aabbOverlap(...)` returns normalized boxes, overlap state, and intersection. |
++| Bounding box normalization | PASS | `normalizeBoundingBox(...)` supports negative dimensions and left/top/right/bottom. |
++| Swept AABB contract | PASS | `sweptAabb(...)` evaluates moving AABB against target AABB over a delta. |
++| Collision time | PASS | Swept result includes `collisionTime`; helper `collisionTime(...)` is exported. |
++| Impact normal | PASS | Swept result includes `impactNormal`. |
++| Impact point | PASS | Swept result includes `impactPoint`. |
++| Before/after positions | PASS | Swept result includes `beforePosition`, `afterPosition`, `startPosition`, and `endPosition`. |
++| Regression high-speed vertical impact | PASS | Test covers moving 10x10 box from `0,0` toward target at `0,50` without skipping. |
++| Unit tests | PASS | Added `tests/engine/HitboxCollisionContract.test.mjs`. |
++| No Hitboxes editor UI | PASS | No UI files changed in this PR. |
++| No unrelated tools | PASS | No unrelated tool files changed. |
++| No start_of_day folders | PASS | No `start_of_day` files changed. |
++| Required reports and ZIP | PASS | Reports and `tmp/PR_26177_DELTA_003-hitboxes-engine-collision-contract_delta.zip` produced. |
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_validation-lane.md b/docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_validation-lane.md
 new file mode 100644
-index 000000000..9e8fc01a7
+index 000000000..32061f85f
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation_validation-lane.md
-@@ -0,0 +1,18 @@
-+# PR_26177_DELTA_002 Hitboxes Foundation Validation Lane
++++ b/docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_validation-lane.md
+@@ -0,0 +1,14 @@
++# PR_26177_DELTA_003 Hitboxes Engine Collision Contract Validation Lane
 +
 +## Commands
 +
 +| Command | Status | Notes |
 +|---|---|---|
-+| `git branch --show-current` | PASS | Confirmed PR branch. |
-+| `node --check assets/toolbox/hitboxes/js/index.js` | PASS | External JS parses successfully. |
-+| Hitboxes metadata import check | PASS | `getToolById("hitboxes")` exists, status is `Under Construction`, release channel is `beta`, route is `toolbox/hitboxes/index.html`, and tool is visible. |
-+| `rg -n "style=" toolbox/hitboxes/index.html assets/toolbox/hitboxes/js/index.js` | PASS | No inline styles found. |
-+| `rg -n " onclick=| onchange=| oninput=| onsubmit=| onload=" toolbox/hitboxes/index.html assets/toolbox/hitboxes/js/index.js` | PASS | No inline event handlers found. |
-+| `rg -n "<script" toolbox/hitboxes/index.html` | PASS | All script tags use external `src` files. |
-+| `rg -n "Alfa - Hitboxes" docs_build/dev/ProjectInstructions` | PASS | No Alfa-owned Hitboxes backlog entry found. |
-+| `node ./scripts/run-node-test-files.mjs tests/tools/RequiredToolsBaseline.test.mjs tests/shared/tools/ToolContractCoverage.test.mjs tests/shared/ProjectWorkspaceToolRegistrationValidation.test.mjs` | FAIL | Existing unrelated failure: `Tool registry entry missing: physics-sandbox`. No Hitboxes failure was reported before the lane stopped. |
++| `git branch --show-current` | PASS | Confirmed `PR_26177_DELTA_003-hitboxes-engine-collision-contract`. |
++| `node --check src/engine/collision/hitboxCollision.js` | PASS | Shared collision module parses. |
++| `node --check tests/engine/HitboxCollisionContract.test.mjs` | PASS | Unit test parses. |
++| `node ./scripts/run-node-test-files.mjs tests/engine/HitboxCollisionContract.test.mjs` | PASS | `1/1 targeted node test file(s) passed.` |
 +
 +## Result
 +
-+PASS for focused Hitboxes foundation validation. One broader existing baseline lane remains failing outside this PR scope.
-diff --git a/src/shared/toolbox/tool-metadata-inventory.js b/src/shared/toolbox/tool-metadata-inventory.js
-index 955f54d8a..0a368a985 100644
---- a/src/shared/toolbox/tool-metadata-inventory.js
-+++ b/src/shared/toolbox/tool-metadata-inventory.js
-@@ -886,14 +886,14 @@ export const TOOL_REGISTRY = Object.freeze([
-     "id": "hitboxes",
-     "name": "Hitboxes",
-     "displayName": "Hitboxes",
--    "shortDescription": "Plan collision, hurtbox, and interaction region workflows.",
-+    "shortDescription": "Define collision, hurtbox, and interaction region workflows.",
-     "shortLabel": "Hitboxes",
-     "path": "hitboxes",
-     "folderName": "hitboxes",
-     "entryPoint": "hitboxes/index.html",
-     "badge": "/assets/theme-v2/images/badges/hitboxes.png",
-     "tool": "/assets/theme-v2/images/tools/hitboxes.png",
--    "description": "Plan collision, hurtbox, and interaction region workflows.",
-+    "description": "Define collision, hurtbox, and interaction region workflows.",
-     "category": "Platform",
-     "colorGroup": "tool-group-platform",
-     "active": true,
-@@ -902,10 +902,13 @@ export const TOOL_REGISTRY = Object.freeze([
-     "requiredForTestable": true,
-     "requiredForPublish": true,
-     "requires": [],
--    "status": "Wireframe",
-+    "status": "Under Construction",
-+    "releaseChannel": "beta",
-     "progressChecklist": [
--      "Review readiness",
--      "Static planned text only"
-+      "Theme V2 page shell",
-+      "External JS foundation",
-+      "Local API contract placeholders",
-+      "Drawing and editing deferred"
-     ],
-     "deferred": false,
-     "hidden": false,
-diff --git a/toolbox/hitboxes/index.html b/toolbox/hitboxes/index.html
-index 97ba96d91..4d092731d 100644
---- a/toolbox/hitboxes/index.html
-+++ b/toolbox/hitboxes/index.html
-@@ -6,7 +6,7 @@
-     <base href="/">
-     <meta name="viewport" content="width=device-width, initial-scale=1">
-     <title>Hitboxes - GameFoundryStudio</title>
--    <meta name="description" content="Hitboxes Toolbox wireframe. Plan collision, hurtbox, and interaction region workflows.">
-+    <meta name="description" content="Hitboxes toolbox foundation for Team Delta-owned collision, hurtbox, and interaction region setup.">
-     <link rel="icon" href="/favicon.svg">
-     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
- </head>
-@@ -18,7 +18,7 @@
-             <div class="container">
-                 <div class="kicker">Toolbox / Hitboxes</div>
-                 <h1>Hitboxes</h1>
--                <p class="lede">Plan collision, hurtbox, and interaction region workflows. Static wireframe only; no database, persistence, save, load, or runtime behavior is implemented.</p>
-+                <p class="lede">Review the Team Delta hitbox foundation for collision, hurtbox, and interaction region workflows.</p>
-             </div>
-         </section>
-         <section class="section">
-@@ -31,13 +31,47 @@
-                         <div class="accordion-stack">
-                             <details class="vertical-accordion" open>
-                                 <summary>Setup</summary>
--                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
-+                                <div class="accordion-body content-stack">
-+                                    <p>Status: <span data-hitboxes-foundation-status>Foundation ready</span></p>
-+                                    <p>Owner: <span data-hitboxes-owner>Team Delta</span></p>
-+                                    <p>Persistence: <span data-hitboxes-persistence>Local API contract pending</span></p>
-+                                </div>
-                             </details>
-                         </div>
-                     </aside>
--                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="hitboxes" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
--                    <section class="tool-center-panel"><h2>Workspace</h2>
--                        <p>Plan collision, hurtbox, and interaction region workflows. This page preserves the shared Theme V2 tool template structure for future rebuild work.</p>
-+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="hitboxes" data-tool-icon-src="assets/theme-v2/images/badges/hitboxes.png" data-tool-character-src="assets/theme-v2/images/tools/hitboxes.png"></div>
-+                    <section class="tool-center-panel">
-+                        <h2>Hitbox Foundation</h2>
-+                        <p>Establish the tool shell and contract surface before drawing, editing, binding, validation, and preview work begins.</p>
-+                        <div class="grid cols-3" aria-label="Hitboxes foundation summary">
-+                            <article class="mini-stat"><strong data-hitboxes-contract-count>3</strong>Contracts</article>
-+                            <article class="mini-stat"><strong data-hitboxes-scope-count>0</strong>Editable Regions</article>
-+                            <article class="mini-stat"><strong data-hitboxes-tool-state>Foundation</strong>Status</article>
-+                        </div>
-+                        <article class="card">
-+                            <div class="card-body content-stack">
-+                                <div class="surface-header">
-+                                    <div>
-+                                        <div class="kicker">MVP Sequence</div>
-+                                        <h3>Foundation Scope</h3>
-+                                    </div>
-+                                </div>
-+                                <div class="table-wrapper">
-+                                    <table class="data-table" aria-label="Hitboxes foundation milestones">
-+                                        <thead>
-+                                            <tr>
-+                                                <th scope="col">Milestone</th>
-+                                                <th scope="col">Status</th>
-+                                                <th scope="col">Notes</th>
-+                                            </tr>
-+                                        </thead>
-+                                        <tbody data-hitboxes-foundation-table>
-+                                            <tr><td colspan="3">Loading Hitboxes foundation.</td></tr>
-+                                        </tbody>
-+                                    </table>
-+                                </div>
-+                            </div>
-+                        </article>
-                     </section>
-                     <aside class="tool-column tool-group-platform">
-                         <div class="tool-column-header">
-@@ -46,7 +80,11 @@
-                         <div class="accordion-stack">
-                             <details class="vertical-accordion" open>
-                                 <summary>Output</summary>
--                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
-+                                <div class="accordion-body content-stack">
-+                                    <p>Service: <span data-hitboxes-service>placeholder</span></p>
-+                                    <p>Mode: <span data-hitboxes-mode>read-only foundation</span></p>
-+                                    <div class="status" role="status" data-hitboxes-log>Loading Hitboxes foundation.</div>
-+                                </div>
-                             </details>
-                         </div>
-                     </aside>
-@@ -57,6 +95,6 @@
-     <div data-partial="footer"></div>
-     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
-     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
-+    <script type="module" src="assets/toolbox/hitboxes/js/index.js"></script>
- </body>
--
- </html>
++PASS. Focused engine collision contract validation completed.
+diff --git a/src/engine/collision/hitboxCollision.js b/src/engine/collision/hitboxCollision.js
+new file mode 100644
+index 000000000..ed5eaafa3
+--- /dev/null
++++ b/src/engine/collision/hitboxCollision.js
+@@ -0,0 +1,198 @@
++function finiteNumber(value, fallback = 0) {
++  return Number.isFinite(value) ? value : fallback;
++}
++
++function normalizeAxisBounds(start, size, end) {
++  if (Number.isFinite(end)) {
++    return {
++      max: Math.max(finiteNumber(start), end),
++      min: Math.min(finiteNumber(start), end),
++    };
++  }
++  const safeStart = finiteNumber(start);
++  const safeEnd = safeStart + finiteNumber(size);
++  return {
++    max: Math.max(safeStart, safeEnd),
++    min: Math.min(safeStart, safeEnd),
++  };
++}
++
++function freezePoint(x, y) {
++  return Object.freeze({
++    x: finiteNumber(x),
++    y: finiteNumber(y),
++  });
++}
++
++export function normalizeBoundingBox(box = {}) {
++  const xBounds = normalizeAxisBounds(box.x ?? box.left, box.width, box.right);
++  const yBounds = normalizeAxisBounds(box.y ?? box.top, box.height, box.bottom);
++  const width = xBounds.max - xBounds.min;
++  const height = yBounds.max - yBounds.min;
++  return Object.freeze({
++    bottom: yBounds.max,
++    centerX: xBounds.min + width / 2,
++    centerY: yBounds.min + height / 2,
++    height,
++    left: xBounds.min,
++    right: xBounds.max,
++    top: yBounds.min,
++    width,
++    x: xBounds.min,
++    y: yBounds.min,
++  });
++}
++
++export function aabbOverlap(leftBox, rightBox) {
++  const left = normalizeBoundingBox(leftBox);
++  const right = normalizeBoundingBox(rightBox);
++  const overlap = left.left < right.right
++    && left.right > right.left
++    && left.top < right.bottom
++    && left.bottom > right.top;
++  const intersection = overlap
++    ? normalizeBoundingBox({
++      bottom: Math.min(left.bottom, right.bottom),
++      left: Math.max(left.left, right.left),
++      right: Math.min(left.right, right.right),
++      top: Math.max(left.top, right.top),
++    })
++    : null;
++  return Object.freeze({
++    intersection,
++    left,
++    overlap,
++    right,
++  });
++}
++
++function positionBox(box, position) {
++  const normalized = normalizeBoundingBox(box);
++  return normalizeBoundingBox({
++    height: normalized.height,
++    width: normalized.width,
++    x: position.x,
++    y: position.y,
++  });
++}
++
++function entryExitTimes(movingMin, movingMax, targetMin, targetMax, velocity) {
++  if (velocity > 0) {
++    return {
++      entry: (targetMin - movingMax) / velocity,
++      exit: (targetMax - movingMin) / velocity,
++    };
++  }
++  if (velocity < 0) {
++    return {
++      entry: (targetMax - movingMin) / velocity,
++      exit: (targetMin - movingMax) / velocity,
++    };
++  }
++  if (movingMax <= targetMin || movingMin >= targetMax) {
++    return {
++      entry: Number.POSITIVE_INFINITY,
++      exit: Number.NEGATIVE_INFINITY,
++    };
++  }
++  return {
++    entry: Number.NEGATIVE_INFINITY,
++    exit: Number.POSITIVE_INFINITY,
++  };
++}
++
++function normalForImpact(entryX, entryY, velocity) {
++  if (entryX > entryY) {
++    return freezePoint(velocity.x > 0 ? -1 : 1, 0);
++  }
++  if (entryY > entryX) {
++    return freezePoint(0, velocity.y > 0 ? -1 : 1);
++  }
++  return freezePoint(0, 0);
++}
++
++function impactPointFor(movingBox, targetBox, normal) {
++  if (normal.x < 0) {
++    return freezePoint(targetBox.left, movingBox.centerY);
++  }
++  if (normal.x > 0) {
++    return freezePoint(targetBox.right, movingBox.centerY);
++  }
++  if (normal.y < 0) {
++    return freezePoint(movingBox.centerX, targetBox.top);
++  }
++  if (normal.y > 0) {
++    return freezePoint(movingBox.centerX, targetBox.bottom);
++  }
++  return freezePoint(movingBox.centerX, movingBox.centerY);
++}
++
++export function sweptAabb({
++  deltaTime = 1,
++  movingBox,
++  targetBox,
++  velocity = {},
++} = {}) {
++  const moving = normalizeBoundingBox(movingBox);
++  const target = normalizeBoundingBox(targetBox);
++  const duration = Math.max(0, finiteNumber(deltaTime, 1));
++  const safeVelocity = freezePoint(velocity.x, velocity.y);
++  const displacement = freezePoint(safeVelocity.x * duration, safeVelocity.y * duration);
++  const startPosition = freezePoint(moving.x, moving.y);
++  const endPosition = freezePoint(moving.x + displacement.x, moving.y + displacement.y);
++  const startOverlap = aabbOverlap(moving, target).overlap;
++
++  if (startOverlap) {
++    const impactPosition = startPosition;
++    const impactBox = positionBox(moving, impactPosition);
++    return Object.freeze({
++      afterPosition: endPosition,
++      beforePosition: startPosition,
++      collided: true,
++      collisionTime: 0,
++      endBox: positionBox(moving, endPosition),
++      endPosition,
++      impactNormal: freezePoint(0, 0),
++      impactPoint: impactPointFor(impactBox, target, freezePoint(0, 0)),
++      impactPosition,
++      startBox: moving,
++      startPosition,
++      targetBox: target,
++    });
++  }
++
++  const xTimes = entryExitTimes(moving.left, moving.right, target.left, target.right, displacement.x);
++  const yTimes = entryExitTimes(moving.top, moving.bottom, target.top, target.bottom, displacement.y);
++  const entryTime = Math.max(xTimes.entry, yTimes.entry);
++  const exitTime = Math.min(xTimes.exit, yTimes.exit);
++  const collided = entryTime >= 0
++    && entryTime <= 1
++    && entryTime <= exitTime
++    && xTimes.entry !== Number.POSITIVE_INFINITY
++    && yTimes.entry !== Number.POSITIVE_INFINITY;
++  const collisionTime = collided ? entryTime : null;
++  const impactPosition = collided
++    ? freezePoint(moving.x + displacement.x * entryTime, moving.y + displacement.y * entryTime)
++    : null;
++  const impactBox = impactPosition ? positionBox(moving, impactPosition) : null;
++  const impactNormal = collided ? normalForImpact(xTimes.entry, yTimes.entry, displacement) : freezePoint(0, 0);
++
++  return Object.freeze({
++    afterPosition: endPosition,
++    beforePosition: startPosition,
++    collided,
++    collisionTime,
++    endBox: positionBox(moving, endPosition),
++    endPosition,
++    impactNormal,
++    impactPoint: impactBox ? impactPointFor(impactBox, target, impactNormal) : null,
++    impactPosition,
++    startBox: moving,
++    startPosition,
++    targetBox: target,
++  });
++}
++
++export function collisionTime(sweptResult = {}) {
++  return Number.isFinite(sweptResult.collisionTime) ? sweptResult.collisionTime : null;
++}
+diff --git a/tests/engine/HitboxCollisionContract.test.mjs b/tests/engine/HitboxCollisionContract.test.mjs
+new file mode 100644
+index 000000000..20394081a
+--- /dev/null
++++ b/tests/engine/HitboxCollisionContract.test.mjs
+@@ -0,0 +1,86 @@
++import assert from "node:assert/strict";
++import {
++  aabbOverlap,
++  collisionTime,
++  normalizeBoundingBox,
++  sweptAabb,
++} from "../../src/engine/collision/hitboxCollision.js";
++
++export function run() {
++  const normalized = normalizeBoundingBox({ height: -8, width: 10, x: 5, y: 12 });
++  assert.deepEqual(
++    {
++      bottom: normalized.bottom,
++      height: normalized.height,
++      left: normalized.left,
++      right: normalized.right,
++      top: normalized.top,
++      width: normalized.width,
++      x: normalized.x,
++      y: normalized.y,
++    },
++    {
++      bottom: 12,
++      height: 8,
++      left: 5,
++      right: 15,
++      top: 4,
++      width: 10,
++      x: 5,
++      y: 4,
++    },
++  );
++
++  const overlap = aabbOverlap(
++    { x: 0, y: 0, width: 10, height: 10 },
++    { x: 5, y: 5, width: 10, height: 10 },
++  );
++  assert.equal(overlap.overlap, true);
++  assert.deepEqual(
++    {
++      height: overlap.intersection.height,
++      width: overlap.intersection.width,
++      x: overlap.intersection.x,
++      y: overlap.intersection.y,
++    },
++    { height: 5, width: 5, x: 5, y: 5 },
++  );
++  assert.equal(aabbOverlap({ x: 0, y: 0, width: 4, height: 4 }, { x: 5, y: 0, width: 4, height: 4 }).overlap, false);
++
++  const highSpeedImpact = sweptAabb({
++    movingBox: { x: 0, y: 0, width: 10, height: 10 },
++    targetBox: { x: 0, y: 50, width: 10, height: 10 },
++    velocity: { x: 0, y: 100 },
++  });
++  assert.equal(highSpeedImpact.collided, true);
++  assert.equal(highSpeedImpact.collisionTime, 0.4);
++  assert.deepEqual(highSpeedImpact.impactNormal, { x: 0, y: -1 });
++  assert.deepEqual(highSpeedImpact.beforePosition, { x: 0, y: 0 });
++  assert.deepEqual(highSpeedImpact.afterPosition, { x: 0, y: 100 });
++  assert.deepEqual(highSpeedImpact.impactPosition, { x: 0, y: 40 });
++  assert.deepEqual(highSpeedImpact.impactPoint, { x: 5, y: 50 });
++  assert.equal(collisionTime(highSpeedImpact), 0.4);
++
++  const horizontalImpact = sweptAabb({
++    movingBox: { x: 0, y: 0, width: 10, height: 10 },
++    targetBox: { x: 30, y: 0, width: 10, height: 10 },
++    velocity: { x: 40, y: 0 },
++  });
++  assert.equal(horizontalImpact.collided, true);
++  assert.equal(horizontalImpact.collisionTime, 0.5);
++  assert.deepEqual(horizontalImpact.impactNormal, { x: -1, y: 0 });
++  assert.deepEqual(horizontalImpact.impactPoint, { x: 30, y: 5 });
++
++  const miss = sweptAabb({
++    movingBox: { x: 0, y: 0, width: 10, height: 10 },
++    targetBox: { x: 0, y: 50, width: 10, height: 10 },
++    velocity: { x: 100, y: 0 },
++  });
++  assert.equal(miss.collided, false);
++  assert.equal(miss.collisionTime, null);
++  assert.equal(miss.impactPoint, null);
++}
++
++if (import.meta.url === `file://${process.argv[1]}`) {
++  run();
++}
