@@ -1,0 +1,108 @@
+# PR_26177_BRAVO_002 Correct Team Branch Governance
+
+## Scope
+
+Correction-only governance PR. No feature implementation and no unrelated cleanup.
+
+Repo-structured ZIP path: `tmp/PR_26177_BRAVO_002-correct-team-branch-governance_delta.zip`
+
+## Initial Branch/Status
+
+- Initial branch: `main`
+- Initial status: `main...origin/main [ahead 1, behind 120]`
+- Initial finding: governance failure.
+- Details:
+  - Prior Bravo audit commit `cda216906 Add Bravo TTS profiles audit report` was on local `main`.
+  - `main` also had an in-progress merge with `MERGE_HEAD` present.
+  - `docs_build/dev/reports/codex_changed_files.txt` and `docs_build/dev/reports/codex_review.diff` were conflicted.
+  - `main` had staged merge changes from non-Bravo work.
+
+## Correction Steps Taken
+
+1. Reported branch/status before making correction changes.
+2. Confirmed the repository was on `main` and not clean.
+3. Did not commit on `main`.
+4. Aborted the interrupted merge on `main`.
+5. Created `bravo/26177-text-to-speech` from `origin/main`.
+6. Cherry-picked the prior scoped Bravo audit commit onto the Bravo branch.
+7. Resolved only the Codex artifact conflicts from that cherry-pick.
+8. Moved local `main` back to `origin/main` while staying on the Bravo branch.
+9. Added team-branch governance documentation in `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md`.
+10. Regenerated the required Codex report artifacts for this correction.
+11. Packaged the correction ZIP under `tmp/`.
+
+## Final Branch/Status
+
+- Final working branch: `bravo/26177-text-to-speech`
+- Final branch status after commit: `## bravo/26177-text-to-speech...origin/main [ahead 2]`
+- Final branch clean status: PASS, no staged or unstaged file entries were reported.
+- Local `main` ref: reset to `origin/main`.
+- Codex must remain on `bravo/26177-text-to-speech` after this correction.
+
+## Main Clean Check
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| Local `main` equals `origin/main` | PASS | `git diff --quiet main origin/main` returned success after correction. |
+| Bravo audit changes removed from local `main` | PASS | `main` ref was moved back to `origin/main`; Bravo audit commit is retained on `bravo/26177-text-to-speech`. |
+| No commit performed on dirty `main` | PASS | Correction commit is made only on `bravo/26177-text-to-speech`. |
+
+## Bravo Branch Clean Check
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| Current branch is Bravo branch | PASS | `git status --short --branch` reports `bravo/26177-text-to-speech`. |
+| Bravo branch contains PR_26177_BRAVO_001 audit report | PASS | `docs_build/dev/reports/PR_26177_BRAVO_001-audit-text-to-speech-profiles-emotions.md` is present on the Bravo branch. |
+| Bravo branch contains PR_26177_BRAVO_002 governance correction report | PASS | This report is present on the Bravo branch. |
+| Bravo branch clean after commit | PASS | `git status --short --branch` reported only the branch header and no staged/unstaged file entries. |
+
+## Requirement Checklist
+
+| Requirement | Result | Notes |
+| --- | --- | --- |
+| Inspect current branch and git status | PASS | Initial branch/status captured before correction. |
+| If current branch is main and dirty, do not commit on main | PASS | No commit was made on `main`. |
+| Create or switch to `bravo/26177-text-to-speech` | PASS | Branch created from `origin/main`; final work remains there. |
+| Preserve current Bravo audit changes and commit on Bravo only | PASS | Prior audit commit was cherry-picked to the Bravo branch. |
+| Ensure main has no staged or unstaged changes after correction | PASS | Local `main` ref equals `origin/main`; correction worktree remains on Bravo. |
+| Do not switch back to main except validation | PASS | Correction stayed on Bravo after branch creation; main clean check used ref comparison. |
+| Stay on `bravo/26177-text-to-speech` after correction | PASS | Final branch remains Bravo. |
+| Keep PR_26177_BRAVO_001 changes on Bravo branch | PASS | Audit report commit is on Bravo branch. |
+| Add/adjust governance documentation for staying on team branch until EOD | PASS | `TEAM_ASSIGNMENTS.md` now requires staying on the assigned team branch until EOD or owner-approved merge checkpoint. |
+| Document returning to main between sequential PRs is prohibited | PASS | Added explicit prohibition in `TEAM_ASSIGNMENTS.md`. |
+| Document staged/unstaged changes on main during team work is a governance failure | PASS | Added explicit governance-failure language and correction path. |
+| No feature implementation | PASS | Only governance docs and reports changed. |
+| No unrelated cleanup | PASS | No unrelated cleanup performed. |
+| Do not modify `start_of_day` folders | PASS | No `start_of_day` paths modified. |
+| Required reports present | PASS | Codex diff, changed-files report, and this PR report are included. |
+| Repo-structured ZIP under `tmp/` | PASS | ZIP path listed above. |
+
+## Validation Lane Report
+
+| Command | Result |
+| --- | --- |
+| `git status --short --branch` | PASS, initial status captured on `main`; post-correction status captured on Bravo. |
+| `git rev-parse --verify MERGE_HEAD` | PASS, confirmed interrupted merge before correction. |
+| `git merge --abort` | PASS, cleared the interrupted merge on `main`. |
+| `git switch -c bravo/26177-text-to-speech origin/main` | PASS, created active Bravo branch from `origin/main`. |
+| `git cherry-pick cda216906` | PARTIAL, expected Codex artifact conflicts resolved with the cherry-picked audit versions. |
+| `git branch -f main origin/main` | PASS, restored local `main` ref to `origin/main`. |
+| `git diff --quiet main origin/main` | PASS, local `main` equals `origin/main`. |
+| `rg -n "Returning to \`main\` between sequential|governance failure|stay on the assigned team branch" docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md` | PASS, governance wording present. |
+| `git diff --check -- docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md docs_build/dev/reports/PR_26177_BRAVO_002-correct-team-branch-governance.md docs_build/dev/reports/codex_changed_files.txt docs_build/dev/reports/codex_review.diff` | PASS, no whitespace errors expected before commit. |
+
+## Manual Validation Notes
+
+- The correction intentionally did not commit or stage new work on `main`.
+- The prior PR_26177_BRAVO_001 audit report is now retained on the Bravo branch.
+- Local `main` was validated by ref comparison instead of switching back to `main`.
+- The governance doc now says team-day Codex work stays on the assigned team branch until EOD or explicit owner-approved merge checkpoint.
+- The governance doc now says returning to `main` between sequential team PRs is prohibited.
+- The governance doc now says staged changes, unstaged changes, unmerged state, or direct commit on `main` during team work is a governance failure.
+
+## Changed Files
+
+- `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md`
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/PR_26177_BRAVO_002-correct-team-branch-governance.md`

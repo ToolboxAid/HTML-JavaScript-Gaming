@@ -1,9 +1,14 @@
 # Scoped changed files
+M	docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
 M	docs_build/dev/reports/codex_changed_files.txt
 M	docs_build/dev/reports/codex_review.diff
+A	docs_build/dev/reports/PR_26177_BRAVO_002-correct-team-branch-governance.md
+
+# Branch correction preserved from prior commit on Bravo branch
 A	docs_build/dev/reports/PR_26177_BRAVO_001-audit-text-to-speech-profiles-emotions.md
 
 # Notes
-- `codex_review.diff` captures the reviewable audit-report addition and intentionally avoids recursive self-diff expansion.
 - No implementation files were modified.
+- Local `main` was restored to `origin/main`.
+- Current work remains on `bravo/26177-text-to-speech`.
 - Required delta ZIP is generated under `tmp/` and must not be staged.
