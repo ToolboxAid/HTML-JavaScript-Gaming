@@ -1,16 +1,16 @@
-﻿M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md
-M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md
-M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md
-M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_requirement-checklist.md
-M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_validation-lane.md
-M	docs_build/dev/reports/coverage_changed_js_guardrail.txt
-M	docs_build/dev/reports/playwright_v8_coverage_report.txt
-D	scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs
-M	scripts/validate-browser-env-agnostic.mjs
-D	src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs
-D	tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs
-M	tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
-M	tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-M	tests/playwright/tools/GameJourneyTool.spec.mjs
-M	docs_build/dev/reports/codex_changed_files.txt
-M	docs_build/dev/reports/codex_review.diff
+assets/toolbox/game-configuration/js/index.js
+docs_build/database/ddl/game-configuration.sql
+docs_build/database/seed/game-configuration.json
+docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_branch-validation.md
+docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_manual-validation-notes.md
+docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_report.md
+docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_requirement-checklist.md
+docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_validation-lane.md
+docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/codex_review.diff
+docs_build/dev/reports/coverage_changed_js_guardrail.txt
+docs_build/dev/reports/playwright_v8_coverage_report.txt
+src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js
+src/dev-runtime/server/local-api-router.mjs
+tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs
+toolbox/game-configuration/index.html

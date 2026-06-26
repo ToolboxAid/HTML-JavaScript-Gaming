@@ -8,5 +8,5 @@
     "game_configuration_records": [],
     "game_configuration_validation_items": []
   },
-  "note": "Seed records for this group are intentionally empty until an Admin-owned server API seeds them."
+  "note": "Game Configuration records are server/API-owned. Browser pages must not seed or generate authoritative configuration records."
 }

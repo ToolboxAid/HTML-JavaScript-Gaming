@@ -1,46 +1,63 @@
 import { createGameDesignMockRepository } from "./game-design-mock-repository.js";
+import { GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY } from "./game-workspace-mock-repository.js";
+import { makeSeedUlid } from "../../seed/seed-db-keys.mjs";
 
 export const GAME_CONFIGURATION_TABLES = Object.freeze([
-  "game_configuration_documents",
-  "game_configuration_validation_items"
+  "game_configuration_records",
+  "game_configuration_validation_items",
 ]);
 
 export const GAME_CONFIGURATION_SECTIONS = Object.freeze([
+  "gameDetails",
+  "version",
+  "resolution",
+  "platforms",
+  "visibility",
+  "startupSettings",
   "gameBasics",
   "gameRules",
   "playerSetup",
   "worldSetup",
   "objectSetup",
   "audioSetup",
-  "testReadiness"
+  "testReadiness",
 ]);
 
 export const GAME_CONFIGURATION_PLAYER_MODES = Object.freeze([
   Object.freeze({
     description: "One active player.",
     label: "1 Player",
-    value: "1 Player"
+    value: "1 Player",
   }),
   Object.freeze({
     description: "Multiple players, one active player receives input at a time.",
     label: "2+ Turn Based",
-    value: "2+ Turn Based"
+    value: "2+ Turn Based",
   }),
   Object.freeze({
     description: "Multiple players active at the same time.",
     label: "2+ Concurrent",
-    value: "2+ Concurrent"
-  })
+    value: "2+ Concurrent",
+  }),
 ]);
 
+export const GAME_CONFIGURATION_VISIBILITY_OPTIONS = Object.freeze(["Private", "Unlisted", "Public"]);
+export const GAME_CONFIGURATION_RESOLUTION_OPTIONS = Object.freeze(["1280x720", "1366x768", "1920x1080"]);
+
 const SECTION_LABELS = Object.freeze({
-  gameBasics: "Game Basics",
-  gameRules: "Game Rules",
-  playerSetup: "Player Setup",
-  worldSetup: "World Setup",
-  objectSetup: "Object Setup",
   audioSetup: "Audio Setup",
-  testReadiness: "Test Readiness"
+  gameBasics: "Game Basics",
+  gameDetails: "Game Details",
+  gameRules: "Game Rules",
+  objectSetup: "Object Setup",
+  platforms: "Platforms",
+  playerSetup: "Player Setup",
+  resolution: "Resolution",
+  startupSettings: "Startup Settings",
+  testReadiness: "Test Readiness",
+  version: "Version",
+  visibility: "Visibility",
+  worldSetup: "World Setup",
 });
 
 function cloneRows(rows) {
@@ -49,15 +66,15 @@ function cloneRows(rows) {
 
 function cloneTables(tables) {
   return {
-    game_configuration_documents: cloneRows(tables.game_configuration_documents),
-    game_configuration_validation_items: cloneRows(tables.game_configuration_validation_items)
+    game_configuration_records: cloneRows(tables.game_configuration_records),
+    game_configuration_validation_items: cloneRows(tables.game_configuration_validation_items),
   };
 }
 
 function createEmptyTables() {
   return {
-    game_configuration_documents: [],
-    game_configuration_validation_items: []
+    game_configuration_records: [],
+    game_configuration_validation_items: [],
   };
 }
 
@@ -72,18 +89,54 @@ function normalizePlayerMode(value) {
     : "1 Player";
 }
 
+function normalizeChoice(value, options, fallback) {
+  const normalized = normalizeText(value);
+  return options.includes(normalized) ? normalized : fallback;
+}
+
+function auditFields(index = 0, userKey = GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY) {
+  const timestamp = new Date(Date.UTC(2026, 0, 1, 14, index, 0)).toISOString();
+  return {
+    createdAt: timestamp,
+    createdBy: userKey,
+    updatedAt: timestamp,
+    updatedBy: userKey,
+  };
+}
+
+function hashKeySource(value) {
+  return Array.from(String(value || "game-configuration")).reduce(
+    (hash, character) => ((hash * 31) + character.charCodeAt(0)) % 97,
+    0,
+  );
+}
+
+function keySequenceForProject(baseSequence, projectId, index = 0) {
+  return baseSequence + (hashKeySource(projectId) * 20) + index;
+}
+
+function configurationKeyForProject(projectId) {
+  return makeSeedUlid(keySequenceForProject(8800, projectId));
+}
+
+function validationKeyForProject(projectId, index) {
+  return makeSeedUlid(keySequenceForProject(8900, projectId, index));
+}
+
 function configurationIdForProject(projectId) {
   return `${projectId}-game-configuration`;
 }
 
 function createValidationRows(projectId, findings) {
   return findings.map((finding, index) => ({
-    id: `${projectId}-configuration-validation-${index + 1}`,
+    key: validationKeyForProject(projectId, index),
+    projectKey: projectId,
     projectId,
     section: finding.section,
     label: finding.label,
     action: finding.action,
-    status: "Missing"
+    status: "Missing",
+    ...auditFields(index + 20),
   }));
 }
 
@@ -96,27 +149,43 @@ function designRequiresAudio(handoff) {
 
 function requiredSectionsForHandoff(handoff) {
   const sections = [
+    "gameDetails",
+    "version",
+    "resolution",
+    "platforms",
+    "visibility",
+    "startupSettings",
     "gameBasics",
     "gameRules",
     "playerSetup",
     "worldSetup",
     "objectSetup",
-    "testReadiness"
+    "testReadiness",
   ];
 
   if (designRequiresAudio(handoff)) {
-    sections.splice(5, 0, "audioSetup");
+    sections.splice(11, 0, "audioSetup");
   }
 
   return sections;
 }
 
 function createDocument(projectId, handoff, input = {}) {
+  const activeProject = handoff.activeProject || {};
   const document = {
+    key: configurationKeyForProject(projectId),
     id: configurationIdForProject(projectId),
+    projectKey: projectId,
     projectId,
-    projectPurpose: handoff.activeProject?.purpose || "",
-    gameType: handoff.activeDesign?.gameType || "",
+    gameName: activeProject.name || "",
+    gameDetails: normalizeText(input.gameDetails),
+    version: normalizeText(input.version) || "0.1.0",
+    resolution: normalizeChoice(input.resolution, GAME_CONFIGURATION_RESOLUTION_OPTIONS, "1280x720"),
+    platforms: normalizeText(input.platforms),
+    visibility: normalizeChoice(input.visibility, GAME_CONFIGURATION_VISIBILITY_OPTIONS, "Private"),
+    startupSettings: normalizeText(input.startupSettings),
+    projectPurpose: activeProject.purpose || "",
+    gameType: activeProject.gameType || handoff.activeDesign?.gameType || activeProject.purpose || "",
     genre: handoff.activeDesign?.genre || "",
     playStyle: handoff.activeDesign?.playStyle || "",
     playerMode: normalizePlayerMode(handoff.activeDesign?.playerMode),
@@ -128,7 +197,7 @@ function createDocument(projectId, handoff, input = {}) {
     audioSetup: normalizeText(input.audioSetup),
     testReadiness: normalizeText(input.testReadiness),
     status: "Under Construction",
-    updatedAt: new Date().toISOString()
+    ...auditFields(0, activeProject.ownerKey),
   };
   const validation = validateDocument(document, handoff);
   document.status = validation.findings.length === 0 ? "Ready" : "Under Construction";
@@ -140,29 +209,29 @@ function validateDocument(document, handoff) {
 
   if (!handoff.ready) {
     findings.push({
-      section: "gameDesign",
+      action: "Complete a valid Game Design before editing Game Configuration.",
       label: "Game Design",
-      action: "Complete a valid Game Design before editing Game Configuration."
+      section: "gameDesign",
     });
     return {
       findings,
-      status: "Blocked"
+      status: "Blocked",
     };
   }
 
   requiredSectionsForHandoff(handoff).forEach((section) => {
     if (!normalizeText(document?.[section])) {
       findings.push({
-        section,
+        action: `Complete ${SECTION_LABELS[section]} before Build Game readiness.`,
         label: SECTION_LABELS[section],
-        action: `Complete ${SECTION_LABELS[section]} before Build Game readiness.`
+        section,
       });
     }
   });
 
   return {
     findings,
-    status: findings.length === 0 ? "Ready" : "Needs Input"
+    status: findings.length === 0 ? "Ready" : "Needs Input",
   };
 }
 
@@ -174,7 +243,7 @@ function createSeededGameDesignRepository() {
     gameType: "Puzzle",
     genre: "Adventure",
     playerMode: "1 Player",
-    playStyle: "Single Player"
+    playStyle: "Single Player",
   });
   return repository;
 }
@@ -194,12 +263,14 @@ export function createGameConfigurationMockRepository(options = {}) {
       activeGame: activeProject,
       activeProject,
       ready,
-      validation
+      validation,
     };
   }
 
   function getConfiguration(projectId) {
-    return tables.game_configuration_documents.find((document) => document.projectId === projectId) || null;
+    return tables.game_configuration_records.find((document) => (
+      document.projectId === projectId || document.projectKey === projectId
+    )) || null;
   }
 
   function createConfiguration(projectId, input = {}) {
@@ -209,10 +280,10 @@ export function createGameConfigurationMockRepository(options = {}) {
     }
 
     const document = createDocument(projectId, handoff, input);
-    tables.game_configuration_documents = tables.game_configuration_documents.filter(
-      (row) => row.projectId !== projectId
+    tables.game_configuration_records = tables.game_configuration_records.filter(
+      (row) => row.projectId !== projectId && row.projectKey !== projectId,
     );
-    tables.game_configuration_documents.push(document);
+    tables.game_configuration_records.push(document);
     replaceValidationRows(projectId, validateConfiguration(projectId, document).findings);
     return document;
   }
@@ -221,9 +292,33 @@ export function createGameConfigurationMockRepository(options = {}) {
     return createConfiguration(projectId, input);
   }
 
+  function seedConfigurationForActiveProject() {
+    const handoff = getGameDesignHandoff();
+    const projectId = handoff.activeProject?.id || "";
+    if (!handoff.ready || !projectId || getConfiguration(projectId)) {
+      return null;
+    }
+
+    return createConfiguration(projectId, {
+      audioSetup: "Simple pickup, hazard, and completion sounds.",
+      gameBasics: "Seeded playable setup for the current Game Hub game.",
+      gameDetails: "A friendly puzzle game prepared for sharing and discovery.",
+      gameRules: "Collect every key, avoid hazards, and reach the exit.",
+      objectSetup: "Keys, doors, hazards, exit marker, and tutorial prompt.",
+      platforms: "Web",
+      playerSetup: "One player starts near the first key with keyboard controls.",
+      resolution: "1280x720",
+      startupSettings: "Open on the title screen and start in the first room.",
+      testReadiness: "Confirm start, collect, fail, retry, and win paths before Build Game.",
+      version: "0.1.0",
+      visibility: "Private",
+      worldSetup: "One compact room with a locked exit and visible goal path.",
+    });
+  }
+
   function replaceValidationRows(projectId, findings) {
     tables.game_configuration_validation_items = tables.game_configuration_validation_items.filter(
-      (row) => row.projectId !== projectId
+      (row) => row.projectId !== projectId && row.projectKey !== projectId,
     );
     tables.game_configuration_validation_items.push(...createValidationRows(projectId, findings));
   }
@@ -241,11 +336,11 @@ export function createGameConfigurationMockRepository(options = {}) {
   }
 
   function resetConfiguration(projectId) {
-    tables.game_configuration_documents = tables.game_configuration_documents.filter(
-      (row) => row.projectId !== projectId
+    tables.game_configuration_records = tables.game_configuration_records.filter(
+      (row) => row.projectId !== projectId && row.projectKey !== projectId,
     );
     tables.game_configuration_validation_items = tables.game_configuration_validation_items.filter(
-      (row) => row.projectId !== projectId
+      (row) => row.projectId !== projectId && row.projectKey !== projectId,
     );
     return getSnapshot();
   }
@@ -271,7 +366,7 @@ export function createGameConfigurationMockRepository(options = {}) {
     gameDesignRepository.resetDesignData();
     openRequestedProject(projectId);
     gameDesignRepository.saveDesign({
-      gameType: "Puzzle"
+      gameType: "Puzzle",
     });
     tables = createEmptyTables();
     return getSnapshot();
@@ -285,11 +380,9 @@ export function createGameConfigurationMockRepository(options = {}) {
       gameType: "Puzzle",
       genre: "Adventure",
       playerMode: "1 Player",
-      playStyle: "Single Player"
+      playStyle: "Single Player",
     });
-    if (!projectId) {
-      tables = createEmptyTables();
-    }
+    seedConfigurationForActiveProject();
     return getSnapshot();
   }
 
@@ -309,8 +402,8 @@ export function createGameConfigurationMockRepository(options = {}) {
         gameProgress: "Game Configuration blocked until Game Design is ready",
         projectProgress: "Game Configuration blocked until Game Design is ready",
         publishingProgress: "Build Game blocked by missing Game Design handoff",
+        readinessStatus: "Blocked",
         recommendedNextTool: "Game Design",
-        readinessStatus: "Blocked"
       };
     }
 
@@ -320,8 +413,8 @@ export function createGameConfigurationMockRepository(options = {}) {
         gameProgress: `${handoff.activeProject.name} configuration needs ${validation.findings.length} item${validation.findings.length === 1 ? "" : "s"}`,
         projectProgress: `${handoff.activeProject.name} configuration needs ${validation.findings.length} item${validation.findings.length === 1 ? "" : "s"}`,
         publishingProgress: "Build Game blocked until configuration is ready",
+        readinessStatus: validation.status,
         recommendedNextTool: "Game Configuration",
-        readinessStatus: validation.status
       };
     }
 
@@ -330,8 +423,8 @@ export function createGameConfigurationMockRepository(options = {}) {
       gameProgress: `${handoff.activeProject.name} Game Configuration ready`,
       projectProgress: `${handoff.activeProject.name} Game Configuration ready`,
       publishingProgress: "Build Game remains blocked until required assets are ready",
+      readinessStatus: "Ready",
       recommendedNextTool: "Assets",
-      readinessStatus: "Ready"
     };
   }
 
@@ -346,7 +439,7 @@ export function createGameConfigurationMockRepository(options = {}) {
       handoff,
       progressHandoff: getProjectProgressHandoff(),
       tables: getTables(),
-      validation
+      validation,
     };
   }
 
@@ -363,6 +456,6 @@ export function createGameConfigurationMockRepository(options = {}) {
     resetAll,
     resetConfiguration,
     updateConfiguration,
-    validateConfiguration
+    validateConfiguration,
   };
 }
