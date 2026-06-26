@@ -172,7 +172,7 @@ function configuredDbViewerGroups(tableNames) {
     { id: "game-hub", label: "Game Hub", tableNames: include(["game_workspace_games", "game_workspace_progress"]), type: "tool" },
     { id: "objects", label: "Objects", tableNames: include(["object_definition_records"]), type: "tool" },
     { id: "palette", label: "Palette", tableNames: include(["palette_colors", "palette_source_swatches", "palette_swatch_usages", "project_workspace_palette_globals"]), type: "tool" },
-    { id: "tags", label: "Tags", tableNames: include(["workspace_tag_records"]), type: "tool" },
+    { id: "tags", label: "Tags", tableNames: include(["project_tags", "project_tag_assignments"]), type: "tool" },
     { id: "toolbox_tool_metadata", label: "Tool Metadata", tableNames: include(["toolbox_tool_metadata"]), type: "table" },
     { id: "toolbox_tool_planning", label: "Tool Planning", tableNames: include(["toolbox_tool_planning"]), type: "table" },
     { id: "tool_state_samples", label: "Tool State Samples", tableNames: include(["tool_state_samples"]), type: "table" },

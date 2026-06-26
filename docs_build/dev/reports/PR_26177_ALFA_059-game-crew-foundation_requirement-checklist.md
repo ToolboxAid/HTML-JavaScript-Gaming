@@ -1,14 +1,14 @@
-# PR_26177_ALFA_059-game-crew-foundation Requirement Checklist
+# PR_26177_ALFA_059 Requirement Checklist
 
-Generated: 2026-06-26 18:44:40 UTC
-
-- PASS - Game Crew is a human-testable tool, not a landing page.
-- PASS - Tool shows the current Game Hub game context and matches the status bar selected game.
-- PASS - Tool shows project owner and active member list.
-- PASS - Signed-in Creator can add a Member through the API/DB path.
-- PASS - Signed-in Creator can remove a Member through the API/DB path, and refresh/reload preserves removal.
-- PASS - Roles remain limited to Owner and Member; invitations and permissions are not implemented.
-- PASS - Guest add and remove actions redirect to account/sign-in.html in browser tests.
-- PASS - Guest add and remove API writes return 401.
-- PASS - project_members DDL uses users.key ownership/audit references.
-- PASS - No SQLite, tmp runtime dependency, JSON source of truth, mock-db-store expansion, or new mock repository file was added.
+| Requirement | Status | Notes |
+| --- | --- | --- |
+| Game Crew shows current Game Hub game context | PASS | Playwright page coverage passed. |
+| Game Crew shows owner | PASS | Playwright page coverage passed. |
+| Game Crew shows member list | PASS | Playwright page coverage passed. |
+| Add member persists through API/DB | PASS | API and page coverage passed. |
+| Remove member persists through API/DB | PASS | API and page coverage passed. |
+| Guest add/remove redirects or 401s | PASS | Guest UI/API coverage passed. |
+| No mock repository source of truth for Tags/Design/Configuration | PASS | Files removed; guardrail passed. |
+| No mock-db source of truth for Tags | PASS | Active metadata uses `project_tags` and `project_tag_assignments`. |
+| Browser does not own product data | PASS | Writes route through API/database services. |
+| No JSON source of truth, SQLite, or tmp runtime dependency | PASS | None added. |
