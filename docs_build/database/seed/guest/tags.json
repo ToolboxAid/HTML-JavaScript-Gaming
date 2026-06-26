@@ -6,7 +6,8 @@
   "writableByGuest": false,
   "signInRedirect": "account/sign-in.html",
   "tables": {
-    "workspace_tag_records": []
+    "project_tags": [],
+    "project_tag_assignments": []
   },
   "samplePackages": [
     {

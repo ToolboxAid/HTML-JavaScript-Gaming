@@ -1,5 +1,9 @@
 import { expect, test } from "@playwright/test";
 import process from "node:process";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import { createPostgresConnectionClient } from "../../../src/dev-runtime/persistence/postgres-connection-client.mjs";
+import { SEED_DB_KEYS } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
@@ -7,7 +11,7 @@ import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageRe
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
     lane: "game-configuration",
-    surface: "game configuration mock repository"
+    surface: "game configuration API and database persistence"
   });
 });
 
@@ -25,6 +29,43 @@ function restoreEnvValue(key, value) {
     return;
   }
   process.env[key] = value;
+}
+
+let schemaReadyPromise = null;
+
+async function ensureGameConfigurationDatabaseSchema() {
+  if (!schemaReadyPromise) {
+    schemaReadyPromise = (async () => {
+      const client = createPostgresConnectionClient();
+      for (const ddlFile of [
+        "docs_build/database/ddl/account.sql",
+        "docs_build/database/ddl/game-workspace.sql",
+        "docs_build/database/ddl/game-design.sql",
+        "docs_build/database/ddl/game-configuration.sql",
+      ]) {
+        await client.query(await readFile(path.resolve(ddlFile), "utf8"));
+      }
+    })();
+  }
+  try {
+    await schemaReadyPromise;
+  } catch (error) {
+    schemaReadyPromise = null;
+    throw error;
+  }
+}
+
+async function setServerSession(server, userKey = SEED_DB_KEYS.users.user1) {
+  await fetch(`${server.baseUrl}/api/session/mode`, {
+    body: JSON.stringify({ modeId: "local-db" }),
+    headers: { "Content-Type": "application/json" },
+    method: "POST"
+  });
+  await fetch(`${server.baseUrl}/api/session/user`, {
+    body: JSON.stringify({ userKey }),
+    headers: { "Content-Type": "application/json" },
+    method: "POST"
+  });
 }
 
 async function openRepoPage(page, pathName) {
@@ -61,7 +102,8 @@ async function openRepoPage(page, pathName) {
   });
 
   await workspaceV2CoverageReporter.start(page);
-  await fetch(`${server.baseUrl}/api/local-db/seed`, { method: "POST" });
+  await ensureGameConfigurationDatabaseSchema();
+  await setServerSession(server);
   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
   return { consoleErrors, failedRequests, pageErrors, server };
 }
@@ -201,6 +243,12 @@ test("Game Configuration validation lists missing required sections and blocks B
 
   try {
     await page.getByLabel("Game Basics").fill("A playable setup summary without enough supporting detail.");
+    await page.getByLabel("Game Rules").fill("");
+    await page.getByLabel("Player Setup").fill("");
+    await page.getByLabel("World Setup").fill("");
+    await page.getByLabel("Object Setup").fill("");
+    await page.getByLabel("Audio Setup").fill("");
+    await page.getByLabel("Test Readiness").fill("");
     await page.getByRole("button", { name: "Save Game Configuration" }).click();
 
     await expect(page.locator("[data-game-configuration-log]")).toHaveText("Saved Game Configuration with 6 missing items.");
