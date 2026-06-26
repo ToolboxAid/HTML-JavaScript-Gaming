@@ -1,6 +1,5 @@
 import { existsSync } from "node:fs";
 import path from "node:path";
-import process from "node:process";
 import { createPostgresConnectionClient } from "./postgres-connection-client.mjs";
 import { SEED_DB_KEYS, makeSeedUlid } from "../seed/seed-db-keys.mjs";
 
@@ -60,25 +59,15 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
-function defaultLegacySqlitePath(env = process.env) {
-  const configured = String(env.GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH || "").trim();
-  if (configured) {
-    return path.resolve(configured);
-  }
-  return path.join(process.cwd(), "tmp", "local-api", "game-journey-completion-metrics.sqlite");
-}
-
-function resolveLegacySqlitePath({ dbPath, env, legacyDbPath }) {
-  if (legacyDbPath === null) {
+function resolveLegacySqlitePath(legacyDbPath) {
+  if (legacyDbPath === null || legacyDbPath === undefined) {
     return "";
   }
-  if (legacyDbPath !== undefined) {
-    return path.resolve(legacyDbPath);
+  const value = String(legacyDbPath || "").trim();
+  if (!value) {
+    return "";
   }
-  if (dbPath) {
-    return path.resolve(dbPath);
-  }
-  return defaultLegacySqlitePath(env);
+  return path.resolve(value);
 }
 
 function assertNoUnmigratedLegacySqlite(legacyDbPath) {
@@ -169,11 +158,7 @@ function bucketSeedRow(bucket, now) {
 export function createGameJourneyCompletionMetricsStore(options = {}) {
   const env = options.env || process.env;
   const bucketSeeds = Object.freeze((options.buckets || GAME_JOURNEY_COMPLETION_BUCKETS).map(clone));
-  const legacyDbPath = resolveLegacySqlitePath({
-    dbPath: options.dbPath,
-    env,
-    legacyDbPath: options.legacyDbPath,
-  });
+  const legacyDbPath = resolveLegacySqlitePath(options.legacyDbPath);
   let postgresClient = options.postgresClient || null;
   let readyPromise = null;
 

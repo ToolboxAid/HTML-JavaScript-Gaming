@@ -128,6 +128,21 @@ function restoreEnvValue(key, value) {
   process.env[key] = value;
 }
 
+function createFailingCompletionMetricsPostgresClient() {
+  const failure = new Error("Active metrics store temporarily unavailable at tmp/local-api/game-journey-completion-metrics.sqlite.");
+  return {
+    dumpTable() {
+      return [];
+    },
+    async query() {
+      throw failure;
+    },
+    async requestTable() {
+      throw failure;
+    },
+  };
+}
+
 function expectStaticToolOwnershipAreas(areas) {
   expect(areas.map((area) => area.sectionName)).toEqual([
     "Idea",
@@ -1572,6 +1587,31 @@ test("Toolbox registration exposes Game Journey navigation", async ({ page }) =>
     await expectNoPageFailures(failures);
   } finally {
     await closeWithCoverage(page, failures);
+  }
+});
+
+test("Toolbox renders Creator-safe Game Journey progress outage copy", async ({ page }) => {
+  const server = await startRepoServer({
+    gameJourneyCompletionMetricsPostgresClient: createFailingCompletionMetricsPostgresClient(),
+  });
+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
+
+  try {
+    await page.goto(`${server.baseUrl}/toolbox/index.html?view=group&group=create`, { waitUntil: "networkidle" });
+    await expect(page.locator("[data-game-journey-completion-diagnostic]").first()).toHaveText(
+      "Game Journey progress is temporarily unavailable. Continue building while progress refreshes.",
+    );
+    await expect(page.locator("body")).not.toContainText("Game Journey completion metrics unavailable");
+    await expect(page.locator("body")).not.toContainText("SQLite");
+    await expect(page.locator("body")).not.toContainText("tmp/local-api");
+    await expect(page.locator("body")).not.toContainText("Postgres");
+  } finally {
+    await server.close();
+    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
+    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
   }
 });
 
