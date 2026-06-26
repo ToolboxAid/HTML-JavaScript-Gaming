@@ -33,6 +33,9 @@ const RETIRED_TTS_PROFILE_PARENT_NAMES = Object.freeze([
   "Neutral",
   "Robot",
 ]);
+const RETIRED_TTS_PROFILE_PARENT_NAMES_NORMALIZED = new Set(
+  RETIRED_TTS_PROFILE_PARENT_NAMES.map((name) => name.toLowerCase()),
+);
 const SUPPORTED_TTS_PROVIDER_KEYS = Object.freeze([
   "browser-speech",
   "elevenlabs",
@@ -252,6 +255,10 @@ function normalizeTtsProviderKey(value) {
     throw httpError("TTS Profile provider is not supported.");
   }
   return providerKey;
+}
+
+function isRetiredTtsProfileParentName(value) {
+  return RETIRED_TTS_PROFILE_PARENT_NAMES_NORMALIZED.has(normalizeText(value).trim().toLowerCase());
 }
 
 function normalizeSsmlLikePreset(value, fallback = "normal") {
@@ -596,14 +603,14 @@ export class MessagesPostgresService {
     }
     await this.seedDefaultTtsProfileEmotionSettings();
     await this.deleteEmptyTtsProfileParents();
+    await this.assertNoRetiredTtsProfileParents();
     await this.backfillDefaultVoiceProfileReferences();
   }
 
   async deleteRetiredTtsProfileParents() {
-    const retiredNames = new Set(RETIRED_TTS_PROFILE_PARENT_NAMES.map((name) => name.toLowerCase()));
     const profiles = await this.tableRows("messages_tts_profiles");
     for (const profile of profiles) {
-      if (!retiredNames.has(normalizeText(profile.name).trim().toLowerCase())) {
+      if (!isRetiredTtsProfileParentName(profile.name)) {
         continue;
       }
       await this.deleteTtsProfileParentData(profile.key);
@@ -661,6 +668,16 @@ export class MessagesPostgresService {
         continue;
       }
       await this.deleteRow("messages_tts_profile_emotion_settings", setting.key);
+    }
+  }
+
+  async assertNoRetiredTtsProfileParents() {
+    const remainingNames = (await this.tableRows("messages_tts_profiles"))
+      .map((profile) => normalizeText(profile.name).trim())
+      .filter((name) => isRetiredTtsProfileParentName(name))
+      .sort((left, right) => left.localeCompare(right, undefined, { sensitivity: "base" }));
+    if (remainingNames.length) {
+      throw httpError(`Retired TTS Profile cleanup failed: ${remainingNames.join(", ")} still exist.`, 500);
     }
   }
 
@@ -1131,7 +1148,9 @@ export class MessagesPostgresService {
 
   async listTtsProfiles() {
     await this.ensureReady();
+    await this.deleteRetiredTtsProfileParents();
     await this.deleteEmptyTtsProfileParents();
+    await this.assertNoRetiredTtsProfileParents();
     const rows = (await this.tableRows("messages_tts_profiles")).sort(compareName);
     return Promise.all(rows.map(async (row) => ttsProfileFromRow(
       row,
@@ -1142,7 +1161,9 @@ export class MessagesPostgresService {
 
   async getTtsProfile(key) {
     await this.ensureReady();
+    await this.deleteRetiredTtsProfileParents();
     await this.deleteEmptyTtsProfileParents();
+    await this.assertNoRetiredTtsProfileParents();
     const row = await this.rowByKey("messages_tts_profiles", key);
     if (!row) {
       throw httpError("TTS Profile was not found.", 404);
@@ -1244,6 +1265,9 @@ export class MessagesPostgresService {
 
   async createTtsProfile(input = {}, actorKey = "") {
     const values = this.normalizeTtsProfileInput(input);
+    if (isRetiredTtsProfileParentName(values.name)) {
+      throw httpError("This TTS Profile name is retired and cannot be saved.");
+    }
     if (!Array.isArray(input.emotionSettings) || !input.emotionSettings.length) {
       throw httpError("TTS Profile requires at least one emotion setting.");
     }
@@ -1265,6 +1289,9 @@ export class MessagesPostgresService {
       throw httpError("TTS Profile was deleted because it has no emotion settings.", 410);
     }
     const values = this.normalizeTtsProfileInput(input, existing);
+    if (isRetiredTtsProfileParentName(values.name)) {
+      throw httpError("This TTS Profile name is retired and cannot be saved.");
+    }
     const duplicate = await this.findTtsProfileByName(values.name);
     if (duplicate && duplicate.key !== key) {
       throw httpError(`TTS Profile ${values.name} already exists.`);

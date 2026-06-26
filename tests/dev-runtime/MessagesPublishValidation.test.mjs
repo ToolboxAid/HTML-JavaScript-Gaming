@@ -184,7 +184,8 @@ test("Messages seed cleanup deletes retired parent TTS profiles and orphaned set
   await service.ensureReady();
 
   const ttsProfiles = await postgresClient.requestTable("messages_tts_profiles");
-  assert.deepEqual(ttsProfiles.map((profile) => profile.name).filter((name) => retiredNames.includes(name)), []);
+  const persistedProfileNames = ttsProfiles.map((profile) => profile.name);
+  assert.deepEqual(persistedProfileNames.filter((name) => retiredNames.includes(name)), []);
   assert.equal(ttsProfiles.some((profile) => profile.name === "Empty Parent Profile"), false);
   const settings = await postgresClient.requestTable("messages_tts_profile_emotion_settings");
   assert.equal(settings.some((setting) => String(setting.ttsProfileKey).startsWith("retired-profile-")), false);
@@ -195,7 +196,43 @@ test("Messages seed cleanup deletes retired parent TTS profiles and orphaned set
   assert.equal((await postgresClient.requestTable("messages_records")).some((message) => message.voiceProfileKey === "empty-profile"), false);
   assert.equal((await postgresClient.requestTable("messages_segments")).some((segment) => segment.voiceProfileKey === "empty-profile"), false);
   assert.equal((await postgresClient.requestTable("messages_event_actions")).some((action) => action.messageKey === "empty-message"), false);
+  const apiResponse = await handleMessagesApiContract({
+    method: "GET",
+    parts: ["tts-profiles"],
+    service,
+  });
+  const apiProfileNames = apiResponse.ttsProfiles.map((profile) => profile.name);
+  for (const retiredName of retiredNames) {
+    assert.equal(persistedProfileNames.includes(retiredName), false, `${retiredName} should be deleted from persisted TTS profiles`);
+    assert.equal(apiProfileNames.includes(retiredName), false, `${retiredName} should be absent from API TTS profile output`);
+  }
   assert.deepEqual((await service.listTtsProfiles()).map((profile) => profile.name), []);
+  service.close();
+});
+
+test("Messages seed setup fails if retired TTS profile validation still finds broken names", async () => {
+  const { postgresClient, service } = createServiceHarness();
+  await postgresClient.requestTable("messages_tts_profiles", {
+    body: datedRow({
+      description: "Validation should fail if cleanup misses this row.",
+      key: "missed-retired-profile",
+      language: "en-US",
+      name: "Hero",
+      pitch: 1,
+      providerKey: "browser-speech",
+      rate: 1,
+      voiceName: "Default browser voice",
+      volume: 1,
+    }),
+    method: "POST",
+  });
+  service.deleteRetiredTtsProfileParents = async () => {};
+  service.deleteEmptyTtsProfileParents = async () => {};
+
+  await assert.rejects(
+    () => service.ensureReady(),
+    /Retired TTS Profile cleanup failed: Hero still exist/,
+  );
   service.close();
 });
 
@@ -216,6 +253,29 @@ test("Messages TTS profile saves reject empty parent profiles instead of creatin
     }),
     /requires at least one emotion setting/,
   );
+
+  for (const retiredName of ["Default Balanced Profile", "Hero", "Merchant", "Neutral", "Robot"]) {
+    await assert.rejects(
+      () => service.createTtsProfile({
+        active: true,
+        emotionSettings: [{
+          emotion: "calm",
+          emotionLabel: "Calm",
+          pitch: 1,
+          rate: 1,
+          volume: 1,
+        }],
+        language: "en-US",
+        name: retiredName,
+        pitch: 1,
+        providerKey: "browser-speech",
+        rate: 1,
+        voiceName: "Default browser voice",
+        volume: 1,
+      }),
+      /retired and cannot be saved/,
+    );
+  }
 
   assert.deepEqual(await service.listTtsProfiles(), []);
   service.close();

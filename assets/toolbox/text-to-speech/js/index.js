@@ -80,6 +80,13 @@ const NEW_ROW_KEY = "__new__";
 const DEFAULT_TTS_PROFILE_ID = "tts-profile";
 const DEFAULT_TTS_EMOTION_ID = "calm";
 const SIGN_IN_ROUTE = "account/sign-in.html";
+const RETIRED_TTS_PROFILE_PARENT_NAMES = Object.freeze([
+  "Default Balanced Profile",
+  "Hero",
+  "Merchant",
+  "Neutral",
+  "Robot",
+]);
 
 const TTS_PROFILE_GENDER_OPTIONS = Object.freeze([
   Object.freeze({ label: "Neutral", value: "neutral" }),
@@ -168,6 +175,11 @@ function slugFromText(value, fallback = "tts-profile") {
 
 function labelForOption(options, value, fallback = "") {
   return options.find((option) => String(option.value) === String(value))?.label || fallback || String(value || "");
+}
+
+function isRetiredTextToSpeechProfileName(value) {
+  const normalized = String(value || "").trim().toLowerCase();
+  return RETIRED_TTS_PROFILE_PARENT_NAMES.some((name) => name.toLowerCase() === normalized);
 }
 
 function createTextToSpeechProfileEmotion({
@@ -879,7 +891,9 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
 
   function loadProfilesFromApi() {
     const payload = listTtsProfiles();
-    state.profiles = (payload.ttsProfiles || []).map((profile) => createTextToSpeechProfileFromApi(profile));
+    state.profiles = (payload.ttsProfiles || [])
+      .filter((profile) => !isRetiredTextToSpeechProfileName(profile?.name))
+      .map((profile) => createTextToSpeechProfileFromApi(profile));
     if (state.selectedProfileId && !state.profiles.some((profile) => profile.id === state.selectedProfileId)) {
       state.selectedProfileId = "";
     }
