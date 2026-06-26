@@ -1,191 +1,92 @@
-diff --git a/assets/toolbox/sprites/js/index.js b/assets/toolbox/sprites/js/index.js
-index 9924f47cc..e0149857e 100644
---- a/assets/toolbox/sprites/js/index.js
-+++ b/assets/toolbox/sprites/js/index.js
-@@ -20,6 +20,8 @@ const elements = {
-   paletteStatus: document.querySelector("[data-sprites-palette-status]"),
-   previewPanel: document.querySelector("[data-sprites-preview-panel]"),
-   refresh: document.querySelector("[data-sprites-refresh]"),
-+  referencePanel: document.querySelector("[data-sprites-reference-panel]"),
-+  referenceStatus: document.querySelector("[data-sprites-reference-status]"),
-   replace: document.querySelector("[data-sprites-replace]"),
-   replaceStatus: document.querySelector("[data-sprites-replace-status]"),
-   search: document.querySelector("[data-sprites-search]"),
-@@ -193,8 +195,12 @@ function usageCountFor(sprite) {
-   return Number.isFinite(count) && count >= 0 ? String(count) : "0";
- }
+diff --git a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
+index de7ad4681..195db3d15 100644
+--- a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
++++ b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
+@@ -23,10 +23,14 @@
 
-+function referencesFor(sprite) {
-+  return Array.isArray(sprite?.references) ? sprite.references : [];
-+}
-+
- function numericUsageCount(sprite) {
--  const count = Number(sprite?.usageCount ?? sprite?.usage_count ?? sprite?.references?.length);
-+  const count = Number(sprite?.usageCount ?? sprite?.usage_count ?? referencesFor(sprite).length);
-   return Number.isFinite(count) && count >= 0 ? count : 0;
- }
+ ### Graphics
 
-@@ -324,8 +330,10 @@ function renderUnavailable(message) {
-   setText(elements.paletteSelectionStatus, "Palette/Colors selection unavailable until API-backed key records are available.");
-   setText(elements.storageStatus, "Storage import unavailable because the Sprites API is not responding.");
-   setText(elements.filterStatus, "Filters unavailable until Sprites records load from the API.");
-+  setText(elements.referenceStatus, "References unavailable until Sprites records load from the API.");
-   setText(elements.replaceStatus, "Replace metadata unavailable until the Sprites API responds.");
-   renderPreviewPanel(null);
-+  renderReferencePanel(null);
-   setText(elements.updated, new Date().toLocaleTimeString());
-   setHidden(elements.emptyState, false);
-   setHidden(elements.errorState, false);
-@@ -400,11 +408,58 @@ function renderPreviewPanel(sprite) {
-   setDisabled(elements.replace, false);
- }
+-0% Complete — Create the visual look of your game
++20% Complete — Create the visual look of your game
 
-+function renderReferencePanel(sprite) {
-+  if (!elements.referencePanel) {
-+    return;
-+  }
-+  elements.referencePanel.replaceChildren();
-+  if (!sprite) {
-+    setText(elements.referenceStatus, "Select a sprite to review API-provided usage references.");
-+    elements.referencePanel.append(createParagraph("No sprite selected for reference review.", "status"));
-+    return;
-+  }
-+  const references = referencesFor(sprite);
-+  const usageCount = numericUsageCount(sprite);
-+  setText(
-+    elements.referenceStatus,
-+    usageCount > 0
-+      ? `${usageCount} usage reference${usageCount === 1 ? "" : "s"} reported by the Sprites API.`
-+      : "No usage references reported by the Sprites API."
-+  );
-+  if (!references.length) {
-+    elements.referencePanel.append(createParagraph("No references reported yet. Future Objects and Worlds references will appear here when the API supplies them.", "status"));
-+    return;
-+  }
-+  const wrapper = document.createElement("div");
-+  wrapper.className = "table-wrapper";
-+  const table = document.createElement("table");
-+  table.className = "data-table";
-+  table.setAttribute("aria-label", "Sprite usage references");
-+  const head = document.createElement("thead");
-+  const headRow = document.createElement("tr");
-+  headRow.append(createCell("Source Type"), createCell("Source Key"), createCell("Label"));
-+  head.append(headRow);
-+  const body = document.createElement("tbody");
-+  references.forEach((reference) => {
-+    const row = document.createElement("tr");
-+    row.append(
-+      createCell(normalizeText(reference.sourceType)),
-+      createCell(normalizeText(reference.sourceKey)),
-+      createCell(normalizeText(reference.label, "No label"))
-+    );
-+    body.append(row);
-+  });
-+  table.append(head, body);
-+  wrapper.append(table);
-+  elements.referencePanel.append(wrapper);
-+}
-+
- function selectSprite(sprite) {
-   selectedSpriteKey = sprite?.key || "";
-   if (!sprite) {
-     setText(elements.metadata, "Select a sprite row to review its metadata.");
-     renderPreviewPanel(null);
-+    renderReferencePanel(null);
-     return;
-   }
-   const key = normalizeText(sprite?.key, "Unavailable");
-@@ -412,6 +467,7 @@ function selectSprite(sprite) {
-   const sizeBytes = normalizeText(sprite?.sizeBytes ?? sprite?.size_bytes, "Unavailable");
-   setText(elements.metadata, `${normalizeText(sprite?.name)} (${key}) | ${mimeType} | ${formatDimensions(sprite)} | ${sizeBytes} bytes`);
-   renderPreviewPanel(sprite);
-+  renderReferencePanel(sprite);
- }
-
- function renderRows(sprites, emptyMessage = "No Sprites records returned by the API.") {
-@@ -491,9 +547,10 @@ function createSpriteRow(sprite) {
-     actions.append(
-       createButton("Edit", "spritesEdit", sprite?.key || "", { label: `Edit ${name}` }),
-       createButton("Duplicate", "spritesDuplicateRow", sprite?.key || "", { label: `Duplicate ${name}` }),
--      createButton(archived ? "Archived" : "Archive", "spritesArchive", sprite?.key || "", {
-+      createButton(archived ? "Archived" : usageCount > 0 ? "Archive Safely" : "Archive", "spritesArchive", sprite?.key || "", {
-         disabled: archived,
--        label: archived ? `${name} is already archived` : `Archive ${name}`,
-+        label: archived ? `${name} is already archived` : usageCount > 0 ? `Archive safely ${name}` : `Archive ${name}`,
-+        title: usageCount > 0 ? "Sprite is referenced. Archive is the safe action; destructive delete is blocked." : "",
-       }),
-       createButton(usageCount > 0 ? "Delete Blocked" : "Delete", "spritesDelete", sprite?.key || "", {
-         disabled: usageCount > 0,
+ - [ ] Bravo - Asset Studio V2
+-- [ ] Bravo - Sprite Studio V2
++- [x] Charlie - Sprites MVP
++  - Completion reference: PR_26177_CHARLIE_009 through PR_26177_CHARLIE_016.
++  - Scope: API-backed Sprites asset management MVP.
++  - Palette/Colors remains the reusable color source of truth.
++  - Future enhancements only: binary storage upload, Palette/Colors selector integration, and deeper cross-tool references.
+ - [ ] Bravo - Animation Studio V2
+ - [ ] Bravo - Palette Manager
+ - [ ] Bravo - Video Studio
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 6c5cebe36..734504cef 100644
+index 734504cef..2f9f9e020 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -30,7 +30,7 @@ Files with executed line/function counts where available:
- (76%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 22/29
- (77%) assets/theme-v2/js/tool-display-mode.js - executed lines 304/304; executed functions 23/30
- (80%) assets/theme-v2/js/theme-icons.js - executed lines 69/69; executed functions 4/5
--(96%) assets/toolbox/sprites/js/index.js - executed lines 776/776; executed functions 76/79
-+(96%) assets/toolbox/sprites/js/index.js - executed lines 831/831; executed functions 79/82
- (97%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 35/36
+@@ -14,7 +14,7 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
+ Exercised tool entry points detected:
+ (76%) Toolbox Index - exercised 1 runtime JS files
+ (0%) Tool Template V2 - not exercised by this Playwright run
+-(73%) Theme V2 Shared JS - exercised 6 runtime JS files
++(74%) Theme V2 Shared JS - exercised 6 runtime JS files
 
- Uncovered or low-coverage changed JS files:
+ Changed runtime JS files covered:
+ (100%) none changed - no changed runtime JS files
+@@ -23,7 +23,7 @@ Files with executed line/function counts where available:
+ (36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2041/2041; executed functions 12/33
+ (42%) src/api/server-api-client.js - executed lines 168/168; executed functions 8/19
+ (57%) assets/theme-v2/js/account-auth-service.js - executed lines 64/64; executed functions 4/7
+-(64%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 63/98
++(65%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 64/98
+ (67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
+ (70%) assets/theme-v2/js/login-session.js - executed lines 113/113; executed functions 7/10
+ (75%) src/api/public-config-client.js - executed lines 209/209; executed functions 21/28
 diff --git a/tests/playwright/tools/SpritesToolShell.spec.mjs b/tests/playwright/tools/SpritesToolShell.spec.mjs
-index 8f26757ca..7c8683a77 100644
+index 7c8683a77..7ef48053c 100644
 --- a/tests/playwright/tools/SpritesToolShell.spec.mjs
 +++ b/tests/playwright/tools/SpritesToolShell.spec.mjs
-@@ -242,7 +242,7 @@ test("Sprites shell archives referenced records and deletes only unreferenced re
-
-   try {
-     await expect(page.getByRole("button", { name: "Delete blocked for Used Sprite" })).toBeDisabled();
--    await page.getByRole("button", { name: "Archive Used Sprite" }).click();
-+    await page.getByRole("button", { name: "Archive safely Used Sprite" }).click();
-     await expect(page.locator("[data-sprites-table-body]")).toContainText("archived");
-     await page.getByRole("button", { name: "Delete Free Sprite" }).click();
-     await expect(page.locator("[data-sprites-table-body]")).not.toContainText("Free Sprite");
-@@ -254,6 +254,73 @@ test("Sprites shell archives referenced records and deletes only unreferenced re
+@@ -39,6 +39,66 @@ test("Sprites shell loads API-backed empty state without inline page code", asyn
    }
  });
 
-+test("Sprites shell shows API-provided references and blocks destructive delete", async ({ page }) => {
-+  const postedPaths = [];
-+  const referencedKey = "01J1SPRITEREF0000000000000";
++test("Sprites shell is reachable from the Toolbox navigation route", async ({ page }) => {
++  const server = await startRepoServer();
++  await page.route("**/api/sprites/records", async (route) => {
++    await route.fulfill({
++      body: JSON.stringify({ data: { sprites: [] }, ok: true }),
++      contentType: "application/json",
++      status: 200,
++    });
++  });
++  await workspaceV2CoverageReporter.start(page);
++  try {
++    await page.goto(`${server.baseUrl}/`, { waitUntil: "networkidle" });
++    const spritesLink = page.locator("[data-toolbox-menu-item][data-route='sprites']").first();
++    await expect(spritesLink).toHaveAttribute("href", "toolbox/sprites/index.html");
++    const href = await spritesLink.getAttribute("href");
++    await page.goto(`${server.baseUrl}/${href}`, { waitUntil: "networkidle" });
++    await expect(page.getByRole("heading", { level: 1, name: "Sprites" })).toBeVisible();
++    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
++  } finally {
++    await workspaceV2CoverageReporter.stop(page);
++    await server.close();
++  }
++});
++
++test("Sprites shell keeps Palette and storage follow-ups visible without owning color data", async ({ page }) => {
 +  const server = await openSpritesPage(page, async (currentPage) => {
-+    await currentPage.route("**/api/sprites/records**", async (route) => {
-+      const request = route.request();
-+      const url = new URL(request.url());
-+      if (request.method() === "POST") {
-+        postedPaths.push(url.pathname);
-+        await route.fulfill({
-+          body: JSON.stringify({ data: { sprite: null }, ok: true }),
-+          contentType: "application/json",
-+          status: 200,
-+        });
-+        return;
-+      }
++    await currentPage.route("**/api/sprites/records", async (route) => {
 +      await route.fulfill({
 +        body: JSON.stringify({
 +          data: {
 +            sprites: [
 +              {
-+                key: referencedKey,
-+                name: "Referenced Sprite",
++                key: "01J1SPRITEPOLISH0000000000",
++                name: "Polish Sprite",
++                paletteColorKeys: ["palette_color_polish"],
 +                status: "ready",
-+                updatedAt: "2026-06-26T13:20:00.000Z",
-+                usageCount: 2,
-+                references: [
-+                  {
-+                    key: "01J1REFOBJECT000000000000",
-+                    label: "Hero Object",
-+                    sourceKey: "object_hero",
-+                    sourceType: "Objects",
-+                  },
-+                  {
-+                    key: "01J1REFWORLD0000000000000",
-+                    label: "Intro World",
-+                    sourceKey: "world_intro",
-+                    sourceType: "Worlds",
-+                  },
-+                ],
++                updatedAt: "2026-06-26T14:00:00.000Z",
++                usageCount: 0,
 +              },
 +            ],
 +          },
@@ -198,112 +99,99 @@ index 8f26757ca..7c8683a77 100644
 +  });
 +
 +  try {
-+    await page.locator(`[data-sprites-row-key='${referencedKey}']`).click();
-+    await expect(page.locator("[data-sprites-reference-status]")).toContainText("2 usage references");
-+    await expect(page.locator("[data-sprites-reference-panel]")).toContainText("Objects");
-+    await expect(page.locator("[data-sprites-reference-panel]")).toContainText("Hero Object");
-+    await expect(page.locator("[data-sprites-reference-panel]")).toContainText("Worlds");
-+    await expect(page.getByRole("button", { name: "Delete blocked for Referenced Sprite" })).toBeDisabled();
-+    await page.getByRole("button", { name: "Archive safely Referenced Sprite" }).click();
-+    expect(postedPaths).toContain(`/api/sprites/records/${referencedKey}/archive`);
-+    expect(postedPaths).not.toContain(`/api/sprites/records/${referencedKey}/delete`);
++    await expect(page.locator("[data-sprites-palette-status]")).toContainText("1 Palette/Colors key reference");
++    await expect(page.locator("[data-sprites-palette-selection-status]")).toContainText("display-only");
++    await expect(page.locator("[data-sprites-storage-status]")).toContainText("Binary upload/storage import is not configured");
++    await expect(page.locator("[data-sprites-table-body]")).toContainText("palette_color_polish");
 +  } finally {
 +    await workspaceV2CoverageReporter.stop(page);
 +    await server.close();
 +  }
 +});
 +
- test("Sprites shell previews metadata and shows storage and Palette unavailable states", async ({ page }) => {
+ test("Sprites shell renders records and Palette/Colors key references from API response", async ({ page }) => {
    const server = await openSpritesPage(page, async (currentPage) => {
      await currentPage.route("**/api/sprites/records", async (route) => {
-diff --git a/toolbox/sprites/index.html b/toolbox/sprites/index.html
-index 963582677..6287ceb1e 100644
---- a/toolbox/sprites/index.html
-+++ b/toolbox/sprites/index.html
-@@ -124,6 +124,15 @@
-                                     </div>
-                                 </div>
-                             </details>
-+                            <details class="vertical-accordion" open>
-+                                <summary>References</summary>
-+                                <div class="accordion-body content-stack">
-+                                    <p data-sprites-reference-status>Select a sprite to review API-provided usage references.</p>
-+                                    <div data-sprites-reference-panel>
-+                                        <p class="status" role="status">No sprite selected for reference review.</p>
-+                                    </div>
-+                                </div>
-+                            </details>
-                             <details class="vertical-accordion" open>
-                                 <summary>Import</summary>
-                                 <div class="accordion-body content-stack">
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-branch-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-branch-validation.md
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_016-sprites-playwright-final-polish-branch-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_016-sprites-playwright-final-polish-branch-validation.md
 new file mode 100644
-index 000000000..7a4a077c0
+index 000000000..1565dbd41
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-branch-validation.md
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_016-sprites-playwright-final-polish-branch-validation.md
 @@ -0,0 +1,12 @@
-+# PR_26177_CHARLIE_015 Branch Validation
++# PR_26177_CHARLIE_016 Branch Validation
 +
 +Status: PASS
 +
 +## Checks
 +
-+- PASS: PR015 was created as a stacked branch from `PR_26177_CHARLIE_014-sprites-tags-categories-search`.
-+- PASS: Stacking is required because reference protection builds on the PR014 Sprites table/actions.
-+- PASS: Current work branch is `PR_26177_CHARLIE_015-sprites-reference-protection`.
-+- PASS: Branch contains only the Sprites reference protection PR scope relative to PR014.
++- PASS: PR016 was created as a stacked branch from `PR_26177_CHARLIE_015-sprites-reference-protection`.
++- PASS: Stacking is required because final polish validates the complete Sprites MVP stack.
++- PASS: Current work branch is `PR_26177_CHARLIE_016-sprites-playwright-final-polish`.
++- PASS: Branch contains only final Sprites polish, validation, and backlog closeout scope relative to PR015.
 +- PASS: No merge was performed.
 +- PASS: No `start_of_day` path is changed.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-manual-validation-notes.md b/docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-manual-validation-notes.md
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_016-sprites-playwright-final-polish-manual-validation-notes.md b/docs_build/dev/reports/PR_26177_CHARLIE_016-sprites-playwright-final-polish-manual-validation-notes.md
 new file mode 100644
-index 000000000..a32c4eb7c
+index 000000000..3e08d04d2
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-manual-validation-notes.md
-@@ -0,0 +1,13 @@
-+# PR_26177_CHARLIE_015 Manual Validation Notes
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_016-sprites-playwright-final-polish-manual-validation-notes.md
+@@ -0,0 +1,18 @@
++# PR_26177_CHARLIE_016 Manual Validation Notes
 +
 +Status: PASS
 +
 +## Manual Review
 +
-+- Verified API-provided references render in the inspector.
-+- Verified empty reference state appears when the API returns no references.
-+- Verified referenced sprites show usage counts.
-+- Verified delete is disabled for referenced sprites.
-+- Verified archive remains available and clearly labeled as the safe action for referenced sprites.
-+- Verified no fake Objects or Worlds references were added.
-+- Verified future reference ownership remains API/database-backed.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-requirements-checklist.md b/docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-requirements-checklist.md
++- Verified Sprites route is present in the Toolbox navigation.
++- Verified route load through the shared repo server.
++- Verified final coverage includes empty, list, create, edit, archive, delete protection, metadata preview, Palette/Colors references, search/filter, reference protection, and guest redirect.
++- Verified Palette/Colors remains the reusable color source of truth.
++- Verified Sprites does not own reusable color definitions.
++- Verified binary upload/storage remains a future enhancement until a storage API contract exists.
++- Verified backlog marks Sprites MVP complete and separates future enhancements.
++- Verified no `start_of_day` files changed.
++
++## Final MVP State
++
++Sprites MVP is complete for API-backed asset-management workflows. Future enhancements are operational/product expansion items, not blockers for the MVP represented by this stack.
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_016-sprites-playwright-final-polish-requirements-checklist.md b/docs_build/dev/reports/PR_26177_CHARLIE_016-sprites-playwright-final-polish-requirements-checklist.md
 new file mode 100644
-index 000000000..22fe3f038
+index 000000000..93f07871f
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-requirements-checklist.md
-@@ -0,0 +1,18 @@
-+# PR_26177_CHARLIE_015 Requirements Checklist
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_016-sprites-playwright-final-polish-requirements-checklist.md
+@@ -0,0 +1,25 @@
++# PR_26177_CHARLIE_016 Requirements Checklist
 +
 +Status: PASS
 +
-+- PASS: Added reference viewer for where a sprite is used.
-+- PASS: Reference viewer consumes API-provided references only.
-+- PASS: Did not invent fake references.
-+- PASS: Prevents destructive delete when a sprite is referenced.
-+- PASS: Allows safe archive action with clear labeling for referenced sprites.
-+- PASS: Shows usage counts in the table.
-+- PASS: Shows usage reference details in the inspector.
-+- PASS: Establishes future Objects/Worlds reference contract through API/database references.
-+- PASS: Shows visible empty state when no real references are available.
++- PASS: Final Sprites MVP polish completed.
++- PASS: Theme V2 compliance validated.
++- PASS: No inline CSS, style blocks, script blocks, inline handlers, or page-local CSS were added.
++- PASS: Route/navigation works and is covered by Playwright.
++- PASS: Table-first UI remains consistent.
++- PASS: Palette/Colors remains the color source of truth.
++- PASS: Required reports are current.
++- PASS: Manual validation notes are complete.
++- PASS: Sprites backlog status updated to MVP complete.
++- PASS: Playwright coverage includes route load.
++- PASS: Playwright coverage includes empty state.
++- PASS: Playwright coverage includes list rendering.
++- PASS: Playwright coverage includes create/edit/archive behaviors.
++- PASS: Playwright coverage includes preview/metadata.
++- PASS: Playwright coverage includes Palette/Colors reference state.
++- PASS: Playwright coverage includes search/filter.
++- PASS: Playwright coverage includes reference protection.
++- PASS: Playwright coverage includes guest save redirect.
 +- PASS: Did not add browser storage product-data source of truth.
 +- PASS: Did not introduce MEM DB, local-mem, fake-login, or silent fallback.
-+- PASS: Targeted Playwright coverage passed.
-+- PASS: Required report artifacts were created.
 +- PASS: Repo-structured ZIP artifact was created under `tmp/`.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-validation-lane.md b/docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-validation-lane.md
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_016-sprites-playwright-final-polish-validation-lane.md b/docs_build/dev/reports/PR_26177_CHARLIE_016-sprites-playwright-final-polish-validation-lane.md
 new file mode 100644
-index 000000000..30019411e
+index 000000000..a33a425bf
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-validation-lane.md
-@@ -0,0 +1,33 @@
-+# PR_26177_CHARLIE_015 Validation Lane
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_016-sprites-playwright-final-polish-validation-lane.md
+@@ -0,0 +1,37 @@
++# PR_26177_CHARLIE_016 Validation Lane
 +
 +Status: PASS
 +
@@ -325,24 +213,28 @@ index 000000000..30019411e
 +git diff --check
 +```
 +
-+Result: PASS. Git reported only repository line-ending warnings for changed HTML/test files.
++Result: PASS. Git reported only repository line-ending warnings for the changed Playwright file.
 +
 +```powershell
 +node ./node_modules/@playwright/test/cli.js test tests/playwright/tools/SpritesToolShell.spec.mjs --project=playwright --workers=1 --reporter=list
 +```
 +
-+Result: PASS, 10 passed.
++Result: PASS, 12 passed.
++
++## Playwright Impact
++
++Playwright impacted: Yes. Targeted Sprites Playwright suite passed.
 +
 +## Playwright Coverage
 +
 +Targeted Playwright coverage updated `docs_build/dev/reports/playwright_v8_coverage_report.txt` for the Sprites browser module.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection.md b/docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection.md
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_016-sprites-playwright-final-polish.md b/docs_build/dev/reports/PR_26177_CHARLIE_016-sprites-playwright-final-polish.md
 new file mode 100644
-index 000000000..f7359d479
+index 000000000..7fa505aa8
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection.md
-@@ -0,0 +1,49 @@
-+# PR_26177_CHARLIE_015-sprites-reference-protection
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_016-sprites-playwright-final-polish.md
+@@ -0,0 +1,58 @@
++# PR_26177_CHARLIE_016-sprites-playwright-final-polish
 +
 +Team: Charlie
 +
@@ -350,35 +242,44 @@ index 000000000..f7359d479
 +
 +## Scope
 +
-+Added API-provided reference visibility and strengthened destructive delete protection for Sprites.
++Completed final Sprites MVP polish, route/navigation coverage, manual validation documentation, and backlog status update.
 +
 +## Changed Files
 +
-+- `toolbox/sprites/index.html`
-+- `assets/toolbox/sprites/js/index.js`
++- `docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md`
 +- `tests/playwright/tools/SpritesToolShell.spec.mjs`
 +- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
 +- `docs_build/dev/reports/codex_review.diff`
 +- `docs_build/dev/reports/codex_changed_files.txt`
-+- `docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection.md`
-+- `docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-branch-validation.md`
-+- `docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-requirements-checklist.md`
-+- `docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-validation-lane.md`
-+- `docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-manual-validation-notes.md`
++- `docs_build/dev/reports/PR_26177_CHARLIE_016-sprites-playwright-final-polish.md`
++- `docs_build/dev/reports/PR_26177_CHARLIE_016-sprites-playwright-final-polish-branch-validation.md`
++- `docs_build/dev/reports/PR_26177_CHARLIE_016-sprites-playwright-final-polish-requirements-checklist.md`
++- `docs_build/dev/reports/PR_26177_CHARLIE_016-sprites-playwright-final-polish-validation-lane.md`
++- `docs_build/dev/reports/PR_26177_CHARLIE_016-sprites-playwright-final-polish-manual-validation-notes.md`
 +
 +## Implementation Notes
 +
-+- Added reference viewer for API-provided usage references.
-+- Displays source type, source key, and label for each usage reference.
-+- Shows empty reference state when the API reports no references.
-+- Keeps usage count visible in table and details.
-+- Destructive delete remains disabled when usage count is greater than zero.
-+- Referenced sprites show `Archive Safely` to make the safe action explicit.
-+- No fake Objects or Worlds references were added.
++- Added route/navigation Playwright coverage for the Sprites menu route.
++- Added explicit coverage that Palette/Colors remains display-only/authoritative and storage upload remains unavailable until a real API contract exists.
++- Updated backlog Graphics section to mark `Charlie - Sprites MVP` complete.
++- Recorded future enhancements for binary storage upload, Palette/Colors selector integration, and deeper cross-tool references.
++- No runtime API/database behavior was added in this final polish PR.
 +
-+## Reference Contract
++## Final Sprites MVP Coverage
 +
-+The UI consumes the existing Sprites API `references` array. Future Objects/Worlds integrations should supply real usage rows through the API/database reference contract rather than browser-local inference.
++Targeted Playwright now covers:
++
++- route load and Toolbox navigation href
++- empty state
++- list rendering
++- create validation and API-owned key behavior
++- guest save redirect
++- archive/delete protection
++- preview and metadata
++- Palette/Colors reference state
++- storage unavailable state
++- search and filters
++- reference protection
 +
 +## Validation
 +
@@ -390,4 +291,4 @@ index 000000000..f7359d479
 +
 +## ZIP Artifact
 +
-+- `tmp/PR_26177_CHARLIE_015-sprites-reference-protection_delta.zip`
++- `tmp/PR_26177_CHARLIE_016-sprites-playwright-final-polish_delta.zip`

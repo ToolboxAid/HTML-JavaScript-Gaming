@@ -14,7 +14,7 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
 Exercised tool entry points detected:
 (76%) Toolbox Index - exercised 1 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
-(73%) Theme V2 Shared JS - exercised 6 runtime JS files
+(74%) Theme V2 Shared JS - exercised 6 runtime JS files
 
 Changed runtime JS files covered:
 (100%) none changed - no changed runtime JS files
@@ -23,7 +23,7 @@ Files with executed line/function counts where available:
 (36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2041/2041; executed functions 12/33
 (42%) src/api/server-api-client.js - executed lines 168/168; executed functions 8/19
 (57%) assets/theme-v2/js/account-auth-service.js - executed lines 64/64; executed functions 4/7
-(64%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 63/98
+(65%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 64/98
 (67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
 (70%) assets/theme-v2/js/login-session.js - executed lines 113/113; executed functions 7/10
 (75%) src/api/public-config-client.js - executed lines 209/209; executed functions 21/28
