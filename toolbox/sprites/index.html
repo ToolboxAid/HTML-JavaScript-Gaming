@@ -41,6 +41,7 @@
                                 <div class="accordion-body content-stack">
                                     <p>Reusable colors stay owned by Palette/Colors.</p>
                                     <p data-sprites-palette-status>Palette/Colors references load with Sprites records when available.</p>
+                                    <p data-sprites-palette-selection-status>Palette/Colors selection loads when the Palette/Colors API is available.</p>
                                 </div>
                             </details>
                         </div>
@@ -99,6 +100,20 @@
                                 <summary>Selection</summary>
                                 <div class="accordion-body content-stack">
                                     <p data-sprites-metadata>Select a sprite row to review its metadata.</p>
+                                    <div data-sprites-preview-panel>
+                                        <p class="status" role="status">No sprite selected for preview.</p>
+                                    </div>
+                                    <div class="action-group action-group--tight">
+                                        <button class="btn btn--compact" type="button" data-sprites-duplicate disabled>Duplicate Sprite</button>
+                                        <button class="btn btn--compact" type="button" data-sprites-replace disabled>Replace Metadata</button>
+                                    </div>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Import</summary>
+                                <div class="accordion-body content-stack">
+                                    <p data-sprites-storage-status>Storage import is checking API capabilities.</p>
+                                    <p data-sprites-replace-status>Select a sprite to update source metadata through the API.</p>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>

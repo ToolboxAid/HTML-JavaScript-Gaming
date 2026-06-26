@@ -1,505 +1,355 @@
 diff --git a/assets/toolbox/sprites/js/index.js b/assets/toolbox/sprites/js/index.js
-index a76f9a7b7..471c64d83 100644
+index 471c64d83..fcbe5bd04 100644
 --- a/assets/toolbox/sprites/js/index.js
 +++ b/assets/toolbox/sprites/js/index.js
-@@ -1,6 +1,10 @@
- const SPRITES_API_PATH = "/api/sprites/records";
-+const SIGN_IN_PATH = "account/sign-in.html";
-+const SPRITE_STATUSES = Object.freeze(["draft", "ready", "published", "archived"]);
-
- const elements = {
-+  actionStatus: document.querySelector("[data-sprites-action-status]"),
-+  add: document.querySelector("[data-sprites-add]"),
-   apiStatus: document.querySelector("[data-sprites-api-status]"),
-   count: document.querySelector("[data-sprites-count]"),
-   emptyState: document.querySelector("[data-sprites-empty-state]"),
-@@ -13,8 +17,12 @@ const elements = {
+@@ -13,15 +13,22 @@ const elements = {
+   metadata: document.querySelector("[data-sprites-metadata]"),
+   outputStatus: document.querySelector("[data-sprites-output-status]"),
+   outputSummary: document.querySelector("[data-sprites-output-summary]"),
++  paletteSelectionStatus: document.querySelector("[data-sprites-palette-selection-status]"),
+   paletteStatus: document.querySelector("[data-sprites-palette-status]"),
++  previewPanel: document.querySelector("[data-sprites-preview-panel]"),
    refresh: document.querySelector("[data-sprites-refresh]"),
++  replace: document.querySelector("[data-sprites-replace]"),
++  replaceStatus: document.querySelector("[data-sprites-replace-status]"),
++  storageStatus: document.querySelector("[data-sprites-storage-status]"),
    tableBody: document.querySelector("[data-sprites-table-body]"),
    updated: document.querySelector("[data-sprites-updated]"),
-+  validation: document.querySelector("[data-sprites-validation]"),
+   validation: document.querySelector("[data-sprites-validation]"),
++  duplicate: document.querySelector("[data-sprites-duplicate]"),
  };
 
-+let currentSprites = [];
-+let editingKey = "";
-+
+ let currentSprites = [];
+ let editingKey = "";
++let selectedSpriteKey = "";
+
  function setText(target, value) {
    if (target) {
-     target.textContent = value;
-@@ -40,11 +48,65 @@ function createHeaderCell(value) {
+@@ -35,12 +42,27 @@ function setHidden(target, hidden) {
+   }
+ }
+
++function setDisabled(target, disabled) {
++  if (target) {
++    target.disabled = disabled;
++  }
++}
++
+ function createCell(value) {
+   const cell = document.createElement("td");
+   cell.textContent = value;
    return cell;
  }
 
-+function createButton(label, datasetName, value, options = {}) {
-+  const button = document.createElement("button");
-+  button.className = options.primary ? "btn btn--compact primary" : "btn btn--compact";
-+  button.type = "button";
-+  button.dataset[datasetName] = value;
-+  button.textContent = label;
-+  if (options.disabled) {
-+    button.disabled = true;
++function createParagraph(value, className = "") {
++  const paragraph = document.createElement("p");
++  if (className) {
++    paragraph.className = className;
 +  }
-+  if (options.label) {
-+    button.setAttribute("aria-label", options.label);
-+  }
-+  if (options.title) {
-+    button.title = options.title;
-+  }
-+  return button;
++  paragraph.textContent = value;
++  return paragraph;
 +}
 +
-+function createInput(value, label, datasetName) {
-+  const input = document.createElement("input");
-+  input.type = "text";
-+  input.value = value || "";
-+  input.setAttribute("aria-label", label);
-+  input.dataset[datasetName] = "true";
-+  return input;
-+}
-+
-+function createStatusSelect(value) {
-+  const select = document.createElement("select");
-+  select.setAttribute("aria-label", "Sprite status");
-+  select.dataset.spritesStatusInput = "true";
-+  const placeholder = document.createElement("option");
-+  placeholder.value = "";
-+  placeholder.textContent = "Select status";
-+  select.append(placeholder);
-+  SPRITE_STATUSES.forEach((status) => {
-+    const option = document.createElement("option");
-+    option.value = status;
-+    option.textContent = status;
-+    select.append(option);
-+  });
-+  select.value = SPRITE_STATUSES.includes(value) ? value : "";
-+  return select;
-+}
-+
- function normalizeText(value, fallback = "Unavailable") {
-   const text = String(value ?? "").trim();
-   return text || fallback;
+ function createHeaderCell(value) {
+   const cell = document.createElement("th");
+   cell.scope = "row";
+@@ -132,6 +154,14 @@ function formatSource(sprite) {
+   return normalizeText(sprite?.sourceName || sprite?.sourcePath || sprite?.storagePath || sprite?.storageKey || sprite?.sourceStorageReference);
  }
 
-+function normalizeCategory(value) {
-+  return String(value ?? "").trim().replace(/\s+/g, " ");
++function previewSourceFor(sprite) {
++  const source = String(sprite?.storagePath || sprite?.source || sprite?.sourcePath || sprite?.sourceName || "").trim();
++  if (!source || /^https?:\/\//i.test(source)) {
++    return "";
++  }
++  return source;
 +}
 +
-+function setActionStatus(value) {
-+  setText(elements.actionStatus, value);
-+  setText(elements.validation, value);
-+}
-+
- function formatTimestamp(value) {
-   const text = String(value ?? "").trim();
-   if (!text) {
-@@ -85,6 +147,11 @@ function usageCountFor(sprite) {
-   return Number.isFinite(count) && count >= 0 ? String(count) : "0";
- }
-
-+function numericUsageCount(sprite) {
-+  const count = Number(sprite?.usageCount ?? sprite?.usage_count ?? sprite?.references?.length);
-+  return Number.isFinite(count) && count >= 0 ? count : 0;
-+}
-+
- function spriteRowsFromPayload(payload) {
-   if (Array.isArray(payload?.data?.sprites)) {
-     return payload.data.sprites;
-@@ -100,6 +167,7 @@ function renderLoading() {
-   setText(elements.libraryStatus, "Loading");
+ function paletteKeysFor(sprite) {
+   if (Array.isArray(sprite?.paletteColorKeys)) {
+     return sprite.paletteColorKeys.map((key) => String(key || "").trim()).filter(Boolean);
+@@ -168,6 +198,8 @@ function renderLoading() {
    setText(elements.outputStatus, "Loading");
    setText(elements.outputSummary, "Waiting for Sprites API response.");
-+  setActionStatus("Loading Sprites records.");
+   setActionStatus("Loading Sprites records.");
++  setText(elements.storageStatus, "Storage import is checking API capabilities.");
++  setText(elements.replaceStatus, "Select a sprite to update source metadata through the API.");
    setText(elements.emptyState, "Loading Sprites records.");
    setText(elements.updated, "Checking");
    setHidden(elements.emptyState, false);
-@@ -107,7 +175,7 @@ function renderLoading() {
-   if (elements.tableBody) {
-     const row = document.createElement("tr");
-     const cell = createCell("Loading Sprites records.");
--    cell.colSpan = 8;
-+    cell.colSpan = 9;
-     row.append(cell);
-     elements.tableBody.replaceChildren(row);
-   }
-@@ -119,6 +187,7 @@ function renderUnavailable(message) {
-   setText(elements.libraryStatus, "Unavailable");
-   setText(elements.outputStatus, "Unavailable");
-   setText(elements.outputSummary, detail);
-+  setActionStatus(detail);
-   setText(elements.emptyState, "Sprites records cannot be loaded from the API yet.");
+@@ -192,6 +224,10 @@ function renderUnavailable(message) {
    setText(elements.errorState, detail);
    setText(elements.metadata, "Sprite metadata unavailable until the Sprites API responds.");
-@@ -129,7 +198,7 @@ function renderUnavailable(message) {
-   if (elements.tableBody) {
-     const row = document.createElement("tr");
-     const cell = createCell("Sprites API unavailable.");
--    cell.colSpan = 8;
-+    cell.colSpan = 9;
-     row.append(cell);
-     elements.tableBody.replaceChildren(row);
-   }
-@@ -154,16 +223,86 @@ function renderRows(sprites) {
-   if (sprites.length === 0) {
-     const row = document.createElement("tr");
-     const cell = createCell("No Sprites records returned by the API.");
--    cell.colSpan = 8;
-+    cell.colSpan = 9;
-     row.append(cell);
--    elements.tableBody.replaceChildren(row);
-+    elements.tableBody.replaceChildren(...(editingKey === "__new__" ? [createEditRow(), row] : [row]));
+   setText(elements.paletteStatus, "Palette/Colors references unavailable until Sprites records load from the API.");
++  setText(elements.paletteSelectionStatus, "Palette/Colors selection unavailable until API-backed key records are available.");
++  setText(elements.storageStatus, "Storage import unavailable because the Sprites API is not responding.");
++  setText(elements.replaceStatus, "Replace metadata unavailable until the Sprites API responds.");
++  renderPreviewPanel(null);
+   setText(elements.updated, new Date().toLocaleTimeString());
+   setHidden(elements.emptyState, false);
+   setHidden(elements.errorState, false);
+@@ -211,9 +247,73 @@ function renderPaletteStatus(sprites) {
+   });
+   if (referencedKeys.size === 0) {
+     setText(elements.paletteStatus, "No Palette/Colors references in current Sprites records.");
++    setText(elements.paletteSelectionStatus, "Palette/Colors selection unavailable: no API-backed Palette/Colors key records are attached to Sprites yet.");
      return;
    }
-
--  const rows = sprites.map((sprite) => {
-+  const rows = [
-+    ...(editingKey === "__new__" ? [createEditRow()] : []),
-+    ...sprites.map((sprite) => {
-+      if (editingKey === sprite.key) {
-+        return createEditRow(sprite);
-+      }
-+      return createSpriteRow(sprite);
-+    }),
-+  ];
-+  elements.tableBody.replaceChildren(...rows);
+   setText(elements.paletteStatus, `${referencedKeys.size} Palette/Colors key reference${referencedKeys.size === 1 ? "" : "s"} surfaced from API records.`);
++  setText(elements.paletteSelectionStatus, "Palette/Colors key references are display-only until the Palette/Colors selection API is available.");
 +}
 +
-+function createEditRow(sprite = null) {
-+  const row = document.createElement("tr");
-+  row.dataset.spritesEditingRow = sprite?.key || "__new__";
++function renderPreviewPanel(sprite) {
++  if (!elements.previewPanel) {
++    return;
++  }
++  elements.previewPanel.replaceChildren();
++  if (!sprite) {
++    elements.previewPanel.append(createParagraph("No sprite selected for preview.", "status"));
++    setDisabled(elements.duplicate, true);
++    setDisabled(elements.replace, true);
++    return;
++  }
++  const source = previewSourceFor(sprite);
++  if (source) {
++    const image = document.createElement("img");
++    image.src = source;
++    image.alt = `${normalizeText(sprite.name)} preview`;
++    image.loading = "lazy";
++    elements.previewPanel.append(image);
++  } else {
++    elements.previewPanel.append(createParagraph("Image preview unavailable for this sprite source.", "status"));
++  }
 +
-+  const nameCell = document.createElement("td");
-+  nameCell.append(createInput(sprite?.name || "", "Sprite name", "spritesNameInput"));
-+
-+  const statusCell = document.createElement("td");
-+  statusCell.append(createStatusSelect(sprite?.status || ""));
-+
-+  const categoryCell = document.createElement("td");
-+  categoryCell.append(createInput(sprite?.category || "", "Sprite category", "spritesCategoryInput"));
-+
-+  const sourceCell = document.createElement("td");
-+  sourceCell.append(createInput(sprite?.source || sprite?.sourceName || sprite?.storagePath || "", "Sprite source reference", "spritesSourceInput"));
-+
-+  const actionsCell = document.createElement("td");
-+  const actions = document.createElement("div");
-+  actions.className = "action-group action-group--tight";
-+  actions.append(
-+    createButton("Save", "spritesSave", sprite?.key || "__new__", { primary: true }),
-+    createButton("Cancel", "spritesCancel", sprite?.key || "__new__")
-+  );
-+  actionsCell.append(actions);
-+
-+  row.append(
-+    nameCell,
-+    statusCell,
-+    categoryCell,
-+    sourceCell,
-+    createCell(formatDimensions(sprite || {})),
-+    createCell(sprite ? paletteKeysFor(sprite).join(", ") || "None" : "None"),
-+    createCell(sprite ? formatTimestamp(sprite.updatedAt ?? sprite.updated_at) : "Server-owned"),
-+    createCell(sprite ? usageCountFor(sprite) : "0"),
-+    actionsCell
-+  );
-+  return row;
++  const metadata = document.createElement("div");
++  metadata.className = "table-wrapper";
++  const table = document.createElement("table");
++  table.className = "data-table";
++  table.setAttribute("aria-label", "Selected sprite metadata");
++  const body = document.createElement("tbody");
++  [
++    ["File/Source", formatSource(sprite)],
++    ["MIME/Type", normalizeText(sprite.mimeType ?? sprite.mime_type)],
++    ["Dimensions", formatDimensions(sprite)],
++    ["File Size", normalizeText(sprite.sizeBytes ?? sprite.size_bytes, "Unavailable")],
++    ["Updated At", formatTimestamp(sprite.updatedAt ?? sprite.updated_at)],
++    ["Updated By", normalizeText(sprite.updatedBy ?? sprite.updated_by)],
++    ["Palette Keys", paletteKeysFor(sprite).join(", ") || "None"],
++  ].forEach(([label, value]) => {
++    const row = document.createElement("tr");
++    row.append(createHeaderCell(label), createCell(value));
++    body.append(row);
++  });
++  table.append(body);
++  metadata.append(table);
++  elements.previewPanel.append(metadata);
++  setDisabled(elements.duplicate, false);
++  setDisabled(elements.replace, false);
 +}
 +
-+function createSpriteRow(sprite) {
-     const row = document.createElement("tr");
-     const paletteKeys = paletteKeysFor(sprite);
-     row.dataset.spritesRowKey = normalizeText(sprite?.key, "");
-+    const actionsCell = document.createElement("td");
-+    const actions = document.createElement("div");
-+    const usageCount = numericUsageCount(sprite);
-+    const name = normalizeText(sprite?.name);
-+    const archived = sprite?.archived === true || sprite?.status === "archived";
-+    actions.className = "action-group action-group--tight";
-+    actions.append(
-+      createButton("Edit", "spritesEdit", sprite?.key || "", { label: `Edit ${name}` }),
-+      createButton(archived ? "Archived" : "Archive", "spritesArchive", sprite?.key || "", {
-+        disabled: archived,
-+        label: archived ? `${name} is already archived` : `Archive ${name}`,
-+      }),
-+      createButton(usageCount > 0 ? "Delete Blocked" : "Delete", "spritesDelete", sprite?.key || "", {
-+        disabled: usageCount > 0,
-+        label: usageCount > 0 ? `Delete blocked for ${name}` : `Delete ${name}`,
-+        title: usageCount > 0 ? "Sprite is referenced. Archive it instead of deleting it." : "",
-+      })
-+    );
-+    actionsCell.append(actions);
-     row.append(
-       createHeaderCell(normalizeText(sprite?.name)),
-       createCell(normalizeText(sprite?.status)),
-@@ -172,7 +311,8 @@ function renderRows(sprites) {
-       createCell(formatDimensions(sprite)),
-       createCell(paletteKeys.length ? paletteKeys.join(", ") : "None"),
-       createCell(formatTimestamp(sprite?.updatedAt ?? sprite?.updated_at)),
--      createCell(usageCountFor(sprite))
-+      createCell(usageCountFor(sprite)),
-+      actionsCell
-     );
-     row.addEventListener("click", () => {
-       const key = normalizeText(sprite?.key, "Unavailable");
-@@ -181,12 +321,11 @@ function renderRows(sprites) {
-       setText(elements.metadata, `${normalizeText(sprite?.name)} (${key}) | ${mimeType} | ${formatDimensions(sprite)} | ${sizeBytes} bytes`);
-     });
-     return row;
--  });
--  elements.tableBody.replaceChildren(...rows);
++function selectSprite(sprite) {
++  selectedSpriteKey = sprite?.key || "";
++  if (!sprite) {
++    setText(elements.metadata, "Select a sprite row to review its metadata.");
++    renderPreviewPanel(null);
++    return;
++  }
++  const key = normalizeText(sprite?.key, "Unavailable");
++  const mimeType = normalizeText(sprite?.mimeType ?? sprite?.mime_type, "Unavailable");
++  const sizeBytes = normalizeText(sprite?.sizeBytes ?? sprite?.size_bytes, "Unavailable");
++  setText(elements.metadata, `${normalizeText(sprite?.name)} (${key}) | ${mimeType} | ${formatDimensions(sprite)} | ${sizeBytes} bytes`);
++  renderPreviewPanel(sprite);
  }
 
- function renderSprites(payload) {
-   const sprites = spriteRowsFromPayload(payload);
-+  currentSprites = sprites;
-   const count = sprites.length;
-   setText(elements.apiStatus, "Ready");
-   setText(elements.libraryStatus, count > 0 ? "Ready" : "Empty");
-@@ -196,12 +335,127 @@ function renderSprites(payload) {
-   setText(elements.emptyState, count > 0 ? "" : "No Sprites records returned by the API.");
+ function renderRows(sprites) {
+@@ -292,6 +392,7 @@ function createSpriteRow(sprite) {
+     actions.className = "action-group action-group--tight";
+     actions.append(
+       createButton("Edit", "spritesEdit", sprite?.key || "", { label: `Edit ${name}` }),
++      createButton("Duplicate", "spritesDuplicateRow", sprite?.key || "", { label: `Duplicate ${name}` }),
+       createButton(archived ? "Archived" : "Archive", "spritesArchive", sprite?.key || "", {
+         disabled: archived,
+         label: archived ? `${name} is already archived` : `Archive ${name}`,
+@@ -315,10 +416,7 @@ function createSpriteRow(sprite) {
+       actionsCell
+     );
+     row.addEventListener("click", () => {
+-      const key = normalizeText(sprite?.key, "Unavailable");
+-      const mimeType = normalizeText(sprite?.mimeType ?? sprite?.mime_type, "Unavailable");
+-      const sizeBytes = normalizeText(sprite?.sizeBytes ?? sprite?.size_bytes, "Unavailable");
+-      setText(elements.metadata, `${normalizeText(sprite?.name)} (${key}) | ${mimeType} | ${formatDimensions(sprite)} | ${sizeBytes} bytes`);
++      selectSprite(sprite);
+     });
+     return row;
+ }
+@@ -336,12 +434,32 @@ function renderSprites(payload) {
    setText(elements.updated, new Date().toLocaleTimeString());
    setText(elements.metadata, count > 0 ? "Select a sprite row to review its metadata." : "No sprite metadata available yet.");
-+  setActionStatus("Ready for API-backed edits.");
+   setActionStatus("Ready for API-backed edits.");
++  setText(elements.storageStatus, "Binary upload/storage import is not configured for Sprites yet. Existing source and storage metadata can be reviewed and replaced through the API.");
++  setText(elements.replaceStatus, "Select a sprite to replace source metadata or duplicate with a server-owned key.");
++  selectSprite(sprites.find((sprite) => sprite.key === selectedSpriteKey) || null);
    setHidden(elements.emptyState, count > 0);
    setHidden(elements.errorState, true);
    renderPaletteStatus(sprites);
    renderRows(sprites);
  }
 
-+function collectEditingValues(row) {
++function bodyFromSprite(sprite, overrides = {}) {
 +  return {
-+    category: normalizeCategory(row.querySelector("[data-sprites-category-input]")?.value),
-+    name: String(row.querySelector("[data-sprites-name-input]")?.value ?? "").trim(),
-+    source: String(row.querySelector("[data-sprites-source-input]")?.value ?? "").trim(),
-+    status: String(row.querySelector("[data-sprites-status-input]")?.value ?? "").trim(),
++    category: normalizeCategory(overrides.category ?? sprite?.category),
++    height: sprite?.height ?? null,
++    mimeType: String(overrides.mimeType ?? sprite?.mimeType ?? "").trim(),
++    name: String(overrides.name ?? sprite?.name ?? "").trim(),
++    originalName: String(overrides.originalName ?? sprite?.originalName ?? "").trim(),
++    paletteColorKeys: paletteKeysFor(sprite),
++    sizeBytes: sprite?.sizeBytes ?? null,
++    source: String(overrides.source ?? sprite?.source ?? "").trim(),
++    status: String(overrides.status ?? sprite?.status ?? "").trim(),
++    storagePath: String(overrides.storagePath ?? sprite?.storagePath ?? "").trim(),
++    tagKeys: Array.isArray(sprite?.tagKeys) ? sprite.tagKeys : [],
++    width: sprite?.width ?? null,
 +  };
 +}
 +
-+function validateSpriteValues(values) {
-+  const issues = [];
-+  if (!values.name) {
-+    issues.push("Sprite name is required.");
-+  }
-+  if (!SPRITE_STATUSES.includes(values.status)) {
-+    issues.push(`Sprite status must be one of: ${SPRITE_STATUSES.join(", ")}.`);
-+  }
-+  return issues;
-+}
-+
-+function redirectGuestToSignIn() {
-+  window.location.href = SIGN_IN_PATH;
-+}
-+
-+async function readJsonResponse(response) {
-+  try {
-+    return await response.json();
-+  } catch {
-+    return null;
-+  }
-+}
-+
-+async function writeSprite(path, body = {}) {
-+  const response = await fetch(path, {
-+    body: JSON.stringify(body),
-+    headers: {
-+      accept: "application/json",
-+      "content-type": "application/json",
-+    },
-+    method: "POST",
-+  });
-+  const payload = await readJsonResponse(response);
-+  if (response.status === 401 || response.status === 403) {
-+    redirectGuestToSignIn();
-+    return null;
-+  }
-+  if (!response.ok || payload?.ok === false) {
-+    const message = payload?.error?.message || payload?.error || payload?.message || `Sprites API returned ${response.status}.`;
-+    throw new Error(message);
-+  }
-+  return payload;
-+}
-+
-+async function saveEditingRow(row, key) {
-+  const values = collectEditingValues(row);
-+  const issues = validateSpriteValues(values);
-+  if (issues.length) {
-+    setActionStatus(issues.join(" "));
-+    return;
-+  }
-+  const body = {
-+    category: values.category,
-+    name: values.name,
-+    source: values.source,
-+    status: values.status,
-+  };
-+  try {
-+    setActionStatus("Saving sprite record.");
-+    const path = key === "__new__" ? SPRITES_API_PATH : `${SPRITES_API_PATH}/${encodeURIComponent(key)}`;
-+    const payload = await writeSprite(path, body);
-+    if (!payload) {
-+      return;
-+    }
-+    editingKey = "";
-+    setActionStatus("Sprite record saved.");
-+    await loadSprites();
-+  } catch (error) {
-+    setActionStatus(error instanceof Error ? error.message : "Sprite save failed.");
-+  }
-+}
-+
-+async function archiveSprite(key) {
-+  try {
-+    setActionStatus("Archiving sprite record.");
-+    const payload = await writeSprite(`${SPRITES_API_PATH}/${encodeURIComponent(key)}/archive`);
-+    if (!payload) {
-+      return;
-+    }
-+    setActionStatus("Sprite record archived.");
-+    await loadSprites();
-+  } catch (error) {
-+    setActionStatus(error instanceof Error ? error.message : "Sprite archive failed.");
-+  }
-+}
-+
-+async function deleteSprite(key) {
+ function collectEditingValues(row) {
+   return {
+     category: normalizeCategory(row.querySelector("[data-sprites-category-input]")?.value),
+@@ -456,6 +574,50 @@ async function deleteSprite(key) {
+   }
+ }
+
++async function duplicateSprite(key) {
 +  const sprite = currentSprites.find((item) => item.key === key);
-+  if (sprite && numericUsageCount(sprite) > 0) {
-+    setActionStatus("Sprite is referenced. Archive it instead of deleting it.");
++  if (!sprite) {
++    setActionStatus("Select a sprite before duplicating.");
 +    return;
 +  }
 +  try {
-+    setActionStatus("Deleting sprite record.");
-+    const payload = await writeSprite(`${SPRITES_API_PATH}/${encodeURIComponent(key)}/delete`);
++    setActionStatus("Duplicating sprite through the API.");
++    const payload = await writeSprite(SPRITES_API_PATH, bodyFromSprite(sprite, {
++      name: `${normalizeText(sprite.name, "Sprite")} Copy`,
++      status: sprite.status || "draft",
++    }));
 +    if (!payload) {
 +      return;
 +    }
-+    setActionStatus("Sprite record deleted.");
++    selectedSpriteKey = payload?.data?.sprite?.key || "";
++    setActionStatus("Sprite duplicated with an API-owned key.");
 +    await loadSprites();
 +  } catch (error) {
-+    setActionStatus(error instanceof Error ? error.message : "Sprite delete failed.");
++    setActionStatus(error instanceof Error ? error.message : "Sprite duplicate failed.");
++  }
++}
++
++async function replaceSpriteMetadata(key) {
++  const sprite = currentSprites.find((item) => item.key === key);
++  if (!sprite) {
++    setActionStatus("Select a sprite before replacing metadata.");
++    return;
++  }
++  try {
++    setActionStatus("Replacing sprite source metadata through the API.");
++    const payload = await writeSprite(`${SPRITES_API_PATH}/${encodeURIComponent(key)}`, bodyFromSprite(sprite, {
++      source: sprite.source || sprite.storagePath || sprite.sourceName || "",
++    }));
++    if (!payload) {
++      return;
++    }
++    setActionStatus("Sprite source metadata replaced.");
++    await loadSprites();
++  } catch (error) {
++    setActionStatus(error instanceof Error ? error.message : "Sprite replace metadata failed.");
 +  }
 +}
 +
  async function loadSprites() {
    renderLoading();
    try {
-@@ -230,4 +484,48 @@ elements.refresh?.addEventListener("click", () => {
-   void loadSprites();
+@@ -500,6 +662,7 @@ elements.tableBody?.addEventListener("click", (event) => {
+   const saveKey = target.dataset.spritesSave;
+   const archiveKey = target.dataset.spritesArchive;
+   const deleteKey = target.dataset.spritesDelete;
++  const duplicateKey = target.dataset.spritesDuplicateRow;
+   if (editKey !== undefined) {
+     editingKey = editKey;
+     renderRows(currentSprites);
+@@ -523,9 +686,21 @@ elements.tableBody?.addEventListener("click", (event) => {
+     void archiveSprite(archiveKey);
+     return;
+   }
++  if (duplicateKey !== undefined) {
++    void duplicateSprite(duplicateKey);
++    return;
++  }
+   if (deleteKey !== undefined) {
+     void deleteSprite(deleteKey);
+   }
  });
 
-+elements.add?.addEventListener("click", () => {
-+  editingKey = "__new__";
-+  renderRows(currentSprites);
-+  setActionStatus("New sprite row ready. Name and status are required.");
++elements.duplicate?.addEventListener("click", () => {
++  void duplicateSprite(selectedSpriteKey);
 +});
 +
-+elements.tableBody?.addEventListener("click", (event) => {
-+  const target = event.target;
-+  if (!(target instanceof HTMLElement)) {
-+    return;
-+  }
-+  const editKey = target.dataset.spritesEdit;
-+  const cancelKey = target.dataset.spritesCancel;
-+  const saveKey = target.dataset.spritesSave;
-+  const archiveKey = target.dataset.spritesArchive;
-+  const deleteKey = target.dataset.spritesDelete;
-+  if (editKey !== undefined) {
-+    editingKey = editKey;
-+    renderRows(currentSprites);
-+    setActionStatus("Editing sprite row. Name and status are required.");
-+    return;
-+  }
-+  if (cancelKey !== undefined) {
-+    editingKey = "";
-+    renderRows(currentSprites);
-+    setActionStatus("Sprite edit cancelled.");
-+    return;
-+  }
-+  if (saveKey !== undefined) {
-+    const row = target.closest("[data-sprites-editing-row]");
-+    if (row) {
-+      void saveEditingRow(row, saveKey);
-+    }
-+    return;
-+  }
-+  if (archiveKey !== undefined) {
-+    void archiveSprite(archiveKey);
-+    return;
-+  }
-+  if (deleteKey !== undefined) {
-+    void deleteSprite(deleteKey);
-+  }
++elements.replace?.addEventListener("click", () => {
++  void replaceSpriteMetadata(selectedSpriteKey);
 +});
 +
  void loadSprites();
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index b2f2b45dd..b2b44660d 100644
+index b2b44660d..fa5f97754 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -14,7 +14,7 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
- Exercised tool entry points detected:
- (76%) Toolbox Index - exercised 1 runtime JS files
- (0%) Tool Template V2 - not exercised by this Playwright run
--(74%) Theme V2 Shared JS - exercised 4 runtime JS files
-+(73%) Theme V2 Shared JS - exercised 6 runtime JS files
-
- Changed runtime JS files covered:
- (100%) none changed - no changed runtime JS files
-@@ -22,13 +22,15 @@ Changed runtime JS files covered:
- Files with executed line/function counts where available:
- (36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2041/2041; executed functions 12/33
- (42%) src/api/server-api-client.js - executed lines 168/168; executed functions 8/19
-+(57%) assets/theme-v2/js/account-auth-service.js - executed lines 64/64; executed functions 4/7
- (64%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 63/98
--(65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
- (67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
-+(70%) assets/theme-v2/js/login-session.js - executed lines 113/113; executed functions 7/10
-+(75%) src/api/public-config-client.js - executed lines 209/209; executed functions 21/28
+@@ -30,12 +30,12 @@ Files with executed line/function counts where available:
  (76%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 22/29
  (77%) assets/theme-v2/js/tool-display-mode.js - executed lines 304/304; executed functions 23/30
  (80%) assets/theme-v2/js/theme-icons.js - executed lines 69/69; executed functions 4/5
--(92%) assets/toolbox/sprites/js/index.js - executed lines 212/212; executed functions 23/25
-+(96%) assets/toolbox/sprites/js/index.js - executed lines 485/485; executed functions 43/45
+-(96%) assets/toolbox/sprites/js/index.js - executed lines 485/485; executed functions 43/45
  (97%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 35/36
++(97%) assets/toolbox/sprites/js/index.js - executed lines 649/649; executed functions 57/59
 
  Uncovered or low-coverage changed JS files:
-@@ -36,4 +38,4 @@ Uncovered or low-coverage changed JS files:
+ (100%) none changed - no changed runtime JS files
 
  Changed JS files considered:
  (0%) tests/playwright/tools/SpritesToolShell.spec.mjs - changed JS file not collected as browser runtime coverage
--(92%) assets/toolbox/sprites/js/index.js - changed JS file with browser V8 coverage
-+(96%) assets/toolbox/sprites/js/index.js - changed JS file with browser V8 coverage
+-(96%) assets/toolbox/sprites/js/index.js - changed JS file with browser V8 coverage
++(97%) assets/toolbox/sprites/js/index.js - changed JS file with browser V8 coverage
 diff --git a/tests/playwright/tools/SpritesToolShell.spec.mjs b/tests/playwright/tools/SpritesToolShell.spec.mjs
-index 8a5e8f2cf..3b48fb225 100644
+index 3b48fb225..55f7b0718 100644
 --- a/tests/playwright/tools/SpritesToolShell.spec.mjs
 +++ b/tests/playwright/tools/SpritesToolShell.spec.mjs
-@@ -105,3 +105,151 @@ test("Sprites shell shows unavailable state when API contract is missing", async
+@@ -253,3 +253,141 @@ test("Sprites shell archives referenced records and deletes only unreferenced re
      await server.close();
    }
  });
 +
-+test("Sprites shell validates and creates records through API without browser-owned keys", async ({ page }) => {
-+  const createdBodies = [];
-+  let sprites = [];
++test("Sprites shell previews metadata and shows storage and Palette unavailable states", async ({ page }) => {
 +  const server = await openSpritesPage(page, async (currentPage) => {
 +    await currentPage.route("**/api/sprites/records", async (route) => {
-+      const request = route.request();
-+      if (request.method() === "POST") {
-+        const body = request.postDataJSON();
-+        createdBodies.push(body);
-+        const sprite = {
-+          ...body,
-+          key: "01J1SPRITECREATEDBYAPI0000",
-+          updatedAt: "2026-06-26T12:10:00.000Z",
-+          usageCount: 0,
-+        };
-+        sprites = [sprite];
-+        await route.fulfill({
-+          body: JSON.stringify({ data: { sprite }, ok: true }),
-+          contentType: "application/json",
-+          status: 200,
-+        });
-+        return;
-+      }
 +      await route.fulfill({
-+        body: JSON.stringify({ data: { sprites }, ok: true }),
++        body: JSON.stringify({
++          data: {
++            sprites: [
++              {
++                key: "01J1SPRITEMETA0000000000000",
++                name: "Preview Sprite",
++                status: "ready",
++                category: "Characters",
++                source: "assets/theme-v2/images/image-missing.svg",
++                mimeType: "image/svg+xml",
++                width: 64,
++                height: 32,
++                sizeBytes: 4096,
++                updatedAt: "2026-06-26T12:30:00.000Z",
++                updatedBy: "01J1USER0000000000000000000",
++                paletteColorKeys: ["palette_color_preview"],
++                usageCount: 0,
++              },
++            ],
++          },
++          ok: true,
++        }),
 +        contentType: "application/json",
 +        status: 200,
 +      });
@@ -507,95 +357,69 @@ index 8a5e8f2cf..3b48fb225 100644
 +  });
 +
 +  try {
-+    await page.getByRole("button", { name: "Add Sprite" }).click();
-+    await page.getByRole("button", { name: "Save" }).click();
-+    await expect(page.locator("[data-sprites-validation]")).toContainText("Sprite name is required.");
-+    await page.getByLabel("Sprite name").fill("  Hero Idle  ");
-+    await page.getByLabel("Sprite status").selectOption("ready");
-+    await page.getByLabel("Sprite category").fill("  Player   Characters  ");
-+    await page.getByLabel("Sprite source reference").fill("assets/sprites/hero-idle.png");
-+    await page.getByRole("button", { name: "Save" }).click();
-+    await expect(page.locator("[data-sprites-table-body]")).toContainText("Hero Idle");
-+    expect(createdBodies).toHaveLength(1);
-+    expect(createdBodies[0]).toEqual({
-+      category: "Player Characters",
-+      name: "Hero Idle",
-+      source: "assets/sprites/hero-idle.png",
-+      status: "ready",
-+    });
-+    expect(createdBodies[0].key).toBeUndefined();
++    await page.locator("[data-sprites-row-key='01J1SPRITEMETA0000000000000']").click();
++    await expect(page.locator("[data-sprites-preview-panel] img")).toHaveAttribute("src", "assets/theme-v2/images/image-missing.svg");
++    await expect(page.locator("[data-sprites-preview-panel]")).toContainText("image/svg+xml");
++    await expect(page.locator("[data-sprites-preview-panel]")).toContainText("64 x 32");
++    await expect(page.locator("[data-sprites-preview-panel]")).toContainText("4096");
++    await expect(page.locator("[data-sprites-preview-panel]")).toContainText("palette_color_preview");
++    await expect(page.locator("[data-sprites-storage-status]")).toContainText("Binary upload/storage import is not configured");
++    await expect(page.locator("[data-sprites-palette-selection-status]")).toContainText("display-only");
 +  } finally {
 +    await workspaceV2CoverageReporter.stop(page);
 +    await server.close();
 +  }
 +});
 +
-+test("Sprites shell redirects guest save attempts to sign-in", async ({ page }) => {
-+  const server = await openSpritesPage(page, async (currentPage) => {
-+    await currentPage.route("**/api/sprites/records", async (route) => {
-+      if (route.request().method() === "POST") {
-+        await route.fulfill({
-+          body: JSON.stringify({ error: "Sign in is required to save Sprites.", ok: false }),
-+          contentType: "application/json",
-+          status: 401,
-+        });
-+        return;
-+      }
-+      await route.fulfill({
-+        body: JSON.stringify({ data: { sprites: [] }, ok: true }),
-+        contentType: "application/json",
-+        status: 200,
-+      });
-+    });
-+  });
-+
-+  try {
-+    await page.getByRole("button", { name: "Add Sprite" }).click();
-+    await page.getByLabel("Sprite name").fill("Guest Sprite");
-+    await page.getByLabel("Sprite status").selectOption("draft");
-+    await page.getByRole("button", { name: "Save" }).click();
-+    await page.waitForURL(/\/account\/sign-in\.html$/);
-+  } finally {
-+    await workspaceV2CoverageReporter.stop(page);
-+    await server.close();
-+  }
-+});
-+
-+test("Sprites shell archives referenced records and deletes only unreferenced records", async ({ page }) => {
-+  const postedPaths = [];
++test("Sprites shell duplicates with API-owned key and replaces metadata through API", async ({ page }) => {
++  const posted = [];
 +  let sprites = [
 +    {
-+      key: "01J1SPRITEUSED00000000000000",
-+      name: "Used Sprite",
++      key: "01J1SPRITEDUPE0000000000000",
++      name: "Duplicate Source",
 +      status: "ready",
-+      updatedAt: "2026-06-26T12:20:00.000Z",
-+      usageCount: 2,
-+    },
-+    {
-+      key: "01J1SPRITEFREE00000000000000",
-+      name: "Free Sprite",
-+      status: "draft",
-+      updatedAt: "2026-06-26T12:15:00.000Z",
++      category: "Characters",
++      source: "assets/theme-v2/images/image-missing.svg",
++      mimeType: "image/svg+xml",
++      width: 32,
++      height: 32,
++      sizeBytes: 1024,
++      updatedAt: "2026-06-26T12:40:00.000Z",
++      updatedBy: "01J1USER0000000000000000000",
++      paletteColorKeys: ["palette_color_duplicate"],
 +      usageCount: 0,
 +    },
 +  ];
 +  const server = await openSpritesPage(page, async (currentPage) => {
 +    await currentPage.route("**/api/sprites/records**", async (route) => {
-+      const url = new URL(route.request().url());
-+      if (route.request().method() === "POST") {
-+        postedPaths.push(url.pathname);
-+        if (url.pathname.endsWith("/archive")) {
-+          sprites = sprites.map((sprite) => (
-+            url.pathname.includes(sprite.key)
-+              ? { ...sprite, archived: true, status: "archived" }
-+              : sprite
-+          ));
++      const request = route.request();
++      const url = new URL(request.url());
++      if (request.method() === "POST") {
++        const body = request.postDataJSON() || {};
++        posted.push({ body, path: url.pathname });
++        if (url.pathname === "/api/sprites/records") {
++          const sprite = {
++            ...body,
++            key: "01J1SPRITEDUPECOPY000000000",
++            updatedAt: "2026-06-26T12:45:00.000Z",
++            updatedBy: "01J1USER0000000000000000000",
++            usageCount: 0,
++          };
++          sprites = [...sprites, sprite];
++          await route.fulfill({
++            body: JSON.stringify({ data: { sprite }, ok: true }),
++            contentType: "application/json",
++            status: 200,
++          });
++          return;
 +        }
-+        if (url.pathname.endsWith("/delete")) {
-+          sprites = sprites.filter((sprite) => !url.pathname.includes(sprite.key));
-+        }
++        sprites = sprites.map((sprite) => (
++          url.pathname.includes(sprite.key)
++            ? { ...sprite, ...body, updatedAt: "2026-06-26T12:50:00.000Z" }
++            : sprite
++        ));
 +        await route.fulfill({
-+          body: JSON.stringify({ data: { sprite: sprites[0] || null }, ok: true }),
++          body: JSON.stringify({ data: { sprite: sprites[0] }, ok: true }),
 +          contentType: "application/json",
 +          status: 200,
 +        });
@@ -610,150 +434,149 @@ index 8a5e8f2cf..3b48fb225 100644
 +  });
 +
 +  try {
-+    await expect(page.getByRole("button", { name: "Delete blocked for Used Sprite" })).toBeDisabled();
-+    await page.getByRole("button", { name: "Archive Used Sprite" }).click();
-+    await expect(page.locator("[data-sprites-table-body]")).toContainText("archived");
-+    await page.getByRole("button", { name: "Delete Free Sprite" }).click();
-+    await expect(page.locator("[data-sprites-table-body]")).not.toContainText("Free Sprite");
-+    expect(postedPaths).toContain("/api/sprites/records/01J1SPRITEUSED00000000000000/archive");
-+    expect(postedPaths).toContain("/api/sprites/records/01J1SPRITEFREE00000000000000/delete");
++    await page.locator("[data-sprites-row-key='01J1SPRITEDUPE0000000000000']").click();
++    await page.getByRole("button", { name: "Duplicate Sprite" }).click();
++    await expect(page.locator("[data-sprites-table-body]")).toContainText("Duplicate Source Copy");
++    await page.locator("[data-sprites-row-key='01J1SPRITEDUPE0000000000000']").click();
++    await page.getByRole("button", { name: "Replace Metadata" }).click();
++    expect(posted).toEqual(expect.arrayContaining([
++      expect.objectContaining({
++        path: "/api/sprites/records",
++        body: expect.objectContaining({
++          name: "Duplicate Source Copy",
++          paletteColorKeys: ["palette_color_duplicate"],
++        }),
++      }),
++      expect.objectContaining({
++        path: "/api/sprites/records/01J1SPRITEDUPE0000000000000",
++        body: expect.objectContaining({
++          name: "Duplicate Source",
++          source: "assets/theme-v2/images/image-missing.svg",
++        }),
++      }),
++    ]));
++    expect(posted[0].body.key).toBeUndefined();
 +  } finally {
 +    await workspaceV2CoverageReporter.stop(page);
 +    await server.close();
 +  }
 +});
 diff --git a/toolbox/sprites/index.html b/toolbox/sprites/index.html
-index 24ab61222..efab72661 100644
+index efab72661..e72610c6b 100644
 --- a/toolbox/sprites/index.html
 +++ b/toolbox/sprites/index.html
-@@ -74,16 +74,19 @@
-                                                 <th scope="col">Palette Refs</th>
-                                                 <th scope="col">Updated</th>
-                                                 <th scope="col">Usage</th>
-+                                                <th scope="col">Actions</th>
-                                             </tr>
-                                         </thead>
-                                         <tbody data-sprites-table-body>
--                                            <tr><td colspan="8">Loading Sprites records.</td></tr>
-+                                            <tr><td colspan="9">Loading Sprites records.</td></tr>
-                                         </tbody>
-                                     </table>
-                                 </div>
-                                 <div class="action-group">
-+                                    <button class="btn primary" type="button" data-sprites-add>Add Sprite</button>
-                                     <button class="btn" type="button" data-sprites-refresh>Refresh</button>
-                                 </div>
-+                                <div class="status" role="status" data-sprites-validation>Ready for API-backed edits.</div>
-                             </div>
-                         </article>
-                     </section>
-@@ -103,6 +106,7 @@
+@@ -41,6 +41,7 @@
                                  <div class="accordion-body content-stack">
-                                     <p>Status: <span data-sprites-output-status>Loading</span></p>
-                                     <p data-sprites-output-summary>Waiting for Sprites API response.</p>
-+                                    <p data-sprites-action-status>No pending sprite action.</p>
+                                     <p>Reusable colors stay owned by Palette/Colors.</p>
+                                     <p data-sprites-palette-status>Palette/Colors references load with Sprites records when available.</p>
++                                    <p data-sprites-palette-selection-status>Palette/Colors selection loads when the Palette/Colors API is available.</p>
                                  </div>
                              </details>
                          </div>
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-branch-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-branch-validation.md
+@@ -99,6 +100,20 @@
+                                 <summary>Selection</summary>
+                                 <div class="accordion-body content-stack">
+                                     <p data-sprites-metadata>Select a sprite row to review its metadata.</p>
++                                    <div data-sprites-preview-panel>
++                                        <p class="status" role="status">No sprite selected for preview.</p>
++                                    </div>
++                                    <div class="action-group action-group--tight">
++                                        <button class="btn btn--compact" type="button" data-sprites-duplicate disabled>Duplicate Sprite</button>
++                                        <button class="btn btn--compact" type="button" data-sprites-replace disabled>Replace Metadata</button>
++                                    </div>
++                                </div>
++                            </details>
++                            <details class="vertical-accordion" open>
++                                <summary>Import</summary>
++                                <div class="accordion-body content-stack">
++                                    <p data-sprites-storage-status>Storage import is checking API capabilities.</p>
++                                    <p data-sprites-replace-status>Select a sprite to update source metadata through the API.</p>
+                                 </div>
+                             </details>
+                             <details class="vertical-accordion" open>
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-branch-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-branch-validation.md
 new file mode 100644
-index 000000000..9d6159bfe
+index 000000000..f9063cc91
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-branch-validation.md
-@@ -0,0 +1,18 @@
-+# PR_26177_CHARLIE_012 Branch Validation
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-branch-validation.md
+@@ -0,0 +1,16 @@
++# PR_26177_CHARLIE_013 Branch Validation
 +
 +Status: PASS
 +
 +## Checks
 +
-+- PASS: `main` was checked and synced to `origin/main` before continuing.
-+- PASS: `main` worktree was clean before continuing.
-+- PASS: PR012 was created as a stacked branch from `PR_26177_CHARLIE_011-sprites-tool-shell`.
-+- PASS: Stacking is required because CRUD depends on the PR011 shell and avoids duplicating PR011 in a separate main-based branch.
-+- PASS: Current work branch is `PR_26177_CHARLIE_012-sprites-library-crud`.
-+- PASS: Branch contains only the Sprites library CRUD PR scope relative to PR011.
++- PASS: PR013 was created as a stacked branch from `PR_26177_CHARLIE_012-sprites-library-crud`.
++- PASS: Stacking is required because preview/metadata/duplicate/replace controls build on the PR012 library CRUD shell.
++- PASS: Current work branch is `PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette`.
++- PASS: Branch contains only the Sprites import/preview/metadata/Palette PR scope relative to PR012.
 +- PASS: No merge was performed.
 +- PASS: No `start_of_day` path is changed.
 +
 +## Notes
 +
-+The Sprites API/database foundation is still provided by `PR_26177_CHARLIE_010-sprites-api-db-foundation`. This PR validates browser CRUD behavior against mocked API responses matching that contract.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-manual-validation-notes.md b/docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-manual-validation-notes.md
++The current API supports metadata/source/storage reference fields but does not provide binary upload/storage object creation. This PR therefore exposes storage import as unavailable and documents the follow-up instead of adding fake upload behavior.
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-manual-validation-notes.md b/docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-manual-validation-notes.md
 new file mode 100644
-index 000000000..894bf1ba1
+index 000000000..0f4513909
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-manual-validation-notes.md
-@@ -0,0 +1,20 @@
-+# PR_26177_CHARLIE_012 Manual Validation Notes
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-manual-validation-notes.md
+@@ -0,0 +1,18 @@
++# PR_26177_CHARLIE_013 Manual Validation Notes
 +
 +Status: PASS
 +
 +## Manual Review
 +
-+- Verified Add Sprite opens an editable row without generating a sprite key in the browser.
-+- Verified Save requires a sprite name.
-+- Verified Save requires an explicit valid status.
-+- Verified category input is normalized before API submission.
-+- Verified create and update requests use the Sprites API POST contract.
-+- Verified archive uses the API archive endpoint.
-+- Verified delete uses the API delete endpoint only when the record has no usage references.
-+- Verified referenced records display a disabled delete action with archive as the available safe action.
-+- Verified 401 write response redirects to `account/sign-in.html`.
-+- Verified no color definitions or reusable Palette/Colors records are created by Sprites.
++- Verified selected sprite metadata is displayed from API response fields only.
++- Verified preview image uses an API-provided local source path when present.
++- Verified missing preview source displays an unavailable state.
++- Verified duplicate omits browser-generated keys and posts to the create API.
++- Verified replace metadata posts to the update API for the selected sprite key.
++- Verified Palette/Colors keys are displayed as references only.
++- Verified Palette/Colors selection is visibly unavailable until an API-backed selector exists.
++- Verified binary upload/storage import is visibly unavailable rather than simulated.
 +
-+## Manual Limitation
++## Follow-Up
 +
-+The live API/database foundation remains in PR010. This PR uses mocked API responses in Playwright to validate the UI contract until PR010 is merged.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-requirements-checklist.md b/docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-requirements-checklist.md
++Add real binary upload/storage import only when a storage API contract exists for Sprites. Add Palette/Colors selector only when Palette/Colors exposes an API-backed key selection contract.
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-requirements-checklist.md b/docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-requirements-checklist.md
 new file mode 100644
-index 000000000..dcb0172b7
+index 000000000..1eafb6af2
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-requirements-checklist.md
-@@ -0,0 +1,25 @@
-+# PR_26177_CHARLIE_012 Requirements Checklist
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-requirements-checklist.md
+@@ -0,0 +1,20 @@
++# PR_26177_CHARLIE_013 Requirements Checklist
 +
 +Status: PASS
 +
-+- PASS: Implemented API-backed sprite library table controls.
-+- PASS: Added create flow.
-+- PASS: Added edit/update flow.
-+- PASS: Added archive flow.
-+- PASS: Added delete flow.
-+- PASS: Delete is blocked for referenced records using API-provided usage count.
-+- PASS: Archive remains available as the safer referenced-record action.
-+- PASS: Name is required before save.
-+- PASS: Status must be one of the API contract values: `draft`, `ready`, `published`, `archived`.
-+- PASS: Category is optional and normalized.
-+- PASS: No silent default status is applied for new records.
-+- PASS: Guest save attempts redirect to `account/sign-in.html`.
-+- PASS: Browser does not generate authoritative sprite keys.
-+- PASS: API/server remains responsible for key and audit fields.
-+- PASS: No Sprite-owned reusable color data was added.
-+- PASS: No page-local reusable Palette/Colors arrays were added.
-+- PASS: No browser storage product-data source of truth was added.
-+- PASS: No MEM DB, local-mem, fake-login, or silent fallback was introduced.
++- PASS: Evaluated import/upload workflow against current storage/API support.
++- PASS: Did not add fake upload behavior because binary storage import is not available in the current Sprites API contract.
++- PASS: Added visible storage import unavailable state.
++- PASS: Added preview panel.
++- PASS: Added metadata display for image/source name, MIME/type, dimensions, file size, updatedAt, and updatedBy.
++- PASS: Added replace sprite metadata action through the API.
++- PASS: Added duplicate sprite action through the API with server-owned new key.
++- PASS: Displayed Palette/Colors references only as API/database keys.
++- PASS: Displayed Palette/Colors selection unavailable state because selection integration is incomplete.
++- PASS: Did not add Sprite-owned color definitions.
++- PASS: Did not add page-local Palette/Colors arrays.
++- PASS: Did not add browser storage product-data source of truth.
++- PASS: Did not introduce MEM DB, local-mem, fake-login, or silent fallback.
 +- PASS: Targeted Playwright coverage passed.
 +- PASS: Required report artifacts were created.
 +- PASS: Repo-structured ZIP artifact was created under `tmp/`.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-validation-lane.md b/docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-validation-lane.md
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-validation-lane.md b/docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-validation-lane.md
 new file mode 100644
-index 000000000..324365ff1
+index 000000000..17a048046
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-validation-lane.md
-@@ -0,0 +1,40 @@
-+# PR_26177_CHARLIE_012 Validation Lane
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-validation-lane.md
+@@ -0,0 +1,33 @@
++# PR_26177_CHARLIE_013 Validation Lane
 +
 +Status: PASS
 +
 +## Commands
-+
-+```powershell
-+git -c http.sslBackend=schannel pull --ff-only origin main
-+git rev-list --left-right --count origin/main...HEAD
-+```
-+
-+Result: PASS, `main` was synced at `0 0` before the stacked branch was created.
 +
 +```powershell
 +rg -n "<style|style=|onclick=|onchange=|oninput=|onsubmit=|<script>" toolbox/sprites/index.html assets/toolbox/sprites/js/index.js tests/playwright/tools/SpritesToolShell.spec.mjs
@@ -777,18 +600,18 @@ index 000000000..324365ff1
 +node ./node_modules/@playwright/test/cli.js test tests/playwright/tools/SpritesToolShell.spec.mjs --project=playwright --workers=1 --reporter=list
 +```
 +
-+Result: PASS, 6 passed.
++Result: PASS, 8 passed.
 +
 +## Playwright Coverage
 +
 +Targeted Playwright coverage updated `docs_build/dev/reports/playwright_v8_coverage_report.txt` for the Sprites browser module.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud.md b/docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud.md
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette.md b/docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette.md
 new file mode 100644
-index 000000000..478dc853d
+index 000000000..3721c6709
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud.md
-@@ -0,0 +1,51 @@
-+# PR_26177_CHARLIE_012-sprites-library-crud
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette.md
+@@ -0,0 +1,45 @@
++# PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette
 +
 +Team: Charlie
 +
@@ -796,7 +619,7 @@ index 000000000..478dc853d
 +
 +## Scope
 +
-+Extended the Sprites tool shell with API-backed library CRUD controls. The browser still does not own authoritative data: all create, update, archive, and delete actions call the Sprites API contract.
++Added Sprites preview, metadata, duplicate, replace-metadata, and Palette/Colors reference states without introducing fake storage or browser-owned product data.
 +
 +## Changed Files
 +
@@ -806,27 +629,21 @@ index 000000000..478dc853d
 +- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
 +- `docs_build/dev/reports/codex_review.diff`
 +- `docs_build/dev/reports/codex_changed_files.txt`
-+- `docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud.md`
-+- `docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-branch-validation.md`
-+- `docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-requirements-checklist.md`
-+- `docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-validation-lane.md`
-+- `docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-manual-validation-notes.md`
++- `docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette.md`
++- `docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-branch-validation.md`
++- `docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-requirements-checklist.md`
++- `docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-validation-lane.md`
++- `docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-manual-validation-notes.md`
 +
 +## Implementation Notes
 +
-+- Added Add/Edit/Save/Cancel controls for sprite records.
-+- Added required `name` validation and API-contract status validation.
-+- Added category normalization by trimming and collapsing internal whitespace.
-+- Added archive action through `/api/sprites/records/:key/archive`.
-+- Added delete action through `/api/sprites/records/:key/delete`.
-+- Delete is disabled when the API-provided usage count indicates references; archive remains the safer action.
-+- Guest write attempts redirect to `account/sign-in.html` when the API returns 401 or 403.
-+- Create requests do not include browser-generated authoritative keys.
-+- Sprites still does not define reusable colors or duplicate Palette/Colors records.
-+
-+## Stack Note
-+
-+This PR is stacked on `PR_26177_CHARLIE_011-sprites-tool-shell` because the CRUD work depends on the shell structure. Project Instructions allow stacked sequential PRs when dependency order requires it. Opening this from `main` would duplicate PR011 shell work and violate one-purpose scope.
++- Added selected sprite preview panel.
++- Added metadata display for file/source, MIME/type, dimensions, file size, updatedAt, updatedBy, and Palette/Colors keys.
++- Added duplicate action through the Sprites create API so the server owns the new key.
++- Added replace-metadata action through the Sprites update API.
++- Added visible storage import unavailable state because the current Sprites API contract does not provide binary upload/storage write support.
++- Added Palette/Colors selection unavailable/display-only state because Palette/Colors key selection integration is not present in the current contract.
++- No reusable color definitions were added to Sprites.
 +
 +## Validation
 +
@@ -838,4 +655,4 @@ index 000000000..478dc853d
 +
 +## ZIP Artifact
 +
-+- `tmp/PR_26177_CHARLIE_012-sprites-library-crud_delta.zip`
++- `tmp/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette_delta.zip`

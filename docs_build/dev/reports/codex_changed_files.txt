@@ -3,22 +3,22 @@ M assets/toolbox/sprites/js/index.js
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
  M tests/playwright/tools/SpritesToolShell.spec.mjs
  M toolbox/sprites/index.html
-?? docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-branch-validation.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-manual-validation-notes.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-requirements-checklist.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-validation-lane.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-branch-validation.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-manual-validation-notes.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-requirements-checklist.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-validation-lane.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-branch-validation.md
-docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-manual-validation-notes.md
-docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-requirements-checklist.md
-docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud-validation-lane.md
-docs_build/dev/reports/PR_26177_CHARLIE_012-sprites-library-crud.md
+docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-branch-validation.md
+docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-manual-validation-notes.md
+docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-requirements-checklist.md
+docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-validation-lane.md
+docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette.md
 
 # git diff --stat
-assets/toolbox/sprites/js/index.js                 | 314 ++++++++++++++++++++-
- .../dev/reports/playwright_v8_coverage_report.txt  |  10 +-
- tests/playwright/tools/SpritesToolShell.spec.mjs   | 148 ++++++++++
- toolbox/sprites/index.html                         |   6 +-
- 4 files changed, 465 insertions(+), 13 deletions(-)
+assets/toolbox/sprites/js/index.js                 | 183 ++++++++++++++++++++-
+ .../dev/reports/playwright_v8_coverage_report.txt  |   4 +-
+ tests/playwright/tools/SpritesToolShell.spec.mjs   | 138 ++++++++++++++++
+ toolbox/sprites/index.html                         |  15 ++
+ 4 files changed, 334 insertions(+), 6 deletions(-)

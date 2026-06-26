@@ -253,3 +253,141 @@ test("Sprites shell archives referenced records and deletes only unreferenced re
     await server.close();
   }
 });
+
+test("Sprites shell previews metadata and shows storage and Palette unavailable states", async ({ page }) => {
+  const server = await openSpritesPage(page, async (currentPage) => {
+    await currentPage.route("**/api/sprites/records", async (route) => {
+      await route.fulfill({
+        body: JSON.stringify({
+          data: {
+            sprites: [
+              {
+                key: "01J1SPRITEMETA0000000000000",
+                name: "Preview Sprite",
+                status: "ready",
+                category: "Characters",
+                source: "assets/theme-v2/images/image-missing.svg",
+                mimeType: "image/svg+xml",
+                width: 64,
+                height: 32,
+                sizeBytes: 4096,
+                updatedAt: "2026-06-26T12:30:00.000Z",
+                updatedBy: "01J1USER0000000000000000000",
+                paletteColorKeys: ["palette_color_preview"],
+                usageCount: 0,
+              },
+            ],
+          },
+          ok: true,
+        }),
+        contentType: "application/json",
+        status: 200,
+      });
+    });
+  });
+
+  try {
+    await page.locator("[data-sprites-row-key='01J1SPRITEMETA0000000000000']").click();
+    await expect(page.locator("[data-sprites-preview-panel] img")).toHaveAttribute("src", "assets/theme-v2/images/image-missing.svg");
+    await expect(page.locator("[data-sprites-preview-panel]")).toContainText("image/svg+xml");
+    await expect(page.locator("[data-sprites-preview-panel]")).toContainText("64 x 32");
+    await expect(page.locator("[data-sprites-preview-panel]")).toContainText("4096");
+    await expect(page.locator("[data-sprites-preview-panel]")).toContainText("palette_color_preview");
+    await expect(page.locator("[data-sprites-storage-status]")).toContainText("Binary upload/storage import is not configured");
+    await expect(page.locator("[data-sprites-palette-selection-status]")).toContainText("display-only");
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await server.close();
+  }
+});
+
+test("Sprites shell duplicates with API-owned key and replaces metadata through API", async ({ page }) => {
+  const posted = [];
+  let sprites = [
+    {
+      key: "01J1SPRITEDUPE0000000000000",
+      name: "Duplicate Source",
+      status: "ready",
+      category: "Characters",
+      source: "assets/theme-v2/images/image-missing.svg",
+      mimeType: "image/svg+xml",
+      width: 32,
+      height: 32,
+      sizeBytes: 1024,
+      updatedAt: "2026-06-26T12:40:00.000Z",
+      updatedBy: "01J1USER0000000000000000000",
+      paletteColorKeys: ["palette_color_duplicate"],
+      usageCount: 0,
+    },
+  ];
+  const server = await openSpritesPage(page, async (currentPage) => {
+    await currentPage.route("**/api/sprites/records**", async (route) => {
+      const request = route.request();
+      const url = new URL(request.url());
+      if (request.method() === "POST") {
+        const body = request.postDataJSON() || {};
+        posted.push({ body, path: url.pathname });
+        if (url.pathname === "/api/sprites/records") {
+          const sprite = {
+            ...body,
+            key: "01J1SPRITEDUPECOPY000000000",
+            updatedAt: "2026-06-26T12:45:00.000Z",
+            updatedBy: "01J1USER0000000000000000000",
+            usageCount: 0,
+          };
+          sprites = [...sprites, sprite];
+          await route.fulfill({
+            body: JSON.stringify({ data: { sprite }, ok: true }),
+            contentType: "application/json",
+            status: 200,
+          });
+          return;
+        }
+        sprites = sprites.map((sprite) => (
+          url.pathname.includes(sprite.key)
+            ? { ...sprite, ...body, updatedAt: "2026-06-26T12:50:00.000Z" }
+            : sprite
+        ));
+        await route.fulfill({
+          body: JSON.stringify({ data: { sprite: sprites[0] }, ok: true }),
+          contentType: "application/json",
+          status: 200,
+        });
+        return;
+      }
+      await route.fulfill({
+        body: JSON.stringify({ data: { sprites }, ok: true }),
+        contentType: "application/json",
+        status: 200,
+      });
+    });
+  });
+
+  try {
+    await page.locator("[data-sprites-row-key='01J1SPRITEDUPE0000000000000']").click();
+    await page.getByRole("button", { name: "Duplicate Sprite" }).click();
+    await expect(page.locator("[data-sprites-table-body]")).toContainText("Duplicate Source Copy");
+    await page.locator("[data-sprites-row-key='01J1SPRITEDUPE0000000000000']").click();
+    await page.getByRole("button", { name: "Replace Metadata" }).click();
+    expect(posted).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        path: "/api/sprites/records",
+        body: expect.objectContaining({
+          name: "Duplicate Source Copy",
+          paletteColorKeys: ["palette_color_duplicate"],
+        }),
+      }),
+      expect.objectContaining({
+        path: "/api/sprites/records/01J1SPRITEDUPE0000000000000",
+        body: expect.objectContaining({
+          name: "Duplicate Source",
+          source: "assets/theme-v2/images/image-missing.svg",
+        }),
+      }),
+    ]));
+    expect(posted[0].body.key).toBeUndefined();
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await server.close();
+  }
+});
