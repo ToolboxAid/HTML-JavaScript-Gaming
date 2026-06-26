@@ -242,12 +242,79 @@ test("Sprites shell archives referenced records and deletes only unreferenced re
 
   try {
     await expect(page.getByRole("button", { name: "Delete blocked for Used Sprite" })).toBeDisabled();
-    await page.getByRole("button", { name: "Archive Used Sprite" }).click();
+    await page.getByRole("button", { name: "Archive safely Used Sprite" }).click();
     await expect(page.locator("[data-sprites-table-body]")).toContainText("archived");
     await page.getByRole("button", { name: "Delete Free Sprite" }).click();
     await expect(page.locator("[data-sprites-table-body]")).not.toContainText("Free Sprite");
     expect(postedPaths).toContain("/api/sprites/records/01J1SPRITEUSED00000000000000/archive");
     expect(postedPaths).toContain("/api/sprites/records/01J1SPRITEFREE00000000000000/delete");
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await server.close();
+  }
+});
+
+test("Sprites shell shows API-provided references and blocks destructive delete", async ({ page }) => {
+  const postedPaths = [];
+  const referencedKey = "01J1SPRITEREF0000000000000";
+  const server = await openSpritesPage(page, async (currentPage) => {
+    await currentPage.route("**/api/sprites/records**", async (route) => {
+      const request = route.request();
+      const url = new URL(request.url());
+      if (request.method() === "POST") {
+        postedPaths.push(url.pathname);
+        await route.fulfill({
+          body: JSON.stringify({ data: { sprite: null }, ok: true }),
+          contentType: "application/json",
+          status: 200,
+        });
+        return;
+      }
+      await route.fulfill({
+        body: JSON.stringify({
+          data: {
+            sprites: [
+              {
+                key: referencedKey,
+                name: "Referenced Sprite",
+                status: "ready",
+                updatedAt: "2026-06-26T13:20:00.000Z",
+                usageCount: 2,
+                references: [
+                  {
+                    key: "01J1REFOBJECT000000000000",
+                    label: "Hero Object",
+                    sourceKey: "object_hero",
+                    sourceType: "Objects",
+                  },
+                  {
+                    key: "01J1REFWORLD0000000000000",
+                    label: "Intro World",
+                    sourceKey: "world_intro",
+                    sourceType: "Worlds",
+                  },
+                ],
+              },
+            ],
+          },
+          ok: true,
+        }),
+        contentType: "application/json",
+        status: 200,
+      });
+    });
+  });
+
+  try {
+    await page.locator(`[data-sprites-row-key='${referencedKey}']`).click();
+    await expect(page.locator("[data-sprites-reference-status]")).toContainText("2 usage references");
+    await expect(page.locator("[data-sprites-reference-panel]")).toContainText("Objects");
+    await expect(page.locator("[data-sprites-reference-panel]")).toContainText("Hero Object");
+    await expect(page.locator("[data-sprites-reference-panel]")).toContainText("Worlds");
+    await expect(page.getByRole("button", { name: "Delete blocked for Referenced Sprite" })).toBeDisabled();
+    await page.getByRole("button", { name: "Archive safely Referenced Sprite" }).click();
+    expect(postedPaths).toContain(`/api/sprites/records/${referencedKey}/archive`);
+    expect(postedPaths).not.toContain(`/api/sprites/records/${referencedKey}/delete`);
   } finally {
     await workspaceV2CoverageReporter.stop(page);
     await server.close();
