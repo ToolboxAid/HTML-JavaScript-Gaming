@@ -23,6 +23,7 @@ The Project Instructions operating system provides additive governance for:
 - archive and history preservation
 - recognized project instruction/reference files
 - environment governance
+- tool and gameplay contract governance
 
 ## Preservation
 
@@ -46,6 +47,14 @@ Existing Project Instructions outside `docs_build/dev/ProjectInstructions/` rema
 `docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md` defines the official environment model, environment invariance rule, shared API/service contract rule, required Supabase/Postgres/R2 services, required R2 prefixes, and SQLite retired status.
 
 `docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md` defines official `.env` file names, environment variable values, host/domain configuration, API URL configuration, R2 prefix configuration, and feature flag governance.
+
+## Tool And Contract Governance
+
+`docs_build/dev/ProjectInstructions/addendums/workspace_v2_playwright_gate.md` defines the Workspace Manager V2 Playwright validation gate.
+
+`docs_build/dev/ProjectInstructions/addendums/samples2tools_adapter_guidance.md` defines the shared sample-to-tool launch and hydration guidance.
+
+`docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md` defines the King of the Iceberg layout data contract.
 
 ## Single Source and Main Lock Governance
 

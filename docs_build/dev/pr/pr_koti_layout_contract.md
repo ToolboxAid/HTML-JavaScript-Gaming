@@ -55,7 +55,7 @@ The layout contract must support:
 Create:
 
 ```txt
-docs_build/dev/koti_layout_contract.md
+docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md
 ```
 
 Include:
@@ -149,7 +149,7 @@ Run only targeted checks:
 
 ## Acceptance Criteria
 
-- `docs_build/dev/koti_layout_contract.md` exists.
+- `docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md` exists.
 - Contract is based on the validated exported layout snapshot.
 - Contract defines the minimal first-playable layout shape.
 - Contract includes validation rules and example JSON.

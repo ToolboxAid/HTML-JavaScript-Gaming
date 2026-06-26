@@ -56,3 +56,6 @@ Addendum index:
 - Project Reference Files Governance: docs_build/dev/ProjectInstructions/addendums/project_reference_files.md
 - Environment Governance Model: docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md
 - Environment Configuration Standards: docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md
+- Workspace V2 Playwright Gate: docs_build/dev/ProjectInstructions/addendums/workspace_v2_playwright_gate.md
+- Samples2Tools Adapter Guidance: docs_build/dev/ProjectInstructions/addendums/samples2tools_adapter_guidance.md
+- King of the Iceberg Layout Contract: docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md

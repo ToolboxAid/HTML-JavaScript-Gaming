@@ -1,37 +1,36 @@
 ﻿diff --git a/docs_build/dev/BUILD_PR.md b/docs_build/dev/BUILD_PR.md
-index 30700e9cd..b6c87c77d 100644
+deleted file mode 100644
+index 30700e9cd..000000000
 --- a/docs_build/dev/BUILD_PR.md
-+++ b/docs_build/dev/BUILD_PR.md
-@@ -1 +1 @@
++++ /dev/null
+@@ -1,66 +0,0 @@
 -# PR_26177_006-shared-time-foundation
-+# PR_26177_OWNER_007-project-instructions-single-source-eod-lock
-@@ -5 +5 @@
+-
+-## Purpose
+-
 -Add a small shared time foundation.
-+Make `docs_build/dev/ProjectInstructions/` the only active Project Instructions source and add EOD main lock plus next-day reset governance.
-@@ -9,5 +9 @@ Add a small shared time foundation.
+-
+-## Source Of Truth
+-
 -This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth for `PR_26177_006-shared-time-foundation`.
 -
 -## Stack
 -
 -- Base branch: `PR_26177_005-shared-text-foundation`
-+This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth for `PR_26177_OWNER_007-project-instructions-single-source-eod-lock`.
-@@ -17,6 +13,9 @@ This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth f
+-
+-## Exact Scope
+-
 -- Add `src/shared/time/` foundation.
 -- Include duration formatting, timestamp helpers, debounce/throttle/sleep helpers where safe for shared runtime.
 -- Add targeted tests for the shared time area.
 -- No scheduler/runtime behavior changes.
 -- Create required Codex reports under `docs_build/dev/reports/`.
 -- Create repo-structured delta ZIP under `tmp/`.
-+- Audit repo for ProjectInstructions / project instructions duplicates.
-+- Establish `docs_build/dev/ProjectInstructions/` as the only active source.
-+- Remove duplicate active instruction files from `docs_build/dev/` root.
-+- Remove stale one-off PR/restart files from `docs_build/dev/` root.
-+- Keep preserved historical ProjectInstructions material reference-only.
-+- Keep `project-instructions/` out of this PR except for a tiny deprecated pointer.
-+- Update active team start/governance docs to reference only `docs_build/dev/ProjectInstructions/`.
-+- Add EOD main lock, next-day reset governance, and canonical START / WORK / END branch lifecycle rules.
-+- Add required reports under `docs_build/dev/reports/`.
-@@ -28,7 +27,27 @@ This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth f
+-
+-## Exact Targets
+-
+-- `docs_build/dev/PLAN_PR.md`
+-- `docs_build/dev/BUILD_PR.md`
 -- `src/shared/time/time.js`
 -- `tests/shared/TimeFoundation.test.mjs`
 -- `docs_build/dev/reports/PR_26177_006-shared-time-foundation.md`
@@ -39,34 +38,11 @@ index 30700e9cd..b6c87c77d 100644
 -- `docs_build/dev/reports/PR_26177_006-shared-time-foundation_requirement-checklist.md`
 -- `docs_build/dev/reports/PR_26177_006-shared-time-foundation_validation-lane.md`
 -- `docs_build/dev/reports/PR_26177_006-shared-time-foundation_manual-validation-notes.md`
-+- `docs_build/dev/ProjectInstructions/README.txt`
-+- `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
-+- `docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md`
-+- `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md`
-+- `docs_build/dev/ProjectInstructions/addendums/*.md`
-+- `project-instructions/README.md` (tiny deprecated pointer only)
-+- `docs_build/dev/PROJECT_INSTRUCTIONS.md` (delete)
-+- `docs_build/dev/PROJECT_MULTI_PC.txt` (delete)
-+- `docs_build/dev/BUILD_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT.md` (delete)
-+- `docs_build/dev/PLAN_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT.md` (delete)
-+- `docs_build/dev/codex_commands.md` (delete)
-+- `docs_build/dev/codex_rules.md` (delete)
-+- `docs_build/dev/commit_comment.txt` (delete)
-+- `docs_build/dev/next_command.txt` (delete if present)
-+- `docs_build/dev/NEXT_RESTART.md` (delete)
-+- `docs_build/dev/restart_notes_11_105.md` (delete)
-+- `docs_build/dev/restart_notes_11_110.md` (delete)
-+- `docs_build/dev/restart_notes_11_111.md` (delete)
-+- `docs_build/dev/restart_notes_11_112.md` (delete)
-+- `docs_build/dev/restart_notes_11_116.md` (delete)
-+- `docs_build/dev/restart_notes_11_118.md` (delete)
-+- `docs_build/dev/restart_notes_11_119.md` (delete)
-+- `docs_build/dev/restart_notes_11_120.md` (delete)
-+- `docs_build/dev/restart_notes_11_121.md` (delete)
-+- `docs_build/dev/restart_notes_11_122.md` (delete)
-+- `docs_build/dev/restart_notes_11_123.md` (delete)
-+- `docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock*.md`
-@@ -40,8 +59,4 @@ This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth f
+-- `docs_build/dev/reports/codex_review.diff`
+-- `docs_build/dev/reports/codex_changed_files.txt`
+-
+-## Out Of Scope
+-
 -- No scheduler/runtime behavior changes.
 -- No browser-owned product data.
 -- No runtime UI changes.
@@ -75,25 +51,17 @@ index 30700e9cd..b6c87c77d 100644
 -- No `start_of_day` folder changes.
 -- No unrelated cleanup.
 -- No full samples smoke by default.
-+- No product/runtime changes.
-+- No feature work.
-+- No `start_of_day` changes.
-+- No legacy SQLite file changes.
-@@ -51 +66 @@ This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth f
+-
+-## Validation
+-
 -Run exactly:
-+Run:
-@@ -54,3 +69,7 @@ Run exactly:
+-
+-```powershell
 -node ./scripts/run-node-test-files.mjs tests/shared/TimeFoundation.test.mjs
 -node --check src/shared/time/time.js
 -node --check tests/shared/TimeFoundation.test.mjs
-+Test-Path docs_build/dev/PROJECT_INSTRUCTIONS.md
-+Test-Path docs_build/dev/PROJECT_MULTI_PC.txt
-+rg -n 'only active Project Instructions source|docs_build/dev/ProjectInstructions/' docs_build/dev/ProjectInstructions
-+rg -n 'docs_build/dev/PROJECT_INSTRUCTIONS.md.*source of truth|Codex must always read `docs_build/dev/PROJECT_INSTRUCTIONS.md`|Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`' docs_build/dev/ProjectInstructions project-instructions
-+git diff --name-status $(git merge-base HEAD origin/main) -- project-instructions
-+rg -n "Branch Lifecycle \\(Canonical\\)|Every PR follows exactly three phases|^START$|^WORK$|^END$|Mandatory Hard Stops|tomorrow's official baseline|No commits on main|Never checkout main|Only after ALL four pass" docs_build/dev/ProjectInstructions
-+git diff --name-only -- src assets toolbox games api serverside package.json package-lock.json docs_build/dev/start_of_day
-@@ -59,8 +77,0 @@ git diff --check
+-git diff --check
+-```
 -
 -## Artifact
 -
@@ -246,16 +214,19 @@ index e44fe0fc4..000000000
 -docs_build/dev/codex_commands.md
 -```
 diff --git a/docs_build/dev/PLAN_PR.md b/docs_build/dev/PLAN_PR.md
-index 907936aee..257739f3d 100644
+deleted file mode 100644
+index 907936aee..000000000
 --- a/docs_build/dev/PLAN_PR.md
-+++ b/docs_build/dev/PLAN_PR.md
-@@ -1 +1 @@
++++ /dev/null
+@@ -1,22 +0,0 @@
 -# PLAN_PR: PR_26177_006-shared-time-foundation
-+# PLAN_PR: PR_26177_OWNER_007-project-instructions-single-source-eod-lock
-@@ -5 +5 @@
+-
+-## Purpose
+-
 -Add a small shared time foundation.
-+Make `docs_build/dev/ProjectInstructions/` the only active Project Instructions source and add EOD main lock plus next-day reset governance.
-@@ -9,7 +9,9 @@ Add a small shared time foundation.
+-
+-## Scope
+-
 -- Add `src/shared/time/` foundation.
 -- Include duration formatting, timestamp helpers, sleep, debounce, and throttle helpers.
 -- Add targeted tests.
@@ -263,36 +234,13 @@ index 907936aee..257739f3d 100644
 -- No browser-owned product data.
 -- No runtime UI changes.
 -- No unrelated cleanup.
-+- Audit ProjectInstructions and project instructions duplicates.
-+- Delete duplicate active instruction files from `docs_build/dev/` root.
-+- Delete stale one-off PR/restart files from `docs_build/dev/` root.
-+- Preserve historical ProjectInstructions-style sources only as deprecated reference material.
-+- Keep `project-instructions/` out of the PR except for a tiny deprecated pointer.
-+- Move active legacy addendums into `docs_build/dev/ProjectInstructions/addendums/`.
-+- Update active team start and governance docs to reference only `docs_build/dev/ProjectInstructions/`.
-+- Add EOD main lock, next-day reset, team PR branch creation gate, and canonical START / WORK / END branch lifecycle rules.
-+- Add required Codex reports under `docs_build/dev/reports/`.
-@@ -17 +19 @@ Add a small shared time foundation.
+-
 -## Implementation Plan
-+## Out Of Scope
-@@ -19,4 +21,13 @@ Add a small shared time foundation.
+-
 -1. Add `src/shared/time/time.js`.
 -2. Add `tests/shared/TimeFoundation.test.mjs`.
 -3. Validate duration, timestamp, sleep, debounce, and throttle helpers.
 -4. Produce required Codex reports and repo-structured ZIP.
-+- No product/runtime changes.
-+- No feature work.
-+- No `start_of_day` changes.
-+- No legacy SQLite file changes.
-+
-+## Validation Plan
-+
-+1. Run targeted grep/search proving no active duplicate ProjectInstructions source remains.
-+2. Confirm duplicate active root instruction files and stale one-off root files are absent.
-+3. Confirm `project-instructions/**` has no PR changes except the tiny deprecated pointer.
-+4. Confirm EOD/Next Day and canonical START / WORK / END branch lifecycle rules appear in active governance docs.
-+5. Confirm no product/runtime files changed.
-+6. Run `git diff --check`.
 diff --git a/docs_build/dev/PLAN_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT.md b/docs_build/dev/PLAN_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT.md
 deleted file mode 100644
 index f4a0ebc2c..000000000
@@ -3369,7 +3317,7 @@ index 4127fd8ae..000000000
 -- If the PR crosses multiple team ownership areas, stop and require OWNER to split or assign the work.
 -- If the requested implementation path conflicts with the active owner path, stop before changes.
 diff --git a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-index d2a84ecbe..647881f1f 100644
+index d2a84ecbe..506fcdcbc 100644
 --- a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 +++ b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 @@ -6,0 +7,6 @@ This file is the root index for the append-first Project Instructions operating
@@ -3379,16 +3327,26 @@ index d2a84ecbe..647881f1f 100644
 +
 +Historical Project Instructions material outside this folder is deprecated reference material only and must not be used as an active source of governance.
 +
-@@ -23 +29 @@ The Project Instructions operating system provides additive governance for:
+@@ -19,0 +26 @@ The Project Instructions operating system provides additive governance for:
++- tool and gameplay contract governance
+@@ -23 +30 @@ The Project Instructions operating system provides additive governance for:
 -Existing Project Instructions remain preserved in their current locations. This operating system adds structure without deleting or rewriting existing documentation.
 +Existing Project Instructions outside `docs_build/dev/ProjectInstructions/` remain preserved only as deprecated reference material. When guidance conflicts, active files under `docs_build/dev/ProjectInstructions/` win unless OWNER explicitly approves a newer governance change.
-@@ -43,0 +50,4 @@ Existing Project Instructions remain preserved in their current locations. This
+@@ -43,0 +51,12 @@ Existing Project Instructions remain preserved in their current locations. This
++## Tool And Contract Governance
++
++`docs_build/dev/ProjectInstructions/addendums/workspace_v2_playwright_gate.md` defines the Workspace Manager V2 Playwright validation gate.
++
++`docs_build/dev/ProjectInstructions/addendums/samples2tools_adapter_guidance.md` defines the shared sample-to-tool launch and hydration guidance.
++
++`docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md` defines the King of the Iceberg layout data contract.
++
 +## Single Source and Main Lock Governance
 +
 +`docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md` defines the single active Project Instructions source, canonical START / WORK / END branch lifecycle, EOD main lock, next-day reset, team branch creation gate, daily synchronization baseline, and mandatory hard stops.
 +
 diff --git a/docs_build/dev/ProjectInstructions/README.txt b/docs_build/dev/ProjectInstructions/README.txt
-index a48becf05..f4d2df0c3 100644
+index a48becf05..ff1f5c54f 100644
 --- a/docs_build/dev/ProjectInstructions/README.txt
 +++ b/docs_build/dev/ProjectInstructions/README.txt
 @@ -4 +4 @@ Folder purpose:
@@ -3426,6 +3384,10 @@ index a48becf05..f4d2df0c3 100644
 +- Assistant Execution Modes: docs_build/dev/ProjectInstructions/addendums/assistant_execution_modes.md
 +- Codex Artifact and Reporting Standard: docs_build/dev/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
 +- Codex Project Instructions Startup: docs_build/dev/ProjectInstructions/addendums/codex_project_instructions_startup.md
+@@ -53,0 +59,3 @@ Addendum index:
++- Workspace V2 Playwright Gate: docs_build/dev/ProjectInstructions/addendums/workspace_v2_playwright_gate.md
++- Samples2Tools Adapter Guidance: docs_build/dev/ProjectInstructions/addendums/samples2tools_adapter_guidance.md
++- King of the Iceberg Layout Contract: docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md
 diff --git a/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md b/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
 index d0118f63a..292540043 100644
 --- a/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
@@ -3893,6 +3855,10 @@ index 000000000..ee11393b4
 +- Verify markdown is valid
 +- Verify all indexed addendums exist
 +- Verify the required ZIP artifact is produced
+diff --git a/docs_build/dev/koti_layout_contract.md b/docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md
+similarity index 100%
+rename from docs_build/dev/koti_layout_contract.md
+rename to docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md
 diff --git a/docs_build/dev/ProjectInstructions/addendums/legacy_migration_policy.md b/docs_build/dev/ProjectInstructions/addendums/legacy_migration_policy.md
 new file mode 100644
 index 000000000..5e43679f4
@@ -4220,13 +4186,21 @@ index 000000000..ff606135a
 +
 +`docs_build/dev/start_of_day/` may point to `docs_build/dev/ProjectInstructions/`, but it must not become a second active Project Instructions source.
 diff --git a/docs_build/dev/ProjectInstructions/addendums/release_gate.md b/docs_build/dev/ProjectInstructions/addendums/release_gate.md
-index c45a2c49d..57620f816 100644
+index c45a2c49d..d0ec78175 100644
 --- a/docs_build/dev/ProjectInstructions/addendums/release_gate.md
 +++ b/docs_build/dev/ProjectInstructions/addendums/release_gate.md
 @@ -24,0 +25 @@ Before a governance, documentation, or administrative PR is merged, validate:
 +- Canonical START / WORK / END branch lifecycle guidance remains intact.
 @@ -38,0 +40 @@ The release gate should confirm these files when relevant to the PR:
 +- `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`
+@@ -41,0 +44,3 @@ The release gate should confirm these files when relevant to the PR:
++- `docs_build/dev/ProjectInstructions/addendums/workspace_v2_playwright_gate.md`
++- `docs_build/dev/ProjectInstructions/addendums/samples2tools_adapter_guidance.md`
++- `docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md`
+diff --git a/docs_build/dev/samples2tools_adapter_guidance.md b/docs_build/dev/ProjectInstructions/addendums/samples2tools_adapter_guidance.md
+similarity index 100%
+rename from docs_build/dev/samples2tools_adapter_guidance.md
+rename to docs_build/dev/ProjectInstructions/addendums/samples2tools_adapter_guidance.md
 diff --git a/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md b/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
 index 9a2addbdc..225a2e4ab 100644
 --- a/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
@@ -4307,6 +4281,10 @@ index 000000000..997b16730
 +- Tool tests validate tool functionality.
 +- Regression tests validate platform behavior.
 +- New tests follow the canonical structure.
+diff --git a/docs_build/dev/workspace_v2_playwright_gate.md b/docs_build/dev/ProjectInstructions/addendums/workspace_v2_playwright_gate.md
+similarity index 100%
+rename from docs_build/dev/workspace_v2_playwright_gate.md
+rename to docs_build/dev/ProjectInstructions/addendums/workspace_v2_playwright_gate.md
 diff --git a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
 index 9735b4bd4..f4d7e4bb8 100644
 --- a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
@@ -4376,6 +4354,24 @@ index 9735b4bd4..f4d7e4bb8 100644
 +- STOP if current branch is `main` before commit.
 +- STOP if attempting to push `main`.
 +- STOP if new PR work starts before returning to synchronized `main`.
+diff --git a/docs_build/dev/bundle_readme.md b/docs_build/dev/bundle_readme.md
+deleted file mode 100644
+index bcc6ab3c2..000000000
+--- a/docs_build/dev/bundle_readme.md
++++ /dev/null
+@@ -1,12 +0,0 @@
+-# Bundle Contents
+-
+-This ZIP is repo-structured and contains docs-first PR instructions only.
+-
+-Files:
+-
+-- `docs_build/dev/plan_pr_tool_workspace_manifest_boundaries.md`
+-- `docs_build/dev/codex_commands.md`
+-- `docs_build/dev/commit_comment.txt`
+-- `docs_build/dev/next_command.txt`
+-
+-No implementation code is included.
 diff --git a/docs_build/dev/codex_commands.md b/docs_build/dev/codex_commands.md
 deleted file mode 100644
 index ecd6fdded..000000000
@@ -4438,12 +4434,228 @@ index a8cd06794..000000000
 -- move accordion chevron into the Idea table cell
 -- keep Notes count informational instead of a toggle
 -- update targeted Playwright coverage and reports
+diff --git a/docs_build/dev/pr/BUILD_PR.md b/docs_build/dev/pr/BUILD_PR.md
+new file mode 100644
+index 000000000..ae900ce42
+--- /dev/null
++++ b/docs_build/dev/pr/BUILD_PR.md
+@@ -0,0 +1,95 @@
++# PR_26177_OWNER_007-project-instructions-single-source-eod-lock
++
++## Purpose
++
++Make `docs_build/dev/ProjectInstructions/` the only active Project Instructions source and add EOD main lock plus next-day reset governance.
++
++## Source Of Truth
++
++This `docs_build/dev/pr/BUILD_PR.md`, `docs_build/dev/pr/PLAN_PR.md`, and the user request are the source of truth for `PR_26177_OWNER_007-project-instructions-single-source-eod-lock`.
++
++## Exact Scope
++
++- Audit repo for ProjectInstructions / project instructions duplicates.
++- Establish `docs_build/dev/ProjectInstructions/` as the only active source.
++- Remove duplicate active instruction files from `docs_build/dev/` root.
++- Remove stale one-off PR/restart files from `docs_build/dev/` root.
++- Move PR-specific docs from `docs_build/dev/` root into `docs_build/dev/pr/`.
++- Move active governance/contract docs from `docs_build/dev/` root into `docs_build/dev/ProjectInstructions/addendums/`.
++- Move audit outputs from `docs_build/dev/` root into `docs_build/dev/reports/audits/`.
++- Delete stale one-off bundle metadata from `docs_build/dev/` root.
++- Keep preserved historical ProjectInstructions material reference-only.
++- Keep `project-instructions/` out of this PR except for a tiny deprecated pointer.
++- Update active team start/governance docs to reference only `docs_build/dev/ProjectInstructions/`.
++- Add EOD main lock, next-day reset governance, and canonical START / WORK / END branch lifecycle rules.
++- Add required reports under `docs_build/dev/reports/`.
++
++## Exact Targets
++
++- `docs_build/dev/pr/PLAN_PR.md`
++- `docs_build/dev/pr/BUILD_PR.md`
++- `docs_build/dev/pr/*.md`
++- `docs_build/dev/ProjectInstructions/README.txt`
++- `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
++- `docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md`
++- `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md`
++- `docs_build/dev/ProjectInstructions/addendums/*.md`
++- `docs_build/dev/reports/audits/*.md`
++- `project-instructions/README.md` (tiny deprecated pointer only)
++- `docs_build/dev/PROJECT_INSTRUCTIONS.md` (delete)
++- `docs_build/dev/PROJECT_MULTI_PC.txt` (delete)
++- `docs_build/dev/BUILD_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT.md` (delete)
++- `docs_build/dev/PLAN_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT.md` (delete)
++- `docs_build/dev/codex_commands.md` (delete)
++- `docs_build/dev/codex_rules.md` (delete)
++- `docs_build/dev/commit_comment.txt` (delete)
++- `docs_build/dev/next_command.txt` (delete if present)
++- `docs_build/dev/NEXT_RESTART.md` (delete)
++- `docs_build/dev/restart_notes_11_105.md` (delete)
++- `docs_build/dev/restart_notes_11_110.md` (delete)
++- `docs_build/dev/restart_notes_11_111.md` (delete)
++- `docs_build/dev/restart_notes_11_112.md` (delete)
++- `docs_build/dev/restart_notes_11_116.md` (delete)
++- `docs_build/dev/restart_notes_11_118.md` (delete)
++- `docs_build/dev/restart_notes_11_119.md` (delete)
++- `docs_build/dev/restart_notes_11_120.md` (delete)
++- `docs_build/dev/restart_notes_11_121.md` (delete)
++- `docs_build/dev/restart_notes_11_122.md` (delete)
++- `docs_build/dev/restart_notes_11_123.md` (delete)
++- `docs_build/dev/bundle_readme.md` (delete)
++- `docs_build/dev/validation_checklist.txt` (delete)
++- `docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock*.md`
++- `docs_build/dev/reports/codex_review.diff`
++- `docs_build/dev/reports/codex_changed_files.txt`
++
++## Out Of Scope
++
++- No product/runtime changes.
++- No feature work.
++- No `start_of_day` changes.
++- No legacy SQLite file changes.
++
++## Validation
++
++Run:
++
++```powershell
++Test-Path docs_build/dev/PROJECT_INSTRUCTIONS.md
++Test-Path docs_build/dev/PROJECT_MULTI_PC.txt
++Test-Path docs_build/dev/BUILD_PR.md
++Test-Path docs_build/dev/PLAN_PR.md
++Test-Path docs_build/dev/workspace_v2_playwright_gate.md
++Test-Path docs_build/dev/samples2tools_adapter_guidance.md
++Test-Path docs_build/dev/security-audit.md
++Test-Path docs_build/dev/component-audit.md
++Test-Path docs_build/dev/css-audit.md
++Test-Path docs_build/dev/bundle_readme.md
++Test-Path docs_build/dev/validation_checklist.txt
++rg -n 'only active Project Instructions source|docs_build/dev/ProjectInstructions/' docs_build/dev/ProjectInstructions
++rg -n 'docs_build/dev/PROJECT_INSTRUCTIONS.md.*source of truth|Codex must always read `docs_build/dev/PROJECT_INSTRUCTIONS.md`|Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`' docs_build/dev/ProjectInstructions project-instructions
++git diff --name-status $(git merge-base HEAD origin/main) -- project-instructions
++git diff --name-status $(git merge-base HEAD origin/main) -- docs_build/dev/pr docs_build/dev/ProjectInstructions/addendums docs_build/dev/reports/audits
++rg -n "Branch Lifecycle \\(Canonical\\)|Every PR follows exactly three phases|^START$|^WORK$|^END$|Mandatory Hard Stops|tomorrow's official baseline|No commits on main|Never checkout main|Only after ALL four pass" docs_build/dev/ProjectInstructions
++git diff --name-only -- src assets toolbox games api serverside package.json package-lock.json docs_build/dev/start_of_day
++git diff --check
++```
+diff --git a/docs_build/dev/pr/PLAN_PR.md b/docs_build/dev/pr/PLAN_PR.md
+new file mode 100644
+index 000000000..b3c2951fe
+--- /dev/null
++++ b/docs_build/dev/pr/PLAN_PR.md
+@@ -0,0 +1,40 @@
++# PLAN_PR: PR_26177_OWNER_007-project-instructions-single-source-eod-lock
++
++## Purpose
++
++Make `docs_build/dev/ProjectInstructions/` the only active Project Instructions source and add EOD main lock plus next-day reset governance.
++
++## Scope
++
++- Audit ProjectInstructions and project instructions duplicates.
++- Delete duplicate active instruction files from `docs_build/dev/` root.
++- Delete stale one-off PR/restart files from `docs_build/dev/` root.
++- Move PR-specific docs from `docs_build/dev/` root into `docs_build/dev/pr/`.
++- Move active governance/contract docs from `docs_build/dev/` root into `docs_build/dev/ProjectInstructions/addendums/`.
++- Move audit outputs from `docs_build/dev/` root into `docs_build/dev/reports/audits/`.
++- Delete stale one-off bundle metadata from `docs_build/dev/` root.
++- Preserve historical ProjectInstructions-style sources only as deprecated reference material.
++- Keep `project-instructions/` out of the PR except for a tiny deprecated pointer.
++- Move active legacy addendums into `docs_build/dev/ProjectInstructions/addendums/`.
++- Update active team start and governance docs to reference only `docs_build/dev/ProjectInstructions/`.
++- Add EOD main lock, next-day reset, team PR branch creation gate, and canonical START / WORK / END branch lifecycle rules.
++- Add required Codex reports under `docs_build/dev/reports/`.
++
++## Out Of Scope
++
++- No product/runtime changes.
++- No feature work.
++- No `start_of_day` changes.
++- No legacy SQLite file changes.
++
++## Validation Plan
++
++1. Run targeted grep/search proving no active duplicate ProjectInstructions source remains.
++2. Confirm duplicate active root instruction files and stale one-off root files are absent.
++3. Confirm `project-instructions/**` has no PR changes except the tiny deprecated pointer.
++4. Confirm docs_build/dev root no longer contains active loose instruction, audit, contract, or PR files.
++5. Confirm moved active governance/contract docs are under `docs_build/dev/ProjectInstructions/addendums/`.
++6. Confirm moved audit outputs are under `docs_build/dev/reports/audits/`.
++7. Confirm EOD/Next Day and canonical START / WORK / END branch lifecycle rules appear in active governance docs.
++8. Confirm no product/runtime files changed.
++9. Run `git diff --check`.
+diff --git a/docs_build/dev/plan_pr_tool_workspace_manifest_boundaries.md b/docs_build/dev/pr/plan_pr_tool_workspace_manifest_boundaries.md
+similarity index 100%
+rename from docs_build/dev/plan_pr_tool_workspace_manifest_boundaries.md
+rename to docs_build/dev/pr/plan_pr_tool_workspace_manifest_boundaries.md
+diff --git a/docs_build/dev/pr_koti_layout_contract.md b/docs_build/dev/pr/pr_koti_layout_contract.md
+similarity index 96%
+rename from docs_build/dev/pr_koti_layout_contract.md
+rename to docs_build/dev/pr/pr_koti_layout_contract.md
+index 4dcb572b0..9c4b75989 100644
+--- a/docs_build/dev/pr_koti_layout_contract.md
++++ b/docs_build/dev/pr/pr_koti_layout_contract.md
+@@ -58 +58 @@ Create:
+-docs_build/dev/koti_layout_contract.md
++docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md
+@@ -152 +152 @@ Run only targeted checks:
+-- `docs_build/dev/koti_layout_contract.md` exists.
++- `docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md` exists.
+diff --git a/docs_build/dev/pr_tool_fix_asset_browser_1505.md b/docs_build/dev/pr/pr_tool_fix_asset_browser_1505.md
+similarity index 100%
+rename from docs_build/dev/pr_tool_fix_asset_browser_1505.md
+rename to docs_build/dev/pr/pr_tool_fix_asset_browser_1505.md
+diff --git a/docs_build/dev/pr_tool_fix_fullscreen_exit_state.md b/docs_build/dev/pr/pr_tool_fix_fullscreen_exit_state.md
+similarity index 100%
+rename from docs_build/dev/pr_tool_fix_fullscreen_exit_state.md
+rename to docs_build/dev/pr/pr_tool_fix_fullscreen_exit_state.md
+diff --git a/docs_build/dev/pr_tool_fix_parallax_header_metadata.md b/docs_build/dev/pr/pr_tool_fix_parallax_header_metadata.md
+similarity index 100%
+rename from docs_build/dev/pr_tool_fix_parallax_header_metadata.md
+rename to docs_build/dev/pr/pr_tool_fix_parallax_header_metadata.md
+diff --git a/docs_build/dev/pr_tool_header_singleline.md b/docs_build/dev/pr/pr_tool_header_singleline.md
+similarity index 100%
+rename from docs_build/dev/pr_tool_header_singleline.md
+rename to docs_build/dev/pr/pr_tool_header_singleline.md
+diff --git a/docs_build/dev/pr_tool_interactive_uat.md b/docs_build/dev/pr/pr_tool_interactive_uat.md
+similarity index 100%
+rename from docs_build/dev/pr_tool_interactive_uat.md
+rename to docs_build/dev/pr/pr_tool_interactive_uat.md
+diff --git a/docs_build/dev/pr_tool_layout_workflow_baseline.md b/docs_build/dev/pr/pr_tool_layout_workflow_baseline.md
+similarity index 100%
+rename from docs_build/dev/pr_tool_layout_workflow_baseline.md
+rename to docs_build/dev/pr/pr_tool_layout_workflow_baseline.md
+diff --git a/docs_build/dev/pr_tool_remove_future_import_hints.md b/docs_build/dev/pr/pr_tool_remove_future_import_hints.md
+similarity index 100%
+rename from docs_build/dev/pr_tool_remove_future_import_hints.md
+rename to docs_build/dev/pr/pr_tool_remove_future_import_hints.md
+diff --git a/docs_build/dev/pr_tool_remove_static_header_intro.md b/docs_build/dev/pr/pr_tool_remove_static_header_intro.md
+similarity index 100%
+rename from docs_build/dev/pr_tool_remove_static_header_intro.md
+rename to docs_build/dev/pr/pr_tool_remove_static_header_intro.md
+diff --git a/docs_build/dev/pr_tool_stabilization.md b/docs_build/dev/pr/pr_tool_stabilization.md
+similarity index 100%
+rename from docs_build/dev/pr_tool_stabilization.md
+rename to docs_build/dev/pr/pr_tool_stabilization.md
+diff --git a/docs_build/dev/pr_tool_uat_closeout.md b/docs_build/dev/pr/pr_tool_uat_closeout.md
+similarity index 100%
+rename from docs_build/dev/pr_tool_uat_closeout.md
+rename to docs_build/dev/pr/pr_tool_uat_closeout.md
+diff --git a/docs_build/dev/pr_tool_uat_fix_fullscreen_header_wiring.md b/docs_build/dev/pr/pr_tool_uat_fix_fullscreen_header_wiring.md
+similarity index 100%
+rename from docs_build/dev/pr_tool_uat_fix_fullscreen_header_wiring.md
+rename to docs_build/dev/pr/pr_tool_uat_fix_fullscreen_header_wiring.md
+diff --git a/docs_build/dev/pr_tool_uat_fix_header_asset_browser.md b/docs_build/dev/pr/pr_tool_uat_fix_header_asset_browser.md
+similarity index 100%
+rename from docs_build/dev/pr_tool_uat_fix_header_asset_browser.md
+rename to docs_build/dev/pr/pr_tool_uat_fix_header_asset_browser.md
+diff --git a/docs_build/dev/pr_tool_uat_fixes.md b/docs_build/dev/pr/pr_tool_uat_fixes.md
+similarity index 100%
+rename from docs_build/dev/pr_tool_uat_fixes.md
+rename to docs_build/dev/pr/pr_tool_uat_fixes.md
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock.md b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock.md
 new file mode 100644
-index 000000000..7abd6fe1f
+index 000000000..8b4c45375
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock.md
-@@ -0,0 +1,70 @@
+@@ -0,0 +1,95 @@
 +﻿# PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 +
 +Date: 2026-06-26
@@ -4455,19 +4667,38 @@ index 000000000..7abd6fe1f
 +
 +- Established docs_build/dev/ProjectInstructions/ as the only active Project Instructions source.
 +- Added canonical Branch Lifecycle governance: START, WORK, END.
-+- Documented START commands and required results, including clean main, main...origin/main 0 0, and HEAD matching published EOD SHA.
-+- Documented WORK rules requiring Codex to remain on the PR branch, validate from the PR branch, commit only on the PR branch, and push only the PR branch.
-+- Documented END rules requiring PR branch push, PR update, merge, immediate main checkout/fetch/ff-only pull, clean 0 0 confirmation, and publication of Branch, HEAD SHA, and date/time as the next baseline.
-+- Added mandatory hard stops for main-before-commit, dirty branch creation, non-synced main, baseline mismatch, unvalidated merge, and starting new PR work before synchronized main return.
++- Documented START, WORK, END branch lifecycle and mandatory hard stops.
 +- Deleted duplicate active instruction files from docs_build/dev root.
 +- Deleted stale one-off PR/restart files listed by OWNER review from docs_build/dev root.
++- Added docs_build/dev/pr/ and moved PR-specific root docs there, including this PR's PLAN_PR.md and BUILD_PR.md.
++- Moved active governance/contract root docs into docs_build/dev/ProjectInstructions/addendums/.
++- Moved audit outputs into docs_build/dev/reports/audits/.
++- Deleted stale one-off bundle metadata from docs_build/dev root.
 +- Corrected project-instructions/** scope so the PR only adds a tiny deprecated pointer README there.
 +- Preserved project-instructions/addendums/** unchanged in the PR; unique current governance content is carried by docs_build/dev/ProjectInstructions/addendums/.
-+- Updated active governance docs so the only active Project Instructions source is docs_build/dev/ProjectInstructions/.
-+- Preserved docs_build/dev/ProjectInstructions/**, docs_build/dev/reports/**, current PR reports, and active validation/audit docs.
++- Confirmed docs_build/dev root no longer contains active loose instruction, audit, contract, or PR files.
 +- No product/runtime, start_of_day, feature, or legacy SQLite file changes were made.
 +
-+## Cleanup Files
++## Moved To ProjectInstructions SSoT
++
++- docs_build/dev/workspace_v2_playwright_gate.md -> docs_build/dev/ProjectInstructions/addendums/workspace_v2_playwright_gate.md
++- docs_build/dev/samples2tools_adapter_guidance.md -> docs_build/dev/ProjectInstructions/addendums/samples2tools_adapter_guidance.md
++- docs_build/dev/koti_layout_contract.md -> docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md
++
++## Moved To PR Folder
++
++- docs_build/dev/PLAN_PR.md -> docs_build/dev/pr/PLAN_PR.md
++- docs_build/dev/BUILD_PR.md -> docs_build/dev/pr/BUILD_PR.md
++- docs_build/dev/plan_pr_tool_workspace_manifest_boundaries.md -> docs_build/dev/pr/plan_pr_tool_workspace_manifest_boundaries.md
++- docs_build/dev/pr_*.md -> docs_build/dev/pr/pr_*.md
++
++## Moved To Audit Reports
++
++- docs_build/dev/security-audit.md -> docs_build/dev/reports/audits/security-audit.md
++- docs_build/dev/component-audit.md -> docs_build/dev/reports/audits/component-audit.md
++- docs_build/dev/css-audit.md -> docs_build/dev/reports/audits/css-audit.md
++
++## Deleted Root Files
 +
 +Deleted duplicate active instruction files:
 +- docs_build/dev/PROJECT_INSTRUCTIONS.md
@@ -4492,19 +4723,25 @@ index 000000000..7abd6fe1f
 +- docs_build/dev/restart_notes_11_121.md
 +- docs_build/dev/restart_notes_11_122.md
 +- docs_build/dev/restart_notes_11_123.md
++- docs_build/dev/bundle_readme.md
++- docs_build/dev/validation_checklist.txt
 +
 +## Ambiguous Old Docs Handling
 +
-+- Reviewed old project-instructions addendum files before changing them.
-+- Moved/currentized active governance into docs_build/dev/ProjectInstructions/addendums/ during this PR.
++- Reviewed loose root docs before moving or deleting them.
++- Moved active/contract content into docs_build/dev/ProjectInstructions/addendums/.
++- Moved one-off PR docs into docs_build/dev/pr/ instead of deleting them by filename.
++- Moved audit outputs into docs_build/dev/reports/audits/.
 +- Removed project-instructions/addendums/** edits from the PR so old files remain historical reference, not a second active source.
 +- Added only project-instructions/README.md as a tiny deprecated pointer to docs_build/dev/ProjectInstructions/.
 +
 +## Validation
 +
 +- PASS: current branch is PR_26177_OWNER_007-project-instructions-single-source-eod-lock.
-+- PASS: targeted path checks confirm duplicate root instruction files and listed stale one-off files are absent.
++- PASS: docs_build/dev root file list is empty after cleanup.
++- PASS: targeted path checks confirm duplicate root instruction files, moved root files, and listed stale one-off files are absent.
 +- PASS: project-instructions/** PR diff is limited to project-instructions/README.md.
++- PASS: active moved governance/contract docs are indexed in docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md and README.txt.
 +- PASS: targeted grep found no active duplicate ProjectInstructions source-of-truth claim outside the active source.
 +- PASS: targeted grep confirmed canonical lifecycle language appears in active governance docs.
 +- PASS: product/runtime and start_of_day changed-file check returned no files.
@@ -4516,10 +4753,10 @@ index 000000000..7abd6fe1f
 +- tmp/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_delta.zip
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_branch-validation.md b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_branch-validation.md
 new file mode 100644
-index 000000000..ca364fa88
+index 000000000..5248e0ef6
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_branch-validation.md
-@@ -0,0 +1,11 @@
+@@ -0,0 +1,12 @@
 +﻿# Branch Validation - PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 +
 +Status: PASS
@@ -4527,16 +4764,17 @@ index 000000000..ca364fa88
 +- PASS: Current branch is PR_26177_OWNER_007-project-instructions-single-source-eod-lock.
 +- PASS: Branch is not main during WORK.
 +- PASS: Worktree changes are scoped to governance/docs cleanup, reports, and the required delta artifact.
++- PASS: docs_build/dev root contains no loose files after moving PR docs, active addendums, and audit outputs.
 +- PASS: project-instructions/** is limited to a tiny deprecated pointer README in the PR diff.
 +- PASS: No product/runtime files changed.
 +- PASS: No start_of_day files changed.
 +- PASS: docs_build/dev/ProjectInstructions/ remains present and active.
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_manual-validation-notes.md
 new file mode 100644
-index 000000000..9db3adfcb
+index 000000000..8dfbb7cba
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_manual-validation-notes.md
-@@ -0,0 +1,14 @@
+@@ -0,0 +1,20 @@
 +﻿# Manual Validation Notes - PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 +
 +Status: PASS
@@ -4544,19 +4782,25 @@ index 000000000..9db3adfcb
 +- Reviewed cleanup scope against OWNER-provided file list.
 +- Removed only duplicate active instruction files and stale one-off root docs from docs_build/dev root.
 +- Removed docs_build/dev/next_command.txt only as an exact untracked/ignored stale file; it is not included in the git commit.
++- Reviewed ambiguous loose root docs before action.
++- Moved active contract/governance docs into docs_build/dev/ProjectInstructions/addendums/.
++- Moved PR-specific docs into docs_build/dev/pr/.
++- Moved audit outputs into docs_build/dev/reports/audits/.
++- Deleted stale bundle metadata from docs_build/dev root.
 +- Reviewed ambiguous old project-instructions addendum files and left them unchanged in this PR.
 +- Confirmed active/current governance content is under docs_build/dev/ProjectInstructions/.
 +- Confirmed docs_build/dev/ProjectInstructions/** was preserved.
 +- Confirmed docs_build/dev/reports/** and current PR reports were preserved/regenerated.
++- Confirmed docs_build/dev root has no loose files after cleanup.
 +- Confirmed no product/runtime files changed.
 +- Confirmed no start_of_day files changed.
 +- Playwright was not run; documentation/governance-only change.
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_requirement-checklist.md b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_requirement-checklist.md
 new file mode 100644
-index 000000000..aa2deded4
+index 000000000..a3ee5d2da
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_requirement-checklist.md
-@@ -0,0 +1,22 @@
+@@ -0,0 +1,29 @@
 +﻿# Requirement Checklist - PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 +
 +Status: PASS
@@ -4565,26 +4809,33 @@ index 000000000..aa2deded4
 +- PASS: Active source is docs_build/dev/ProjectInstructions/.
 +- PASS: Duplicate active instruction files in docs_build/dev root were deleted.
 +- PASS: Stale PR/restart one-off files listed in OWNER review were deleted or removed from local disk when untracked.
++- PASS: Created docs_build/dev/pr/.
++- PASS: Moved docs_build/dev/PLAN_PR.md to docs_build/dev/pr/PLAN_PR.md.
++- PASS: Moved docs_build/dev/BUILD_PR.md to docs_build/dev/pr/BUILD_PR.md.
++- PASS: Moved workspace_v2_playwright_gate.md into ProjectInstructions addendums.
++- PASS: Moved samples2tools_adapter_guidance.md into ProjectInstructions addendums.
++- PASS: Moved KOTI layout contract into ProjectInstructions addendums after reviewing unique contract content.
++- PASS: Moved security, component, and CSS audit outputs into docs_build/dev/reports/audits/.
++- PASS: Deleted bundle_readme.md and validation_checklist.txt.
++- PASS: Updated active references to moved paths.
++- PASS: docs_build/dev root no longer contains active loose instruction, audit, contract, or PR files.
 +- PASS: project-instructions/** changes were removed from this PR except for a tiny deprecated pointer README.
-+- PASS: Ambiguous old docs were reviewed before cleanup; project-instructions/addendums/** remains unchanged in the PR.
-+- PASS: Unique current governance content exists under docs_build/dev/ProjectInstructions/ before old reference material is ignored as inactive.
++- PASS: Ambiguous old docs were reviewed before cleanup; unique current governance content exists under docs_build/dev/ProjectInstructions/.
 +- PASS: docs_build/dev/ProjectInstructions/** was not deleted.
 +- PASS: docs_build/dev/reports/** and current PR reports were preserved/regenerated.
-+- PASS: Active validation/audit docs were not deleted without migration.
-+- PASS: Active team start/governance docs reference docs_build/dev/ProjectInstructions/ as the active source.
++- PASS: Active validation/audit docs were moved rather than deleted.
 +- PASS: EOD main lock governance is documented.
 +- PASS: Next-day reset governance is documented.
 +- PASS: Canonical START / WORK / END branch lifecycle is documented.
-+- PASS: Team rule blocks PR branch creation until main is clean, synced, and at the published EOD SHA.
 +- PASS: No feature work started.
 +- PASS: No product/runtime files changed.
 +- PASS: No start_of_day files changed.
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_validation-lane.md b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_validation-lane.md
 new file mode 100644
-index 000000000..43cba6fce
+index 000000000..dc20125c8
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_validation-lane.md
-@@ -0,0 +1,28 @@
+@@ -0,0 +1,38 @@
 +﻿# Validation Lane - PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 +
 +Status: PASS
@@ -4594,30 +4845,52 @@ index 000000000..43cba6fce
 +`powershell
 +git branch --show-current
 +git status --short --branch --untracked-files=all
++Get-ChildItem -File docs_build/dev
 +Test-Path docs_build/dev/PROJECT_INSTRUCTIONS.md
 +Test-Path docs_build/dev/PROJECT_MULTI_PC.txt
++Test-Path docs_build/dev/BUILD_PR.md
++Test-Path docs_build/dev/PLAN_PR.md
++Test-Path docs_build/dev/workspace_v2_playwright_gate.md
++Test-Path docs_build/dev/samples2tools_adapter_guidance.md
++Test-Path docs_build/dev/security-audit.md
++Test-Path docs_build/dev/component-audit.md
++Test-Path docs_build/dev/css-audit.md
++Test-Path docs_build/dev/bundle_readme.md
++Test-Path docs_build/dev/validation_checklist.txt
 +git diff --name-status $(git merge-base HEAD origin/main) -- project-instructions
 +rg -n 'docs_build/dev/PROJECT_INSTRUCTIONS.md.*source of truth|Codex must always read docs_build/dev/PROJECT_INSTRUCTIONS.md|Read docs_build/dev/PROJECT_INSTRUCTIONS.md' docs_build/dev/ProjectInstructions project-instructions
-+rg -n 'only active Project Instructions source|docs_build/dev/ProjectInstructions/' docs_build/dev/ProjectInstructions
-+rg -n "Branch Lifecycle \\(Canonical\\)|Every PR follows exactly three phases|^START$|^WORK$|^END$|Mandatory Hard Stops|tomorrow's official baseline|No commits on main|Never checkout main|Only after ALL four pass" docs_build/dev/ProjectInstructions
++rg -n 'workspace_v2_playwright_gate|samples2tools_adapter_guidance|koti_layout_contract' docs_build/dev/ProjectInstructions
 +git diff --name-only -- src assets toolbox games api serverside package.json package-lock.json docs_build/dev/start_of_day
 +git diff --check
 +`
 +
 +Results:
 +- PASS: Branch is PR_26177_OWNER_007-project-instructions-single-source-eod-lock.
-+- PASS: Duplicate/stale root file path checks returned absent for every listed cleanup file.
++- PASS: docs_build/dev root file listing returned no files.
++- PASS: Duplicate/stale/moved root path checks returned absent for every listed cleanup file.
 +- PASS: project-instructions/** diff returned only A project-instructions/README.md.
 +- PASS: Active-source grep did not find old root instruction source-of-truth wording.
-+- PASS: Positive grep found active ProjectInstructions and branch lifecycle governance language.
++- PASS: Moved governance/contract addendum paths appear in active ProjectInstructions docs.
 +- PASS: Product/runtime/start_of_day changed-file check returned no files.
 +- PASS: git diff --check returned no whitespace errors.
 +- PASS: Playwright not impacted because no runtime files changed.
+diff --git a/docs_build/dev/component-audit.md b/docs_build/dev/reports/audits/component-audit.md
+similarity index 100%
+rename from docs_build/dev/component-audit.md
+rename to docs_build/dev/reports/audits/component-audit.md
+diff --git a/docs_build/dev/css-audit.md b/docs_build/dev/reports/audits/css-audit.md
+similarity index 100%
+rename from docs_build/dev/css-audit.md
+rename to docs_build/dev/reports/audits/css-audit.md
+diff --git a/docs_build/dev/security-audit.md b/docs_build/dev/reports/audits/security-audit.md
+similarity index 100%
+rename from docs_build/dev/security-audit.md
+rename to docs_build/dev/reports/audits/security-audit.md
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 8e34972a1..2293660d7 100644
+index 8e34972a1..bed8ea54f 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,14 +1,47 @@
+@@ -1,14 +1,72 @@
 -docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md
 -docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md
 -docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md
@@ -4632,10 +4905,10 @@ index 8e34972a1..2293660d7 100644
 -tests/helpers/playwrightRepoServer.mjs
 -tests/playwright/tools/GameJourneyTool.spec.mjs
 -tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-+﻿M	docs_build/dev/BUILD_PR.md
++﻿D	docs_build/dev/BUILD_PR.md
 +D	docs_build/dev/BUILD_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT.md
 +D	docs_build/dev/NEXT_RESTART.md
-+M	docs_build/dev/PLAN_PR.md
++D	docs_build/dev/PLAN_PR.md
 +D	docs_build/dev/PLAN_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT.md
 +D	docs_build/dev/PROJECT_INSTRUCTIONS.md
 +D	docs_build/dev/PROJECT_MULTI_PC.txt
@@ -4648,23 +4921,47 @@ index 8e34972a1..2293660d7 100644
 +A	docs_build/dev/ProjectInstructions/addendums/canonical_repository_structure.md
 +A	docs_build/dev/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
 +A	docs_build/dev/ProjectInstructions/addendums/codex_project_instructions_startup.md
++R100	docs_build/dev/koti_layout_contract.md	docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md
 +A	docs_build/dev/ProjectInstructions/addendums/legacy_migration_policy.md
 +M	docs_build/dev/ProjectInstructions/addendums/multi_team.md
 +M	docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
 +A	docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
 +M	docs_build/dev/ProjectInstructions/addendums/release_gate.md
++R100	docs_build/dev/samples2tools_adapter_guidance.md	docs_build/dev/ProjectInstructions/addendums/samples2tools_adapter_guidance.md
 +M	docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
 +M	docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
 +A	docs_build/dev/ProjectInstructions/addendums/test_structure_standardization.md
++R100	docs_build/dev/workspace_v2_playwright_gate.md	docs_build/dev/ProjectInstructions/addendums/workspace_v2_playwright_gate.md
 +M	docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
++D	docs_build/dev/bundle_readme.md
 +D	docs_build/dev/codex_commands.md
 +D	docs_build/dev/codex_rules.md
 +D	docs_build/dev/commit_comment.txt
++A	docs_build/dev/pr/BUILD_PR.md
++A	docs_build/dev/pr/PLAN_PR.md
++R100	docs_build/dev/plan_pr_tool_workspace_manifest_boundaries.md	docs_build/dev/pr/plan_pr_tool_workspace_manifest_boundaries.md
++R096	docs_build/dev/pr_koti_layout_contract.md	docs_build/dev/pr/pr_koti_layout_contract.md
++R100	docs_build/dev/pr_tool_fix_asset_browser_1505.md	docs_build/dev/pr/pr_tool_fix_asset_browser_1505.md
++R100	docs_build/dev/pr_tool_fix_fullscreen_exit_state.md	docs_build/dev/pr/pr_tool_fix_fullscreen_exit_state.md
++R100	docs_build/dev/pr_tool_fix_parallax_header_metadata.md	docs_build/dev/pr/pr_tool_fix_parallax_header_metadata.md
++R100	docs_build/dev/pr_tool_header_singleline.md	docs_build/dev/pr/pr_tool_header_singleline.md
++R100	docs_build/dev/pr_tool_interactive_uat.md	docs_build/dev/pr/pr_tool_interactive_uat.md
++R100	docs_build/dev/pr_tool_layout_workflow_baseline.md	docs_build/dev/pr/pr_tool_layout_workflow_baseline.md
++R100	docs_build/dev/pr_tool_remove_future_import_hints.md	docs_build/dev/pr/pr_tool_remove_future_import_hints.md
++R100	docs_build/dev/pr_tool_remove_static_header_intro.md	docs_build/dev/pr/pr_tool_remove_static_header_intro.md
++R100	docs_build/dev/pr_tool_stabilization.md	docs_build/dev/pr/pr_tool_stabilization.md
++R100	docs_build/dev/pr_tool_uat_closeout.md	docs_build/dev/pr/pr_tool_uat_closeout.md
++R100	docs_build/dev/pr_tool_uat_fix_fullscreen_header_wiring.md	docs_build/dev/pr/pr_tool_uat_fix_fullscreen_header_wiring.md
++R100	docs_build/dev/pr_tool_uat_fix_header_asset_browser.md	docs_build/dev/pr/pr_tool_uat_fix_header_asset_browser.md
++R100	docs_build/dev/pr_tool_uat_fixes.md	docs_build/dev/pr/pr_tool_uat_fixes.md
 +A	docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock.md
 +A	docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_branch-validation.md
 +A	docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_manual-validation-notes.md
 +A	docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_requirement-checklist.md
 +A	docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_validation-lane.md
++R100	docs_build/dev/component-audit.md	docs_build/dev/reports/audits/component-audit.md
++R100	docs_build/dev/css-audit.md	docs_build/dev/reports/audits/css-audit.md
++R100	docs_build/dev/security-audit.md	docs_build/dev/reports/audits/security-audit.md
 +M	docs_build/dev/reports/codex_changed_files.txt
 +M	docs_build/dev/reports/codex_review.diff
 +D	docs_build/dev/restart_notes_11_105.md
@@ -4678,6 +4975,7 @@ index 8e34972a1..2293660d7 100644
 +D	docs_build/dev/restart_notes_11_121.md
 +D	docs_build/dev/restart_notes_11_122.md
 +D	docs_build/dev/restart_notes_11_123.md
++D	docs_build/dev/validation_checklist.txt
 +A	project-instructions/README.md
 diff --git a/docs_build/dev/restart_notes_11_105.md b/docs_build/dev/restart_notes_11_105.md
 deleted file mode 100644
@@ -4860,6 +5158,17 @@ index 6fff27148..000000000
 -- Workspace/game validates parent document only.
 -- Tool validates direct tool JSON only.
 -- Workspace Manager routes exact referenced payload to tool, no conversion.
+diff --git a/docs_build/dev/validation_checklist.txt b/docs_build/dev/validation_checklist.txt
+deleted file mode 100644
+index b0ac337aa..000000000
+--- a/docs_build/dev/validation_checklist.txt
++++ /dev/null
+@@ -1,5 +0,0 @@
+-Validation Checklist
+-
+-[ ] Roadmap locked
+-[ ] Guard rules documented
+-[ ] No further structural edits allowed
 diff --git a/project-instructions/README.md b/project-instructions/README.md
 new file mode 100644
 index 000000000..db8aaf4cd

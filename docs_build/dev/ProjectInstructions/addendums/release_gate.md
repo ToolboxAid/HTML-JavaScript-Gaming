@@ -41,6 +41,9 @@ The release gate should confirm these files when relevant to the PR:
 - `docs_build/dev/ProjectInstructions/addendums/project_reference_files.md`
 - `docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md`
 - `docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md`
+- `docs_build/dev/ProjectInstructions/addendums/workspace_v2_playwright_gate.md`
+- `docs_build/dev/ProjectInstructions/addendums/samples2tools_adapter_guidance.md`
+- `docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md`
 - `docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md`
 - `docs_build/dev/admin-notes/Installs required.txt` when present
 - `docs_build/dev/admin-notes/Table layout.txt` when present
