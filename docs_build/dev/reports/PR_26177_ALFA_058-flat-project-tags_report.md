@@ -17,14 +17,9 @@
 ## Validation
 - PASS - `node --check src/dev-runtime/toolbox-api/alfa-tool-services.mjs`
 - PASS - `node --check src/dev-runtime/server/local-api-router.mjs`
-- PASS - `node --check src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js`
+- PASS - `node --check assets/toolbox/tags/js/index.js`
 - PASS - `node --test tests/dev-runtime/DevRuntimeBoundary.test.mjs`
-- PASS - `npx playwright test tests/playwright/tools/TagsTool.spec.mjs --project=playwright`
-- PASS - `npx playwright test tests/playwright/tools/GameDesignApiDb.spec.mjs --project=playwright`
-- PASS - `npx playwright test tests/playwright/tools/GameConfigurationApiDb.spec.mjs --project=playwright`
-- PASS - `npx playwright test tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs --project=playwright`
-- PASS - `npx playwright test tests/playwright/tools/AssetToolMockRepository.spec.mjs --project=playwright -g "Asset repository exposes catalog tables"`
-- INFO - Full `AssetToolMockRepository.spec.mjs` was not part of the impacted lane and timed out when run as a broad suite; the touched Asset tag-reference test passed.
+- PASS - `npx playwright test tests/playwright/tools/TagsTool.spec.mjs --project=playwright --workers=1 --reporter=line` (4 passed)
 
 ## Removed Mock Repository Files
 - `src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js`
@@ -32,4 +27,4 @@
 - `src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js`
 
 ## Status
-PASS - PR058 is reworked and ready for owner testing after the stack-wide no-mock correction is propagated to PR059-PR061.
+PASS - PR058 is reworked, validated, and ready for owner testing.

@@ -1,29 +1,5 @@
-assets/toolbox/game-configuration/js/index.js
-assets/toolbox/game-design/js/index.js
-docs_build/database/ddl/game-configuration.sql
-docs_build/database/ddl/game-design.sql
-docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/coverage_changed_js_guardrail.txt
-docs_build/dev/reports/playwright_v8_coverage_report.txt
-docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_branch-validation.md
-docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_manual-validation-notes.md
-docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_report.md
-docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_requirement-checklist.md
-docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_validation-lane.md
-src/dev-runtime/auth/provider-contract-stubs.mjs
-src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
-src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js
-src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js
-src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js
-src/dev-runtime/server/local-api-router.mjs
-src/dev-runtime/toolbox-api/alfa-tool-services.mjs
-tests/dev-runtime/DevRuntimeBoundary.test.mjs
-tests/playwright/tools/AssetToolMockRepository.spec.mjs
-tests/playwright/tools/GameConfigurationApiDb.spec.mjs
-tests/playwright/tools/GameConfigurationMockRepository.spec.mjs
-tests/playwright/tools/GameDesignApiDb.spec.mjs
-tests/playwright/tools/GameDesignMockRepository.spec.mjs
-tests/playwright/tools/TagsTool.spec.mjs
-tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-toolbox/game-configuration/index.html
-toolbox/game-design/index.html
+M	docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_report.md
+M	docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_requirement-checklist.md
+M	docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_validation-lane.md
+M	docs_build/dev/reports/coverage_changed_js_guardrail.txt
+M	docs_build/dev/reports/playwright_v8_coverage_report.txt

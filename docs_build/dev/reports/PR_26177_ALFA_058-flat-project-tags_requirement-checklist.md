@@ -11,6 +11,6 @@
 | No browser-owned product data | PASS | Writes route through API database service. |
 | No JSON source of truth | PASS | No tool JSON store added. |
 | No mock repository source of truth | PASS | Retired mock files deleted and guardrail added. |
-| No new or expanded mock-db-store usage for Tags/Design/Configuration | PASS | Router uses DB-backed Alfa services. |
+| No new or expanded mock-db-store usage for Tags/Game Crew/Game Design/Game Configuration | PASS | Router uses DB-backed Alfa services; this PR does not change `mock-db-store.js`. |
 | Server/API owns keys and audit fields | PASS | Service uses adapter key creation and audit fields. |
 | DDL/DML/seed location discipline | PASS | DDL under `docs_build/database/ddl/`; no duplicate tool DDL folders added. |
