@@ -7,7 +7,7 @@
 | Team Alfa | none | none | none | Available |
 | Team Bravo | none | none | none | Available |
 | Team Charlie | none | none | none | Available |
-| Team Delta | none | none | none | Available |
+| Team Delta | PR_26177_DELTA_052-random-seed-utility | PR_26177_DELTA_052-random-seed-utility | PR_26177_DELTA_052-random-seed-utility | Active |
 | Team Golf | none | none | none | Available |
 | Team OWNER | none | none | none | Available |
 
@@ -48,11 +48,15 @@ Current OWNER clarification:
 
 ## Team Alfa
 
-Status: Available
+Status: Active
 
-Active assignment: none.
+Active assignment: PR_26177_DELTA_052-random-seed-utility.
 
-Active branch: none.
+Active branch: PR_26177_DELTA_052-random-seed-utility.
+
+Active PR: PR_26177_DELTA_052-random-seed-utility.
+
+OWNER override approved: Assign Team Delta PR_26177_DELTA_052-random-seed-utility.
 
 ## Team Bravo
 

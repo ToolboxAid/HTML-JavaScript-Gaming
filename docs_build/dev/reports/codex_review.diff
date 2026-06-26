@@ -1,674 +1,649 @@
-diff --git a/.env.example b/.env.example
-index e4fd3594e..ce6b0bd7c 100644
---- a/.env.example
-+++ b/.env.example
-@@ -4,6 +4,29 @@
- # Official environment model:
- # Local (VS Code) -> DEV -> IST -> UAT -> PROD
- #
-+# Only this .env.example file is committed to the repository.
-+# Real .env files are user/environment-owned and must live outside
-+# the repo clone or be injected by deployment.
-+#
-+# Official external copy-source names when a copy-source file is used:
-+# - .env.local
-+# - .env.dev
-+# - .env.ist
-+# - .env.uat
-+# - .env.prod
-+# Legacy technical debt only:
-+# - .env.prd
-+#
-+# Example external layout:
-+# - /env/local/.env
-+# - /env/dev/.env
-+# - /env/ist/.env
-+# - /env/uat/.env
-+# - /env/prod/.env
-+# - /GFS/ repo clone
-+#
-+# The app/runtime reads .env values supplied by the target environment.
-+#
- # Environment invariance:
- # Use an identical deployable artifact in every environment.
- # Only .env values and environment-managed secret values differ.
-@@ -19,10 +42,21 @@
- # Configure runtime auth, database, and storage connections here.
- # Missing connection configuration reports diagnostics instead of falling back.
-
--# Browser-safe public site configuration exposed through the server API.
-+# Required environment identity.
-+# Allowed values: local, dev, ist, uat, prod.
-+GAMEFOUNDRY_ENVIRONMENT=local
-+
-+# Browser-safe public site/API configuration exposed through the server API.
- # These values may be sent to browser pages. Do not place secrets here.
-+# Local uses 127.0.0.1 hostnames.
-+# DEV/IST/UAT/PROD use configured *.gamefoundrystudio.com hostnames.
-+# One shared API/service contract is used everywhere; URLs may differ by .env only.
-+# Do not split Local API and Public API contracts.
- GAMEFOUNDRY_SITE_URL=
- GAMEFOUNDRY_API_URL=
-+
-+# Display-only environment label.
-+# Do not use this value for runtime behavior, API/service selection, storage selection, or feature behavior.
- # Valid environment banner labels:
- # - Local Development Environment
- # - Development Environment
 diff --git a/docs_build/dev/BUILD_PR.md b/docs_build/dev/BUILD_PR.md
-index 73ffaa35e..f6deb6aab 100644
+index f6deb6aab..8b322a4d5 100644
 --- a/docs_build/dev/BUILD_PR.md
 +++ b/docs_build/dev/BUILD_PR.md
-@@ -1,29 +1,40 @@
--# PR_26177_OWNER_050-environment-governance-model
-+# PR_26177_OWNER_051-environment-configuration-standards
+@@ -1,89 +1,86 @@
+-# PR_26177_OWNER_051-environment-configuration-standards
++# PR_26177_DELTA_052-random-seed-utility
 
  ## Purpose
 
--Establish the official Game Foundry Studio environment governance model and align the active configuration example comments/placeholders with that model.
-+Define the official Game Foundry Studio environment configuration standards that build on the OWNER_050 environment model.
+-Define the official Game Foundry Studio environment configuration standards that build on the OWNER_050 environment model.
++Add a reusable shared JavaScript `RandomSeed` utility for deterministic seeded random sequences.
 
  ## Source Of Truth
 
--This `BUILD_PR.md` and the user request are the source of truth for `PR_26177_OWNER_050-environment-governance-model`.
-+This `BUILD_PR.md` and the user request are the source of truth for `PR_26177_OWNER_051-environment-configuration-standards`.
+-This `BUILD_PR.md` and the user request are the source of truth for `PR_26177_OWNER_051-environment-configuration-standards`.
++This `BUILD_PR.md`, `PLAN_PR.md`, the user request, and `docs_build/dev/ProjectInstructions.zip` are the source of truth for `PR_26177_DELTA_052-random-seed-utility`.
++
++## OWNER Override And Team Assignment
++
++OWNER override approved: Assign Team Delta `PR_26177_DELTA_052-random-seed-utility`.
++
++Team Delta owns Shared JS, runtime utilities, technical debt remediation, and runtime test coverage.
 
  ## Exact Scope
 
--- Documentation/governance only unless `.env.example` comment or placeholder updates are required.
--- Establish `Local (VS Code) -> DEV -> IST -> UAT -> PROD` as the official environment model.
--- Define the environment invariance rule: the deployable artifact is identical across all environments; only `.env` values and environment-managed secret values differ.
--- Define one shared API/service contract across all environments.
--- Define Supabase Auth, Supabase Postgres, and Cloudflare R2 as required for every environment.
--- Define R2 top-level prefixes:
--  - `/local/`
--  - `/dev/`
--  - `/ist/`
--  - `/uat/`
--  - `/prod/`
--- Define that all environments receive approved guest seed data for all tools.
--- State SQLite is deprecated/retired and is not an active runtime database.
--- Review `.env.example` and update comments/placeholders to match the official model.
-+- Governance/documentation only.
-+- Build on OWNER_050 environment model.
-+- Standardize environment file names:
-+  - `.env.local`
-+  - `.env.dev`
-+  - `.env.ist`
-+  - `.env.uat`
-+  - `.env.prod`
-+- Treat `.env.prd` as legacy technical debt only.
-+- Add `GAMEFOUNDRY_ENVIRONMENT` allowed values:
-+  - `local`
-+  - `dev`
-+  - `ist`
-+  - `uat`
-+  - `prod`
-+- Keep `GAMEFOUNDRY_ENVIRONMENT_LABEL` display-only.
-+- Document that only `.env` values and environment-managed secrets differ.
-+- Document that the deployable artifact must remain identical.
-+- Document one shared API/service contract.
-+- Document feature flags cannot create permanent environment-specific behavior.
-+- Review `.env.example` comments/placeholders only.
-+- Clarify that only `.env.example` is committed to the repository.
-+- Clarify that real `.env` files are user/environment-owned and must live outside the repo clone or be injected by deployment.
-+- Document the external `/env/<target>/.env` layout next to the `/GFS/` repo clone.
-+- Do not change runtime behavior.
+-- Governance/documentation only.
+-- Build on OWNER_050 environment model.
+-- Standardize environment file names:
+-  - `.env.local`
+-  - `.env.dev`
+-  - `.env.ist`
+-  - `.env.uat`
+-  - `.env.prod`
+-- Treat `.env.prd` as legacy technical debt only.
+-- Add `GAMEFOUNDRY_ENVIRONMENT` allowed values:
+-  - `local`
+-  - `dev`
+-  - `ist`
+-  - `uat`
+-  - `prod`
+-- Keep `GAMEFOUNDRY_ENVIRONMENT_LABEL` display-only.
+-- Document that only `.env` values and environment-managed secrets differ.
+-- Document that the deployable artifact must remain identical.
+-- Document one shared API/service contract.
+-- Document feature flags cannot create permanent environment-specific behavior.
+-- Review `.env.example` comments/placeholders only.
+-- Clarify that only `.env.example` is committed to the repository.
+-- Clarify that real `.env` files are user/environment-owned and must live outside the repo clone or be injected by deployment.
+-- Document the external `/env/<target>/.env` layout next to the `/GFS/` repo clone.
+-- Do not change runtime behavior.
++- Add reusable shared JavaScript utility class named `RandomSeed`.
++- Constructor accepts an initial seed.
++- Include:
++  - `seed(value)`
++  - `next()`
++  - `nextInt(min, max)`
++  - `nextFloat(min, max)`
++  - `pick(array)`
++- Same seed must reproduce the same sequence after reseeding.
++- Different seeds should produce different sequences.
++- Add JSDoc.
++- Add targeted unit tests.
++- Do not replace existing `Math.random()` usage.
++- No UI changes.
++- No browser storage.
++- No API/database changes.
++- No unrelated cleanup.
  - Create required Codex reports under `docs_build/dev/reports/`.
  - Create repo-structured delta ZIP under `tmp/`.
 
-@@ -33,17 +44,16 @@ This `BUILD_PR.md` and the user request are the source of truth for `PR_26177_OW
- - `docs_build/dev/PROJECT_INSTRUCTIONS.md`
- - `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
- - `docs_build/dev/ProjectInstructions/README.txt`
-+- `docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md`
- - `docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md`
--- `docs_build/dev/ProjectInstructions/addendums/postgres_only.md`
- - `docs_build/dev/ProjectInstructions/addendums/release_gate.md`
--- `docs_build/dev/admin-notes/index.txt`
- - `.env.example`
--- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model.md`
--- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_branch-validation.md`
--- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_requirement-checklist.md`
--- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_validation-lane.md`
--- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_manual-validation-notes.md`
--- `docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_instruction-compliance-checklist.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_branch-validation.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_requirement-checklist.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_validation-lane.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_manual-validation-notes.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_instruction-compliance-checklist.md`
+ ## Exact Targets
+
++- `docs_build/dev/PLAN_PR.md`
+ - `docs_build/dev/BUILD_PR.md`
+-- `docs_build/dev/PROJECT_INSTRUCTIONS.md`
+-- `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
+-- `docs_build/dev/ProjectInstructions/README.txt`
+-- `docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md`
+-- `docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md`
+-- `docs_build/dev/ProjectInstructions/addendums/release_gate.md`
+-- `.env.example`
+-- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards.md`
+-- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_branch-validation.md`
+-- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_requirement-checklist.md`
+-- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_validation-lane.md`
+-- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_manual-validation-notes.md`
+-- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_instruction-compliance-checklist.md`
++- `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md`
++- `docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md`
++- `src/shared/math/RandomSeed.js`
++- `tests/shared/RandomSeed.test.mjs`
++- `docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility.md`
++- `docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility_branch-validation.md`
++- `docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility_requirement-checklist.md`
++- `docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility_validation-lane.md`
++- `docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility_manual-validation-notes.md`
++- `docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility_instruction-compliance-checklist.md`
  - `docs_build/dev/reports/codex_review.diff`
  - `docs_build/dev/reports/codex_changed_files.txt`
 
-@@ -53,24 +63,27 @@ This `BUILD_PR.md` and the user request are the source of truth for `PR_26177_OW
+ ## Out Of Scope
+
+-- No runtime code changes.
++- No existing `Math.random()` call-site replacements.
  - No UI changes.
- - No engine core changes.
+-- No engine core changes.
++- No browser storage changes.
++- No API changes.
++- No database changes.
++- No engine core changes outside the new shared utility.
  - No `start_of_day` folder changes.
--- No `.env`, `.env.dev`, `.env.ist`, `.env.uat`, or `.env.prd` secret/value edits.
-+- No actual `.env`, `.env.local`, `.env.dev`, `.env.ist`, `.env.uat`, `.env.prod`, or `.env.prd` secret/value file edits.
-+- No committed real `.env.*` copy-source files.
- - No API implementation changes.
- - No storage implementation changes.
- - No database migration or DDL changes.
-+- No feature flag implementation changes.
+-- No actual `.env`, `.env.local`, `.env.dev`, `.env.ist`, `.env.uat`, `.env.prod`, or `.env.prd` secret/value file edits.
+-- No committed real `.env.*` copy-source files.
+-- No API implementation changes.
+-- No storage implementation changes.
+-- No database migration or DDL changes.
+-- No feature flag implementation changes.
++- No unrelated cleanup.
 
  ## Validation
 
  Run exactly:
 
  ```powershell
--git status
++node ./scripts/run-node-test-files.mjs tests/shared/RandomSeed.test.mjs
++node --check src/shared/math/RandomSeed.js
++node --check tests/shared/RandomSeed.test.mjs
  git diff --check
  ```
 
-+Playwright is not required unless runtime files change.
-+
+-Playwright is not required unless runtime files change.
++Playwright is not required because this PR does not change UI or browser runtime behavior.
+
  ## Artifact
 
  Create repo-structured delta ZIP:
 
  ```text
--tmp/PR_26177_OWNER_050-environment-governance-model_delta.zip
-+tmp/PR_26177_OWNER_051-environment-configuration-standards_delta.zip
+-tmp/PR_26177_OWNER_051-environment-configuration-standards_delta.zip
++tmp/PR_26177_DELTA_052-random-seed-utility_delta.zip
  ```
-diff --git a/docs_build/dev/PROJECT_INSTRUCTIONS.md b/docs_build/dev/PROJECT_INSTRUCTIONS.md
-index 2eee7be67..af9e9e2db 100644
---- a/docs_build/dev/PROJECT_INSTRUCTIONS.md
-+++ b/docs_build/dev/PROJECT_INSTRUCTIONS.md
-@@ -497,8 +497,9 @@ Environment invariance rule:
- Shared API/service contract:
- - One shared API/service contract is required across Local (VS Code), DEV, IST, UAT, and PROD.
- - Browser/UI/runtime code must consume the same contract in every environment.
--- Environment-specific endpoints, keys, buckets, and prefixes are configuration values only.
-+- Environment-specific URLs, endpoints, keys, buckets, and prefixes are `.env` or environment-managed secret/config values only.
- - Do not create environment-specific API/service contracts.
-+- Do not split Local API and Public API contracts. Local and shared environments use the same API/service contract; URLs may differ by `.env` only.
+diff --git a/docs_build/dev/PLAN_PR.md b/docs_build/dev/PLAN_PR.md
+index 6f7c6a9a3..d12263894 100644
+--- a/docs_build/dev/PLAN_PR.md
++++ b/docs_build/dev/PLAN_PR.md
+@@ -1,39 +1,48 @@
+-# PLAN_PR: Move JSON schemas under tools ownership
++# PLAN_PR: PR_26177_DELTA_052-random-seed-utility
 
- Required services in every environment:
- - Supabase Auth
-@@ -519,11 +520,37 @@ Required Cloudflare R2 top-level prefixes:
+ ## Purpose
+-Move schema contracts out of the repository root and into the tools area so schema ownership matches the systems that load, edit, validate, and export tool/sample data.
++
++Add a reusable shared JavaScript `RandomSeed` utility for deterministic seeded random sequences.
++
++## Owner And Assignment
++
++- Team: Delta
++- OWNER override approved: Assign Team Delta `PR_26177_DELTA_052-random-seed-utility`.
++- Ownership fit: Team Delta owns Shared JS, runtime utilities, technical debt remediation, and runtime test coverage.
 
- Derived R2 paths for projects, backups, exports, or future storage lanes must stay under the matching top-level prefix for the active environment.
+ ## Scope
+-- Do not change runtime behavior directly.
+-- Do not edit locked samples.
+-- Do not modify start_of_day folders.
+-- Establish schema placement rules for Codex to implement in the next pass.
+-
+-## Schema placement rule
+-Use this structure:
+-
+-```text
+-toolbox/
+-  schemas/
+-    tool.manifest.schema.json
+-    palette.schema.json
+-    samples/
+-      sample.tool-payload.schema.json
+-    toolbox/
+-      vector-map-editor.schema.json
+-      vector-asset-studio.schema.json
+-      sprite-editor.schema.json
+-```
+-
+-## Rationale
+-Schemas belong near tool contracts, not at repository root. The root should stay clean and should not accumulate validation artifacts.
+-
+-Shared schemas live at `src/shared/schemas/`.
+-Tool-specific schemas live at `src/shared/schemas/tools/<tool>.schema.json`.
+-
+-## Acceptance criteria
+-- No new schema files are added at repository root.
+-- All JSON schema files are under `src/shared/schemas/`.
+-- Tool manifest validation uses `src/shared/schemas/tool.manifest.schema.json`.
+-- Tool-specific payload validation uses `src/shared/schemas/tools/<tool>.schema.json`.
+-- Samples reference the same tool schema contracts used by tool manifests.
++
++- Add a shared JavaScript utility class named `RandomSeed`.
++- Constructor accepts an initial seed.
++- Include:
++  - `seed(value)`
++  - `next()`
++  - `nextInt(min, max)`
++  - `nextFloat(min, max)`
++  - `pick(array)`
++- Add JSDoc for the utility and public methods.
++- Add targeted unit tests.
++- Do not replace existing `Math.random()` usage.
++- No UI changes.
++- No browser storage.
++- No API/database changes.
++- No unrelated cleanup.
++
++## Implementation Plan
++
++1. Add `src/shared/math/RandomSeed.js`.
++2. Add `tests/shared/RandomSeed.test.mjs`.
++3. Validate deterministic reseeding, different-seed divergence, numeric ranges, and array picking.
++4. Run targeted unit tests for `RandomSeed`.
++5. Run changed-file syntax checks for the new JS and test files.
++6. Produce required reports and repo-structured ZIP.
++
++## Acceptance Criteria
++
++- Same seed reproduces the same sequence after reseeding.
++- Different seeds produce different sequences.
++- `next()` returns deterministic normalized values.
++- `nextInt(min, max)` returns deterministic inclusive integers inside range.
++- `nextFloat(min, max)` returns deterministic floats inside range.
++- `pick(array)` returns deterministic values from the provided array.
++- Existing `Math.random()` usage remains unchanged.
+diff --git a/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md b/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
+index 6ddf25619..841dc2a76 100644
+--- a/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
++++ b/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
+@@ -31,7 +31,7 @@ If a team has no assignment, no active branch, and no active PR, it is inactive
+ | Team Alfa | none | none | none | Available | Active ownership lane |
+ | Team Bravo | none | none | none | Available | Active ownership lane |
+ | Team Charlie | none | none | none | Available | Active ownership lane |
+-| Team Delta | none | none | none | Available | Active ownership lane |
++| Team Delta | PR_26177_DELTA_052-random-seed-utility | PR_26177_DELTA_052-random-seed-utility | PR_26177_DELTA_052-random-seed-utility | Active | OWNER override approved: Assign Team Delta PR_26177_DELTA_052-random-seed-utility |
+ | Team Golf | none | none | none | Available | Replacement active ownership lane for retired Team Gamma |
+ | Team OWNER | none | none | none | Available | Governance Phase 1 complete |
 
--The following files are copy-source files only:
-+Only `.env.example` is committed to the repository.
-+
-+Real `.env` files are user/environment-owned and must live outside the repo clone or be injected by deployment.
-+
-+Official external environment file names when a copy-source file is used outside the repo clone:
-+- `.env.local`
- - `.env.dev`
- - `.env.ist`
- - `.env.uat`
--- `.env.prd` is the legacy copy-source filename for PROD values; new environment governance uses the `PROD` environment name.
-+- `.env.prod`
-+
-+Example external layout:
-+- `/env/local/.env`
-+- `/env/dev/.env`
-+- `/env/ist/.env`
-+- `/env/uat/.env`
-+- `/env/prod/.env`
-+- `/GFS/` repo clone
-+
-+The app/runtime reads `.env` values supplied by the target environment. It must not require real `.env` files to be committed inside the repo clone.
-+
-+`.env.prd` is legacy technical debt only. New environment governance uses `.env.prod` for external PROD copy-source naming and the `PROD` environment name.
-+
-+Allowed `GAMEFOUNDRY_ENVIRONMENT` values:
-+- `local`
-+- `dev`
-+- `ist`
-+- `uat`
-+- `prod`
-+
-+`GAMEFOUNDRY_ENVIRONMENT_LABEL` is display-only and must not drive runtime behavior, API/service selection, database selection, storage selection, or feature behavior.
+diff --git a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
+index 37d1d7369..bf359530c 100644
+--- a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
++++ b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
+@@ -7,7 +7,7 @@
+ | Team Alfa | none | none | none | Available |
+ | Team Bravo | none | none | none | Available |
+ | Team Charlie | none | none | none | Available |
+-| Team Delta | none | none | none | Available |
++| Team Delta | PR_26177_DELTA_052-random-seed-utility | PR_26177_DELTA_052-random-seed-utility | PR_26177_DELTA_052-random-seed-utility | Active |
+ | Team Golf | none | none | none | Available |
+ | Team OWNER | none | none | none | Available |
 
- Valid environment stages are:
- - `Local (VS Code)`
-@@ -552,6 +579,16 @@ Do not introduce runtime parameters such as:
+@@ -48,11 +48,15 @@ Current OWNER clarification:
 
- Application code, runtime code, API/service code, and DB runtime scripts must not branch behavior by deployment target name.
+ ## Team Alfa
 
-+Host/domain configuration:
-+- Local (VS Code) uses `127.0.0.1` hostnames.
-+- DEV, IST, UAT, and PROD use configured `*.gamefoundrystudio.com` hostnames.
-+- Host/domain differences are configuration values only and must not create separate deployable artifacts or environment-specific code.
+-Status: Available
++Status: Active
+
+-Active assignment: none.
++Active assignment: PR_26177_DELTA_052-random-seed-utility.
+
+-Active branch: none.
++Active branch: PR_26177_DELTA_052-random-seed-utility.
 +
-+Feature flag governance:
-+- Feature flags must not create permanent environment-specific behavior.
-+- Feature flags may be used only for staged rollout, testing, or emergency mitigation.
-+- Feature flags must be removed, promoted to normal behavior, or documented as active temporary controls when the rollout, test, or mitigation ends.
++Active PR: PR_26177_DELTA_052-random-seed-utility.
 +
- ## RUNTIME SCRIPT NAMING GOVERNANCE
++OWNER override approved: Assign Team Delta PR_26177_DELTA_052-random-seed-utility.
 
- Active runtime script names should describe capability rather than vendor/provider.
-diff --git a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-index 16238a317..d2a84ecbe 100644
---- a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-+++ b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-@@ -39,6 +39,8 @@ Existing Project Instructions remain preserved in their current locations. This
-
- `docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md` defines the official environment model, environment invariance rule, shared API/service contract rule, required Supabase/Postgres/R2 services, required R2 prefixes, and SQLite retired status.
-
-+`docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md` defines official `.env` file names, environment variable values, host/domain configuration, API URL configuration, R2 prefix configuration, and feature flag governance.
-+
- ## Merge Control
-
- No PR in this operating system is merged without explicit owner approval.
-diff --git a/docs_build/dev/ProjectInstructions/README.txt b/docs_build/dev/ProjectInstructions/README.txt
-index 0e4f9b470..a48becf05 100644
---- a/docs_build/dev/ProjectInstructions/README.txt
-+++ b/docs_build/dev/ProjectInstructions/README.txt
-@@ -50,3 +50,4 @@ Addendum index:
- - Codex Project Instructions Startup: project-instructions/addendums/codex-project-instructions-startup.md
- - Project Reference Files Governance: docs_build/dev/ProjectInstructions/addendums/project_reference_files.md
- - Environment Governance Model: docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md
-+- Environment Configuration Standards: docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md
-diff --git a/docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md b/docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md
+ ## Team Bravo
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility.md b/docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility.md
 new file mode 100644
-index 000000000..d08f4317b
+index 000000000..7d45d339f
 --- /dev/null
-+++ b/docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md
-@@ -0,0 +1,112 @@
-+# Environment Configuration Standards
-+
-+Status: Approved
-+Owner: OWNER
-+
-+## Purpose
-+
-+Define the official environment configuration standards that build on the OWNER_050 environment model.
-+
-+This addendum is governance/documentation only. It does not change runtime behavior, API implementation, storage implementation, database DDL, or secret values.
-+
-+## Source Model
-+
-+This standard builds on:
-+
-+```text
-+Local (VS Code) -> DEV -> IST -> UAT -> PROD
-+```
-+
-+The deployable artifact must remain identical across all environments.
-+
-+Only `.env` values and environment-managed secret values may differ by environment.
-+
-+Deployable artifacts must not contain environment-specific application code, runtime code, API/service code, database code, storage code, or feature behavior.
-+
-+## Official Environment Files
-+
-+Only `.env.example` is committed to the repository.
-+
-+Real `.env` files are user/environment-owned and must live outside the repo clone or be injected by deployment.
-+
-+Official external environment copy-source file names when a copy-source file is used outside the repo clone:
-+
-+- `.env.local`
-+- `.env.dev`
-+- `.env.ist`
-+- `.env.uat`
-+- `.env.prod`
-+
-+Example external layout:
-+
-+- `/env/local/.env`
-+- `/env/dev/.env`
-+- `/env/ist/.env`
-+- `/env/uat/.env`
-+- `/env/prod/.env`
-+- `/GFS/` repo clone
-+
-+The app/runtime reads `.env` values supplied by the target environment.
-+
-+Runtime startup still reads `.env` values only. The official flow is for each environment to supply those values from outside the repo clone or through deployment injection before validation/startup.
-+
-+`.env.prd` is legacy technical debt only. Do not introduce new references to `.env.prd` except when documenting migration or historical compatibility.
-+
-+## Environment Identity
-+
-+Allowed `GAMEFOUNDRY_ENVIRONMENT` values:
-+
-+- `local`
-+- `dev`
-+- `ist`
-+- `uat`
-+- `prod`
-+
-+`GAMEFOUNDRY_ENVIRONMENT` identifies the active configuration lane. It must not cause application, runtime, API/service, database, storage, or feature behavior forks.
-+
-+`GAMEFOUNDRY_ENVIRONMENT_LABEL` is display-only. It may be used for visual labels and diagnostics, but must not drive runtime behavior, API/service selection, database selection, storage selection, or feature behavior.
-+
-+## Host And Domain Configuration
-+
-+Local (VS Code) uses `127.0.0.1` hostnames.
-+
-+DEV, IST, UAT, and PROD use configured `*.gamefoundrystudio.com` hostnames.
-+
-+Host/domain differences are configuration values only. They must not create separate deployable artifacts or environment-specific code.
-+
-+## R2 Prefix Configuration
-+
-+Required Cloudflare R2 top-level prefixes:
-+
-+- Local (VS Code): `/local/`
-+- DEV: `/dev/`
-+- IST: `/ist/`
-+- UAT: `/uat/`
-+- PROD: `/prod/`
-+
-+R2 project, backup, export, import, or future storage paths must stay under the matching environment prefix.
-+
-+## API/Service Contract Configuration
-+
-+One shared API/service contract is required across Local (VS Code), DEV, IST, UAT, and PROD.
-+
-+Rules:
-+
-+- API URLs may differ by `.env` only.
-+- Do not split Local API and Public API contracts.
-+- Do not create environment-specific API/service contracts.
-+- Browser/UI/runtime code must use the same API/service contract shape in every environment.
-+
-+## Feature Flag Governance
-+
-+Feature flags must not create permanent environment-specific behavior.
-+
-+Allowed feature flag uses:
-+
-+- staged rollout
-+- testing
-+- emergency mitigation
-+
-+Feature flags must be removed, promoted to normal behavior, or documented as active temporary controls when the rollout, test, or mitigation ends.
-+
-+Feature flags must not become a substitute for the environment invariance rule.
-diff --git a/docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md b/docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md
-index ef3c0e1cd..de7c90331 100644
---- a/docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md
-+++ b/docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md
-@@ -112,3 +112,7 @@ Rules:
- ## Scope Boundary
-
- This governance addendum defines documentation and configuration contract rules only. It does not change runtime code, API implementation code, storage implementation code, database DDL, or secret values.
-+
-+## Related Configuration Standard
-+
-+`docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md` defines the official `.env` file names, allowed `GAMEFOUNDRY_ENVIRONMENT` values, display-only environment label rule, host/domain configuration, API URL configuration, and feature flag governance.
-diff --git a/docs_build/dev/ProjectInstructions/addendums/release_gate.md b/docs_build/dev/ProjectInstructions/addendums/release_gate.md
-index 79af94858..c45a2c49d 100644
---- a/docs_build/dev/ProjectInstructions/addendums/release_gate.md
-+++ b/docs_build/dev/ProjectInstructions/addendums/release_gate.md
-@@ -38,6 +38,7 @@ The release gate should confirm these files when relevant to the PR:
- - `docs_build/dev/ProjectInstructions/addendums/pr_workflow.md`
- - `docs_build/dev/ProjectInstructions/addendums/project_reference_files.md`
- - `docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md`
-+- `docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md`
- - `docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md`
- - `docs_build/dev/admin-notes/Installs required.txt` when present
- - `docs_build/dev/admin-notes/Table layout.txt` when present
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards.md b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards.md
-new file mode 100644
-index 000000000..5006840aa
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards.md
-@@ -0,0 +1,76 @@
-+# PR_26177_OWNER_051-environment-configuration-standards
++++ b/docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility.md
+@@ -0,0 +1,55 @@
++# PR_26177_DELTA_052-random-seed-utility
 +
 +Date: 2026-06-26
-+Team: OWNER
-+Scope: Governance/documentation only, plus `.env.example` comments/placeholders
++Team: Delta
++Scope: Shared JavaScript utility and targeted unit tests
 +Status: PASS
 +
 +## Summary
 +
-+- Built on OWNER_050 by adding official environment configuration standards.
-+- Clarified that only `.env.example` is committed to the repository.
-+- Clarified that real `.env` files are user/environment-owned and must live outside the repo clone or be injected by deployment.
-+- Documented external environment layout: `/env/local/.env`, `/env/dev/.env`, `/env/ist/.env`, `/env/uat/.env`, `/env/prod/.env`, and `/GFS/` repo clone.
-+- Standardized official external copy-source file names: `.env.local`, `.env.dev`, `.env.ist`, `.env.uat`, and `.env.prod`.
-+- Documented `.env.prd` as legacy technical debt only.
-+- Clarified that `.env.prod` remains the official PROD naming when a copy-source file is used outside the repo.
-+- Added allowed `GAMEFOUNDRY_ENVIRONMENT` values: `local`, `dev`, `ist`, `uat`, and `prod`.
-+- Clarified that `GAMEFOUNDRY_ENVIRONMENT_LABEL` is display-only.
-+- Preserved the identical deployable artifact rule and the rule that only `.env` values and environment-managed secret values may differ.
-+- Preserved one shared API/service contract and documented that URLs may differ by `.env` only.
-+- Documented local hostnames use `127.0.0.1`, while shared environments use configured `*.gamefoundrystudio.com` hostnames.
-+- Documented feature flags cannot create permanent environment-specific behavior.
-+- Updated `.env.example` comments/placeholders only.
-+- No runtime behavior, UI behavior, engine core, DDL, storage implementation, API implementation, or feature flag implementation changed.
++- Added reusable shared JavaScript utility class `RandomSeed`.
++- Implemented constructor seed initialization plus `seed(value)`, `next()`, `nextInt(min, max)`, `nextFloat(min, max)`, and `pick(array)`.
++- Added JSDoc for the utility and public methods.
++- Verified same-seed reproducibility after reseeding.
++- Verified different seeds produce different sequences.
++- Added targeted unit tests in `tests/shared/RandomSeed.test.mjs`.
++- Preserved existing `Math.random()` usage; no call sites were replaced.
++- Updated active Team Delta assignment metadata required by the attached Project Instructions.
++- No UI, browser storage, API, database, or unrelated cleanup changes were made.
 +
 +## Branch Validation
 +
-+PASS. Current branch is `PR_26177_OWNER_051-environment-configuration-standards`, created from clean synchronized `main` at `62ebb318b`.
++PASS. Work started from clean `main` synchronized with `origin/main` at `0e9aa23eee267edcc6aac0eb660185c4552128c8`.
 +
-+## Instruction Compliance
++Current PR branch:
 +
-+- PASS: Current branch was `main` before branch creation.
-+- PASS: PR name includes OWNER team token.
-+- PASS: Team OWNER owns environment strategy and governance.
-+- PASS: Scope is governance/documentation only except `.env.example` comments/placeholders.
-+- PASS: No runtime, UI, engine core, `start_of_day`, migration, DDL, API implementation, storage implementation, or feature flag implementation files changed.
-+- PASS: Required reports and ZIP artifact are produced for the BUILD.
++`PR_26177_DELTA_052-random-seed-utility`
 +
 +## Changed Files
 +
-+- `.env.example`
++- `docs_build/dev/PLAN_PR.md`
 +- `docs_build/dev/BUILD_PR.md`
-+- `docs_build/dev/PROJECT_INSTRUCTIONS.md`
-+- `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
-+- `docs_build/dev/ProjectInstructions/README.txt`
-+- `docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md`
-+- `docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md`
-+- `docs_build/dev/ProjectInstructions/addendums/release_gate.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_branch-validation.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_requirement-checklist.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_validation-lane.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_manual-validation-notes.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_instruction-compliance-checklist.md`
++- `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md`
++- `docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md`
++- `src/shared/math/RandomSeed.js`
++- `tests/shared/RandomSeed.test.mjs`
++- `docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility.md`
++- `docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility_branch-validation.md`
++- `docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility_requirement-checklist.md`
++- `docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility_validation-lane.md`
++- `docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility_manual-validation-notes.md`
++- `docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility_instruction-compliance-checklist.md`
 +- `docs_build/dev/reports/codex_changed_files.txt`
 +- `docs_build/dev/reports/codex_review.diff`
-+
-+## Required Reports
-+
-+- `docs_build/dev/reports/codex_review.diff`
-+- `docs_build/dev/reports/codex_changed_files.txt`
-+- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_branch-validation.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_requirement-checklist.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_validation-lane.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_manual-validation-notes.md`
-+- `docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_instruction-compliance-checklist.md`
 +
 +## Validation
 +
-+- PASS: `git diff --check`.
-+- SKIP: Playwright was not run because no runtime files changed.
++- PASS: `node ./scripts/run-node-test-files.mjs tests/shared/RandomSeed.test.mjs`
++- PASS: `node --check src/shared/math/RandomSeed.js`
++- PASS: `node --check tests/shared/RandomSeed.test.mjs`
++- PASS: `git diff --check`
++- SKIP: Playwright was not run because no UI or browser runtime files changed.
 +
 +## Artifact
 +
-+- `tmp/PR_26177_OWNER_051-environment-configuration-standards_delta.zip`
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_branch-validation.md b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_branch-validation.md
++- `tmp/PR_26177_DELTA_052-random-seed-utility_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility_branch-validation.md b/docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility_branch-validation.md
 new file mode 100644
-index 000000000..daa6e152b
+index 000000000..a376c0b7f
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_branch-validation.md
-@@ -0,0 +1,27 @@
-+# PR_26177_OWNER_051-environment-configuration-standards Branch Validation
-+
-+## Branch
-+
-+`PR_26177_OWNER_051-environment-configuration-standards`
-+
-+## Base
-+
-+- Base branch: `main`
-+- Base commit at branch creation: `62ebb318b`
-+
-+## Checks
-+
-+- Current branch was `main` before branch creation: PASS.
-+- Worktree before branch creation was clean and synced with `origin/main`: PASS.
-+- Current branch is the scoped OWNER_051 branch: PASS.
-+- Scope is limited to environment configuration governance, `.env.example` comments/placeholders, reports, and Codex review artifacts: PASS.
-+- OWNER_050 environment model remains the base model: PASS.
-+- No runtime files changed: PASS.
-+- No UI files changed: PASS.
-+- No engine core files changed: PASS.
-+- Only `.env.example` was changed; no actual `.env.*` secret/value files changed: PASS.
-+- Real `.env` files are documented as external or deployment-injected, not repo-owned: PASS.
-+
-+## Result
-+
-+PASS
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_instruction-compliance-checklist.md
-new file mode 100644
-index 000000000..1579566f0
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_instruction-compliance-checklist.md
++++ b/docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility_branch-validation.md
 @@ -0,0 +1,24 @@
-+# PR_26177_OWNER_051-environment-configuration-standards Instruction Compliance Checklist
++# PR_26177_DELTA_052-random-seed-utility Branch Validation
 +
-+- [x] Read repo BUILD instructions before task actions.
-+- [x] Confirmed current branch was `main` before creating OWNER_051.
-+- [x] Created branch `PR_26177_OWNER_051-environment-configuration-standards` from `main`.
-+- [x] Read active `docs_build/dev/BUILD_PR.md`.
-+- [x] Replaced active `docs_build/dev/BUILD_PR.md` with OWNER_051 scope.
-+- [x] Read active OWNER_050 environment governance surfaces.
-+- [x] Confirmed OWNER owns environment strategy and governance.
-+- [x] Kept the PR to one purpose: environment configuration standards.
-+- [x] Avoided runtime code changes.
-+- [x] Avoided UI changes.
-+- [x] Avoided engine core changes.
-+- [x] Avoided `start_of_day` changes.
-+- [x] Avoided actual `.env.*` secret/value file edits.
-+- [x] Clarified only `.env.example` is committed.
-+- [x] Clarified real `.env` files are external or deployment-injected.
-+- [x] Did not run Playwright because no runtime files changed.
-+- [x] Created required Codex reports under `docs_build/dev/reports/`.
-+- [x] Created repo-structured delta ZIP under `tmp/`.
++Status: PASS
 +
-+## Result
++## Start Gates
 +
-+PASS
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_manual-validation-notes.md
++- PASS: Initial branch was `main`.
++- PASS: Initial worktree was clean.
++- PASS: `main` was synchronized with `origin/main`.
++- PASS: PR branch was created from `main`.
++
++## Active Branch
++
++`PR_26177_DELTA_052-random-seed-utility`
++
++## Base Commit
++
++`0e9aa23eee267edcc6aac0eb660185c4552128c8`
++
++## Scope Confirmation
++
++- PASS: Team Delta assignment was OWNER-approved.
++- PASS: Work is limited to shared JS utility, targeted test coverage, PR governance docs, reports, and ZIP packaging.
++- PASS: No UI, browser storage, API, database, or unrelated cleanup changes were made.
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility_instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility_instruction-compliance-checklist.md
 new file mode 100644
-index 000000000..841089ce0
+index 000000000..f53deb5a5
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_manual-validation-notes.md
-@@ -0,0 +1,27 @@
-+# PR_26177_OWNER_051-environment-configuration-standards Manual Validation Notes
++++ b/docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility_instruction-compliance-checklist.md
+@@ -0,0 +1,13 @@
++# PR_26177_DELTA_052-random-seed-utility Instruction Compliance Checklist
 +
-+Manual validation was limited to governance/documentation review because this PR establishes environment configuration standards and updates `.env.example` comments/placeholders only.
-+
-+## Notes
-+
-+- Confirmed only `.env.example` is committed to the repository.
-+- Confirmed real `.env` files are user/environment-owned and must live outside the repo clone or be injected by deployment.
-+- Confirmed external layout documents `/env/local/.env`, `/env/dev/.env`, `/env/ist/.env`, `/env/uat/.env`, `/env/prod/.env`, and `/GFS/` repo clone.
-+- Confirmed official external copy-source names are `.env.local`, `.env.dev`, `.env.ist`, `.env.uat`, and `.env.prod`.
-+- Confirmed `.env.prd` is documented as legacy technical debt only.
-+- Confirmed `.env.prod` remains the official PROD naming when a copy-source file is used outside the repo.
-+- Confirmed allowed `GAMEFOUNDRY_ENVIRONMENT` values are `local`, `dev`, `ist`, `uat`, and `prod`.
-+- Confirmed `GAMEFOUNDRY_ENVIRONMENT_LABEL` is display-only.
-+- Confirmed only `.env` values and environment-managed secret values may differ by environment.
-+- Confirmed deployable artifacts must remain identical.
-+- Confirmed one shared API/service contract is required.
-+- Confirmed local hostnames use `127.0.0.1`.
-+- Confirmed shared environments use configured `*.gamefoundrystudio.com` hostnames.
-+- Confirmed R2 prefixes remain `/local/`, `/dev/`, `/ist/`, `/uat/`, and `/prod/`.
-+- Confirmed API URLs may differ by `.env` only and there is no Local API vs Public API split.
-+- Confirmed feature flags cannot create permanent environment-specific behavior.
-+- Confirmed no runtime behavior changed.
-+
-+## Result
-+
-+PASS
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_requirement-checklist.md b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_requirement-checklist.md
++| Instruction | Status | Notes |
++|---|---:|---|
++| Read `ProjectInstructions.zip` and `README.txt` first | PASS | Read `ProjectInstructions/README.txt` before applying relevant instructions. |
++| Use `main` branch only as start/base | PASS | Start gate confirmed current branch `main` before work. |
++| Hard stop if current branch is not `main` | PASS | Branch was `main`. |
++| Hard stop if worktree is not clean | PASS | Worktree was clean. |
++| Use PR workflow rather than direct commit to `main` | PASS | Created `PR_26177_DELTA_052-random-seed-utility` from `main`. |
++| Apply OWNER override assignment to Team Delta | PASS | Assignment documented in active Team Delta metadata. |
++| Keep one PR purpose only | PASS | Scope is RandomSeed shared utility and targeted tests. |
++| Produce required reports | PASS | Required report files were created under `docs_build/dev/reports/`. |
++| Produce repo-structured ZIP under `tmp/` | PASS | ZIP path is `tmp/PR_26177_DELTA_052-random-seed-utility_delta.zip`. |
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility_manual-validation-notes.md
 new file mode 100644
-index 000000000..b65f2abe5
+index 000000000..c1bc64bcd
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_requirement-checklist.md
-@@ -0,0 +1,49 @@
-+# PR_26177_OWNER_051-environment-configuration-standards Requirement Checklist
++++ b/docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility_manual-validation-notes.md
+@@ -0,0 +1,13 @@
++# PR_26177_DELTA_052-random-seed-utility Manual Validation Notes
 +
-+- [x] Keep scope governance/documentation only.
-+- [x] Build on OWNER_050 environment model.
-+- [x] Clarify only `.env.example` is committed to the repository.
-+- [x] Clarify real `.env` files are user/environment-owned and must live outside the repo clone or be injected by deployment.
-+- [x] Document `/env/local/.env`.
-+- [x] Document `/env/dev/.env`.
-+- [x] Document `/env/ist/.env`.
-+- [x] Document `/env/uat/.env`.
-+- [x] Document `/env/prod/.env`.
-+- [x] Document `/GFS/` repo clone layout.
-+- [x] Standardize external copy-source `.env.local`.
-+- [x] Standardize external copy-source `.env.dev`.
-+- [x] Standardize external copy-source `.env.ist`.
-+- [x] Standardize external copy-source `.env.uat`.
-+- [x] Standardize external copy-source `.env.prod`.
-+- [x] Treat `.env.prd` as legacy technical debt only.
-+- [x] Keep `.env.prod` as the official PROD naming when a copy-source file is used outside the repo.
-+- [x] Define `GAMEFOUNDRY_ENVIRONMENT=local`.
-+- [x] Define `GAMEFOUNDRY_ENVIRONMENT=dev`.
-+- [x] Define `GAMEFOUNDRY_ENVIRONMENT=ist`.
-+- [x] Define `GAMEFOUNDRY_ENVIRONMENT=uat`.
-+- [x] Define `GAMEFOUNDRY_ENVIRONMENT=prod`.
-+- [x] Keep `GAMEFOUNDRY_ENVIRONMENT_LABEL` display-only.
-+- [x] Document that only `.env` values and environment-managed secret values differ.
-+- [x] Document that the deployable artifact must remain identical.
-+- [x] Document one shared API/service contract.
-+- [x] Document local host/domain uses `127.0.0.1`.
-+- [x] Document shared environments use configured `*.gamefoundrystudio.com` hostnames.
-+- [x] Document R2 prefixes `/local/`, `/dev/`, `/ist/`, `/uat/`, `/prod/`.
-+- [x] Document API URLs may differ by `.env` only.
-+- [x] Document no Local API vs Public API split.
-+- [x] Document feature flags cannot create permanent environment-specific behavior.
-+- [x] Review and update `.env.example` comments/placeholders only.
-+- [x] Remove wording that implies `.env.local`, `.env.dev`, `.env.ist`, `.env.uat`, or `.env.prod` are repo files.
-+- [x] Do not change runtime behavior.
-+- [x] Produce PR-specific report.
-+- [x] Produce branch validation report.
-+- [x] Produce validation lane report.
-+- [x] Produce manual validation notes.
-+- [x] Produce instruction compliance checklist.
-+- [x] Produce `codex_review.diff`.
-+- [x] Produce `codex_changed_files.txt`.
-+- [x] Produce repo-structured ZIP under `tmp/`.
++Status: PASS
 +
-+## Result
++Manual review confirmed:
 +
-+PASS
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_validation-lane.md b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_validation-lane.md
++- `RandomSeed` is opt-in and does not replace existing `Math.random()` usage.
++- The utility is in the existing shared math area: `src/shared/math/RandomSeed.js`.
++- The class exposes the required public methods.
++- The implementation stores generator state in memory only.
++- No browser storage, API, database, UI, or start-of-day files were changed.
++- Team Delta assignment metadata reflects the OWNER override and active PR branch.
++- Playwright is not impacted by this shared utility/test-only change set.
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility_requirement-checklist.md b/docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility_requirement-checklist.md
 new file mode 100644
-index 000000000..5d9e12580
+index 000000000..1c41104cd
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_OWNER_051-environment-configuration-standards_validation-lane.md
-@@ -0,0 +1,24 @@
-+# PR_26177_OWNER_051-environment-configuration-standards Validation Lane
++++ b/docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility_requirement-checklist.md
+@@ -0,0 +1,20 @@
++# PR_26177_DELTA_052-random-seed-utility Requirement Checklist
 +
-+## Lane
++| Requirement | Status | Notes |
++|---|---:|---|
++| Add reusable shared JavaScript utility class named `RandomSeed` | PASS | Added `src/shared/math/RandomSeed.js`. |
++| Constructor accepts an initial seed | PASS | `constructor(initialSeed = 1)` seeds the instance. |
++| Include `seed(value)` | PASS | Reseeds and returns the instance. |
++| Include `next()` | PASS | Returns deterministic values in `[0, 1)`. |
++| Include `nextInt(min, max)` | PASS | Returns inclusive deterministic integers. |
++| Include `nextFloat(min, max)` | PASS | Returns deterministic floats in `[min, max)`. |
++| Include `pick(array)` | PASS | Deterministically selects from a non-empty array. |
++| Same seed reproduces same sequence after reseeding | PASS | Covered by targeted unit test. |
++| Different seeds should produce different sequences | PASS | Covered by targeted unit test. |
++| Add JSDoc | PASS | Added class and public method JSDoc. |
++| Add targeted unit tests | PASS | Added `tests/shared/RandomSeed.test.mjs`. |
++| Do not replace existing `Math.random()` usage | PASS | No existing call sites were changed. |
++| No UI changes | PASS | No UI files changed. |
++| No browser storage | PASS | No storage usage was added. |
++| No API/database changes | PASS | No API or database files changed. |
++| No unrelated cleanup | PASS | Changes stayed scoped to utility, tests, PR docs, assignment metadata, and reports. |
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility_validation-lane.md b/docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility_validation-lane.md
+new file mode 100644
+index 000000000..c83580bb4
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_DELTA_052-random-seed-utility_validation-lane.md
+@@ -0,0 +1,23 @@
++# PR_26177_DELTA_052-random-seed-utility Validation Lane
 +
-+Documentation/governance lane.
++Status: PASS
 +
 +## Commands
 +
-+- `git diff --check`
++```powershell
++node ./scripts/run-node-test-files.mjs tests/shared/RandomSeed.test.mjs
++node --check src/shared/math/RandomSeed.js
++node --check tests/shared/RandomSeed.test.mjs
++git diff --check
++```
 +
-+## Skipped Lanes
++## Results
 +
-+- Runtime validation skipped: no runtime files changed.
-+- UI/browser validation skipped: no UI files changed.
-+- Playwright skipped: no runtime files changed.
-+- Engine validation skipped: no engine core files changed.
-+- Database migration validation skipped: no DDL, migration, or runtime database implementation changed.
-+- Storage runtime validation skipped: no storage implementation changed.
-+- Feature flag runtime validation skipped: no feature flag implementation changed.
-+- External environment file layout validation is documentation-only: no filesystem or deployment changes were made.
++- PASS: `tests/shared/RandomSeed.test.mjs`
++- PASS: `src/shared/math/RandomSeed.js` syntax check
++- PASS: `tests/shared/RandomSeed.test.mjs` syntax check
++- PASS: `git diff --check`
 +
-+## Result
++## Playwright
 +
-+PASS
++SKIP. Playwright was not run because this PR does not change UI, browser storage, API/database behavior, or existing browser runtime flows.
+diff --git a/src/shared/math/RandomSeed.js b/src/shared/math/RandomSeed.js
+new file mode 100644
+index 000000000..19d948644
+--- /dev/null
++++ b/src/shared/math/RandomSeed.js
+@@ -0,0 +1,122 @@
++const UINT32_RANGE = 0x100000000;
++const FNV_OFFSET_BASIS = 0x811c9dc5;
++const FNV_PRIME = 0x01000193;
++
++function normalizeSeedValue(value) {
++  const text = String(value ?? "0");
++  let hash = FNV_OFFSET_BASIS;
++
++  for (let index = 0; index < text.length; index += 1) {
++    hash ^= text.charCodeAt(index);
++    hash = Math.imul(hash, FNV_PRIME);
++  }
++
++  return hash >>> 0;
++}
++
++function assertFiniteNumber(value, name) {
++  if (!Number.isFinite(value)) {
++    throw new TypeError(`${name} must be a finite number.`);
++  }
++}
++
++function assertOrderedRange(min, max) {
++  assertFiniteNumber(min, "min");
++  assertFiniteNumber(max, "max");
++
++  if (max < min) {
++    throw new RangeError("max must be greater than or equal to min.");
++  }
++}
++
++/**
++ * Deterministic seeded pseudo-random number generator for repeatable game and
++ * tool workflows. `RandomSeed` is intentionally opt-in and does not replace
++ * existing `Math.random()` usage.
++ */
++export class RandomSeed {
++  /**
++   * Creates a deterministic generator initialized with the provided seed.
++   *
++   * @param {*} initialSeed Value used to initialize the generator sequence.
++   */
++  constructor(initialSeed = 1) {
++    this.seed(initialSeed);
++  }
++
++  /**
++   * Reseeds the generator so future calls repeat the sequence for the same seed.
++   *
++   * @param {*} value Value used to initialize the generator sequence.
++   * @returns {RandomSeed} This generator instance for chaining.
++   */
++  seed(value) {
++    this._state = normalizeSeedValue(value);
++    return this;
++  }
++
++  /**
++   * Returns the next deterministic number in the range [0, 1).
++   *
++   * @returns {number} A deterministic pseudo-random number.
++   */
++  next() {
++    this._state = (this._state + 0x6d2b79f5) >>> 0;
++    let value = this._state;
++    value = Math.imul(value ^ (value >>> 15), value | 1);
++    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
++    return ((value ^ (value >>> 14)) >>> 0) / UINT32_RANGE;
++  }
++
++  /**
++   * Returns the next deterministic integer between min and max, inclusive.
++   *
++   * @param {number} min Inclusive lower bound.
++   * @param {number} max Inclusive upper bound.
++   * @returns {number} A deterministic integer inside the requested range.
++   */
++  nextInt(min, max) {
++    assertOrderedRange(min, max);
++    const lower = Math.ceil(min);
++    const upper = Math.floor(max);
++
++    if (upper < lower) {
++      throw new RangeError("integer range must include at least one integer.");
++    }
++
++    return Math.floor(this.next() * (upper - lower + 1)) + lower;
++  }
++
++  /**
++   * Returns the next deterministic floating-point number in the range [min, max).
++   *
++   * @param {number} min Inclusive lower bound.
++   * @param {number} max Exclusive upper bound.
++   * @returns {number} A deterministic floating-point number inside the range.
++   */
++  nextFloat(min, max) {
++    assertOrderedRange(min, max);
++    return min + this.next() * (max - min);
++  }
++
++  /**
++   * Selects one deterministic item from a non-empty array.
++   *
++   * @template T
++   * @param {T[]} array Source array to select from.
++   * @returns {T} The selected array item.
++   */
++  pick(array) {
++    if (!Array.isArray(array)) {
++      throw new TypeError("array must be an array.");
++    }
++
++    if (array.length === 0) {
++      throw new RangeError("array must contain at least one item.");
++    }
++
++    return array[this.nextInt(0, array.length - 1)];
++  }
++}
++
++export default RandomSeed;
+diff --git a/tests/shared/RandomSeed.test.mjs b/tests/shared/RandomSeed.test.mjs
+new file mode 100644
+index 000000000..b61a44157
+--- /dev/null
++++ b/tests/shared/RandomSeed.test.mjs
+@@ -0,0 +1,57 @@
++/*
++Toolbox Aid
++David Quesenberry
++06/26/2026
++RandomSeed.test.mjs
++*/
++import assert from "node:assert/strict";
++import { RandomSeed } from "../../src/shared/math/RandomSeed.js";
++
++function takeSequence(generator, count) {
++  return Array.from({ length: count }, () => generator.next());
++}
++
++export function run() {
++  const first = new RandomSeed("level-1");
++  const second = new RandomSeed("level-1");
++  assert.deepEqual(takeSequence(first, 5), takeSequence(second, 5));
++
++  first.seed("level-1");
++  second.seed("different-level");
++  assert.notDeepEqual(takeSequence(first, 5), takeSequence(second, 5));
++
++  const reseeded = new RandomSeed(42);
++  const originalSequence = takeSequence(reseeded, 6);
++  reseeded.seed(42);
++  assert.deepEqual(takeSequence(reseeded, 6), originalSequence);
++
++  const integerSeed = new RandomSeed("integer-range");
++  for (let index = 0; index < 100; index += 1) {
++    const value = integerSeed.nextInt(2, 5);
++    assert.equal(Number.isInteger(value), true);
++    assert.equal(value >= 2 && value <= 5, true);
++  }
++
++  const floatSeed = new RandomSeed("float-range");
++  for (let index = 0; index < 100; index += 1) {
++    const value = floatSeed.nextFloat(-2, 3);
++    assert.equal(value >= -2 && value < 3, true);
++  }
++
++  const pickSource = ["alpha", "bravo", "charlie", "delta"];
++  const pickerA = new RandomSeed("pick-seed");
++  const pickerB = new RandomSeed("pick-seed");
++  assert.deepEqual(
++    Array.from({ length: 8 }, () => pickerA.pick(pickSource)),
++    Array.from({ length: 8 }, () => pickerB.pick(pickSource))
++  );
++
++  assert.throws(() => new RandomSeed("empty").pick([]), RangeError);
++  assert.throws(() => new RandomSeed("bad-array").pick("not-array"), TypeError);
++  assert.throws(() => new RandomSeed("bad-int").nextInt(5, 2), RangeError);
++  assert.throws(() => new RandomSeed("bad-float").nextFloat(0, Number.POSITIVE_INFINITY), TypeError);
++}
++
++if (import.meta.url === `file://${process.argv[1]}`) {
++  run();
++}
