@@ -6,7 +6,7 @@
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Sprites - GameFoundryStudio</title>
-    <meta name="description" content="Sprites Toolbox wireframe. Plan sprite creation, review, and game-ready export workflows.">
+    <meta name="description" content="Sprites Toolbox shell for API-backed asset records, metadata, and Palette/Colors references.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -18,7 +18,7 @@
             <div class="container">
                 <div class="kicker">Toolbox / Sprites</div>
                 <h1>Sprites</h1>
-                <p class="lede">Plan sprite creation, review, and game-ready export workflows. Static wireframe only; no database, persistence, save, load, or runtime behavior is implemented.</p>
+                <p class="lede">Manage sprite assets for games through the shared API contract, with Palette/Colors remaining the source of truth for reusable colors.</p>
             </div>
         </section>
         <section class="section">
@@ -30,14 +30,62 @@
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Setup</summary>
-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
+                                <summary>Library Status</summary>
+                                <div class="accordion-body content-stack">
+                                    <p>Sprites are game-ready asset records owned by the Sprites API and database tables.</p>
+                                    <p>Status: <span data-sprites-api-status>Loading</span></p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Palette/Colors</summary>
+                                <div class="accordion-body content-stack">
+                                    <p>Reusable colors stay owned by Palette/Colors.</p>
+                                    <p data-sprites-palette-status>Palette/Colors references load with Sprites records when available.</p>
+                                </div>
                             </details>
                         </div>
                     </aside>
-                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="sprites" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
-                    <section class="tool-center-panel"><h2>Workspace</h2>
-                        <p>Plan sprite creation, review, and game-ready export workflows. This page preserves the shared Theme V2 tool template structure for future rebuild work.</p>
+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="sprites" data-tool-icon-src="assets/theme-v2/images/badges/sprites.png" data-tool-character-src="assets/theme-v2/images/tools/sprites.png"></div>
+                    <section class="tool-center-panel">
+                        <h2>Sprite Library</h2>
+                        <p>Review API-backed sprite asset records, source references, metadata, and Palette/Colors key references.</p>
+                        <div class="grid cols-3" aria-label="Sprites summary">
+                            <article class="mini-stat"><strong data-sprites-library-status>Loading</strong>Status</article>
+                            <article class="mini-stat"><strong data-sprites-count>0</strong>Sprites</article>
+                            <article class="mini-stat"><strong data-sprites-updated>Not checked</strong>Last Check</article>
+                        </div>
+                        <article class="card">
+                            <div class="card-body content-stack">
+                                <div>
+                                    <div class="kicker">Assets</div>
+                                    <h3>Sprites Table</h3>
+                                </div>
+                                <div class="status" role="status" data-sprites-empty-state>Loading Sprites records.</div>
+                                <div class="status" role="status" data-sprites-error-state hidden>Sprites API unavailable.</div>
+                                <div class="table-wrapper">
+                                    <table class="data-table" aria-label="Sprites library">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Name</th>
+                                                <th scope="col">Status</th>
+                                                <th scope="col">Category</th>
+                                                <th scope="col">Source</th>
+                                                <th scope="col">Dimensions</th>
+                                                <th scope="col">Palette Refs</th>
+                                                <th scope="col">Updated</th>
+                                                <th scope="col">Usage</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody data-sprites-table-body>
+                                            <tr><td colspan="8">Loading Sprites records.</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="action-group">
+                                    <button class="btn" type="button" data-sprites-refresh>Refresh</button>
+                                </div>
+                            </div>
+                        </article>
                     </section>
                     <aside class="tool-column tool-group-design">
                         <div class="tool-column-header">
@@ -45,8 +93,17 @@
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
+                                <summary>Selection</summary>
+                                <div class="accordion-body content-stack">
+                                    <p data-sprites-metadata>Select a sprite row to review its metadata.</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
                                 <summary>Output</summary>
-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
+                                <div class="accordion-body content-stack">
+                                    <p>Status: <span data-sprites-output-status>Loading</span></p>
+                                    <p data-sprites-output-summary>Waiting for Sprites API response.</p>
+                                </div>
                             </details>
                         </div>
                     </aside>
@@ -57,6 +114,7 @@
     <div data-partial="footer"></div>
     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+    <script type="module" src="assets/toolbox/sprites/js/index.js"></script>
 </body>
 
 </html>
