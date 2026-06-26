@@ -1,0 +1,26 @@
+{
+  "group": "Text To Speech",
+  "groupKey": "text-to-speech",
+  "owner": "docs_build/database/seed/guest",
+  "readOnly": true,
+  "writableByGuest": false,
+  "signInRedirect": "account/sign-in.html",
+  "tables": {},
+  "samplePackages": [
+    {
+      "key": "guest-text-to-speech-starter",
+      "audience": "guest",
+      "createdBy": "01K2GFSJ0Y0000000000000054",
+      "groupKey": "text-to-speech",
+      "label": "Guest Text To Speech starter",
+      "loadablePath": "toolbox/text-to-speech/index.html",
+      "readOnly": true,
+      "sampleKind": "toolSeed",
+      "signInRedirect": "account/sign-in.html",
+      "source": "docs_build/database/seed/guest/text-to-speech.json",
+      "toolKey": "text-to-speech",
+      "toolName": "Text To Speech",
+      "writableByGuest": false
+    }
+  ]
+}

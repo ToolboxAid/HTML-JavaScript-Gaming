@@ -3529,7 +3529,15 @@ class ApiRuntimeDataSource {
   }
 
   async currentStateSnapshot() {
-    return this.snapshot();
+    return this.snapshot({ includePostgresCompletionMetrics: false });
+  }
+
+  async resetStateSnapshot() {
+    this.applyStateSnapshot({
+      cleared: false,
+      tables: createServerSeedTables(),
+    });
+    return this.currentStateSnapshot();
   }
 
   applyStateSnapshot(state = {}) {
@@ -5416,6 +5424,10 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
   }
 
   setMode(modeId) {
+    const normalizedModeId = String(modeId || "").trim();
+    if (normalizedModeId && normalizedModeId !== "local-db" && normalizedModeId !== FIXED_ACCOUNT_SESSION_MODE.id) {
+      throw new Error(`Unknown local login environment: ${normalizedModeId}.`);
+    }
     return {
       ...clone(FIXED_ACCOUNT_SESSION_MODE),
       diagnostic: "Session mode switching is disabled; account sessions use the fixed server-owned auth session.",
@@ -6704,7 +6716,7 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
     return result;
   }
 
-  async snapshot() {
+  async snapshot({ includePostgresCompletionMetrics = true } = {}) {
     const schemas = getMockDbTableSchemas();
     const toolGroups = getMockDbToolGroups();
     const owners = {
@@ -6754,7 +6766,7 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
       ...gameConfigurationTables(this.gameConfigurationRepository),
       ...objectsTables(this.objectsRepository),
       ...controlsTables(this.inputMappingRepository),
-      ...(await gameJourneyTables(this.gameJourneyRepository)),
+      ...(includePostgresCompletionMetrics ? await gameJourneyTables(this.gameJourneyRepository) : {}),
       ...paletteTables(this.paletteRepository),
       ...tagsTables(this.tagsRepository),
       ...assetTables(this.assetRepository),
@@ -6940,6 +6952,24 @@ export function createLocalApiRouter({
 
       if (parts[1] === "product-data" && request.method === "GET" && parts[2] === "snapshot") {
         ok(response, await dataSource.snapshotForRoute());
+        return true;
+      }
+
+      if (parts[1] === "local-db") {
+        if (request.method === "GET" && parts[2] === "snapshot") {
+          ok(response, await dataSource.currentStateSnapshot());
+          return true;
+        }
+        if (request.method === "POST" && parts[2] === "seed") {
+          ok(response, await dataSource.resetStateSnapshot());
+          return true;
+        }
+      }
+
+      if (parts[1] === "dev" && parts[2] === "testing" && request.method === "POST" && parts[3] === "mock-db-state") {
+        const body = await readRequestJson(request);
+        dataSource.applyStateSnapshot(body.state);
+        ok(response, await dataSource.currentStateSnapshot());
         return true;
       }
 

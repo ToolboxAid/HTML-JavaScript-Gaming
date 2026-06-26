@@ -1,0 +1,26 @@
+{
+  "group": "Idea Board",
+  "groupKey": "idea-board",
+  "owner": "docs_build/database/seed/guest",
+  "readOnly": true,
+  "writableByGuest": false,
+  "signInRedirect": "account/sign-in.html",
+  "tables": {},
+  "samplePackages": [
+    {
+      "key": "guest-idea-board-starter",
+      "audience": "guest",
+      "createdBy": "01K2GFSJ0Y0000000000000054",
+      "groupKey": "idea-board",
+      "label": "Guest Idea Board starter",
+      "loadablePath": "toolbox/idea-board/index.html",
+      "readOnly": true,
+      "sampleKind": "toolSeed",
+      "signInRedirect": "account/sign-in.html",
+      "source": "docs_build/database/seed/guest/idea-board.json",
+      "toolKey": "idea-board",
+      "toolName": "Idea Board",
+      "writableByGuest": false
+    }
+  ]
+}

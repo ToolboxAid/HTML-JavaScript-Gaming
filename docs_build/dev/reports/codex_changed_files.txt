@@ -1,6 +1,9 @@
-assets/toolbox/text-to-speech/js/index.js
+docs_build/database/seed/guest/idea-board.json
+docs_build/database/seed/guest/messages.json
+docs_build/database/seed/guest/text-to-speech.json
+docs_build/database/seed/guest/users.json
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/PR_26177_BRAVO_012-add-emotion-editor-preview.md
-tests/playwright/tools/TextToSpeechFunctional.spec.mjs
-tests/tools/Text2SpeechShell.test.mjs
+docs_build/dev/reports/PR_26177_BRAVO_013-fix-local-db-snapshot-eod-gate.md
+docs_build/dev/reports/PR_26177_BRAVO_EOD-closeout.md
+src/dev-runtime/server/local-api-router.mjs
