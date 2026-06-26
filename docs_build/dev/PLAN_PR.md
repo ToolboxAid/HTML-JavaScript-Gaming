@@ -1,48 +1,40 @@
-# PLAN_PR: PR_26177_DELTA_052-random-seed-utility
+# PLAN_PR: PR_26177_DELTA_053-random-shared-helpers
 
 ## Purpose
 
-Add a reusable shared JavaScript `RandomSeed` utility for deterministic seeded random sequences.
+Create shared internal helper logic for random utility operations.
 
 ## Owner And Assignment
 
 - Team: Delta
-- OWNER override approved: Assign Team Delta `PR_26177_DELTA_052-random-seed-utility`.
+- OWNER override approved: Continue Team Delta random utility stack with `PR_26177_DELTA_053-random-shared-helpers`.
 - Ownership fit: Team Delta owns Shared JS, runtime utilities, technical debt remediation, and runtime test coverage.
 
 ## Scope
 
-- Add a shared JavaScript utility class named `RandomSeed`.
-- Constructor accepts an initial seed.
-- Include:
-  - `seed(value)`
-  - `next()`
-  - `nextInt(min, max)`
-  - `nextFloat(min, max)`
-  - `pick(array)`
-- Add JSDoc for the utility and public methods.
+- Add internal/shared helper functions for:
+  - `nextInt(randomNext, min, max)`
+  - `nextFloat(randomNext, min, max)`
+  - `pick(randomNext, array)`
+  - `shuffle(randomNext, array)`
+  - `chance(randomNext, percent)`
+  - `weightedPick(randomNext, weightedItems)`
+- Helper functions must consume a `randomNext` function returning a float `>= 0` and `< 1`.
+- Do not expose these helpers as Creator-facing API.
+- Do not change existing `RandomSeed` behavior.
 - Add targeted unit tests.
-- Do not replace existing `Math.random()` usage.
-- No UI changes.
-- No browser storage.
-- No API/database changes.
-- No unrelated cleanup.
 
 ## Implementation Plan
 
-1. Add `src/shared/math/RandomSeed.js`.
-2. Add `tests/shared/RandomSeed.test.mjs`.
-3. Validate deterministic reseeding, different-seed divergence, numeric ranges, and array picking.
-4. Run targeted unit tests for `RandomSeed`.
-5. Run changed-file syntax checks for the new JS and test files.
-6. Produce required reports and repo-structured ZIP.
+1. Add `src/shared/math/randomHelpers.js`.
+2. Add `tests/shared/RandomHelpers.test.mjs`.
+3. Validate helper behavior and input guards with targeted unit tests.
+4. Preserve current `RandomSeed` implementation and tests unchanged.
+5. Produce required PR reports and repo-structured ZIP.
 
 ## Acceptance Criteria
 
-- Same seed reproduces the same sequence after reseeding.
-- Different seeds produce different sequences.
-- `next()` returns deterministic normalized values.
-- `nextInt(min, max)` returns deterministic inclusive integers inside range.
-- `nextFloat(min, max)` returns deterministic floats inside range.
-- `pick(array)` returns deterministic values from the provided array.
-- Existing `Math.random()` usage remains unchanged.
+- Helpers use only the supplied `randomNext` source.
+- Integer, float, pick, shuffle, chance, and weighted pick operations are covered.
+- Invalid `randomNext`, ranges, arrays, percentages, and weighted item inputs reject predictably.
+- Existing `RandomSeed` behavior remains unchanged.

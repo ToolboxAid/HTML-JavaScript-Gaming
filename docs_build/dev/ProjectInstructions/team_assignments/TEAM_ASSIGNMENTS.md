@@ -7,7 +7,7 @@
 | Team Alfa | none | none | none | Available |
 | Team Bravo | none | none | none | Available |
 | Team Charlie | none | none | none | Available |
-| Team Delta | PR_26177_DELTA_052-random-seed-utility | PR_26177_DELTA_052-random-seed-utility | PR_26177_DELTA_052-random-seed-utility | Active |
+| Team Delta | PR_26177_DELTA_053-random-shared-helpers | PR_26177_DELTA_053-random-shared-helpers | PR_26177_DELTA_053-random-shared-helpers | Active |
 | Team Golf | none | none | none | Available |
 | Team OWNER | none | none | none | Available |
 
@@ -50,13 +50,13 @@ Current OWNER clarification:
 
 Status: Active
 
-Active assignment: PR_26177_DELTA_052-random-seed-utility.
+Active assignment: PR_26177_DELTA_053-random-shared-helpers.
 
-Active branch: PR_26177_DELTA_052-random-seed-utility.
+Active branch: PR_26177_DELTA_053-random-shared-helpers.
 
-Active PR: PR_26177_DELTA_052-random-seed-utility.
+Active PR: PR_26177_DELTA_053-random-shared-helpers.
 
-OWNER override approved: Assign Team Delta PR_26177_DELTA_052-random-seed-utility.
+OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_053-random-shared-helpers.
 
 ## Team Bravo
 
