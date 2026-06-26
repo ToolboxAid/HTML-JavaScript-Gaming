@@ -49,6 +49,7 @@ Team Charlie System Health owns:
 - Shared JS
 - API clients
 - Event systems
+- Hitboxes
 - Performance
 - Technical debt remediation
 - Runtime test coverage

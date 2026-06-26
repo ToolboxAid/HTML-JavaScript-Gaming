@@ -17,6 +17,8 @@ rg -n 'ProjectInstructions/archive|docs_build/dev/archive|docs_build/dev/dod/too
 rg -n 'archive/docs_build/dev/ProjectInstructions/history|archive/docs_build/dev/dod|archive/docs_build/dev/roadmaps|active governance remains only in docs_build/dev/ProjectInstructions' docs_build/dev/ProjectInstructions docs_build/dev/reports/legacy-docs-archive-report.md
 git diff --name-only -- src assets toolbox games api serverside package.json package-lock.json docs_build/dev/start_of_day
 git diff --check
+git merge origin/main
+git diff --name-status origin/main --
 ```
 
 Results:
@@ -29,4 +31,5 @@ Results:
 - PASS: legacy docs archive report exists and confirms active governance remains only in docs_build/dev/ProjectInstructions/.
 - PASS: Product/runtime/start_of_day changed-file check returned no files.
 - PASS: git diff --check returned no whitespace errors.
+- PASS: EOD merge from latest origin/main had conflicts only in generated Codex report files; reports were regenerated.
 - PASS: Playwright not impacted because no runtime files changed.

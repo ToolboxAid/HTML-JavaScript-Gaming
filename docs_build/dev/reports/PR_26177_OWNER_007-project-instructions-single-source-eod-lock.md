@@ -22,6 +22,7 @@ Status: PASS
 - Moved verified old/superseded DoD and roadmap docs to the existing root archive tree under archive/docs_build/dev/.
 - Updated active preservation guidance so future archive/history material uses the root archive tree.
 - Added docs_build/dev/reports/legacy-docs-archive-report.md.
+- Updated the PR branch against latest origin/main for OWNER EOD; conflicts were limited to generated Codex report files and were resolved by regeneration.
 - Confirmed no docs_build/dev/archive/ folder was created.
 - Confirmed no new docs_build/dev/ProjectInstructions/archive/ path was created.
 - Corrected project-instructions/** scope so the PR only adds a tiny deprecated pointer README there.
@@ -73,6 +74,7 @@ Added governance:
 - PASS: no new docs_build/dev/ProjectInstructions/archive/ path was created in this PR.
 - PASS: active preservation guidance points to archive/docs_build/dev/ProjectInstructions/history/.
 - PASS: legacy-docs-archive-report.md exists and confirms active governance remains only in docs_build/dev/ProjectInstructions/.
+- PASS: latest origin/main was merged into the PR branch for EOD; conflicts were limited to codex_changed_files.txt and codex_review.diff.
 - PASS: project-instructions/** PR diff is limited to project-instructions/README.md.
 - PASS: Tool MVP Stacked PR Standard exists and includes required governance text.
 - PASS: No Mock Repository Runtime Source exists and includes required governance text.

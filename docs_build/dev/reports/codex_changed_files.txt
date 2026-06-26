@@ -71,6 +71,7 @@ R100	docs_build/dev/css-audit.md	docs_build/dev/reports/audits/css-audit.md
 R100	docs_build/dev/security-audit.md	docs_build/dev/reports/audits/security-audit.md
 M	docs_build/dev/reports/codex_changed_files.txt
 M	docs_build/dev/reports/codex_review.diff
+A	docs_build/dev/reports/legacy-docs-archive-report.md
 D	docs_build/dev/restart_notes_11_105.md
 D	docs_build/dev/restart_notes_11_110.md
 D	docs_build/dev/restart_notes_11_111.md

@@ -3364,24 +3364,47 @@ diff --git a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/docs_b
 index d2a84ecbe..c52753b84 100644
 --- a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 +++ b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-@@ -6,0 +7,6 @@ This file is the root index for the append-first Project Instructions operating
+@@ -4,6 +4,12 @@ Read `README.txt` first.
+
+ This file is the root index for the append-first Project Instructions operating system under `docs_build/dev/ProjectInstructions/`.
+
 +## Active Source
 +
 +`docs_build/dev/ProjectInstructions/` is the only active Project Instructions source.
 +
 +Historical Project Instructions material outside this folder is deprecated reference material only and must not be used as an active source of governance.
 +
-@@ -19,0 +26 @@ The Project Instructions operating system provides additive governance for:
+ ## Purpose
+
+ The Project Instructions operating system provides additive governance for:
+@@ -17,10 +23,11 @@ The Project Instructions operating system provides additive governance for:
+ - archive and history preservation
+ - recognized project instruction/reference files
+ - environment governance
 +- tool and gameplay contract governance
-@@ -23 +30 @@ The Project Instructions operating system provides additive governance for:
+
+ ## Preservation
+
 -Existing Project Instructions remain preserved in their current locations. This operating system adds structure without deleting or rewriting existing documentation.
 +Existing Project Instructions outside `docs_build/dev/ProjectInstructions/` remain preserved only as deprecated reference material. When guidance conflicts, active files under `docs_build/dev/ProjectInstructions/` win unless OWNER explicitly approves a newer governance change.
-@@ -31,2 +38,2 @@ Existing Project Instructions remain preserved in their current locations. This
+
+ ## Folders
+
+@@ -28,8 +35,8 @@ Existing Project Instructions remain preserved in their current locations. This
+ - `backlog/` contains the central backlog file, `BACKLOG_MASTER.md`.
+ - `team_assignments/` contains current team assignment records.
+ - `deprecation/` contains deprecation workflow documentation.
 -- `archive/` contains retained reference material.
 -- `archive/history/` contains timestamped history snapshots.
 +- Retained reference material belongs under the repository root `archive/` tree, not under `docs_build/dev/`.
 +- History snapshots belong under `archive/docs_build/dev/ProjectInstructions/history/`.
-@@ -43,0 +51,16 @@ Existing Project Instructions remain preserved in their current locations. This
+
+ ## Recognized Project Reference Files
+
+@@ -41,6 +48,22 @@ Existing Project Instructions remain preserved in their current locations. This
+
+ `docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md` defines official `.env` file names, environment variable values, host/domain configuration, API URL configuration, R2 prefix configuration, and feature flag governance.
+
 +## Tool And Contract Governance
 +
 +`docs_build/dev/ProjectInstructions/addendums/workspace_v2_playwright_gate.md` defines the Workspace Manager V2 Playwright validation gate.
@@ -3398,35 +3421,66 @@ index d2a84ecbe..c52753b84 100644
 +
 +`docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md` defines the single active Project Instructions source, canonical START / WORK / END branch lifecycle, EOD main lock, next-day reset, team branch creation gate, daily synchronization baseline, and mandatory hard stops.
 +
+ ## Merge Control
+
+ No PR in this operating system is merged without explicit owner approval.
 diff --git a/docs_build/dev/ProjectInstructions/README.txt b/docs_build/dev/ProjectInstructions/README.txt
 index a48becf05..9831123d3 100644
 --- a/docs_build/dev/ProjectInstructions/README.txt
 +++ b/docs_build/dev/ProjectInstructions/README.txt
-@@ -4 +4 @@ Folder purpose:
+@@ -1,10 +1,10 @@
+ Read this file first.
+
+ Folder purpose:
 -This folder is the append-first Project Instructions operating system for Game Foundry Studio. It organizes active governance, backlog, team assignment, deprecation, and history material without deleting or rewriting the existing Project Instructions files elsewhere in the repository.
 +This folder is the only active Project Instructions source for Game Foundry Studio. It organizes active governance, backlog, team assignment, deprecation, and history material under `docs_build/dev/ProjectInstructions/`.
-@@ -7 +7 @@ Preservation rules:
+
+ Preservation rules:
 -Preserve all existing documentation. Add new files or append explicit references unless the owner explicitly approves deletion or rewrite. When a conflict appears, stop, explain the conflict, and request owner approval before changing existing instruction text.
 +Preserve historical Project Instructions material as deprecated reference only. Do not treat root-level copies in `docs_build/dev/`, `project-instructions/`, or archived snapshots as active instruction sources. When a conflict appears, `docs_build/dev/ProjectInstructions/` wins unless OWNER explicitly approves a newer governance change.
-@@ -16 +16,4 @@ No direct commits to main:
+
+ Backlog workflow:
+ Backlog work is tracked under backlog/. BACKLOG_MASTER.md is the planned source for backlog item status, notes, and references. Backlog item text is treated as immutable once created; status and notes may change under the governance addendums.
+@@ -13,7 +13,10 @@ Team assignment workflow:
+ Team assignments are tracked under team_assignments/. A team pulls work from BACKLOG_MASTER.md, marks the item building when assigned, and records the active assignment under the owning team. Teams work only on assigned items unless an OWNER override explicitly changes the assignment.
+
+ No direct commits to main:
 -Do not commit directly to main unless the owner explicitly instructs that exception. Normal work must use PR branches, draft PRs, validation evidence, and owner-controlled merge approval.
 +Do not commit directly to main. Normal work must use PR branches, draft PRs, validation evidence, and owner-controlled merge approval.
 +
 +Branch lifecycle:
 +Every PR follows exactly three phases: START, WORK, END. The canonical lifecycle is `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`.
-@@ -25 +28 @@ History snapshot rule:
+
+ OWNER override rule:
+ An OWNER override must use this wording:
+@@ -22,16 +25,16 @@ OWNER override approved: <reason>
+ The override must explain why normal team, branch, assignment, or backlog routing is being changed.
+
+ History snapshot rule:
 -When a governance or instruction state needs a history snapshot, add a new file under archive/history/ using:
 +When a governance or instruction state needs a history snapshot, add a new file under `archive/docs_build/dev/ProjectInstructions/history/` using:
-@@ -32,3 +35,3 @@ READ THIS FIRST
+ CCYYMMDD_HHMMSS.md
+
+ Do not rewrite history snapshots after creation unless the owner explicitly approves.
+
+ READ THIS FIRST
+
 -1. Read Project Instructions before making changes.
 -2. Project Instructions are append-only.
 -3. Existing approved guidance may not be removed.
 +1. Read `docs_build/dev/ProjectInstructions/README.txt` before making changes.
 +2. Treat `docs_build/dev/ProjectInstructions/` as the only active Project Instructions source.
 +3. Historical Project Instructions files outside this folder are deprecated references only and must not be used as active sources.
-@@ -42,0 +46 @@ READ THIS FIRST
+ 4. Team ownership must be respected.
+ 5. BACKLOG_MASTER.md is the authoritative backlog.
+ 6. Build Path status derives from backlog status.
+@@ -40,14 +43,21 @@ READ THIS FIRST
+ 9. Follow OWNER governance decisions.
+ 10. When guidance conflicts, newest OWNER-approved guidance wins.
+ 11. Batch Governance Mode is the default for governance, documentation, and administrative work.
 +12. Follow the canonical START / WORK / END lifecycle.
-@@ -45,6 +49,7 @@ Addendum index:
+
+ Addendum index:
 -- Canonical Repository Structure: project-instructions/addendums/canonical-repository-structure.md
 -- Test Structure Standardization: project-instructions/addendums/test-structure-standardization.md
 -- Legacy Migration Policy: project-instructions/addendums/legacy-migration-policy.md
@@ -3440,7 +3494,9 @@ index a48becf05..9831123d3 100644
 +- Assistant Execution Modes: docs_build/dev/ProjectInstructions/addendums/assistant_execution_modes.md
 +- Codex Artifact and Reporting Standard: docs_build/dev/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
 +- Codex Project Instructions Startup: docs_build/dev/ProjectInstructions/addendums/codex_project_instructions_startup.md
-@@ -53,0 +59,5 @@ Addendum index:
+ - Project Reference Files Governance: docs_build/dev/ProjectInstructions/addendums/project_reference_files.md
+ - Environment Governance Model: docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md
+ - Environment Configuration Standards: docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md
 +- Workspace V2 Playwright Gate: docs_build/dev/ProjectInstructions/addendums/workspace_v2_playwright_gate.md
 +- Samples2Tools Adapter Guidance: docs_build/dev/ProjectInstructions/addendums/samples2tools_adapter_guidance.md
 +- King of the Iceberg Layout Contract: docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md
@@ -3450,7 +3506,9 @@ diff --git a/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md b/docs_bu
 index d0118f63a..292540043 100644
 --- a/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
 +++ b/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
-@@ -2,0 +3,21 @@
+@@ -1,5 +1,26 @@
+ # TEAM_START_COMMANDS
+
 +## Required Main Reset Gate For Every Team
 +
 +No team creates a PR branch until all checks pass:
@@ -3472,7 +3530,13 @@ index d0118f63a..292540043 100644
 +- No implementation on `main`.
 +- No validation on `main` except start validation.
 +
-@@ -125,0 +147,22 @@ Do not treat sequential PR completion as merge approval.
+ ## Start Team Alfa
+
+ Ready-to-copy command:
+@@ -123,4 +144,26 @@ Merge to main is EOD-only and owner-approved, unless the owner explicitly says:
+ "Merge this PR now."
+
+ Do not treat sequential PR completion as merge approval.
 +
 +End of Day:
 +git checkout main
@@ -3495,6 +3559,7 @@ index d0118f63a..292540043 100644
 +git rev-parse HEAD
 +
 +Publish Branch, HEAD SHA, and Date/time. This becomes tomorrow's official baseline.
+ ```
 diff --git a/docs_build/dev/ProjectInstructions/addendums/assistant_execution_modes.md b/docs_build/dev/ProjectInstructions/addendums/assistant_execution_modes.md
 new file mode 100644
 index 000000000..6d7928669
@@ -3625,32 +3690,62 @@ diff --git a/docs_build/dev/ProjectInstructions/addendums/branch_context_governa
 index 09cd3a1ec..798bb2cba 100644
 --- a/docs_build/dev/ProjectInstructions/addendums/branch_context_governance.md
 +++ b/docs_build/dev/ProjectInstructions/addendums/branch_context_governance.md
-@@ -23,0 +24,2 @@ At the start of work, report or validate:
+@@ -21,6 +21,8 @@ At the start of work, report or validate:
+ - active PR number/name or explicit `PLAN_ONLY`
+ - previous PR Closed status unless this is an explicitly documented stacked PR chain
+
 +Session start must follow the canonical START phase in `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`.
 +
-@@ -40,0 +43,2 @@ After a branch is created, the branch remains the working context.
+ ## Stop Conditions
+
+ Stop and report before changing files when:
+@@ -38,6 +40,8 @@ Stop and report before changing files when:
+
+ After a branch is created, the branch remains the working context.
+
 +This is the canonical WORK phase: remain on the PR branch, never checkout `main`, commit only on the PR branch, push only the PR branch, validate from the PR branch, and open/update the PR from the PR branch.
 +
-@@ -50 +54 @@ Do not automatically return to `main` after:
+ Do not automatically return to `main` after:
+
+ - commit
+@@ -47,7 +51,7 @@ Do not automatically return to `main` after:
+ - review updates
+ - additional commits
+
 -Return to `main` only after the PR is merged, the branch is retired, or OWNER explicitly says to return to `main`.
 +Return to `main` only in the canonical END phase after the PR is merged, the branch is retired, or OWNER explicitly says to return to `main`.
-@@ -60,0 +65 @@ Closed branch context requires:
+
+ Returning to `main` is required before Closed can be recorded.
+
+@@ -58,6 +62,7 @@ Closed branch context requires:
+ - local/origin sync is `0/0`
+ - no untracked files
+ - source branch disposition recorded as `retained`
 +- branch, HEAD SHA, and date/time recorded as the new EOD baseline when this is EOD closeout
+
+ ## GitHub Authority
+
 diff --git a/docs_build/dev/ProjectInstructions/addendums/branch_lock_governance.md b/docs_build/dev/ProjectInstructions/addendums/branch_lock_governance.md
 index 518f8c943..61b95cfae 100644
 --- a/docs_build/dev/ProjectInstructions/addendums/branch_lock_governance.md
 +++ b/docs_build/dev/ProjectInstructions/addendums/branch_lock_governance.md
-@@ -25,0 +26,2 @@ Keep active work attached to the correct assigned team, branch, and OWNER decisi
+@@ -23,12 +23,36 @@ Keep active work attached to the correct assigned team, branch, and OWNER decisi
+
+ - Start from current `main`.
+ - Pull latest `origin/main` before creating a work branch.
 +- Do not create a PR branch unless current branch is `main`, worktree is clean, `main...origin/main` is `0 0`, and `HEAD` SHA matches the published EOD SHA.
 +- Follow the canonical START / WORK / END lifecycle in `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`.
-@@ -27 +29,5 @@ Keep active work attached to the correct assigned team, branch, and OWNER decisi
+ - Keep work on the active branch until the PR is merged, the branch is retired, or OWNER says to return to `main`.
 -- Do not commit directly to `main` unless OWNER explicitly approves.
 +- Do not commit directly to `main`.
 +- HARD STOP before committing if current branch is `main`.
 +- HARD STOP if the branch changes unexpectedly during implementation.
 +- Commit only to the PR branch.
 +- Push only the PR branch.
-@@ -31,0 +38,18 @@ Keep active work attached to the correct assigned team, branch, and OWNER decisi
+ - Do not merge stale historical branches directly unless they are current, clean, still needed, and OWNER-approved.
+ - Retain source branches by default after merge and closeout.
+ - Record branch disposition before Closed as `retained`.
+
 +## Branch Lifecycle (Canonical)
 +
 +Every PR follows exactly three phases:
@@ -3669,7 +3764,13 @@ index 518f8c943..61b95cfae 100644
 +- END by merging, returning to synchronized `main`, publishing branch, HEAD SHA, and date/time, then stopping all work.
 +- Mandatory hard stops before commits on `main`, dirty branch creation, non-`0 0` main sync, baseline SHA mismatch, unvalidated merge, or new PR work before synchronized main return.
 +
-@@ -56,0 +81,33 @@ If protected guidance must change, OWNER approval is required.
+ ## OWNER Override
+
+ OWNER may override a branch lock or team assignment.
+@@ -54,3 +78,36 @@ Protected guidance includes:
+ - Governance Phase 1 completion guidance
+
+ If protected guidance must change, OWNER approval is required.
 +
 +## End Of Day Main Lock
 +
@@ -3978,13 +4079,30 @@ diff --git a/docs_build/dev/ProjectInstructions/addendums/multi_team.md b/docs_b
 index d8acc7b0e..7ba2cae8d 100644
 --- a/docs_build/dev/ProjectInstructions/addendums/multi_team.md
 +++ b/docs_build/dev/ProjectInstructions/addendums/multi_team.md
-@@ -53,0 +54 @@ Rules:
+@@ -51,6 +51,7 @@ Rules:
+ - One Codex session may execute multiple sequential PRs.
+ - Each PR must still have one clear purpose.
+ - Each PR must create or use its own approved branch.
 +- Each PR must follow the canonical START / WORK / END lifecycle in `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`.
-@@ -71,0 +73 @@ During active work:
+ - Each PR may be committed and pushed during active work.
+ - Each PR may be opened as a draft PR during active work.
+ - Do not commit directly to main.
+@@ -69,13 +70,14 @@ During active work:
+ - Pushes are allowed and expected.
+ - Draft PRs are allowed and expected.
+ - Direct commits to main are prohibited.
 +- WORK remains on the PR branch; never checkout main during WORK.
-@@ -78 +80 @@ At end of day:
+ - Merges to main are prohibited unless explicitly approved by the owner.
+
+ At end of day:
+ - Owner reviews ready PRs.
+ - Owner explicitly approves which PRs merge.
+ - Only owner-approved PRs may merge to main.
 -- After merge, return to main and pull latest main.
 +- After merge, execute the canonical END phase, return to synchronized main, and publish branch, HEAD SHA, and date/time.
+ - Do not treat sequential PR completion as merge approval.
+
+ Commit/push during the day is allowed only on assigned team/OWNER/PR branches.
 diff --git a/docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md b/docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md
 new file mode 100644
 index 000000000..2df16f830
@@ -4044,7 +4162,10 @@ diff --git a/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md b/docs_
 index f8a4acb6e..278717326 100644
 --- a/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
 +++ b/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
-@@ -28,0 +29,28 @@ Define the standard pull request workflow for Game Foundry Studio.
+@@ -26,6 +26,34 @@ Define the standard pull request workflow for Game Foundry Studio.
+ 15. Pull latest main before starting the next PR.
+ 16. Verify Main Verified and Closed gates.
+
 +## Branch Lifecycle (Canonical)
 +
 +Every PR follows exactly three phases:
@@ -4073,7 +4194,13 @@ index f8a4acb6e..278717326 100644
 +- STOP if current branch changes unexpectedly.
 +- STOP if attempting to push `main`.
 +
-@@ -92,0 +121,22 @@ Use stacked sequential PRs only when dependency order requires it.
+ ## PR Lifecycle States
+
+ Required state order:
+@@ -90,6 +118,28 @@ For governance, documentation, and administrative work, use Batch Governance Mod
+
+ Use stacked sequential PRs only when dependency order requires it.
+
 +## Tool MVP Stacked PRs
 +
 +Tool MVP work must follow:
@@ -4096,7 +4223,13 @@ index f8a4acb6e..278717326 100644
 +
 +Visible acceptance must be Creator-facing first. Architecture can be handled under the covers, but the PR purpose must be user-testable.
 +
-@@ -131,0 +182,37 @@ Stop only for:
+ ## OWNER Shortcut: PRs
+
+ Keyword:
+@@ -129,3 +179,40 @@ Stop only for:
+ - Merge conflict
+ - Validation failure
+ - OWNER decision
 +
 +## EOD Main Lock
 +
@@ -4138,9 +4271,14 @@ diff --git a/docs_build/dev/ProjectInstructions/addendums/preservation.md b/docs
 index 9344992c0..79a647050 100644
 --- a/docs_build/dev/ProjectInstructions/addendums/preservation.md
 +++ b/docs_build/dev/ProjectInstructions/addendums/preservation.md
-@@ -40 +40 @@ History snapshots go to:
+@@ -37,6 +37,6 @@ When material is no longer active, archive it instead of deleting it. Archive en
+
+ History snapshots go to:
+
 -`docs_build/dev/ProjectInstructions/archive/history/CCYYMMDD_HHMMSS.md`
 +`archive/docs_build/dev/ProjectInstructions/history/CCYYMMDD_HHMMSS.md`
+
+ Use 24-hour local time for `HHMMSS` unless the owner specifies another time basis.
 diff --git a/docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md b/docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
 new file mode 100644
 index 000000000..ff606135a
@@ -4350,16 +4488,30 @@ diff --git a/docs_build/dev/ProjectInstructions/addendums/release_gate.md b/docs
 index c45a2c49d..72bd75c71 100644
 --- a/docs_build/dev/ProjectInstructions/addendums/release_gate.md
 +++ b/docs_build/dev/ProjectInstructions/addendums/release_gate.md
-@@ -24,0 +25 @@ Before a governance, documentation, or administrative PR is merged, validate:
+@@ -22,6 +22,7 @@ Before a governance, documentation, or administrative PR is merged, validate:
+ - PR workflow guidance remains intact.
+ - Team assignment governance remains intact.
+ - Active team registry guidance remains compatible with temporary active teams.
 +- Canonical START / WORK / END branch lifecycle guidance remains intact.
-@@ -38,0 +40 @@ The release gate should confirm these files when relevant to the PR:
+ - No protected Project Instructions guidance was deleted.
+ - No permanent team roster or permanent discipline ownership was restored.
+ - No direct-to-main commit rule was bypassed.
+@@ -36,9 +37,15 @@ The release gate should confirm these files when relevant to the PR:
+ - `docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md`
+ - `docs_build/dev/ProjectInstructions/addendums/governance_phase1_complete.md`
+ - `docs_build/dev/ProjectInstructions/addendums/pr_workflow.md`
 +- `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`
-@@ -41,0 +44,5 @@ The release gate should confirm these files when relevant to the PR:
+ - `docs_build/dev/ProjectInstructions/addendums/project_reference_files.md`
+ - `docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md`
+ - `docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md`
 +- `docs_build/dev/ProjectInstructions/addendums/workspace_v2_playwright_gate.md`
 +- `docs_build/dev/ProjectInstructions/addendums/samples2tools_adapter_guidance.md`
 +- `docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md`
 +- `docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md`
 +- `docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md`
+ - `docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md`
+ - `docs_build/dev/admin-notes/Installs required.txt` when present
+ - `docs_build/dev/admin-notes/Table layout.txt` when present
 diff --git a/docs_build/dev/samples2tools_adapter_guidance.md b/docs_build/dev/ProjectInstructions/addendums/samples2tools_adapter_guidance.md
 similarity index 100%
 rename from docs_build/dev/samples2tools_adapter_guidance.md
@@ -4368,17 +4520,28 @@ diff --git a/docs_build/dev/ProjectInstructions/addendums/team_release_readiness
 index 9a2addbdc..225a2e4ab 100644
 --- a/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
 +++ b/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
-@@ -20,0 +21 @@ Teams may start only when all of the following are true:
+@@ -18,9 +18,13 @@ Teams may start only when all of the following are true:
+ - OWNER governance exists.
+ - One-active-branch-per-team rule exists.
+ - No-direct-main rule exists.
 +- Canonical START / WORK / END lifecycle exists.
-@@ -23,0 +25,3 @@ Teams may start only when all of the following are true:
+ - Out-of-scope stop rule exists.
+ - Build Path sync rule exists.
+ - PR lifecycle states exist in order: PR Open, Plan, Build, Validation, Approved, Merged, Main Verified, Closed.
 +- START requires synchronized `main`, clean worktree, `main...origin/main` `0 0`, and HEAD matching published EOD SHA before branch creation.
 +- WORK requires remaining on the PR branch.
 +- END requires merge, return to synchronized `main`, and publishing branch, HEAD SHA, and date/time.
+ - Previous-PR Closed gate exists before a team starts another PR, except explicitly documented stacked PR chains.
+ - Final closeout output includes branch, worktree, local/origin sync, PR number/name, PR status, merge/final commit, branch disposition, backlog update status, tool state update status, ZIP path, and Closeout PASS/FAIL.
+
 diff --git a/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md b/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
 index 26c337ee1..e2d6b7226 100644
 --- a/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
 +++ b/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
-@@ -16,3 +16,5 @@ Before a team starts, validate:
+@@ -13,9 +13,11 @@ OWNER identifies available teams when starting work.
+
+ Before a team starts, validate:
+
 -- current branch and expected branch are known
 -- worktree is clean or unrelated changes are understood
 -- `main` is current when a new branch is required
@@ -4387,7 +4550,13 @@ index 26c337ee1..e2d6b7226 100644
 +- worktree is clean
 +- `main...origin/main` is `0 0`
 +- `HEAD` SHA matches published EOD SHA
-@@ -65,7 +67,8 @@ For backlog-driven work:
+ - active assignment is selected or confirmed by OWNER
+ - assigned team uses NATO phonetic naming
+ - work remains with the assigned team until complete or OWNER reassignment
+@@ -62,13 +64,14 @@ For backlog-driven work:
+ 2. Select only the OWNER-approved backlog item.
+ 3. Use the approved status model from `status_model.md`.
+ 4. Confirm the previous PR for the team is Closed, unless this is an explicitly documented stacked PR chain.
 -5. Create or use the approved team branch and PR identity.
 -6. Mark lifecycle state as PR Open.
 -7. Plan on the same PR branch.
@@ -4403,8 +4572,17 @@ index 26c337ee1..e2d6b7226 100644
 +10. Record active work in the active team registry when required.
 +11. Open or update a draft PR during active WORK.
 +12. Merge only through OWNER-approved PR workflow and canonical END.
-@@ -96,0 +100 @@ A team or OWNER PR is release-ready when:
+
+ ## Team Command Examples
+
+@@ -94,6 +97,7 @@ A team or OWNER PR is release-ready when:
+ - PR summary states the validation result
+ - lifecycle state is at least Validation
+ - required reports and repo-structured ZIP under `tmp/` exist before Closed
 +- canonical END publishes branch, HEAD SHA, and date/time when the PR merges
+
+ Closed readiness requires:
+ - PR merged and pushed
 diff --git a/docs_build/dev/ProjectInstructions/addendums/test_structure_standardization.md b/docs_build/dev/ProjectInstructions/addendums/test_structure_standardization.md
 new file mode 100644
 index 000000000..997b16730
@@ -4542,7 +4720,10 @@ diff --git a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENT
 index 9735b4bd4..f4d7e4bb8 100644
 --- a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
 +++ b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
-@@ -213,0 +214,64 @@ Merge to main is EOD-only and owner-approved, unless the owner explicitly says:
+@@ -211,3 +211,67 @@ Commit/push during the day is allowed only on assigned team/OWNER/PR branches.
+
+ Merge to main is EOD-only and owner-approved, unless the owner explicitly says:
+ "Merge this PR now."
 +
 +## EOD Main Lock And Next Day Reset
 +
@@ -4888,12 +5069,24 @@ rename to docs_build/dev/pr/pr_koti_layout_contract.md
 index 4dcb572b0..9c4b75989 100644
 --- a/docs_build/dev/pr_koti_layout_contract.md
 +++ b/docs_build/dev/pr/pr_koti_layout_contract.md
-@@ -58 +58 @@ Create:
+@@ -55,7 +55,7 @@ The layout contract must support:
+ Create:
+
+ ```txt
 -docs_build/dev/koti_layout_contract.md
 +docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md
-@@ -152 +152 @@ Run only targeted checks:
+ ```
+
+ Include:
+@@ -149,7 +149,7 @@ Run only targeted checks:
+
+ ## Acceptance Criteria
+
 -- `docs_build/dev/koti_layout_contract.md` exists.
 +- `docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md` exists.
+ - Contract is based on the validated exported layout snapshot.
+ - Contract defines the minimal first-playable layout shape.
+ - Contract includes validation rules and example JSON.
 diff --git a/docs_build/dev/pr_tool_fix_asset_browser_1505.md b/docs_build/dev/pr/pr_tool_fix_asset_browser_1505.md
 similarity index 100%
 rename from docs_build/dev/pr_tool_fix_asset_browser_1505.md
@@ -4948,10 +5141,10 @@ rename from docs_build/dev/pr_tool_uat_fixes.md
 rename to docs_build/dev/pr/pr_tool_uat_fixes.md
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock.md b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock.md
 new file mode 100644
-index 000000000..5acd2eb69
+index 000000000..ee3309235
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock.md
-@@ -0,0 +1,86 @@
+@@ -0,0 +1,88 @@
 +﻿# PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 +
 +Date: 2026-06-26
@@ -4976,6 +5169,7 @@ index 000000000..5acd2eb69
 +- Moved verified old/superseded DoD and roadmap docs to the existing root archive tree under archive/docs_build/dev/.
 +- Updated active preservation guidance so future archive/history material uses the root archive tree.
 +- Added docs_build/dev/reports/legacy-docs-archive-report.md.
++- Updated the PR branch against latest origin/main for OWNER EOD; conflicts were limited to generated Codex report files and were resolved by regeneration.
 +- Confirmed no docs_build/dev/archive/ folder was created.
 +- Confirmed no new docs_build/dev/ProjectInstructions/archive/ path was created.
 +- Corrected project-instructions/** scope so the PR only adds a tiny deprecated pointer README there.
@@ -5027,6 +5221,7 @@ index 000000000..5acd2eb69
 +- PASS: no new docs_build/dev/ProjectInstructions/archive/ path was created in this PR.
 +- PASS: active preservation guidance points to archive/docs_build/dev/ProjectInstructions/history/.
 +- PASS: legacy-docs-archive-report.md exists and confirms active governance remains only in docs_build/dev/ProjectInstructions/.
++- PASS: latest origin/main was merged into the PR branch for EOD; conflicts were limited to codex_changed_files.txt and codex_review.diff.
 +- PASS: project-instructions/** PR diff is limited to project-instructions/README.md.
 +- PASS: Tool MVP Stacked PR Standard exists and includes required governance text.
 +- PASS: No Mock Repository Runtime Source exists and includes required governance text.
@@ -5040,16 +5235,18 @@ index 000000000..5acd2eb69
 +- tmp/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_delta.zip
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_branch-validation.md b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_branch-validation.md
 new file mode 100644
-index 000000000..56f292997
+index 000000000..3ce24a843
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_branch-validation.md
-@@ -0,0 +1,13 @@
+@@ -0,0 +1,15 @@
 +﻿# Branch Validation - PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 +
 +Status: PASS
 +
 +- PASS: Current branch is PR_26177_OWNER_007-project-instructions-single-source-eod-lock.
 +- PASS: Branch is not main during WORK.
++- PASS: Latest origin/main was merged into the PR branch for EOD without leaving the PR branch.
++- PASS: Merge conflicts were limited to generated Codex report files and were resolved by regeneration.
 +- PASS: Worktree changes are scoped to governance/docs cleanup, legacy docs archiving, reports, and the required delta artifact.
 +- PASS: Existing root archive tree is used for legacy docs.
 +- PASS: docs_build/dev/archive/ was not created.
@@ -5059,10 +5256,10 @@ index 000000000..56f292997
 +- PASS: docs_build/dev/ProjectInstructions/ remains the only active governance source.
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_manual-validation-notes.md
 new file mode 100644
-index 000000000..2a740f24b
+index 000000000..a5d8ef287
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_manual-validation-notes.md
-@@ -0,0 +1,17 @@
+@@ -0,0 +1,18 @@
 +﻿# Manual Validation Notes - PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 +
 +Status: PASS
@@ -5076,6 +5273,7 @@ index 000000000..2a740f24b
 +- Left docs_build/dev/roadmaps/ in place because unlisted roadmap files remain there.
 +- Added docs_build/dev/reports/legacy-docs-archive-report.md.
 +- Updated active preservation guidance away from docs_build/dev/ProjectInstructions/archive/ and toward root archive history.
++- Merged latest origin/main into the PR branch for EOD and regenerated the generated Codex report files that conflicted.
 +- Confirmed active governance remains only under docs_build/dev/ProjectInstructions/.
 +- Confirmed no product/runtime files changed.
 +- Confirmed no start_of_day files changed.
@@ -5121,10 +5319,10 @@ index 000000000..d9691504c
 +- PASS: No start_of_day files changed.
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_validation-lane.md b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_validation-lane.md
 new file mode 100644
-index 000000000..3a433e437
+index 000000000..094867b8f
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_validation-lane.md
-@@ -0,0 +1,32 @@
+@@ -0,0 +1,35 @@
 +﻿# Validation Lane - PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 +
 +Status: PASS
@@ -5144,6 +5342,8 @@ index 000000000..3a433e437
 +rg -n 'archive/docs_build/dev/ProjectInstructions/history|archive/docs_build/dev/dod|archive/docs_build/dev/roadmaps|active governance remains only in docs_build/dev/ProjectInstructions' docs_build/dev/ProjectInstructions docs_build/dev/reports/legacy-docs-archive-report.md
 +git diff --name-only -- src assets toolbox games api serverside package.json package-lock.json docs_build/dev/start_of_day
 +git diff --check
++git merge origin/main
++git diff --name-status origin/main --
 +```
 +
 +Results:
@@ -5156,6 +5356,7 @@ index 000000000..3a433e437
 +- PASS: legacy docs archive report exists and confirms active governance remains only in docs_build/dev/ProjectInstructions/.
 +- PASS: Product/runtime/start_of_day changed-file check returned no files.
 +- PASS: git diff --check returned no whitespace errors.
++- PASS: EOD merge from latest origin/main had conflicts only in generated Codex report files; reports were regenerated.
 +- PASS: Playwright not impacted because no runtime files changed.
 diff --git a/docs_build/dev/component-audit.md b/docs_build/dev/reports/audits/component-audit.md
 similarity index 100%
@@ -5170,25 +5371,29 @@ similarity index 100%
 rename from docs_build/dev/security-audit.md
 rename to docs_build/dev/reports/audits/security-audit.md
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 8e34972a1..59beeffb0 100644
+index 0172ab7b9..d23a0452b 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,14 +1,73 @@
--docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md
--docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md
--docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md
--docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_requirement-checklist.md
--docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_validation-lane.md
+@@ -1,7 +1,87 @@
+-docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
+-docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
+-docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership.md
+-docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_branch-validation.md
+-docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_validation-checklist.md
 -docs_build/dev/reports/codex_changed_files.txt
 -docs_build/dev/reports/codex_review.diff
--src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs
--src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
--src/dev-runtime/server/local-api-router.mjs
--tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
--tests/helpers/playwrightRepoServer.mjs
--tests/playwright/tools/GameJourneyTool.spec.mjs
--tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-+﻿D	docs_build/dev/BUILD_PR.md
++﻿R100	docs_build/dev/dod/tool_ui_readiness_dod.md	archive/docs_build/dev/dod/tool_ui_readiness_dod.md
++R100	docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md
++R100	docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_APPEND.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_APPEND.md
++R100	docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE.md
++R100	docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE_8_19.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE_8_19.md
++R100	docs_build/dev/roadmaps/MASTER_ROADMAP_RECOVERY.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_RECOVERY.md
++R100	docs_build/dev/roadmaps/MASTER_ROADMAP_SAMPLES2TOOLS.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_SAMPLES2TOOLS.md
++R100	docs_build/dev/roadmaps/MASTER_ROADMAP_TOOLS.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_TOOLS.md
++R100	docs_build/dev/roadmaps/MIDI_STUDIO_V2_ROADMAP.md	archive/docs_build/dev/roadmaps/MIDI_STUDIO_V2_ROADMAP.md
++R100	docs_build/dev/roadmaps/README.md	archive/docs_build/dev/roadmaps/README.md
++R100	docs_build/dev/roadmaps/phases.txt	archive/docs_build/dev/roadmaps/phases.txt
++D	docs_build/dev/BUILD_PR.md
 +D	docs_build/dev/BUILD_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT.md
 +D	docs_build/dev/NEXT_RESTART.md
 +D	docs_build/dev/PLAN_PR.md
@@ -5207,7 +5412,9 @@ index 8e34972a1..59beeffb0 100644
 +R100	docs_build/dev/koti_layout_contract.md	docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md
 +A	docs_build/dev/ProjectInstructions/addendums/legacy_migration_policy.md
 +M	docs_build/dev/ProjectInstructions/addendums/multi_team.md
++A	docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md
 +M	docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
++M	docs_build/dev/ProjectInstructions/addendums/preservation.md
 +A	docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
 +M	docs_build/dev/ProjectInstructions/addendums/release_gate.md
 +R100	docs_build/dev/samples2tools_adapter_guidance.md	docs_build/dev/ProjectInstructions/addendums/samples2tools_adapter_guidance.md
@@ -5248,6 +5455,7 @@ index 8e34972a1..59beeffb0 100644
 +R100	docs_build/dev/security-audit.md	docs_build/dev/reports/audits/security-audit.md
 +M	docs_build/dev/reports/codex_changed_files.txt
 +M	docs_build/dev/reports/codex_review.diff
++A	docs_build/dev/reports/legacy-docs-archive-report.md
 +D	docs_build/dev/restart_notes_11_105.md
 +D	docs_build/dev/restart_notes_11_110.md
 +D	docs_build/dev/restart_notes_11_111.md
@@ -5261,6 +5469,53 @@ index 8e34972a1..59beeffb0 100644
 +D	docs_build/dev/restart_notes_11_123.md
 +D	docs_build/dev/validation_checklist.txt
 +A	project-instructions/README.md
+diff --git a/docs_build/dev/reports/legacy-docs-archive-report.md b/docs_build/dev/reports/legacy-docs-archive-report.md
+new file mode 100644
+index 000000000..846fd9017
+--- /dev/null
++++ b/docs_build/dev/reports/legacy-docs-archive-report.md
+@@ -0,0 +1,41 @@
++# Legacy Docs Archive Report
++
++Date: 2026-06-26
++Branch: PR_26177_OWNER_007-project-instructions-single-source-eod-lock
++Status: PASS
++
++## Files Moved
++
++Moved verified old/superseded DoD material:
++
++- `docs_build/dev/dod/tool_ui_readiness_dod.md` -> `archive/docs_build/dev/dod/tool_ui_readiness_dod.md`
++
++Moved verified old/superseded roadmap material:
++
++- `docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md` -> `archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
++- `docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_APPEND.md` -> `archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_APPEND.md`
++- `docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE.md` -> `archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE.md`
++- `docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE_8_19.md` -> `archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE_8_19.md`
++- `docs_build/dev/roadmaps/MASTER_ROADMAP_RECOVERY.md` -> `archive/docs_build/dev/roadmaps/MASTER_ROADMAP_RECOVERY.md`
++- `docs_build/dev/roadmaps/MASTER_ROADMAP_SAMPLES2TOOLS.md` -> `archive/docs_build/dev/roadmaps/MASTER_ROADMAP_SAMPLES2TOOLS.md`
++- `docs_build/dev/roadmaps/MASTER_ROADMAP_TOOLS.md` -> `archive/docs_build/dev/roadmaps/MASTER_ROADMAP_TOOLS.md`
++- `docs_build/dev/roadmaps/MIDI_STUDIO_V2_ROADMAP.md` -> `archive/docs_build/dev/roadmaps/MIDI_STUDIO_V2_ROADMAP.md`
++- `docs_build/dev/roadmaps/phases.txt` -> `archive/docs_build/dev/roadmaps/phases.txt`
++- `docs_build/dev/roadmaps/README.md` -> `archive/docs_build/dev/roadmaps/README.md`
++
++## Folders Removed
++
++- `docs_build/dev/dod/` removed because it was empty after the move.
++- `docs_build/dev/roadmaps/` not removed because unlisted roadmap files remain there.
++
++## Verification Notes
++
++- PASS: Existing repository root `archive/` was used.
++- PASS: No `docs_build/dev/archive/` folder was created.
++- PASS: No new `docs_build/dev/ProjectInstructions/archive/` path was created.
++- PASS: Active archive guidance now points to `archive/docs_build/dev/ProjectInstructions/history/`.
++- PASS: Active governance remains only in `docs_build/dev/ProjectInstructions/`.
++
++## Superseded Status
++
++The moved files are treated as legacy/superseded because current active governance is under `docs_build/dev/ProjectInstructions/`; current backlog, workflow, status, environment, tool MVP, no-mock repository, and preservation rules are indexed from that folder.
 diff --git a/docs_build/dev/restart_notes_11_105.md b/docs_build/dev/restart_notes_11_105.md
 deleted file mode 100644
 index 561c0ee1e..000000000
