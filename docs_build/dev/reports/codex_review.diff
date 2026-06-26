@@ -1,140 +1,1658 @@
-diff --git a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-index de7ad4681..37fe942aa 100644
---- a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-+++ b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-@@ -72,7 +72,7 @@
- 
- - [ ] Alfa - Controls
- - [ ] Alfa - Input Mapping
--- [ ] Alfa - Hitboxes
-+- [ ] Delta - Hitboxes
- 
- ### Rules
- 
-@@ -252,5 +252,6 @@ Current OWNER clarification:
- - [x] Delta - Event system audit
-   - Completed by PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup.
- - [ ] Delta - Controls runtime framework audit
-+- [ ] Delta - Hitboxes
- - [ ] Delta - Object runtime framework audit
- - [ ] Delta - World runtime framework audit
-diff --git a/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md b/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-index bc548346d..1e2e47843 100644
---- a/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-+++ b/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-@@ -49,6 +49,7 @@ Team Charlie System Health owns:
- - Shared JS
- - API clients
- - Event systems
-+- Hitboxes
- - Performance
- - Technical debt remediation
- - Runtime test coverage
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership.md b/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership.md
+diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+index 7b1c51f19..e9067da4f 100644
+--- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+@@ -6,7 +6,11 @@ Missing changed runtime JS files are WARN, not FAIL.
+ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+
+ Changed runtime JS files considered:
+-(100%) none changed - no changed runtime JS files
++(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2043/2043; executed functions 12/33
+
+ Guardrail warnings:
+-(100%) none changed - no changed runtime JS files
++(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++(36%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: advisory low coverage below 50%; executed lines 2043/2043; executed functions 12/33
+diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+index f2363d3bf..cf9e81bf9 100644
+--- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
++++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+@@ -12,31 +12,39 @@ Note: entry percentages use function coverage when available, otherwise line cov
+ Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+
+ Exercised tool entry points detected:
+-(76%) Toolbox Index - exercised 1 runtime JS files
++(82%) Toolbox Index - exercised 3 runtime JS files
+ (0%) Tool Template V2 - not exercised by this Playwright run
+-(72%) Theme V2 Shared JS - exercised 4 runtime JS files
++(73%) Theme V2 Shared JS - exercised 3 runtime JS files
+
+ Changed runtime JS files covered:
+-(100%) none changed - no changed runtime JS files
++(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2043/2043; executed functions 12/33
+
+ Files with executed line/function counts where available:
+-(36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2041/2041; executed functions 12/33
++(25%) src/api/session-api-client.js - executed lines 67/67; executed functions 3/12
++(33%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
++(36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2043/2043; executed functions 12/33
++(48%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 11/23
++(50%) toolbox/game-hub/game-hub-api-client.js - executed lines 26/26; executed functions 2/4
+ (53%) src/api/server-api-client.js - executed lines 168/168; executed functions 10/19
+-(64%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 63/98
++(62%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 61/98
+ (65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
+ (67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
+-(73%) assets/toolbox/game-journey/js/index.js - executed lines 1662/1662; executed functions 108/148
+-(76%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 22/29
+-(77%) assets/theme-v2/js/tool-display-mode.js - executed lines 304/304; executed functions 23/30
+ (80%) assets/theme-v2/js/theme-icons.js - executed lines 69/69; executed functions 4/5
+-(89%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 32/36
+-(100%) assets/js/shared/game-journey-api-client.js - executed lines 19/19; executed functions 2/2
++(89%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 106/119
++(100%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 37/37
+
+ Uncovered or low-coverage changed JS files:
+-(100%) none changed - no changed runtime JS files
++(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
++(36%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: advisory low coverage; executed lines 2043/2043
+
+ Changed JS files considered:
+-(0%) scripts/validate-browser-env-agnostic.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/GameJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) assets/toolbox/sprites/js/index.js - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/dev-runtime/SpritesAssetRepository.test.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/SpritesToolMvp.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
++(36%) src/shared/toolbox/tool-metadata-inventory.js - changed JS file with browser V8 coverage
+diff --git a/src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js b/src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
+index 407a7339e..48aa55a91 100644
+--- a/src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
++++ b/src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
+@@ -2530,6 +2530,333 @@ export function createAssetToolMockRepository(options = {}) {
+     return paletteRepository.seedActiveProjectPalette();
+   }
+
++  const SPRITE_STATUS_OPTIONS = Object.freeze(["Draft", "Ready", "Archived"]);
++
++  function normalizeSpriteStatus(value, fallback = "Ready") {
++    const normalized = normalizeText(value);
++    const match = SPRITE_STATUS_OPTIONS.find((status) => status.toLowerCase() === normalized.toLowerCase());
++    return match || fallback;
++  }
++
++  function normalizeSpriteCategory(value, fallback = "Sprite") {
++    const normalized = normalizeCatalogUsage(value);
++    return normalized || fallback;
++  }
++
++  function paletteColorExists(paletteColorKey) {
++    if (!paletteColorKey) {
++      return true;
++    }
++    return listPaletteSwatches().some((swatch) => swatch.key === paletteColorKey);
++  }
++
++  function spritePaletteColors() {
++    return listPaletteSwatches().map((swatch) => ({
++      hex: swatch.hex || "",
++      key: swatch.key,
++      name: swatch.name,
++      source: swatch.source || "Palette/Colors",
++    }));
++  }
++
++  function spriteReferenceSummary(asset = null) {
++    return {
++      destructiveDeleteAllowed: false,
++      message: asset
++        ? "Object and World reference contracts are not connected yet; destructive delete is disabled for Sprites. Archive remains available."
++        : "Reference contract is ready for future Object and World usage checks.",
++      references: [],
++      status: "Unavailable",
++      usageCount: 0,
++    };
++  }
++
++  function decorateSpriteAsset(asset) {
++    if (!asset) {
++      return null;
++    }
++    const paletteColorKey = normalizeText(asset.paletteColorKey);
++    const referenceSummary = spriteReferenceSummary(asset);
++    return {
++      ...asset,
++      category: normalizeSpriteCategory(asset.category || "Sprite"),
++      dimensions: asset.dimensions || null,
++      paletteColorKey,
++      paletteColorName: spritePaletteColors().find((swatch) => swatch.key === paletteColorKey)?.name || "",
++      previewStatus: asset.viewPath || asset.storedPath
++        ? "Preview metadata available; image bytes are unavailable until storage preview is connected."
++        : "Preview unavailable until sprite image storage is connected.",
++      referenceSummary,
++      status: normalizeSpriteStatus(asset.status),
++      usageCount: referenceSummary.usageCount,
++    };
++  }
++
++  function listSpriteRecords() {
++    return listAssetsByType("Sprites").map(decorateSpriteAsset);
++  }
++
++  function spriteValidationResult(input = {}, existingAsset = null) {
++    const name = normalizeText(input.name || existingAsset?.name);
++    const description = normalizeText(input.description || existingAsset?.description);
++    const category = normalizeSpriteCategory(input.category || existingAsset?.category || "Sprite");
++    const status = normalizeSpriteStatus(input.status || existingAsset?.status);
++    const tags = listTags();
++    const tagKeys = normalizeAssetTagKeys(input.tagKeys, tags);
++    const requestedTagKeys = Array.isArray(input.tagKeys) ? input.tagKeys.map(normalizeText).filter(Boolean) : [];
++    const invalidTagKeys = requestedTagKeys.filter((tagKey) => !tagKeys.includes(tagKey));
++    const paletteColorKey = normalizeText(input.paletteColorKey || existingAsset?.paletteColorKey);
++    const findings = [];
++
++    if (!name) {
++      findings.push({
++        action: "Name the sprite before saving.",
++        field: "name",
++        label: "Sprite Name",
++      });
++    }
++    if (input.status && !SPRITE_STATUS_OPTIONS.includes(status)) {
++      findings.push({
++        action: `Choose a valid sprite status: ${SPRITE_STATUS_OPTIONS.join(", ")}.`,
++        field: "status",
++        label: "Sprite Status",
++      });
++    }
++    if (input.category && !normalizeCatalogUsage(input.category)) {
++      findings.push({
++        action: `Choose a valid sprite category: ${ASSET_USAGE_OPTIONS.join(", ")}.`,
++        field: "category",
++        label: "Sprite Category",
++      });
++    }
++    if (invalidTagKeys.length) {
++      findings.push({
++        action: "Choose tags from the shared Tags tool list.",
++        field: "tagKeys",
++        label: "Sprite Tags",
++      });
++    }
++    if (!paletteColorExists(paletteColorKey)) {
++      findings.push({
++        action: "Choose a Palette/Colors record by key; Sprites cannot own reusable color definitions.",
++        field: "paletteColorKey",
++        label: "Palette Color Key",
++      });
++    }
++
++    return {
++      findings,
++      sprite: {
++        category,
++        description,
++        name,
++        paletteColorKey,
++        status,
++        tagKeys,
++      },
++      status: findings.length === 0 ? "Ready" : "Needs Input",
++    };
++  }
++
++  function duplicateSpriteFinding(name, currentAssetId = "") {
++    const normalizedName = normalizeText(name).toLowerCase();
++    const spriteKey = spriteAssetKeyForObjectKey(name);
++    const duplicate = listSpriteRecords().find((asset) => (
++      asset.id !== currentAssetId
++      && (
++        asset.id === spriteKey
++        || normalizeText(asset.name).toLowerCase() === normalizedName
++      )
++    ));
++    if (!duplicate) {
++      return null;
++    }
++    return {
++      action: `A sprite named ${duplicate.name} already exists. Edit that sprite or choose a unique name.`,
++      field: "name",
++      label: "Duplicate Sprite",
++    };
++  }
++
++  function finishSpriteMutation(asset, validation, message, extra = {}) {
++    const timestamp = new Date().toISOString();
++    asset.name = validation.sprite.name;
++    asset.description = validation.sprite.description;
++    asset.category = validation.sprite.category;
++    asset.paletteColorKey = validation.sprite.paletteColorKey;
++    asset.status = validation.sprite.status;
++    asset.tagKeys = validation.sprite.tagKeys;
++    asset.updatedAt = timestamp;
++    asset.updatedBy = activeUserKey();
++    selectedAssetId = asset.id;
++    replaceValidationRows(asset.projectId, []);
++    persistTables();
++    return {
++      asset: decorateSpriteAsset(asset),
++      message,
++      snapshot: getSpritesSnapshot(),
++      validation,
++      ...extra,
++    };
++  }
++
++  function createSpriteRecord(input = {}) {
++    const validation = spriteValidationResult(input);
++    const duplicateFinding = validation.findings.length ? null : duplicateSpriteFinding(validation.sprite.name);
++    const findings = duplicateFinding ? [...validation.findings, duplicateFinding] : validation.findings;
++    if (hasExplicitGuestSession()) {
++      return {
++        created: false,
++        message: "Sign in required to save Sprites through the Local API.",
++        snapshot: getSpritesSnapshot(),
++        validation: { ...validation, findings, status: "Needs Input" },
++      };
++    }
++    const projectResult = ensureUploadProject();
++    const projectId = projectResult.projectId || getConfigurationHandoff().activeProject?.id || "";
++    replaceValidationRows(projectId, findings);
++    if (findings.length || !projectId) {
++      return {
++        created: false,
++        message: findings[0]?.action || projectResult.message || "Sprite create blocked: open an active game first.",
++        snapshot: getSpritesSnapshot(),
++        validation: { ...validation, findings, status: "Needs Input" },
++      };
++    }
++
++    const handoffResult = ensureSpriteAssetForObject({
++      name: validation.sprite.name,
++      objectKey: validation.sprite.name,
++      objectName: validation.sprite.name,
++    });
++    if (!handoffResult.created && !handoffResult.linked) {
++      return {
++        created: false,
++        message: handoffResult.message,
++        snapshot: getSpritesSnapshot(),
++        validation,
++      };
++    }
++    return finishSpriteMutation(
++      handoffResult.asset,
++      validation,
++      `Created sprite ${validation.sprite.name}.`,
++      { created: true },
++    );
++  }
++
++  function updateSpriteRecord(assetId, input = {}) {
++    const handoff = getConfigurationHandoff();
++    const projectId = handoff.activeProject?.id || "";
++    const asset = findOwnedAsset(assetId, projectId);
++    if (!asset) {
++      return {
++        message: blockedOwnerMessage("update"),
++        snapshot: getSpritesSnapshot(),
++        updated: false,
++      };
++    }
++    const validation = spriteValidationResult(input, asset);
++    const duplicateFinding = validation.findings.length ? null : duplicateSpriteFinding(validation.sprite.name, asset.id);
++    const findings = duplicateFinding ? [...validation.findings, duplicateFinding] : validation.findings;
++    replaceValidationRows(projectId, findings);
++    if (hasExplicitGuestSession()) {
++      return {
++        message: "Sign in required to save Sprites through the Local API.",
++        snapshot: getSpritesSnapshot(),
++        updated: false,
++        validation: { ...validation, findings, status: "Needs Input" },
++      };
++    }
++    if (findings.length) {
++      return {
++        asset: decorateSpriteAsset(asset),
++        message: findings[0]?.action || "Sprite update blocked.",
++        snapshot: getSpritesSnapshot(),
++        updated: false,
++        validation: { ...validation, findings, status: "Needs Input" },
++      };
++    }
++    return finishSpriteMutation(
++      asset,
++      validation,
++      `Updated sprite ${validation.sprite.name}.`,
++      { updated: true },
++    );
++  }
++
++  function archiveSpriteRecord(assetId) {
++    const handoff = getConfigurationHandoff();
++    const projectId = handoff.activeProject?.id || "";
++    const asset = findOwnedAsset(assetId, projectId);
++    if (!asset) {
++      return {
++        archived: false,
++        message: blockedOwnerMessage("archive"),
++        snapshot: getSpritesSnapshot(),
++      };
++    }
++    if (hasExplicitGuestSession()) {
++      return {
++        archived: false,
++        message: "Sign in required to archive Sprites through the Local API.",
++        snapshot: getSpritesSnapshot(),
++      };
++    }
++    const timestamp = new Date().toISOString();
++    asset.archivedAt = timestamp;
++    asset.status = "Archived";
++    asset.updatedAt = timestamp;
++    asset.updatedBy = activeUserKey();
++    selectedAssetId = asset.id;
++    replaceValidationRows(projectId, []);
++    persistTables();
++    return {
++      archived: true,
++      asset: decorateSpriteAsset(asset),
++      message: `Archived sprite ${asset.name}.`,
++      snapshot: getSpritesSnapshot(),
++    };
++  }
++
++  function deleteSpriteRecord(assetId) {
++    const asset = findOwnedAsset(assetId, getConfigurationHandoff().activeProject?.id || "");
++    return {
++      asset: decorateSpriteAsset(asset),
++      deleted: false,
++      message: "Destructive sprite delete is disabled until Object and World references can be verified. Archive the sprite instead.",
++      referenceSummary: spriteReferenceSummary(asset),
++      snapshot: getSpritesSnapshot(),
++    };
++  }
++
++  function getSpritesSnapshot() {
++    const handoff = getConfigurationHandoff();
++    const sprites = listSpriteRecords();
++    const selectedSprite = sprites.find((asset) => asset.id === selectedAssetId) || sprites[0] || null;
++    const projectId = handoff.activeProject?.id || "";
++    const findings = tables.asset_validation_items.filter((row) => row.projectId === projectId);
++    return {
++      categories: [...ASSET_USAGE_OPTIONS],
++      handoff,
++      paletteColors: spritePaletteColors(),
++      paletteOwnership: "Palette/Colors is the reusable color source of truth. Sprites store paletteColorKey references only.",
++      preview: {
++        message: "Sprite image preview is product-safe metadata until storage/image bytes are connected.",
++        status: "Unavailable",
++      },
++      referenceContract: spriteReferenceSummary(),
++      selectedSprite,
++      sprites,
++      statusOptions: [...SPRITE_STATUS_OPTIONS],
++      tags: listTags(),
++      validation: {
++        findings,
++        status: findings.length ? "Needs Input" : "Ready",
++      },
++    };
++  }
++
+   function getProgressHandoff() {
+     const handoff = getConfigurationHandoff();
+     const assets = listAssets();
+@@ -2610,15 +2937,19 @@ export function createAssetToolMockRepository(options = {}) {
+     ASSET_USAGE_OPTIONS,
+     ASSET_USAGE_BY_ROLE,
+     addAssetRecord,
++    archiveSpriteRecord,
+     assetsByType,
+     clearAssetLibrary,
+     deleteAsset,
+     deleteAssetRecord,
++    deleteSpriteRecord,
+     ensureSpriteAssetForObject,
++    createSpriteRecord,
+     getConfigurationHandoff,
+     getPaletteSnapshot,
+     getProgressHandoff,
+     getRoleDiagnostics,
++    getSpritesSnapshot,
+     getSnapshot,
+     getTables,
+     importAsset,
+@@ -2642,6 +2973,7 @@ export function createAssetToolMockRepository(options = {}) {
+     setUploadFileWriteSupport,
+     updateAsset,
+     updateAssetRecord,
++    updateSpriteRecord,
+     validateCatalogAssetInput,
+     validateAssetInput
+   };
+diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
+index 913163236..897d6630d 100644
+--- a/src/dev-runtime/server/local-api-router.mjs
++++ b/src/dev-runtime/server/local-api-router.mjs
+@@ -2555,7 +2555,7 @@ function normalizedToolKey(row) {
+   return String(row?.toolKey || row?.toolId || row?.id || "").trim();
+ }
+
+-const SOURCE_CONTROLLED_TOOLBOX_TOOL_IDS = new Set(["game-hub", "idea-board", "messages", "tags", "text-to-speech", "users"]);
++const SOURCE_CONTROLLED_TOOLBOX_TOOL_IDS = new Set(["game-hub", "idea-board", "messages", "sprites", "tags", "text-to-speech", "users"]);
+ const SOURCE_CONTROLLED_TOOLBOX_METADATA_FIELDS = Object.freeze([
+   "active",
+   "adminOnly",
+@@ -6640,6 +6640,7 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
+     if (toolId === "tags") return this.tagsRepository;
+     if (toolId === "asset") return this.assetRepository;
+     if (toolId === "assets") return this.assetRepository;
++    if (toolId === "sprites") return this.assetRepository;
+     throw new Error(`Unknown toolbox API data source: ${toolId}.`);
+   }
+
+@@ -6706,7 +6707,7 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
+         TAGS_TOOL_TABLES: this.tagsRepository.TAGS_TOOL_TABLES,
+       };
+     }
+-    if (toolId === "asset" || toolId === "assets") {
++    if (toolId === "asset" || toolId === "assets" || toolId === "sprites") {
+       return {
+         ASSET_ROLE_DEFINITIONS: this.assetRepository.ASSET_ROLE_DEFINITIONS,
+         ASSET_CATALOG_TYPES: this.assetRepository.ASSET_CATALOG_TYPES,
+diff --git a/src/shared/toolbox/tool-metadata-inventory.js b/src/shared/toolbox/tool-metadata-inventory.js
+index 955f54d8a..9c4bd342c 100644
+--- a/src/shared/toolbox/tool-metadata-inventory.js
++++ b/src/shared/toolbox/tool-metadata-inventory.js
+@@ -472,9 +472,11 @@ export const TOOL_REGISTRY = Object.freeze([
+     "requiredForPublish": true,
+     "requires": [],
+     "status": "Wireframe",
++    "releaseChannel": "wireframe",
+     "progressChecklist": [
+-      "Review readiness",
+-      "Static planned text only"
++      "Toolbox entry opens Sprites route",
++      "API-backed sprite library shell available",
++      "Palette/Colors remains reusable color source of truth"
+     ],
+     "deferred": false,
+     "hidden": false,
+diff --git a/tests/playwright/tools/ToolboxRoutePages.spec.mjs b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
+index 243f413d0..181278600 100644
+--- a/tests/playwright/tools/ToolboxRoutePages.spec.mjs
++++ b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
+@@ -564,10 +564,10 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
+     await expect(page.locator("[data-toolbox-tool-name-link='Game Hub']")).toHaveAttribute("href", "/toolbox/game-hub/index.html");
+     await expect(page.locator("[data-toolbox-tool-name-link='Text To Speech']")).toHaveAttribute("href", "/toolbox/text-to-speech/index.html");
+     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toHaveCount(0);
+-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 15/43");
++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 16/43");
+     await page.locator("[data-toolbox-status-filter='planned']").click();
+     await expect(page.locator("[data-toolbox-status-filter='planned']")).toHaveAttribute("aria-pressed", "true");
+-    await expect(page.locator("[data-toolbox-tool-card][data-toolbox-release-channel='planned']")).toHaveCount(27);
++    await expect(page.locator("[data-toolbox-tool-card][data-toolbox-release-channel='planned']")).toHaveCount(26);
+     await expect(page.locator("[data-toolbox-tool-card]")).toHaveCount(42);
+     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 42/43");
+     await expect(page.locator("[data-toolbox-tool-name-link='AI Command Center']")).toBeVisible();
+@@ -641,8 +641,8 @@ test("toolbox status kickers, filters, card order, and voting controls work from
+     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+
+     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
+-      "Planned (27)",
+-      "Wireframe (4)",
++      "Planned (26)",
++      "Wireframe (5)",
+       "Beta (8)",
+       "Complete (3)",
+       "Deprecated (1)",
+@@ -658,8 +658,8 @@ test("toolbox status kickers, filters, card order, and voting controls work from
+
+     await page.locator("[data-tools-view='build-path']").click();
+     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
+-      "Planned (27)",
+-      "Wireframe (4)",
++      "Planned (26)",
++      "Wireframe (5)",
+       "Beta (8)",
+       "Complete (3)",
+       "Deprecated (1)",
+@@ -1378,8 +1378,8 @@ test("toolbox Build Path status filters support multi-select registry-matched to
+     await expect(page.locator("[data-tools-sort='grouped']")).not.toHaveClass(/primary/);
+
+     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
+-      "Planned (27)",
+-      "Wireframe (4)",
++      "Planned (26)",
++      "Wireframe (5)",
+       "Beta (8)",
+       "Complete (3)",
+       "Deprecated (1)",
+@@ -1391,14 +1391,14 @@ test("toolbox Build Path status filters support multi-select registry-matched to
+
+     await page.locator("[data-toolbox-status-filter='planned']").click();
+     await expectActiveFilters(["planned", "complete"]);
+-    await expectBuildPathChannels(["planned", "complete"], 30);
++    await expectBuildPathChannels(["planned", "complete"], 29);
+     await expect(page.locator("[data-build-path-tool='AI Command Center']")).toBeVisible();
+     await expectBuildPathOrder("AI Command Center", registryById.get("ai-assistant").order);
+     await expectBuildPathOrder("Colors", registryById.get("colors").order);
+
+     await page.locator("[data-toolbox-status-filter='complete']").click();
+     await expectActiveFilters(["planned"]);
+-    await expectBuildPathChannels(["planned"], 27);
++    await expectBuildPathChannels(["planned"], 26);
+     await expect(page.locator("[data-build-path-tool='Colors']")).toHaveCount(0);
+     await expect(page.locator("[data-build-path-tool='AI Command Center']")).toBeVisible();
+
+diff --git a/toolbox/sprites/index.html b/toolbox/sprites/index.html
+index c66454371..fc236f32f 100644
+--- a/toolbox/sprites/index.html
++++ b/toolbox/sprites/index.html
+@@ -6,7 +6,7 @@
+     <base href="/">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+     <title>Sprites - GameFoundryStudio</title>
+-    <meta name="description" content="Sprites Toolbox wireframe. Plan sprite creation, review, and game-ready export workflows.">
++    <meta name="description" content="Sprites Toolbox manages sprite assets for creators, games, worlds, publishing, sharing, and community workflows.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+ </head>
+@@ -18,26 +18,68 @@
+             <div class="container">
+                 <div class="kicker">Toolbox / Sprites</div>
+                 <h1>Sprites</h1>
+-                <p class="lede">Plan sprite creation, review, and game-ready export workflows. Static wireframe only; no database, persistence, save, load, or runtime behavior is implemented.</p>
++                <p class="lede">Manage sprite asset records for creators, games, worlds, publishing, sharing, and community workflows.</p>
+             </div>
+         </section>
+         <section class="section">
+             <div class="container container--tool-wide">
+-                <div class="tool-workspace tool-workspace--wide">
++                <div class="tool-workspace tool-workspace--wide" data-sprites-app>
+                     <aside class="tool-column tool-group-design">
+                         <div class="tool-column-header">
+                             <h2>Sprites</h2>
+                         </div>
+                         <div class="accordion-stack">
+                             <details class="vertical-accordion" open>
+-                                <summary>Setup</summary>
+-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
++                                <summary>Library Tools</summary>
++                                <div class="accordion-body content-stack">
++                                    <button class="btn" type="button" data-sprites-add>Add Sprite</button>
++                                    <label for="spritesSearch">Search</label>
++                                    <input id="spritesSearch" type="search" data-sprites-search aria-label="Search Sprites">
++                                    <label for="spritesStatusFilter">Status</label>
++                                    <select id="spritesStatusFilter" data-sprites-status-filter aria-label="Filter Sprites by status"></select>
++                                    <label for="spritesCategoryFilter">Category</label>
++                                    <select id="spritesCategoryFilter" data-sprites-category-filter aria-label="Filter Sprites by category"></select>
++                                    <label for="spritesTagFilter">Tag</label>
++                                    <select id="spritesTagFilter" data-sprites-tag-filter aria-label="Filter Sprites by shared tag"></select>
++                                </div>
++                            </details>
++                            <details class="vertical-accordion" open>
++                                <summary>Palette/Colors</summary>
++                                <div class="accordion-body content-stack">
++                                    <p data-sprites-palette-state>Palette/Colors references loading.</p>
++                                    <a class="btn" href="toolbox/colors/index.html">Open Colors</a>
++                                </div>
+                             </details>
+                         </div>
+                     </aside>
+-                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="sprites" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
+-                    <section class="tool-center-panel"><h2>Workspace</h2>
+-                        <p>Plan sprite creation, review, and game-ready export workflows. This page preserves the shared Theme V2 tool template structure for future rebuild work.</p>
++                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="sprites" data-tool-icon-src="assets/theme-v2/images/badges/sprites.png" data-tool-character-src="assets/theme-v2/images/tools/sprites.png"></div>
++                    <section class="tool-center-panel">
++                        <h2>Sprite Library</h2>
++                        <p>Use the table to create, edit, and archive sprite records through the Local API service contract.</p>
++                        <div class="grid cols-3" aria-label="Sprite library summary">
++                            <article class="mini-stat"><strong data-sprites-library-status>Loading</strong>Library Status</article>
++                            <article class="mini-stat"><strong data-sprites-count>0</strong>Sprites</article>
++                            <article class="mini-stat"><strong data-sprites-visible-count>0</strong>Visible</article>
++                        </div>
++                        <p class="status" role="status" data-sprites-log>Sprites loading.</p>
++                        <div class="table-wrapper">
++                            <table class="data-table" data-sprites-table aria-label="Sprite library">
++                                <thead>
++                                    <tr>
++                                        <th scope="col">Name</th>
++                                        <th scope="col">Status</th>
++                                        <th scope="col">Category</th>
++                                        <th scope="col">Tags</th>
++                                        <th scope="col">Palette Key</th>
++                                        <th scope="col">Updated</th>
++                                        <th scope="col">Actions</th>
++                                    </tr>
++                                </thead>
++                                <tbody data-sprites-table-body>
++                                    <tr><td colspan="7">Loading Sprites.</td></tr>
++                                </tbody>
++                            </table>
++                        </div>
+                     </section>
+                     <aside class="tool-column tool-group-design">
+                         <div class="tool-column-header">
+@@ -45,8 +87,32 @@
+                         </div>
+                         <div class="accordion-stack">
+                             <details class="vertical-accordion" open>
+-                                <summary>Output</summary>
+-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
++                                <summary>Preview</summary>
++                                <div class="accordion-body content-stack" data-sprites-preview>
++                                    <p>Choose a sprite to review preview metadata.</p>
++                                </div>
++                            </details>
++                            <details class="vertical-accordion" open>
++                                <summary>Metadata</summary>
++                                <div class="accordion-body content-stack">
++                                    <ul data-sprites-metadata>
++                                        <li>No selected sprite details.</li>
++                                    </ul>
++                                </div>
++                            </details>
++                            <details class="vertical-accordion" open>
++                                <summary>References</summary>
++                                <div class="accordion-body content-stack" data-sprites-references>
++                                    <p>Reference protection loading.</p>
++                                </div>
++                            </details>
++                            <details class="vertical-accordion" open>
++                                <summary>Validation</summary>
++                                <div class="accordion-body content-stack">
++                                    <ul data-sprites-validation>
++                                        <li>No validation findings.</li>
++                                    </ul>
++                                </div>
+                             </details>
+                         </div>
+                     </aside>
+@@ -57,6 +123,7 @@
+     <div data-partial="footer"></div>
+     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
++    <script type="module" src="assets/toolbox/sprites/js/index.js"></script>
+ </body>
+
+ </html>
+diff --git a/assets/toolbox/sprites/js/index.js b/assets/toolbox/sprites/js/index.js
 new file mode 100644
-index 000000000..aecd58bab
+index 000000000..3e5f8299b
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership.md
-@@ -0,0 +1,33 @@
-+# PR_26177_DELTA_001-hitboxes-team-ownership
++++ b/assets/toolbox/sprites/js/index.js
+@@ -0,0 +1,503 @@
++import { createServerRepositoryClient } from "../../../../src/api/server-api-client.js";
++import { getSessionCurrent } from "../../../../src/api/session-api-client.js";
 +
-+Team: Delta
-+Branch: PR_26177_DELTA_001-hitboxes-team-ownership
-+Base: main
-+Scope: Project Instructions ownership/backlog documentation only
++const repository = createServerRepositoryClient("sprites");
 +
-+## Summary
++const elements = {
++  add: document.querySelector("[data-sprites-add]"),
++  categoryFilter: document.querySelector("[data-sprites-category-filter]"),
++  count: document.querySelector("[data-sprites-count]"),
++  libraryStatus: document.querySelector("[data-sprites-library-status]"),
++  log: document.querySelector("[data-sprites-log]"),
++  metadata: document.querySelector("[data-sprites-metadata]"),
++  paletteState: document.querySelector("[data-sprites-palette-state]"),
++  preview: document.querySelector("[data-sprites-preview]"),
++  references: document.querySelector("[data-sprites-references]"),
++  search: document.querySelector("[data-sprites-search]"),
++  statusFilter: document.querySelector("[data-sprites-status-filter]"),
++  tableBody: document.querySelector("[data-sprites-table-body]"),
++  tagFilter: document.querySelector("[data-sprites-tag-filter]"),
++  validation: document.querySelector("[data-sprites-validation]"),
++  visibleCount: document.querySelector("[data-sprites-visible-count]"),
++};
 +
-+Team Delta is now the sole documented owner of Hitboxes in the Project Instructions ownership and backlog routing files.
++let snapshot = emptySnapshot();
++let editingSpriteId = "";
++let selectedSpriteId = "";
++let filterState = {
++  category: "",
++  query: "",
++  status: "",
++  tagKey: "",
++};
 +
-+## Changes
++function emptySnapshot() {
++  return {
++    categories: [],
++    paletteColors: [],
++    paletteOwnership: "Palette/Colors is the reusable color source of truth.",
++    preview: { message: "Preview unavailable until the Sprites API is ready.", status: "Unavailable" },
++    referenceContract: { message: "Reference contract unavailable.", references: [], usageCount: 0 },
++    selectedSprite: null,
++    sprites: [],
++    statusOptions: [],
++    tags: [],
++    validation: { findings: [], status: "Loading" },
++  };
++}
 +
-+- Updated `docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md` to add Hitboxes to Team Delta ownership.
-+- Updated `docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md` to change the Game Journey MVP Hitboxes item from Alfa to Delta.
-+- Added Hitboxes to the Team Delta backlog alignment list.
++function normalizeText(value) {
++  return String(value || "").trim();
++}
 +
-+## Scope Guard
++function setText(target, value) {
++  if (target) {
++    target.textContent = value;
++  }
++}
 +
-+- No implementation code changed.
-+- No engine core files changed.
-+- No `start_of_day` files changed.
-+- No other team ownership assignments changed.
-+- Existing unrelated untracked file `docs_build/dev/ProjectInstructions (2).zip` was left untouched.
++function option(value, label = value) {
++  const optionElement = document.createElement("option");
++  optionElement.value = value;
++  optionElement.textContent = label;
++  return optionElement;
++}
++
++function replaceSelectOptions(select, values, selectedValue = "", includeAllLabel = "") {
++  if (!select) {
++    return;
++  }
++  const options = includeAllLabel ? [option("", includeAllLabel)] : [];
++  values.forEach((value) => {
++    options.push(option(value));
++  });
++  select.replaceChildren(...options);
++  select.value = selectedValue;
++}
++
++function tagLabel(tagKey) {
++  return snapshot.tags.find((tag) => tag.id === tagKey)?.name || tagKey;
++}
++
++function paletteLabel(paletteColorKey) {
++  const swatch = snapshot.paletteColors.find((color) => color.key === paletteColorKey);
++  return swatch ? `${swatch.name} (${swatch.key})` : paletteColorKey || "None";
++}
++
++function currentSession() {
++  try {
++    return getSessionCurrent();
++  } catch {
++    return { authenticated: false };
++  }
++}
++
++function requireCreatorSession() {
++  if (currentSession()?.authenticated === true) {
++    return true;
++  }
++  window.location.href = "account/sign-in.html";
++  return false;
++}
++
++function loadSnapshot() {
++  const result = repository.getSpritesSnapshot();
++  if (!result || result.error) {
++    const diagnostic = result?.message || result?.validation?.findings?.[0]?.action || repository.__apiDiagnostic?.() || "Sprites API unavailable.";
++    snapshot = emptySnapshot();
++    snapshot.validation.findings = [{ action: diagnostic, label: "Sprites API", status: "Blocked" }];
++    snapshot.validation.status = "Blocked";
++    setText(elements.log, diagnostic);
++    render();
++    return;
++  }
++  snapshot = result;
++  if (!selectedSpriteId && snapshot.selectedSprite?.id) {
++    selectedSpriteId = snapshot.selectedSprite.id;
++  }
++  if (selectedSpriteId && !snapshot.sprites.some((sprite) => sprite.id === selectedSpriteId)) {
++    selectedSpriteId = snapshot.selectedSprite?.id || snapshot.sprites[0]?.id || "";
++  }
++  render();
++}
++
++function filteredSprites() {
++  const query = filterState.query.toLowerCase();
++  return snapshot.sprites.filter((sprite) => {
++    const matchesStatus = !filterState.status || sprite.status === filterState.status;
++    const matchesCategory = !filterState.category || sprite.category === filterState.category;
++    const matchesTag = !filterState.tagKey || (Array.isArray(sprite.tagKeys) && sprite.tagKeys.includes(filterState.tagKey));
++    const searchable = [
++      sprite.name,
++      sprite.key,
++      sprite.category,
++      sprite.status,
++      sprite.paletteColorKey,
++      ...(Array.isArray(sprite.tagKeys) ? sprite.tagKeys.map(tagLabel) : []),
++    ].join(" ").toLowerCase();
++    const matchesQuery = !query || searchable.includes(query);
++    return matchesStatus && matchesCategory && matchesTag && matchesQuery;
++  });
++}
++
++function createCell(text) {
++  const cell = document.createElement("td");
++  cell.textContent = text;
++  return cell;
++}
++
++function createButton(label, action, spriteId = "") {
++  const button = document.createElement("button");
++  button.className = "btn btn--compact";
++  button.type = "button";
++  button.dataset.spritesAction = action;
++  if (spriteId) {
++    button.dataset.spriteId = spriteId;
++  }
++  button.textContent = label;
++  return button;
++}
++
++function createInput(value, label, name) {
++  const input = document.createElement("input");
++  input.type = "text";
++  input.value = value || "";
++  input.setAttribute("aria-label", label);
++  input.dataset.spritesField = name;
++  return input;
++}
++
++function createSelect(values, selectedValue, label, name, emptyLabel = "") {
++  const select = document.createElement("select");
++  select.setAttribute("aria-label", label);
++  select.dataset.spritesField = name;
++  const options = [];
++  if (emptyLabel) {
++    options.push(option("", emptyLabel));
++  }
++  values.forEach((value) => options.push(option(value)));
++  select.replaceChildren(...options);
++  select.value = selectedValue || "";
++  return select;
++}
++
++function createPaletteSelect(selectedValue) {
++  const select = document.createElement("select");
++  select.setAttribute("aria-label", "Palette color reference");
++  select.dataset.spritesField = "paletteColorKey";
++  const options = [option("", "No Palette color reference")];
++  snapshot.paletteColors.forEach((color) => {
++    options.push(option(color.key, `${color.name} (${color.key})`));
++  });
++  select.replaceChildren(...options);
++  select.value = selectedValue || "";
++  if (snapshot.paletteColors.length === 0) {
++    select.disabled = true;
++  }
++  return select;
++}
++
++function createTagSelect(selectedTagKeys = []) {
++  const select = document.createElement("select");
++  select.setAttribute("aria-label", "Shared tag reference");
++  select.dataset.spritesField = "tagKeys";
++  select.replaceChildren(
++    option("", "No shared tag"),
++    ...snapshot.tags.map((tag) => option(tag.id, tag.name)),
++  );
++  select.value = selectedTagKeys[0] || "";
++  if (snapshot.tags.length === 0) {
++    select.disabled = true;
++  }
++  return select;
++}
++
++function createEditorRow(sprite = {}) {
++  const row = document.createElement("tr");
++  const isNew = !sprite.id;
++  row.dataset.spritesEditorRow = isNew ? "__new__" : sprite.id;
++
++  const nameCell = document.createElement("td");
++  nameCell.append(createInput(sprite.name || "", "Sprite name", "name"));
++  row.append(nameCell);
++
++  const statusCell = document.createElement("td");
++  statusCell.append(createSelect(snapshot.statusOptions, sprite.status || "Ready", "Sprite status", "status"));
++  row.append(statusCell);
++
++  const categoryCell = document.createElement("td");
++  categoryCell.append(createSelect(snapshot.categories, sprite.category || "Sprite", "Sprite category", "category"));
++  row.append(categoryCell);
++
++  const tagsCell = document.createElement("td");
++  tagsCell.append(createTagSelect(sprite.tagKeys || []));
++  row.append(tagsCell);
++
++  const paletteCell = document.createElement("td");
++  paletteCell.append(createPaletteSelect(sprite.paletteColorKey || ""));
++  row.append(paletteCell);
++
++  row.append(createCell(isNew ? "New sprite" : sprite.updatedAt || "Unavailable"));
++
++  const actionsCell = document.createElement("td");
++  actionsCell.append(
++    createButton("Save", "save", sprite.id || "__new__"),
++    document.createTextNode(" "),
++    createButton("Cancel", "cancel", sprite.id || "__new__"),
++  );
++  row.append(actionsCell);
++  return row;
++}
++
++function rowValues(row) {
++  const field = (name) => row.querySelector(`[data-sprites-field='${name}']`);
++  const tagKey = normalizeText(field("tagKeys")?.value);
++  return {
++    category: normalizeText(field("category")?.value),
++    name: normalizeText(field("name")?.value),
++    paletteColorKey: normalizeText(field("paletteColorKey")?.value),
++    status: normalizeText(field("status")?.value),
++    tagKeys: tagKey ? [tagKey] : [],
++  };
++}
++
++function renderRows() {
++  if (!elements.tableBody) {
++    return;
++  }
++  const rows = [];
++  const sprites = filteredSprites();
++
++  sprites.forEach((sprite) => {
++    if (editingSpriteId === sprite.id) {
++      rows.push(createEditorRow(sprite));
++      return;
++    }
++    const row = document.createElement("tr");
++    row.dataset.spritesRow = sprite.id;
++    if (sprite.id === selectedSpriteId) {
++      row.dataset.spritesSelected = "true";
++    }
++    row.append(
++      createCell(sprite.name || "Unnamed Sprite"),
++      createCell(sprite.status || "Unavailable"),
++      createCell(sprite.category || "Uncategorized"),
++      createCell((sprite.tagKeys || []).map(tagLabel).join(", ") || "No shared tags"),
++      createCell(sprite.paletteColorKey || "None"),
++      createCell(sprite.updatedAt || "Unavailable"),
++    );
++    const actionsCell = document.createElement("td");
++    actionsCell.append(
++      createButton("View", "view", sprite.id),
++      document.createTextNode(" "),
++      createButton("Edit", "edit", sprite.id),
++      document.createTextNode(" "),
++      createButton("Archive", "archive", sprite.id),
++    );
++    row.append(actionsCell);
++    rows.push(row);
++  });
++
++  if (editingSpriteId === "__new__") {
++    rows.push(createEditorRow());
++  }
++
++  if (rows.length === 0) {
++    const emptyRow = document.createElement("tr");
++    const emptyCell = document.createElement("td");
++    emptyCell.colSpan = 7;
++    emptyCell.textContent = snapshot.sprites.length === 0
++      ? "No sprite records yet. Add a sprite to begin testing the MVP."
++      : "No sprites match the current filters.";
++    emptyRow.append(emptyCell);
++    rows.push(emptyRow);
++  }
++  elements.tableBody.replaceChildren(...rows);
++}
++
++function renderFilters() {
++  replaceSelectOptions(elements.statusFilter, snapshot.statusOptions, filterState.status, "All statuses");
++  replaceSelectOptions(elements.categoryFilter, snapshot.categories, filterState.category, "All categories");
++  if (elements.tagFilter) {
++    const tagOptions = [option("", "All tags"), ...snapshot.tags.map((tag) => option(tag.id, tag.name))];
++    elements.tagFilter.replaceChildren(...tagOptions);
++    elements.tagFilter.value = filterState.tagKey;
++  }
++}
++
++function renderPaletteState() {
++  if (!elements.paletteState) {
++    return;
++  }
++  if (snapshot.paletteColors.length === 0) {
++    elements.paletteState.textContent = "Palette/Colors has no reusable color records available. Sprites will save Palette color references as empty keys.";
++    return;
++  }
++  elements.paletteState.textContent = `${snapshot.paletteColors.length} Palette/Colors record${snapshot.paletteColors.length === 1 ? "" : "s"} available by API key. Sprites store paletteColorKey only.`;
++}
++
++function renderMetadata() {
++  const sprite = snapshot.sprites.find((candidate) => candidate.id === selectedSpriteId) || snapshot.selectedSprite;
++  if (!elements.metadata || !elements.preview || !elements.references) {
++    return;
++  }
++  if (!sprite) {
++    elements.metadata.replaceChildren(listItem("No selected sprite details."));
++    elements.preview.replaceChildren(paragraph(snapshot.preview.message || "Preview unavailable."));
++    elements.references.replaceChildren(paragraph(snapshot.referenceContract.message || "Reference protection unavailable."));
++    return;
++  }
++  elements.metadata.replaceChildren(
++    listItem(`Key: ${sprite.key || sprite.id}`),
++    listItem(`Source: ${sprite.source || "Unavailable"}`),
++    listItem(`File: ${sprite.fileName || sprite.originalName || "Unavailable"}`),
++    listItem(`MIME/type: ${sprite.mimeType || "Unavailable"}`),
++    listItem(`Dimensions: ${sprite.dimensions || "Unavailable"}`),
++    listItem(`Size: ${sprite.size ? `${sprite.size} bytes` : "Unavailable"}`),
++    listItem(`Palette color key: ${sprite.paletteColorKey || "None"}`),
++    listItem(`Updated by: ${sprite.updatedBy || "Unavailable"}`),
++    listItem(`Updated at: ${sprite.updatedAt || "Unavailable"}`),
++  );
++  elements.preview.replaceChildren(
++    paragraph(sprite.previewStatus || snapshot.preview.message || "Preview unavailable."),
++    paragraph(`Stored path: ${sprite.storedPath || sprite.path || "Unavailable"}`),
++  );
++  const referenceSummary = sprite.referenceSummary || snapshot.referenceContract;
++  elements.references.replaceChildren(
++    paragraph(referenceSummary.message || "Reference protection unavailable."),
++    paragraph(`Usage count: ${referenceSummary.usageCount || 0}`),
++  );
++}
++
++function listItem(text) {
++  const item = document.createElement("li");
++  item.textContent = text;
++  return item;
++}
++
++function paragraph(text) {
++  const item = document.createElement("p");
++  item.textContent = text;
++  return item;
++}
++
++function renderValidation() {
++  if (!elements.validation) {
++    return;
++  }
++  const findings = snapshot.validation?.findings || [];
++  if (findings.length === 0) {
++    elements.validation.replaceChildren(listItem("No validation findings."));
++    return;
++  }
++  elements.validation.replaceChildren(
++    ...findings.map((finding) => listItem(`${finding.label || "Finding"}: ${finding.action || finding.status || "Needs input"}`)),
++  );
++}
++
++function renderSummary() {
++  const visible = filteredSprites();
++  setText(elements.count, String(snapshot.sprites.length));
++  setText(elements.visibleCount, String(visible.length));
++  setText(elements.libraryStatus, snapshot.validation?.status || "Unavailable");
++  if (!elements.log?.textContent || elements.log.textContent === "Sprites loading.") {
++    setText(elements.log, snapshot.sprites.length ? "Sprites ready." : "Sprites ready. Add a sprite to begin.");
++  }
++}
++
++function render() {
++  renderFilters();
++  renderPaletteState();
++  renderRows();
++  renderMetadata();
++  renderValidation();
++  renderSummary();
++}
++
++function saveEditorRow(row) {
++  if (!requireCreatorSession()) {
++    return;
++  }
++  const spriteId = row.dataset.spritesEditorRow;
++  const values = rowValues(row);
++  const result = spriteId === "__new__"
++    ? repository.createSpriteRecord(values)
++    : repository.updateSpriteRecord(spriteId, values);
++  setText(elements.log, result?.message || "Sprite save did not return a message.");
++  if (result?.created || result?.updated) {
++    editingSpriteId = "";
++    selectedSpriteId = result.asset?.id || selectedSpriteId;
++  }
++  loadSnapshot();
++}
++
++elements.add?.addEventListener("click", () => {
++  editingSpriteId = "__new__";
++  selectedSpriteId = "";
++  setText(elements.log, "Adding sprite.");
++  render();
++});
++
++elements.tableBody?.addEventListener("click", (event) => {
++  const button = event.target.closest("[data-sprites-action]");
++  if (!button) {
++    return;
++  }
++  const spriteId = button.dataset.spriteId || "";
++  const action = button.dataset.spritesAction;
++  if (action === "view") {
++    selectedSpriteId = spriteId;
++    setText(elements.log, "Viewing sprite.");
++    render();
++    return;
++  }
++  if (action === "edit") {
++    selectedSpriteId = spriteId;
++    editingSpriteId = spriteId;
++    setText(elements.log, "Editing sprite.");
++    render();
++    return;
++  }
++  if (action === "cancel") {
++    editingSpriteId = "";
++    setText(elements.log, "Sprite edit canceled.");
++    render();
++    return;
++  }
++  if (action === "save") {
++    const row = button.closest("[data-sprites-editor-row]");
++    saveEditorRow(row);
++    return;
++  }
++  if (action === "archive") {
++    if (!requireCreatorSession()) {
++      return;
++    }
++    const result = repository.archiveSpriteRecord(spriteId);
++    setText(elements.log, result?.message || "Sprite archive did not return a message.");
++    selectedSpriteId = spriteId;
++    loadSnapshot();
++  }
++});
++
++elements.search?.addEventListener("input", () => {
++  filterState.query = normalizeText(elements.search.value);
++  render();
++});
++
++elements.statusFilter?.addEventListener("change", () => {
++  filterState.status = normalizeText(elements.statusFilter.value);
++  render();
++});
++
++elements.categoryFilter?.addEventListener("change", () => {
++  filterState.category = normalizeText(elements.categoryFilter.value);
++  render();
++});
++
++elements.tagFilter?.addEventListener("change", () => {
++  filterState.tagKey = normalizeText(elements.tagFilter.value);
++  render();
++});
++
++loadSnapshot();
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion.md b/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion.md
+new file mode 100644
+index 000000000..4b7076c57
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion.md
+@@ -0,0 +1,63 @@
++# PR_26177_CHARLIE_018-sprites-testable-mvp-completion
++
++Team: Charlie
++
++Status: PASS
++
++## Scope
++
++Completed the Sprites MVP to a manually testable state without splitting additional PRs.
++
++Implemented:
++- Toolbox Sprites entry is active/clickable through the source-controlled registry.
++- `/toolbox/sprites/index.html` loads a Theme V2 Sprites workspace.
++- Sprites uses Web UI -> API/service contract -> asset repository.
++- Sprite list/create/edit/archive flows are API-backed through `/api/toolbox/sprites`.
++- Guest save attempts redirect to `account/sign-in.html`.
++- Preview/metadata surface shows product-safe metadata and explicit unavailable preview state.
++- Palette/Colors remains reusable color SSoT; Sprites stores `paletteColorKey` only.
++- Search/filter/status/category/tag controls are available.
++- Reference protection disables destructive delete and shows explicit unavailable Object/World reference state.
++
++## Changed Files
++
++- `assets/toolbox/sprites/js/index.js`
++- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
++- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- `src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js`
++- `src/dev-runtime/server/local-api-router.mjs`
++- `src/shared/toolbox/tool-metadata-inventory.js`
++- `tests/dev-runtime/SpritesAssetRepository.test.mjs`
++- `tests/playwright/tools/SpritesToolMvp.spec.mjs`
++- `tests/playwright/tools/ToolboxRoutePages.spec.mjs`
++- `toolbox/sprites/index.html`
 +
 +## Validation
 +
-+- PASS: Current branch before PR branch creation was `main`.
-+- PASS: PR branch created and work remained on `PR_26177_DELTA_001-hitboxes-team-ownership`.
-+- PASS: `rg -n "Alfa - Hitboxes" docs_build/dev/ProjectInstructions` returned no matches.
-+- PASS: `rg -n "Delta - Hitboxes|Hitboxes" docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md` found only Delta ownership entries for Hitboxes in target files.
-+- PASS: `git diff --name-only` showed only Project Instructions ownership/backlog files before report generation.
++PASS `node ./scripts/run-node-test-files.mjs tests/dev-runtime/SpritesAssetRepository.test.mjs`
 +
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_branch-validation.md b/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_branch-validation.md
++PASS `npx playwright test tests/playwright/tools/SpritesToolMvp.spec.mjs --workers=1 --reporter=list`
++
++PASS `npx playwright test tests/playwright/tools/ToolNavigationPrevNext.spec.mjs -g "Toolbox card names link" --workers=1 --reporter=list`
++
++PASS `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs -g "toolbox index shows wireframe and beta tools|toolbox status kickers" --workers=1 --reporter=list`
++
++Note: one combined Toolbox status run hit a Playwright artifact timeout after the index test passed; the exact status test was rerun independently and passed.
++
++PASS `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs -g "toolbox status kickers, filters, card order, and voting controls work from registry metadata" --workers=1 --reporter=list --timeout=180000`
++
++PASS `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs -g "toolbox Build Path status filters" --workers=1 --reporter=list --timeout=180000`
++
++PASS `git diff --check`
++
++PASS static scan for inline style/script/event handler usage in Sprites HTML/JS.
++
++PASS static scan for forbidden Sprites persistence patterns in Sprites HTML/JS.
++
++## Notes
++
++- No `start_of_day` files changed.
++- No browser storage product-data SSoT introduced.
++- No MEM DB, local-mem, fake-login, SQLite direction, or silent product-data fallback introduced.
++- Sprites deliberately reuses the existing asset repository through a Sprites API alias rather than adding a parallel database architecture.
++- Destructive delete remains disabled until Object/World reference contracts can verify real references.
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_branch-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_branch-validation.md
 new file mode 100644
-index 000000000..4dcb5c321
+index 000000000..e08b920bb
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_branch-validation.md
-@@ -0,0 +1,17 @@
-+# PR_26177_DELTA_001 Hitboxes Team Ownership Branch Validation
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_branch-validation.md
+@@ -0,0 +1,28 @@
++# Branch Validation
 +
-+Branch: PR_26177_DELTA_001-hitboxes-team-ownership
-+Base: main
++PR: PR_26177_CHARLIE_018-sprites-testable-mvp-completion
 +
-+Result: PASS
++Status: PASS
 +
-+| Check | Status | Notes |
-+|---|---|---|
-+| Start branch was main | PASS | `git branch --show-current` returned `main` before branch creation. |
-+| PR branch created | PASS | Current branch is `PR_26177_DELTA_001-hitboxes-team-ownership`. |
-+| Branch starts from current main | PASS | Starting commit was `f237619cf7aea710a32b9d5141115fb02dbd3293`; `HEAD...origin/main` was `0 0` before edits. |
-+| Scope is documentation/reporting only | PASS | No implementation code changed. |
-+| Engine core untouched | PASS | No engine core files changed. |
-+| start_of_day untouched | PASS | No `start_of_day` files changed. |
-+| Unrelated work preserved | PASS | Existing untracked `docs_build/dev/ProjectInstructions (2).zip` left untouched. |
++## Branch Gate
 +
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_validation-checklist.md b/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_validation-checklist.md
++- Current branch: `PR_26177_CHARLIE_018-sprites-testable-mvp-completion`
++- Started after synced `main`: PASS
++- Worktree before implementation: clean on new PR branch
++- Remote upstream: not present until PR018 push
++
++## Scope Gate
++
++- No `start_of_day` files changed: PASS
++- One PR purpose only: PASS
++- No unrelated cleanup: PASS
++- Runtime/API/UI changes limited to Sprites MVP testability and affected Toolbox metadata/tests: PASS
++- No direct commits to `main`: PASS
++
++## Changed-File Check
++
++PASS: changed files are Sprites UI/API contract, affected Toolbox metadata/tests, required reports, and generated validation coverage reports.
++
++## Final Branch State Before Commit
++
++Pending commit/push at report generation time.
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_manual-validation-notes.md
 new file mode 100644
-index 000000000..9d801e2e9
+index 000000000..47d30d91c
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_validation-checklist.md
-@@ -0,0 +1,15 @@
-+# PR_26177_DELTA_001 Hitboxes Team Ownership Validation Checklist
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_manual-validation-notes.md
+@@ -0,0 +1,33 @@
++# Manual Validation Notes
 +
-+| Requirement | Status | Notes |
-+|---|---|---|
-+| Hard stop unless current branch is main | PASS | Start branch was verified as `main` before creating the PR branch. |
-+| Create and switch to PR branch | PASS | Created and switched to `PR_26177_DELTA_001-hitboxes-team-ownership`. |
-+| Team Delta sole owner of Hitboxes | PASS | Team ownership map lists Hitboxes under Team Delta. |
-+| Remove Hitboxes from Team Alfa ownership | PASS | Backlog item changed from `Alfa - Hitboxes` to `Delta - Hitboxes`; no `Alfa - Hitboxes` matches remain in ProjectInstructions. |
-+| Do not modify implementation code | PASS | Only Project Instructions and report artifacts changed. |
-+| Do not change other team ownership | PASS | Diff changes only Hitboxes ownership/routing. |
-+| Regenerate Codex review diff | PASS | `docs_build/dev/reports/codex_review.diff` generated from the working diff. |
-+| Regenerate Codex changed files | PASS | `docs_build/dev/reports/codex_changed_files.txt` generated from changed files. |
-+| PR-specific report | PASS | `docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership.md` added. |
-+| Branch validation | PASS | `docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_branch-validation.md` added. |
++PR: PR_26177_CHARLIE_018-sprites-testable-mvp-completion
 +
-diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 9bbcdda40..0172ab7b9 100644
---- a/docs_build/dev/reports/codex_changed_files.txt
-+++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,12 +1,7 @@
--# git status --short
--M docs_build/dev/reports/PR_26175_DELTA_010-final-team-delta-completion-report.md
-- M docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout.md
--?? docs_build/dev/reports/PR_26175_DELTA_EOD_final_report.md
--
--# git ls-files --others --exclude-standard
--docs_build/dev/reports/PR_26175_DELTA_EOD_final_report.md
--
--# git diff --stat
--.../PR_26175_DELTA_010-final-team-delta-completion-report.md        | 6 +++++-
-- .../dev/reports/PR_26175_DELTA_010-runtime-testability-closeout.md  | 3 ++-
-- 2 files changed, 7 insertions(+), 2 deletions(-)
-\ No newline at end of file
-+docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-+docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-+docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership.md
-+docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_branch-validation.md
-+docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_validation-checklist.md
-+docs_build/dev/reports/codex_changed_files.txt
-+docs_build/dev/reports/codex_review.diff
++Status: PASS
++
++## Manual Test Steps
++
++1. Start the local API/site server.
++2. Open `/toolbox/index.html`.
++3. Confirm the Sprites card is visible without enabling Planned tools.
++4. Click Sprites and confirm navigation to `/toolbox/sprites/index.html`.
++5. Confirm the Sprites table, summary cards, filters, preview, metadata, references, and validation panels render.
++6. Click `Add Sprite`.
++7. Enter `Hero Sprite`.
++8. Select category `Character`.
++9. Save and confirm a row appears with status `Ready`.
++10. Click `Edit`, change the name to `Hero Sprite Revised`, choose category `Icon`, and save.
++11. Search for `revised` and confirm only the matching sprite remains visible.
++12. Filter category `Icon` and confirm the matching sprite remains visible.
++13. Click `Archive` and confirm status changes to `Archived`.
++14. Confirm the metadata panel shows key, file/source details, size/dimensions unavailable where appropriate, palette color key, updated by, and updated at.
++15. Confirm the reference panel says destructive delete is disabled until Object/World reference contracts are available.
++16. Sign out or set a guest session.
++17. Open `/toolbox/sprites/index.html`, click `Add Sprite`, enter a name, and save.
++18. Confirm the browser redirects to `/account/sign-in.html`.
++19. Confirm Palette/Colors references are shown by key only and no Sprites-owned reusable color definitions are present.
++
++## Manual Notes
++
++- Preview is intentionally metadata-safe until storage/image byte preview integration is available.
++- Palette/Colors empty state is explicit when no reusable color records are available.
++- Destructive delete is intentionally unavailable; archive is the supported MVP lifecycle operation.
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_requirements-checklist.md b/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_requirements-checklist.md
+new file mode 100644
+index 000000000..f628d22e6
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_requirements-checklist.md
+@@ -0,0 +1,25 @@
++# Requirement Checklist
++
++PR: PR_26177_CHARLIE_018-sprites-testable-mvp-completion
++
++Status: PASS
++
++- PASS Ensure `/toolbox/index.html` Sprites is active/clickable.
++- PASS Ensure `/toolbox/sprites/index.html` loads.
++- PASS Ensure Sprites tool has working table/list surface.
++- PASS Ensure API-backed list/create/edit/archive works.
++- PASS Ensure guest save redirects to `account/sign-in.html`.
++- PASS Ensure preview/metadata surface works or shows explicit product-safe unavailable state.
++- PASS Ensure Palette/Colors is the only source for reusable colors.
++- PASS Ensure Sprites references Palette/Colors by key only.
++- PASS Ensure Sprites does not own color definitions or page-local color arrays.
++- PASS Ensure search/filter/tags/categories work where supported.
++- PASS Ensure reference viewer/delete protection works or shows clear empty state.
++- PASS Remove planned state where it blocks Sprites testing.
++- PASS Keep Theme V2 compliance.
++- PASS No inline CSS, inline JS, style blocks, script blocks, or inline event handlers in Sprites page.
++- PASS Do not modify `start_of_day` folders.
++- PASS No unrelated cleanup.
++- PASS Do not introduce MEM DB, local-mem, fake-login, browser-owned product data, browser storage product-data SSoT, SQLite direction, or silent fallbacks.
++- PASS Maintain Web UI -> API/service contract -> database/repository flow.
++- PASS Browser does not generate authoritative database keys.
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_validation-lane.md b/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_validation-lane.md
+new file mode 100644
+index 000000000..974390325
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_018-sprites-testable-mvp-completion_validation-lane.md
+@@ -0,0 +1,50 @@
++# Validation Lane
++
++PR: PR_26177_CHARLIE_018-sprites-testable-mvp-completion
++
++Status: PASS
++
++## Commands
++
++```text
++node ./scripts/run-node-test-files.mjs tests/dev-runtime/SpritesAssetRepository.test.mjs
++PASS tests/dev-runtime/SpritesAssetRepository.test.mjs
++1/1 targeted node test file(s) passed.
++```
++
++```text
++npx playwright test tests/playwright/tools/SpritesToolMvp.spec.mjs --workers=1 --reporter=list
++3 passed
++```
++
++```text
++npx playwright test tests/playwright/tools/ToolNavigationPrevNext.spec.mjs -g "Toolbox card names link" --workers=1 --reporter=list
++1 passed
++```
++
++```text
++npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs -g "toolbox index shows wireframe and beta tools|toolbox status kickers" --workers=1 --reporter=list
++1 passed, 1 Playwright artifact timeout
++```
++
++```text
++npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs -g "toolbox status kickers, filters, card order, and voting controls work from registry metadata" --workers=1 --reporter=list --timeout=180000
++1 passed
++```
++
++```text
++npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs -g "toolbox Build Path status filters" --workers=1 --reporter=list --timeout=180000
++1 passed
++```
++
++```text
++git diff --check
++PASS
++```
++
++## Static Checks
++
++- PASS Sprites HTML/JS has no inline style/script/event handler matches.
++- PASS Sprites HTML/JS has no browser storage product-data SSoT matches.
++- PASS No `start_of_day` changed files.
++- NOTE Broad scan over all changed files finds pre-existing hex literals in `tests/playwright/tools/ToolboxRoutePages.spec.mjs`; Sprites implementation does not introduce reusable color definitions.
+diff --git a/tests/dev-runtime/SpritesAssetRepository.test.mjs b/tests/dev-runtime/SpritesAssetRepository.test.mjs
+new file mode 100644
+index 000000000..6d4e4019d
+--- /dev/null
++++ b/tests/dev-runtime/SpritesAssetRepository.test.mjs
+@@ -0,0 +1,71 @@
++import assert from "node:assert/strict";
++
++import { createAssetToolMockRepository } from "../../src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js";
++import { MOCK_DB_KEYS } from "../../src/dev-runtime/persistence/mock-db-store.js";
++
++export function run() {
++  const repository = createAssetToolMockRepository({
++    sessionUserKey: () => MOCK_DB_KEYS.users.user1,
++  });
++
++  const emptySnapshot = repository.getSpritesSnapshot();
++  assert.equal(emptySnapshot.validation.status, "Ready");
++  assert.equal(emptySnapshot.paletteOwnership.includes("Palette/Colors"), true);
++  assert.deepEqual(emptySnapshot.sprites, []);
++
++  const created = repository.createSpriteRecord({
++    category: "Character",
++    name: "Hero Sprite",
++    paletteColorKey: "",
++    status: "Ready",
++    tagKeys: [],
++  });
++  assert.equal(created.created, true);
++  assert.equal(created.asset.name, "Hero Sprite");
++  assert.equal(created.asset.category, "Character");
++  assert.equal(created.asset.createdBy, MOCK_DB_KEYS.users.user1);
++  assert.equal(created.asset.updatedBy, MOCK_DB_KEYS.users.user1);
++  assert.equal(created.asset.paletteColorKey, "");
++  assert.equal(created.asset.usage, "sprite");
++  assert.equal(created.asset.referenceSummary.destructiveDeleteAllowed, false);
++  assert.equal(repository.getSpritesSnapshot().sprites.length, 1);
++
++  const duplicate = repository.createSpriteRecord({
++    category: "Character",
++    name: "Hero Sprite",
++    status: "Ready",
++    tagKeys: [],
++  });
++  assert.equal(duplicate.created, false);
++  assert.match(duplicate.message, /already exists/);
++
++  const updated = repository.updateSpriteRecord(created.asset.id, {
++    category: "Icon",
++    name: "Hero Sprite Revised",
++    paletteColorKey: "",
++    status: "Ready",
++    tagKeys: [],
++  });
++  assert.equal(updated.updated, true);
++  assert.equal(updated.asset.name, "Hero Sprite Revised");
++  assert.equal(updated.asset.category, "Icon");
++
++  const blockedDelete = repository.deleteSpriteRecord(updated.asset.id);
++  assert.equal(blockedDelete.deleted, false);
++  assert.equal(blockedDelete.referenceSummary.destructiveDeleteAllowed, false);
++  assert.match(blockedDelete.message, /Destructive sprite delete is disabled/);
++
++  const archived = repository.archiveSpriteRecord(updated.asset.id);
++  assert.equal(archived.archived, true);
++  assert.equal(archived.asset.status, "Archived");
++
++  const guestRepository = createAssetToolMockRepository({ sessionUserKey: () => "" });
++  const guestCreate = guestRepository.createSpriteRecord({
++    category: "Sprite",
++    name: "Guest Sprite",
++    status: "Ready",
++    tagKeys: [],
++  });
++  assert.equal(guestCreate.created, false);
++  assert.match(guestCreate.message, /Sign in required/);
++}
+diff --git a/tests/playwright/tools/SpritesToolMvp.spec.mjs b/tests/playwright/tools/SpritesToolMvp.spec.mjs
+new file mode 100644
+index 000000000..95f8f0374
+--- /dev/null
++++ b/tests/playwright/tools/SpritesToolMvp.spec.mjs
+@@ -0,0 +1,147 @@
++import { expect, test } from "@playwright/test";
++import { readFileSync } from "node:fs";
++import { resolve } from "node:path";
++import { fileURLToPath } from "node:url";
++import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store.js";
++import { isBrowserExtensionNoise } from "../../helpers/browserExtensionNoise.mjs";
++import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
++import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
++
++const REPO_ROOT = resolve(fileURLToPath(new URL("../../..", import.meta.url)));
++
++test.afterAll(async () => {
++  await workspaceV2CoverageReporter.writeReport();
++});
++
++async function setServerSession(server, userKey = MOCK_DB_KEYS.users.user1) {
++  await fetch(`${server.baseUrl}/api/session/mode`, {
++    body: JSON.stringify({ modeId: "local-db" }),
++    headers: { "Content-Type": "application/json" },
++    method: "POST",
++  });
++  await fetch(`${server.baseUrl}/api/session/user`, {
++    body: JSON.stringify({ userKey }),
++    headers: { "Content-Type": "application/json" },
++    method: "POST",
++  });
++}
++
++async function openSpritesPage(page, userKey = MOCK_DB_KEYS.users.user1) {
++  const server = await startRepoServer();
++  const failedRequests = [];
++  const pageErrors = [];
++  const consoleErrors = [];
++  await page.addInitScript(({ apiUrl, siteUrl }) => {
++    window.GameFoundryPublicConfig = {
++      apiUrl,
++      environmentLabel: "Development Environment",
++      siteUrl,
++    };
++  }, { apiUrl: `${server.baseUrl}/api`, siteUrl: server.baseUrl });
++  page.on("response", (response) => {
++    if (response.status() >= 400) {
++      failedRequests.push(`${response.status()} ${response.url()}`);
++    }
++  });
++  page.on("requestfailed", (request) => {
++    failedRequests.push(`FAILED ${request.url()}`);
++  });
++  page.on("pageerror", (error) => {
++    const text = error.stack || error.message;
++    if (!isBrowserExtensionNoise(text)) {
++      pageErrors.push(error.message);
++    }
++  });
++  page.on("console", (message) => {
++    if (message.type() === "error" && !isBrowserExtensionNoise(message.text())) {
++      consoleErrors.push(message.text());
++    }
++  });
++  await setServerSession(server, userKey);
++  await workspaceV2CoverageReporter.start(page);
++  await page.goto(`${server.baseUrl}/toolbox/sprites/index.html`, { waitUntil: "networkidle" });
++  return { consoleErrors, failedRequests, pageErrors, server };
++}
++
++function expectNoPageFailures(failures) {
++  expect(failures.failedRequests).toEqual([]);
++  expect(failures.pageErrors).toEqual([]);
++  expect(failures.consoleErrors).toEqual([]);
++}
++
++test("Sprites is clickable from Toolbox and loads the API-backed MVP surface", async ({ page }) => {
++  const failures = await openSpritesPage(page);
++  try {
++    await page.goto(`${failures.server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
++    const spritesLink = page.locator("[data-toolbox-tool-name-link='Sprites']");
++    await expect(spritesLink).toHaveAttribute("href", "/toolbox/sprites/index.html");
++    await expect(spritesLink).not.toHaveAttribute("data-toolbox-launch-blocked", "planned");
++    await spritesLink.click();
++    await page.waitForURL(/\/toolbox\/sprites\/index\.html$/);
++    await expect(page.getByRole("heading", { level: 1, name: "Sprites" })).toBeVisible();
++    await expect(page.locator("[data-sprites-table]")).toBeVisible();
++    await expect(page.locator("[data-sprites-log]")).toContainText(/Sprites ready|Sprites loading/);
++    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
++    expectNoPageFailures(failures);
++  } finally {
++    await workspaceV2CoverageReporter.stop(page);
++    await failures.server.close();
++  }
++});
++
++test("Sprites creator can create, edit, filter, inspect, and archive a sprite", async ({ page }) => {
++  const failures = await openSpritesPage(page);
++  try {
++    await page.getByRole("button", { name: "Add Sprite" }).click();
++    await page.getByLabel("Sprite name").fill("Hero Sprite");
++    await page.getByLabel("Sprite category").selectOption("Character");
++    await page.getByRole("button", { name: "Save" }).click();
++
++    await expect(page.locator("[data-sprites-row]").filter({ hasText: "Hero Sprite" })).toBeVisible();
++    await expect(page.locator("[data-sprites-log]")).toContainText("Created sprite Hero Sprite.");
++    await expect(page.locator("[data-sprites-metadata]")).toContainText("Key:");
++    await expect(page.locator("[data-sprites-metadata]")).toContainText("Palette color key: None");
++    await expect(page.locator("[data-sprites-preview]")).toContainText(/Preview metadata|Preview unavailable/);
++    await expect(page.locator("[data-sprites-references]")).toContainText("destructive delete is disabled");
++
++    await page.locator("[data-sprites-row]").filter({ hasText: "Hero Sprite" }).getByRole("button", { name: "Edit" }).click();
++    await page.getByLabel("Sprite name").fill("Hero Sprite Revised");
++    await page.getByLabel("Sprite category").selectOption("Icon");
++    await page.getByRole("button", { name: "Save" }).click();
++    await expect(page.locator("[data-sprites-row]").filter({ hasText: "Hero Sprite Revised" })).toBeVisible();
++    await expect(page.locator("[data-sprites-row]").filter({ hasText: "Icon" })).toBeVisible();
++
++    await page.getByLabel("Search Sprites").fill("revised");
++    await expect(page.locator("[data-sprites-row]")).toHaveCount(1);
++    await page.getByLabel("Search Sprites").fill("");
++    await page.getByLabel("Filter Sprites by category").selectOption("Icon");
++    await expect(page.locator("[data-sprites-row]")).toHaveCount(1);
++
++    await page.locator("[data-sprites-row]").filter({ hasText: "Hero Sprite Revised" }).getByRole("button", { name: "Archive" }).click();
++    await expect(page.locator("[data-sprites-row]").filter({ hasText: "Hero Sprite Revised" })).toContainText("Archived");
++    await expect(page.locator("[data-sprites-log]")).toContainText("Archived sprite Hero Sprite Revised.");
++    expectNoPageFailures(failures);
++  } finally {
++    await workspaceV2CoverageReporter.stop(page);
++    await failures.server.close();
++  }
++});
++
++test("Sprites guest save redirects to sign in and Palette color ownership stays external", async ({ page }) => {
++  const failures = await openSpritesPage(page, "");
++  try {
++    await page.getByRole("button", { name: "Add Sprite" }).click();
++    await page.getByLabel("Sprite name").fill("Guest Sprite");
++    await page.getByRole("button", { name: "Save" }).click();
++    await page.waitForURL(/\/account\/sign-in\.html$/);
++
++    const source = readFileSync(resolve(REPO_ROOT, "assets/toolbox/sprites/js/index.js"), "utf8");
++    expect(source).not.toMatch(/#[0-9A-Fa-f]{6}/);
++    expect(source).not.toMatch(/const\s+\w*color\w*\s*=\s*\[/i);
++    expect(source).toContain("paletteColorKey");
++    expectNoPageFailures(failures);
++  } finally {
++    await workspaceV2CoverageReporter.stop(page);
++    await failures.server.close();
++  }
++});
