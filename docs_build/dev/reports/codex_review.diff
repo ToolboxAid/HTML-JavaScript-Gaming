@@ -1,27 +1,242 @@
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_branch-validation.md b/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_branch-validation.md
-index 42eaf7fcc..d309d3b8f 100644
---- a/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_branch-validation.md
-+++ b/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_branch-validation.md
-@@ -12,4 +12,3 @@
- | PR_008 merged before PR_009 | PASS | PR #200 was marked ready, merged, and main was pulled. |
- | Main clean/synced after PR_008 | PASS | Worktree clean and `main...origin/main` returned `0 0`. |
- | PR_009 branch created from updated main | PASS | Branch `PR_26175_DELTA_009-replay-event-service-coverage` created from `1dcfc080a`. |
--
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_requirements-checklist.md b/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_requirements-checklist.md
-index 0d1f1c45b..31f1f33d9 100644
---- a/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_requirements-checklist.md
-+++ b/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_requirements-checklist.md
-@@ -16,4 +16,3 @@
- | No hidden defaults | PASS | No runtime behavior changed. |
- | Required reports | PASS | Report packet and Codex artifacts created. |
- | Repo-structured ZIP | PASS | `tmp/PR_26175_DELTA_009-replay-event-service-coverage_delta.zip`. |
--
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_validation-lane.md b/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_validation-lane.md
-index f1e320520..afbadc7a9 100644
---- a/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_validation-lane.md
-+++ b/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_validation-lane.md
-@@ -27,4 +27,3 @@ git diff --check
- ## Browser / Playwright
-
- SKIP - No browser UI files changed.
--
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_010-final-team-delta-completion-report.md b/docs_build/dev/reports/PR_26175_DELTA_010-final-team-delta-completion-report.md
+new file mode 100644
+index 000000000..e871142cf
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_DELTA_010-final-team-delta-completion-report.md
+@@ -0,0 +1,51 @@
++# Final Team Delta Completion Report
++
++## Executive Summary
++
++Team Delta runtime testability work through DELTA_009 is complete on main. PR_26175_DELTA_010 records the report-only closeout and confirms the testing direction is page/service-level, not team-runner based.
++
++## Completed Work
++
++| Delta item | Completion evidence | Status |
++|---|---|---|
++| DELTA_001 | Main contains runtime tick optimization commit `b760048a4`. | Complete |
++| DELTA_002 | Main contains replay clone consolidation commit `801780b96`. | Complete |
++| DELTA_003 | PR #185 merged. | Complete |
++| DELTA_004 | PR #186 merged. | Complete |
++| DELTA_005 | PR #187 merged. | Complete |
++| DELTA_006 | PR #189 merged. | Complete |
++| DELTA_007 | PR #199 merged. | Complete |
++| DELTA_008 | PR #200 merged. | Complete |
++| DELTA_009 | PR #201 merged. | Complete |
++
++## Final Testing Model
++
++- Site-wide/all-tests command: `npm test`
++- Runtime service command: `npm run test:service:runtime`
++- API service command: `npm run test:service:api`
++- Team-specific Delta command: none
++- Team-specific Delta runner: none
++- Delta validation harness script: absent
++
++## Final Validation
++
++| Validation | Result |
++|---|---|
++| `npm run test:service:runtime` | PASS |
++| `npm run test:service:api` | PASS |
++| Package/script guard | PASS |
++| Report verification | PASS |
++| `git diff --check` | PASS |
++
++## Closeout Notes
++
++- No runtime feature changes were made in PR_010.
++- No new tests were added in PR_010.
++- No npm commands were added in PR_010.
++- No browser-owned product data was introduced.
++- No hidden defaults or silent fallbacks were introduced.
++- Source branches remain retained by default.
++
++## Open Hygiene Note
++
++GitHub still has obsolete draft PR #188 for the earlier rejected Delta-specific harness approach. It is not part of the active DELTA_001 through DELTA_010 path and was not modified by this closeout.
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout.md b/docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout.md
+new file mode 100644
+index 000000000..b42068d87
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout.md
+@@ -0,0 +1,76 @@
++# PR_26175_DELTA_010-runtime-testability-closeout
++
++## Summary
++
++Team Delta completed the report-only runtime testability closeout after PR_26175_DELTA_009 merged to main.
++
++This PR does not change runtime behavior, tests, package commands, UI, browser-owned data, hidden defaults, or fallback behavior. It records the final Delta testability state and confirms the page/service-level testing model is the active direction.
++
++## Scope
++
++- Team: Delta
++- Branch: `PR_26175_DELTA_010-runtime-testability-closeout`
++- Purpose: report-only closeout
++- Runtime feature changes: none
++- New tests: none
++- New npm commands: none
++- New runners: none
++- UI changes: none
++
++## Delta Merge Confirmation
++
++| Work item | Evidence | Status |
++|---|---|---|
++| DELTA_001 Runtime Performance Optimization | Commit `b760048a4` is an ancestor of main; reports exist under `docs_build/dev/reports/`. | PASS |
++| DELTA_002 Shared Runtime Consolidation | Commit `801780b96` is an ancestor of main; reports exist under `docs_build/dev/reports/`. | PASS |
++| DELTA_003 API Client Standardization | GitHub PR #185 merged on 2026-06-25. | PASS |
++| DELTA_004 Runtime Test Expansion | GitHub PR #186 merged on 2026-06-25. | PASS |
++| DELTA_005 Runtime Technical Debt Cleanup | GitHub PR #187 merged on 2026-06-25. | PASS |
++| DELTA_006 Page Service Test Lanes | GitHub PR #189 merged on 2026-06-25. | PASS |
++| DELTA_007 Runtime Service Coverage | GitHub PR #199 merged on 2026-06-25. | PASS |
++| DELTA_008 API Client Service Coverage | GitHub PR #200 merged on 2026-06-25. | PASS |
++| DELTA_009 Replay Event Service Coverage | GitHub PR #201 merged on 2026-06-26. | PASS |
++
++## Testing Model Confirmation
++
++| Requirement | Status | Evidence |
++|---|---|---|
++| `npm test` is the site-wide/all-tests command | PASS | `package.json` keeps `test=node ./scripts/run-node-tests.mjs`. |
++| Page/service-level testing is active | PASS | `test:service:runtime` and `test:service:api` are present. |
++| No Team Delta-specific test command exists | PASS | Package/script guard found no `test:delta-runtime`, `run-delta-runtime`, or `test:delta` command. |
++| No Team Delta validation harness exists | PASS | `scripts/run-delta-runtime-validation.mjs` is absent. |
++| No duplicate test runner/orchestration added by Delta closeout | PASS | Existing `scripts/run-node-test-files.mjs` remains the focused service-file runner. |
++
++## Runtime Testability Coverage
++
++| Area | Page/service lane coverage |
++|---|---|
++| Runtime tick and processing | `npm run test:service:runtime` |
++| Replay clone and timeline behavior | `npm run test:service:runtime` |
++| Runtime event/action/trigger systems | `npm run test:service:runtime` |
++| Final runtime systems coverage | `npm run test:service:runtime` |
++| Shared API client boundary behavior | `npm run test:service:api` |
++| Public API URL resolution | `npm run test:service:api` |
++
++## Validation
++
++| Command | Status | Notes |
++|---|---|---|
++| `npm run test:service:runtime` | PASS | 23/23 targeted Node test files passed after PR_009 merge. |
++| `npm run test:service:api` | PASS | 2/2 targeted Node test files passed. |
++| Package/script guard | PASS | `npm test` unchanged; no team-specific Delta command or harness. |
++| Report verification | PASS | Required PR_010 report files exist. |
++| `git diff --check` | PASS | No whitespace errors after report generation. |
++
++## Manual Notes
++
++- `npm test` was inspected as the site-wide command path and was not changed.
++- Full `npm test` was not required for this report-only PR because no runtime, test, or command implementation changed in PR_010.
++- Source branches are retained; no branch deletion was performed.
++- Historical obsolete draft PR #188 still exists on GitHub but is outside this closeout merge scope and was not modified.
++
++## ZIP
++
++Repo-structured delta ZIP:
++
++`tmp/PR_26175_DELTA_010-runtime-testability-closeout_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout_branch-validation.md b/docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout_branch-validation.md
+new file mode 100644
+index 000000000..4c95b7375
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout_branch-validation.md
+@@ -0,0 +1,14 @@
++# PR_26175_DELTA_010 Branch Validation
++
++| Check | Status | Notes |
++|---|---|---|
++| Started from main | PASS | Checked out `main` before PR_009 review and merge. |
++| Pulled latest main | PASS | `git pull --ff-only` completed. |
++| Start branch was main | PASS | Current branch was `main` at the start gate. |
++| Start worktree clean | PASS | `git status --short` returned clean. |
++| Start main/origin sync | PASS | `main...origin/main` returned `0 0`. |
++| PR_009 reviewed before merge | PASS | Scope, reports, service lane, and governance guards checked. |
++| PR_009 marked ready before merge | PASS | PR #201 was draft and was marked ready after checks passed. |
++| PR_009 merged before PR_010 | PASS | PR #201 merged on 2026-06-26. |
++| Main clean/synced after PR_009 | PASS | Main pulled to `2f6d7be27` and `main...origin/main` returned `0 0`. |
++| PR_010 branch rebuilt from updated main | PASS | Branch `PR_26175_DELTA_010-runtime-testability-closeout` starts from `2f6d7be27`. |
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout_manual-validation-notes.md b/docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout_manual-validation-notes.md
+new file mode 100644
+index 000000000..79b512c4f
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout_manual-validation-notes.md
+@@ -0,0 +1,13 @@
++# PR_26175_DELTA_010 Manual Validation Notes
++
++- Confirmed PR #201 was merged before PR_010 work began.
++- Confirmed main was clean and synchronized after the PR #201 merge.
++- Confirmed PR_010 was rebuilt from the updated main commit `2f6d7be27`.
++- Confirmed no runtime source files were changed.
++- Confirmed no test files were changed.
++- Confirmed no npm commands were changed.
++- Confirmed no Team Delta-specific test runner exists on main.
++- Confirmed no `test:delta-runtime` package script exists.
++- Confirmed `scripts/run-delta-runtime-validation.mjs` does not exist.
++- Confirmed `npm run test:service:runtime` and `npm run test:service:api` are the focused page/service lanes.
++- Confirmed full `npm test` was not required because PR_010 is report-only and does not alter test orchestration.
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout_requirements-checklist.md b/docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout_requirements-checklist.md
+new file mode 100644
+index 000000000..53678cb07
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout_requirements-checklist.md
+@@ -0,0 +1,18 @@
++# PR_26175_DELTA_010 Requirements Checklist
++
++| Requirement | Status | Notes |
++|---|---|---|
++| Report-only closeout | PASS | Only reports and Codex artifacts changed. |
++| No runtime feature changes | PASS | No runtime source files changed. |
++| No new tests | PASS | No test files changed. |
++| No new commands | PASS | `package.json` unchanged. |
++| Confirm DELTA_001 through DELTA_009 merged | PASS | Main commit ancestry and GitHub merged PR evidence recorded. |
++| Confirm `npm test` is site-wide/all-tests command | PASS | `npm test` remains `node ./scripts/run-node-tests.mjs`. |
++| Confirm page/service-level testing model | PASS | `test:service:runtime` and `test:service:api` remain the focused service lanes. |
++| Confirm no team-specific test commands | PASS | Package/scripts guard found no Delta-named test command. |
++| Confirm no `test:delta-runtime` | PASS | Package script absent. |
++| Confirm no Delta validation harness script | PASS | `scripts/run-delta-runtime-validation.mjs` absent. |
++| Confirm no duplicate test runner/orchestration | PASS | Existing shared test runners reused; no runner added. |
++| Final Team Delta report | PASS | `PR_26175_DELTA_010-final-team-delta-completion-report.md` added. |
++| Required reports | PASS | PR report packet and Codex artifacts created. |
++| Repo-structured ZIP | PASS | `tmp/PR_26175_DELTA_010-runtime-testability-closeout_delta.zip`. |
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout_validation-lane.md b/docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout_validation-lane.md
+new file mode 100644
+index 000000000..3c7e27815
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout_validation-lane.md
+@@ -0,0 +1,34 @@
++# PR_26175_DELTA_010 Validation Lane
++
++## Commands
++
++```powershell
++npm run test:service:runtime
++npm run test:service:api
++$pkg = Get-Content -Raw package.json | ConvertFrom-Json; if ($pkg.scripts.test -ne 'node ./scripts/run-node-tests.mjs') { throw 'npm test changed unexpectedly' }; if ($pkg.scripts.PSObject.Properties.Name -contains 'test:delta-runtime') { throw 'test:delta-runtime exists' }
++if (Test-Path scripts/run-delta-runtime-validation.mjs) { throw 'unexpected delta runtime script' }
++rg -n "delta-runtime|run-delta-runtime|test:delta" package.json scripts
++Test-Path docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout.md
++Test-Path docs_build/dev/reports/PR_26175_DELTA_010-final-team-delta-completion-report.md
++git diff --check
++```
++
++## Results
++
++| Command | Status |
++|---|---|
++| `npm run test:service:runtime` | PASS |
++| `npm run test:service:api` | PASS |
++| Package command assertion | PASS |
++| Delta harness absence check | PASS |
++| Delta command grep | PASS - no matches in package/scripts |
++| Required report verification | PASS |
++| `git diff --check` | PASS |
++
++## Site-Wide Command
++
++`npm test` remains the single site-wide/all-tests command path and was not changed by PR_010.
++
++## Browser / Playwright
++
++SKIP - Report-only closeout; no browser UI files changed.
