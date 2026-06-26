@@ -1,4 +1,4 @@
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/PR_26177_BRAVO_014-playwright-chromium-validation.md
+docs_build/dev/reports/PR_26177_BRAVO_015-final-eod-closeout.md
 docs_build/dev/reports/PR_26177_BRAVO_EOD-closeout.md
