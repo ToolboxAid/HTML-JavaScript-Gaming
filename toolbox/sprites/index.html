@@ -44,6 +44,21 @@
                                     <p data-sprites-palette-selection-status>Palette/Colors selection loads when the Palette/Colors API is available.</p>
                                 </div>
                             </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Search & Filters</summary>
+                                <div class="accordion-body content-stack">
+                                    <label for="spritesSearch">Search</label>
+                                    <input id="spritesSearch" type="search" data-sprites-search aria-label="Search Sprites">
+                                    <label for="spritesStatusFilter">Status</label>
+                                    <select id="spritesStatusFilter" data-sprites-status-filter aria-label="Filter Sprites by status"></select>
+                                    <label for="spritesCategoryFilter">Category</label>
+                                    <select id="spritesCategoryFilter" data-sprites-category-filter aria-label="Filter Sprites by category"></select>
+                                    <label for="spritesTagFilter">Tag Key</label>
+                                    <select id="spritesTagFilter" data-sprites-tag-filter aria-label="Filter Sprites by tag key"></select>
+                                    <button class="btn btn--compact" type="button" data-sprites-clear-filters>Clear Filters</button>
+                                    <p data-sprites-filter-status>Filters load with API-backed Sprites records.</p>
+                                </div>
+                            </details>
                         </div>
                     </aside>
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="sprites" data-tool-icon-src="assets/theme-v2/images/badges/sprites.png" data-tool-character-src="assets/theme-v2/images/tools/sprites.png"></div>
