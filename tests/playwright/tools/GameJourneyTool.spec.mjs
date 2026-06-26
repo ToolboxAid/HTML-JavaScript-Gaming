@@ -40,7 +40,6 @@ test.afterAll(async () => {
 async function openRepoPage(page, pathName, options = {}) {
   const gameJourneyCompletionMetricsPostgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
   const server = await startRepoServer({
-    gameJourneyCompletionMetricsLegacyDbPath: null,
     gameJourneyCompletionMetricsPostgresClient,
   });
   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
@@ -126,6 +125,21 @@ function restoreEnvValue(key, value) {
     return;
   }
   process.env[key] = value;
+}
+
+function createFailingCompletionMetricsPostgresClient() {
+  const failure = new Error("Active metrics store temporarily unavailable at tmp/local-api/game-journey-completion-metrics.sqlite.");
+  return {
+    dumpTable() {
+      return [];
+    },
+    async query() {
+      throw failure;
+    },
+    async requestTable() {
+      throw failure;
+    },
+  };
 }
 
 function expectStaticToolOwnershipAreas(areas) {
@@ -223,7 +237,6 @@ test("Game Journey exposes static tool ownership areas without automatic counts"
 
   const gameJourneyCompletionMetricsPostgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
   const server = await startRepoServer({
-    gameJourneyCompletionMetricsLegacyDbPath: null,
     gameJourneyCompletionMetricsPostgresClient,
   });
   try {
@@ -247,7 +260,6 @@ test("Game Journey progress dashboard summarizes completion metrics", async ({ p
   process.env.GAMEFOUNDRY_LOCAL_DB_PATH = localDbPath;
   const gameJourneyCompletionMetricsPostgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
   const server = await startRepoServer({
-    gameJourneyCompletionMetricsLegacyDbPath: null,
     gameJourneyCompletionMetricsPostgresClient,
   });
   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
@@ -1270,7 +1282,6 @@ test("Game Journey displays system template diagnostics", async ({ page }) => {
 
 test("Game Journey mock data keeps system guidance template-owned", async () => {
   const repository = createGameJourneyMockRepository({
-    completionMetricsLegacyDbPath: null,
     completionMetricsPostgresClient: createGameJourneyCompletionMetricsPostgresClientStub(),
     memoryDbTables: standaloneSeedTables,
     persist: false,
@@ -1437,7 +1448,6 @@ test("Game Journey mock data keeps system guidance template-owned", async () => 
 test("Game Journey Local API persists completion metrics to Postgres", async () => {
   const gameJourneyCompletionMetricsPostgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
   const server = await startRepoServer({
-    gameJourneyCompletionMetricsLegacyDbPath: null,
     gameJourneyCompletionMetricsPostgresClient,
   });
   try {
@@ -1496,27 +1506,9 @@ test("Game Journey Local API persists completion metrics to Postgres", async () 
 test("Game Journey completion metrics fail visibly when Postgres is not configured", async () => {
   const store = createGameJourneyCompletionMetricsStore({
     env: {},
-    legacyDbPath: null,
   });
 
   await expect(store.listMetrics()).rejects.toThrow(/GAMEFOUNDRY_DATABASE_URL/);
-});
-
-test("Game Journey completion metrics protect legacy SQLite data from silent drop", async () => {
-  const legacyDbPath = path.join(process.cwd(), "tmp", "local-api", `game-journey-legacy-guard-${process.pid}-${Date.now()}.sqlite`);
-  await fs.mkdir(path.dirname(legacyDbPath), { recursive: true });
-  await fs.writeFile(legacyDbPath, "legacy metrics placeholder");
-
-  const store = createGameJourneyCompletionMetricsStore({
-    legacyDbPath,
-    postgresClient: createGameJourneyCompletionMetricsPostgresClientStub(),
-  });
-
-  try {
-    await expect(store.listMetrics()).rejects.toThrow(/Legacy Game Journey completion metrics SQLite data exists/);
-  } finally {
-    await fs.rm(legacyDbPath, { force: true });
-  }
 });
 
 test("Game Journey requires an active game before editing", async ({ page }) => {
@@ -1572,6 +1564,31 @@ test("Toolbox registration exposes Game Journey navigation", async ({ page }) =>
     await expectNoPageFailures(failures);
   } finally {
     await closeWithCoverage(page, failures);
+  }
+});
+
+test("Toolbox renders Creator-safe Game Journey progress outage copy", async ({ page }) => {
+  const server = await startRepoServer({
+    gameJourneyCompletionMetricsPostgresClient: createFailingCompletionMetricsPostgresClient(),
+  });
+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
+
+  try {
+    await page.goto(`${server.baseUrl}/toolbox/index.html?view=group&group=create`, { waitUntil: "networkidle" });
+    await expect(page.locator("[data-game-journey-completion-diagnostic]").first()).toHaveText(
+      "Game Journey progress is temporarily unavailable. Continue building while progress refreshes.",
+    );
+    await expect(page.locator("body")).not.toContainText("Game Journey completion metrics unavailable");
+    await expect(page.locator("body")).not.toContainText("SQLite");
+    await expect(page.locator("body")).not.toContainText("tmp/local-api");
+    await expect(page.locator("body")).not.toContainText("Postgres");
+  } finally {
+    await server.close();
+    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
+    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
   }
 });
 

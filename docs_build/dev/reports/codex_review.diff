@@ -1,372 +1,465 @@
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_008-environment-management-complete.md b/docs_build/dev/reports/PR_26177_CHARLIE_008-environment-management-complete.md
-new file mode 100644
-index 000000000..47b1a3689
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_008-environment-management-complete.md
-@@ -0,0 +1,52 @@
-+# PR_26177_CHARLIE_008-environment-management-complete
-+
-+## Summary
-+
-+Team Charlie completed the Environment Management closeout slice.
-+
-+This PR keeps runtime behavior scoped to environment diagnostics and validation:
-+
-+- Environment Banner diagnostics now expose the environment safeguard state.
-+- DEV/UAT-style labels remain visible as non-production safeguards.
-+- Production labels remain hidden by default.
-+- Missing local environment labels produce the existing actionable danger banner.
-+- Configurable Runtime Ports are marked deprecated/superseded instead of pending/open work.
-+- Environment Banner Playwright coverage now targets an existing legal page.
-+
-+## Changed Files
-+
+diff --git a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md
+index c5ced6d1b..53bc243c2 100644
+--- a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md
++++ b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md
+@@ -17,3 +17,4 @@ Status: PASS
+ - PASS: Tests are limited to targeted Game Journey completion metrics regression coverage.
+ - PASS: Did not delete, move, overwrite, export, or migrate `tmp/local-api/game-journey-completion-metrics.sqlite`.
+ - PASS: Did not start Alfa Tags PRs.
++- PASS: Final audit removed active runtime JS/MJS SQLite and `tmp/local-api` references outside the migration-only utility.
+diff --git a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md
+index 9a952fb7b..6dad6bb08 100644
+--- a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md
++++ b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md
+@@ -5,9 +5,10 @@ Status: PASS
+ ## Notes
+
+ - Confirmed the repo-local `tmp/local-api/game-journey-completion-metrics.sqlite` file exists before validation.
+-- Confirmed active `createGameJourneyCompletionMetricsStore({ postgresClient })` no longer resolves that retired path by default.
+-- Confirmed active metrics load 14 Postgres-backed completion buckets while the retired file remains untouched.
+-- Confirmed explicit `legacyDbPath` protection remains covered by the existing migration/regression test file.
++- Confirmed active `createGameJourneyCompletionMetricsStore({ postgresClient })` exposes no `legacyDbPath`.
++- Confirmed active metrics snapshots expose no `legacySqlitePath`.
++- Confirmed active metrics load 14 DB-backed completion buckets while the retired file remains untouched.
++- Confirmed active runtime JS/MJS has no SQLite or `tmp/local-api` metrics references outside the migration-only utility.
+ - Confirmed the toolbox page renders neutral Creator-facing outage wording when active metrics are unavailable.
+ - Confirmed the toolbox page does not render the forbidden warning string, SQLite wording, `tmp/local-api`, or Postgres internals in the simulated outage lane.
+ - Confirmed no Alfa Tags PR work was started.
+diff --git a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md
+index 1940890cf..777642b00 100644
+--- a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md
++++ b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md
+@@ -11,9 +11,10 @@ Recover the Game Journey completion metrics path so active Alfa and Owner work n
+ ## Implementation Summary
+
+ - Removed active runtime defaulting to `tmp/local-api/game-journey-completion-metrics.sqlite` in `createGameJourneyCompletionMetricsStore`.
+-- Kept the explicit `legacyDbPath` guard intact for recovery/migration callers so legacy data is still protected from silent overwrite or deletion.
++- Removed active runtime `legacyDbPath` guard plumbing from the Game Journey metrics store, repository, Local API router, and Playwright test server helper.
+ - Updated `toolbox/tools-page-accordions.js` to render neutral Creator-safe progress outage wording instead of backend diagnostics.
+-- Added a store-level regression test proving a retired default SQLite-shaped file does not block active Postgres-backed metrics.
++- Added a store-level regression test proving a retired default SQLite-shaped file does not block or get touched by active DB-backed metrics.
++- Added a targeted guardrail test proving active runtime JS/MJS under `src`, `assets`, and `toolbox` has no SQLite or `tmp/local-api` metrics references, excluding the migration-only utility.
+ - Added a focused Playwright test proving the toolbox page does not render the forbidden warning, SQLite wording, local filesystem path, or Postgres internals when metrics are unavailable.
+
+ ## Reference Comparison
+@@ -28,16 +29,20 @@ Recover the Game Journey completion metrics path so active Alfa and Owner work n
+ - PASS: `node --check` on modified source and test files.
+ - PASS: `node ./scripts/run-node-test-files.mjs tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs`.
+ - PASS: `npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --project=playwright --workers=1 --reporter=line -g "Game Journey Local API persists completion metrics to Postgres|Toolbox renders Creator-safe Game Journey progress outage copy"`.
+-- PASS: Direct proof against the actual existing `tmp/local-api/game-journey-completion-metrics.sqlite` file confirmed active Postgres metrics load 14 buckets and do not resolve a legacy path.
+-- PASS: Runtime source search found no `Game Journey completion metrics unavailable` string.
+-- PASS: Runtime source search found no active metrics-store default reference to `game-journey-completion-metrics.sqlite`, `GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH`, or `defaultLegacySqlitePath`.
++- PASS: Direct proof against the actual existing `tmp/local-api/game-journey-completion-metrics.sqlite` file confirmed active DB metrics load 14 buckets, expose no legacy path fields, and do not touch the retired file.
++- PASS: Active runtime JS/MJS search found no SQLite, `.sqlite`, `better-sqlite`, `game-journey-completion-metrics.sqlite`, or `tmp/local-api` references outside the migration-only utility.
++- PASS: Runtime source search found no `Game Journey completion metrics unavailable` Creator-facing string.
+ - PASS: `git diff --check` reported no whitespace errors. Git emitted line-ending warnings only.
+
+ ## Files
+
+ - `src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs`
++- `src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js`
 +- `src/dev-runtime/server/local-api-router.mjs`
-+- `tests/dev-runtime/AdminHealthOperations.test.mjs`
-+- `tests/dev-runtime/PublicEnvironmentConfig.test.mjs`
-+- `tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
-+- `tests/playwright/tools/EnvironmentBannerCoverage.spec.mjs`
-+- `docs_build/dev/reports/PR_26177_CHARLIE_008-environment-management-complete.md`
-+- `docs_build/dev/reports/PR_26177_CHARLIE_008-environment-management-complete_branch-validation.md`
-+- `docs_build/dev/reports/PR_26177_CHARLIE_008-environment-management-complete_manual-validation-notes.md`
-+- `docs_build/dev/reports/PR_26177_CHARLIE_008-environment-management-complete_requirements-checklist.md`
-+- `docs_build/dev/reports/PR_26177_CHARLIE_008-environment-management-complete_validation-lane.md`
-+- `docs_build/dev/reports/codex_changed_files.txt`
-+- `docs_build/dev/reports/codex_review.diff`
-+
-+## Implementation Notes
-+
-+- Added `environmentSafeguard`, `environmentLabelNormalized`, `environmentBannerSource`, and `environmentBannerTone` diagnostics to `/api/public/config`.
-+- Preserved the existing Environment Banner rendering contract and Theme V2 partial flow.
-+- Changed System Health Local API startup diagnostics for Configurable Runtime Ports from `PENDING/deferred/cancelled` to `PASS/deprecated/superseded`.
-+- Corrected Environment Banner Playwright coverage from missing `/legal/disclaimer.html` to existing `/legal/privacy-policy.html`.
-+- No UI content, API data ownership, database, or storage behavior changes were introduced.
-+
-+## Validation
-+
-+- PASS: `node --check src/dev-runtime/server/local-api-router.mjs`
-+- PASS: `node --check tests/dev-runtime/PublicEnvironmentConfig.test.mjs`
-+- PASS: `node --check tests/dev-runtime/AdminHealthOperations.test.mjs`
-+- PASS: `node --check tests/playwright/tools/EnvironmentBannerCoverage.spec.mjs`
-+- PASS: `node --test tests/dev-runtime/PublicEnvironmentConfig.test.mjs tests/dev-runtime/AdminHealthOperations.test.mjs tests/api/admin-system-health/contract.test.mjs`
-+- PASS: `npx playwright test tests/playwright/tools/EnvironmentBannerCoverage.spec.mjs --workers=1`
-+- PASS: `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1`
-+- PASS: `git diff --check`
-+
-+## ZIP
-+
-+- `tmp/PR_26177_CHARLIE_008-environment-management-complete_delta.zip`
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_008-environment-management-complete_branch-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_008-environment-management-complete_branch-validation.md
-new file mode 100644
-index 000000000..ced9e889a
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_008-environment-management-complete_branch-validation.md
-@@ -0,0 +1,24 @@
-+# PR_26177_CHARLIE_008 Branch Validation
-+
-+## Branch
-+
-+- Branch: `PR_26177_CHARLIE_008-environment-management-complete`
-+- Start branch: `main`
-+- Main start commit: `8cdd87bf2eb2b9c0625e80881f1d359e902fa8fc`
-+
-+## Checks
-+
-+| Check | Result | Notes |
-+| --- | --- | --- |
-+| Started from `main` | PASS | Branch was created after `main` was clean and synchronized. |
-+| Worktree clean before branch work | PASS | Startup status check returned no changes. |
-+| One PR purpose only | PASS | Environment management diagnostics/tests only. |
-+| No `start_of_day` changes | PASS | Changed-file list contains no `start_of_day` paths. |
-+| Environment Banner complete | PASS | DEV/UAT visible safeguards, production hidden, missing local label diagnostic covered. |
-+| Configurable Runtime Ports not open work | PASS | System Health reports deprecated/superseded. |
-+| No runtime data ownership regression | PASS | Browser remains a consumer of public config and System Health API contracts. |
-+| Repo-structured ZIP created | PASS | `tmp/PR_26177_CHARLIE_008-environment-management-complete_delta.zip`. |
-+
-+## Result
-+
-+PASS
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_008-environment-management-complete_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_CHARLIE_008-environment-management-complete_manual-validation-notes.md
-new file mode 100644
-index 000000000..a6cd24c7f
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_008-environment-management-complete_manual-validation-notes.md
-@@ -0,0 +1,20 @@
-+# PR_26177_CHARLIE_008 Manual Validation Notes
-+
-+## Manual Review
-+
-+- Confirmed changed files are limited to environment diagnostics, targeted tests, and required reports.
-+- Confirmed no `start_of_day` paths were modified.
-+- Confirmed no inline styles, style blocks, script blocks, page-local CSS, or inline event handlers were introduced.
-+- Confirmed no browser-owned authoritative product data was added.
-+- Confirmed no secrets are exposed in public config diagnostics.
-+
-+## Notes
-+
-+- Environment Banner coverage previously referenced missing `/legal/disclaimer.html`; the targeted legal coverage route now uses existing `/legal/privacy-policy.html`.
-+- DEV/custom labels and UAT labels render visible non-production banners.
-+- Production labels are normalized to `PROD` diagnostics and hidden by default.
-+- Configurable Runtime Ports are closed as deprecated/superseded and are not tracked as active work.
-+
-+## Result
-+
-+PASS
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_008-environment-management-complete_requirements-checklist.md b/docs_build/dev/reports/PR_26177_CHARLIE_008-environment-management-complete_requirements-checklist.md
-new file mode 100644
-index 000000000..ed435cbe0
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_008-environment-management-complete_requirements-checklist.md
-@@ -0,0 +1,19 @@
-+# PR_26177_CHARLIE_008 Requirements Checklist
-+
-+| Requirement | Result | Evidence |
-+| --- | --- | --- |
-+| Complete Environment Management from 90% to 100% | PASS | Environment safeguards and runtime-port closeout are explicit. |
-+| Environment Banner complete | PASS | Public config diagnostics and Playwright banner coverage passed. |
-+| Update reports/checklists accordingly | PASS | This report set contains branch validation, checklist, validation lane, manual notes, and shared diff/list artifacts. |
-+| Mark Configurable Runtime Ports deprecated/superseded, not open work | PASS | Local API startup diagnostics now return `deprecated/superseded` with PASS. |
-+| DEV/UAT/PROD environment safeguards | PASS | DEV/custom and UAT labels render visible safeguards; Production hides by default. |
-+| Environment-aware diagnostics | PASS | `/api/public/config` reports normalized label and safeguard state. |
-+| Final Charlie completion checklist | PASS | This checklist records the final Environment Management completion items. |
-+| Targeted tests | PASS | Public config, Admin System Health, Environment Banner, and Admin System Health Playwright tests passed. |
-+| No MEM DB/local-mem/fake-login/browser SSoT | PASS | No product-data ownership changes. |
-+| No SQLite direction | PASS | No SQLite additions or terminology. |
-+| Theme V2 rules | PASS | Existing Theme V2 partial flow preserved; no inline styles/scripts added. |
-+
-+## Result
-+
-+PASS
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_008-environment-management-complete_validation-lane.md b/docs_build/dev/reports/PR_26177_CHARLIE_008-environment-management-complete_validation-lane.md
-new file mode 100644
-index 000000000..ff9900ddd
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_008-environment-management-complete_validation-lane.md
-@@ -0,0 +1,24 @@
-+# PR_26177_CHARLIE_008 Validation Lane
-+
-+## Commands
-+
-+| Command | Result |
-+| --- | --- |
-+| `node --check src/dev-runtime/server/local-api-router.mjs` | PASS |
-+| `node --check tests/dev-runtime/PublicEnvironmentConfig.test.mjs` | PASS |
-+| `node --check tests/dev-runtime/AdminHealthOperations.test.mjs` | PASS |
-+| `node --check tests/playwright/tools/EnvironmentBannerCoverage.spec.mjs` | PASS |
-+| `node --test tests/dev-runtime/PublicEnvironmentConfig.test.mjs tests/dev-runtime/AdminHealthOperations.test.mjs tests/api/admin-system-health/contract.test.mjs` | PASS, 10 tests |
-+| `npx playwright test tests/playwright/tools/EnvironmentBannerCoverage.spec.mjs --workers=1` | PASS, 3 tests |
-+| `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1` | PASS, 3 tests |
-+| `git diff --check` | PASS |
-+
-+## Playwright
-+
-+Impacted: Yes, Environment Banner diagnostics and System Health startup diagnostics changed.
-+
-+Result: PASS.
-+
-+## Full Samples Smoke
-+
-+Not run. Not required for this targeted Environment Management PR.
+ - `tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs`
++- `tests/helpers/playwrightRepoServer.mjs`
+ - `tests/playwright/tools/GameJourneyTool.spec.mjs`
++- `tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`
+ - `toolbox/tools-page-accordions.js`
+
+ ## Artifact
+diff --git a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_requirement-checklist.md b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_requirement-checklist.md
+index 544b7057f..65a654b6d 100644
+--- a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_requirement-checklist.md
++++ b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_requirement-checklist.md
+@@ -11,12 +11,14 @@ Status: PASS
+ - PASS: Fixed only the Game Journey completion metrics regression.
+ - PASS: Did not delete, move, overwrite, export, or migrate `tmp/local-api/game-journey-completion-metrics.sqlite`.
+ - PASS: Stopped active runtime from defaulting to `tmp/local-api/game-journey-completion-metrics.sqlite`.
++- PASS: Removed active runtime `legacyDbPath` SQLite guard plumbing.
+ - PASS: Preserved Postgres-backed Game Journey completion metrics as the active path.
+ - PASS: Ensured `toolbox/tools-page-accordions.js` cannot render `Game Journey completion metrics unavailable:`.
+ - PASS: Creator-facing UI does not expose SQLite, local filesystem paths, migration/export language, or Postgres internals.
+ - PASS: Did not introduce silent fallback behavior; metrics outage remains visible with neutral wording.
+ - PASS: Added targeted regression tests.
+ - PASS: Proved the existing legacy SQLite file does not block active metrics.
++- PASS: Proved active runtime JS/MJS has no SQLite or `tmp/local-api` metrics references outside the migration-only utility.
+ - PASS: Proved the forbidden warning string is not rendered.
+ - PASS: Proved Game Journey metrics still load through the active DB/API path.
+ - PASS: Used targeted validation only.
+diff --git a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_validation-lane.md b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_validation-lane.md
+index fe5ba4768..47530c453 100644
+--- a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_validation-lane.md
++++ b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_validation-lane.md
+@@ -6,9 +6,13 @@ Status: PASS
+
+ ```powershell
+ node --check src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs
++node --check src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
++node --check src/dev-runtime/server/local-api-router.mjs
+ node --check toolbox/tools-page-accordions.js
+ node --check tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
++node --check tests/helpers/playwrightRepoServer.mjs
+ node --check tests/playwright/tools/GameJourneyTool.spec.mjs
++node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+ ```
+
+ Result: PASS
+@@ -17,7 +21,7 @@ Result: PASS
+ node ./scripts/run-node-test-files.mjs tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs
+ ```
+
+-Result: PASS, 2 targeted node test files passed
++Result: PASS, 2 targeted node test files passed. Includes active runtime JS/MJS SQLite reference guardrail.
+
+ ```powershell
+ npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --project=playwright --workers=1 --reporter=line -g "Game Journey Local API persists completion metrics to Postgres|Toolbox renders Creator-safe Game Journey progress outage copy"
+@@ -26,14 +30,14 @@ npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --project=pl
+ Result: PASS, 2 passed
+
+ ```powershell
+-node -e "import('node:fs').then(async fs=>{const [{createGameJourneyCompletionMetricsStore}, {createGameJourneyCompletionMetricsPostgresClientStub}] = await Promise.all([import('./src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs'), import('./tests/helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs')]); const legacy='tmp/local-api/game-journey-completion-metrics.sqlite'; if(!fs.existsSync(legacy)) throw new Error('Expected existing legacy SQLite file for regression proof'); const store=createGameJourneyCompletionMetricsStore({postgresClient:createGameJourneyCompletionMetricsPostgresClientStub()}); const metrics=await store.listMetrics(); if(store.legacyDbPath) throw new Error('Active store resolved a legacy path'); if(metrics.length!==14) throw new Error('Expected 14 active metrics'); console.log('PASS active Postgres metrics ignore existing retired legacy SQLite file');})"
++node -e "import('node:fs').then(async fs=>{const [{createGameJourneyCompletionMetricsStore}, {createGameJourneyCompletionMetricsPostgresClientStub}] = await Promise.all([import('./src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs'), import('./tests/helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs')]); const legacy='tmp/local-api/game-journey-completion-metrics.sqlite'; if(!fs.existsSync(legacy)) throw new Error('Expected existing retired local file for regression proof'); const before=fs.statSync(legacy).mtimeMs; const store=createGameJourneyCompletionMetricsStore({postgresClient:createGameJourneyCompletionMetricsPostgresClientStub()}); const metrics=await store.listMetrics(); const snapshot=await store.snapshot(); const after=fs.statSync(legacy).mtimeMs; if(Object.hasOwn(store, 'legacyDbPath')) throw new Error('Store exposes legacyDbPath'); if(Object.hasOwn(snapshot, 'legacySqlitePath')) throw new Error('Snapshot exposes legacySqlitePath'); if(metrics.length!==14) throw new Error('Expected 14 active metrics'); if(before!==after) throw new Error('Retired local file was touched'); console.log('PASS active DB metrics ignore and do not inspect retired local file');})"
+ ```
+
+ Result: PASS
+
+ ```powershell
++rg -n -i "sqlite|better-sqlite|game-journey-completion-metrics\.sqlite|tmp/local-api" src assets toolbox -g "*.js" -g "*.mjs" --glob "!src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs"
+ rg -n "Game Journey completion metrics unavailable" src assets toolbox --glob "!**/*.map"
+-rg -n "game-journey-completion-metrics\.sqlite|GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH|defaultLegacySqlitePath" src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs toolbox/tools-page-accordions.js assets/toolbox/game-journey/js/index.js
+ ```
+
+ Result: PASS, no matches
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 48675b782..4b7e9de43 100644
+index 585a10850..8e34972a1 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,14 +1,12 @@
--docs_build/dev/BUILD_PR.md
--docs_build/dev/PLAN_PR.md
--docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
--docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
--docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions.md
--docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_branch-validation.md
--docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_instruction-compliance-checklist.md
--docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_manual-validation-notes.md
--docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_requirement-checklist.md
--docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_validation-lane.md
--docs_build/dev/reports/codex_changed_files.txt
-+﻿docs_build/dev/reports/codex_changed_files.txt
+@@ -6,6 +6,9 @@ docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recove
+ docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
--src/shared/math/randomHelpers.js
--src/shared/validation/assert.js
-+docs_build/dev/reports/PR_26177_CHARLIE_008-environment-management-complete.md
-+docs_build/dev/reports/PR_26177_CHARLIE_008-environment-management-complete_branch-validation.md
-+docs_build/dev/reports/PR_26177_CHARLIE_008-environment-management-complete_manual-validation-notes.md
-+docs_build/dev/reports/PR_26177_CHARLIE_008-environment-management-complete_requirements-checklist.md
-+docs_build/dev/reports/PR_26177_CHARLIE_008-environment-management-complete_validation-lane.md
+ src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs
++src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
 +src/dev-runtime/server/local-api-router.mjs
-+tests/dev-runtime/AdminHealthOperations.test.mjs
-+tests/dev-runtime/PublicEnvironmentConfig.test.mjs
-+tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-+tests/playwright/tools/EnvironmentBannerCoverage.spec.mjs
+ tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
++tests/helpers/playwrightRepoServer.mjs
+ tests/playwright/tools/GameJourneyTool.spec.mjs
+-toolbox/tools-page-accordions.js
++tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+diff --git a/src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs b/src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs
+index 6c202c8a2..eea6294e7 100644
+--- a/src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs
++++ b/src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs
+@@ -1,5 +1,3 @@
+-import { existsSync } from "node:fs";
+-import path from "node:path";
+ import { createPostgresConnectionClient } from "./postgres-connection-client.mjs";
+ import { SEED_DB_KEYS, makeSeedUlid } from "../seed/seed-db-keys.mjs";
+
+@@ -59,24 +57,6 @@ function clone(value) {
+   return JSON.parse(JSON.stringify(value));
+ }
+
+-function resolveLegacySqlitePath(legacyDbPath) {
+-  if (legacyDbPath === null || legacyDbPath === undefined) {
+-    return "";
+-  }
+-  const value = String(legacyDbPath || "").trim();
+-  if (!value) {
+-    return "";
+-  }
+-  return path.resolve(value);
+-}
+-
+-function assertNoUnmigratedLegacySqlite(legacyDbPath) {
+-  if (!legacyDbPath || !existsSync(legacyDbPath)) {
+-    return;
+-  }
+-  throw new Error(`Legacy Game Journey completion metrics SQLite data exists at ${legacyDbPath}. No data was removed or overwritten. Export or migrate that data into Postgres, then move the legacy file before using the Postgres metrics store.`);
+-}
+-
+ function normalizeCount(value, fallback = 0) {
+   const parsed = Number(value);
+   if (!Number.isFinite(parsed)) {
+@@ -158,7 +138,6 @@ function bucketSeedRow(bucket, now) {
+ export function createGameJourneyCompletionMetricsStore(options = {}) {
+   const env = options.env || process.env;
+   const bucketSeeds = Object.freeze((options.buckets || GAME_JOURNEY_COMPLETION_BUCKETS).map(clone));
+-  const legacyDbPath = resolveLegacySqlitePath(options.legacyDbPath);
+   let postgresClient = options.postgresClient || null;
+   let readyPromise = null;
+
+@@ -230,7 +209,6 @@ export function createGameJourneyCompletionMetricsStore(options = {}) {
+   async function ensureReady() {
+     if (!readyPromise) {
+       readyPromise = (async () => {
+-        assertNoUnmigratedLegacySqlite(legacyDbPath);
+         await client().query(GAME_JOURNEY_COMPLETION_METRICS_SCHEMA_SQL);
+         await seedDefaultBuckets();
+       })();
+@@ -298,7 +276,6 @@ export function createGameJourneyCompletionMetricsStore(options = {}) {
+       databaseConfigKey: "GAMEFOUNDRY_DATABASE_URL",
+       databaseEngine: "Postgres",
+       databasePath: "GAMEFOUNDRY_DATABASE_URL",
+-      legacySqlitePath: legacyDbPath,
+       serviceContract: "Web UI -> Local API/Service Contract -> Postgres",
+       source: GAME_JOURNEY_COMPLETION_METRICS_TABLE,
+       tableName: GAME_JOURNEY_COMPLETION_METRICS_TABLE,
+@@ -312,7 +289,6 @@ export function createGameJourneyCompletionMetricsStore(options = {}) {
+   }
+
+   return {
+-    legacyDbPath,
+     listMetrics,
+     snapshot,
+     updateMetric,
+diff --git a/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js b/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
+index 73b409c42..8e0ddc92b 100644
+--- a/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
++++ b/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
+@@ -627,7 +627,6 @@ export function createGameJourneyMockRepository(options = {}) {
+   const completionMetricsStore =
+     options.completionMetricsStore || createGameJourneyCompletionMetricsStore({
+       dbPath: options.completionMetricsDbPath,
+-      legacyDbPath: options.completionMetricsLegacyDbPath,
+       postgresClient: options.completionMetricsPostgresClient,
+     });
+   const tables = loadMockDbTables(GAME_JOURNEY_DB_OWNER, getSeedTables(), options).tables;
 diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index f2f927aff..a3761260c 100644
+index f2f927aff..2cb9a66f1 100644
 --- a/src/dev-runtime/server/local-api-router.mjs
 +++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -1065,18 +1065,17 @@ function systemHealthLocalApiStartupDiagnostics(env = process.env) {
-     },
-     {
-       field: "Configurable multiple runtime ports",
--      reason: "Configurable multiple runtime ports are explicitly deferred/cancelled for this PR.",
--      status: "PENDING",
--      value: "deferred/cancelled",
-+      reason: "Configurable Runtime Ports are deprecated/superseded by fixed Local API and static site configuration.",
-+      status: "PASS",
-+      value: "deprecated/superseded",
-     },
-   ];
--  const actionableRows = rows.filter((row) => row.status !== "PENDING");
-   return {
--    message: "Local API startup diagnostics use the approved safe output format; configurable multiple runtime ports remain deferred.",
-+    message: "Local API startup diagnostics use the approved safe output format; configurable multiple runtime ports are deprecated/superseded.",
-     rows,
-     secretEditingAllowed: false,
-     secretsExposed: false,
--    status: overallHealthStatus(actionableRows),
-+    status: overallHealthStatus(rows),
-   };
- }
+@@ -3304,14 +3304,12 @@ function productTablesFromSnapshot(snapshot) {
 
-@@ -2346,6 +2345,24 @@ function environmentLabelSuppressesBanner(label) {
-   return ENVIRONMENT_LABEL_HIDDEN_VALUES.includes(normalized);
- }
+ class ApiRuntimeDataSource {
+   constructor({
+-    gameJourneyCompletionMetricsLegacyDbPath = undefined,
+     gameJourneyCompletionMetricsPostgresClient = null,
+     messagesPostgresClient = null,
+     messagesService = null,
+     repoRoot = process.cwd(),
+   } = {}) {
+     this.messagesService = messagesService || createMessagesPostgresService({ postgresClient: messagesPostgresClient });
+-    this.gameJourneyCompletionMetricsLegacyDbPath = gameJourneyCompletionMetricsLegacyDbPath;
+     this.gameJourneyCompletionMetricsPostgresClient = gameJourneyCompletionMetricsPostgresClient;
+     this.repositoryCounter = 1;
+     this.repositoryById = new Map();
+@@ -3556,7 +3554,6 @@ class ApiRuntimeDataSource {
+       this.standaloneTables.invitations = [];
+     }
+     this.sharedOptions = {
+-      completionMetricsLegacyDbPath: this.gameJourneyCompletionMetricsLegacyDbPath,
+       completionMetricsPostgresClient: this.gameJourneyCompletionMetricsPostgresClient,
+       memoryDbTables: this.standaloneTables,
+       sessionMode: this.sessionModeId,
+@@ -6839,14 +6836,12 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
+  * The router itself serves the configured server API contract.
+  */
+ export function createLocalApiRouter({
+-  gameJourneyCompletionMetricsLegacyDbPath = undefined,
+   gameJourneyCompletionMetricsPostgresClient = null,
+   messagesPostgresClient = null,
+   messagesService = null,
+   repoRoot = process.cwd(),
+ } = {}) {
+   const dataSource = new ApiRuntimeDataSource({
+-    gameJourneyCompletionMetricsLegacyDbPath,
+     gameJourneyCompletionMetricsPostgresClient,
+     messagesPostgresClient,
+     messagesService,
+diff --git a/tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs b/tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
+index edbc0333e..1ca7de68e 100644
+--- a/tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
++++ b/tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
+@@ -10,6 +10,34 @@ import {
+ } from "../../src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs";
+ import { createGameJourneyCompletionMetricsPostgresClientStub } from "../helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs";
 
-+function environmentLabelDiagnosticName(label) {
-+  const normalizedName = normalizeEnvironmentName(label);
-+  if (normalizedName) {
-+    return normalizedName === "PRD" ? "PROD" : normalizedName;
-+  }
-+  return String(label || "").trim() ? "CUSTOM" : "UNCONFIGURED";
-+}
++const ACTIVE_RUNTIME_ROOTS = Object.freeze(["src", "assets", "toolbox"]);
++const ACTIVE_RUNTIME_ALLOWED_FILES = new Set([
++  path.normalize("src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs"),
++]);
++const RUNTIME_FORBIDDEN_PATTERNS = Object.freeze([
++  /sqlite/i,
++  /\.sqlite/i,
++  /better-sqlite/i,
++  /game-journey-completion-metrics\.sqlite/i,
++  /tmp\/local-api/i,
++]);
 +
-+function environmentSafeguardStatus(publicConfig, environmentBanner) {
-+  const label = String(publicConfig?.environmentLabel || "").trim();
-+  if (!label) {
-+    return environmentBanner.active ? "missing-label-diagnostic" : "missing-label-hidden";
-+  }
-+  return environmentLabelSuppressesBanner(label)
-+    ? "production-banner-hidden"
-+    : "non-production-banner-visible";
-+}
-+
- function inactiveEnvironmentBanner() {
-   return {
-     active: false,
-@@ -2388,7 +2405,11 @@ function publicConfigDiagnostics(publicConfig, environmentBanner) {
-   return {
-     apiUrlConfigured: Boolean(publicConfig.apiUrl),
-     environmentBannerActive: environmentBanner.active,
-+    environmentBannerSource: environmentBanner.source || ENVIRONMENT_BANNER_SOURCE,
-+    environmentBannerTone: environmentBanner.tone,
-     environmentLabelConfigured: Boolean(publicConfig.environmentLabel),
-+    environmentLabelNormalized: environmentLabelDiagnosticName(publicConfig.environmentLabel),
-+    environmentSafeguard: environmentSafeguardStatus(publicConfig, environmentBanner),
-     secretsExposed: false,
-     siteUrlConfigured: Boolean(publicConfig.siteUrl),
-   };
-diff --git a/tests/dev-runtime/AdminHealthOperations.test.mjs b/tests/dev-runtime/AdminHealthOperations.test.mjs
-index 59bea182c..bd6e6d5ed 100644
---- a/tests/dev-runtime/AdminHealthOperations.test.mjs
-+++ b/tests/dev-runtime/AdminHealthOperations.test.mjs
-@@ -296,7 +296,7 @@ test("Admin can view operational health while Creator sessions are blocked", asy
-         true,
-       );
-       assert.equal(
--        health.localApiStartup.rows.some((row) => row.field === "Configurable multiple runtime ports" && row.status === "PENDING" && row.value === "deferred/cancelled"),
-+        health.localApiStartup.rows.some((row) => row.field === "Configurable multiple runtime ports" && row.status === "PASS" && row.value === "deprecated/superseded"),
-         true,
-       );
-       const startupRows = new Map(health.localApiStartup.rows.map((row) => [row.field, row]));
-diff --git a/tests/dev-runtime/PublicEnvironmentConfig.test.mjs b/tests/dev-runtime/PublicEnvironmentConfig.test.mjs
-index f459aa8d2..f9a245ab2 100644
---- a/tests/dev-runtime/PublicEnvironmentConfig.test.mjs
-+++ b/tests/dev-runtime/PublicEnvironmentConfig.test.mjs
-@@ -99,6 +99,10 @@ test("public config exposes only browser-safe environment values", async () => {
-       assert.equal(payload.environmentBanner.active, true);
-       assert.equal(payload.environmentBanner.message, "Development Environment");
-       assert.equal(payload.environmentBanner.tone, "warning");
-+      assert.equal(payload.diagnostics.environmentBannerSource, "environment-config");
-+      assert.equal(payload.diagnostics.environmentBannerTone, "warning");
-+      assert.equal(payload.diagnostics.environmentLabelNormalized, "CUSTOM");
-+      assert.equal(payload.diagnostics.environmentSafeguard, "non-production-banner-visible");
-       const serialized = JSON.stringify(payload);
-       for (const key of Object.keys(SECRET_ENV)) {
-         assert.equal(serialized.includes(key), false);
-@@ -127,6 +131,28 @@ test("production environment label hides the environment banner by default", asy
-       assert.equal(payload.environmentBanner.active, false);
-       assert.equal(payload.environmentBanner.message, "");
-       assert.equal(payload.diagnostics.environmentLabelConfigured, true);
-+      assert.equal(payload.diagnostics.environmentLabelNormalized, "PROD");
-+      assert.equal(payload.diagnostics.environmentSafeguard, "production-banner-hidden");
-+    } finally {
-+      await server.close();
++async function activeRuntimeJavaScriptFiles(root) {
++  const entries = await fs.readdir(root, { withFileTypes: true });
++  const files = [];
++  for (const entry of entries) {
++    const child = path.join(root, entry.name);
++    if (entry.isDirectory()) {
++      files.push(...await activeRuntimeJavaScriptFiles(child));
++      continue;
 +    }
-+  });
-+});
++    if (entry.isFile() && /\.(?:mjs|js)$/i.test(entry.name)) {
++      files.push(child);
++    }
++  }
++  return files;
++}
 +
-+test("UAT environment label keeps visible non-production safeguard banner", async () => {
-+  await withEnv({
-+    GAMEFOUNDRY_API_URL: "https://uat.gamefoundrystudio.example",
-+    GAMEFOUNDRY_ENVIRONMENT_LABEL: "UAT",
-+    GAMEFOUNDRY_SITE_URL: "https://uat.gamefoundrystudio.example",
-+  }, async () => {
-+    const server = await startApiServer();
-+    try {
-+      const payload = await apiJson(server.baseUrl, "/api/public/config");
-+      assert.equal(payload.environmentBanner.active, true);
-+      assert.equal(payload.environmentBanner.message, "UAT");
-+      assert.equal(payload.environmentBanner.tone, "warning");
-+      assert.equal(payload.diagnostics.environmentLabelNormalized, "UAT");
-+      assert.equal(payload.diagnostics.environmentSafeguard, "non-production-banner-visible");
-     } finally {
-       await server.close();
-     }
-@@ -147,6 +173,8 @@ test("missing local environment label returns an actionable diagnostic banner",
-       assert.match(payload.environmentBanner.message, /\.env/);
-       assert.equal(payload.environmentBanner.tone, "danger");
-       assert.equal(payload.diagnostics.environmentLabelConfigured, false);
-+      assert.equal(payload.diagnostics.environmentLabelNormalized, "UNCONFIGURED");
-+      assert.equal(payload.diagnostics.environmentSafeguard, "missing-label-diagnostic");
-     } finally {
-       await server.close();
-     }
-diff --git a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-index cf54c49d3..f7c0b9839 100644
---- a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-+++ b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-@@ -225,7 +225,7 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
-     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Database mode");
-     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Storage status");
-     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Configurable multiple runtime ports");
--    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("deferred/cancelled");
-+    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("deprecated/superseded");
-     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).not.toContainText("secret");
-     await expect(page.getByRole("table", { name: "Database health" })).toContainText("Postgres");
-     await expect(page.locator("[data-admin-system-health-db-value='type']")).toHaveText("Local Docker PostgreSQL");
-diff --git a/tests/playwright/tools/EnvironmentBannerCoverage.spec.mjs b/tests/playwright/tools/EnvironmentBannerCoverage.spec.mjs
-index cc401f48a..bc73c1f78 100644
---- a/tests/playwright/tools/EnvironmentBannerCoverage.spec.mjs
-+++ b/tests/playwright/tools/EnvironmentBannerCoverage.spec.mjs
-@@ -16,7 +16,7 @@ const COVERAGE_PAGES = Object.freeze([
-   Object.freeze({ family: "account", path: "/account/sign-in.html" }),
-   Object.freeze({ family: "admin", path: "/admin/system-health.html" }),
-   Object.freeze({ family: "owner", path: "/owner/memberships.html" }),
--  Object.freeze({ family: "legal", path: "/legal/disclaimer.html" }),
-+  Object.freeze({ family: "legal", path: "/legal/privacy-policy.html" }),
-   Object.freeze({ family: "memberships", path: "/memberships/index.html" }),
- ]);
+ test("active Game Journey metrics ignore the retired default legacy SQLite path", async () => {
+   const originalCwd = process.cwd();
+   const directory = await fs.mkdtemp(path.join(os.tmpdir(), "gfs-game-journey-metrics-store-"));
+@@ -24,8 +52,10 @@ test("active Game Journey metrics ignore the retired default legacy SQLite path"
+     const postgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
+     const store = createGameJourneyCompletionMetricsStore({ postgresClient });
+     const metrics = await store.listMetrics();
++    const snapshot = await store.snapshot();
 
-@@ -114,6 +114,7 @@ test("environment banner renders across shared-layout page families", async ({ p
-         const diagnostics = await page.evaluate(() => window.GameFoundryEnvironmentBannerDiagnostics);
-         expect(diagnostics.environmentBannerActive).toBe(true);
-         expect(diagnostics.environmentLabelConfigured).toBe(true);
-+        expect(diagnostics.environmentSafeguard).toBe("non-production-banner-visible");
-         expect(diagnostics.secretsExposed).toBe(false);
-       }
-     } finally {
-@@ -152,6 +153,7 @@ test("production label hides the environment banner by default", async ({ page }
-       const diagnostics = await page.evaluate(() => window.GameFoundryEnvironmentBannerDiagnostics);
-       expect(diagnostics.environmentBannerActive).toBe(false);
-       expect(diagnostics.environmentLabelConfigured).toBe(true);
-+      expect(diagnostics.environmentSafeguard).toBe("production-banner-hidden");
-       expect(diagnostics.secretsExposed).toBe(false);
-     } finally {
-       await closeBannerPage(page, server);
+-    assert.equal(store.legacyDbPath, "");
++    assert.equal(Object.hasOwn(store, "legacyDbPath"), false);
++    assert.equal(Object.hasOwn(snapshot, "legacySqlitePath"), false);
+     assert.equal(metrics.length, 14);
+     assert.equal(postgresClient.dumpTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE).length, 14);
+     assert.equal(await fs.readFile(retiredLegacyPath, "utf8"), retiredLegacyContents);
+@@ -34,3 +64,26 @@ test("active Game Journey metrics ignore the retired default legacy SQLite path"
+     await fs.rm(directory, { force: true, recursive: true });
+   }
+ });
++
++test("active runtime JS and MJS do not contain SQLite or tmp local metrics references", async () => {
++  const files = [];
++  for (const root of ACTIVE_RUNTIME_ROOTS) {
++    files.push(...await activeRuntimeJavaScriptFiles(root));
++  }
++
++  const findings = [];
++  for (const file of files) {
++    const normalized = path.normalize(file);
++    if (ACTIVE_RUNTIME_ALLOWED_FILES.has(normalized)) {
++      continue;
++    }
++    const contents = await fs.readFile(file, "utf8");
++    RUNTIME_FORBIDDEN_PATTERNS.forEach((pattern) => {
++      if (pattern.test(contents)) {
++        findings.push(`${file}: ${pattern}`);
++      }
++    });
++  }
++
++  assert.deepEqual(findings, []);
++});
+diff --git a/tests/helpers/playwrightRepoServer.mjs b/tests/helpers/playwrightRepoServer.mjs
+index 9bc8e8f07..71c7853aa 100644
+--- a/tests/helpers/playwrightRepoServer.mjs
++++ b/tests/helpers/playwrightRepoServer.mjs
+@@ -91,13 +91,11 @@ function resolveBrowserRoutePath(decodedPath) {
+ }
+
+ export async function startRepoServer({
+-  gameJourneyCompletionMetricsLegacyDbPath = undefined,
+   gameJourneyCompletionMetricsPostgresClient = null,
+   messagesPostgresClient = null,
+ } = {}) {
+   await loadRuntimeEnv();
+   const handleLocalApiRequest = createLocalApiRouter({
+-    gameJourneyCompletionMetricsLegacyDbPath,
+     gameJourneyCompletionMetricsPostgresClient,
+     messagesPostgresClient,
+     repoRoot,
+diff --git a/tests/playwright/tools/GameJourneyTool.spec.mjs b/tests/playwright/tools/GameJourneyTool.spec.mjs
+index 75a913d96..cc47265cf 100644
+--- a/tests/playwright/tools/GameJourneyTool.spec.mjs
++++ b/tests/playwright/tools/GameJourneyTool.spec.mjs
+@@ -40,7 +40,6 @@ test.afterAll(async () => {
+ async function openRepoPage(page, pathName, options = {}) {
+   const gameJourneyCompletionMetricsPostgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
+   const server = await startRepoServer({
+-    gameJourneyCompletionMetricsLegacyDbPath: null,
+     gameJourneyCompletionMetricsPostgresClient,
+   });
+   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+@@ -238,7 +237,6 @@ test("Game Journey exposes static tool ownership areas without automatic counts"
+
+   const gameJourneyCompletionMetricsPostgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
+   const server = await startRepoServer({
+-    gameJourneyCompletionMetricsLegacyDbPath: null,
+     gameJourneyCompletionMetricsPostgresClient,
+   });
+   try {
+@@ -262,7 +260,6 @@ test("Game Journey progress dashboard summarizes completion metrics", async ({ p
+   process.env.GAMEFOUNDRY_LOCAL_DB_PATH = localDbPath;
+   const gameJourneyCompletionMetricsPostgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
+   const server = await startRepoServer({
+-    gameJourneyCompletionMetricsLegacyDbPath: null,
+     gameJourneyCompletionMetricsPostgresClient,
+   });
+   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+@@ -1285,7 +1282,6 @@ test("Game Journey displays system template diagnostics", async ({ page }) => {
+
+ test("Game Journey mock data keeps system guidance template-owned", async () => {
+   const repository = createGameJourneyMockRepository({
+-    completionMetricsLegacyDbPath: null,
+     completionMetricsPostgresClient: createGameJourneyCompletionMetricsPostgresClientStub(),
+     memoryDbTables: standaloneSeedTables,
+     persist: false,
+@@ -1452,7 +1448,6 @@ test("Game Journey mock data keeps system guidance template-owned", async () =>
+ test("Game Journey Local API persists completion metrics to Postgres", async () => {
+   const gameJourneyCompletionMetricsPostgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
+   const server = await startRepoServer({
+-    gameJourneyCompletionMetricsLegacyDbPath: null,
+     gameJourneyCompletionMetricsPostgresClient,
+   });
+   try {
+@@ -1511,29 +1506,11 @@ test("Game Journey Local API persists completion metrics to Postgres", async ()
+ test("Game Journey completion metrics fail visibly when Postgres is not configured", async () => {
+   const store = createGameJourneyCompletionMetricsStore({
+     env: {},
+-    legacyDbPath: null,
+   });
+
+   await expect(store.listMetrics()).rejects.toThrow(/GAMEFOUNDRY_DATABASE_URL/);
+ });
+
+-test("Game Journey completion metrics protect legacy SQLite data from silent drop", async () => {
+-  const legacyDbPath = path.join(process.cwd(), "tmp", "local-api", `game-journey-legacy-guard-${process.pid}-${Date.now()}.sqlite`);
+-  await fs.mkdir(path.dirname(legacyDbPath), { recursive: true });
+-  await fs.writeFile(legacyDbPath, "legacy metrics placeholder");
+-
+-  const store = createGameJourneyCompletionMetricsStore({
+-    legacyDbPath,
+-    postgresClient: createGameJourneyCompletionMetricsPostgresClientStub(),
+-  });
+-
+-  try {
+-    await expect(store.listMetrics()).rejects.toThrow(/Legacy Game Journey completion metrics SQLite data exists/);
+-  } finally {
+-    await fs.rm(legacyDbPath, { force: true });
+-  }
+-});
+-
+ test("Game Journey requires an active game before editing", async ({ page }) => {
+   const failures = await openRepoPage(page, "/toolbox/game-journey/index.html?game=none");
+
+diff --git a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+index 6d626f03b..be8c88698 100644
+--- a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
++++ b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+@@ -115,7 +115,6 @@ async function expectNoNavigationFallbackUi(page) {
+
+ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
+   const server = await startRepoServer({
+-    gameJourneyCompletionMetricsLegacyDbPath: null,
+     gameJourneyCompletionMetricsPostgresClient: createGameJourneyCompletionMetricsPostgresClientStub(),
+   });
+   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+@@ -478,7 +477,6 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
+
+ test("Idea Board gates Create Project to Ready ideas and locks converted projects", async ({ page }) => {
+   const server = await startRepoServer({
+-    gameJourneyCompletionMetricsLegacyDbPath: null,
+     gameJourneyCompletionMetricsPostgresClient: createGameJourneyCompletionMetricsPostgresClientStub(),
+   });
+   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+@@ -595,7 +593,6 @@ test("Idea Board gates Create Project to Ready ideas and locks converted project
+
+ test("Idea Board guest write actions redirect to sign in before saving data", async ({ page }) => {
+   const server = await startRepoServer({
+-    gameJourneyCompletionMetricsLegacyDbPath: null,
+     gameJourneyCompletionMetricsPostgresClient: createGameJourneyCompletionMetricsPostgresClientStub(),
+   });
+   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;

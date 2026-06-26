@@ -115,7 +115,6 @@ async function expectNoNavigationFallbackUi(page) {
 
 test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
   const server = await startRepoServer({
-    gameJourneyCompletionMetricsLegacyDbPath: null,
     gameJourneyCompletionMetricsPostgresClient: createGameJourneyCompletionMetricsPostgresClientStub(),
   });
   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
@@ -478,7 +477,6 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
 
 test("Idea Board gates Create Project to Ready ideas and locks converted projects", async ({ page }) => {
   const server = await startRepoServer({
-    gameJourneyCompletionMetricsLegacyDbPath: null,
     gameJourneyCompletionMetricsPostgresClient: createGameJourneyCompletionMetricsPostgresClientStub(),
   });
   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
@@ -595,7 +593,6 @@ test("Idea Board gates Create Project to Ready ideas and locks converted project
 
 test("Idea Board guest write actions redirect to sign in before saving data", async ({ page }) => {
   const server = await startRepoServer({
-    gameJourneyCompletionMetricsLegacyDbPath: null,
     gameJourneyCompletionMetricsPostgresClient: createGameJourneyCompletionMetricsPostgresClientStub(),
   });
   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;

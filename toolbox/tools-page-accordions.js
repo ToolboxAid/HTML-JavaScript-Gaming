@@ -210,7 +210,7 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
     const voteRowsByToolId = new Map();
     let voteDiagnostic = "";
     let gameJourneyCompletionSnapshot = null;
-    let gameJourneyCompletionDiagnostic = "";
+    let gameJourneyCompletionUnavailable = false;
 
     function applyToolboxVoteSnapshot(snapshot) {
         voteRowsByToolId.clear();
@@ -229,7 +229,7 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
     try {
         gameJourneyCompletionSnapshot = readGameJourneyCompletionMetrics();
     } catch (error) {
-        gameJourneyCompletionDiagnostic = error instanceof Error ? error.message : String(error || "Game Journey completion metrics unavailable.");
+        gameJourneyCompletionUnavailable = true;
     }
 
     const gameJourneyCompletionByGroup = new Map(
@@ -1219,12 +1219,12 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
         const body = document.createElement("div");
         body.className = "accordion-body";
 
-        if (gameJourneyCompletionDiagnostic) {
+        if (gameJourneyCompletionUnavailable) {
             const diagnostic = document.createElement("p");
             diagnostic.className = "status";
             diagnostic.dataset.gameJourneyCompletionDiagnostic = group.title;
             diagnostic.setAttribute("role", "status");
-            diagnostic.textContent = "Game Journey completion metrics unavailable: " + gameJourneyCompletionDiagnostic;
+            diagnostic.textContent = "Game Journey progress is temporarily unavailable. Continue building while progress refreshes.";
             body.append(diagnostic);
         }
 
