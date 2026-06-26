@@ -13,15 +13,22 @@ const elements = {
   metadata: document.querySelector("[data-sprites-metadata]"),
   outputStatus: document.querySelector("[data-sprites-output-status]"),
   outputSummary: document.querySelector("[data-sprites-output-summary]"),
+  paletteSelectionStatus: document.querySelector("[data-sprites-palette-selection-status]"),
   paletteStatus: document.querySelector("[data-sprites-palette-status]"),
+  previewPanel: document.querySelector("[data-sprites-preview-panel]"),
   refresh: document.querySelector("[data-sprites-refresh]"),
+  replace: document.querySelector("[data-sprites-replace]"),
+  replaceStatus: document.querySelector("[data-sprites-replace-status]"),
+  storageStatus: document.querySelector("[data-sprites-storage-status]"),
   tableBody: document.querySelector("[data-sprites-table-body]"),
   updated: document.querySelector("[data-sprites-updated]"),
   validation: document.querySelector("[data-sprites-validation]"),
+  duplicate: document.querySelector("[data-sprites-duplicate]"),
 };
 
 let currentSprites = [];
 let editingKey = "";
+let selectedSpriteKey = "";
 
 function setText(target, value) {
   if (target) {
@@ -35,10 +42,25 @@ function setHidden(target, hidden) {
   }
 }
 
+function setDisabled(target, disabled) {
+  if (target) {
+    target.disabled = disabled;
+  }
+}
+
 function createCell(value) {
   const cell = document.createElement("td");
   cell.textContent = value;
   return cell;
+}
+
+function createParagraph(value, className = "") {
+  const paragraph = document.createElement("p");
+  if (className) {
+    paragraph.className = className;
+  }
+  paragraph.textContent = value;
+  return paragraph;
 }
 
 function createHeaderCell(value) {
@@ -132,6 +154,14 @@ function formatSource(sprite) {
   return normalizeText(sprite?.sourceName || sprite?.sourcePath || sprite?.storagePath || sprite?.storageKey || sprite?.sourceStorageReference);
 }
 
+function previewSourceFor(sprite) {
+  const source = String(sprite?.storagePath || sprite?.source || sprite?.sourcePath || sprite?.sourceName || "").trim();
+  if (!source || /^https?:\/\//i.test(source)) {
+    return "";
+  }
+  return source;
+}
+
 function paletteKeysFor(sprite) {
   if (Array.isArray(sprite?.paletteColorKeys)) {
     return sprite.paletteColorKeys.map((key) => String(key || "").trim()).filter(Boolean);
@@ -168,6 +198,8 @@ function renderLoading() {
   setText(elements.outputStatus, "Loading");
   setText(elements.outputSummary, "Waiting for Sprites API response.");
   setActionStatus("Loading Sprites records.");
+  setText(elements.storageStatus, "Storage import is checking API capabilities.");
+  setText(elements.replaceStatus, "Select a sprite to update source metadata through the API.");
   setText(elements.emptyState, "Loading Sprites records.");
   setText(elements.updated, "Checking");
   setHidden(elements.emptyState, false);
@@ -192,6 +224,10 @@ function renderUnavailable(message) {
   setText(elements.errorState, detail);
   setText(elements.metadata, "Sprite metadata unavailable until the Sprites API responds.");
   setText(elements.paletteStatus, "Palette/Colors references unavailable until Sprites records load from the API.");
+  setText(elements.paletteSelectionStatus, "Palette/Colors selection unavailable until API-backed key records are available.");
+  setText(elements.storageStatus, "Storage import unavailable because the Sprites API is not responding.");
+  setText(elements.replaceStatus, "Replace metadata unavailable until the Sprites API responds.");
+  renderPreviewPanel(null);
   setText(elements.updated, new Date().toLocaleTimeString());
   setHidden(elements.emptyState, false);
   setHidden(elements.errorState, false);
@@ -211,9 +247,73 @@ function renderPaletteStatus(sprites) {
   });
   if (referencedKeys.size === 0) {
     setText(elements.paletteStatus, "No Palette/Colors references in current Sprites records.");
+    setText(elements.paletteSelectionStatus, "Palette/Colors selection unavailable: no API-backed Palette/Colors key records are attached to Sprites yet.");
     return;
   }
   setText(elements.paletteStatus, `${referencedKeys.size} Palette/Colors key reference${referencedKeys.size === 1 ? "" : "s"} surfaced from API records.`);
+  setText(elements.paletteSelectionStatus, "Palette/Colors key references are display-only until the Palette/Colors selection API is available.");
+}
+
+function renderPreviewPanel(sprite) {
+  if (!elements.previewPanel) {
+    return;
+  }
+  elements.previewPanel.replaceChildren();
+  if (!sprite) {
+    elements.previewPanel.append(createParagraph("No sprite selected for preview.", "status"));
+    setDisabled(elements.duplicate, true);
+    setDisabled(elements.replace, true);
+    return;
+  }
+  const source = previewSourceFor(sprite);
+  if (source) {
+    const image = document.createElement("img");
+    image.src = source;
+    image.alt = `${normalizeText(sprite.name)} preview`;
+    image.loading = "lazy";
+    elements.previewPanel.append(image);
+  } else {
+    elements.previewPanel.append(createParagraph("Image preview unavailable for this sprite source.", "status"));
+  }
+
+  const metadata = document.createElement("div");
+  metadata.className = "table-wrapper";
+  const table = document.createElement("table");
+  table.className = "data-table";
+  table.setAttribute("aria-label", "Selected sprite metadata");
+  const body = document.createElement("tbody");
+  [
+    ["File/Source", formatSource(sprite)],
+    ["MIME/Type", normalizeText(sprite.mimeType ?? sprite.mime_type)],
+    ["Dimensions", formatDimensions(sprite)],
+    ["File Size", normalizeText(sprite.sizeBytes ?? sprite.size_bytes, "Unavailable")],
+    ["Updated At", formatTimestamp(sprite.updatedAt ?? sprite.updated_at)],
+    ["Updated By", normalizeText(sprite.updatedBy ?? sprite.updated_by)],
+    ["Palette Keys", paletteKeysFor(sprite).join(", ") || "None"],
+  ].forEach(([label, value]) => {
+    const row = document.createElement("tr");
+    row.append(createHeaderCell(label), createCell(value));
+    body.append(row);
+  });
+  table.append(body);
+  metadata.append(table);
+  elements.previewPanel.append(metadata);
+  setDisabled(elements.duplicate, false);
+  setDisabled(elements.replace, false);
+}
+
+function selectSprite(sprite) {
+  selectedSpriteKey = sprite?.key || "";
+  if (!sprite) {
+    setText(elements.metadata, "Select a sprite row to review its metadata.");
+    renderPreviewPanel(null);
+    return;
+  }
+  const key = normalizeText(sprite?.key, "Unavailable");
+  const mimeType = normalizeText(sprite?.mimeType ?? sprite?.mime_type, "Unavailable");
+  const sizeBytes = normalizeText(sprite?.sizeBytes ?? sprite?.size_bytes, "Unavailable");
+  setText(elements.metadata, `${normalizeText(sprite?.name)} (${key}) | ${mimeType} | ${formatDimensions(sprite)} | ${sizeBytes} bytes`);
+  renderPreviewPanel(sprite);
 }
 
 function renderRows(sprites) {
@@ -292,6 +392,7 @@ function createSpriteRow(sprite) {
     actions.className = "action-group action-group--tight";
     actions.append(
       createButton("Edit", "spritesEdit", sprite?.key || "", { label: `Edit ${name}` }),
+      createButton("Duplicate", "spritesDuplicateRow", sprite?.key || "", { label: `Duplicate ${name}` }),
       createButton(archived ? "Archived" : "Archive", "spritesArchive", sprite?.key || "", {
         disabled: archived,
         label: archived ? `${name} is already archived` : `Archive ${name}`,
@@ -315,10 +416,7 @@ function createSpriteRow(sprite) {
       actionsCell
     );
     row.addEventListener("click", () => {
-      const key = normalizeText(sprite?.key, "Unavailable");
-      const mimeType = normalizeText(sprite?.mimeType ?? sprite?.mime_type, "Unavailable");
-      const sizeBytes = normalizeText(sprite?.sizeBytes ?? sprite?.size_bytes, "Unavailable");
-      setText(elements.metadata, `${normalizeText(sprite?.name)} (${key}) | ${mimeType} | ${formatDimensions(sprite)} | ${sizeBytes} bytes`);
+      selectSprite(sprite);
     });
     return row;
 }
@@ -336,10 +434,30 @@ function renderSprites(payload) {
   setText(elements.updated, new Date().toLocaleTimeString());
   setText(elements.metadata, count > 0 ? "Select a sprite row to review its metadata." : "No sprite metadata available yet.");
   setActionStatus("Ready for API-backed edits.");
+  setText(elements.storageStatus, "Binary upload/storage import is not configured for Sprites yet. Existing source and storage metadata can be reviewed and replaced through the API.");
+  setText(elements.replaceStatus, "Select a sprite to replace source metadata or duplicate with a server-owned key.");
+  selectSprite(sprites.find((sprite) => sprite.key === selectedSpriteKey) || null);
   setHidden(elements.emptyState, count > 0);
   setHidden(elements.errorState, true);
   renderPaletteStatus(sprites);
   renderRows(sprites);
+}
+
+function bodyFromSprite(sprite, overrides = {}) {
+  return {
+    category: normalizeCategory(overrides.category ?? sprite?.category),
+    height: sprite?.height ?? null,
+    mimeType: String(overrides.mimeType ?? sprite?.mimeType ?? "").trim(),
+    name: String(overrides.name ?? sprite?.name ?? "").trim(),
+    originalName: String(overrides.originalName ?? sprite?.originalName ?? "").trim(),
+    paletteColorKeys: paletteKeysFor(sprite),
+    sizeBytes: sprite?.sizeBytes ?? null,
+    source: String(overrides.source ?? sprite?.source ?? "").trim(),
+    status: String(overrides.status ?? sprite?.status ?? "").trim(),
+    storagePath: String(overrides.storagePath ?? sprite?.storagePath ?? "").trim(),
+    tagKeys: Array.isArray(sprite?.tagKeys) ? sprite.tagKeys : [],
+    width: sprite?.width ?? null,
+  };
 }
 
 function collectEditingValues(row) {
@@ -456,6 +574,50 @@ async function deleteSprite(key) {
   }
 }
 
+async function duplicateSprite(key) {
+  const sprite = currentSprites.find((item) => item.key === key);
+  if (!sprite) {
+    setActionStatus("Select a sprite before duplicating.");
+    return;
+  }
+  try {
+    setActionStatus("Duplicating sprite through the API.");
+    const payload = await writeSprite(SPRITES_API_PATH, bodyFromSprite(sprite, {
+      name: `${normalizeText(sprite.name, "Sprite")} Copy`,
+      status: sprite.status || "draft",
+    }));
+    if (!payload) {
+      return;
+    }
+    selectedSpriteKey = payload?.data?.sprite?.key || "";
+    setActionStatus("Sprite duplicated with an API-owned key.");
+    await loadSprites();
+  } catch (error) {
+    setActionStatus(error instanceof Error ? error.message : "Sprite duplicate failed.");
+  }
+}
+
+async function replaceSpriteMetadata(key) {
+  const sprite = currentSprites.find((item) => item.key === key);
+  if (!sprite) {
+    setActionStatus("Select a sprite before replacing metadata.");
+    return;
+  }
+  try {
+    setActionStatus("Replacing sprite source metadata through the API.");
+    const payload = await writeSprite(`${SPRITES_API_PATH}/${encodeURIComponent(key)}`, bodyFromSprite(sprite, {
+      source: sprite.source || sprite.storagePath || sprite.sourceName || "",
+    }));
+    if (!payload) {
+      return;
+    }
+    setActionStatus("Sprite source metadata replaced.");
+    await loadSprites();
+  } catch (error) {
+    setActionStatus(error instanceof Error ? error.message : "Sprite replace metadata failed.");
+  }
+}
+
 async function loadSprites() {
   renderLoading();
   try {
@@ -500,6 +662,7 @@ elements.tableBody?.addEventListener("click", (event) => {
   const saveKey = target.dataset.spritesSave;
   const archiveKey = target.dataset.spritesArchive;
   const deleteKey = target.dataset.spritesDelete;
+  const duplicateKey = target.dataset.spritesDuplicateRow;
   if (editKey !== undefined) {
     editingKey = editKey;
     renderRows(currentSprites);
@@ -523,9 +686,21 @@ elements.tableBody?.addEventListener("click", (event) => {
     void archiveSprite(archiveKey);
     return;
   }
+  if (duplicateKey !== undefined) {
+    void duplicateSprite(duplicateKey);
+    return;
+  }
   if (deleteKey !== undefined) {
     void deleteSprite(deleteKey);
   }
+});
+
+elements.duplicate?.addEventListener("click", () => {
+  void duplicateSprite(selectedSpriteKey);
+});
+
+elements.replace?.addEventListener("click", () => {
+  void replaceSpriteMetadata(selectedSpriteKey);
 });
 
 void loadSprites();
