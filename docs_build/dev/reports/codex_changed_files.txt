@@ -1,12 +1,17 @@
-# git status --short
-M docs_build/dev/reports/PR_26175_DELTA_010-final-team-delta-completion-report.md
- M docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout.md
-?? docs_build/dev/reports/PR_26175_DELTA_EOD_final_report.md
-
-# git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26175_DELTA_EOD_final_report.md
-
-# git diff --stat
-.../PR_26175_DELTA_010-final-team-delta-completion-report.md        | 6 +++++-
- .../dev/reports/PR_26175_DELTA_010-runtime-testability-closeout.md  | 3 ++-
- 2 files changed, 7 insertions(+), 2 deletions(-)
+.env.example
+docs_build/dev/BUILD_PR.md
+docs_build/dev/PROJECT_INSTRUCTIONS.md
+docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+docs_build/dev/ProjectInstructions/README.txt
+docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md
+docs_build/dev/ProjectInstructions/addendums/postgres_only.md
+docs_build/dev/ProjectInstructions/addendums/release_gate.md
+docs_build/dev/admin-notes/index.txt
+docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model.md
+docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_branch-validation.md
+docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_instruction-compliance-checklist.md
+docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_manual-validation-notes.md
+docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_requirement-checklist.md
+docs_build/dev/reports/PR_26177_OWNER_050-environment-governance-model_validation-lane.md
+docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/codex_review.diff

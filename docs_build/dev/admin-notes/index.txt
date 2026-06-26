@@ -2,7 +2,7 @@
 [.] Start the server
 npm run dev:local-api
 
-[x] Deploy DEV, IST, UAT, PRD
+[x] Deploy Local (VS Code), DEV, IST, UAT, PROD
 node .\scripts\validate-supabase-dev.mjs
 node .\scripts\apply-supabase-dev-ddl.mjs
 node .\scripts\validate-supabase-dev.mjs
