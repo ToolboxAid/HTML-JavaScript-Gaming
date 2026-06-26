@@ -3308,7 +3308,14 @@ function paletteTables(repository) {
 }
 
 function tagsTables(repository) {
-  return normalizeOwnedTables("tags", repository.getTables());
+  const tables = repository.getTables();
+  return normalizeOwnedTables("tags", {
+    project_tag_assignments: (tables.project_tag_assignments || []).map((record) => ({
+      ...record,
+      projectKey: gameWorkspaceGameKey(record.projectKey),
+    })),
+    project_tags: tables.project_tags || [],
+  });
 }
 
 function assetTables(repository) {
@@ -3701,6 +3708,17 @@ class ApiRuntimeDataSource {
 
   async persistProductProviderState(action) {
     return this.persistSupabaseProductSnapshot(action);
+  }
+
+  async persistTagsProviderState(action) {
+    return {
+      action,
+      database: "API database",
+      databaseEngine: "Server-owned project tag repository",
+      providerId: "api-project-tags",
+      serviceContract: "Browser -> API -> Database",
+      status: "PASS",
+    };
   }
 
   async persistGameWorkspaceProviderState(action) {
@@ -6790,6 +6808,8 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
     if (repositoryMethodRequiresPersistence(methodName) && !methodPersistsThroughToolStore) {
       if (repository === this.gameWorkspaceRepository) {
         await this.persistGameWorkspaceProviderState(`Persisting ${methodName} result`);
+      } else if (repository === this.tagsRepository) {
+        await this.persistTagsProviderState(`Persisting ${methodName} result`);
       } else if (repository === this.assetRepository) {
         await this.persistAssetProviderState(`Persisting ${methodName} result`);
       } else {

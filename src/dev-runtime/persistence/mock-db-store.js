@@ -76,7 +76,7 @@ export const MOCK_DB_TOOL_GROUPS = Object.freeze({
   }),
   tags: Object.freeze({
     label: "Tags",
-    tableNames: Object.freeze(["workspace_tag_records"]),
+    tableNames: Object.freeze(["project_tags", "project_tag_assignments"]),
   }),
   asset: Object.freeze({
     label: "Asset",
@@ -133,7 +133,8 @@ const MOCK_DB_TABLE_SCHEMAS = Object.freeze({
   palette_source_swatches: Object.freeze(["key", "id", "swatchKey", "hex", "name", "source", "sourceLabel", "tags", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   palette_swatch_usages: Object.freeze(["key", "id", "gameId", "assetId", "swatchHex", "swatchName", "swatchKey", "toolId", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   project_workspace_palette_globals: Object.freeze(["key", "gameId", "swatchCount", "toolKey", "workspacePath", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-  workspace_tag_records: Object.freeze(["key", "id", "gameId", "name", "description", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  project_tags: Object.freeze(["key", "slug", "label", "description", "active", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  project_tag_assignments: Object.freeze(["key", "projectKey", "tagKey", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   asset_role_definitions: Object.freeze(["key", "id", "label", "storageFolder", "extensions", "mimeTypes", "previewBehavior", "uploadEnabled", "inputMode", "usageRoles", "maxSizeBytes", "dbFields", "validationNeeds", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   asset_library_items: Object.freeze(["key", "id", "gameId", "ownerProjectId", "ownerUserId", "assetRole", "assetRoleLabel", "assetType", "description", "tagKeys", "name", "source", "reference", "fileName", "originalName", "mimeType", "size", "checksum", "storageObjectId", "storedPath", "path", "previewKind", "role", "type", "usage", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   asset_storage_objects: Object.freeze(["key", "id", "assetId", "gameId", "ownerProjectId", "role", "originalName", "storedPath", "mimeType", "size", "checksum", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),

@@ -4,8 +4,66 @@
   "owner": "docs_build/database/seed",
   "serverSideSeedRequired": true,
   "browserAuthoritativeKeyGenerationAllowed": false,
+  "architecture": "Browser -> API -> Database",
+  "flatTagsOnly": true,
   "tables": {
-    "workspace_tag_records": []
+    "project_tags": [
+      {
+        "key": "01K2GFSJ0Y0000000000007201",
+        "slug": "platformer",
+        "label": "platformer",
+        "description": "Platforming, jumping, and movement-focused projects.",
+        "active": true,
+        "createdBy": "01K2GFSJ0Y0000000000000054",
+        "updatedBy": "01K2GFSJ0Y0000000000000054"
+      },
+      {
+        "key": "01K2GFSJ0Y0000000000007202",
+        "slug": "fantasy",
+        "label": "fantasy",
+        "description": "Magic, legends, and fantasy world themes.",
+        "active": true,
+        "createdBy": "01K2GFSJ0Y0000000000000054",
+        "updatedBy": "01K2GFSJ0Y0000000000000054"
+      },
+      {
+        "key": "01K2GFSJ0Y0000000000007203",
+        "slug": "medium",
+        "label": "medium",
+        "description": "Medium-sized project scope.",
+        "active": true,
+        "createdBy": "01K2GFSJ0Y0000000000000054",
+        "updatedBy": "01K2GFSJ0Y0000000000000054"
+      },
+      {
+        "key": "01K2GFSJ0Y0000000000007204",
+        "slug": "pixel-art",
+        "label": "pixel-art",
+        "description": "Pixel art visual direction.",
+        "active": true,
+        "createdBy": "01K2GFSJ0Y0000000000000054",
+        "updatedBy": "01K2GFSJ0Y0000000000000054"
+      },
+      {
+        "key": "01K2GFSJ0Y0000000000007205",
+        "slug": "kids",
+        "label": "kids",
+        "description": "Designed for younger players.",
+        "active": true,
+        "createdBy": "01K2GFSJ0Y0000000000000054",
+        "updatedBy": "01K2GFSJ0Y0000000000000054"
+      },
+      {
+        "key": "01K2GFSJ0Y0000000000007206",
+        "slug": "boss-fight",
+        "label": "boss-fight",
+        "description": "Includes a climactic boss encounter.",
+        "active": true,
+        "createdBy": "01K2GFSJ0Y0000000000000054",
+        "updatedBy": "01K2GFSJ0Y0000000000000054"
+      }
+    ],
+    "project_tag_assignments": []
   },
-  "note": "Seed records for this group are intentionally empty until an Admin-owned server API seeds them."
+  "note": "Flat reusable tag seed labels are server/API owned. Project-specific assignments are intentionally empty and must be created through the API."
 }

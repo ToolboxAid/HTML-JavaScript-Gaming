@@ -6,7 +6,7 @@
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Tags - GameFoundryStudio</title>
-    <meta name="description" content="Tags Toolbox runtime for shared Game Hub vocabulary and usage references.">
+    <meta name="description" content="Tags Toolbox runtime for flat project labels and project tag assignment.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -18,7 +18,7 @@
             <div class="container">
                 <div class="kicker">Toolbox / Tags</div>
                 <h1>Tags</h1>
-                <p class="lede">Manage shared Game Hub tags used by creator tools.</p>
+                <p class="lede">Manage flat project tags for discovery, sharing, and creator workflow context.</p>
             </div>
         </section>
         <section class="section">
@@ -30,46 +30,49 @@
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Game Hub Vocabulary</summary>
+                                <summary>Project Tags</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Tags are shared vocabulary for the active Game Hub.</p>
-                                    <p>Assets and future tools should choose tags from this shared list.</p>
+                                    <p>Tags are reusable flat labels for projects.</p>
+                                    <p>Assign labels to the active project to support discovery and creator guidance.</p>
                                 </div>
                             </details>
                         </div>
                     </aside>
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="tags" data-tool-icon-src="assets/theme-v2/images/badges/tags.png" data-tool-character-src="assets/theme-v2/images/tools/tags.png"></div>
                     <section class="tool-center-panel">
-                        <h2>Game Hub Tags</h2>
-                        <p>Use this table as the shared tag vocabulary for the active Game Hub.</p>
+                        <h2>Project Tags</h2>
+                        <p>Create reusable flat labels and assign them to the active project through the API.</p>
                         <div class="grid cols-3" aria-label="Tags summary">
                             <article class="mini-stat"><strong data-tags-status>Needs Tags</strong>Status</article>
                             <article class="mini-stat"><strong data-tags-count>0</strong>Tags</article>
-                            <article class="mini-stat"><strong data-tags-usage-count>0</strong>Usage</article>
+                            <article class="mini-stat"><strong data-tags-assigned-count>0</strong>Assigned</article>
                         </div>
                         <article class="card">
                             <div class="card-body content-stack">
                                 <div>
-                                    <div class="kicker">Shared Vocabulary</div>
-                                    <h3>Tags Table</h3>
+                                    <div class="kicker">Flat Labels</div>
+                                    <h3>Project Tags Table</h3>
                                 </div>
+                                <p>Active project: <strong data-tags-active-project>Demo Game</strong></p>
                                 <div class="table-wrapper">
                                     <table class="data-table" aria-label="Workspace tags">
                                         <thead>
                                             <tr>
-                                                <th scope="col">Tag Name</th>
+                                                <th scope="col">Tag Label</th>
                                                 <th scope="col">Description</th>
-                                                <th scope="col">Usage Count</th>
+                                                <th scope="col">Assigned</th>
+                                                <th scope="col">Usage</th>
                                                 <th scope="col">Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody data-tags-table>
-                                            <tr><td colspan="4">No tags added yet.</td></tr>
+                                            <tr><td colspan="5">No tags added yet.</td></tr>
                                         </tbody>
                                     </table>
                                 </div>
                                 <div class="action-group">
                                     <button class="btn" type="button" data-tags-add>Add Tag</button>
+                                    <button class="btn btn--secondary" type="button" data-tags-refresh>Refresh Tags</button>
                                 </div>
                             </div>
                         </article>
@@ -84,6 +87,7 @@
                                 <div class="accordion-body content-stack">
                                     <p>Status: <span data-tags-output-status>Needs Tags</span></p>
                                     <p>Selected Tag: <span data-tags-selected>None</span></p>
+                                    <p>Assigned Tags: <span data-tags-assigned-labels>None</span></p>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
@@ -95,7 +99,8 @@
                                                 <tr><th scope="col">Table</th><th scope="col">Rows</th></tr>
                                             </thead>
                                             <tbody data-tags-table-counts>
-                                                <tr><td>workspace_tag_records</td><td>0</td></tr>
+                                                <tr><td>project_tags</td><td>0</td></tr>
+                                                <tr><td>project_tag_assignments</td><td>0</td></tr>
                                             </tbody>
                                         </table>
                                     </div>
