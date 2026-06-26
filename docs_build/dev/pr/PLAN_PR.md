@@ -15,6 +15,8 @@ Make `docs_build/dev/ProjectInstructions/` the only active Project Instructions 
 - Delete stale one-off bundle metadata from `docs_build/dev/` root.
 - Add Tool MVP Stacked PR Standard under `docs_build/dev/ProjectInstructions/`.
 - Update PR planning/template and report requirements for tool MVP PRs.
+- Add No Mock Repository Runtime Source governance under `docs_build/dev/ProjectInstructions/`.
+- Update Creator-testable stacked MVP standard to reject mock/page-array/JSON/browser-storage/tmp completion states.
 - Preserve historical ProjectInstructions-style sources only as deprecated reference material.
 - Keep `project-instructions/` out of the PR except for a tiny deprecated pointer.
 - Move active legacy addendums into `docs_build/dev/ProjectInstructions/addendums/`.
@@ -39,6 +41,8 @@ Make `docs_build/dev/ProjectInstructions/` the only active Project Instructions 
 6. Confirm moved audit outputs are under `docs_build/dev/reports/audits/`.
 7. Confirm Tool MVP Stacked PR Standard appears in active ProjectInstructions.
 8. Confirm tool MVP PR template/report requirements include Creator-testable outcome, Playwright tests, Mr. Q manual test, stack membership, and previous/next dependency.
-9. Confirm EOD/Next Day and canonical START / WORK / END branch lifecycle rules appear in active governance docs.
-10. Confirm no product/runtime files changed.
-11. Run `git diff --check`.
+9. Confirm No Mock Repository Runtime Source governance appears in active ProjectInstructions.
+10. Confirm Creator-testable stacked MVP standard rejects mock/page-array/JSON/browser-storage/tmp completion states.
+11. Confirm EOD/Next Day and canonical START / WORK / END branch lifecycle rules appear in active governance docs.
+12. Confirm no product/runtime files changed.
+13. Run `git diff --check`.

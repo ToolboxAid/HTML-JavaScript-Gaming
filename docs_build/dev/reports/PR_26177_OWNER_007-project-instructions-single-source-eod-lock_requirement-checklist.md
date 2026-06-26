@@ -17,6 +17,18 @@ Status: PASS
 - PASS: Updated active references to moved paths.
 - PASS: docs_build/dev root no longer contains active loose instruction, audit, contract, or PR files.
 - PASS: Added Tool MVP Stacked PR Standard under docs_build/dev/ProjectInstructions/.
+- PASS: Added No Mock Repository Runtime Source governance under docs_build/dev/ProjectInstructions/.
+- PASS: Documented Browser → API → Database as the required product-data flow.
+- PASS: Documented mock repositories as 100% technical debt.
+- PASS: Documented "Mock repository ready" as not Creator-testable completion.
+- PASS: Documented page arrays, JSON source files, /tmp files, and browser storage as not product-data sources of truth.
+- PASS: Documented runtime tool data must come from API/service contract backed by database.
+- PASS: Documented seed data is allowed only when it seeds the database and is owned by server/API/setup flow.
+- PASS: Documented browser pages must not seed authoritative records directly.
+- PASS: Documented temporary mock repository debt metadata requirements.
+- PASS: Documented Game Configuration mock repository ready does not count as complete.
+- PASS: Updated Tool MVP standard to reject mock/page-array/JSON/browser-storage/tmp completion states.
+- PASS: Updated Tool MVP standard to allow seeded demo data only when stored in DB and read through API.
 - PASS: Documented one large Codex command -> multiple focused stacked PRs -> each PR has a testable Creator outcome.
 - PASS: Documented no giant PR and no stopping after every small PR unless blocked.
 - PASS: Documented independently scoped Creator-testable PRs.

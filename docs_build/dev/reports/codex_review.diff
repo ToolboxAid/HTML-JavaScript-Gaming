@@ -3317,7 +3317,7 @@ index 4127fd8ae..000000000
 -- If the PR crosses multiple team ownership areas, stop and require OWNER to split or assign the work.
 -- If the requested implementation path conflicts with the active owner path, stop before changes.
 diff --git a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-index d2a84ecbe..569cc079a 100644
+index d2a84ecbe..82082e67c 100644
 --- a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 +++ b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 @@ -6,0 +7,6 @@ This file is the root index for the append-first Project Instructions operating
@@ -3332,7 +3332,7 @@ index d2a84ecbe..569cc079a 100644
 @@ -23 +30 @@ The Project Instructions operating system provides additive governance for:
 -Existing Project Instructions remain preserved in their current locations. This operating system adds structure without deleting or rewriting existing documentation.
 +Existing Project Instructions outside `docs_build/dev/ProjectInstructions/` remain preserved only as deprecated reference material. When guidance conflicts, active files under `docs_build/dev/ProjectInstructions/` win unless OWNER explicitly approves a newer governance change.
-@@ -43,0 +51,14 @@ Existing Project Instructions remain preserved in their current locations. This
+@@ -43,0 +51,16 @@ Existing Project Instructions remain preserved in their current locations. This
 +## Tool And Contract Governance
 +
 +`docs_build/dev/ProjectInstructions/addendums/workspace_v2_playwright_gate.md` defines the Workspace Manager V2 Playwright validation gate.
@@ -3343,12 +3343,14 @@ index d2a84ecbe..569cc079a 100644
 +
 +`docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md` defines the Creator-facing stacked PR standard for tool MVP work.
 +
++`docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md` defines the Browser → API → Database product-data rule and mock repository technical debt boundary.
++
 +## Single Source and Main Lock Governance
 +
 +`docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md` defines the single active Project Instructions source, canonical START / WORK / END branch lifecycle, EOD main lock, next-day reset, team branch creation gate, daily synchronization baseline, and mandatory hard stops.
 +
 diff --git a/docs_build/dev/ProjectInstructions/README.txt b/docs_build/dev/ProjectInstructions/README.txt
-index a48becf05..3f47b61c7 100644
+index a48becf05..73709e00f 100644
 --- a/docs_build/dev/ProjectInstructions/README.txt
 +++ b/docs_build/dev/ProjectInstructions/README.txt
 @@ -4 +4 @@ Folder purpose:
@@ -3386,11 +3388,12 @@ index a48becf05..3f47b61c7 100644
 +- Assistant Execution Modes: docs_build/dev/ProjectInstructions/addendums/assistant_execution_modes.md
 +- Codex Artifact and Reporting Standard: docs_build/dev/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
 +- Codex Project Instructions Startup: docs_build/dev/ProjectInstructions/addendums/codex_project_instructions_startup.md
-@@ -53,0 +59,4 @@ Addendum index:
+@@ -53,0 +59,5 @@ Addendum index:
 +- Workspace V2 Playwright Gate: docs_build/dev/ProjectInstructions/addendums/workspace_v2_playwright_gate.md
 +- Samples2Tools Adapter Guidance: docs_build/dev/ProjectInstructions/addendums/samples2tools_adapter_guidance.md
 +- King of the Iceberg Layout Contract: docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md
 +- Tool MVP Stacked PR Standard: docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md
++- No Mock Repository Runtime Source: docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md
 diff --git a/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md b/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
 index d0118f63a..292540043 100644
 --- a/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
@@ -4230,18 +4233,19 @@ index 000000000..ff606135a
 +
 +`docs_build/dev/start_of_day/` may point to `docs_build/dev/ProjectInstructions/`, but it must not become a second active Project Instructions source.
 diff --git a/docs_build/dev/ProjectInstructions/addendums/release_gate.md b/docs_build/dev/ProjectInstructions/addendums/release_gate.md
-index c45a2c49d..19d2df4e4 100644
+index c45a2c49d..72bd75c71 100644
 --- a/docs_build/dev/ProjectInstructions/addendums/release_gate.md
 +++ b/docs_build/dev/ProjectInstructions/addendums/release_gate.md
 @@ -24,0 +25 @@ Before a governance, documentation, or administrative PR is merged, validate:
 +- Canonical START / WORK / END branch lifecycle guidance remains intact.
 @@ -38,0 +40 @@ The release gate should confirm these files when relevant to the PR:
 +- `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`
-@@ -41,0 +44,4 @@ The release gate should confirm these files when relevant to the PR:
+@@ -41,0 +44,5 @@ The release gate should confirm these files when relevant to the PR:
 +- `docs_build/dev/ProjectInstructions/addendums/workspace_v2_playwright_gate.md`
 +- `docs_build/dev/ProjectInstructions/addendums/samples2tools_adapter_guidance.md`
 +- `docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md`
 +- `docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md`
++- `docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md`
 diff --git a/docs_build/dev/samples2tools_adapter_guidance.md b/docs_build/dev/ProjectInstructions/addendums/samples2tools_adapter_guidance.md
 similarity index 100%
 rename from docs_build/dev/samples2tools_adapter_guidance.md
@@ -4326,6 +4330,96 @@ index 000000000..997b16730
 +- Tool tests validate tool functionality.
 +- Regression tests validate platform behavior.
 +- New tests follow the canonical structure.
+diff --git a/docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md b/docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md
+new file mode 100644
+index 000000000..a44e7fcd5
+--- /dev/null
++++ b/docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md
+@@ -0,0 +1,84 @@
++# Tool MVP Stacked PR Standard
++
++Status: Approved
++Owner: OWNER
++
++## Purpose
++
++Define how Codex plans and executes Creator-facing tool MVP work without creating one giant PR or stopping after every small PR.
++
++## Standard
++
++For tool MVPs, use:
++
++```text
++One large Codex command -> multiple focused stacked PRs -> each PR has a testable Creator outcome.
++```
++
++## Rules
++
++- Do not create one giant PR.
++- Do not stop after every small PR unless blocked.
++- Each PR must be independently scoped.
++- Each PR must produce a Creator-testable outcome.
++- Each PR must answer:
++
++```text
++What can Mr. Q test after applying this ZIP?
++```
++
++- Codex must continue through the stacked PR sequence unless blocked by:
++  - branch state
++  - failed validation
++  - missing source files
++  - Project Instructions conflict
++  - unresolved dependency from a prior PR
++
++## Creator-Facing Acceptance
++
++For tool MVP PR planning, visible acceptance must be Creator-facing first.
++
++Architecture can be handled under the covers, but PR purpose must be user-testable.
++
++Each tool MVP PR must state:
++- Creator-testable outcome
++- What Playwright tests
++- What Mr. Q should manually test
++- Whether the PR is part of a stacked MVP sequence
++- Previous PR dependency
++- Next PR dependency
++
++## Runtime Data Completion Boundary
++
++A PR outcome must not be described as complete if the visible data is coming from:
++
++- mock repositories
++- page arrays
++- JSON source files
++- browser storage
++- `/tmp`
++
++Seeded demo data is fine only when it is stored in the database and read back through the API.
++
++Tool MVPs must follow `docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md`.
++
++## Hitboxes MVP Example Stack
++
++Example Hitboxes MVP stack:
++
++- PR 1: Creator can open the tool and choose a real/test object.
++- PR 2: Creator can see the object and draw a rectangle hitbox.
++- PR 3: Creator can move/resize/save/reload hitboxes.
++- PR 4: Creator can test Object A vs Object B collision.
++- PR 5: Creator can test speed/animation so fast objects do not skip collision.
++- PR 6: Polish and regression coverage.
++
++## Lifecycle Relationship
++
++Tool MVP stacks are explicitly documented stacked PR chains.
++
++Each PR in the stack still follows the canonical START / WORK / END lifecycle and must produce required reports and a repo-structured ZIP.
++
++When OWNER gives one large Codex command for a tool MVP stack, Codex may continue from one completed PR to the next without stopping for a conversational checkpoint, unless a blocker listed in this standard occurs.
++
++The final PR in the stack must perform normal closeout and stop all work after returning to synchronized main.
 diff --git a/docs_build/dev/workspace_v2_playwright_gate.md b/docs_build/dev/ProjectInstructions/addendums/workspace_v2_playwright_gate.md
 similarity index 100%
 rename from docs_build/dev/workspace_v2_playwright_gate.md
@@ -4481,10 +4575,10 @@ index a8cd06794..000000000
 -- update targeted Playwright coverage and reports
 diff --git a/docs_build/dev/pr/BUILD_PR.md b/docs_build/dev/pr/BUILD_PR.md
 new file mode 100644
-index 000000000..a80b02ddd
+index 000000000..4a32b70d6
 --- /dev/null
 +++ b/docs_build/dev/pr/BUILD_PR.md
-@@ -0,0 +1,99 @@
+@@ -0,0 +1,103 @@
 +# PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 +
 +## Purpose
@@ -4507,6 +4601,8 @@ index 000000000..a80b02ddd
 +- Delete stale one-off bundle metadata from `docs_build/dev/` root.
 +- Add Tool MVP Stacked PR Standard under `docs_build/dev/ProjectInstructions/`.
 +- Update PR planning/template and report requirements for tool MVP PRs.
++- Add No Mock Repository Runtime Source governance under `docs_build/dev/ProjectInstructions/`.
++- Update Creator-testable stacked MVP standard to reject mock/page-array/JSON/browser-storage/tmp completion states.
 +- Keep preserved historical ProjectInstructions material reference-only.
 +- Keep `project-instructions/` out of this PR except for a tiny deprecated pointer.
 +- Update active team start/governance docs to reference only `docs_build/dev/ProjectInstructions/`.
@@ -4524,6 +4620,7 @@ index 000000000..a80b02ddd
 +- `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md`
 +- `docs_build/dev/ProjectInstructions/addendums/*.md`
 +- `docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md`
++- `docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md`
 +- `docs_build/dev/reports/audits/*.md`
 +- `project-instructions/README.md` (tiny deprecated pointer only)
 +- `docs_build/dev/PROJECT_INSTRUCTIONS.md` (delete)
@@ -4577,6 +4674,7 @@ index 000000000..a80b02ddd
 +Test-Path docs_build/dev/validation_checklist.txt
 +rg -n 'only active Project Instructions source|docs_build/dev/ProjectInstructions/' docs_build/dev/ProjectInstructions
 +rg -n 'Tool MVP Stacked PR Standard|Creator-testable outcome|What can Mr\\. Q test after applying this ZIP|What Playwright tests|What Mr\\. Q should manually test|Previous PR dependency|Next PR dependency' docs_build/dev/ProjectInstructions
++rg -n 'No Mock Repository Runtime Source|Browser → API → Database|Mock repositories are 100% technical debt|Game Configuration mock repository ready|Seeded demo data is fine only when it is stored in the database and read back through the API' docs_build/dev/ProjectInstructions
 +rg -n 'docs_build/dev/PROJECT_INSTRUCTIONS.md.*source of truth|Codex must always read `docs_build/dev/PROJECT_INSTRUCTIONS.md`|Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`' docs_build/dev/ProjectInstructions project-instructions
 +git diff --name-status $(git merge-base HEAD origin/main) -- project-instructions
 +git diff --name-status $(git merge-base HEAD origin/main) -- docs_build/dev/pr docs_build/dev/ProjectInstructions/addendums docs_build/dev/reports/audits
@@ -4586,10 +4684,10 @@ index 000000000..a80b02ddd
 +```
 diff --git a/docs_build/dev/pr/PLAN_PR.md b/docs_build/dev/pr/PLAN_PR.md
 new file mode 100644
-index 000000000..f249d86de
+index 000000000..3b9706288
 --- /dev/null
 +++ b/docs_build/dev/pr/PLAN_PR.md
-@@ -0,0 +1,44 @@
+@@ -0,0 +1,48 @@
 +# PLAN_PR: PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 +
 +## Purpose
@@ -4607,6 +4705,8 @@ index 000000000..f249d86de
 +- Delete stale one-off bundle metadata from `docs_build/dev/` root.
 +- Add Tool MVP Stacked PR Standard under `docs_build/dev/ProjectInstructions/`.
 +- Update PR planning/template and report requirements for tool MVP PRs.
++- Add No Mock Repository Runtime Source governance under `docs_build/dev/ProjectInstructions/`.
++- Update Creator-testable stacked MVP standard to reject mock/page-array/JSON/browser-storage/tmp completion states.
 +- Preserve historical ProjectInstructions-style sources only as deprecated reference material.
 +- Keep `project-instructions/` out of the PR except for a tiny deprecated pointer.
 +- Move active legacy addendums into `docs_build/dev/ProjectInstructions/addendums/`.
@@ -4631,9 +4731,11 @@ index 000000000..f249d86de
 +6. Confirm moved audit outputs are under `docs_build/dev/reports/audits/`.
 +7. Confirm Tool MVP Stacked PR Standard appears in active ProjectInstructions.
 +8. Confirm tool MVP PR template/report requirements include Creator-testable outcome, Playwright tests, Mr. Q manual test, stack membership, and previous/next dependency.
-+9. Confirm EOD/Next Day and canonical START / WORK / END branch lifecycle rules appear in active governance docs.
-+10. Confirm no product/runtime files changed.
-+11. Run `git diff --check`.
++9. Confirm No Mock Repository Runtime Source governance appears in active ProjectInstructions.
++10. Confirm Creator-testable stacked MVP standard rejects mock/page-array/JSON/browser-storage/tmp completion states.
++11. Confirm EOD/Next Day and canonical START / WORK / END branch lifecycle rules appear in active governance docs.
++12. Confirm no product/runtime files changed.
++13. Run `git diff --check`.
 diff --git a/docs_build/dev/plan_pr_tool_workspace_manifest_boundaries.md b/docs_build/dev/pr/plan_pr_tool_workspace_manifest_boundaries.md
 similarity index 100%
 rename from docs_build/dev/plan_pr_tool_workspace_manifest_boundaries.md
@@ -4705,15 +4807,15 @@ rename from docs_build/dev/pr_tool_uat_fixes.md
 rename to docs_build/dev/pr/pr_tool_uat_fixes.md
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock.md b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock.md
 new file mode 100644
-index 000000000..be4187a7f
+index 000000000..9f126802e
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock.md
-@@ -0,0 +1,104 @@
+@@ -0,0 +1,124 @@
 +﻿# PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 +
 +Date: 2026-06-26
 +Branch: PR_26177_OWNER_007-project-instructions-single-source-eod-lock
-+Scope: Project Instructions single-source governance, EOD main lock, branch lifecycle governance, docs_build/dev root cleanup, and Tool MVP stacked PR governance
++Scope: Project Instructions single-source governance, EOD main lock, branch lifecycle governance, docs_build/dev root cleanup, Tool MVP stacked PR governance, and no-mock runtime source governance
 +Status: PASS
 +
 +## Summary
@@ -4728,12 +4830,28 @@ index 000000000..be4187a7f
 +- Moved audit outputs into docs_build/dev/reports/audits/.
 +- Deleted stale one-off bundle metadata from docs_build/dev root.
 +- Added docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md.
++- Added docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md.
++- Updated Creator-testable stacked MVP governance so PR outcomes cannot be complete when visible data comes from mock repositories, page arrays, JSON source files, browser storage, or /tmp.
 +- Updated PR workflow governance so tool MVP PR plans/templates include Creator-testable outcome, Playwright test scope, Mr. Q manual test scope, stacked MVP sequence membership, and previous/next PR dependencies.
 +- Updated Codex artifact/reporting governance so every tool MVP PR report includes those same fields and answers what Mr. Q can test after applying the ZIP.
 +- Corrected project-instructions/** scope so the PR only adds a tiny deprecated pointer README there.
 +- Preserved project-instructions/addendums/** unchanged in the PR; unique current governance content is carried by docs_build/dev/ProjectInstructions/addendums/.
 +- Confirmed docs_build/dev root no longer contains active loose instruction, audit, contract, or PR files.
 +- No product/runtime, start_of_day, feature, or legacy SQLite file changes were made.
++
++## No Mock Repository Runtime Source
++
++Added governance:
++- Required product-data flow: Browser → API → Database.
++- Mock repositories are 100% technical debt.
++- "Mock repository ready" is not a valid Creator-testable completion state.
++- Page arrays, JSON source files, /tmp files, and browser storage are not product-data sources of truth.
++- Runtime tool data must come from the API/service contract backed by the database.
++- Seed data is allowed only if it seeds the database.
++- Seed execution must be owned by server/API/setup flow.
++- Browser pages must not seed authoritative records directly.
++- Temporary mock repositories must document why they exist, affected files, removal PR, replacement API/DB path, and Creator-testable limitation.
++- "Game Configuration mock repository ready" does not count as complete; completion requires Game Configuration data to load through Browser → API → Database.
 +
 +## Tool MVP Stacked PR Standard
 +
@@ -4745,6 +4863,8 @@ index 000000000..be4187a7f
 +- Each PR answers: What can Mr. Q test after applying this ZIP?
 +- Codex continues through the stack unless blocked by branch state, failed validation, missing source files, Project Instructions conflict, or unresolved prior-PR dependency.
 +- Visible acceptance for tool MVP planning is Creator-facing first.
++- A PR outcome cannot be complete if visible data comes from mock repositories, page arrays, JSON source files, browser storage, or /tmp.
++- Seeded demo data is fine only when it is stored in the database and read back through the API.
 +- Hitboxes MVP example stack is included.
 +
 +## Moved To ProjectInstructions SSoT
@@ -4802,6 +4922,8 @@ index 000000000..be4187a7f
 +- PASS: project-instructions/** PR diff is limited to project-instructions/README.md.
 +- PASS: active moved governance/contract docs are indexed in docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md and README.txt.
 +- PASS: Tool MVP Stacked PR Standard exists and includes required governance text.
++- PASS: No Mock Repository Runtime Source exists and includes required governance text.
++- PASS: Tool MVP standard rejects mock/page-array/JSON/browser-storage/tmp completion states and allows seeded demo data only when stored in DB and read through API.
 +- PASS: PR workflow/template requirements include Creator-testable outcome, Playwright tests, Mr. Q manual test, stack membership, and previous/next dependency.
 +- PASS: Codex report requirements include Creator-testable outcome, Playwright tests, Mr. Q manual test, stack membership, and previous/next dependency.
 +- PASS: targeted grep found no active duplicate ProjectInstructions source-of-truth claim outside the active source.
@@ -4815,10 +4937,10 @@ index 000000000..be4187a7f
 +- tmp/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_delta.zip
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_branch-validation.md b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_branch-validation.md
 new file mode 100644
-index 000000000..4f6f63016
+index 000000000..694c0151f
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_branch-validation.md
-@@ -0,0 +1,13 @@
+@@ -0,0 +1,14 @@
 +﻿# Branch Validation - PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 +
 +Status: PASS
@@ -4828,16 +4950,17 @@ index 000000000..4f6f63016
 +- PASS: Worktree changes are scoped to governance/docs cleanup, reports, and the required delta artifact.
 +- PASS: docs_build/dev root contains no loose files after moving PR docs, active addendums, and audit outputs.
 +- PASS: Tool MVP Stacked PR Standard was added under docs_build/dev/ProjectInstructions/addendums/.
++- PASS: No Mock Repository Runtime Source was added under docs_build/dev/ProjectInstructions/addendums/.
 +- PASS: project-instructions/** is limited to a tiny deprecated pointer README in the PR diff.
 +- PASS: No product/runtime files changed.
 +- PASS: No start_of_day files changed.
 +- PASS: docs_build/dev/ProjectInstructions/ remains present and active.
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_manual-validation-notes.md
 new file mode 100644
-index 000000000..dea18c9c2
+index 000000000..dbb60e956
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_manual-validation-notes.md
-@@ -0,0 +1,22 @@
+@@ -0,0 +1,24 @@
 +﻿# Manual Validation Notes - PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 +
 +Status: PASS
@@ -4851,6 +4974,8 @@ index 000000000..dea18c9c2
 +- Moved audit outputs into docs_build/dev/reports/audits/.
 +- Deleted stale bundle metadata from docs_build/dev root.
 +- Added Tool MVP Stacked PR Standard as active ProjectInstructions governance.
++- Added No Mock Repository Runtime Source as active ProjectInstructions governance.
++- Updated Creator-testable stacked MVP PR standard to reject mock repository, page array, JSON source file, browser storage, and /tmp completion states.
 +- Updated PR workflow/template and reporting governance for tool MVP PRs.
 +- Reviewed ambiguous old project-instructions addendum files and left them unchanged in this PR.
 +- Confirmed active/current governance content is under docs_build/dev/ProjectInstructions/.
@@ -4862,10 +4987,10 @@ index 000000000..dea18c9c2
 +- Playwright was not run; documentation/governance-only change.
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_requirement-checklist.md b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_requirement-checklist.md
 new file mode 100644
-index 000000000..3b6d61193
+index 000000000..e38393898
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_requirement-checklist.md
-@@ -0,0 +1,39 @@
+@@ -0,0 +1,51 @@
 +﻿# Requirement Checklist - PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 +
 +Status: PASS
@@ -4885,6 +5010,18 @@ index 000000000..3b6d61193
 +- PASS: Updated active references to moved paths.
 +- PASS: docs_build/dev root no longer contains active loose instruction, audit, contract, or PR files.
 +- PASS: Added Tool MVP Stacked PR Standard under docs_build/dev/ProjectInstructions/.
++- PASS: Added No Mock Repository Runtime Source governance under docs_build/dev/ProjectInstructions/.
++- PASS: Documented Browser → API → Database as the required product-data flow.
++- PASS: Documented mock repositories as 100% technical debt.
++- PASS: Documented "Mock repository ready" as not Creator-testable completion.
++- PASS: Documented page arrays, JSON source files, /tmp files, and browser storage as not product-data sources of truth.
++- PASS: Documented runtime tool data must come from API/service contract backed by database.
++- PASS: Documented seed data is allowed only when it seeds the database and is owned by server/API/setup flow.
++- PASS: Documented browser pages must not seed authoritative records directly.
++- PASS: Documented temporary mock repository debt metadata requirements.
++- PASS: Documented Game Configuration mock repository ready does not count as complete.
++- PASS: Updated Tool MVP standard to reject mock/page-array/JSON/browser-storage/tmp completion states.
++- PASS: Updated Tool MVP standard to allow seeded demo data only when stored in DB and read through API.
 +- PASS: Documented one large Codex command -> multiple focused stacked PRs -> each PR has a testable Creator outcome.
 +- PASS: Documented no giant PR and no stopping after every small PR unless blocked.
 +- PASS: Documented independently scoped Creator-testable PRs.
@@ -4907,10 +5044,10 @@ index 000000000..3b6d61193
 +- PASS: No start_of_day files changed.
 diff --git a/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_validation-lane.md b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_validation-lane.md
 new file mode 100644
-index 000000000..df39b2ab4
+index 000000000..f35b6cf2b
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_validation-lane.md
-@@ -0,0 +1,40 @@
+@@ -0,0 +1,44 @@
 +﻿# Validation Lane - PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 +
 +Status: PASS
@@ -4934,8 +5071,10 @@ index 000000000..df39b2ab4
 +Test-Path docs_build/dev/validation_checklist.txt
 +git diff --name-status $(git merge-base HEAD origin/main) -- project-instructions
 +rg -n 'Tool MVP Stacked PR Standard|One large Codex command|Creator-testable outcome|What can Mr\. Q test after applying this ZIP|What Playwright tests|What Mr\. Q should manually test|stacked MVP sequence|Previous PR dependency|Next PR dependency|Hitboxes MVP' docs_build/dev/ProjectInstructions
++rg -n 'No Mock Repository Runtime Source|Browser → API → Database|Mock repositories are 100% technical debt|Mock repository ready|Page arrays are not product-data sources of truth|JSON source files are not product-data sources of truth|/tmp.*not product-data|Browser storage is not product-data|Runtime tool data must come from the API/service contract backed by the database|Seed data is allowed only if it seeds the database|Seed execution must be owned by server/API/setup flow|Browser pages must not seed authoritative records directly|Game Configuration mock repository ready' docs_build/dev/ProjectInstructions
++rg -n 'A PR outcome must not be described as complete|mock repositories|page arrays|JSON source files|browser storage|/tmp|Seeded demo data is fine only when it is stored in the database and read back through the API|no_mock_repository_runtime_source' docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md
 +rg -n 'docs_build/dev/PROJECT_INSTRUCTIONS.md.*source of truth|Codex must always read `docs_build/dev/PROJECT_INSTRUCTIONS.md`|Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`' docs_build/dev/ProjectInstructions project-instructions
-+rg -n 'workspace_v2_playwright_gate|samples2tools_adapter_guidance|koti_layout_contract|tool_mvp_stacked_pr_standard' docs_build/dev/ProjectInstructions
++rg -n 'workspace_v2_playwright_gate|samples2tools_adapter_guidance|koti_layout_contract|tool_mvp_stacked_pr_standard|no_mock_repository_runtime_source' docs_build/dev/ProjectInstructions
 +git diff --name-only -- src assets toolbox games api serverside package.json package-lock.json docs_build/dev/start_of_day
 +git diff --check
 +```
@@ -4946,6 +5085,8 @@ index 000000000..df39b2ab4
 +- PASS: Duplicate/stale/moved root path checks returned absent for every listed cleanup file.
 +- PASS: project-instructions/** diff returned only A project-instructions/README.md.
 +- PASS: Tool MVP Stacked PR Standard and required report/template fields appear in active ProjectInstructions docs.
++- PASS: No Mock Repository Runtime Source and required product-data flow rules appear in active ProjectInstructions docs.
++- PASS: Tool MVP standard rejects mock/page-array/JSON/browser-storage/tmp completion states.
 +- PASS: Active-source grep did not find old root instruction source-of-truth wording.
 +- PASS: Moved governance/contract addendum paths appear in active ProjectInstructions docs.
 +- PASS: Product/runtime/start_of_day changed-file check returned no files.

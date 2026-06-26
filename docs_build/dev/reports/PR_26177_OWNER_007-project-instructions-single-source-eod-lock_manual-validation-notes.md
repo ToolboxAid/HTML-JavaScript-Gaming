@@ -11,6 +11,8 @@ Status: PASS
 - Moved audit outputs into docs_build/dev/reports/audits/.
 - Deleted stale bundle metadata from docs_build/dev root.
 - Added Tool MVP Stacked PR Standard as active ProjectInstructions governance.
+- Added No Mock Repository Runtime Source as active ProjectInstructions governance.
+- Updated Creator-testable stacked MVP PR standard to reject mock repository, page array, JSON source file, browser storage, and /tmp completion states.
 - Updated PR workflow/template and reporting governance for tool MVP PRs.
 - Reviewed ambiguous old project-instructions addendum files and left them unchanged in this PR.
 - Confirmed active/current governance content is under docs_build/dev/ProjectInstructions/.

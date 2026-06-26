@@ -48,6 +48,20 @@ Each tool MVP PR must state:
 - Previous PR dependency
 - Next PR dependency
 
+## Runtime Data Completion Boundary
+
+A PR outcome must not be described as complete if the visible data is coming from:
+
+- mock repositories
+- page arrays
+- JSON source files
+- browser storage
+- `/tmp`
+
+Seeded demo data is fine only when it is stored in the database and read back through the API.
+
+Tool MVPs must follow `docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md`.
+
 ## Hitboxes MVP Example Stack
 
 Example Hitboxes MVP stack:

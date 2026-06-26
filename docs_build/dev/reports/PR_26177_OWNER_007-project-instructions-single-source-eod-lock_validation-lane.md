@@ -21,8 +21,10 @@ Test-Path docs_build/dev/bundle_readme.md
 Test-Path docs_build/dev/validation_checklist.txt
 git diff --name-status $(git merge-base HEAD origin/main) -- project-instructions
 rg -n 'Tool MVP Stacked PR Standard|One large Codex command|Creator-testable outcome|What can Mr\. Q test after applying this ZIP|What Playwright tests|What Mr\. Q should manually test|stacked MVP sequence|Previous PR dependency|Next PR dependency|Hitboxes MVP' docs_build/dev/ProjectInstructions
+rg -n 'No Mock Repository Runtime Source|Browser → API → Database|Mock repositories are 100% technical debt|Mock repository ready|Page arrays are not product-data sources of truth|JSON source files are not product-data sources of truth|/tmp.*not product-data|Browser storage is not product-data|Runtime tool data must come from the API/service contract backed by the database|Seed data is allowed only if it seeds the database|Seed execution must be owned by server/API/setup flow|Browser pages must not seed authoritative records directly|Game Configuration mock repository ready' docs_build/dev/ProjectInstructions
+rg -n 'A PR outcome must not be described as complete|mock repositories|page arrays|JSON source files|browser storage|/tmp|Seeded demo data is fine only when it is stored in the database and read back through the API|no_mock_repository_runtime_source' docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md
 rg -n 'docs_build/dev/PROJECT_INSTRUCTIONS.md.*source of truth|Codex must always read `docs_build/dev/PROJECT_INSTRUCTIONS.md`|Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`' docs_build/dev/ProjectInstructions project-instructions
-rg -n 'workspace_v2_playwright_gate|samples2tools_adapter_guidance|koti_layout_contract|tool_mvp_stacked_pr_standard' docs_build/dev/ProjectInstructions
+rg -n 'workspace_v2_playwright_gate|samples2tools_adapter_guidance|koti_layout_contract|tool_mvp_stacked_pr_standard|no_mock_repository_runtime_source' docs_build/dev/ProjectInstructions
 git diff --name-only -- src assets toolbox games api serverside package.json package-lock.json docs_build/dev/start_of_day
 git diff --check
 ```
@@ -33,6 +35,8 @@ Results:
 - PASS: Duplicate/stale/moved root path checks returned absent for every listed cleanup file.
 - PASS: project-instructions/** diff returned only A project-instructions/README.md.
 - PASS: Tool MVP Stacked PR Standard and required report/template fields appear in active ProjectInstructions docs.
+- PASS: No Mock Repository Runtime Source and required product-data flow rules appear in active ProjectInstructions docs.
+- PASS: Tool MVP standard rejects mock/page-array/JSON/browser-storage/tmp completion states.
 - PASS: Active-source grep did not find old root instruction source-of-truth wording.
 - PASS: Moved governance/contract addendum paths appear in active ProjectInstructions docs.
 - PASS: Product/runtime/start_of_day changed-file check returned no files.

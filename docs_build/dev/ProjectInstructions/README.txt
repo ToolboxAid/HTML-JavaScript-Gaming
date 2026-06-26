@@ -60,3 +60,4 @@ Addendum index:
 - Samples2Tools Adapter Guidance: docs_build/dev/ProjectInstructions/addendums/samples2tools_adapter_guidance.md
 - King of the Iceberg Layout Contract: docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md
 - Tool MVP Stacked PR Standard: docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md
+- No Mock Repository Runtime Source: docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md

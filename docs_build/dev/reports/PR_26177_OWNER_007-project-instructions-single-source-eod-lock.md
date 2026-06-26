@@ -2,7 +2,7 @@
 
 Date: 2026-06-26
 Branch: PR_26177_OWNER_007-project-instructions-single-source-eod-lock
-Scope: Project Instructions single-source governance, EOD main lock, branch lifecycle governance, docs_build/dev root cleanup, and Tool MVP stacked PR governance
+Scope: Project Instructions single-source governance, EOD main lock, branch lifecycle governance, docs_build/dev root cleanup, Tool MVP stacked PR governance, and no-mock runtime source governance
 Status: PASS
 
 ## Summary
@@ -17,12 +17,28 @@ Status: PASS
 - Moved audit outputs into docs_build/dev/reports/audits/.
 - Deleted stale one-off bundle metadata from docs_build/dev root.
 - Added docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md.
+- Added docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md.
+- Updated Creator-testable stacked MVP governance so PR outcomes cannot be complete when visible data comes from mock repositories, page arrays, JSON source files, browser storage, or /tmp.
 - Updated PR workflow governance so tool MVP PR plans/templates include Creator-testable outcome, Playwright test scope, Mr. Q manual test scope, stacked MVP sequence membership, and previous/next PR dependencies.
 - Updated Codex artifact/reporting governance so every tool MVP PR report includes those same fields and answers what Mr. Q can test after applying the ZIP.
 - Corrected project-instructions/** scope so the PR only adds a tiny deprecated pointer README there.
 - Preserved project-instructions/addendums/** unchanged in the PR; unique current governance content is carried by docs_build/dev/ProjectInstructions/addendums/.
 - Confirmed docs_build/dev root no longer contains active loose instruction, audit, contract, or PR files.
 - No product/runtime, start_of_day, feature, or legacy SQLite file changes were made.
+
+## No Mock Repository Runtime Source
+
+Added governance:
+- Required product-data flow: Browser → API → Database.
+- Mock repositories are 100% technical debt.
+- "Mock repository ready" is not a valid Creator-testable completion state.
+- Page arrays, JSON source files, /tmp files, and browser storage are not product-data sources of truth.
+- Runtime tool data must come from the API/service contract backed by the database.
+- Seed data is allowed only if it seeds the database.
+- Seed execution must be owned by server/API/setup flow.
+- Browser pages must not seed authoritative records directly.
+- Temporary mock repositories must document why they exist, affected files, removal PR, replacement API/DB path, and Creator-testable limitation.
+- "Game Configuration mock repository ready" does not count as complete; completion requires Game Configuration data to load through Browser → API → Database.
 
 ## Tool MVP Stacked PR Standard
 
@@ -34,6 +50,8 @@ Added governance:
 - Each PR answers: What can Mr. Q test after applying this ZIP?
 - Codex continues through the stack unless blocked by branch state, failed validation, missing source files, Project Instructions conflict, or unresolved prior-PR dependency.
 - Visible acceptance for tool MVP planning is Creator-facing first.
+- A PR outcome cannot be complete if visible data comes from mock repositories, page arrays, JSON source files, browser storage, or /tmp.
+- Seeded demo data is fine only when it is stored in the database and read back through the API.
 - Hitboxes MVP example stack is included.
 
 ## Moved To ProjectInstructions SSoT
@@ -91,6 +109,8 @@ Deleted stale one-off root files:
 - PASS: project-instructions/** PR diff is limited to project-instructions/README.md.
 - PASS: active moved governance/contract docs are indexed in docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md and README.txt.
 - PASS: Tool MVP Stacked PR Standard exists and includes required governance text.
+- PASS: No Mock Repository Runtime Source exists and includes required governance text.
+- PASS: Tool MVP standard rejects mock/page-array/JSON/browser-storage/tmp completion states and allows seeded demo data only when stored in DB and read through API.
 - PASS: PR workflow/template requirements include Creator-testable outcome, Playwright tests, Mr. Q manual test, stack membership, and previous/next dependency.
 - PASS: Codex report requirements include Creator-testable outcome, Playwright tests, Mr. Q manual test, stack membership, and previous/next dependency.
 - PASS: targeted grep found no active duplicate ProjectInstructions source-of-truth claim outside the active source.

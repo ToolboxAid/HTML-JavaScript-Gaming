@@ -24,6 +24,7 @@ R100	docs_build/dev/samples2tools_adapter_guidance.md	docs_build/dev/ProjectInst
 M	docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
 M	docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
 A	docs_build/dev/ProjectInstructions/addendums/test_structure_standardization.md
+A	docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md
 R100	docs_build/dev/workspace_v2_playwright_gate.md	docs_build/dev/ProjectInstructions/addendums/workspace_v2_playwright_gate.md
 M	docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
 D	docs_build/dev/bundle_readme.md

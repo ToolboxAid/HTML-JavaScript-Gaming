@@ -45,6 +45,7 @@ The release gate should confirm these files when relevant to the PR:
 - `docs_build/dev/ProjectInstructions/addendums/samples2tools_adapter_guidance.md`
 - `docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md`
 - `docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md`
+- `docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md`
 - `docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md`
 - `docs_build/dev/admin-notes/Installs required.txt` when present
 - `docs_build/dev/admin-notes/Table layout.txt` when present
