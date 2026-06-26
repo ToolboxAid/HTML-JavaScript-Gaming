@@ -1,36 +1,36 @@
 diff --git a/docs_build/dev/BUILD_PR.md b/docs_build/dev/BUILD_PR.md
-index 8e003cf3d..d47106b59 100644
+index d47106b59..30700e9cd 100644
 --- a/docs_build/dev/BUILD_PR.md
 +++ b/docs_build/dev/BUILD_PR.md
 @@ -1,23 +1,23 @@
--# PR_26177_004-shared-color-foundation
-+# PR_26177_005-shared-text-foundation
+-# PR_26177_005-shared-text-foundation
++# PR_26177_006-shared-time-foundation
 
  ## Purpose
 
--Add a small shared color foundation.
-+Add a small shared text foundation.
+-Add a small shared text foundation.
++Add a small shared time foundation.
 
  ## Source Of Truth
 
--This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth for `PR_26177_004-shared-color-foundation`.
-+This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth for `PR_26177_005-shared-text-foundation`.
+-This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth for `PR_26177_005-shared-text-foundation`.
++This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth for `PR_26177_006-shared-time-foundation`.
 
  ## Stack
 
--- Base branch: `PR_26177_003-shared-geometry-foundation`
-+- Base branch: `PR_26177_004-shared-color-foundation`
+-- Base branch: `PR_26177_004-shared-color-foundation`
++- Base branch: `PR_26177_005-shared-text-foundation`
 
  ## Exact Scope
 
--- Add `src/shared/color/` foundation.
--- Include hex/rgb/hsl conversion, clamp, lerp/blend helpers, luminance/contrast basics.
--- Add targeted tests for the shared color area.
--- No page styling changes.
-+- Add `src/shared/text/` foundation.
-+- Include safe string helpers such as slugify, casing, truncate, escapeHtml, and normalizeWhitespace.
-+- Add targeted tests for the shared text area.
-+- No copy rewrites outside tests/docs.
+-- Add `src/shared/text/` foundation.
+-- Include safe string helpers such as slugify, casing, truncate, escapeHtml, and normalizeWhitespace.
+-- Add targeted tests for the shared text area.
+-- No copy rewrites outside tests/docs.
++- Add `src/shared/time/` foundation.
++- Include duration formatting, timestamp helpers, debounce/throttle/sleep helpers where safe for shared runtime.
++- Add targeted tests for the shared time area.
++- No scheduler/runtime behavior changes.
  - Create required Codex reports under `docs_build/dev/reports/`.
  - Create repo-structured delta ZIP under `tmp/`.
 
@@ -38,27 +38,27 @@ index 8e003cf3d..d47106b59 100644
 
  - `docs_build/dev/PLAN_PR.md`
  - `docs_build/dev/BUILD_PR.md`
--- `src/shared/color/color.js`
--- `tests/shared/ColorFoundation.test.mjs`
--- `docs_build/dev/reports/PR_26177_004-shared-color-foundation.md`
--- `docs_build/dev/reports/PR_26177_004-shared-color-foundation_branch-validation.md`
--- `docs_build/dev/reports/PR_26177_004-shared-color-foundation_requirement-checklist.md`
--- `docs_build/dev/reports/PR_26177_004-shared-color-foundation_validation-lane.md`
--- `docs_build/dev/reports/PR_26177_004-shared-color-foundation_manual-validation-notes.md`
-+- `src/shared/text/text.js`
-+- `tests/shared/TextFoundation.test.mjs`
-+- `docs_build/dev/reports/PR_26177_005-shared-text-foundation.md`
-+- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_branch-validation.md`
-+- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_requirement-checklist.md`
-+- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_validation-lane.md`
-+- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_manual-validation-notes.md`
+-- `src/shared/text/text.js`
+-- `tests/shared/TextFoundation.test.mjs`
+-- `docs_build/dev/reports/PR_26177_005-shared-text-foundation.md`
+-- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_branch-validation.md`
+-- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_requirement-checklist.md`
+-- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_validation-lane.md`
+-- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_manual-validation-notes.md`
++- `src/shared/time/time.js`
++- `tests/shared/TimeFoundation.test.mjs`
++- `docs_build/dev/reports/PR_26177_006-shared-time-foundation.md`
++- `docs_build/dev/reports/PR_26177_006-shared-time-foundation_branch-validation.md`
++- `docs_build/dev/reports/PR_26177_006-shared-time-foundation_requirement-checklist.md`
++- `docs_build/dev/reports/PR_26177_006-shared-time-foundation_validation-lane.md`
++- `docs_build/dev/reports/PR_26177_006-shared-time-foundation_manual-validation-notes.md`
  - `docs_build/dev/reports/codex_review.diff`
  - `docs_build/dev/reports/codex_changed_files.txt`
 
  ## Out Of Scope
 
--- No page styling changes.
-+- No copy rewrites outside tests/docs.
+-- No copy rewrites outside tests/docs.
++- No scheduler/runtime behavior changes.
  - No browser-owned product data.
  - No runtime UI changes.
  - No browser storage changes.
@@ -66,12 +66,12 @@ index 8e003cf3d..d47106b59 100644
  Run exactly:
 
  ```powershell
--node ./scripts/run-node-test-files.mjs tests/shared/ColorFoundation.test.mjs
--node --check src/shared/color/color.js
--node --check tests/shared/ColorFoundation.test.mjs
-+node ./scripts/run-node-test-files.mjs tests/shared/TextFoundation.test.mjs
-+node --check src/shared/text/text.js
-+node --check tests/shared/TextFoundation.test.mjs
+-node ./scripts/run-node-test-files.mjs tests/shared/TextFoundation.test.mjs
+-node --check src/shared/text/text.js
+-node --check tests/shared/TextFoundation.test.mjs
++node ./scripts/run-node-test-files.mjs tests/shared/TimeFoundation.test.mjs
++node --check src/shared/time/time.js
++node --check tests/shared/TimeFoundation.test.mjs
  git diff --check
  ```
 
@@ -79,262 +79,1126 @@ index 8e003cf3d..d47106b59 100644
  Create repo-structured delta ZIP:
 
  ```text
--tmp/PR_26177_004-shared-color-foundation_delta.zip
-+tmp/PR_26177_005-shared-text-foundation_delta.zip
+-tmp/PR_26177_005-shared-text-foundation_delta.zip
++tmp/PR_26177_006-shared-time-foundation_delta.zip
  ```
 diff --git a/docs_build/dev/PLAN_PR.md b/docs_build/dev/PLAN_PR.md
-index 62670625e..0682bd3cf 100644
+index 0682bd3cf..907936aee 100644
 --- a/docs_build/dev/PLAN_PR.md
 +++ b/docs_build/dev/PLAN_PR.md
-@@ -1,23 +1,22 @@
--# PLAN_PR: PR_26177_004-shared-color-foundation
-+# PLAN_PR: PR_26177_005-shared-text-foundation
+@@ -1,22 +1,22 @@
+-# PLAN_PR: PR_26177_005-shared-text-foundation
++# PLAN_PR: PR_26177_006-shared-time-foundation
 
  ## Purpose
 
--Add a small shared color foundation.
-+Add a small shared text foundation.
+-Add a small shared text foundation.
++Add a small shared time foundation.
 
  ## Scope
 
--- Add `src/shared/color/` foundation.
--- Include hex/rgb/hsl conversion helpers.
--- Include clamp, lerp/blend helpers, luminance, and contrast basics.
-+- Add `src/shared/text/` foundation.
-+- Include safe string helpers for whitespace normalization, slug/casing, truncation, and HTML escaping.
+-- Add `src/shared/text/` foundation.
+-- Include safe string helpers for whitespace normalization, slug/casing, truncation, and HTML escaping.
++- Add `src/shared/time/` foundation.
++- Include duration formatting, timestamp helpers, sleep, debounce, and throttle helpers.
  - Add targeted tests.
--- No page styling changes.
-+- No copy rewrites outside tests/docs.
+-- No copy rewrites outside tests/docs.
++- No scheduler/runtime behavior changes.
  - No browser-owned product data.
  - No runtime UI changes.
  - No unrelated cleanup.
 
  ## Implementation Plan
 
--1. Add `src/shared/color/color.js`.
--2. Add `tests/shared/ColorFoundation.test.mjs`.
--3. Validate conversion, blending, luminance, and contrast helpers.
-+1. Add `src/shared/text/text.js`.
-+2. Add `tests/shared/TextFoundation.test.mjs`.
-+3. Validate safe string helpers.
+-1. Add `src/shared/text/text.js`.
+-2. Add `tests/shared/TextFoundation.test.mjs`.
+-3. Validate safe string helpers.
++1. Add `src/shared/time/time.js`.
++2. Add `tests/shared/TimeFoundation.test.mjs`.
++3. Validate duration, timestamp, sleep, debounce, and throttle helpers.
  4. Produce required Codex reports and repo-structured ZIP.
-diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 1b00743a4..b115685ce 100644
---- a/docs_build/dev/reports/codex_changed_files.txt
-+++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,11 +1,11 @@
- docs_build/dev/BUILD_PR.md
- docs_build/dev/PLAN_PR.md
--docs_build/dev/reports/PR_26177_004-shared-color-foundation.md
--docs_build/dev/reports/PR_26177_004-shared-color-foundation_branch-validation.md
--docs_build/dev/reports/PR_26177_004-shared-color-foundation_manual-validation-notes.md
--docs_build/dev/reports/PR_26177_004-shared-color-foundation_requirement-checklist.md
--docs_build/dev/reports/PR_26177_004-shared-color-foundation_validation-lane.md
-+docs_build/dev/reports/PR_26177_005-shared-text-foundation.md
-+docs_build/dev/reports/PR_26177_005-shared-text-foundation_branch-validation.md
-+docs_build/dev/reports/PR_26177_005-shared-text-foundation_manual-validation-notes.md
-+docs_build/dev/reports/PR_26177_005-shared-text-foundation_requirement-checklist.md
-+docs_build/dev/reports/PR_26177_005-shared-text-foundation_validation-lane.md
- docs_build/dev/reports/codex_changed_files.txt
- docs_build/dev/reports/codex_review.diff
--src/shared/color/color.js
--tests/shared/ColorFoundation.test.mjs
-+src/shared/text/text.js
-+tests/shared/TextFoundation.test.mjs
-diff --git a/docs_build/dev/reports/PR_26177_005-shared-text-foundation.md b/docs_build/dev/reports/PR_26177_005-shared-text-foundation.md
+diff --git a/docs_build/dev/reports/PR_26177_006-shared-time-foundation.md b/docs_build/dev/reports/PR_26177_006-shared-time-foundation.md
 new file mode 100644
-index 000000000..c8fce16be
+index 000000000..84039ff0f
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_005-shared-text-foundation.md
-@@ -0,0 +1,23 @@
-+# PR_26177_005-shared-text-foundation
++++ b/docs_build/dev/reports/PR_26177_006-shared-time-foundation.md
+@@ -0,0 +1,24 @@
++# PR_26177_006-shared-time-foundation
 +
 +Date: 2026-06-26
-+Scope: Shared text foundation
++Scope: Shared time foundation
 +Status: PASS
 +
 +## Summary
 +
-+- Added `src/shared/text/text.js`.
-+- Added safe string helpers for whitespace normalization, slug/casing, truncation, and HTML escaping.
-+- Added targeted tests in `tests/shared/TextFoundation.test.mjs`.
-+- No copy rewrites, runtime UI, browser product-data ownership, API/database, or unrelated cleanup changes were made.
++- Added `src/shared/time/time.js`.
++- Added duration formatting, timestamp, sleep, debounce, and throttle helpers.
++- Added targeted tests in `tests/shared/TimeFoundation.test.mjs`.
++- No scheduler/runtime behavior, runtime UI, browser product-data ownership, API/database, legacy SQLite file, `start_of_day`, or unrelated cleanup changes were made.
 +
 +## Validation
 +
-+- PASS: `node ./scripts/run-node-test-files.mjs tests/shared/TextFoundation.test.mjs`.
-+- PASS: `node --check src/shared/text/text.js`.
-+- PASS: `node --check tests/shared/TextFoundation.test.mjs`.
-+- PASS: `git diff --check`.
++- PASS: `node ./scripts/run-node-test-files.mjs tests/shared/HashFoundation.test.mjs tests/shared/NoiseFoundation.test.mjs tests/shared/GeometryFoundation.test.mjs tests/shared/ColorFoundation.test.mjs tests/shared/TextFoundation.test.mjs tests/shared/TimeFoundation.test.mjs`.
++- PASS: `node --check src/shared/time/time.js`.
++- PASS: `node --check tests/shared/TimeFoundation.test.mjs`.
++- PASS: `git diff --check -- . ':!.vscode/settings.json'`.
++- PASS: Normal targeted validation output did not include the Game Journey legacy SQLite metrics warning.
 +
 +## Artifact
 +
-+- `tmp/PR_26177_005-shared-text-foundation_delta.zip`
-diff --git a/docs_build/dev/reports/PR_26177_005-shared-text-foundation_branch-validation.md b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_branch-validation.md
++- `tmp/PR_26177_006-shared-time-foundation_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26177_006-shared-time-foundation_branch-validation.md b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_branch-validation.md
 new file mode 100644
-index 000000000..04f5b7ca5
+index 000000000..5727d2b29
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_branch-validation.md
-@@ -0,0 +1,5 @@
-+# PR_26177_005-shared-text-foundation Branch Validation
-+
-+- PASS: Current branch is `PR_26177_005-shared-text-foundation`.
-+- PASS: Branch is stacked on `PR_26177_004-shared-color-foundation`.
-+- PASS: Scope is documentation/report files plus shared text code and tests only.
-diff --git a/docs_build/dev/reports/PR_26177_005-shared-text-foundation_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_manual-validation-notes.md
-new file mode 100644
-index 000000000..c93ec9d94
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_manual-validation-notes.md
++++ b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_branch-validation.md
 @@ -0,0 +1,6 @@
-+# PR_26177_005-shared-text-foundation Manual Validation Notes
++# PR_26177_006-shared-time-foundation Branch Validation
 +
-+- Reviewed scope against the user request and BUILD document.
-+- Confirmed the change does not alter UI, storage, API, database, scheduler, or engine behavior.
-+- Confirmed no `start_of_day` files were modified.
-+- Confirmed ZIP artifact path: `tmp/PR_26177_005-shared-text-foundation_delta.zip`.
-diff --git a/docs_build/dev/reports/PR_26177_005-shared-text-foundation_requirement-checklist.md b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_requirement-checklist.md
++- PASS: Current branch is `PR_26177_006-shared-time-foundation`.
++- PASS: Current branch is the final shared-time stacked branch containing PR_26177_001 through PR_26177_006 work.
++- PASS: Branch is tracking `origin/PR_26177_006-shared-time-foundation`.
++- PASS: Only unrelated local change is `.vscode/settings.json`, containing developer-local Live Server configuration; it was not staged.
+diff --git a/docs_build/dev/reports/PR_26177_006-shared-time-foundation_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_manual-validation-notes.md
 new file mode 100644
-index 000000000..87ebe2d92
+index 000000000..20a21f838
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_requirement-checklist.md
-@@ -0,0 +1,13 @@
-+# PR_26177_005-shared-text-foundation Requirement Checklist
++++ b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_manual-validation-notes.md
+@@ -0,0 +1,8 @@
++# PR_26177_006-shared-time-foundation Manual Validation Notes
++
++- Reviewed `git status` before continuing.
++- Reviewed `.vscode/settings.json` diff and confirmed it only adds developer-local `liveServer.settings.port` configuration.
++- Left `.vscode/settings.json` untouched and excluded from staging.
++- Confirmed no `start_of_day` files were modified.
++- Confirmed no legacy SQLite metrics files were removed, moved, or overwritten.
++- Confirmed ZIP artifact path: `tmp/PR_26177_006-shared-time-foundation_delta.zip`.
+diff --git a/docs_build/dev/reports/PR_26177_006-shared-time-foundation_requirement-checklist.md b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_requirement-checklist.md
+new file mode 100644
+index 000000000..d82ee557d
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_requirement-checklist.md
+@@ -0,0 +1,18 @@
++# PR_26177_006-shared-time-foundation Requirement Checklist
 +
 +- PASS: One PR purpose only.
 +- PASS: Smallest valid scoped change.
-+- PASS: No unrelated cleanup.
++- PASS: No unrelated cleanup staged or committed.
 +- PASS: Did not modify `start_of_day` folders.
 +- PASS: Did not add browser product-data ownership.
 +- PASS: Used ES modules consistent with repo style.
-+- PASS: Added `src/shared/text/` foundation.
-+- PASS: Included `slugify`, casing, `truncate`, `escapeHtml`, and `normalizeWhitespace` helpers.
-+- PASS: No copy rewrites outside tests/docs.
-+- PASS: Added targeted tests for the shared text area.
++- PASS: Added `src/shared/time/` foundation.
++- PASS: Included duration formatting helpers.
++- PASS: Included timestamp helpers.
++- PASS: Included sleep/debounce/throttle helpers safe for opt-in shared runtime use.
++- PASS: No scheduler/runtime behavior changes.
++- PASS: Added targeted tests for the shared time area.
++- PASS: Targeted shared foundation tests for Hash, Noise, Geometry, Color, Text, and Time passed.
++- PASS: Normal validation did not show the Game Journey legacy SQLite metrics warning.
++- PASS: Did not remove, move, or overwrite legacy SQLite metrics files.
 +- PASS: Did not run full samples smoke by default.
-diff --git a/docs_build/dev/reports/PR_26177_005-shared-text-foundation_validation-lane.md b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_validation-lane.md
+diff --git a/docs_build/dev/reports/PR_26177_006-shared-time-foundation_validation-lane.md b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_validation-lane.md
 new file mode 100644
-index 000000000..8fa44a0c0
+index 000000000..b327bb6b0
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_validation-lane.md
-@@ -0,0 +1,8 @@
-+# PR_26177_005-shared-text-foundation Validation Lane
++++ b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_validation-lane.md
+@@ -0,0 +1,9 @@
++# PR_26177_006-shared-time-foundation Validation Lane
 +
-+- PASS: `node ./scripts/run-node-test-files.mjs tests/shared/TextFoundation.test.mjs`.
-+- PASS: `node --check src/shared/text/text.js`.
-+- PASS: `node --check tests/shared/TextFoundation.test.mjs`.
-+- PASS: `git diff --check`.
++- PASS: `node ./scripts/run-node-test-files.mjs tests/shared/HashFoundation.test.mjs tests/shared/NoiseFoundation.test.mjs tests/shared/GeometryFoundation.test.mjs tests/shared/ColorFoundation.test.mjs tests/shared/TextFoundation.test.mjs tests/shared/TimeFoundation.test.mjs`.
++- PASS: `node --check src/shared/time/time.js`.
++- PASS: `node --check tests/shared/TimeFoundation.test.mjs`.
++- PASS: `git diff --check -- . ':!.vscode/settings.json'`.
++- PASS: Normal targeted validation output did not include the Game Journey legacy SQLite metrics warning.
 +
-+Full samples smoke was intentionally not run because this PR changes only a shared helper module and targeted tests.
-diff --git a/src/shared/text/text.js b/src/shared/text/text.js
++Full samples smoke was intentionally not run because this closeout validates the shared foundation stack with targeted tests only.
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index b115685ce..ba3f7a58a 100644
+--- a/docs_build/dev/reports/codex_changed_files.txt
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -1,11 +1,12 @@
+ docs_build/dev/BUILD_PR.md
+ docs_build/dev/PLAN_PR.md
+-docs_build/dev/reports/PR_26177_005-shared-text-foundation.md
+-docs_build/dev/reports/PR_26177_005-shared-text-foundation_branch-validation.md
+-docs_build/dev/reports/PR_26177_005-shared-text-foundation_manual-validation-notes.md
+-docs_build/dev/reports/PR_26177_005-shared-text-foundation_requirement-checklist.md
+-docs_build/dev/reports/PR_26177_005-shared-text-foundation_validation-lane.md
++docs_build/dev/reports/PR_26177_006-shared-time-foundation.md
++docs_build/dev/reports/PR_26177_006-shared-time-foundation_branch-validation.md
++docs_build/dev/reports/PR_26177_006-shared-time-foundation_closeout.md
++docs_build/dev/reports/PR_26177_006-shared-time-foundation_manual-validation-notes.md
++docs_build/dev/reports/PR_26177_006-shared-time-foundation_requirement-checklist.md
++docs_build/dev/reports/PR_26177_006-shared-time-foundation_validation-lane.md
+ docs_build/dev/reports/codex_changed_files.txt
+ docs_build/dev/reports/codex_review.diff
+-src/shared/text/text.js
+-tests/shared/TextFoundation.test.mjs
++src/shared/time/time.js
++tests/shared/TimeFoundation.test.mjs
+diff --git a/docs_build/dev/reports/codex_review.diff b/docs_build/dev/reports/codex_review.diff
+index 596dc3bbd..fe3bf7586 100644
+--- a/docs_build/dev/reports/codex_review.diff
++++ b/docs_build/dev/reports/codex_review.diff
+@@ -1,36 +1,36 @@
+ diff --git a/docs_build/dev/BUILD_PR.md b/docs_build/dev/BUILD_PR.md
+-index 8e003cf3d..d47106b59 100644
++index d47106b59..30700e9cd 100644
+ --- a/docs_build/dev/BUILD_PR.md
+ +++ b/docs_build/dev/BUILD_PR.md
+ @@ -1,23 +1,23 @@
+--# PR_26177_004-shared-color-foundation
+-+# PR_26177_005-shared-text-foundation
++-# PR_26177_005-shared-text-foundation
+++# PR_26177_006-shared-time-foundation
+
+  ## Purpose
+
+--Add a small shared color foundation.
+-+Add a small shared text foundation.
++-Add a small shared text foundation.
+++Add a small shared time foundation.
+
+  ## Source Of Truth
+
+--This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth for `PR_26177_004-shared-color-foundation`.
+-+This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth for `PR_26177_005-shared-text-foundation`.
++-This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth for `PR_26177_005-shared-text-foundation`.
+++This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth for `PR_26177_006-shared-time-foundation`.
+
+  ## Stack
+
+--- Base branch: `PR_26177_003-shared-geometry-foundation`
+-+- Base branch: `PR_26177_004-shared-color-foundation`
++-- Base branch: `PR_26177_004-shared-color-foundation`
+++- Base branch: `PR_26177_005-shared-text-foundation`
+
+  ## Exact Scope
+
+--- Add `src/shared/color/` foundation.
+--- Include hex/rgb/hsl conversion, clamp, lerp/blend helpers, luminance/contrast basics.
+--- Add targeted tests for the shared color area.
+--- No page styling changes.
+-+- Add `src/shared/text/` foundation.
+-+- Include safe string helpers such as slugify, casing, truncate, escapeHtml, and normalizeWhitespace.
+-+- Add targeted tests for the shared text area.
+-+- No copy rewrites outside tests/docs.
++-- Add `src/shared/text/` foundation.
++-- Include safe string helpers such as slugify, casing, truncate, escapeHtml, and normalizeWhitespace.
++-- Add targeted tests for the shared text area.
++-- No copy rewrites outside tests/docs.
+++- Add `src/shared/time/` foundation.
+++- Include duration formatting, timestamp helpers, debounce/throttle/sleep helpers where safe for shared runtime.
+++- Add targeted tests for the shared time area.
+++- No scheduler/runtime behavior changes.
+  - Create required Codex reports under `docs_build/dev/reports/`.
+  - Create repo-structured delta ZIP under `tmp/`.
+
+@@ -38,27 +38,27 @@ index 8e003cf3d..d47106b59 100644
+
+  - `docs_build/dev/PLAN_PR.md`
+  - `docs_build/dev/BUILD_PR.md`
+--- `src/shared/color/color.js`
+--- `tests/shared/ColorFoundation.test.mjs`
+--- `docs_build/dev/reports/PR_26177_004-shared-color-foundation.md`
+--- `docs_build/dev/reports/PR_26177_004-shared-color-foundation_branch-validation.md`
+--- `docs_build/dev/reports/PR_26177_004-shared-color-foundation_requirement-checklist.md`
+--- `docs_build/dev/reports/PR_26177_004-shared-color-foundation_validation-lane.md`
+--- `docs_build/dev/reports/PR_26177_004-shared-color-foundation_manual-validation-notes.md`
+-+- `src/shared/text/text.js`
+-+- `tests/shared/TextFoundation.test.mjs`
+-+- `docs_build/dev/reports/PR_26177_005-shared-text-foundation.md`
+-+- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_branch-validation.md`
+-+- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_requirement-checklist.md`
+-+- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_validation-lane.md`
+-+- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_manual-validation-notes.md`
++-- `src/shared/text/text.js`
++-- `tests/shared/TextFoundation.test.mjs`
++-- `docs_build/dev/reports/PR_26177_005-shared-text-foundation.md`
++-- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_branch-validation.md`
++-- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_requirement-checklist.md`
++-- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_validation-lane.md`
++-- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_manual-validation-notes.md`
+++- `src/shared/time/time.js`
+++- `tests/shared/TimeFoundation.test.mjs`
+++- `docs_build/dev/reports/PR_26177_006-shared-time-foundation.md`
+++- `docs_build/dev/reports/PR_26177_006-shared-time-foundation_branch-validation.md`
+++- `docs_build/dev/reports/PR_26177_006-shared-time-foundation_requirement-checklist.md`
+++- `docs_build/dev/reports/PR_26177_006-shared-time-foundation_validation-lane.md`
+++- `docs_build/dev/reports/PR_26177_006-shared-time-foundation_manual-validation-notes.md`
+  - `docs_build/dev/reports/codex_review.diff`
+  - `docs_build/dev/reports/codex_changed_files.txt`
+
+  ## Out Of Scope
+
+--- No page styling changes.
+-+- No copy rewrites outside tests/docs.
++-- No copy rewrites outside tests/docs.
+++- No scheduler/runtime behavior changes.
+  - No browser-owned product data.
+  - No runtime UI changes.
+  - No browser storage changes.
+@@ -66,12 +66,12 @@ index 8e003cf3d..d47106b59 100644
+  Run exactly:
+
+  ```powershell
+--node ./scripts/run-node-test-files.mjs tests/shared/ColorFoundation.test.mjs
+--node --check src/shared/color/color.js
+--node --check tests/shared/ColorFoundation.test.mjs
+-+node ./scripts/run-node-test-files.mjs tests/shared/TextFoundation.test.mjs
+-+node --check src/shared/text/text.js
+-+node --check tests/shared/TextFoundation.test.mjs
++-node ./scripts/run-node-test-files.mjs tests/shared/TextFoundation.test.mjs
++-node --check src/shared/text/text.js
++-node --check tests/shared/TextFoundation.test.mjs
+++node ./scripts/run-node-test-files.mjs tests/shared/TimeFoundation.test.mjs
+++node --check src/shared/time/time.js
+++node --check tests/shared/TimeFoundation.test.mjs
+  git diff --check
+  ```
+
+@@ -79,127 +79,126 @@ index 8e003cf3d..d47106b59 100644
+  Create repo-structured delta ZIP:
+
+  ```text
+--tmp/PR_26177_004-shared-color-foundation_delta.zip
+-+tmp/PR_26177_005-shared-text-foundation_delta.zip
++-tmp/PR_26177_005-shared-text-foundation_delta.zip
+++tmp/PR_26177_006-shared-time-foundation_delta.zip
+  ```
+ diff --git a/docs_build/dev/PLAN_PR.md b/docs_build/dev/PLAN_PR.md
+-index 62670625e..0682bd3cf 100644
++index 0682bd3cf..907936aee 100644
+ --- a/docs_build/dev/PLAN_PR.md
+ +++ b/docs_build/dev/PLAN_PR.md
+-@@ -1,23 +1,22 @@
+--# PLAN_PR: PR_26177_004-shared-color-foundation
+-+# PLAN_PR: PR_26177_005-shared-text-foundation
++@@ -1,22 +1,22 @@
++-# PLAN_PR: PR_26177_005-shared-text-foundation
+++# PLAN_PR: PR_26177_006-shared-time-foundation
+
+  ## Purpose
+
+--Add a small shared color foundation.
+-+Add a small shared text foundation.
++-Add a small shared text foundation.
+++Add a small shared time foundation.
+
+  ## Scope
+
+--- Add `src/shared/color/` foundation.
+--- Include hex/rgb/hsl conversion helpers.
+--- Include clamp, lerp/blend helpers, luminance, and contrast basics.
+-+- Add `src/shared/text/` foundation.
+-+- Include safe string helpers for whitespace normalization, slug/casing, truncation, and HTML escaping.
++-- Add `src/shared/text/` foundation.
++-- Include safe string helpers for whitespace normalization, slug/casing, truncation, and HTML escaping.
+++- Add `src/shared/time/` foundation.
+++- Include duration formatting, timestamp helpers, sleep, debounce, and throttle helpers.
+  - Add targeted tests.
+--- No page styling changes.
+-+- No copy rewrites outside tests/docs.
++-- No copy rewrites outside tests/docs.
+++- No scheduler/runtime behavior changes.
+  - No browser-owned product data.
+  - No runtime UI changes.
+  - No unrelated cleanup.
+
+  ## Implementation Plan
+
+--1. Add `src/shared/color/color.js`.
+--2. Add `tests/shared/ColorFoundation.test.mjs`.
+--3. Validate conversion, blending, luminance, and contrast helpers.
+-+1. Add `src/shared/text/text.js`.
+-+2. Add `tests/shared/TextFoundation.test.mjs`.
+-+3. Validate safe string helpers.
++-1. Add `src/shared/text/text.js`.
++-2. Add `tests/shared/TextFoundation.test.mjs`.
++-3. Validate safe string helpers.
+++1. Add `src/shared/time/time.js`.
+++2. Add `tests/shared/TimeFoundation.test.mjs`.
+++3. Validate duration, timestamp, sleep, debounce, and throttle helpers.
+  4. Produce required Codex reports and repo-structured ZIP.
+ diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+-index 1b00743a4..b115685ce 100644
++index b115685ce..70de807d0 100644
+ --- a/docs_build/dev/reports/codex_changed_files.txt
+ +++ b/docs_build/dev/reports/codex_changed_files.txt
+ @@ -1,11 +1,11 @@
+  docs_build/dev/BUILD_PR.md
+  docs_build/dev/PLAN_PR.md
+--docs_build/dev/reports/PR_26177_004-shared-color-foundation.md
+--docs_build/dev/reports/PR_26177_004-shared-color-foundation_branch-validation.md
+--docs_build/dev/reports/PR_26177_004-shared-color-foundation_manual-validation-notes.md
+--docs_build/dev/reports/PR_26177_004-shared-color-foundation_requirement-checklist.md
+--docs_build/dev/reports/PR_26177_004-shared-color-foundation_validation-lane.md
+-+docs_build/dev/reports/PR_26177_005-shared-text-foundation.md
+-+docs_build/dev/reports/PR_26177_005-shared-text-foundation_branch-validation.md
+-+docs_build/dev/reports/PR_26177_005-shared-text-foundation_manual-validation-notes.md
+-+docs_build/dev/reports/PR_26177_005-shared-text-foundation_requirement-checklist.md
+-+docs_build/dev/reports/PR_26177_005-shared-text-foundation_validation-lane.md
++-docs_build/dev/reports/PR_26177_005-shared-text-foundation.md
++-docs_build/dev/reports/PR_26177_005-shared-text-foundation_branch-validation.md
++-docs_build/dev/reports/PR_26177_005-shared-text-foundation_manual-validation-notes.md
++-docs_build/dev/reports/PR_26177_005-shared-text-foundation_requirement-checklist.md
++-docs_build/dev/reports/PR_26177_005-shared-text-foundation_validation-lane.md
+++docs_build/dev/reports/PR_26177_006-shared-time-foundation.md
+++docs_build/dev/reports/PR_26177_006-shared-time-foundation_branch-validation.md
+++docs_build/dev/reports/PR_26177_006-shared-time-foundation_manual-validation-notes.md
+++docs_build/dev/reports/PR_26177_006-shared-time-foundation_requirement-checklist.md
+++docs_build/dev/reports/PR_26177_006-shared-time-foundation_validation-lane.md
+  docs_build/dev/reports/codex_changed_files.txt
+  docs_build/dev/reports/codex_review.diff
+--src/shared/color/color.js
+--tests/shared/ColorFoundation.test.mjs
+-+src/shared/text/text.js
+-+tests/shared/TextFoundation.test.mjs
+-diff --git a/docs_build/dev/reports/PR_26177_005-shared-text-foundation.md b/docs_build/dev/reports/PR_26177_005-shared-text-foundation.md
++-src/shared/text/text.js
++-tests/shared/TextFoundation.test.mjs
+++src/shared/time/time.js
+++tests/shared/TimeFoundation.test.mjs
++diff --git a/docs_build/dev/reports/PR_26177_006-shared-time-foundation.md b/docs_build/dev/reports/PR_26177_006-shared-time-foundation.md
+ new file mode 100644
+-index 000000000..c8fce16be
++index 000000000..85ba1053d
+ --- /dev/null
+-+++ b/docs_build/dev/reports/PR_26177_005-shared-text-foundation.md
+++++ b/docs_build/dev/reports/PR_26177_006-shared-time-foundation.md
+ @@ -0,0 +1,23 @@
+-+# PR_26177_005-shared-text-foundation
+++# PR_26177_006-shared-time-foundation
+ +
+ +Date: 2026-06-26
+-+Scope: Shared text foundation
+++Scope: Shared time foundation
+ +Status: PASS
+ +
+ +## Summary
+ +
+-+- Added `src/shared/text/text.js`.
+-+- Added safe string helpers for whitespace normalization, slug/casing, truncation, and HTML escaping.
+-+- Added targeted tests in `tests/shared/TextFoundation.test.mjs`.
+-+- No copy rewrites, runtime UI, browser product-data ownership, API/database, or unrelated cleanup changes were made.
+++- Added `src/shared/time/time.js`.
+++- Added duration formatting, timestamp, sleep, debounce, and throttle helpers.
+++- Added targeted tests in `tests/shared/TimeFoundation.test.mjs`.
+++- No scheduler/runtime behavior, runtime UI, browser product-data ownership, API/database, or unrelated cleanup changes were made.
+ +
+ +## Validation
+ +
+-+- PASS: `node ./scripts/run-node-test-files.mjs tests/shared/TextFoundation.test.mjs`.
+-+- PASS: `node --check src/shared/text/text.js`.
+-+- PASS: `node --check tests/shared/TextFoundation.test.mjs`.
+++- PASS: `node ./scripts/run-node-test-files.mjs tests/shared/TimeFoundation.test.mjs`.
+++- PASS: `node --check src/shared/time/time.js`.
+++- PASS: `node --check tests/shared/TimeFoundation.test.mjs`.
+ +- PASS: `git diff --check`.
+ +
+ +## Artifact
+ +
+-+- `tmp/PR_26177_005-shared-text-foundation_delta.zip`
+-diff --git a/docs_build/dev/reports/PR_26177_005-shared-text-foundation_branch-validation.md b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_branch-validation.md
+++- `tmp/PR_26177_006-shared-time-foundation_delta.zip`
++diff --git a/docs_build/dev/reports/PR_26177_006-shared-time-foundation_branch-validation.md b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_branch-validation.md
+ new file mode 100644
+-index 000000000..04f5b7ca5
++index 000000000..281bceea1
+ --- /dev/null
+-+++ b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_branch-validation.md
+++++ b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_branch-validation.md
+ @@ -0,0 +1,5 @@
+-+# PR_26177_005-shared-text-foundation Branch Validation
+++# PR_26177_006-shared-time-foundation Branch Validation
+ +
+-+- PASS: Current branch is `PR_26177_005-shared-text-foundation`.
+-+- PASS: Branch is stacked on `PR_26177_004-shared-color-foundation`.
+-+- PASS: Scope is documentation/report files plus shared text code and tests only.
+-diff --git a/docs_build/dev/reports/PR_26177_005-shared-text-foundation_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_manual-validation-notes.md
+++- PASS: Current branch is `PR_26177_006-shared-time-foundation`.
+++- PASS: Branch is stacked on `PR_26177_005-shared-text-foundation`.
+++- PASS: Scope is documentation/report files plus shared time code and tests only.
++diff --git a/docs_build/dev/reports/PR_26177_006-shared-time-foundation_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_manual-validation-notes.md
+ new file mode 100644
+-index 000000000..c93ec9d94
++index 000000000..ce4c0fa1a
+ --- /dev/null
+-+++ b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_manual-validation-notes.md
+++++ b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_manual-validation-notes.md
+ @@ -0,0 +1,6 @@
+-+# PR_26177_005-shared-text-foundation Manual Validation Notes
+++# PR_26177_006-shared-time-foundation Manual Validation Notes
+ +
+ +- Reviewed scope against the user request and BUILD document.
+ +- Confirmed the change does not alter UI, storage, API, database, scheduler, or engine behavior.
+ +- Confirmed no `start_of_day` files were modified.
+-+- Confirmed ZIP artifact path: `tmp/PR_26177_005-shared-text-foundation_delta.zip`.
+-diff --git a/docs_build/dev/reports/PR_26177_005-shared-text-foundation_requirement-checklist.md b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_requirement-checklist.md
+++- Confirmed ZIP artifact path: `tmp/PR_26177_006-shared-time-foundation_delta.zip`.
++diff --git a/docs_build/dev/reports/PR_26177_006-shared-time-foundation_requirement-checklist.md b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_requirement-checklist.md
+ new file mode 100644
+-index 000000000..87ebe2d92
++index 000000000..74dc61da1
+ --- /dev/null
+-+++ b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_requirement-checklist.md
+-@@ -0,0 +1,13 @@
+-+# PR_26177_005-shared-text-foundation Requirement Checklist
+++++ b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_requirement-checklist.md
++@@ -0,0 +1,15 @@
+++# PR_26177_006-shared-time-foundation Requirement Checklist
+ +
+ +- PASS: One PR purpose only.
+ +- PASS: Smallest valid scoped change.
+@@ -207,134 +206,276 @@ index 000000000..87ebe2d92
+ +- PASS: Did not modify `start_of_day` folders.
+ +- PASS: Did not add browser product-data ownership.
+ +- PASS: Used ES modules consistent with repo style.
+-+- PASS: Added `src/shared/text/` foundation.
+-+- PASS: Included `slugify`, casing, `truncate`, `escapeHtml`, and `normalizeWhitespace` helpers.
+-+- PASS: No copy rewrites outside tests/docs.
+-+- PASS: Added targeted tests for the shared text area.
+++- PASS: Added `src/shared/time/` foundation.
+++- PASS: Included duration formatting helpers.
+++- PASS: Included timestamp helpers.
+++- PASS: Included sleep/debounce/throttle helpers safe for opt-in shared runtime use.
+++- PASS: No scheduler/runtime behavior changes.
+++- PASS: Added targeted tests for the shared time area.
+ +- PASS: Did not run full samples smoke by default.
+-diff --git a/docs_build/dev/reports/PR_26177_005-shared-text-foundation_validation-lane.md b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_validation-lane.md
++diff --git a/docs_build/dev/reports/PR_26177_006-shared-time-foundation_validation-lane.md b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_validation-lane.md
+ new file mode 100644
+-index 000000000..8fa44a0c0
++index 000000000..dbebe4ce4
+ --- /dev/null
+-+++ b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_validation-lane.md
+++++ b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_validation-lane.md
+ @@ -0,0 +1,8 @@
+-+# PR_26177_005-shared-text-foundation Validation Lane
+++# PR_26177_006-shared-time-foundation Validation Lane
+ +
+-+- PASS: `node ./scripts/run-node-test-files.mjs tests/shared/TextFoundation.test.mjs`.
+-+- PASS: `node --check src/shared/text/text.js`.
+-+- PASS: `node --check tests/shared/TextFoundation.test.mjs`.
+++- PASS: `node ./scripts/run-node-test-files.mjs tests/shared/TimeFoundation.test.mjs`.
+++- PASS: `node --check src/shared/time/time.js`.
+++- PASS: `node --check tests/shared/TimeFoundation.test.mjs`.
+ +- PASS: `git diff --check`.
+ +
+ +Full samples smoke was intentionally not run because this PR changes only a shared helper module and targeted tests.
+-diff --git a/src/shared/text/text.js b/src/shared/text/text.js
++diff --git a/src/shared/time/time.js b/src/shared/time/time.js
+ new file mode 100644
+-index 000000000..3e387388f
++index 000000000..8ce8d6283
+ --- /dev/null
+-+++ b/src/shared/text/text.js
+-@@ -0,0 +1,63 @@
+-+const HTML_ESCAPE_MAP = Object.freeze({
+-+  "&": "&amp;",
+-+  "<": "&lt;",
+-+  ">": "&gt;",
+-+  "\"": "&quot;",
+-+  "'": "&#39;",
+-+});
+-+
+-+function toText(value) {
+-+  return value == null ? "" : String(value);
+-+}
+++++ b/src/shared/time/time.js
++@@ -0,0 +1,185 @@
+++const SECOND_MS = 1000;
+++const MINUTE_MS = 60 * SECOND_MS;
+++const HOUR_MS = 60 * MINUTE_MS;
+++const DAY_MS = 24 * HOUR_MS;
+ +
+-+function stripDiacritics(value) {
+-+  return value.normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
+++function toFiniteNumber(value, fallback = 0) {
+++  const number = Number(value);
+++  return Number.isFinite(number) ? number : fallback;
+ +}
+ +
+-+export function normalizeWhitespace(value) {
+-+  return toText(value).replace(/\s+/g, " ").trim();
+++function normalizeDelay(value) {
+++  return Math.max(0, Math.floor(toFiniteNumber(value)));
+ +}
+ +
+-+export function slugify(value) {
+-+  return stripDiacritics(normalizeWhitespace(value))
+-+    .toLowerCase()
+-+    .replace(/[^a-z0-9]+/g, "-")
+-+    .replace(/^-+|-+$/g, "");
+++function toDate(value = Date.now()) {
+++  const date = value instanceof Date ? new Date(value.getTime()) : new Date(value);
+++  if (Number.isNaN(date.getTime())) {
+++    throw new TypeError("value must be a valid date, timestamp, or date string.");
+++  }
+++  return date;
+ +}
+ +
+-+export function toTitleCase(value) {
+-+  return normalizeWhitespace(value).replace(/\b[\p{L}\p{N}][\p{L}\p{N}'-]*/gu, (word) => (
+-+    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+-+  ));
+++/**
+++ * Formats a duration in milliseconds using compact day/hour/minute/second units.
+++ *
+++ * @param {number} milliseconds Duration in milliseconds.
+++ * @returns {string} Compact duration text.
+++ */
+++export function formatDuration(milliseconds) {
+++  const raw = toFiniteNumber(milliseconds);
+++  const sign = raw < 0 ? "-" : "";
+++  let remaining = Math.round(Math.abs(raw));
+++
+++  if (remaining < SECOND_MS) {
+++    return `${sign}${remaining}ms`;
+++  }
+++
+++  const units = [
+++    [DAY_MS, "d"],
+++    [HOUR_MS, "h"],
+++    [MINUTE_MS, "m"],
+++    [SECOND_MS, "s"],
+++  ];
+++  const parts = [];
+++
+++  for (const [unitMs, label] of units) {
+++    const count = Math.floor(remaining / unitMs);
+++    if (count > 0) {
+++      parts.push(`${count}${label}`);
+++      remaining -= count * unitMs;
+++    }
+++  }
+++
+++  if (remaining > 0) {
+++    parts.push(`${remaining}ms`);
+++  }
+++
+++  return `${sign}${parts.join(" ")}`;
+ +}
+ +
+-+export function toCamelCase(value) {
+-+  const words = stripDiacritics(normalizeWhitespace(value))
+-+    .split(/[^A-Za-z0-9]+/)
+-+    .filter(Boolean);
+++/**
+++ * Converts a date-like value to a Unix timestamp in milliseconds.
+++ *
+++ * @param {Date|string|number} [value] Date-like value.
+++ * @returns {number} Unix timestamp in milliseconds.
+++ */
+++export function toUnixMilliseconds(value = Date.now()) {
+++  return toDate(value).getTime();
+++}
+ +
+-+  return words.map((word, index) => {
+-+    const lower = word.toLowerCase();
+-+    return index === 0 ? lower : lower.charAt(0).toUpperCase() + lower.slice(1);
+-+  }).join("");
+++/**
+++ * Converts a date-like value to an ISO-8601 timestamp.
+++ *
+++ * @param {Date|string|number} [value] Date-like value.
+++ * @returns {string} ISO timestamp.
+++ */
+++export function toIsoTimestamp(value = Date.now()) {
+++  return toDate(value).toISOString();
+ +}
+ +
+-+export function truncate(value, maxLength, options = {}) {
+-+  const text = toText(value);
+-+  const length = Math.max(0, Math.floor(Number(maxLength) || 0));
+-+  const suffix = options.suffix == null ? "..." : String(options.suffix);
+++/**
+++ * Resolves after the provided delay.
+++ *
+++ * @param {number} milliseconds Delay in milliseconds.
+++ * @returns {Promise<void>} Promise that resolves after the delay.
+++ */
+++export function sleep(milliseconds) {
+++  return new Promise((resolve) => {
+++    setTimeout(resolve, normalizeDelay(milliseconds));
+++  });
+++}
+ +
+-+  if (text.length <= length) {
+-+    return text;
+++/**
+++ * Creates a debounced function that runs after calls settle.
+++ *
+++ * @param {Function} callback Function to debounce.
+++ * @param {number} waitMs Debounce delay in milliseconds.
+++ * @returns {Function & {cancel: Function}} Debounced function.
+++ */
+++export function debounce(callback, waitMs = 0) {
+++  if (typeof callback !== "function") {
+++    throw new TypeError("callback must be a function.");
+ +  }
+ +
+-+  if (length <= suffix.length) {
+-+    return suffix.slice(0, length);
+++  let timeoutId = null;
+++  const delay = normalizeDelay(waitMs);
+++
+++  function debounced(...args) {
+++    const context = this;
+++    if (timeoutId !== null) {
+++      clearTimeout(timeoutId);
+++    }
+++
+++    timeoutId = setTimeout(() => {
+++      timeoutId = null;
+++      callback.apply(context, args);
+++    }, delay);
+ +  }
+ +
+-+  return `${text.slice(0, length - suffix.length)}${suffix}`;
+++  debounced.cancel = () => {
+++    if (timeoutId !== null) {
+++      clearTimeout(timeoutId);
+++      timeoutId = null;
+++    }
+++  };
+++
+++  return debounced;
+ +}
+ +
+-+export function escapeHtml(value) {
+-+  return toText(value).replace(/[&<>"']/g, (character) => HTML_ESCAPE_MAP[character]);
+++/**
+++ * Creates a throttled function that runs at most once per wait window.
+++ *
+++ * @param {Function} callback Function to throttle.
+++ * @param {number} waitMs Throttle window in milliseconds.
+++ * @returns {Function & {cancel: Function}} Throttled function.
+++ */
+++export function throttle(callback, waitMs = 0) {
+++  if (typeof callback !== "function") {
+++    throw new TypeError("callback must be a function.");
+++  }
+++
+++  const delay = normalizeDelay(waitMs);
+++  let lastRun = 0;
+++  let timeoutId = null;
+++  let pendingArgs = null;
+++  let pendingContext = null;
+++
+++  function invoke(timestamp) {
+++    lastRun = timestamp;
+++    timeoutId = null;
+++    callback.apply(pendingContext, pendingArgs);
+++    pendingArgs = null;
+++    pendingContext = null;
+++  }
+++
+++  function throttled(...args) {
+++    const now = Date.now();
+++    pendingArgs = args;
+++    pendingContext = this;
+++    const remaining = delay - (now - lastRun);
+++
+++    if (remaining <= 0 || remaining > delay) {
+++      if (timeoutId !== null) {
+++        clearTimeout(timeoutId);
+++      }
+++      invoke(now);
+++      return;
+++    }
+++
+++    if (timeoutId === null) {
+++      timeoutId = setTimeout(() => invoke(Date.now()), remaining);
+++    }
+++  }
+++
+++  throttled.cancel = () => {
+++    if (timeoutId !== null) {
+++      clearTimeout(timeoutId);
+++      timeoutId = null;
+++    }
+++    pendingArgs = null;
+++    pendingContext = null;
+++  };
+++
+++  return throttled;
+ +}
+-diff --git a/tests/shared/TextFoundation.test.mjs b/tests/shared/TextFoundation.test.mjs
++diff --git a/tests/shared/TimeFoundation.test.mjs b/tests/shared/TimeFoundation.test.mjs
+ new file mode 100644
+-index 000000000..893c5edfd
++index 000000000..b0df9a1b7
+ --- /dev/null
+-+++ b/tests/shared/TextFoundation.test.mjs
+-@@ -0,0 +1,37 @@
+++++ b/tests/shared/TimeFoundation.test.mjs
++@@ -0,0 +1,55 @@
+ +/*
+ +Toolbox Aid
+ +David Quesenberry
+ +06/26/2026
+-+TextFoundation.test.mjs
+++TimeFoundation.test.mjs
+ +*/
+ +import assert from "node:assert/strict";
+ +import {
+-+  escapeHtml,
+-+  normalizeWhitespace,
+-+  slugify,
+-+  toCamelCase,
+-+  toTitleCase,
+-+  truncate,
+-+} from "../../src/shared/text/text.js";
+-+
+-+export function run() {
+-+  assert.equal(normalizeWhitespace("  Alpha\n\tBeta   Gamma  "), "Alpha Beta Gamma");
+-+  assert.equal(normalizeWhitespace(null), "");
+-+
+-+  assert.equal(slugify(" Café Racer: Level 12! "), "cafe-racer-level-12");
+-+  assert.equal(slugify(" -- "), "");
+-+
+-+  assert.equal(toTitleCase("the QUICK-brown fox"), "The Quick-brown Fox");
+-+  assert.equal(toCamelCase("Café racer level 12"), "cafeRacerLevel12");
+-+
+-+  assert.equal(truncate("Hello world", 8), "Hello...");
+-+  assert.equal(truncate("Hello", 8), "Hello");
+-+  assert.equal(truncate("Hello world", 2), "..");
+-+  assert.equal(truncate("Hello world", 8, { suffix: "!" }), "Hello w!");
+-+
+-+  assert.equal(escapeHtml("<button data-name=\"A&B\">It's</button>"), "&lt;button data-name=&quot;A&amp;B&quot;&gt;It&#39;s&lt;/button&gt;");
+++  debounce,
+++  formatDuration,
+++  sleep,
+++  throttle,
+++  toIsoTimestamp,
+++  toUnixMilliseconds,
+++} from "../../src/shared/time/time.js";
+++
+++export async function run() {
+++  assert.equal(formatDuration(500), "500ms");
+++  assert.equal(formatDuration(3_661_250), "1h 1m 1s 250ms");
+++  assert.equal(formatDuration(-61_000), "-1m 1s");
+++
+++  const date = new Date("2026-06-26T12:34:56.789Z");
+++  assert.equal(toUnixMilliseconds(date), Date.UTC(2026, 5, 26, 12, 34, 56, 789));
+++  assert.equal(toIsoTimestamp(date), "2026-06-26T12:34:56.789Z");
+++  assert.throws(() => toIsoTimestamp("not a date"), TypeError);
+++
+++  const start = Date.now();
+++  await sleep(5);
+++  assert.ok(Date.now() - start >= 0);
+++
+++  const debounceCalls = [];
+++  const debounced = debounce((value) => debounceCalls.push(value), 5);
+++  debounced("first");
+++  debounced("second");
+++  assert.deepEqual(debounceCalls, []);
+++  await sleep(15);
+++  assert.deepEqual(debounceCalls, ["second"]);
+++  debounced("cancelled");
+++  debounced.cancel();
+++  await sleep(10);
+++  assert.deepEqual(debounceCalls, ["second"]);
+++
+++  const throttleCalls = [];
+++  const throttled = throttle((value) => throttleCalls.push(value), 10);
+++  throttled("first");
+++  throttled("second");
+++  assert.deepEqual(throttleCalls, ["first"]);
+++  await sleep(20);
+++  assert.deepEqual(throttleCalls, ["first", "second"]);
+++  throttled.cancel();
+ +}
+ +
+ +if (import.meta.url === `file://${process.argv[1]}`) {
+-+  run();
+++  await run();
+ +}
+diff --git a/src/shared/time/time.js b/src/shared/time/time.js
 new file mode 100644
-index 000000000..3e387388f
+index 000000000..8ce8d6283
 --- /dev/null
-+++ b/src/shared/text/text.js
-@@ -0,0 +1,63 @@
-+const HTML_ESCAPE_MAP = Object.freeze({
-+  "&": "&amp;",
-+  "<": "&lt;",
-+  ">": "&gt;",
-+  "\"": "&quot;",
-+  "'": "&#39;",
-+});
++++ b/src/shared/time/time.js
+@@ -0,0 +1,185 @@
++const SECOND_MS = 1000;
++const MINUTE_MS = 60 * SECOND_MS;
++const HOUR_MS = 60 * MINUTE_MS;
++const DAY_MS = 24 * HOUR_MS;
 +
-+function toText(value) {
-+  return value == null ? "" : String(value);
++function toFiniteNumber(value, fallback = 0) {
++  const number = Number(value);
++  return Number.isFinite(number) ? number : fallback;
 +}
 +
-+function stripDiacritics(value) {
-+  return value.normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
++function normalizeDelay(value) {
++  return Math.max(0, Math.floor(toFiniteNumber(value)));
 +}
 +
-+export function normalizeWhitespace(value) {
-+  return toText(value).replace(/\s+/g, " ").trim();
++function toDate(value = Date.now()) {
++  const date = value instanceof Date ? new Date(value.getTime()) : new Date(value);
++  if (Number.isNaN(date.getTime())) {
++    throw new TypeError("value must be a valid date, timestamp, or date string.");
++  }
++  return date;
 +}
 +
-+export function slugify(value) {
-+  return stripDiacritics(normalizeWhitespace(value))
-+    .toLowerCase()
-+    .replace(/[^a-z0-9]+/g, "-")
-+    .replace(/^-+|-+$/g, "");
-+}
++/**
++ * Formats a duration in milliseconds using compact day/hour/minute/second units.
++ *
++ * @param {number} milliseconds Duration in milliseconds.
++ * @returns {string} Compact duration text.
++ */
++export function formatDuration(milliseconds) {
++  const raw = toFiniteNumber(milliseconds);
++  const sign = raw < 0 ? "-" : "";
++  let remaining = Math.round(Math.abs(raw));
 +
-+export function toTitleCase(value) {
-+  return normalizeWhitespace(value).replace(/\b[\p{L}\p{N}][\p{L}\p{N}'-]*/gu, (word) => (
-+    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-+  ));
-+}
-+
-+export function toCamelCase(value) {
-+  const words = stripDiacritics(normalizeWhitespace(value))
-+    .split(/[^A-Za-z0-9]+/)
-+    .filter(Boolean);
-+
-+  return words.map((word, index) => {
-+    const lower = word.toLowerCase();
-+    return index === 0 ? lower : lower.charAt(0).toUpperCase() + lower.slice(1);
-+  }).join("");
-+}
-+
-+export function truncate(value, maxLength, options = {}) {
-+  const text = toText(value);
-+  const length = Math.max(0, Math.floor(Number(maxLength) || 0));
-+  const suffix = options.suffix == null ? "..." : String(options.suffix);
-+
-+  if (text.length <= length) {
-+    return text;
++  if (remaining < SECOND_MS) {
++    return `${sign}${remaining}ms`;
 +  }
 +
-+  if (length <= suffix.length) {
-+    return suffix.slice(0, length);
++  const units = [
++    [DAY_MS, "d"],
++    [HOUR_MS, "h"],
++    [MINUTE_MS, "m"],
++    [SECOND_MS, "s"],
++  ];
++  const parts = [];
++
++  for (const [unitMs, label] of units) {
++    const count = Math.floor(remaining / unitMs);
++    if (count > 0) {
++      parts.push(`${count}${label}`);
++      remaining -= count * unitMs;
++    }
 +  }
 +
-+  return `${text.slice(0, length - suffix.length)}${suffix}`;
++  if (remaining > 0) {
++    parts.push(`${remaining}ms`);
++  }
++
++  return `${sign}${parts.join(" ")}`;
 +}
 +
-+export function escapeHtml(value) {
-+  return toText(value).replace(/[&<>"']/g, (character) => HTML_ESCAPE_MAP[character]);
++/**
++ * Converts a date-like value to a Unix timestamp in milliseconds.
++ *
++ * @param {Date|string|number} [value] Date-like value.
++ * @returns {number} Unix timestamp in milliseconds.
++ */
++export function toUnixMilliseconds(value = Date.now()) {
++  return toDate(value).getTime();
 +}
-diff --git a/tests/shared/TextFoundation.test.mjs b/tests/shared/TextFoundation.test.mjs
++
++/**
++ * Converts a date-like value to an ISO-8601 timestamp.
++ *
++ * @param {Date|string|number} [value] Date-like value.
++ * @returns {string} ISO timestamp.
++ */
++export function toIsoTimestamp(value = Date.now()) {
++  return toDate(value).toISOString();
++}
++
++/**
++ * Resolves after the provided delay.
++ *
++ * @param {number} milliseconds Delay in milliseconds.
++ * @returns {Promise<void>} Promise that resolves after the delay.
++ */
++export function sleep(milliseconds) {
++  return new Promise((resolve) => {
++    setTimeout(resolve, normalizeDelay(milliseconds));
++  });
++}
++
++/**
++ * Creates a debounced function that runs after calls settle.
++ *
++ * @param {Function} callback Function to debounce.
++ * @param {number} waitMs Debounce delay in milliseconds.
++ * @returns {Function & {cancel: Function}} Debounced function.
++ */
++export function debounce(callback, waitMs = 0) {
++  if (typeof callback !== "function") {
++    throw new TypeError("callback must be a function.");
++  }
++
++  let timeoutId = null;
++  const delay = normalizeDelay(waitMs);
++
++  function debounced(...args) {
++    const context = this;
++    if (timeoutId !== null) {
++      clearTimeout(timeoutId);
++    }
++
++    timeoutId = setTimeout(() => {
++      timeoutId = null;
++      callback.apply(context, args);
++    }, delay);
++  }
++
++  debounced.cancel = () => {
++    if (timeoutId !== null) {
++      clearTimeout(timeoutId);
++      timeoutId = null;
++    }
++  };
++
++  return debounced;
++}
++
++/**
++ * Creates a throttled function that runs at most once per wait window.
++ *
++ * @param {Function} callback Function to throttle.
++ * @param {number} waitMs Throttle window in milliseconds.
++ * @returns {Function & {cancel: Function}} Throttled function.
++ */
++export function throttle(callback, waitMs = 0) {
++  if (typeof callback !== "function") {
++    throw new TypeError("callback must be a function.");
++  }
++
++  const delay = normalizeDelay(waitMs);
++  let lastRun = 0;
++  let timeoutId = null;
++  let pendingArgs = null;
++  let pendingContext = null;
++
++  function invoke(timestamp) {
++    lastRun = timestamp;
++    timeoutId = null;
++    callback.apply(pendingContext, pendingArgs);
++    pendingArgs = null;
++    pendingContext = null;
++  }
++
++  function throttled(...args) {
++    const now = Date.now();
++    pendingArgs = args;
++    pendingContext = this;
++    const remaining = delay - (now - lastRun);
++
++    if (remaining <= 0 || remaining > delay) {
++      if (timeoutId !== null) {
++        clearTimeout(timeoutId);
++      }
++      invoke(now);
++      return;
++    }
++
++    if (timeoutId === null) {
++      timeoutId = setTimeout(() => invoke(Date.now()), remaining);
++    }
++  }
++
++  throttled.cancel = () => {
++    if (timeoutId !== null) {
++      clearTimeout(timeoutId);
++      timeoutId = null;
++    }
++    pendingArgs = null;
++    pendingContext = null;
++  };
++
++  return throttled;
++}
+diff --git a/tests/shared/TimeFoundation.test.mjs b/tests/shared/TimeFoundation.test.mjs
 new file mode 100644
-index 000000000..893c5edfd
+index 000000000..b0df9a1b7
 --- /dev/null
-+++ b/tests/shared/TextFoundation.test.mjs
-@@ -0,0 +1,37 @@
++++ b/tests/shared/TimeFoundation.test.mjs
+@@ -0,0 +1,55 @@
 +/*
 +Toolbox Aid
 +David Quesenberry
 +06/26/2026
-+TextFoundation.test.mjs
++TimeFoundation.test.mjs
 +*/
 +import assert from "node:assert/strict";
 +import {
-+  escapeHtml,
-+  normalizeWhitespace,
-+  slugify,
-+  toCamelCase,
-+  toTitleCase,
-+  truncate,
-+} from "../../src/shared/text/text.js";
++  debounce,
++  formatDuration,
++  sleep,
++  throttle,
++  toIsoTimestamp,
++  toUnixMilliseconds,
++} from "../../src/shared/time/time.js";
 +
-+export function run() {
-+  assert.equal(normalizeWhitespace("  Alpha\n\tBeta   Gamma  "), "Alpha Beta Gamma");
-+  assert.equal(normalizeWhitespace(null), "");
++export async function run() {
++  assert.equal(formatDuration(500), "500ms");
++  assert.equal(formatDuration(3_661_250), "1h 1m 1s 250ms");
++  assert.equal(formatDuration(-61_000), "-1m 1s");
 +
-+  assert.equal(slugify(" Café Racer: Level 12! "), "cafe-racer-level-12");
-+  assert.equal(slugify(" -- "), "");
++  const date = new Date("2026-06-26T12:34:56.789Z");
++  assert.equal(toUnixMilliseconds(date), Date.UTC(2026, 5, 26, 12, 34, 56, 789));
++  assert.equal(toIsoTimestamp(date), "2026-06-26T12:34:56.789Z");
++  assert.throws(() => toIsoTimestamp("not a date"), TypeError);
 +
-+  assert.equal(toTitleCase("the QUICK-brown fox"), "The Quick-brown Fox");
-+  assert.equal(toCamelCase("Café racer level 12"), "cafeRacerLevel12");
++  const start = Date.now();
++  await sleep(5);
++  assert.ok(Date.now() - start >= 0);
 +
-+  assert.equal(truncate("Hello world", 8), "Hello...");
-+  assert.equal(truncate("Hello", 8), "Hello");
-+  assert.equal(truncate("Hello world", 2), "..");
-+  assert.equal(truncate("Hello world", 8, { suffix: "!" }), "Hello w!");
++  const debounceCalls = [];
++  const debounced = debounce((value) => debounceCalls.push(value), 5);
++  debounced("first");
++  debounced("second");
++  assert.deepEqual(debounceCalls, []);
++  await sleep(15);
++  assert.deepEqual(debounceCalls, ["second"]);
++  debounced("cancelled");
++  debounced.cancel();
++  await sleep(10);
++  assert.deepEqual(debounceCalls, ["second"]);
 +
-+  assert.equal(escapeHtml("<button data-name=\"A&B\">It's</button>"), "&lt;button data-name=&quot;A&amp;B&quot;&gt;It&#39;s&lt;/button&gt;");
++  const throttleCalls = [];
++  const throttled = throttle((value) => throttleCalls.push(value), 10);
++  throttled("first");
++  throttled("second");
++  assert.deepEqual(throttleCalls, ["first"]);
++  await sleep(20);
++  assert.deepEqual(throttleCalls, ["first", "second"]);
++  throttled.cancel();
 +}
 +
 +if (import.meta.url === `file://${process.argv[1]}`) {
-+  run();
++  await run();
 +}
+diff --git a/docs_build/dev/reports/PR_26177_006-shared-time-foundation_closeout.md b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_closeout.md
+new file mode 100644
+index 000000000..3141839a4
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_006-shared-time-foundation_closeout.md
+@@ -0,0 +1,29 @@
++# PR_26177_006-shared-time-foundation Closeout Report
++
++Date: 2026-06-26
++Status: PASS
++
++## Branch
++
++- Current branch: `PR_26177_006-shared-time-foundation`.
++- PR: #214.
++- Base branch before merge: `PR_26177_005-shared-text-foundation`.
++
++## Scope Review
++
++- PASS: Change remains limited to shared time foundation code, targeted tests, BUILD/PLAN docs, and required reports.
++- PASS: Local `.vscode/settings.json` developer setting was reviewed, left untouched, and excluded from staging.
++- PASS: No `start_of_day` folders were modified.
++- PASS: No legacy SQLite metrics files were removed, moved, or overwritten.
++
++## Validation
++
++- PASS: `node ./scripts/run-node-test-files.mjs tests/shared/HashFoundation.test.mjs tests/shared/NoiseFoundation.test.mjs tests/shared/GeometryFoundation.test.mjs tests/shared/ColorFoundation.test.mjs tests/shared/TextFoundation.test.mjs tests/shared/TimeFoundation.test.mjs`.
++- PASS: `node --check src/shared/time/time.js`.
++- PASS: `node --check tests/shared/TimeFoundation.test.mjs`.
++- PASS: `git diff --check -- . ':!.vscode/settings.json'`.
++- PASS: Normal targeted validation output did not include the Game Journey legacy SQLite metrics warning.
++
++## ZIP
++
++- PASS: Refreshed repo-structured ZIP exists at `tmp/PR_26177_006-shared-time-foundation_delta.zip`.
