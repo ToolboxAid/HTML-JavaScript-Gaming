@@ -2530,6 +2530,333 @@ export function createAssetToolMockRepository(options = {}) {
     return paletteRepository.seedActiveProjectPalette();
   }
 
+  const SPRITE_STATUS_OPTIONS = Object.freeze(["Draft", "Ready", "Archived"]);
+
+  function normalizeSpriteStatus(value, fallback = "Ready") {
+    const normalized = normalizeText(value);
+    const match = SPRITE_STATUS_OPTIONS.find((status) => status.toLowerCase() === normalized.toLowerCase());
+    return match || fallback;
+  }
+
+  function normalizeSpriteCategory(value, fallback = "Sprite") {
+    const normalized = normalizeCatalogUsage(value);
+    return normalized || fallback;
+  }
+
+  function paletteColorExists(paletteColorKey) {
+    if (!paletteColorKey) {
+      return true;
+    }
+    return listPaletteSwatches().some((swatch) => swatch.key === paletteColorKey);
+  }
+
+  function spritePaletteColors() {
+    return listPaletteSwatches().map((swatch) => ({
+      hex: swatch.hex || "",
+      key: swatch.key,
+      name: swatch.name,
+      source: swatch.source || "Palette/Colors",
+    }));
+  }
+
+  function spriteReferenceSummary(asset = null) {
+    return {
+      destructiveDeleteAllowed: false,
+      message: asset
+        ? "Object and World reference contracts are not connected yet; destructive delete is disabled for Sprites. Archive remains available."
+        : "Reference contract is ready for future Object and World usage checks.",
+      references: [],
+      status: "Unavailable",
+      usageCount: 0,
+    };
+  }
+
+  function decorateSpriteAsset(asset) {
+    if (!asset) {
+      return null;
+    }
+    const paletteColorKey = normalizeText(asset.paletteColorKey);
+    const referenceSummary = spriteReferenceSummary(asset);
+    return {
+      ...asset,
+      category: normalizeSpriteCategory(asset.category || "Sprite"),
+      dimensions: asset.dimensions || null,
+      paletteColorKey,
+      paletteColorName: spritePaletteColors().find((swatch) => swatch.key === paletteColorKey)?.name || "",
+      previewStatus: asset.viewPath || asset.storedPath
+        ? "Preview metadata available; image bytes are unavailable until storage preview is connected."
+        : "Preview unavailable until sprite image storage is connected.",
+      referenceSummary,
+      status: normalizeSpriteStatus(asset.status),
+      usageCount: referenceSummary.usageCount,
+    };
+  }
+
+  function listSpriteRecords() {
+    return listAssetsByType("Sprites").map(decorateSpriteAsset);
+  }
+
+  function spriteValidationResult(input = {}, existingAsset = null) {
+    const name = normalizeText(input.name || existingAsset?.name);
+    const description = normalizeText(input.description || existingAsset?.description);
+    const category = normalizeSpriteCategory(input.category || existingAsset?.category || "Sprite");
+    const status = normalizeSpriteStatus(input.status || existingAsset?.status);
+    const tags = listTags();
+    const tagKeys = normalizeAssetTagKeys(input.tagKeys, tags);
+    const requestedTagKeys = Array.isArray(input.tagKeys) ? input.tagKeys.map(normalizeText).filter(Boolean) : [];
+    const invalidTagKeys = requestedTagKeys.filter((tagKey) => !tagKeys.includes(tagKey));
+    const paletteColorKey = normalizeText(input.paletteColorKey || existingAsset?.paletteColorKey);
+    const findings = [];
+
+    if (!name) {
+      findings.push({
+        action: "Name the sprite before saving.",
+        field: "name",
+        label: "Sprite Name",
+      });
+    }
+    if (input.status && !SPRITE_STATUS_OPTIONS.includes(status)) {
+      findings.push({
+        action: `Choose a valid sprite status: ${SPRITE_STATUS_OPTIONS.join(", ")}.`,
+        field: "status",
+        label: "Sprite Status",
+      });
+    }
+    if (input.category && !normalizeCatalogUsage(input.category)) {
+      findings.push({
+        action: `Choose a valid sprite category: ${ASSET_USAGE_OPTIONS.join(", ")}.`,
+        field: "category",
+        label: "Sprite Category",
+      });
+    }
+    if (invalidTagKeys.length) {
+      findings.push({
+        action: "Choose tags from the shared Tags tool list.",
+        field: "tagKeys",
+        label: "Sprite Tags",
+      });
+    }
+    if (!paletteColorExists(paletteColorKey)) {
+      findings.push({
+        action: "Choose a Palette/Colors record by key; Sprites cannot own reusable color definitions.",
+        field: "paletteColorKey",
+        label: "Palette Color Key",
+      });
+    }
+
+    return {
+      findings,
+      sprite: {
+        category,
+        description,
+        name,
+        paletteColorKey,
+        status,
+        tagKeys,
+      },
+      status: findings.length === 0 ? "Ready" : "Needs Input",
+    };
+  }
+
+  function duplicateSpriteFinding(name, currentAssetId = "") {
+    const normalizedName = normalizeText(name).toLowerCase();
+    const spriteKey = spriteAssetKeyForObjectKey(name);
+    const duplicate = listSpriteRecords().find((asset) => (
+      asset.id !== currentAssetId
+      && (
+        asset.id === spriteKey
+        || normalizeText(asset.name).toLowerCase() === normalizedName
+      )
+    ));
+    if (!duplicate) {
+      return null;
+    }
+    return {
+      action: `A sprite named ${duplicate.name} already exists. Edit that sprite or choose a unique name.`,
+      field: "name",
+      label: "Duplicate Sprite",
+    };
+  }
+
+  function finishSpriteMutation(asset, validation, message, extra = {}) {
+    const timestamp = new Date().toISOString();
+    asset.name = validation.sprite.name;
+    asset.description = validation.sprite.description;
+    asset.category = validation.sprite.category;
+    asset.paletteColorKey = validation.sprite.paletteColorKey;
+    asset.status = validation.sprite.status;
+    asset.tagKeys = validation.sprite.tagKeys;
+    asset.updatedAt = timestamp;
+    asset.updatedBy = activeUserKey();
+    selectedAssetId = asset.id;
+    replaceValidationRows(asset.projectId, []);
+    persistTables();
+    return {
+      asset: decorateSpriteAsset(asset),
+      message,
+      snapshot: getSpritesSnapshot(),
+      validation,
+      ...extra,
+    };
+  }
+
+  function createSpriteRecord(input = {}) {
+    const validation = spriteValidationResult(input);
+    const duplicateFinding = validation.findings.length ? null : duplicateSpriteFinding(validation.sprite.name);
+    const findings = duplicateFinding ? [...validation.findings, duplicateFinding] : validation.findings;
+    if (hasExplicitGuestSession()) {
+      return {
+        created: false,
+        message: "Sign in required to save Sprites through the Local API.",
+        snapshot: getSpritesSnapshot(),
+        validation: { ...validation, findings, status: "Needs Input" },
+      };
+    }
+    const projectResult = ensureUploadProject();
+    const projectId = projectResult.projectId || getConfigurationHandoff().activeProject?.id || "";
+    replaceValidationRows(projectId, findings);
+    if (findings.length || !projectId) {
+      return {
+        created: false,
+        message: findings[0]?.action || projectResult.message || "Sprite create blocked: open an active game first.",
+        snapshot: getSpritesSnapshot(),
+        validation: { ...validation, findings, status: "Needs Input" },
+      };
+    }
+
+    const handoffResult = ensureSpriteAssetForObject({
+      name: validation.sprite.name,
+      objectKey: validation.sprite.name,
+      objectName: validation.sprite.name,
+    });
+    if (!handoffResult.created && !handoffResult.linked) {
+      return {
+        created: false,
+        message: handoffResult.message,
+        snapshot: getSpritesSnapshot(),
+        validation,
+      };
+    }
+    return finishSpriteMutation(
+      handoffResult.asset,
+      validation,
+      `Created sprite ${validation.sprite.name}.`,
+      { created: true },
+    );
+  }
+
+  function updateSpriteRecord(assetId, input = {}) {
+    const handoff = getConfigurationHandoff();
+    const projectId = handoff.activeProject?.id || "";
+    const asset = findOwnedAsset(assetId, projectId);
+    if (!asset) {
+      return {
+        message: blockedOwnerMessage("update"),
+        snapshot: getSpritesSnapshot(),
+        updated: false,
+      };
+    }
+    const validation = spriteValidationResult(input, asset);
+    const duplicateFinding = validation.findings.length ? null : duplicateSpriteFinding(validation.sprite.name, asset.id);
+    const findings = duplicateFinding ? [...validation.findings, duplicateFinding] : validation.findings;
+    replaceValidationRows(projectId, findings);
+    if (hasExplicitGuestSession()) {
+      return {
+        message: "Sign in required to save Sprites through the Local API.",
+        snapshot: getSpritesSnapshot(),
+        updated: false,
+        validation: { ...validation, findings, status: "Needs Input" },
+      };
+    }
+    if (findings.length) {
+      return {
+        asset: decorateSpriteAsset(asset),
+        message: findings[0]?.action || "Sprite update blocked.",
+        snapshot: getSpritesSnapshot(),
+        updated: false,
+        validation: { ...validation, findings, status: "Needs Input" },
+      };
+    }
+    return finishSpriteMutation(
+      asset,
+      validation,
+      `Updated sprite ${validation.sprite.name}.`,
+      { updated: true },
+    );
+  }
+
+  function archiveSpriteRecord(assetId) {
+    const handoff = getConfigurationHandoff();
+    const projectId = handoff.activeProject?.id || "";
+    const asset = findOwnedAsset(assetId, projectId);
+    if (!asset) {
+      return {
+        archived: false,
+        message: blockedOwnerMessage("archive"),
+        snapshot: getSpritesSnapshot(),
+      };
+    }
+    if (hasExplicitGuestSession()) {
+      return {
+        archived: false,
+        message: "Sign in required to archive Sprites through the Local API.",
+        snapshot: getSpritesSnapshot(),
+      };
+    }
+    const timestamp = new Date().toISOString();
+    asset.archivedAt = timestamp;
+    asset.status = "Archived";
+    asset.updatedAt = timestamp;
+    asset.updatedBy = activeUserKey();
+    selectedAssetId = asset.id;
+    replaceValidationRows(projectId, []);
+    persistTables();
+    return {
+      archived: true,
+      asset: decorateSpriteAsset(asset),
+      message: `Archived sprite ${asset.name}.`,
+      snapshot: getSpritesSnapshot(),
+    };
+  }
+
+  function deleteSpriteRecord(assetId) {
+    const asset = findOwnedAsset(assetId, getConfigurationHandoff().activeProject?.id || "");
+    return {
+      asset: decorateSpriteAsset(asset),
+      deleted: false,
+      message: "Destructive sprite delete is disabled until Object and World references can be verified. Archive the sprite instead.",
+      referenceSummary: spriteReferenceSummary(asset),
+      snapshot: getSpritesSnapshot(),
+    };
+  }
+
+  function getSpritesSnapshot() {
+    const handoff = getConfigurationHandoff();
+    const sprites = listSpriteRecords();
+    const selectedSprite = sprites.find((asset) => asset.id === selectedAssetId) || sprites[0] || null;
+    const projectId = handoff.activeProject?.id || "";
+    const findings = tables.asset_validation_items.filter((row) => row.projectId === projectId);
+    return {
+      categories: [...ASSET_USAGE_OPTIONS],
+      handoff,
+      paletteColors: spritePaletteColors(),
+      paletteOwnership: "Palette/Colors is the reusable color source of truth. Sprites store paletteColorKey references only.",
+      preview: {
+        message: "Sprite image preview is product-safe metadata until storage/image bytes are connected.",
+        status: "Unavailable",
+      },
+      referenceContract: spriteReferenceSummary(),
+      selectedSprite,
+      sprites,
+      statusOptions: [...SPRITE_STATUS_OPTIONS],
+      tags: listTags(),
+      validation: {
+        findings,
+        status: findings.length ? "Needs Input" : "Ready",
+      },
+    };
+  }
+
   function getProgressHandoff() {
     const handoff = getConfigurationHandoff();
     const assets = listAssets();
@@ -2610,15 +2937,19 @@ export function createAssetToolMockRepository(options = {}) {
     ASSET_USAGE_OPTIONS,
     ASSET_USAGE_BY_ROLE,
     addAssetRecord,
+    archiveSpriteRecord,
     assetsByType,
     clearAssetLibrary,
     deleteAsset,
     deleteAssetRecord,
+    deleteSpriteRecord,
     ensureSpriteAssetForObject,
+    createSpriteRecord,
     getConfigurationHandoff,
     getPaletteSnapshot,
     getProgressHandoff,
     getRoleDiagnostics,
+    getSpritesSnapshot,
     getSnapshot,
     getTables,
     importAsset,
@@ -2642,6 +2973,7 @@ export function createAssetToolMockRepository(options = {}) {
     setUploadFileWriteSupport,
     updateAsset,
     updateAssetRecord,
+    updateSpriteRecord,
     validateCatalogAssetInput,
     validateAssetInput
   };

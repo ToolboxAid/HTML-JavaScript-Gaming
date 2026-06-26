@@ -6,7 +6,7 @@
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Sprites - GameFoundryStudio</title>
-    <meta name="description" content="Sprites Toolbox wireframe. Plan sprite creation, review, and game-ready export workflows.">
+    <meta name="description" content="Sprites Toolbox manages sprite assets for creators, games, worlds, publishing, sharing, and community workflows.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -18,35 +18,101 @@
             <div class="container">
                 <div class="kicker">Toolbox / Sprites</div>
                 <h1>Sprites</h1>
-                <p class="lede">Plan sprite creation, review, and game-ready export workflows. Static wireframe only; no database, persistence, save, load, or runtime behavior is implemented.</p>
+                <p class="lede">Manage sprite asset records for creators, games, worlds, publishing, sharing, and community workflows.</p>
             </div>
         </section>
         <section class="section">
             <div class="container container--tool-wide">
-                <div class="tool-workspace tool-workspace--wide">
+                <div class="tool-workspace tool-workspace--wide" data-sprites-app>
                     <aside class="tool-column tool-group-design">
                         <div class="tool-column-header">
                             <h2>Sprites</h2>
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Setup</summary>
-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
+                                <summary>Library Tools</summary>
+                                <div class="accordion-body content-stack">
+                                    <button class="btn" type="button" data-sprites-add>Add Sprite</button>
+                                    <label for="spritesSearch">Search</label>
+                                    <input id="spritesSearch" type="search" data-sprites-search aria-label="Search Sprites">
+                                    <label for="spritesStatusFilter">Status</label>
+                                    <select id="spritesStatusFilter" data-sprites-status-filter aria-label="Filter Sprites by status"></select>
+                                    <label for="spritesCategoryFilter">Category</label>
+                                    <select id="spritesCategoryFilter" data-sprites-category-filter aria-label="Filter Sprites by category"></select>
+                                    <label for="spritesTagFilter">Tag</label>
+                                    <select id="spritesTagFilter" data-sprites-tag-filter aria-label="Filter Sprites by shared tag"></select>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Palette/Colors</summary>
+                                <div class="accordion-body content-stack">
+                                    <p data-sprites-palette-state>Palette/Colors references loading.</p>
+                                    <a class="btn" href="toolbox/colors/index.html">Open Colors</a>
+                                </div>
                             </details>
                         </div>
                     </aside>
-                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="sprites" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
-                    <section class="tool-center-panel"><h2>Workspace</h2>
-                        <p>Plan sprite creation, review, and game-ready export workflows. This page preserves the shared Theme V2 tool template structure for future rebuild work.</p>
+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="sprites" data-tool-icon-src="assets/theme-v2/images/badges/sprites.png" data-tool-character-src="assets/theme-v2/images/tools/sprites.png"></div>
+                    <section class="tool-center-panel">
+                        <h2>Sprite Library</h2>
+                        <p>Use the table to create, edit, and archive sprite records through the Local API service contract.</p>
+                        <div class="grid cols-3" aria-label="Sprite library summary">
+                            <article class="mini-stat"><strong data-sprites-library-status>Loading</strong>Library Status</article>
+                            <article class="mini-stat"><strong data-sprites-count>0</strong>Sprites</article>
+                            <article class="mini-stat"><strong data-sprites-visible-count>0</strong>Visible</article>
+                        </div>
+                        <p class="status" role="status" data-sprites-log>Sprites loading.</p>
+                        <div class="table-wrapper">
+                            <table class="data-table" data-sprites-table aria-label="Sprite library">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Category</th>
+                                        <th scope="col">Tags</th>
+                                        <th scope="col">Palette Key</th>
+                                        <th scope="col">Updated</th>
+                                        <th scope="col">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-sprites-table-body>
+                                    <tr><td colspan="7">Loading Sprites.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </section>
                     <aside class="tool-column tool-group-design">
                         <div class="tool-column-header">
-                            <h2>Inspector</h2>
+                            <h2>Sprite Details</h2>
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Output</summary>
-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
+                                <summary>Preview</summary>
+                                <div class="accordion-body content-stack" data-sprites-preview>
+                                    <p>Choose a sprite to review preview metadata.</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Metadata</summary>
+                                <div class="accordion-body content-stack">
+                                    <ul data-sprites-metadata>
+                                        <li>No selected sprite details.</li>
+                                    </ul>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>References</summary>
+                                <div class="accordion-body content-stack" data-sprites-references>
+                                    <p>Reference protection loading.</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Validation</summary>
+                                <div class="accordion-body content-stack">
+                                    <ul data-sprites-validation>
+                                        <li>No validation findings.</li>
+                                    </ul>
+                                </div>
                             </details>
                         </div>
                     </aside>
@@ -57,6 +123,7 @@
     <div data-partial="footer"></div>
     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+    <script type="module" src="assets/toolbox/sprites/js/index.js"></script>
 </body>
 
 </html>

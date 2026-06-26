@@ -2555,7 +2555,7 @@ function normalizedToolKey(row) {
   return String(row?.toolKey || row?.toolId || row?.id || "").trim();
 }
 
-const SOURCE_CONTROLLED_TOOLBOX_TOOL_IDS = new Set(["game-hub", "idea-board", "messages", "tags", "text-to-speech", "users"]);
+const SOURCE_CONTROLLED_TOOLBOX_TOOL_IDS = new Set(["game-hub", "idea-board", "messages", "sprites", "tags", "text-to-speech", "users"]);
 const SOURCE_CONTROLLED_TOOLBOX_METADATA_FIELDS = Object.freeze([
   "active",
   "adminOnly",
@@ -6640,6 +6640,7 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
     if (toolId === "tags") return this.tagsRepository;
     if (toolId === "asset") return this.assetRepository;
     if (toolId === "assets") return this.assetRepository;
+    if (toolId === "sprites") return this.assetRepository;
     throw new Error(`Unknown toolbox API data source: ${toolId}.`);
   }
 
@@ -6706,7 +6707,7 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
         TAGS_TOOL_TABLES: this.tagsRepository.TAGS_TOOL_TABLES,
       };
     }
-    if (toolId === "asset" || toolId === "assets") {
+    if (toolId === "asset" || toolId === "assets" || toolId === "sprites") {
       return {
         ASSET_ROLE_DEFINITIONS: this.assetRepository.ASSET_ROLE_DEFINITIONS,
         ASSET_CATALOG_TYPES: this.assetRepository.ASSET_CATALOG_TYPES,

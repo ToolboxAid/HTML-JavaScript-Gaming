@@ -564,10 +564,10 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
     await expect(page.locator("[data-toolbox-tool-name-link='Game Hub']")).toHaveAttribute("href", "/toolbox/game-hub/index.html");
     await expect(page.locator("[data-toolbox-tool-name-link='Text To Speech']")).toHaveAttribute("href", "/toolbox/text-to-speech/index.html");
     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toHaveCount(0);
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 15/43");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 16/43");
     await page.locator("[data-toolbox-status-filter='planned']").click();
     await expect(page.locator("[data-toolbox-status-filter='planned']")).toHaveAttribute("aria-pressed", "true");
-    await expect(page.locator("[data-toolbox-tool-card][data-toolbox-release-channel='planned']")).toHaveCount(27);
+    await expect(page.locator("[data-toolbox-tool-card][data-toolbox-release-channel='planned']")).toHaveCount(26);
     await expect(page.locator("[data-toolbox-tool-card]")).toHaveCount(42);
     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 42/43");
     await expect(page.locator("[data-toolbox-tool-name-link='AI Command Center']")).toBeVisible();
@@ -641,8 +641,8 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
 
     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
-      "Planned (27)",
-      "Wireframe (4)",
+      "Planned (26)",
+      "Wireframe (5)",
       "Beta (8)",
       "Complete (3)",
       "Deprecated (1)",
@@ -658,8 +658,8 @@ test("toolbox status kickers, filters, card order, and voting controls work from
 
     await page.locator("[data-tools-view='build-path']").click();
     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
-      "Planned (27)",
-      "Wireframe (4)",
+      "Planned (26)",
+      "Wireframe (5)",
       "Beta (8)",
       "Complete (3)",
       "Deprecated (1)",
@@ -1378,8 +1378,8 @@ test("toolbox Build Path status filters support multi-select registry-matched to
     await expect(page.locator("[data-tools-sort='grouped']")).not.toHaveClass(/primary/);
 
     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
-      "Planned (27)",
-      "Wireframe (4)",
+      "Planned (26)",
+      "Wireframe (5)",
       "Beta (8)",
       "Complete (3)",
       "Deprecated (1)",
@@ -1391,14 +1391,14 @@ test("toolbox Build Path status filters support multi-select registry-matched to
 
     await page.locator("[data-toolbox-status-filter='planned']").click();
     await expectActiveFilters(["planned", "complete"]);
-    await expectBuildPathChannels(["planned", "complete"], 30);
+    await expectBuildPathChannels(["planned", "complete"], 29);
     await expect(page.locator("[data-build-path-tool='AI Command Center']")).toBeVisible();
     await expectBuildPathOrder("AI Command Center", registryById.get("ai-assistant").order);
     await expectBuildPathOrder("Colors", registryById.get("colors").order);
 
     await page.locator("[data-toolbox-status-filter='complete']").click();
     await expectActiveFilters(["planned"]);
-    await expectBuildPathChannels(["planned"], 27);
+    await expectBuildPathChannels(["planned"], 26);
     await expect(page.locator("[data-build-path-tool='Colors']")).toHaveCount(0);
     await expect(page.locator("[data-build-path-tool='AI Command Center']")).toBeVisible();
 

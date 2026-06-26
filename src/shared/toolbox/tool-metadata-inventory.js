@@ -472,9 +472,11 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPublish": true,
     "requires": [],
     "status": "Wireframe",
+    "releaseChannel": "wireframe",
     "progressChecklist": [
-      "Review readiness",
-      "Static planned text only"
+      "Toolbox entry opens Sprites route",
+      "API-backed sprite library shell available",
+      "Palette/Colors remains reusable color source of truth"
     ],
     "deferred": false,
     "hidden": false,
