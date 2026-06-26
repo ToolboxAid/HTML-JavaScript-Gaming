@@ -1,0 +1,13 @@
+{
+  "group": "Sprites",
+  "groupKey": "sprites",
+  "owner": "docs_build/database/seed",
+  "serverSideSeedRequired": true,
+  "browserAuthoritativeKeyGenerationAllowed": false,
+  "colorOwnership": "Palette/Colors owns reusable color definitions; Sprites stores Palette/Colors keys only.",
+  "tables": {
+    "sprite_records": [],
+    "sprite_usage_references": []
+  },
+  "note": "Seed records for this group are intentionally empty until a server/API seed path owns them."
+}

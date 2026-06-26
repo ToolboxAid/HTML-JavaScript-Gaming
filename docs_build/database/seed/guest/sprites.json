@@ -5,7 +5,10 @@
   "readOnly": true,
   "writableByGuest": false,
   "signInRedirect": "account/sign-in.html",
-  "tables": {},
+  "tables": {
+    "sprite_records": [],
+    "sprite_usage_references": []
+  },
   "samplePackages": [
     {
       "key": "guest-sprites-starter",

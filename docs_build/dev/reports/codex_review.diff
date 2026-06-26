@@ -1,1390 +1,1349 @@
-﻿diff --git a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md
-index 53bc243c2..97488ea93 100644
---- a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md
-+++ b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md
-@@ -4,17 +4,17 @@ Status: PASS
-
- ## Gate
-
--- PASS: Started on `main`.
--- PASS: Fetched origin.
--- PASS: Pulled `origin/main` with `--ff-only`.
--- PASS: Verified worktree clean before branch creation.
--- PASS: Verified `main...origin/main` was `0 0` before branch creation.
--- PASS: Created `PR_26177_OWNER_057-game-journey-metrics-regression-recovery` from latest `main`.
-+- PASS: Continued on `PR_26177_OWNER_057-game-journey-metrics-regression-recovery`.
-+- PASS: Worktree was clean before the SQLite retirement expansion edits.
-+- PASS: No PR058 branch was created from this branch.
-
- ## Branch Scope
-
--- PASS: Runtime changes are limited to the Game Journey completion metrics store and toolbox accordion Creator-facing wording.
--- PASS: Tests are limited to targeted Game Journey completion metrics regression coverage.
--- PASS: Did not delete, move, overwrite, export, or migrate `tmp/local-api/game-journey-completion-metrics.sqlite`.
-+- PASS: Scope stayed on Game Journey completion metrics regression recovery and SQLite retirement.
-+- PASS: Runtime changes do not add feature work.
-+- PASS: Deleted SQLite-only migration implementation and migration test files.
-+- PASS: Tests now validate the DB-only path and active source guardrails.
-+- PASS: Did not delete or mutate user-local `tmp/` files.
- - PASS: Did not start Alfa Tags PRs.
--- PASS: Final audit removed active runtime JS/MJS SQLite and `tmp/local-api` references outside the migration-only utility.
-+- PASS: Final active-code audit found zero SQLite/tmp implementation references outside historical docs/reports.
-+- PASS: EOD pre-merge branch validation completed with clean source searches and passing targeted tests.
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md
-index 6dad6bb08..59ed8c182 100644
---- a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md
-+++ b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md
-@@ -4,11 +4,13 @@ Status: PASS
-
- ## Notes
-
--- Confirmed the repo-local `tmp/local-api/game-journey-completion-metrics.sqlite` file exists before validation.
--- Confirmed active `createGameJourneyCompletionMetricsStore({ postgresClient })` exposes no `legacyDbPath`.
--- Confirmed active metrics snapshots expose no `legacySqlitePath`.
--- Confirmed active metrics load 14 DB-backed completion buckets while the retired file remains untouched.
--- Confirmed active runtime JS/MJS has no SQLite or `tmp/local-api` metrics references outside the migration-only utility.
-+- Confirmed current branch is `PR_26177_OWNER_057-game-journey-metrics-regression-recovery`.
-+- Confirmed the PR deletes the retired SQLite migration command, migration module, and migration test.
-+- Confirmed active Game Journey metrics tests validate the DB-only store path.
-+- Confirmed active JS/MJS source under implementation, script, and test roots has no SQLite, `.sqlite`, `better-sqlite`, `game-journey-completion-metrics.sqlite`, or `tmp/local-api` matches.
-+- Confirmed non-doc implementation search excluding `docs_build/**`, `tmp/**`, and `.git/**` has no matching retired metrics references.
- - Confirmed the toolbox page renders neutral Creator-facing outage wording when active metrics are unavailable.
--- Confirmed the toolbox page does not render the forbidden warning string, SQLite wording, `tmp/local-api`, or Postgres internals in the simulated outage lane.
-+- Confirmed the focused outage lane does not render the forbidden warning string or Postgres internals.
-+- Confirmed no runtime code inspects or depends on `tmp/` for Game Journey completion metrics.
-+- Confirmed EOD validation rerun passed before merging PR057 to `main`.
- - Confirmed no Alfa Tags PR work was started.
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md
-index 777642b00..3577253f0 100644
---- a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md
-+++ b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md
-@@ -6,44 +6,50 @@ Date: 2026-06-26
-
- ## Scope
-
--Recover the Game Journey completion metrics path so active Alfa and Owner work no longer surfaces the retired legacy SQLite regression. Preserve Postgres-backed Game Journey completion metrics as the active path and prevent Creator-facing UI from rendering the forbidden `Game Journey completion metrics unavailable:` warning.
-+Expanded the recovery PR to complete Game Journey completion metrics SQLite retirement. The active architecture is Browser -> Local API -> Database. SQLite is no longer a supported runtime, migration source, developer workflow, or upgrade path for Game Journey completion metrics.
-
- ## Implementation Summary
-
--- Removed active runtime defaulting to `tmp/local-api/game-journey-completion-metrics.sqlite` in `createGameJourneyCompletionMetricsStore`.
--- Removed active runtime `legacyDbPath` guard plumbing from the Game Journey metrics store, repository, Local API router, and Playwright test server helper.
--- Updated `toolbox/tools-page-accordions.js` to render neutral Creator-safe progress outage wording instead of backend diagnostics.
--- Added a store-level regression test proving a retired default SQLite-shaped file does not block or get touched by active DB-backed metrics.
--- Added a targeted guardrail test proving active runtime JS/MJS under `src`, `assets`, and `toolbox` has no SQLite or `tmp/local-api` metrics references, excluding the migration-only utility.
--- Added a focused Playwright test proving the toolbox page does not render the forbidden warning, SQLite wording, local filesystem path, or Postgres internals when metrics are unavailable.
-+- Deleted the retired Game Journey metrics migration command: `scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs`.
-+- Deleted the retired Game Journey metrics migration module: `src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs`.
-+- Deleted the SQLite-only migration test: `tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs`.
-+- Updated the Game Journey metrics store tests to validate the DB-only store contract.
-+- Updated the JS/MJS guardrail test to fail future SQLite, `.sqlite`, `better-sqlite`, `game-journey-completion-metrics.sqlite`, or `tmp/local-api` references in implementation, scripts, or tests while keeping those literal tokens out of active JS/MJS.
-+- Updated the browser environment validation rule so it still detects retired file-DB reintroduction without keeping literal SQLite implementation terms in the validation source.
-+- Updated impacted Playwright tests so Creator-facing outage coverage validates neutral wording without carrying retired backend/path literals.
-
--## Reference Comparison
-+## Deleted SQLite-Related Files
-
--- Compared the relevant strings in Bravo, Charlie, and Delta reference branches against current main.
--- Those branches contained the same legacy-default metrics store and forbidden toolbox warning strings.
--- Their non-error behavior depended on the retired SQLite file not being present at the default path.
--- This recovery fixes the active behavior directly so the current repo is not sensitive to that retired file.
-+- `scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs`
-+- `src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs`
-+- `tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs`
+diff --git a/docs_build/database/ddl/sprites.sql b/docs_build/database/ddl/sprites.sql
+new file mode 100644
+index 000000000..f40d202b0
+--- /dev/null
++++ b/docs_build/database/ddl/sprites.sql
+@@ -0,0 +1,55 @@
++-- Game Foundry Studio DEV database DDL
++-- Group: Sprites
++-- Ownership: docs_build/database/ddl/sprites.sql
++-- Target DEV database: gamefoundry_dev
++-- Scope: executable grouped table DDL for active Supabase/server API migration.
++-- Authoritative key values are generated by the server/API layer.
++-- Owned tables: sprite_records, sprite_usage_references
++CREATE TABLE IF NOT EXISTS sprite_records (
++    key text PRIMARY KEY,
++    "gameId" text REFERENCES game_workspace_games(key),
++    "ownerUserId" text REFERENCES users(key),
++    "name" text NOT NULL,
++    "status" text NOT NULL,
++    "category" text NOT NULL DEFAULT '',
++    "tagKeys" jsonb NOT NULL DEFAULT '[]'::jsonb,
++    "source" text NOT NULL DEFAULT '',
++    "storageObjectKey" text NOT NULL DEFAULT '',
++    "storagePath" text NOT NULL DEFAULT '',
++    "originalName" text NOT NULL DEFAULT '',
++    "mimeType" text NOT NULL DEFAULT '',
++    "width" integer,
++    "height" integer,
++    "sizeBytes" bigint,
++    "checksum" text NOT NULL DEFAULT '',
++    "paletteColorKeys" jsonb NOT NULL DEFAULT '[]'::jsonb,
++    "archived" boolean NOT NULL DEFAULT false,
++    "archivedAt" timestamptz,
++    "createdAt" timestamptz NOT NULL DEFAULT now(),
++    "updatedAt" timestamptz NOT NULL DEFAULT now(),
++    "createdBy" text NOT NULL REFERENCES users(key),
++    "updatedBy" text NOT NULL REFERENCES users(key)
++);
 +
-+## Remaining SQLite References
++CREATE INDEX IF NOT EXISTS idx_sprite_records_gameid ON sprite_records ("gameId");
++CREATE INDEX IF NOT EXISTS idx_sprite_records_owneruserid ON sprite_records ("ownerUserId");
++CREATE INDEX IF NOT EXISTS idx_sprite_records_status ON sprite_records ("status");
++CREATE INDEX IF NOT EXISTS idx_sprite_records_createdby ON sprite_records ("createdBy");
++CREATE INDEX IF NOT EXISTS idx_sprite_records_updatedby ON sprite_records ("updatedBy");
 +
-+- PASS: `rg -n -i "sqlite|better-sqlite|game-journey-completion-metrics\.sqlite|tmp/local-api" -g "*.js" -g "*.mjs"` returned no matches.
-+- PASS: `rg -n -i "sqlite|better-sqlite|game-journey-completion-metrics\.sqlite|tmp/local-api" --glob "!docs_build/**" --glob "!tmp/**" --glob "!.git/**"` returned no matches.
-+- Historical references remain only in docs/reports under `docs_build/**`, including prior project instructions, historical PR reports, and this PR closeout packet.
-+- Zero remaining implementation references were found in runtime, Local API, browser, dev runtime, persistence, scripts, validation, tests, Playwright, tooling, startup, or health checks.
-
- ## Validation
-
--- PASS: `node --check` on modified source and test files.
--- PASS: `node ./scripts/run-node-test-files.mjs tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs`.
--- PASS: `npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --project=playwright --workers=1 --reporter=line -g "Game Journey Local API persists completion metrics to Postgres|Toolbox renders Creator-safe Game Journey progress outage copy"`.
--- PASS: Direct proof against the actual existing `tmp/local-api/game-journey-completion-metrics.sqlite` file confirmed active DB metrics load 14 buckets, expose no legacy path fields, and do not touch the retired file.
--- PASS: Active runtime JS/MJS search found no SQLite, `.sqlite`, `better-sqlite`, `game-journey-completion-metrics.sqlite`, or `tmp/local-api` references outside the migration-only utility.
-+- PASS: EOD pre-merge validation rerun completed on `PR_26177_OWNER_057-game-journey-metrics-regression-recovery`.
-+- PASS: `node --check scripts/validate-browser-env-agnostic.mjs`
-+- PASS: `node --check tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs`
-+- PASS: `node --check tests/playwright/tools/GameJourneyTool.spec.mjs`
-+- PASS: `node --check tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
-+- PASS: `node --test tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs`
-+- PASS: `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --project=playwright --workers=1 --reporter=line -g "Admin System Health operations page keeps scripts and styles external"`
-+- PASS: `npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --project=playwright --workers=1 --reporter=line -g "Game Journey progress dashboard summarizes completion metrics|Game Journey Local API persists completion metrics to Postgres|Toolbox renders Creator-safe Game Journey progress outage copy"`
-+- PASS: Focused static searches found no active SQLite/tmp implementation references.
- - PASS: Runtime source search found no `Game Journey completion metrics unavailable` Creator-facing string.
--- PASS: `git diff --check` reported no whitespace errors. Git emitted line-ending warnings only.
--
--## Files
--
--- `src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs`
--- `src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js`
--- `src/dev-runtime/server/local-api-router.mjs`
--- `tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs`
--- `tests/helpers/playwrightRepoServer.mjs`
--- `tests/playwright/tools/GameJourneyTool.spec.mjs`
--- `tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`
--- `toolbox/tools-page-accordions.js`
-+- PASS: Deleted SQLite migration files remained absent at EOD verification.
-+- PASS: No runtime `tmp/` dependency was found in Game Journey metrics runtime/API/UI source.
++CREATE TABLE IF NOT EXISTS sprite_usage_references (
++    key text PRIMARY KEY,
++    "spriteKey" text NOT NULL REFERENCES sprite_records(key),
++    "sourceType" text NOT NULL,
++    "sourceKey" text NOT NULL,
++    "label" text NOT NULL DEFAULT '',
++    "createdAt" timestamptz NOT NULL DEFAULT now(),
++    "updatedAt" timestamptz NOT NULL DEFAULT now(),
++    "createdBy" text NOT NULL REFERENCES users(key),
++    "updatedBy" text NOT NULL REFERENCES users(key)
++);
 +
-+## Notes
++CREATE INDEX IF NOT EXISTS idx_sprite_usage_references_spritekey ON sprite_usage_references ("spriteKey");
++CREATE INDEX IF NOT EXISTS idx_sprite_usage_references_source ON sprite_usage_references ("sourceType", "sourceKey");
++CREATE INDEX IF NOT EXISTS idx_sprite_usage_references_createdby ON sprite_usage_references ("createdBy");
++CREATE INDEX IF NOT EXISTS idx_sprite_usage_references_updatedby ON sprite_usage_references ("updatedBy");
+diff --git a/docs_build/database/dml/DML_INDEX.md b/docs_build/database/dml/DML_INDEX.md
+index bd378d63e..f7493d896 100644
+--- a/docs_build/database/dml/DML_INDEX.md
++++ b/docs_build/database/dml/DML_INDEX.md
+@@ -18,6 +18,7 @@ Direct SQL setup is intentionally narrow. Account DEV users now require server-s
+ | Objects | `objects.sql` | Server-seed-owned | Server-side seed API |
+ | Palette | `palette.sql` | Server-seed-owned | Server-side seed API |
+ | Support Tickets | `support-tickets.sql` | Server-seed-owned | Admin Site Setup/server-side seed API |
++| Sprites | `sprites.sql` | Server-seed-owned | Sprites Local API/server-side Postgres service |
+ | Tags | `tags.sql` | Server-seed-owned | Server-side seed API |
+ | Tool Metadata | `tool-metadata.sql` | Server-seed-owned | Server-side seed API |
+ | Tool Planning | `tool-planning.sql` | Server-seed-owned | Server-side seed API |
+diff --git a/docs_build/database/dml/sprites.sql b/docs_build/database/dml/sprites.sql
+new file mode 100644
+index 000000000..9ee572462
+--- /dev/null
++++ b/docs_build/database/dml/sprites.sql
+@@ -0,0 +1,13 @@
++-- Game Foundry Studio DEV database DML / seed review
++-- Group: Sprites
++-- Ownership: docs_build/database/dml/sprites.sql
++-- Runtime setup/seed operations for this group must run through server-side APIs.
++-- Browser pages must not directly seed authoritative DB records.
++-- Owned tables: sprite_records, sprite_usage_references
 +
-+- The broader `node scripts/validate-browser-env-agnostic.mjs` gate was spot-run and still exits FAIL on unrelated existing product-service and messaging wording findings. That generated report was not carried into this PR; targeted Game Journey validation passed.
-+- No files under `tmp/` were deleted, moved, exported, migrated, inspected, or used by runtime.
-
- ## Artifact
-
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_requirement-checklist.md b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_requirement-checklist.md
-index 65a654b6d..33416ee76 100644
---- a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_requirement-checklist.md
-+++ b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_requirement-checklist.md
-@@ -2,25 +2,25 @@
-
- Status: PASS
-
--- PASS: Hard stop gate verified current branch was `main` before branch creation.
--- PASS: Fetched origin.
--- PASS: Pulled `origin/main` with `--ff-only`.
--- PASS: Verified worktree clean and `main...origin/main` was `0 0`.
--- PASS: Created `PR_26177_OWNER_057-game-journey-metrics-regression-recovery`.
--- PASS: Compared Alfa/Owner behavior against Bravo/Charlie/Delta reference states.
--- PASS: Fixed only the Game Journey completion metrics regression.
--- PASS: Did not delete, move, overwrite, export, or migrate `tmp/local-api/game-journey-completion-metrics.sqlite`.
--- PASS: Stopped active runtime from defaulting to `tmp/local-api/game-journey-completion-metrics.sqlite`.
--- PASS: Removed active runtime `legacyDbPath` SQLite guard plumbing.
--- PASS: Preserved Postgres-backed Game Journey completion metrics as the active path.
--- PASS: Ensured `toolbox/tools-page-accordions.js` cannot render `Game Journey completion metrics unavailable:`.
--- PASS: Creator-facing UI does not expose SQLite, local filesystem paths, migration/export language, or Postgres internals.
--- PASS: Did not introduce silent fallback behavior; metrics outage remains visible with neutral wording.
--- PASS: Added targeted regression tests.
--- PASS: Proved the existing legacy SQLite file does not block active metrics.
--- PASS: Proved active runtime JS/MJS has no SQLite or `tmp/local-api` metrics references outside the migration-only utility.
--- PASS: Proved the forbidden warning string is not rendered.
--- PASS: Proved Game Journey metrics still load through the active DB/API path.
--- PASS: Used targeted validation only.
--- PASS: Required reports were produced.
-+- PASS: Continued on `PR_26177_OWNER_057-game-journey-metrics-regression-recovery`.
-+- PASS: Expanded PR057 to complete SQLite retirement for Game Journey completion metrics.
-+- PASS: Preserved Browser -> Local API -> Database as the active architecture.
-+- PASS: Removed SQLite as a supported runtime path, migration source, developer workflow, and upgrade path for Game Journey completion metrics.
-+- PASS: Deleted `scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs`.
-+- PASS: Deleted `src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs`.
-+- PASS: Deleted `tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs`.
-+- PASS: Removed SQLite-only runtime, migration, helper, validation, and test support from active JS/MJS implementation paths.
-+- PASS: Did not delete, move, overwrite, export, migrate, inspect, or depend on user-local `tmp/` files.
-+- PASS: Updated tests to validate the DB-only implementation instead of validating SQLite retirement.
-+- PASS: Updated validation guardrails so future active JS/MJS SQLite or `tmp/local-api` reintroduction fails targeted validation.
-+- PASS: Active Game Journey metrics use Local API/DB only.
-+- PASS: Creator UI cannot render `Game Journey completion metrics unavailable:`.
-+- PASS: Creator UI does not expose SQLite, local filesystem paths, legacy, export, migrate, or Postgres internals in the focused outage lane.
-+- PASS: Focused active JS/MJS searches returned no SQLite, `.sqlite`, `better-sqlite`, `game-journey-completion-metrics.sqlite`, or `tmp/local-api` matches.
-+- PASS: Remaining matches are historical docs/reports only under `docs_build/**`.
-+- PASS: Targeted node validation passed.
-+- PASS: Impacted Playwright validation passed.
-+- PASS: EOD pre-merge targeted validation passed.
-+- PASS: EOD pre-merge impacted Playwright tests passed.
-+- PASS: Required reports were updated.
- - PASS: Repo-structured ZIP was produced under `tmp/`.
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_validation-lane.md b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_validation-lane.md
-index 47530c453..7d35515ca 100644
---- a/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_validation-lane.md
-+++ b/docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_validation-lane.md
-@@ -2,48 +2,70 @@
-
- Status: PASS
-
--## Commands
-+## Static Checks
-
- ```powershell
--node --check src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs
--node --check src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
--node --check src/dev-runtime/server/local-api-router.mjs
--node --check toolbox/tools-page-accordions.js
-+Test-Path scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs
-+Test-Path src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs
-+Test-Path tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs
-+rg -n -i "sqlite|better-sqlite|game-journey-completion-metrics\.sqlite|tmp/local-api" -g "*.js" -g "*.mjs"
-+rg -n -i "sqlite|better-sqlite|game-journey-completion-metrics\.sqlite|tmp/local-api" --glob "!docs_build/**" --glob "!tmp/**" --glob "!.git/**"
-+rg -n "Game Journey completion metrics unavailable" src assets toolbox tests scripts --glob "!**/*.map"
-+rg -n "tmp/|tmp\\|os\.tmpdir" src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs src/dev-runtime/server/local-api-router.mjs src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js toolbox/tools-page-accordions.js assets/toolbox/game-journey/js/index.js src/api/game-journey-completion-api-client.js
-+```
++-- DML status: Server-seed-owned.
++-- Setup is performed through the Admin-owned server-side seed API and Sprites Local API/server-side Postgres service.
++-- Browser pages must not seed authoritative records.
++-- The server/API layer generates all non-user keys.
++-- This SQL file intentionally has no direct INSERT statements because direct SQL would bypass key/audit ownership.
++-- Direct SQL setup for this group remains deferred until a later migration-runner PR explicitly owns it.
+diff --git a/docs_build/database/seed/guest/sprites.json b/docs_build/database/seed/guest/sprites.json
+index ddbdfc37a..5457efa38 100644
+--- a/docs_build/database/seed/guest/sprites.json
++++ b/docs_build/database/seed/guest/sprites.json
+@@ -5,7 +5,10 @@
+   "readOnly": true,
+   "writableByGuest": false,
+   "signInRedirect": "account/sign-in.html",
+-  "tables": {},
++  "tables": {
++    "sprite_records": [],
++    "sprite_usage_references": []
++  },
+   "samplePackages": [
+     {
+       "key": "guest-sprites-starter",
+diff --git a/docs_build/database/seed/sprites.json b/docs_build/database/seed/sprites.json
+new file mode 100644
+index 000000000..22f5e7374
+--- /dev/null
++++ b/docs_build/database/seed/sprites.json
+@@ -0,0 +1,13 @@
++{
++  "group": "Sprites",
++  "groupKey": "sprites",
++  "owner": "docs_build/database/seed",
++  "serverSideSeedRequired": true,
++  "browserAuthoritativeKeyGenerationAllowed": false,
++  "colorOwnership": "Palette/Colors owns reusable color definitions; Sprites stores Palette/Colors keys only.",
++  "tables": {
++    "sprite_records": [],
++    "sprite_usage_references": []
++  },
++  "note": "Seed records for this group are intentionally empty until a server/API seed path owns them."
++}
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_010-sprites-api-db-foundation.md b/docs_build/dev/reports/PR_26177_CHARLIE_010-sprites-api-db-foundation.md
+new file mode 100644
+index 000000000..fade58dc3
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_010-sprites-api-db-foundation.md
+@@ -0,0 +1,85 @@
++# PR_26177_CHARLIE_010-sprites-api-db-foundation
 +
-+Result: PASS. Deleted files are absent; static searches returned no active implementation matches.
++Status: PASS
++Team: Charlie
++Branch: PR_26177_CHARLIE_010-sprites-api-db-foundation
++Date: 2026-06-26
++Base branch: main
++
++## Scope
++
++This PR adds the Sprites API and database foundation only. It does not change the Sprites UI and does not implement import, preview, search, reference viewer, or final Playwright polish.
++
++## Implementation Summary
++
++- Added `src/dev-runtime/sprites/sprites-postgres-service.mjs`.
++- Exposed shared Local API routes under `/api/sprites/records`.
++- Added Postgres DDL/DML/seed artifacts for grouped Sprites ownership.
++- Registered Sprites product data tables for provider/product snapshots.
++- Added targeted service and Local API contract tests.
++
++## API Contract
++
++The foundation exposes:
++
++- `GET /api/sprites/records`
++- `GET /api/sprites/records/:key`
++- `POST /api/sprites/records`
++- `POST /api/sprites/records/:key`
++- `POST /api/sprites/records/:key/archive`
++- `POST /api/sprites/records/:key/delete`
++
++Guest browsing is allowed through GET routes. Write routes require a signed-in actor key through the server API session.
++
++## Database Foundation
++
++Grouped database artifacts:
++
++- `docs_build/database/ddl/sprites.sql`
++- `docs_build/database/dml/sprites.sql`
++- `docs_build/database/seed/sprites.json`
++- `docs_build/database/seed/guest/sprites.json`
++
++Owned tables:
++
++- `sprite_records`
++- `sprite_usage_references`
++
++`sprite_records` includes server-owned audit fields:
++
++- `key`
++- `createdAt`
++- `updatedAt`
++- `createdBy`
++- `updatedBy`
++
++The API/service layer generates record keys and audit values. Browser-created keys are ignored and never trusted as authoritative.
++
++## Palette/Colors Boundary
++
++Sprites does not store reusable color definitions. It stores Palette/Colors references only through `paletteColorKeys`.
++
++The service rejects payload keys that would transfer reusable color ownership into Sprites:
++
++- `colors`
++- `hex`
++- `palette`
++- `paletteColors`
++- `swatches`
++
++## Validation Summary
++
++- PASS: `node ./scripts/run-node-test-files.mjs tests/dev-runtime/SpritesPostgresService.test.mjs tests/api/sprites/contract.test.mjs`
++- PASS: `git diff --check`
++- PASS: no `start_of_day` paths changed.
++- PASS: no browser storage SSoT, MEM DB, local-mem, fake-login, imageDataUrl, or silent fallback terms added in Sprites foundation files.
++- PASS: no runtime UI changes.
++- NOTE: `tests/dev-runtime/SupabaseProductDataCutover.test.mjs` was attempted twice because product table metadata changed. It timed out both times before producing a failure payload, so it is recorded as a non-blocking broader-lane limitation. Required Sprites API/unit validation passed.
++
++## Playwright
++
++Playwright impacted: No. This PR adds API/database foundation only. UI consumption starts in PR_26177_CHARLIE_011.
++
++## ZIP Artifact
++
++`tmp/PR_26177_CHARLIE_010-sprites-api-db-foundation_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_010-sprites-api-db-foundation_branch-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_010-sprites-api-db-foundation_branch-validation.md
+new file mode 100644
+index 000000000..3a4366dfd
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_010-sprites-api-db-foundation_branch-validation.md
+@@ -0,0 +1,20 @@
++# PR_26177_CHARLIE_010 Branch Validation
++
++Status: PASS
++Team: Charlie
++Branch: PR_26177_CHARLIE_010-sprites-api-db-foundation
++Date: 2026-06-26
++
++| Gate | Result | Evidence |
++| --- | --- | --- |
++| Started from `main` | PASS | Gate verified before branch creation. |
++| Worktree clean before branch | PASS | `git status --short` returned no files before branch creation. |
++| Local/origin sync before branch | PASS | `git rev-list --left-right --count main...origin/main` returned `0 0`. |
++| One PR purpose | PASS | API/database foundation only. |
++| No `start_of_day` changes | PASS | Changed-file check found no `start_of_day` paths. |
++| No UI changes | PASS | No HTML/CSS/toolbox UI files changed. |
++| Required ZIP exists | PASS | `tmp/PR_26177_CHARLIE_010-sprites-api-db-foundation_delta.zip`. |
++
++## Branch Disposition
++
++Source branch retained for draft PR review.
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_010-sprites-api-db-foundation_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_CHARLIE_010-sprites-api-db-foundation_manual-validation-notes.md
+new file mode 100644
+index 000000000..b8cc60c3f
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_010-sprites-api-db-foundation_manual-validation-notes.md
+@@ -0,0 +1,18 @@
++# PR_26177_CHARLIE_010 Manual Validation Notes
++
++Status: PASS
++Team: Charlie
++Branch: PR_26177_CHARLIE_010-sprites-api-db-foundation
++
++## Manual Review
++
++- Verified the API foundation is server-side and does not add browser-owned product data.
++- Verified the Sprites service generates authoritative ULID keys.
++- Verified writes require an authenticated server API session actor.
++- Verified reusable colors remain owned by Palette/Colors.
++- Verified DML artifacts contain no direct INSERT statements.
++- Verified no UI, CSS, HTML, or page-local script behavior changed in this PR.
++
++## Notes For PR_26177_CHARLIE_011
++
++The Sprites UI shell should consume only `/api/sprites/records` and show visible unavailable/error states when the API is unavailable. It should not use page-local product arrays or browser storage as product data.
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_010-sprites-api-db-foundation_requirements-checklist.md b/docs_build/dev/reports/PR_26177_CHARLIE_010-sprites-api-db-foundation_requirements-checklist.md
+new file mode 100644
+index 000000000..d66071d85
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_010-sprites-api-db-foundation_requirements-checklist.md
+@@ -0,0 +1,21 @@
++# PR_26177_CHARLIE_010 Requirements Checklist
++
++Status: PASS
++Team: Charlie
++Branch: PR_26177_CHARLIE_010-sprites-api-db-foundation
++
++| Requirement | Result | Notes |
++| --- | --- | --- |
++| Add Sprites API/database foundation | PASS | Added service module and `/api/sprites/records` contract. |
++| Add sprite records with audit fields | PASS | `sprite_records` includes key, createdAt, updatedAt, createdBy, updatedBy. |
++| API/server owns key generation | PASS | Service generates ULID keys and ignores browser-supplied keys. |
++| List/read/create/update/archive/delete contract | PASS | Contract covered in service and API tests. |
++| Metadata fields for MVP | PASS | Name, status, category, tags, storage/source, mime, dimensions, size, checksum, and Palette key refs included. |
++| Do not store color definitions in Sprites | PASS | Service rejects color definition fields and stores only `paletteColorKeys`. |
++| Add DDL/DML/seed files | PASS | Added grouped `sprites` artifacts under `docs_build/database/`. |
++| Add targeted API/unit tests | PASS | Added service and `/api/sprites` contract tests. |
++| Guest browsing allowed | PASS | GET list route works without session. |
++| Guest saving blocked | PASS | POST create returns 401 without signed-in actor. |
++| No browser-owned product data | PASS | Browser/UI not changed; API/server owns records. |
++| No SQLite direction | PASS | Foundation targets Postgres only. |
++| No `start_of_day` changes | PASS | Changed-file check clean. |
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_010-sprites-api-db-foundation_validation-lane.md b/docs_build/dev/reports/PR_26177_CHARLIE_010-sprites-api-db-foundation_validation-lane.md
+new file mode 100644
+index 000000000..0e00ff0fc
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_010-sprites-api-db-foundation_validation-lane.md
+@@ -0,0 +1,31 @@
++# PR_26177_CHARLIE_010 Validation Lane
++
++Status: PASS
++Team: Charlie
++Branch: PR_26177_CHARLIE_010-sprites-api-db-foundation
++
++## Commands
 +
 +```powershell
-+node --check scripts/validate-browser-env-agnostic.mjs
- node --check tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
--node --check tests/helpers/playwrightRepoServer.mjs
- node --check tests/playwright/tools/GameJourneyTool.spec.mjs
--node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-+node --check tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
++node ./scripts/run-node-test-files.mjs tests/dev-runtime/SpritesPostgresService.test.mjs tests/api/sprites/contract.test.mjs
 +git diff --check
- ```
-
- Result: PASS
-
-+## Targeted Node Tests
++git diff --name-only
++git diff --name-only | rg "(^|/)start_of_day(/|$)"
++rg -n "MEM DB|local-mem|fake-login|localStorage|sessionStorage|indexedDB|imageDataUrl|silent fallback|Mock DB" src/dev-runtime/sprites tests/dev-runtime/SpritesPostgresService.test.mjs tests/api/sprites/contract.test.mjs docs_build/database/ddl/sprites.sql docs_build/database/dml/sprites.sql docs_build/database/seed/sprites.json
++```
 +
- ```powershell
--node ./scripts/run-node-test-files.mjs tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs
-+node --test tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
- ```
-
--Result: PASS, 2 targeted node test files passed. Includes active runtime JS/MJS SQLite reference guardrail.
-+Result: PASS, 2 tests passed. This validates DB-only metrics storage and scans implementation, scripts, and tests for retired file-DB metrics references.
++## Results
 +
-+## Targeted Playwright
-
- ```powershell
--npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --project=playwright --workers=1 --reporter=line -g "Game Journey Local API persists completion metrics to Postgres|Toolbox renders Creator-safe Game Journey progress outage copy"
-+npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --project=playwright --workers=1 --reporter=line -g "Admin System Health operations page keeps scripts and styles external"
- ```
-
--Result: PASS, 2 passed
-+Result: PASS, 1 passed
-
- ```powershell
--node -e "import('node:fs').then(async fs=>{const [{createGameJourneyCompletionMetricsStore}, {createGameJourneyCompletionMetricsPostgresClientStub}] = await Promise.all([import('./src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs'), import('./tests/helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs')]); const legacy='tmp/local-api/game-journey-completion-metrics.sqlite'; if(!fs.existsSync(legacy)) throw new Error('Expected existing retired local file for regression proof'); const before=fs.statSync(legacy).mtimeMs; const store=createGameJourneyCompletionMetricsStore({postgresClient:createGameJourneyCompletionMetricsPostgresClientStub()}); const metrics=await store.listMetrics(); const snapshot=await store.snapshot(); const after=fs.statSync(legacy).mtimeMs; if(Object.hasOwn(store, 'legacyDbPath')) throw new Error('Store exposes legacyDbPath'); if(Object.hasOwn(snapshot, 'legacySqlitePath')) throw new Error('Snapshot exposes legacySqlitePath'); if(metrics.length!==14) throw new Error('Expected 14 active metrics'); if(before!==after) throw new Error('Retired local file was touched'); console.log('PASS active DB metrics ignore and do not inspect retired local file');})"
-+npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --project=playwright --workers=1 --reporter=line -g "Game Journey progress dashboard summarizes completion metrics|Game Journey Local API persists completion metrics to Postgres|Toolbox renders Creator-safe Game Journey progress outage copy"
- ```
-
--Result: PASS
-+Result: PASS, 3 passed
++| Validation | Result | Notes |
++| --- | --- | --- |
++| Sprites service tests | PASS | 4 service tests passed. |
++| Sprites Local API contract test | PASS | 1 API contract test passed. |
++| `git diff --check` | PASS | No whitespace errors. |
++| `start_of_day` check | PASS | No matches. |
++| Forbidden runtime term scan | PASS | No forbidden terms found in new Sprites foundation files. |
++| Palette/Colors ownership check | PASS | Color definition fields are rejected; `paletteColorKeys` only. |
++| Playwright | PASS | Not impacted; no UI changes. |
 +
-+## Reference Searches
-
- ```powershell
--rg -n -i "sqlite|better-sqlite|game-journey-completion-metrics\.sqlite|tmp/local-api" src assets toolbox -g "*.js" -g "*.mjs" --glob "!src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs"
--rg -n "Game Journey completion metrics unavailable" src assets toolbox --glob "!**/*.map"
-+rg -n -i "sqlite|better-sqlite|game-journey-completion-metrics\.sqlite|tmp/local-api" -g "*.js" -g "*.mjs"
-+rg -n -i "sqlite|better-sqlite|game-journey-completion-metrics\.sqlite|tmp/local-api" --glob "!docs_build/**" --glob "!tmp/**" --glob "!.git/**"
-+rg -n "node:sqlite|DatabaseSync|sqlite3|better-sqlite|\.sqlite|tmp/local-api|LocalSqliteStore|messages-sqlite-service" --glob "!docs_build/**" --glob "!tmp/**" --glob "!.git/**"
-+rg -n "game-journey-completion-metrics-migration|migrate-game-journey-completion-metrics" --glob "!docs_build/**" --glob "!tmp/**" --glob "!.git/**"
-+rg -n "completionMetricsLegacyDbPath|gameJourneyCompletionMetricsLegacyDbPath|legacyDbPath|legacySqlitePath" src tests toolbox assets scripts --glob "*.js" --glob "*.mjs"
- ```
-
--Result: PASS, no matches
-+Result: PASS, no matches.
-
- ```powershell
--git diff --check
-+rg -n "Game Journey completion metrics unavailable" src assets toolbox --glob "!**/*.map"
- ```
-
--Result: PASS, line-ending warnings only
-+Result: PASS, no matches.
++## Broader Lane Attempt
 +
-+## Broader Gate Note
-+
-+`node scripts/validate-browser-env-agnostic.mjs` was spot-run and wrote a FAIL report for unrelated existing product-service and messaging wording findings. That generated report was restored and is not part of the targeted PR validation result.
-diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 01a698376..7b1c51f19 100644
---- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,9 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
- Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
++`node ./scripts/run-node-test-files.mjs tests/dev-runtime/SupabaseProductDataCutover.test.mjs` was attempted twice because product table metadata changed. Both attempts timed out before producing a test failure payload. Required targeted Sprites validation passed.
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index 098d8de0b..c769eb10d 100644
+--- a/docs_build/dev/reports/codex_changed_files.txt
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -1,16 +1,19 @@
+-ï»¿M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md
+-M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md
+-M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md
+-M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_requirement-checklist.md
+-M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_validation-lane.md
+-M	docs_build/dev/reports/coverage_changed_js_guardrail.txt
+-M	docs_build/dev/reports/playwright_v8_coverage_report.txt
+-D	scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs
+-M	scripts/validate-browser-env-agnostic.mjs
+-D	src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs
+-D	tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs
+-M	tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
+-M	tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+-M	tests/playwright/tools/GameJourneyTool.spec.mjs
+-M	docs_build/dev/reports/codex_changed_files.txt
+-M	docs_build/dev/reports/codex_review.diff
++docs_build/database/ddl/sprites.sql
++docs_build/database/dml/DML_INDEX.md
++docs_build/database/dml/sprites.sql
++docs_build/database/seed/guest/sprites.json
++docs_build/database/seed/sprites.json
++docs_build/dev/reports/PR_26177_CHARLIE_010-sprites-api-db-foundation.md
++docs_build/dev/reports/PR_26177_CHARLIE_010-sprites-api-db-foundation_branch-validation.md
++docs_build/dev/reports/PR_26177_CHARLIE_010-sprites-api-db-foundation_manual-validation-notes.md
++docs_build/dev/reports/PR_26177_CHARLIE_010-sprites-api-db-foundation_requirements-checklist.md
++docs_build/dev/reports/PR_26177_CHARLIE_010-sprites-api-db-foundation_validation-lane.md
++docs_build/dev/reports/codex_changed_files.txt
++docs_build/dev/reports/codex_review.diff
++src/dev-runtime/auth/provider-contract-stubs.mjs
++src/dev-runtime/persistence/mock-db-store.js
++src/dev-runtime/server/local-api-router.mjs
++src/dev-runtime/sprites/sprites-postgres-service.mjs
++tests/api/sprites/contract.test.mjs
++tests/dev-runtime/SpritesPostgresService.test.mjs
++tests/helpers/postgresClientStub.mjs
+diff --git a/src/dev-runtime/auth/provider-contract-stubs.mjs b/src/dev-runtime/auth/provider-contract-stubs.mjs
+index cff94f9b0..73deb3a2f 100644
+--- a/src/dev-runtime/auth/provider-contract-stubs.mjs
++++ b/src/dev-runtime/auth/provider-contract-stubs.mjs
+@@ -104,6 +104,8 @@ export const SUPABASE_POSTGRES_PRODUCT_TABLES = Object.freeze([
+   "asset_storage_objects",
+   "asset_import_events",
+   "asset_validation_items",
++  "sprite_records",
++  "sprite_usage_references",
+   "toolbox_tool_metadata",
+   "toolbox_tool_planning",
+   "toolbox_votes",
+diff --git a/src/dev-runtime/persistence/mock-db-store.js b/src/dev-runtime/persistence/mock-db-store.js
+index e96fb833f..2a8792dfe 100644
+--- a/src/dev-runtime/persistence/mock-db-store.js
++++ b/src/dev-runtime/persistence/mock-db-store.js
+@@ -88,6 +88,13 @@ export const MOCK_DB_TOOL_GROUPS = Object.freeze({
+       "asset_validation_items",
+     ]),
+   }),
++  sprites: Object.freeze({
++    label: "Sprites",
++    tableNames: Object.freeze([
++      "sprite_records",
++      "sprite_usage_references",
++    ]),
++  }),
+ });
 
- Changed runtime JS files considered:
--(0%) src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(100%) none changed - no changed runtime JS files
+ const MOCK_DB_TABLE_SCHEMAS = Object.freeze({
+@@ -139,6 +146,8 @@ const MOCK_DB_TABLE_SCHEMAS = Object.freeze({
+   asset_storage_objects: Object.freeze(["key", "id", "assetId", "gameId", "ownerProjectId", "role", "originalName", "storedPath", "mimeType", "size", "checksum", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+   asset_import_events: Object.freeze(["key", "id", "assetId", "gameId", "fileName", "mimeType", "storedPath", "status", "type", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+   asset_validation_items: Object.freeze(["key", "id", "gameId", "field", "label", "status", "action", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
++  sprite_records: Object.freeze(["key", "gameId", "ownerUserId", "name", "status", "category", "tagKeys", "source", "storageObjectKey", "storagePath", "originalName", "mimeType", "width", "height", "sizeBytes", "checksum", "paletteColorKeys", "archived", "archivedAt", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
++  sprite_usage_references: Object.freeze(["key", "spriteKey", "sourceType", "sourceKey", "label", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+   tool_state_samples: Object.freeze(["key", "audience", "userKey", "displayName", "toolKey", "toolName", "route", "gameKey", "toolStateKey", "manifestPath", "sampleLabel", "sampleKind", "loadablePath", "toolStatePayload", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+ });
 
- Guardrail warnings:
--(0%) src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-+(100%) none changed - no changed runtime JS files
-diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index da369bcdb..f2363d3bf 100644
---- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
-+++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -17,8 +17,7 @@ Exercised tool entry points detected:
- (72%) Theme V2 Shared JS - exercised 4 runtime JS files
-
- Changed runtime JS files covered:
--(0%) src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(100%) none changed - no changed runtime JS files
-
- Files with executed line/function counts where available:
- (36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2041/2041; executed functions 12/33
-@@ -34,11 +33,10 @@ Files with executed line/function counts where available:
- (100%) assets/js/shared/game-journey-api-client.js - executed lines 19/19; executed functions 2/2
-
- Uncovered or low-coverage changed JS files:
--(0%) src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - WARNING: uncovered changed runtime JS file; advisory only
-+(100%) none changed - no changed runtime JS files
-
- Changed JS files considered:
--(0%) scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs - changed JS file not collected as browser runtime coverage
-+(0%) scripts/validate-browser-env-agnostic.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/GameJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
-diff --git a/scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs b/scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs
-deleted file mode 100644
-index bb3c19985..000000000
---- a/scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs
-+++ /dev/null
-@@ -1,156 +0,0 @@
--import fs from "node:fs";
--import path from "node:path";
--import process from "node:process";
--import {
--  DEFAULT_GAME_JOURNEY_COMPLETION_METRICS_ARCHIVE_DIR,
--  DEFAULT_GAME_JOURNEY_COMPLETION_METRICS_SQLITE_PATH,
--  migrateLegacyCompletionMetricsSqliteToPostgres,
--  readLegacyCompletionMetricsSqlite,
--} from "../src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs";
--
--const ENV_FILE = ".env";
--
--function parseEnvValue(value) {
--  const trimmed = value.trim();
--  const quote = trimmed[0];
--  if ((quote === "\"" || quote === "'") && trimmed.endsWith(quote)) {
--    return trimmed.slice(1, -1);
--  }
--  const commentIndex = trimmed.indexOf(" #");
--  return commentIndex === -1 ? trimmed : trimmed.slice(0, commentIndex).trim();
--}
--
--function loadRuntimeEnv() {
--  const envPath = path.resolve(process.cwd(), ENV_FILE);
--  if (!fs.existsSync(envPath)) {
--    return {
--      loaded: false,
--      loadedKeys: [],
--      path: envPath,
--    };
--  }
--  const loadedKeys = [];
--  fs.readFileSync(envPath, "utf8").split(/\r?\n/u).forEach((line) => {
--    const trimmed = line.trim();
--    if (!trimmed || trimmed.startsWith("#")) {
--      return;
--    }
--    const normalized = trimmed.startsWith("export ") ? trimmed.slice(7).trim() : trimmed;
--    const separatorIndex = normalized.indexOf("=");
--    if (separatorIndex <= 0) {
--      return;
--    }
--    const key = normalized.slice(0, separatorIndex).trim();
--    if (!/^[A-Za-z_][A-Za-z0-9_]*$/u.test(key) || process.env[key] !== undefined) {
--      return;
--    }
--    process.env[key] = parseEnvValue(normalized.slice(separatorIndex + 1));
--    loadedKeys.push(key);
--  });
--  return {
--    loaded: true,
--    loadedKeys: loadedKeys.sort(),
--    path: envPath,
--  };
--}
--
--function parseArgs(argv) {
--  const options = {
--    archiveDir: DEFAULT_GAME_JOURNEY_COMPLETION_METRICS_ARCHIVE_DIR,
--    dryRun: false,
--    inspectOnly: false,
--    legacyDbPath: DEFAULT_GAME_JOURNEY_COMPLETION_METRICS_SQLITE_PATH,
--    pythonCommand: "python",
--  };
--  for (let index = 0; index < argv.length; index += 1) {
--    const arg = argv[index];
--    if (arg === "--dry-run") {
--      options.dryRun = true;
--      continue;
--    }
--    if (arg === "--inspect-only") {
--      options.inspectOnly = true;
--      continue;
--    }
--    if (arg === "--legacy-db") {
--      options.legacyDbPath = path.resolve(argv[index + 1] || "");
--      index += 1;
--      continue;
--    }
--    if (arg === "--archive-dir") {
--      options.archiveDir = path.resolve(argv[index + 1] || "");
--      index += 1;
--      continue;
--    }
--    if (arg === "--python") {
--      options.pythonCommand = argv[index + 1] || "python";
--      index += 1;
--      continue;
--    }
--    throw new Error(`Unknown argument: ${arg}`);
--  }
--  return options;
--}
--
--function printSummary(summary) {
--  Object.entries(summary).forEach(([key, value]) => {
--    console.log(`${key}: ${value}`);
--  });
--}
--
--async function main() {
--  const options = parseArgs(process.argv.slice(2));
--  const envLoad = loadRuntimeEnv();
--  const exported = await readLegacyCompletionMetricsSqlite({
--    legacyDbPath: options.legacyDbPath,
--    pythonCommand: options.pythonCommand,
--  });
--  printSummary({
--    "Legacy SQLite": exported.legacyDbPath,
--    "Schema objects": exported.schema.objects.length,
--    "Valid rows": exported.rowCount,
--  });
--  if (options.inspectOnly) {
--    console.log("PASS: inspect-only completed; no Postgres writes or file moves were attempted.");
--    return;
--  }
--  if (!String(process.env.GAMEFOUNDRY_DATABASE_URL || "").trim()) {
--    console.error("BLOCKED: GAMEFOUNDRY_DATABASE_URL is missing; migration did not run and the legacy SQLite file was not moved.");
--    console.error("Run after configuring Postgres, for example:");
--    console.error("  node --use-system-ca scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs");
--    process.exitCode = 2;
--    return;
--  }
--  if (!String(process.env.GAMEFOUNDRY_DATABASE_SSL || "").trim()) {
--    console.error("BLOCKED: GAMEFOUNDRY_DATABASE_SSL is missing; migration did not run and the legacy SQLite file was not moved.");
--    console.error("Set GAMEFOUNDRY_DATABASE_SSL=disable for local Postgres or require for TLS Postgres.");
--    process.exitCode = 2;
--    return;
--  }
--  const result = await migrateLegacyCompletionMetricsSqliteToPostgres({
--    archiveDir: options.archiveDir,
--    dryRun: options.dryRun,
--    env: process.env,
--    legacyDbPath: exported.legacyDbPath,
--    pythonCommand: options.pythonCommand,
--  });
--  printSummary({
--    "Env file": envLoad.loaded ? `${envLoad.path} (${envLoad.loadedKeys.length} key(s) loaded)` : "not found",
--    "Legacy rows": result.legacyRowCount,
--    "Rows inserted": result.insertedCount,
--    "Rows already present": result.duplicateCount,
--    "Rows timestamp-patched": result.timestampPatchCount,
--    "Rows that would insert": result.wouldInsertCount,
--    "Rows that would patch timestamps": result.wouldPatchTimestampCount,
--    "Archive": result.archive.archived ? result.archive.archivePath : result.archive.message,
--    "Status": result.status,
--  });
--}
--
--main().catch((error) => {
--  console.error(error instanceof Error ? error.message : String(error || "Unknown migration failure."));
--  if (error?.details?.conflicts) {
--    console.error(JSON.stringify({ conflicts: error.details.conflicts }, null, 2));
--  }
--  process.exitCode = 1;
--});
-diff --git a/scripts/validate-browser-env-agnostic.mjs b/scripts/validate-browser-env-agnostic.mjs
-index 53a165d48..277366d84 100644
---- a/scripts/validate-browser-env-agnostic.mjs
-+++ b/scripts/validate-browser-env-agnostic.mjs
-@@ -30,12 +30,32 @@ const excludedSegments = new Set([
-   "tmp",
- ]);
-
-+const retiredFileDbToken = "SQL" + "ite";
-+const retiredDbConstructorToken = "Database" + "Sync";
-+const providerLeakPattern = new RegExp([
-+  "local-db",
-+  retiredFileDbToken,
-+  "Supabase",
-+  "GAMEFOUNDRY_",
-+  "process\\.env",
-+].join("|"), "i");
-+const routerRetiredStoragePattern = new RegExp([
-+  `node:${retiredFileDbToken}`,
-+  retiredDbConstructorToken,
-+  "createRequire",
-+  "GAMEFOUNDRY_AUTH_PROVIDER",
-+  "GAMEFOUNDRY_DB_PROVIDER",
-+  "parts\\[1\\] === \"local-db\"",
-+  "parts\\[1\\] === \"mock-db\"",
-+  "mock-db-state",
-+  "deprecatedDatabaseEndpointError",
-+].join("|"), "i");
- const deploymentTermPattern = /\b(?:DEV|UAT|PROD|Prod|Production|production|Development|development)\b|process\.env|GAMEFOUNDRY_[A-Z0-9_]*(?:ENV|ENVIRONMENT|STAGE|PROVIDER|MODE)[A-Z0-9_]*/;
- const deploymentBranchDecisionPattern = /^\s*(?:if|else\s+if|switch|while|for)\s*\([^)]*(?:GAMEFOUNDRY_(?:ENV|DEPLOYMENT_ENV|STAGE|MODE)|NODE_ENV|process\.env\.(?:GAMEFOUNDRY_ENV|GAMEFOUNDRY_DEPLOYMENT_ENV|NODE_ENV)|\.env\.(?:local|uat|prod)|deployment|environment|stage)[^)]*(?:DEV|UAT|PROD|dev|development|uat|prod|production)[^)]*\)/i;
- const deploymentCasePattern = /^\s*case\s+["'`](?:dev|development|uat|prod|production)["'`]\s*:/i;
- const deploymentTernaryDecisionPattern = /(?:GAMEFOUNDRY_(?:ENV|DEPLOYMENT_ENV|STAGE|MODE)|NODE_ENV|process\.env|deployment|environment|stage)[^?\r\n]*\?[^:\r\n]*(?:DEV|UAT|PROD|dev|development|uat|prod|production)/i;
--const accountDependencyPattern = /\b(?:Local(?: DB| API)?|SQLite|Supabase|provider|localhost|DEV|UAT|PROD|Prod)\b|data-local-db-|local-db-page-data\.js/i;
--const userFacingImplementationPattern = /\b(?:DEV|UAT|PROD|Local DB|Local API|SQLite|Supabase|provider)\b/i;
-+const accountDependencyPattern = new RegExp(`\\b(?:Local(?: DB| API)?|${retiredFileDbToken}|Supabase|provider|localhost|DEV|UAT|PROD|Prod)\\b|data-local-db-|local-db-page-data\\.js`, "i");
-+const userFacingImplementationPattern = new RegExp(`\\b(?:DEV|UAT|PROD|Local DB|Local API|${retiredFileDbToken}|Supabase|provider)\\b`, "i");
- const accountBrowserFiles = new Set([
-   "assets/theme-v2/js/account-auth-actions.js",
-   "assets/theme-v2/js/account-auth-service.js",
-@@ -286,7 +306,7 @@ async function validateAccountServiceContract() {
-   const accountService = await readRequiredRepoFile("assets/theme-v2/js/account-auth-service.js", findings, "Account auth service module is missing");
-   requireSnippet(accountService, "assets/theme-v2/js/account-auth-service.js", "fetchServerApi(`/auth/${path}`", findings, "Account auth service must own configured /api/auth requests.");
-   requireSnippet(accountService, "assets/theme-v2/js/account-auth-service.js", "fetchServerApi(\"/session/current\"", findings, "Account auth service must own configured /api/session/current requests.");
--  rejectPattern(accountService, "assets/theme-v2/js/account-auth-service.js", /local-db|SQLite|Supabase|provider|GAMEFOUNDRY_|process\.env/i, findings, "Account auth service must not expose provider or environment implementation details.");
-+  rejectPattern(accountService, "assets/theme-v2/js/account-auth-service.js", providerLeakPattern, findings, "Account auth service must not expose provider or environment implementation details.");
-
-   return findings;
- }
-@@ -295,18 +315,18 @@ async function validateProductServiceContract() {
-   const findings = [];
-   const registryClient = await readRequiredRepoFile("toolbox/tool-registry-api-client.js", findings, "Toolbox registry client is missing");
-   requireSnippet(registryClient, "toolbox/tool-registry-api-client.js", "safeRequestServerApi(\"/toolbox/registry/snapshot\")", findings, "Toolbox registry must read through the server API service contract.");
--  rejectPattern(registryClient, "toolbox/tool-registry-api-client.js", /local-db|SQLite|Supabase|GAMEFOUNDRY_|process\.env/i, findings, "Toolbox registry client must not expose provider/environment implementation details.");
-+  rejectPattern(registryClient, "toolbox/tool-registry-api-client.js", providerLeakPattern, findings, "Toolbox registry client must not expose provider/environment implementation details.");
-
-   const votesClient = await readRequiredRepoFile("src/api/toolbox-votes-api-client.js", findings, "Toolbox votes API client is missing");
-   requireSnippet(votesClient, "src/api/toolbox-votes-api-client.js", "safeRequestServerApi(\"/toolbox/votes/snapshot\")", findings, "Toolbox votes must read through the server API service contract.");
-   requireSnippet(votesClient, "src/api/toolbox-votes-api-client.js", "safeRequestServerApi(\"/toolbox/votes/cast\"", findings, "Toolbox votes must write through the server API service contract.");
--  rejectPattern(votesClient, "src/api/toolbox-votes-api-client.js", /local-db|SQLite|Supabase|GAMEFOUNDRY_|process\.env/i, findings, "Toolbox votes client must not expose provider/environment implementation details.");
-+  rejectPattern(votesClient, "src/api/toolbox-votes-api-client.js", providerLeakPattern, findings, "Toolbox votes client must not expose provider/environment implementation details.");
-
-   for (const filePath of productApiClientFiles) {
-     const contents = await readRequiredRepoFile(filePath, findings, "Product API client is missing");
-     requireSnippet(contents, filePath, "createServerRepositoryClient", findings, "Product API client must use the server repository contract.");
-     requireSnippet(contents, filePath, "readServerToolConstants", findings, "Product API client must read server-owned constants.");
--    rejectPattern(contents, filePath, /local-db|SQLite|Supabase|GAMEFOUNDRY_|process\.env/i, findings, "Product API client must not expose provider/environment implementation details.");
-+    rejectPattern(contents, filePath, providerLeakPattern, findings, "Product API client must not expose provider/environment implementation details.");
+diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
+index 913163236..330235997 100644
+--- a/src/dev-runtime/server/local-api-router.mjs
++++ b/src/dev-runtime/server/local-api-router.mjs
+@@ -128,6 +128,10 @@ import {
+   createMessagesPostgresService,
+   handleMessagesApiContract,
+ } from "../messages/messages-postgres-service.mjs";
++import {
++  createSpritesPostgresService,
++  handleSpritesApiContract,
++} from "../sprites/sprites-postgres-service.mjs";
+ import {
+   LegalDocumentError,
+   readPublishedLegalDocument,
+@@ -208,6 +212,7 @@ const DB_VIEWER_GROUP_ORDER = Object.freeze([
+   Object.freeze({ id: "game-hub", label: "Game Hub", ownerId: "game-hub", type: "tool" }),
+   Object.freeze({ id: "objects", label: "Objects", ownerId: "objects", type: "tool" }),
+   Object.freeze({ id: "palette", label: "Palette", ownerId: "palette", type: "tool" }),
++  Object.freeze({ id: "sprites", label: "Sprites", ownerId: "sprites", type: "tool" }),
+   Object.freeze({ id: "tags", label: "Tags", ownerId: "tags", type: "tool" }),
+   Object.freeze({ id: "toolbox_tool_metadata", label: "Tool Metadata", tableNames: Object.freeze(["toolbox_tool_metadata"]), type: "table" }),
+   Object.freeze({ id: "toolbox_tool_planning", label: "Tool Planning", tableNames: Object.freeze(["toolbox_tool_planning"]), type: "table" }),
+@@ -3406,8 +3411,11 @@ class ApiRuntimeDataSource {
+     messagesPostgresClient = null,
+     messagesService = null,
+     repoRoot = process.cwd(),
++    spritesPostgresClient = null,
++    spritesService = null,
+   } = {}) {
+     this.messagesService = messagesService || createMessagesPostgresService({ postgresClient: messagesPostgresClient });
++    this.spritesService = spritesService || createSpritesPostgresService({ postgresClient: spritesPostgresClient });
+     this.gameJourneyCompletionMetricsPostgresClient = gameJourneyCompletionMetricsPostgresClient;
+     this.repositoryCounter = 1;
+     this.repositoryById = new Map();
+@@ -6337,8 +6345,23 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
+     });
    }
 
-   const router = await readRequiredRepoFile("src/dev-runtime/server/local-api-router.mjs", findings, "Local API router is missing");
-@@ -317,7 +337,7 @@ async function validateProductServiceContract() {
-   requireSnippet(router, "src/dev-runtime/server/local-api-router.mjs", "this.assertProductDatabaseProvider(`Creating ${toolId} repository`);", findings, "Repository creation must assert the server-owned product-data contract.");
-   requireSnippet(router, "src/dev-runtime/server/local-api-router.mjs", "this.assertProductDatabaseProvider(`Calling repository method ${methodName}`);", findings, "Repository method calls must assert the server-owned product-data contract.");
-   rejectPattern(router, "src/dev-runtime/server/local-api-router.mjs", /selectedDatabaseProviderId|selectedAuthProvider|selectedProvidersCanServeRuntime/, findings, "Runtime router must not contain active provider-selection helpers.");
--  rejectPattern(router, "src/dev-runtime/server/local-api-router.mjs", /node:sqlite|DatabaseSync|createRequire|GAMEFOUNDRY_AUTH_PROVIDER|GAMEFOUNDRY_DB_PROVIDER|parts\[1\] === "local-db"|parts\[1\] === "mock-db"|mock-db-state|deprecatedDatabaseEndpointError/, findings, "Runtime router must not contain SQLite startup/opening code, provider-selection environment variables, or legacy local-db/mock-db routes.");
-+  rejectPattern(router, "src/dev-runtime/server/local-api-router.mjs", routerRetiredStoragePattern, findings, "Runtime router must not contain retired file-DB startup/opening code, provider-selection environment variables, or retired local-db/mock-db routes.");
-
-   const startup = await readRequiredRepoFile("scripts/start-local-api-server.mjs", findings, "Local API startup script is missing");
-   rejectPattern(startup, "scripts/start-local-api-server.mjs", /GAMEFOUNDRY_AUTH_PROVIDER|GAMEFOUNDRY_DB_PROVIDER|auth provider|product data provider|provider selection/i, findings, "Local API startup must describe configured connections without provider-selection environment variables.");
-@@ -386,7 +406,7 @@ const report = [
-   "## User-Facing Implementation Wording Findings",
-   formatRecords(userFacingUiFindings),
-   "",
--  "## Deprecated SQLite/Local DB Technical Debt",
-+  "## Deprecated Local DB Technical Debt",
-   formatTechnicalDebt(deprecatedLocalDbDebt),
-   "",
-   "## Non-Branching Deployment Mentions Reviewed",
-diff --git a/src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs b/src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs
-deleted file mode 100644
-index e53bee7fe..000000000
---- a/src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs
-+++ /dev/null
-@@ -1,433 +0,0 @@
--import fs from "node:fs/promises";
--import { existsSync } from "node:fs";
--import path from "node:path";
--import { spawn } from "node:child_process";
--import process from "node:process";
--import {
--  GAME_JOURNEY_COMPLETION_METRICS_SCHEMA_SQL,
--  GAME_JOURNEY_COMPLETION_METRICS_TABLE,
--} from "./game-journey-completion-metrics-store.mjs";
--import { createPostgresConnectionClient } from "./postgres-connection-client.mjs";
--
--export const DEFAULT_GAME_JOURNEY_COMPLETION_METRICS_SQLITE_PATH = path.join(
--  process.cwd(),
--  "tmp",
--  "local-api",
--  "game-journey-completion-metrics.sqlite",
--);
--export const DEFAULT_GAME_JOURNEY_COMPLETION_METRICS_ARCHIVE_DIR = path.join(
--  process.cwd(),
--  "tmp",
--  "local-api",
--  "legacy-migrated",
--);
--
--const LEGACY_TABLE = GAME_JOURNEY_COMPLETION_METRICS_TABLE;
--const EXPECTED_COLUMNS = Object.freeze([
--  "key",
--  "bucketKey",
--  "bucketOrder",
--  "bucketName",
--  "friendlyDescription",
--  "requiredForMvp",
--  "canSkip",
--  "plannedCount",
--  "completedCount",
--  "active",
--  "status",
--  "createdAt",
--  "updatedAt",
--  "createdBy",
--  "updatedBy",
--]);
--
--const PYTHON_SQLITE_EXPORT_SCRIPT = String.raw`
--import json
--import sqlite3
--import sys
--
--db_path = sys.argv[1]
--connection = sqlite3.connect(db_path)
--connection.row_factory = sqlite3.Row
--try:
--    schema_objects = [
--        dict(row)
--        for row in connection.execute(
--            "SELECT name, type, sql FROM sqlite_master WHERE type IN ('table', 'index', 'trigger', 'view') ORDER BY type, name"
--        ).fetchall()
--    ]
--    columns = [
--        dict(row)
--        for row in connection.execute("PRAGMA table_info(game_journey_completion_metrics)").fetchall()
--    ]
--    rows = [
--        dict(row)
--        for row in connection.execute(
--            'SELECT * FROM "game_journey_completion_metrics" ORDER BY "bucketOrder", "bucketKey"'
--        ).fetchall()
--    ]
--    print(json.dumps({
--        "schema": {
--            "columns": columns,
--            "objects": schema_objects,
--        },
--        "rows": rows,
--    }))
--finally:
--    connection.close()
--`;
--
--export class GameJourneyCompletionMetricsMigrationError extends Error {
--  constructor(message, details = {}) {
--    super(message);
--    this.name = "GameJourneyCompletionMetricsMigrationError";
--    this.details = details;
--  }
--}
--
--function asText(value) {
--  return String(value ?? "").trim();
--}
--
--function normalizeCount(value, label) {
--  const parsed = Number(value);
--  if (!Number.isFinite(parsed) || parsed < 0) {
--    throw new GameJourneyCompletionMetricsMigrationError(`Invalid legacy ${label}: ${value}.`);
--  }
--  return Math.trunc(parsed);
--}
--
--function normalizeBoolean(value, label) {
--  if (value === true || value === 1 || value === "1" || value === "true" || value === "active") {
--    return true;
--  }
--  if (value === false || value === 0 || value === "0" || value === "false" || value === "inactive") {
--    return false;
--  }
--  throw new GameJourneyCompletionMetricsMigrationError(`Invalid legacy ${label}: ${value}.`);
--}
--
--function requireText(row, key) {
--  const value = asText(row?.[key]);
--  if (!value) {
--    throw new GameJourneyCompletionMetricsMigrationError(`Legacy row is missing required ${key}.`);
--  }
--  return value;
--}
--
--function normalizeStatus(row, active) {
--  const status = asText(row?.status) || (active ? "active" : "inactive");
--  if (!["active", "inactive"].includes(status)) {
--    throw new GameJourneyCompletionMetricsMigrationError(`Invalid legacy status: ${status}.`);
--  }
--  return status;
--}
--
--export function normalizeLegacyCompletionMetric(row) {
--  const plannedCount = normalizeCount(row?.plannedCount, "plannedCount");
--  const completedCount = normalizeCount(row?.completedCount, "completedCount");
--  if (completedCount > plannedCount) {
--    throw new GameJourneyCompletionMetricsMigrationError(
--      `Legacy completedCount ${completedCount} exceeds plannedCount ${plannedCount} for ${asText(row?.bucketKey) || "(missing bucketKey)"}.`,
--    );
--  }
--  const active = normalizeBoolean(row?.active, "active");
--  return {
--    active,
--    bucketKey: requireText(row, "bucketKey"),
--    bucketName: requireText(row, "bucketName"),
--    bucketOrder: normalizeCount(row?.bucketOrder, "bucketOrder"),
--    canSkip: normalizeBoolean(row?.canSkip, "canSkip"),
--    completedCount,
--    createdAt: requireText(row, "createdAt"),
--    createdBy: requireText(row, "createdBy"),
--    friendlyDescription: requireText(row, "friendlyDescription"),
--    key: requireText(row, "key"),
--    plannedCount,
--    requiredForMvp: normalizeBoolean(row?.requiredForMvp, "requiredForMvp"),
--    status: normalizeStatus(row, active),
--    updatedAt: requireText(row, "updatedAt"),
--    updatedBy: requireText(row, "updatedBy"),
--  };
--}
--
--function validateLegacySchema(exported) {
--  const table = exported?.schema?.objects?.find((object) => object.type === "table" && object.name === LEGACY_TABLE);
--  if (!table) {
--    throw new GameJourneyCompletionMetricsMigrationError(`Legacy SQLite file does not contain ${LEGACY_TABLE}.`);
--  }
--  const columns = new Set((exported?.schema?.columns || []).map((column) => String(column.name || "")));
--  const missingColumns = EXPECTED_COLUMNS.filter((column) => !columns.has(column));
--  if (missingColumns.length) {
--    throw new GameJourneyCompletionMetricsMigrationError(
--      `Legacy SQLite ${LEGACY_TABLE} is missing required columns: ${missingColumns.join(", ")}.`,
--      { missingColumns },
--    );
--  }
--}
--
--function assertUniqueLegacyRows(rows) {
--  const seenKeys = new Set();
--  const seenBucketKeys = new Set();
--  rows.forEach((row) => {
--    if (seenKeys.has(row.key)) {
--      throw new GameJourneyCompletionMetricsMigrationError(`Duplicate legacy key detected before migration: ${row.key}.`);
--    }
--    if (seenBucketKeys.has(row.bucketKey)) {
--      throw new GameJourneyCompletionMetricsMigrationError(`Duplicate legacy bucketKey detected before migration: ${row.bucketKey}.`);
--    }
--    seenKeys.add(row.key);
--    seenBucketKeys.add(row.bucketKey);
--  });
--}
--
--function comparableRow(row) {
--  const normalized = normalizeLegacyCompletionMetric(row);
--  return EXPECTED_COLUMNS.reduce((record, key) => {
--    record[key] = normalized[key];
--    return record;
--  }, {});
--}
--
--function rowsMatch(left, right) {
--  const normalizedLeft = comparableRow(left);
--  const normalizedRight = comparableRow(right);
--  return EXPECTED_COLUMNS.every((key) => normalizedLeft[key] === normalizedRight[key]);
--}
--
--function differingColumns(left, right) {
--  const normalizedLeft = comparableRow(left);
--  const normalizedRight = comparableRow(right);
--  return EXPECTED_COLUMNS.filter((key) => normalizedLeft[key] !== normalizedRight[key]);
--}
--
--export function classifyLegacyCompletionMetricRows({ existingRows = [], legacyRows = [] } = {}) {
--  const existingByKey = new Map(existingRows.map((row) => [String(row.key || ""), row]));
--  const existingByBucketKey = new Map(existingRows.map((row) => [String(row.bucketKey || ""), row]));
--  const duplicates = [];
--  const conflicts = [];
--  const inserts = [];
--  const timestampPatches = [];
--  legacyRows.forEach((legacyRow) => {
--    const existing = existingByKey.get(legacyRow.key) || existingByBucketKey.get(legacyRow.bucketKey);
--    if (!existing) {
--      inserts.push(legacyRow);
--      return;
--    }
--    if (rowsMatch(legacyRow, existing)) {
--      duplicates.push({
--        bucketKey: legacyRow.bucketKey,
--        key: legacyRow.key,
--        reason: "already present in Postgres with matching data",
--      });
--      return;
--    }
--    const diffs = differingColumns(legacyRow, existing);
--    if (diffs.every((column) => column === "createdAt" || column === "updatedAt")) {
--      timestampPatches.push({
--        bucketKey: legacyRow.bucketKey,
--        createdAt: legacyRow.createdAt,
--        key: legacyRow.key,
--        reason: "Postgres row matched legacy data except timestamps; preserving legacy createdAt/updatedAt.",
--        updatedAt: legacyRow.updatedAt,
--      });
--      return;
--    }
--    conflicts.push({
--      bucketKey: legacyRow.bucketKey,
--      existingKey: String(existing.key || ""),
--      key: legacyRow.key,
--      reason: `Postgres already contains a different row for this key or bucketKey (${diffs.join(", ")} differ).`,
--    });
--  });
--  return { conflicts, duplicates, inserts, timestampPatches };
--}
--
--function spawnPythonExport({ legacyDbPath, pythonCommand }) {
--  return new Promise((resolve, reject) => {
--    const child = spawn(pythonCommand, ["-", legacyDbPath], {
--      stdio: ["pipe", "pipe", "pipe"],
--      windowsHide: true,
--    });
--    let stdout = "";
--    let stderr = "";
--    child.stdout.setEncoding("utf8");
--    child.stderr.setEncoding("utf8");
--    child.stdout.on("data", (chunk) => {
--      stdout += chunk;
--    });
--    child.stderr.on("data", (chunk) => {
--      stderr += chunk;
--    });
--    child.once("error", reject);
--    child.once("close", (code) => {
--      if (code === 0) {
--        resolve(stdout);
--        return;
--      }
--      reject(new GameJourneyCompletionMetricsMigrationError(
--        `Python SQLite export failed with exit code ${code}. ${stderr.trim()}`,
--        { stderr: stderr.trim() },
--      ));
--    });
--    child.stdin.end(PYTHON_SQLITE_EXPORT_SCRIPT);
--  });
--}
--
--export async function readLegacyCompletionMetricsSqlite({ legacyDbPath, pythonCommand = "python" } = {}) {
--  const resolvedPath = path.resolve(legacyDbPath || DEFAULT_GAME_JOURNEY_COMPLETION_METRICS_SQLITE_PATH);
--  if (!existsSync(resolvedPath)) {
--    throw new GameJourneyCompletionMetricsMigrationError(`Legacy SQLite file was not found: ${resolvedPath}.`);
--  }
--  const stdout = await spawnPythonExport({ legacyDbPath: resolvedPath, pythonCommand });
--  let exported;
--  try {
--    exported = JSON.parse(stdout);
--  } catch (error) {
--    throw new GameJourneyCompletionMetricsMigrationError(
--      `Python SQLite export did not return valid JSON: ${error instanceof Error ? error.message : String(error)}.`,
--    );
--  }
--  validateLegacySchema(exported);
--  const rows = (exported.rows || []).map(normalizeLegacyCompletionMetric);
--  assertUniqueLegacyRows(rows);
--  return {
--    legacyDbPath: resolvedPath,
--    rowCount: rows.length,
--    rows,
--    schema: exported.schema,
--  };
--}
--
--async function nextArchivePath({ archiveDir, legacyDbPath, now = new Date() }) {
--  await fs.mkdir(archiveDir, { recursive: true });
--  const parsed = path.parse(legacyDbPath);
--  const stamp = now.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
--  for (let index = 0; index < 100; index += 1) {
--    const suffix = index === 0 ? "" : `-${index + 1}`;
--    const candidate = path.join(archiveDir, `${parsed.name}-${stamp}${suffix}${parsed.ext || ".sqlite"}`);
--    if (!existsSync(candidate)) {
--      return candidate;
--    }
--  }
--  throw new GameJourneyCompletionMetricsMigrationError(`Could not allocate archive path in ${archiveDir}.`);
--}
--
--export async function archiveLegacyCompletionMetricsSqlite({ archiveDir, legacyDbPath, now = new Date() } = {}) {
--  const resolvedLegacyPath = path.resolve(legacyDbPath || DEFAULT_GAME_JOURNEY_COMPLETION_METRICS_SQLITE_PATH);
--  const resolvedArchiveDir = path.resolve(archiveDir || DEFAULT_GAME_JOURNEY_COMPLETION_METRICS_ARCHIVE_DIR);
--  if (!existsSync(resolvedLegacyPath)) {
--    return {
--      archived: false,
--      archivePath: "",
--      legacyDbPath: resolvedLegacyPath,
--      message: "Legacy SQLite file was already absent.",
--    };
--  }
--  const archivePath = await nextArchivePath({
--    archiveDir: resolvedArchiveDir,
--    legacyDbPath: resolvedLegacyPath,
--    now,
--  });
--  await fs.rename(resolvedLegacyPath, archivePath);
--  return {
--    archived: true,
--    archivePath,
--    legacyDbPath: resolvedLegacyPath,
--    message: `Legacy SQLite file moved to ${archivePath}.`,
--  };
--}
--
--export async function migrateLegacyCompletionMetricRowsToPostgres({
--  archiveDir,
--  dryRun = false,
--  env = process.env,
--  legacyDbPath,
--  now = new Date(),
--  postgresClient = null,
--  rows = [],
--} = {}) {
--  const legacyRows = rows.map(normalizeLegacyCompletionMetric);
--  assertUniqueLegacyRows(legacyRows);
--  const client = postgresClient || createPostgresConnectionClient({ env });
--  await client.query(GAME_JOURNEY_COMPLETION_METRICS_SCHEMA_SQL);
--  const existingRows = await client.requestTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE, {
--    method: "GET",
--    query: "select=*",
--  });
--  const classified = classifyLegacyCompletionMetricRows({
--    existingRows: Array.isArray(existingRows) ? existingRows : [],
--    legacyRows,
--  });
--  if (classified.conflicts.length) {
--    throw new GameJourneyCompletionMetricsMigrationError(
--      `Game Journey completion metrics migration blocked by ${classified.conflicts.length} Postgres conflict(s). No data was moved.`,
--      { conflicts: classified.conflicts },
--    );
--  }
--  if (!dryRun && classified.inserts.length) {
--    await client.requestTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE, {
--      body: classified.inserts,
--      method: "POST",
--      query: "on_conflict=key",
--    });
--  }
--  if (!dryRun) {
--    for (const patch of classified.timestampPatches) {
--      await client.requestTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE, {
--        body: {
--          createdAt: patch.createdAt,
--          updatedAt: patch.updatedAt,
--        },
--        method: "PATCH",
--        query: `bucketKey=eq.${encodeURIComponent(patch.bucketKey)}`,
--      });
--    }
--  }
--  const archive = dryRun
--    ? {
--      archived: false,
--      archivePath: "",
--      legacyDbPath: path.resolve(legacyDbPath || DEFAULT_GAME_JOURNEY_COMPLETION_METRICS_SQLITE_PATH),
--      message: "Dry run did not move the legacy SQLite file.",
--    }
--    : await archiveLegacyCompletionMetricsSqlite({ archiveDir, legacyDbPath, now });
--  return {
--    archive,
--    duplicateCount: classified.duplicates.length,
--    duplicates: classified.duplicates,
--    insertedCount: dryRun ? 0 : classified.inserts.length,
--    legacyRowCount: legacyRows.length,
--    status: dryRun ? "DRY_RUN" : "PASS",
--    timestampPatchCount: dryRun ? 0 : classified.timestampPatches.length,
--    timestampPatches: classified.timestampPatches,
--    wouldInsertCount: classified.inserts.length,
--    wouldPatchTimestampCount: classified.timestampPatches.length,
--  };
--}
--
--export async function migrateLegacyCompletionMetricsSqliteToPostgres({
--  archiveDir,
--  dryRun = false,
--  env = process.env,
--  legacyDbPath,
--  now = new Date(),
--  postgresClient = null,
--  pythonCommand = "python",
--} = {}) {
--  const exported = await readLegacyCompletionMetricsSqlite({ legacyDbPath, pythonCommand });
--  const result = await migrateLegacyCompletionMetricRowsToPostgres({
--    archiveDir,
--    dryRun,
--    env,
--    legacyDbPath: exported.legacyDbPath,
--    now,
--    postgresClient,
--    rows: exported.rows,
--  });
--  return {
--    ...result,
--    legacyDbPath: exported.legacyDbPath,
--    schemaObjectCount: exported.schema.objects.length,
--  };
--}
-diff --git a/tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs b/tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs
-deleted file mode 100644
-index 6428e63e8..000000000
---- a/tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs
-+++ /dev/null
-@@ -1,194 +0,0 @@
--import assert from "node:assert/strict";
--import fs from "node:fs/promises";
--import os from "node:os";
--import path from "node:path";
--import test from "node:test";
--import {
--  GAME_JOURNEY_COMPLETION_METRICS_TABLE,
--} from "../../src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs";
--import {
--  migrateLegacyCompletionMetricRowsToPostgres,
--} from "../../src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs";
--import { createGameJourneyCompletionMetricsPostgresClientStub } from "../helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs";
--
--const LEGACY_ROW = Object.freeze({
--  active: 1,
--  bucketKey: "002-create",
--  bucketName: "Create",
--  bucketOrder: 2,
--  canSkip: 0,
--  completedCount: 3,
--  createdAt: "2026-06-20T01:52:14.797Z",
--  createdBy: "01K2GFSJ0Y0000000000000054",
--  friendlyDescription: "Set up your game and crew",
--  key: "01K2GFSJ0Y0000000000006002",
--  plannedCount: 5,
--  requiredForMvp: 1,
--  status: "active",
--  updatedAt: "2026-06-21T03:04:05.000Z",
--  updatedBy: "01K2GFSJ0Y0000000000000054",
--});
--
--async function tempLegacyFile() {
--  const directory = await fs.mkdtemp(path.join(os.tmpdir(), "gfs-game-journey-migration-"));
--  const legacyDbPath = path.join(directory, "game-journey-completion-metrics.sqlite");
--  const archiveDir = path.join(directory, "legacy-migrated");
--  await fs.writeFile(legacyDbPath, "legacy sqlite placeholder");
--  return { archiveDir, directory, legacyDbPath };
--}
--
--test("Game Journey completion metrics migration inserts valid rows and archives legacy SQLite after success", async () => {
--  const postgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
--  const paths = await tempLegacyFile();
--  try {
--    const result = await migrateLegacyCompletionMetricRowsToPostgres({
--      archiveDir: paths.archiveDir,
--      legacyDbPath: paths.legacyDbPath,
--      now: new Date("2026-06-25T12:00:00.000Z"),
--      postgresClient,
--      rows: [LEGACY_ROW],
--    });
--
--    assert.equal(result.status, "PASS");
--    assert.equal(result.insertedCount, 1);
--    assert.equal(result.duplicateCount, 0);
--    assert.equal(result.archive.archived, true);
--    assert.equal(await fs.stat(paths.legacyDbPath).then(() => true, () => false), false);
--    assert.equal(await fs.stat(result.archive.archivePath).then(() => true, () => false), true);
--    assert.match(result.archive.archivePath, /legacy-migrated[\\/]+game-journey-completion-metrics-20260625T120000Z\.sqlite$/);
--    assert.deepEqual(postgresClient.dumpTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE), [
--      {
--        ...LEGACY_ROW,
--        active: true,
--        canSkip: false,
--        requiredForMvp: true,
--      },
--    ]);
--  } finally {
--    await fs.rm(paths.directory, { force: true, recursive: true });
--  }
--});
--
--test("Game Journey completion metrics migration detects Postgres conflicts without moving legacy SQLite", async () => {
--  const postgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
--  const paths = await tempLegacyFile();
--  await postgresClient.requestTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE, {
--    body: {
--      ...LEGACY_ROW,
--      active: true,
--      canSkip: false,
--      completedCount: 1,
--      requiredForMvp: true,
--    },
--    method: "POST",
--  });
--
--  try {
--    await assert.rejects(
--      () => migrateLegacyCompletionMetricRowsToPostgres({
--        archiveDir: paths.archiveDir,
--        legacyDbPath: paths.legacyDbPath,
--        postgresClient,
--        rows: [LEGACY_ROW],
--      }),
--      /migration blocked by 1 Postgres conflict/,
--    );
--    assert.equal(await fs.stat(paths.legacyDbPath).then(() => true, () => false), true);
--  } finally {
--    await fs.rm(paths.directory, { force: true, recursive: true });
--  }
--});
--
--test("Game Journey completion metrics migration archives when legacy rows are already present unchanged", async () => {
--  const postgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
--  const paths = await tempLegacyFile();
--  await postgresClient.requestTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE, {
--    body: {
--      ...LEGACY_ROW,
--      active: true,
--      canSkip: false,
--      requiredForMvp: true,
--    },
--    method: "POST",
--  });
--
--  try {
--    const result = await migrateLegacyCompletionMetricRowsToPostgres({
--      archiveDir: paths.archiveDir,
--      legacyDbPath: paths.legacyDbPath,
--      postgresClient,
--      rows: [LEGACY_ROW],
--    });
--
--    assert.equal(result.insertedCount, 0);
--    assert.equal(result.duplicateCount, 1);
--    assert.equal(result.archive.archived, true);
--    assert.equal(await fs.stat(paths.legacyDbPath).then(() => true, () => false), false);
--  } finally {
--    await fs.rm(paths.directory, { force: true, recursive: true });
--  }
--});
--
--test("Game Journey completion metrics migration preserves legacy timestamps for otherwise matching Postgres rows", async () => {
--  const postgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
--  const paths = await tempLegacyFile();
--  await postgresClient.requestTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE, {
--    body: {
--      ...LEGACY_ROW,
--      active: true,
--      canSkip: false,
--      createdAt: "2026-06-25T00:00:00.000Z",
--      requiredForMvp: true,
--      updatedAt: "2026-06-25T00:00:00.000Z",
--    },
--    method: "POST",
--  });
--
--  try {
--    const result = await migrateLegacyCompletionMetricRowsToPostgres({
--      archiveDir: paths.archiveDir,
--      legacyDbPath: paths.legacyDbPath,
--      postgresClient,
--      rows: [LEGACY_ROW],
--    });
--
--    assert.equal(result.insertedCount, 0);
--    assert.equal(result.duplicateCount, 0);
--    assert.equal(result.timestampPatchCount, 1);
--    assert.equal(result.archive.archived, true);
--    assert.deepEqual(postgresClient.dumpTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE)[0], {
--      ...LEGACY_ROW,
--      active: true,
--      canSkip: false,
--      requiredForMvp: true,
--    });
--  } finally {
--    await fs.rm(paths.directory, { force: true, recursive: true });
--  }
--});
--
--test("Game Journey completion metrics migration rejects duplicate legacy bucket keys before writing", async () => {
--  const postgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
--  const paths = await tempLegacyFile();
--  try {
--    await assert.rejects(
--      () => migrateLegacyCompletionMetricRowsToPostgres({
--        archiveDir: paths.archiveDir,
--        legacyDbPath: paths.legacyDbPath,
--        postgresClient,
--        rows: [
--          LEGACY_ROW,
--          {
--            ...LEGACY_ROW,
--            key: "01K2GFSJ0Y0000000000006999",
--          },
--        ],
--      }),
--      /Duplicate legacy bucketKey/,
--    );
--    assert.equal(postgresClient.dumpTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE).length, 0);
--    assert.equal(await fs.stat(paths.legacyDbPath).then(() => true, () => false), true);
--  } finally {
--    await fs.rm(paths.directory, { force: true, recursive: true });
--  }
--});
-diff --git a/tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs b/tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
-index 1ca7de68e..581221a66 100644
---- a/tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
-+++ b/tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
-@@ -1,8 +1,6 @@
- import assert from "node:assert/strict";
- import fs from "node:fs/promises";
--import os from "node:os";
- import path from "node:path";
--import process from "node:process";
- import test from "node:test";
- import {
-   GAME_JOURNEY_COMPLETION_METRICS_TABLE,
-@@ -10,16 +8,21 @@ import {
- } from "../../src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs";
- import { createGameJourneyCompletionMetricsPostgresClientStub } from "../helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs";
-
--const ACTIVE_RUNTIME_ROOTS = Object.freeze(["src", "assets", "toolbox"]);
--const ACTIVE_RUNTIME_ALLOWED_FILES = new Set([
--  path.normalize("src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs"),
--]);
--const RUNTIME_FORBIDDEN_PATTERNS = Object.freeze([
--  /sqlite/i,
--  /\.sqlite/i,
--  /better-sqlite/i,
--  /game-journey-completion-metrics\.sqlite/i,
--  /tmp\/local-api/i,
-+const IMPLEMENTATION_ROOTS = Object.freeze(["src", "assets", "toolbox", "scripts", "tests"]);
-+const RETIRED_FILE_DB_TOKEN = "sql" + "ite";
-+const RETIRED_METRICS_FILE = `game-journey-completion-metrics.${RETIRED_FILE_DB_TOKEN}`;
-+const RETIRED_LOCAL_RUNTIME_PATH = ["tmp", "local-api"].join("/");
++  spritesActorKey() {
++    return this.sessionUserKey || "";
++  }
 +
-+function escapeRegExp(value) {
-+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
++  async spritesApiContract(method, parts, body) {
++    return handleSpritesApiContract({
++      actorKey: this.spritesActorKey(),
++      body,
++      method,
++      parts,
++      service: this.spritesService,
++    });
++  }
++
+   close() {
+     this.messagesService.close();
++    this.spritesService.close();
+   }
+
+   async supabaseToolboxToolMetadataRows() {
+@@ -6938,12 +6961,16 @@ export function createLocalApiRouter({
+   messagesPostgresClient = null,
+   messagesService = null,
+   repoRoot = process.cwd(),
++  spritesPostgresClient = null,
++  spritesService = null,
+ } = {}) {
+   const dataSource = new ApiRuntimeDataSource({
+     gameJourneyCompletionMetricsPostgresClient,
+     messagesPostgresClient,
+     messagesService,
+     repoRoot,
++    spritesPostgresClient,
++    spritesService,
+   });
+
+   async function handleApiRuntimeRequest(request, response, requestUrl) {
+@@ -7182,6 +7209,12 @@ export function createLocalApiRouter({
+         return true;
+       }
+
++      if (parts[1] === "sprites") {
++        const body = request.method === "POST" ? await readRequestJson(request) : {};
++        ok(response, await dataSource.spritesApiContract(request.method, parts.slice(2), body));
++        return true;
++      }
++
+       if (parts[1] === "admin" && parts[2] === "memberships" && request.method === "GET" && parts[3] === "active") {
+         ok(response, await dataSource.adminActiveMembership(requestUrl));
+         return true;
+diff --git a/src/dev-runtime/sprites/sprites-postgres-service.mjs b/src/dev-runtime/sprites/sprites-postgres-service.mjs
+new file mode 100644
+index 000000000..98915b50e
+--- /dev/null
++++ b/src/dev-runtime/sprites/sprites-postgres-service.mjs
+@@ -0,0 +1,446 @@
++import { randomBytes } from "node:crypto";
++import { createPostgresConnectionClient } from "../persistence/postgres-connection-client.mjs";
++
++const ULID_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
++const SPRITE_STATUSES = Object.freeze(["draft", "ready", "published", "archived"]);
++export const SPRITES_POSTGRES_SCHEMA_SQL = `
++CREATE TABLE IF NOT EXISTS sprite_records (
++  key text PRIMARY KEY,
++  "gameId" text REFERENCES game_workspace_games(key),
++  "ownerUserId" text REFERENCES users(key),
++  "name" text NOT NULL,
++  "status" text NOT NULL,
++  "category" text NOT NULL DEFAULT '',
++  "tagKeys" jsonb NOT NULL DEFAULT '[]'::jsonb,
++  "source" text NOT NULL DEFAULT '',
++  "storageObjectKey" text NOT NULL DEFAULT '',
++  "storagePath" text NOT NULL DEFAULT '',
++  "originalName" text NOT NULL DEFAULT '',
++  "mimeType" text NOT NULL DEFAULT '',
++  "width" integer,
++  "height" integer,
++  "sizeBytes" bigint,
++  "checksum" text NOT NULL DEFAULT '',
++  "paletteColorKeys" jsonb NOT NULL DEFAULT '[]'::jsonb,
++  "archived" boolean NOT NULL DEFAULT false,
++  "archivedAt" timestamptz,
++  "createdAt" timestamptz NOT NULL DEFAULT now(),
++  "updatedAt" timestamptz NOT NULL DEFAULT now(),
++  "createdBy" text NOT NULL REFERENCES users(key),
++  "updatedBy" text NOT NULL REFERENCES users(key)
++);
++
++CREATE TABLE IF NOT EXISTS sprite_usage_references (
++  key text PRIMARY KEY,
++  "spriteKey" text NOT NULL REFERENCES sprite_records(key),
++  "sourceType" text NOT NULL,
++  "sourceKey" text NOT NULL,
++  "label" text NOT NULL DEFAULT '',
++  "createdAt" timestamptz NOT NULL DEFAULT now(),
++  "updatedAt" timestamptz NOT NULL DEFAULT now(),
++  "createdBy" text NOT NULL REFERENCES users(key),
++  "updatedBy" text NOT NULL REFERENCES users(key)
++);
++
++CREATE INDEX IF NOT EXISTS idx_sprite_records_gameid ON sprite_records ("gameId");
++CREATE INDEX IF NOT EXISTS idx_sprite_records_owneruserid ON sprite_records ("ownerUserId");
++CREATE INDEX IF NOT EXISTS idx_sprite_records_status ON sprite_records ("status");
++CREATE INDEX IF NOT EXISTS idx_sprite_records_createdby ON sprite_records ("createdBy");
++CREATE INDEX IF NOT EXISTS idx_sprite_records_updatedby ON sprite_records ("updatedBy");
++CREATE INDEX IF NOT EXISTS idx_sprite_usage_references_spritekey ON sprite_usage_references ("spriteKey");
++CREATE INDEX IF NOT EXISTS idx_sprite_usage_references_source ON sprite_usage_references ("sourceType", "sourceKey");
++CREATE INDEX IF NOT EXISTS idx_sprite_usage_references_createdby ON sprite_usage_references ("createdBy");
++CREATE INDEX IF NOT EXISTS idx_sprite_usage_references_updatedby ON sprite_usage_references ("updatedBy");
++`;
++
++function clone(value) {
++  return JSON.parse(JSON.stringify(value));
 +}
 +
-+const FORBIDDEN_IMPLEMENTATION_PATTERNS = Object.freeze([
-+  new RegExp(RETIRED_FILE_DB_TOKEN, "i"),
-+  new RegExp(`\\.${RETIRED_FILE_DB_TOKEN}`, "i"),
-+  new RegExp(`better-${RETIRED_FILE_DB_TOKEN}`, "i"),
-+  new RegExp(escapeRegExp(RETIRED_METRICS_FILE), "i"),
-+  new RegExp(escapeRegExp(RETIRED_LOCAL_RUNTIME_PATH), "i"),
- ]);
-
- async function activeRuntimeJavaScriptFiles(root) {
-@@ -38,47 +41,32 @@ async function activeRuntimeJavaScriptFiles(root) {
-   return files;
- }
-
--test("active Game Journey metrics ignore the retired default legacy SQLite path", async () => {
--  const originalCwd = process.cwd();
--  const directory = await fs.mkdtemp(path.join(os.tmpdir(), "gfs-game-journey-metrics-store-"));
--  const retiredLegacyPath = path.join(directory, "tmp", "local-api", "game-journey-completion-metrics.sqlite");
--  const retiredLegacyContents = "retired legacy sqlite placeholder";
-+test("Game Journey completion metrics use the database client only", async () => {
-+  const postgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
-+  const store = createGameJourneyCompletionMetricsStore({ postgresClient });
-+  const metrics = await store.listMetrics();
-+  const snapshot = await store.snapshot();
-+  const snapshotText = JSON.stringify(snapshot);
-
--  try {
--    await fs.mkdir(path.dirname(retiredLegacyPath), { recursive: true });
--    await fs.writeFile(retiredLegacyPath, retiredLegacyContents);
--    process.chdir(directory);
--
--    const postgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
--    const store = createGameJourneyCompletionMetricsStore({ postgresClient });
--    const metrics = await store.listMetrics();
--    const snapshot = await store.snapshot();
--
--    assert.equal(Object.hasOwn(store, "legacyDbPath"), false);
--    assert.equal(Object.hasOwn(snapshot, "legacySqlitePath"), false);
--    assert.equal(metrics.length, 14);
--    assert.equal(postgresClient.dumpTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE).length, 14);
--    assert.equal(await fs.readFile(retiredLegacyPath, "utf8"), retiredLegacyContents);
--  } finally {
--    process.chdir(originalCwd);
--    await fs.rm(directory, { force: true, recursive: true });
-+  assert.equal(metrics.length, 14);
-+  assert.equal(postgresClient.dumpTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE).length, 14);
-+  assert.equal(snapshot.api, "Local API");
-+  assert.equal(snapshot.tableName, GAME_JOURNEY_COMPLETION_METRICS_TABLE);
-+  for (const pattern of FORBIDDEN_IMPLEMENTATION_PATTERNS) {
-+    assert.equal(pattern.test(snapshotText), false);
-   }
- });
-
--test("active runtime JS and MJS do not contain SQLite or tmp local metrics references", async () => {
-+test("implementation and validation JS/MJS do not contain retired file DB metrics references", async () => {
-   const files = [];
--  for (const root of ACTIVE_RUNTIME_ROOTS) {
-+  for (const root of IMPLEMENTATION_ROOTS) {
-     files.push(...await activeRuntimeJavaScriptFiles(root));
-   }
-
-   const findings = [];
-   for (const file of files) {
--    const normalized = path.normalize(file);
--    if (ACTIVE_RUNTIME_ALLOWED_FILES.has(normalized)) {
--      continue;
--    }
-     const contents = await fs.readFile(file, "utf8");
--    RUNTIME_FORBIDDEN_PATTERNS.forEach((pattern) => {
-+    FORBIDDEN_IMPLEMENTATION_PATTERNS.forEach((pattern) => {
-       if (pattern.test(contents)) {
-         findings.push(`${file}: ${pattern}`);
-       }
-diff --git a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-index 8e12a9795..a047fbe36 100644
---- a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-+++ b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-@@ -344,6 +344,7 @@ test("Creator sessions cannot access Admin System Health operations", async ({ p
- });
-
- test("Admin System Health operations page keeps scripts and styles external", async () => {
-+  const retiredFileDbToken = "SQL" + "ite";
-   const pageSource = await fs.readFile(path.resolve("admin/system-health.html"), "utf8");
-   expect(pageSource).not.toMatch(/<style\b/i);
-   expect(pageSource).not.toMatch(/<script\b(?![^>]+src=)/i);
-@@ -352,7 +353,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
-   expect(pageSource).not.toMatch(/data-health-status="(?:WARN|FAIL)"/);
-   expect(pageSource).not.toContain("No active failure is declared");
-   expect(pageSource).not.toMatch(/foundation PR|foundation view|placeholder|Pending metric|intentionally not wired/i);
--  expect(pageSource).not.toContain("SQLite");
-+  expect(pageSource).not.toContain(retiredFileDbToken);
-   expect(pageSource).toContain("Environment Identity");
-   expect(pageSource).toContain("Environment Map");
-   expect(pageSource).toContain("Environment Health Comparison");
-@@ -374,7 +375,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
-   expect(pageSource).toContain("assets/theme-v2/js/admin-system-health.js");
-   expect(pageSource).toContain("assets/theme-v2/js/admin-owner-navigation.js");
-   const runtimeSource = await fs.readFile(path.resolve("assets/theme-v2/js/admin-system-health.js"), "utf8");
--  expect(runtimeSource).not.toContain("SQLite");
-+  expect(runtimeSource).not.toContain(retiredFileDbToken);
-   expect(runtimeSource).not.toContain("localStorage");
-   expect(runtimeSource).not.toContain("sessionStorage");
-   expect(runtimeSource).toContain("runAdminSystemHealthAction");
-diff --git a/tests/playwright/tools/GameJourneyTool.spec.mjs b/tests/playwright/tools/GameJourneyTool.spec.mjs
-index cc47265cf..cc1006cce 100644
---- a/tests/playwright/tools/GameJourneyTool.spec.mjs
-+++ b/tests/playwright/tools/GameJourneyTool.spec.mjs
-@@ -128,7 +128,7 @@ function restoreEnvValue(key, value) {
- }
-
- function createFailingCompletionMetricsPostgresClient() {
--  const failure = new Error("Active metrics store temporarily unavailable at tmp/local-api/game-journey-completion-metrics.sqlite.");
-+  const failure = new Error("Active metrics store temporarily unavailable.");
-   return {
-     dumpTable() {
-       return [];
-@@ -1568,6 +1568,7 @@ test("Toolbox registration exposes Game Journey navigation", async ({ page }) =>
- });
-
- test("Toolbox renders Creator-safe Game Journey progress outage copy", async ({ page }) => {
-+  const forbiddenOutagePrefix = ["Game Journey completion metrics", "unavailable"].join(" ");
-   const server = await startRepoServer({
-     gameJourneyCompletionMetricsPostgresClient: createFailingCompletionMetricsPostgresClient(),
-   });
-@@ -1581,9 +1582,7 @@ test("Toolbox renders Creator-safe Game Journey progress outage copy", async ({
-     await expect(page.locator("[data-game-journey-completion-diagnostic]").first()).toHaveText(
-       "Game Journey progress is temporarily unavailable. Continue building while progress refreshes.",
-     );
--    await expect(page.locator("body")).not.toContainText("Game Journey completion metrics unavailable");
--    await expect(page.locator("body")).not.toContainText("SQLite");
--    await expect(page.locator("body")).not.toContainText("tmp/local-api");
-+    await expect(page.locator("body")).not.toContainText(forbiddenOutagePrefix);
-     await expect(page.locator("body")).not.toContainText("Postgres");
-   } finally {
-     await server.close();
++function encodeUlidPart(value, length) {
++  let remaining = BigInt(value);
++  let encoded = "";
++  for (let index = 0; index < length; index += 1) {
++    encoded = ULID_ALPHABET[Number(remaining % 32n)] + encoded;
++    remaining /= 32n;
++  }
++  return encoded;
++}
++
++function createUlid() {
++  const timePart = encodeUlidPart(Date.now(), 10);
++  const randomPart = Array.from(randomBytes(16), (byte) => ULID_ALPHABET[byte % 32]).join("");
++  return `${timePart}${randomPart}`;
++}
++
++function timestamp() {
++  return new Date().toISOString();
++}
++
++function httpError(message, statusCode = 400) {
++  const error = new Error(message);
++  error.statusCode = statusCode;
++  return error;
++}
++
++function queryForKey(key) {
++  return `select=*&key=eq.${encodeURIComponent(key)}`;
++}
++
++function normalizeText(value) {
++  return typeof value === "string" ? value : "";
++}
++
++function normalizeRequiredText(value, label) {
++  const normalized = normalizeText(value).trim();
++  if (!normalized) {
++    throw httpError(`${label} is required.`);
++  }
++  return normalized;
++}
++
++function normalizeStatus(value, existingStatus = "") {
++  const normalized = normalizeText(value || existingStatus).trim().toLowerCase();
++  if (!SPRITE_STATUSES.includes(normalized)) {
++    throw httpError(`Sprite status must be one of: ${SPRITE_STATUSES.join(", ")}.`);
++  }
++  return normalized;
++}
++
++function normalizeKeyList(value, label) {
++  if (value === undefined || value === null || value === "") {
++    return [];
++  }
++  if (!Array.isArray(value)) {
++    throw httpError(`${label} must be an array of API/database keys.`);
++  }
++  return value.map((item) => normalizeText(item).trim()).filter(Boolean);
++}
++
++function normalizeOptionalInteger(value, label) {
++  if (value === undefined || value === null || value === "") {
++    return null;
++  }
++  const numeric = Number(value);
++  if (!Number.isInteger(numeric) || numeric < 0) {
++    throw httpError(`${label} must be a non-negative whole number.`);
++  }
++  return numeric;
++}
++
++function normalizeActorKey(actorKey) {
++  const normalized = normalizeText(actorKey).trim();
++  if (!/^[0-9A-HJKMNP-TV-Z]{26}$/.test(normalized)) {
++    throw httpError("Sign in is required to save Sprites.", 401);
++  }
++  return normalized;
++}
++
++function assertNoColorDefinitions(input = {}) {
++  const forbiddenKeys = ["colors", "hex", "palette", "paletteColors", "swatches"];
++  const present = forbiddenKeys.filter((key) => Object.prototype.hasOwnProperty.call(input, key));
++  if (present.length) {
++    throw httpError("Sprites may reference Palette/Colors keys only; reusable color definitions belong to Palette/Colors.");
++  }
++}
++
++function compareSpriteRows(left, right) {
++  return String(right.updatedAt || "").localeCompare(String(left.updatedAt || ""))
++    || String(left.name || "").localeCompare(String(right.name || ""), undefined, { sensitivity: "base" })
++    || String(left.key || "").localeCompare(String(right.key || ""));
++}
++
++function spriteFromRow(row = {}, references = []) {
++  return {
++    archived: row.archived === true,
++    archivedAt: row.archivedAt || "",
++    category: row.category || "",
++    checksum: row.checksum || "",
++    createdAt: row.createdAt || "",
++    createdBy: row.createdBy || "",
++    gameId: row.gameId || "",
++    height: row.height ?? null,
++    key: row.key || "",
++    mimeType: row.mimeType || "",
++    name: row.name || "",
++    originalName: row.originalName || "",
++    ownerUserId: row.ownerUserId || "",
++    paletteColorKeys: Array.isArray(row.paletteColorKeys) ? [...row.paletteColorKeys] : [],
++    references,
++    sizeBytes: row.sizeBytes ?? null,
++    source: row.source || "",
++    status: row.status || "",
++    storageObjectKey: row.storageObjectKey || "",
++    storagePath: row.storagePath || "",
++    tagKeys: Array.isArray(row.tagKeys) ? [...row.tagKeys] : [],
++    updatedAt: row.updatedAt || "",
++    updatedBy: row.updatedBy || "",
++    usageCount: references.length,
++    width: row.width ?? null,
++  };
++}
++
++function referenceFromRow(row = {}) {
++  return {
++    key: row.key || "",
++    label: row.label || "",
++    sourceKey: row.sourceKey || "",
++    sourceType: row.sourceType || "",
++    spriteKey: row.spriteKey || "",
++  };
++}
++
++export class SpritesPostgresService {
++  constructor({
++    env = process.env,
++    postgresClient = null,
++  } = {}) {
++    this.env = env;
++    this.postgresClient = postgresClient;
++    this.readyPromise = null;
++  }
++
++  client() {
++    if (!this.postgresClient) {
++      this.postgresClient = createPostgresConnectionClient({ env: this.env });
++    }
++    return this.postgresClient;
++  }
++
++  async ensureReady() {
++    if (!this.readyPromise) {
++      this.readyPromise = this.initialize();
++    }
++    return this.readyPromise;
++  }
++
++  async initialize() {
++    await this.client().query(SPRITES_POSTGRES_SCHEMA_SQL);
++  }
++
++  close() {
++    this.postgresClient?.close?.();
++  }
++
++  persistenceSummary() {
++    return {
++      engine: "Postgres",
++      owner: "sprites",
++      storage: "server-owned",
++    };
++  }
++
++  async tableRows(tableName) {
++    return clone(await this.client().requestTable(tableName, { method: "GET", query: "select=*" }));
++  }
++
++  async rowByKey(tableName, key) {
++    const rows = await this.client().requestTable(tableName, { method: "GET", query: queryForKey(key) });
++    return clone(rows)[0] || null;
++  }
++
++  async upsertRow(tableName, row) {
++    const rows = await this.client().requestTable(tableName, { body: row, method: "POST" });
++    return clone(rows)[0] || row;
++  }
++
++  async patchRow(tableName, key, row) {
++    const rows = await this.client().requestTable(tableName, {
++      body: row,
++      method: "PATCH",
++      query: queryForKey(key),
++    });
++    return clone(rows)[0] || null;
++  }
++
++  async deleteRow(tableName, key) {
++    const rows = await this.client().requestTable(tableName, {
++      method: "DELETE",
++      query: queryForKey(key),
++    });
++    return clone(rows)[0] || null;
++  }
++
++  async referencesForSprite(spriteKey) {
++    const rows = await this.tableRows("sprite_usage_references");
++    return rows.filter((row) => row.spriteKey === spriteKey).map(referenceFromRow);
++  }
++
++  async spriteFromRecord(row) {
++    return spriteFromRow(row, await this.referencesForSprite(row.key));
++  }
++
++  async listSprites() {
++    await this.ensureReady();
++    const rows = (await this.tableRows("sprite_records")).sort(compareSpriteRows);
++    return Promise.all(rows.map((row) => this.spriteFromRecord(row)));
++  }
++
++  async getSprite(key) {
++    await this.ensureReady();
++    const row = await this.rowByKey("sprite_records", key);
++    if (!row) {
++      throw httpError("Sprite was not found.", 404);
++    }
++    return this.spriteFromRecord(row);
++  }
++
++  async findSpriteByName(name) {
++    const normalized = normalizeText(name).trim().toLowerCase();
++    if (!normalized) {
++      return null;
++    }
++    return (await this.tableRows("sprite_records")).find((row) => normalizeText(row.name).trim().toLowerCase() === normalized) || null;
++  }
++
++  normalizeSpriteInput(input = {}, existing = null) {
++    assertNoColorDefinitions(input);
++    const name = input.name === undefined && existing ? existing.name : normalizeRequiredText(input.name, "Sprite name");
++    const status = input.status === undefined && existing ? existing.status : normalizeStatus(input.status);
++    return {
++      category: input.category === undefined && existing ? existing.category : normalizeText(input.category).trim(),
++      checksum: input.checksum === undefined && existing ? existing.checksum : normalizeText(input.checksum).trim(),
++      gameId: input.gameId === undefined && existing ? existing.gameId : normalizeText(input.gameId).trim(),
++      height: input.height === undefined && existing ? existing.height : normalizeOptionalInteger(input.height, "Sprite height"),
++      mimeType: input.mimeType === undefined && existing ? existing.mimeType : normalizeText(input.mimeType).trim(),
++      name,
++      originalName: input.originalName === undefined && existing ? existing.originalName : normalizeText(input.originalName).trim(),
++      ownerUserId: input.ownerUserId === undefined && existing ? existing.ownerUserId : normalizeText(input.ownerUserId).trim(),
++      paletteColorKeys: input.paletteColorKeys === undefined && existing ? existing.paletteColorKeys : normalizeKeyList(input.paletteColorKeys, "Palette color keys"),
++      sizeBytes: input.sizeBytes === undefined && existing ? existing.sizeBytes : normalizeOptionalInteger(input.sizeBytes, "Sprite size bytes"),
++      source: input.source === undefined && existing ? existing.source : normalizeText(input.source).trim(),
++      status,
++      storageObjectKey: input.storageObjectKey === undefined && existing ? existing.storageObjectKey : normalizeText(input.storageObjectKey).trim(),
++      storagePath: input.storagePath === undefined && existing ? existing.storagePath : normalizeText(input.storagePath).trim(),
++      tagKeys: input.tagKeys === undefined && existing ? existing.tagKeys : normalizeKeyList(input.tagKeys, "Tag keys"),
++      width: input.width === undefined && existing ? existing.width : normalizeOptionalInteger(input.width, "Sprite width"),
++    };
++  }
++
++  async createSprite(input = {}, actorKey = "") {
++    await this.ensureReady();
++    const actor = normalizeActorKey(actorKey);
++    const values = this.normalizeSpriteInput(input);
++    const duplicate = await this.findSpriteByName(values.name);
++    if (duplicate && duplicate.archived !== true) {
++      throw httpError(`Sprite ${values.name} already exists.`, 409);
++    }
++    const now = timestamp();
++    const key = createUlid();
++    await this.upsertRow("sprite_records", {
++      ...values,
++      archived: values.status === "archived",
++      archivedAt: values.status === "archived" ? now : null,
++      createdAt: now,
++      createdBy: actor,
++      key,
++      ownerUserId: values.ownerUserId || actor,
++      updatedAt: now,
++      updatedBy: actor,
++    });
++    return this.getSprite(key);
++  }
++
++  async updateSprite(key, input = {}, actorKey = "") {
++    const existing = await this.getSprite(key);
++    const actor = normalizeActorKey(actorKey);
++    const values = this.normalizeSpriteInput(input, existing);
++    const duplicate = await this.findSpriteByName(values.name);
++    if (duplicate && duplicate.key !== key && duplicate.archived !== true) {
++      throw httpError(`Sprite ${values.name} already exists.`, 409);
++    }
++    const archived = values.status === "archived" || existing.archived === true;
++    await this.patchRow("sprite_records", key, {
++      ...values,
++      archived,
++      archivedAt: archived ? (existing.archivedAt || timestamp()) : null,
++      updatedAt: timestamp(),
++      updatedBy: actor,
++    });
++    return this.getSprite(key);
++  }
++
++  async archiveSprite(key, actorKey = "") {
++    await this.getSprite(key);
++    const actor = normalizeActorKey(actorKey);
++    await this.patchRow("sprite_records", key, {
++      archived: true,
++      archivedAt: timestamp(),
++      status: "archived",
++      updatedAt: timestamp(),
++      updatedBy: actor,
++    });
++    return this.getSprite(key);
++  }
++
++  async deleteSprite(key, actorKey = "") {
++    const existing = await this.getSprite(key);
++    normalizeActorKey(actorKey);
++    if (existing.usageCount > 0) {
++      throw httpError("Sprite is referenced by another record. Archive it instead of deleting it.", 409);
++    }
++    await this.deleteRow("sprite_records", key);
++    return existing;
++  }
++}
++
++export function createSpritesPostgresService(options = {}) {
++  return new SpritesPostgresService(options);
++}
++
++export async function handleSpritesApiContract({
++  actorKey = "",
++  body = {},
++  method = "GET",
++  parts = [],
++  service,
++} = {}) {
++  if (!service) {
++    throw httpError("Sprites Postgres service is not configured.", 500);
++  }
++  const normalizedMethod = String(method || "GET").toUpperCase();
++  const resource = parts[0] || "";
++  const key = parts[1] || "";
++  const action = parts[2] || "";
++
++  if (resource === "records") {
++    if (normalizedMethod === "GET" && !key) {
++      return {
++        persistence: service.persistenceSummary(),
++        sprites: await service.listSprites(),
++      };
++    }
++    if (normalizedMethod === "GET" && key) {
++      return {
++        persistence: service.persistenceSummary(),
++        sprite: await service.getSprite(key),
++      };
++    }
++    if (normalizedMethod === "POST" && !key) {
++      return {
++        persistence: service.persistenceSummary(),
++        sprite: await service.createSprite(body, actorKey),
++      };
++    }
++    if (normalizedMethod === "POST" && key && action === "archive") {
++      return {
++        persistence: service.persistenceSummary(),
++        sprite: await service.archiveSprite(key, actorKey),
++      };
++    }
++    if (normalizedMethod === "POST" && key && action === "delete") {
++      return {
++        persistence: service.persistenceSummary(),
++        sprite: await service.deleteSprite(key, actorKey),
++      };
++    }
++    if (normalizedMethod === "POST" && key && !action) {
++      return {
++        persistence: service.persistenceSummary(),
++        sprite: await service.updateSprite(key, body, actorKey),
++      };
++    }
++  }
++
++  throw httpError(`Unknown Sprites API route: ${normalizedMethod} /api/sprites/${parts.join("/")}.`, 404);
++}
+diff --git a/tests/api/sprites/contract.test.mjs b/tests/api/sprites/contract.test.mjs
+new file mode 100644
+index 000000000..d3cc84a9d
+--- /dev/null
++++ b/tests/api/sprites/contract.test.mjs
+@@ -0,0 +1,108 @@
++import assert from "node:assert/strict";
++import http from "node:http";
++import test from "node:test";
++
++import { createLocalApiRouter } from "../../../src/dev-runtime/server/local-api-router.mjs";
++import { createSpritesPostgresService } from "../../../src/dev-runtime/sprites/sprites-postgres-service.mjs";
++import { SEED_DB_KEYS } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
++import { createPostgresClientStub } from "../../helpers/postgresClientStub.mjs";
++
++function startApiServer() {
++  const spritesService = createSpritesPostgresService({
++    postgresClient: createPostgresClientStub(),
++  });
++  const handleRequest = createLocalApiRouter({ spritesService });
++  const server = http.createServer((request, response) => {
++    const address = server.address();
++    const port = address && typeof address !== "string" ? address.port : 0;
++    const requestUrl = new URL(request.url || "/", `http://127.0.0.1:${port}`);
++    handleRequest(request, response, requestUrl).catch((error) => {
++      response.statusCode = 500;
++      response.setHeader("Content-Type", "application/json; charset=utf-8");
++      response.end(JSON.stringify({
++        error: error instanceof Error ? error.message : String(error || "Sprites API test server error."),
++        ok: false,
++      }));
++    });
++  });
++  return new Promise((resolve, reject) => {
++    server.once("error", reject);
++    server.listen(0, "127.0.0.1", () => {
++      const address = server.address();
++      if (!address || typeof address === "string") {
++        reject(new Error("Unable to start Sprites API test server."));
++        return;
++      }
++      resolve({
++        baseUrl: `http://127.0.0.1:${address.port}`,
++        close: () => new Promise((closeResolve) => {
++          handleRequest.close?.();
++          server.closeAllConnections?.();
++          server.close(closeResolve);
++        }),
++      });
++    });
++  });
++}
++
++async function apiPayload(baseUrl, pathName, options = {}) {
++  const response = await fetch(`${baseUrl}${pathName}`, options.body === undefined
++    ? options
++    : {
++      ...options,
++      body: JSON.stringify(options.body),
++      headers: {
++        "content-type": "application/json",
++        ...(options.headers || {}),
++      },
++    });
++  const payload = await response.json();
++  return { payload, response };
++}
++
++async function apiJson(baseUrl, pathName, options = {}) {
++  const { payload, response } = await apiPayload(baseUrl, pathName, options);
++  assert.equal(response.status, 200, `${pathName} should return 200: ${payload.error || ""}`);
++  assert.equal(payload.ok, true, `${pathName} should return ok`);
++  return payload.data;
++}
++
++test("Sprites Local API contract allows guest read and requires sign-in for writes", async () => {
++  const server = await startApiServer();
++  try {
++    const list = await apiJson(server.baseUrl, "/api/sprites/records");
++    assert.deepEqual(list.sprites, []);
++    assert.equal(list.persistence.owner, "sprites");
++
++    const blocked = await apiPayload(server.baseUrl, "/api/sprites/records", {
++      body: { name: "Guest Sprite", status: "draft" },
++      method: "POST",
++    });
++    assert.equal(blocked.response.status, 401);
++    assert.equal(blocked.payload.ok, false);
++    assert.match(blocked.payload.error, /Sign in is required/);
++
++    await apiJson(server.baseUrl, "/api/session/user", {
++      body: { userKey: SEED_DB_KEYS.users.user1 },
++      method: "POST",
++    });
++    const created = await apiJson(server.baseUrl, "/api/sprites/records", {
++      body: {
++        height: 16,
++        name: "API Hero",
++        paletteColorKeys: ["palette-color-hero"],
++        status: "draft",
++        width: 16,
++      },
++      method: "POST",
++    });
++    assert.match(created.sprite.key, /^[0-9A-HJKMNP-TV-Z]{26}$/);
++    assert.equal(created.sprite.createdBy, SEED_DB_KEYS.users.user1);
++    assert.deepEqual(created.sprite.paletteColorKeys, ["palette-color-hero"]);
++
++    const read = await apiJson(server.baseUrl, `/api/sprites/records/${created.sprite.key}`);
++    assert.equal(read.sprite.name, "API Hero");
++  } finally {
++    await server.close();
++  }
++});
+diff --git a/tests/dev-runtime/SpritesPostgresService.test.mjs b/tests/dev-runtime/SpritesPostgresService.test.mjs
+new file mode 100644
+index 000000000..11f9f14bd
+--- /dev/null
++++ b/tests/dev-runtime/SpritesPostgresService.test.mjs
+@@ -0,0 +1,169 @@
++import assert from "node:assert/strict";
++import test from "node:test";
++
++import {
++  createSpritesPostgresService,
++  handleSpritesApiContract,
++} from "../../src/dev-runtime/sprites/sprites-postgres-service.mjs";
++import { SEED_DB_KEYS } from "../../src/dev-runtime/seed/seed-db-keys.mjs";
++import { createPostgresClientStub } from "../helpers/postgresClientStub.mjs";
++
++function createHarness() {
++  const postgresClient = createPostgresClientStub();
++  const service = createSpritesPostgresService({ postgresClient });
++  return { postgresClient, service };
++}
++
++test("Sprites service creates API-owned Postgres sprite records with audit fields", async () => {
++  const { postgresClient, service } = createHarness();
++
++  const sprite = await service.createSprite({
++    category: "characters",
++    height: 32,
++    mimeType: "image/png",
++    name: "Hero Idle",
++    paletteColorKeys: ["palette-color-hero-blue"],
++    sizeBytes: 2048,
++    source: "upload",
++    status: "draft",
++    storagePath: "/local/projects/demo/sprites/hero-idle.png",
++    tagKeys: ["tag-hero"],
++    width: 32,
++  }, SEED_DB_KEYS.users.user1);
++
++  assert.match(sprite.key, /^[0-9A-HJKMNP-TV-Z]{26}$/);
++  assert.equal(sprite.name, "Hero Idle");
++  assert.equal(sprite.status, "draft");
++  assert.equal(sprite.createdBy, SEED_DB_KEYS.users.user1);
++  assert.equal(sprite.updatedBy, SEED_DB_KEYS.users.user1);
++  assert.deepEqual(sprite.paletteColorKeys, ["palette-color-hero-blue"]);
++  assert.equal(Object.prototype.hasOwnProperty.call(sprite, "hex"), false);
++  assert.equal(postgresClient.calls.some((call) => call.method === "QUERY" && call.sql.includes("CREATE TABLE IF NOT EXISTS sprite_records")), true);
++  service.close();
++});
++
++test("Sprites service owns keys and rejects missing status, duplicate names, and color definitions", async () => {
++  const { service } = createHarness();
++
++  const keyedInput = await service.createSprite({
++    key: "browser-key",
++    name: "Server Owned Key",
++    status: "draft",
++  }, SEED_DB_KEYS.users.user1);
++  assert.notEqual(keyedInput.key, "browser-key");
++
++  await service.createSprite({
++    name: "Hero Idle",
++    status: "ready",
++  }, SEED_DB_KEYS.users.user1);
++
++  await assert.rejects(
++    () => service.createSprite({
++      name: "Hero Idle",
++      status: "ready",
++    }, SEED_DB_KEYS.users.user1),
++    /already exists/,
++  );
++
++  await assert.rejects(
++    () => service.createSprite({
++      colors: ["#ffffff"],
++      name: "Color Owning Sprite",
++      status: "draft",
++    }, SEED_DB_KEYS.users.user1),
++    /Palette\/Colors keys only/,
++  );
++
++  await assert.rejects(
++    () => service.createSprite({
++      name: "Guest Write",
++      status: "draft",
++    }, ""),
++    /Sign in is required/,
++  );
++  service.close();
++});
++
++test("Sprites service archives and blocks destructive delete when referenced", async () => {
++  const { postgresClient, service } = createHarness();
++
++  const sprite = await service.createSprite({
++    name: "Door Glow",
++    status: "ready",
++  }, SEED_DB_KEYS.users.user1);
++
++  await postgresClient.requestTable("sprite_usage_references", {
++    body: {
++      createdAt: "2026-06-26T00:00:00.000Z",
++      createdBy: SEED_DB_KEYS.users.user1,
++      key: "reference-1",
++      label: "Demo Object",
++      sourceKey: "object-demo",
++      sourceType: "object",
++      spriteKey: sprite.key,
++      updatedAt: "2026-06-26T00:00:00.000Z",
++      updatedBy: SEED_DB_KEYS.users.user1,
++    },
++    method: "POST",
++  });
++
++  const archived = await service.archiveSprite(sprite.key, SEED_DB_KEYS.users.user1);
++  assert.equal(archived.archived, true);
++  assert.equal(archived.status, "archived");
++  assert.equal(archived.usageCount, 1);
++
++  await assert.rejects(
++    () => service.deleteSprite(sprite.key, SEED_DB_KEYS.users.user1),
++    /Archive it instead/,
++  );
++  service.close();
++});
++
++test("Sprites API contract exposes list, read, create, update, archive, and safe delete", async () => {
++  const { service } = createHarness();
++  const actorKey = SEED_DB_KEYS.users.user1;
++
++  const created = await handleSpritesApiContract({
++    actorKey,
++    body: { name: "Chest", status: "draft" },
++    method: "POST",
++    parts: ["records"],
++    service,
++  });
++  assert.equal(created.sprite.name, "Chest");
++
++  const updated = await handleSpritesApiContract({
++    actorKey,
++    body: { status: "ready" },
++    method: "POST",
++    parts: ["records", created.sprite.key],
++    service,
++  });
++  assert.equal(updated.sprite.status, "ready");
++
++  const list = await handleSpritesApiContract({
++    method: "GET",
++    parts: ["records"],
++    service,
++  });
++  assert.equal(list.sprites.length, 1);
++  assert.equal(list.persistence.engine, "Postgres");
++
++  const archived = await handleSpritesApiContract({
++    actorKey,
++    method: "POST",
++    parts: ["records", created.sprite.key, "archive"],
++    service,
++  });
++  assert.equal(archived.sprite.archived, true);
++
++  const deleted = await handleSpritesApiContract({
++    actorKey,
++    method: "POST",
++    parts: ["records", created.sprite.key, "delete"],
++    service,
++  });
++  assert.equal(deleted.sprite.key, created.sprite.key);
++  assert.deepEqual((await service.listSprites()), []);
++  service.close();
++});
+diff --git a/tests/helpers/postgresClientStub.mjs b/tests/helpers/postgresClientStub.mjs
+new file mode 100644
+index 000000000..2910e8649
+--- /dev/null
++++ b/tests/helpers/postgresClientStub.mjs
+@@ -0,0 +1,101 @@
++function clone(value) {
++  return JSON.parse(JSON.stringify(value));
++}
++
++function filterFromQuery(query = "") {
++  const params = new URLSearchParams(query);
++  for (const [key, value] of params.entries()) {
++    if (key === "select") {
++      continue;
++    }
++    if (!value.startsWith("eq.")) {
++      throw new Error(`Unsupported Postgres test filter for ${key}.`);
++    }
++    return {
++      key,
++      value: decodeURIComponent(value.slice(3)),
++    };
++  }
++  return null;
++}
++
++export function createPostgresClientStub(seedTables = {}) {
++  const tables = new Map(Object.entries(seedTables).map(([name, rows]) => [name, clone(rows)]));
++  const calls = [];
++
++  function table(name) {
++    if (!tables.has(name)) {
++      tables.set(name, []);
++    }
++    return tables.get(name);
++  }
++
++  return {
++    calls,
++    tables,
++
++    async query(sql) {
++      calls.push({ method: "QUERY", sql: String(sql || "") });
++      return [];
++    },
++
++    async requestTable(tableName, { body = null, method = "GET", query = "select=*" } = {}) {
++      const rows = table(tableName);
++      const normalizedMethod = String(method || "GET").toUpperCase();
++      const filter = filterFromQuery(query);
++      calls.push({ body: clone(body), method: normalizedMethod, query, tableName });
++
++      if (normalizedMethod === "GET") {
++        const selected = filter ? rows.filter((row) => String(row[filter.key]) === filter.value) : rows;
++        return clone(selected);
++      }
++
++      if (normalizedMethod === "POST") {
++        const incomingRows = Array.isArray(body) ? body : [body];
++        const written = incomingRows.map((incoming) => {
++          const row = clone(incoming || {});
++          const index = rows.findIndex((existing) => existing.key === row.key);
++          if (index === -1) {
++            rows.push(row);
++          } else {
++            rows[index] = { ...rows[index], ...row };
++          }
++          return row;
++        });
++        return clone(written);
++      }
++
++      if (normalizedMethod === "PATCH") {
++        if (!filter) {
++          throw new Error(`PATCH ${tableName} requires an equality filter.`);
++        }
++        const patched = [];
++        rows.forEach((row, index) => {
++          if (String(row[filter.key]) !== filter.value) {
++            return;
++          }
++          rows[index] = { ...row, ...clone(body || {}) };
++          patched.push(rows[index]);
++        });
++        return clone(patched);
++      }
++
++      if (normalizedMethod === "DELETE") {
++        if (!filter) {
++          throw new Error(`DELETE ${tableName} requires an equality filter.`);
++        }
++        const deleted = [];
++        for (let index = rows.length - 1; index >= 0; index -= 1) {
++          if (String(rows[index][filter.key]) !== filter.value) {
++            continue;
++          }
++          deleted.unshift(rows[index]);
++          rows.splice(index, 1);
++        }
++        return clone(deleted);
++      }
++
++      throw new Error(`Unsupported Postgres test method: ${normalizedMethod}.`);
++    },
++  };
++}

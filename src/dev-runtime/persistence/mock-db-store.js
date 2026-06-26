@@ -88,6 +88,13 @@ export const MOCK_DB_TOOL_GROUPS = Object.freeze({
       "asset_validation_items",
     ]),
   }),
+  sprites: Object.freeze({
+    label: "Sprites",
+    tableNames: Object.freeze([
+      "sprite_records",
+      "sprite_usage_references",
+    ]),
+  }),
 });
 
 const MOCK_DB_TABLE_SCHEMAS = Object.freeze({
@@ -139,6 +146,8 @@ const MOCK_DB_TABLE_SCHEMAS = Object.freeze({
   asset_storage_objects: Object.freeze(["key", "id", "assetId", "gameId", "ownerProjectId", "role", "originalName", "storedPath", "mimeType", "size", "checksum", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   asset_import_events: Object.freeze(["key", "id", "assetId", "gameId", "fileName", "mimeType", "storedPath", "status", "type", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   asset_validation_items: Object.freeze(["key", "id", "gameId", "field", "label", "status", "action", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  sprite_records: Object.freeze(["key", "gameId", "ownerUserId", "name", "status", "category", "tagKeys", "source", "storageObjectKey", "storagePath", "originalName", "mimeType", "width", "height", "sizeBytes", "checksum", "paletteColorKeys", "archived", "archivedAt", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  sprite_usage_references: Object.freeze(["key", "spriteKey", "sourceType", "sourceKey", "label", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   tool_state_samples: Object.freeze(["key", "audience", "userKey", "displayName", "toolKey", "toolName", "route", "gameKey", "toolStateKey", "manifestPath", "sampleLabel", "sampleKind", "loadablePath", "toolStatePayload", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
 });
 
