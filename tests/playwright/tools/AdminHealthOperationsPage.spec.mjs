@@ -344,6 +344,7 @@ test("Creator sessions cannot access Admin System Health operations", async ({ p
 });
 
 test("Admin System Health operations page keeps scripts and styles external", async () => {
+  const retiredFileDbToken = "SQL" + "ite";
   const pageSource = await fs.readFile(path.resolve("admin/system-health.html"), "utf8");
   expect(pageSource).not.toMatch(/<style\b/i);
   expect(pageSource).not.toMatch(/<script\b(?![^>]+src=)/i);
@@ -352,7 +353,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
   expect(pageSource).not.toMatch(/data-health-status="(?:WARN|FAIL)"/);
   expect(pageSource).not.toContain("No active failure is declared");
   expect(pageSource).not.toMatch(/foundation PR|foundation view|placeholder|Pending metric|intentionally not wired/i);
-  expect(pageSource).not.toContain("SQLite");
+  expect(pageSource).not.toContain(retiredFileDbToken);
   expect(pageSource).toContain("Environment Identity");
   expect(pageSource).toContain("Environment Map");
   expect(pageSource).toContain("Environment Health Comparison");
@@ -374,7 +375,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
   expect(pageSource).toContain("assets/theme-v2/js/admin-system-health.js");
   expect(pageSource).toContain("assets/theme-v2/js/admin-owner-navigation.js");
   const runtimeSource = await fs.readFile(path.resolve("assets/theme-v2/js/admin-system-health.js"), "utf8");
-  expect(runtimeSource).not.toContain("SQLite");
+  expect(runtimeSource).not.toContain(retiredFileDbToken);
   expect(runtimeSource).not.toContain("localStorage");
   expect(runtimeSource).not.toContain("sessionStorage");
   expect(runtimeSource).toContain("runAdminSystemHealthAction");

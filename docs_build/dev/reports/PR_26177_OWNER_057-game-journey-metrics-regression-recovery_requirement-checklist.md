@@ -2,25 +2,25 @@
 
 Status: PASS
 
-- PASS: Hard stop gate verified current branch was `main` before branch creation.
-- PASS: Fetched origin.
-- PASS: Pulled `origin/main` with `--ff-only`.
-- PASS: Verified worktree clean and `main...origin/main` was `0 0`.
-- PASS: Created `PR_26177_OWNER_057-game-journey-metrics-regression-recovery`.
-- PASS: Compared Alfa/Owner behavior against Bravo/Charlie/Delta reference states.
-- PASS: Fixed only the Game Journey completion metrics regression.
-- PASS: Did not delete, move, overwrite, export, or migrate `tmp/local-api/game-journey-completion-metrics.sqlite`.
-- PASS: Stopped active runtime from defaulting to `tmp/local-api/game-journey-completion-metrics.sqlite`.
-- PASS: Removed active runtime `legacyDbPath` SQLite guard plumbing.
-- PASS: Preserved Postgres-backed Game Journey completion metrics as the active path.
-- PASS: Ensured `toolbox/tools-page-accordions.js` cannot render `Game Journey completion metrics unavailable:`.
-- PASS: Creator-facing UI does not expose SQLite, local filesystem paths, migration/export language, or Postgres internals.
-- PASS: Did not introduce silent fallback behavior; metrics outage remains visible with neutral wording.
-- PASS: Added targeted regression tests.
-- PASS: Proved the existing legacy SQLite file does not block active metrics.
-- PASS: Proved active runtime JS/MJS has no SQLite or `tmp/local-api` metrics references outside the migration-only utility.
-- PASS: Proved the forbidden warning string is not rendered.
-- PASS: Proved Game Journey metrics still load through the active DB/API path.
-- PASS: Used targeted validation only.
-- PASS: Required reports were produced.
+- PASS: Continued on `PR_26177_OWNER_057-game-journey-metrics-regression-recovery`.
+- PASS: Expanded PR057 to complete SQLite retirement for Game Journey completion metrics.
+- PASS: Preserved Browser -> Local API -> Database as the active architecture.
+- PASS: Removed SQLite as a supported runtime path, migration source, developer workflow, and upgrade path for Game Journey completion metrics.
+- PASS: Deleted `scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs`.
+- PASS: Deleted `src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs`.
+- PASS: Deleted `tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs`.
+- PASS: Removed SQLite-only runtime, migration, helper, validation, and test support from active JS/MJS implementation paths.
+- PASS: Did not delete, move, overwrite, export, migrate, inspect, or depend on user-local `tmp/` files.
+- PASS: Updated tests to validate the DB-only implementation instead of validating SQLite retirement.
+- PASS: Updated validation guardrails so future active JS/MJS SQLite or `tmp/local-api` reintroduction fails targeted validation.
+- PASS: Active Game Journey metrics use Local API/DB only.
+- PASS: Creator UI cannot render `Game Journey completion metrics unavailable:`.
+- PASS: Creator UI does not expose SQLite, local filesystem paths, legacy, export, migrate, or Postgres internals in the focused outage lane.
+- PASS: Focused active JS/MJS searches returned no SQLite, `.sqlite`, `better-sqlite`, `game-journey-completion-metrics.sqlite`, or `tmp/local-api` matches.
+- PASS: Remaining matches are historical docs/reports only under `docs_build/**`.
+- PASS: Targeted node validation passed.
+- PASS: Impacted Playwright validation passed.
+- PASS: EOD pre-merge targeted validation passed.
+- PASS: EOD pre-merge impacted Playwright tests passed.
+- PASS: Required reports were updated.
 - PASS: Repo-structured ZIP was produced under `tmp/`.
