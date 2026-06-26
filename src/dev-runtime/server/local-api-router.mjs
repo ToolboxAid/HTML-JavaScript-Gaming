@@ -14,6 +14,9 @@ import {
   createObjectsToolMockRepository,
 } from "../persistence/tool-repositories/objects-mock-repository.js";
 import {
+  createHitboxesToolMockRepository,
+} from "../persistence/tool-repositories/hitboxes-mock-repository.js";
+import {
   createInputMappingToolMockRepository,
 } from "../persistence/tool-repositories/input-mapping-mock-repository.js";
 import { createConfiguredBackupStorage, createConfiguredProjectAssetStorage } from "../storage/r2-project-asset-storage.mjs";
@@ -3292,6 +3295,10 @@ function objectsTables(repository) {
   return normalizeOwnedTables("objects", repository.getTables());
 }
 
+function hitboxesTables(repository) {
+  return normalizeOwnedTables("hitboxes", repository.getTables());
+}
+
 function controlsTables(repository) {
   return normalizeOwnedTables("controls", repository.getTables());
 }
@@ -3687,6 +3694,12 @@ class ApiRuntimeDataSource {
     this.objectsRepository = createObjectsToolMockRepository({
       gameWorkspaceRepository: this.gameWorkspaceRepository,
       ...this.sharedOptions,
+    });
+    this.hitboxesRepository = createHitboxesToolMockRepository({
+      gameWorkspaceRepository: this.gameWorkspaceRepository,
+      objectsRepository: this.objectsRepository,
+      ...this.sharedOptions,
+      sessionUserKey: () => this.sessionUserKey,
     });
     this.inputMappingRepository = createInputMappingToolMockRepository({
       gameWorkspaceRepository: this.gameWorkspaceRepository,
@@ -6633,6 +6646,7 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
     if (toolId === "game-design") return this.gameDesignRepository;
     if (toolId === "game-configuration") return this.gameConfigurationRepository;
     if (toolId === "objects") return this.objectsRepository;
+    if (toolId === "hitboxes") return this.hitboxesRepository;
     if (toolId === "controls") return this.inputMappingRepository;
     if (toolId === "game-journey") return this.gameJourneyRepository;
     if (toolId === "palette") return this.paletteRepository;
@@ -6671,6 +6685,12 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
         OBJECT_TYPE_TEMPLATES: this.objectsRepository.OBJECT_TYPE_TEMPLATES,
         OBJECTS_TOOL_TABLES: this.objectsRepository.OBJECTS_TOOL_TABLES,
         STARTER_OBJECTS: this.objectsRepository.STARTER_OBJECTS,
+      };
+    }
+    if (toolId === "hitboxes") {
+      return {
+        DEV_SAMPLE_OBJECTS: this.hitboxesRepository.DEV_SAMPLE_OBJECTS,
+        HITBOXES_TOOL_TABLES: this.hitboxesRepository.HITBOXES_TOOL_TABLES,
       };
     }
     if (toolId === "controls") {
@@ -6848,6 +6868,7 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
       ...gameDesignTables(this.gameDesignRepository),
       ...gameConfigurationTables(this.gameConfigurationRepository),
       ...objectsTables(this.objectsRepository),
+      ...hitboxesTables(this.hitboxesRepository),
       ...controlsTables(this.inputMappingRepository),
       ...(await gameJourneyTables(this.gameJourneyRepository)),
       ...paletteTables(this.paletteRepository),

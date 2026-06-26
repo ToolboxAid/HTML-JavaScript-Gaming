@@ -20,7 +20,7 @@ Order,Tool,Group,Status,Complete
 19,Build Game,Build/Create,Wireframe,No
 20,Game Testing,Play,Wireframe,No
 21,Controls,Platform,Wireframe,No
-22,Hitboxes,Platform,Wireframe,No
+22,Hitboxes,Platform,Under Construction,No
 23,Saved Data,Platform,Wireframe,No
 24,Debug,Platform,Wireframe,No
 25,Performance,Platform,Wireframe,No

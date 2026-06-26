@@ -49,11 +49,10 @@ R100	docs_build/dev/admin-notes/tools/edit_input.txt	archive/docs_build/dev/admi
 R100	docs_build/dev/admin-notes/tools/game config.txt	archive/docs_build/dev/admin-notes/tools/game config.txt
 R100	docs_build/dev/admin-notes/tools/game design.txt	archive/docs_build/dev/admin-notes/tools/game design.txt
 R100	docs_build/dev/admin-notes/tools/game publisher.txt	archive/docs_build/dev/admin-notes/tools/game publisher.txt
-R098	docs_build/dev/admin-notes/tools/index.txt	archive/docs_build/dev/admin-notes/tools/index.txt
+R100	docs_build/dev/admin-notes/tools/index.txt	archive/docs_build/dev/admin-notes/tools/index.txt
 R100	docs_build/dev/roadmaps/MASTER_ROADMAP_FEATURES.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_FEATURES.md
 R100	docs_build/dev/roadmaps/MASTER_ROADMAP_STYLE.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_STYLE.md
 R100	docs_build/dev/roadmaps/POST_MIGRATION_PLATFORM_ROADMAP.md	archive/docs_build/dev/roadmaps/POST_MIGRATION_PLATFORM_ROADMAP.md
-D	assets/toolbox/hitboxes/js/index.js
 A	docs_build/dev/PR/README.md
 R100	docs_build/dev/pr/BUILD_PR.md	docs_build/dev/PR/examples/OWNER_007_BUILD_PR.md
 R100	docs_build/dev/pr/PLAN_PR.md	docs_build/dev/PR/examples/OWNER_007_PLAN_PR.md
@@ -117,30 +116,7 @@ R100	docs_build/dev/specs/TOOL_LAUNCH_SSOT.md	docs_build/dev/ProjectInstructions
 R100	docs_build/dev/specs/TOOL_STATE_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/TOOL_STATE_CONTRACT.md
 R100	docs_build/dev/specs/UPDATE_CHANNEL_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/UPDATE_CHANNEL_CONTRACT.md
 R100	docs_build/dev/specs/VERSION_COMPATIBILITY_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/VERSION_COMPATIBILITY_CONTRACT.md
-D	docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_manual-validation-notes.md
-D	docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_requirement-checklist.md
-D	docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_validation-lane.md
-D	docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation.md
-D	docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation_branch-validation.md
-D	docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation_manual-validation-notes.md
-D	docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation_requirement-checklist.md
-D	docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation_validation-lane.md
-D	docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract.md
-D	docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_branch-validation.md
-D	docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_manual-validation-notes.md
-D	docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_requirement-checklist.md
-D	docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_validation-lane.md
-D	docs_build/dev/reports/PR_26177_DELTA_004-hitboxes-real-object-source.md
-D	docs_build/dev/reports/PR_26177_DELTA_004-hitboxes-real-object-source_branch-validation.md
-D	docs_build/dev/reports/PR_26177_DELTA_004-hitboxes-real-object-source_manual-validation-notes.md
-D	docs_build/dev/reports/PR_26177_DELTA_004-hitboxes-real-object-source_requirement-checklist.md
-D	docs_build/dev/reports/PR_26177_DELTA_004-hitboxes-real-object-source_validation-lane.md
-D	docs_build/dev/reports/PR_26177_DELTA_005-hitboxes-testable-mvp.md
-D	docs_build/dev/reports/PR_26177_DELTA_005-hitboxes-testable-mvp_branch_validation.md
-D	docs_build/dev/reports/PR_26177_DELTA_005-hitboxes-testable-mvp_manual_validation.md
-D	docs_build/dev/reports/PR_26177_DELTA_005-hitboxes-testable-mvp_requirements_checklist.md
-D	docs_build/dev/reports/PR_26177_DELTA_005-hitboxes-testable-mvp_validation_lane.md
-D	docs_build/dev/reports/PR_26177_DELTA_hitboxes_chain_eod_2026-06-26.md
+A	docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup.md
 A	docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_branch-validation.md
 A	docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_manual-validation-notes.md
 A	docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_requirement-checklist.md
@@ -154,11 +130,3 @@ D	project-instructions/addendums/codex-artifact-and-reporting-standard.md
 D	project-instructions/addendums/codex-project-instructions-startup.md
 D	project-instructions/addendums/legacy-migration-policy.md
 D	project-instructions/addendums/test-structure-standardization.md
-M	src/dev-runtime/persistence/mock-db-store.js
-D	src/dev-runtime/persistence/tool-repositories/hitboxes-mock-repository.js
-M	src/dev-runtime/server/local-api-router.mjs
-D	src/engine/collision/hitboxCollision.js
-M	src/shared/toolbox/tool-metadata-inventory.js
-D	tests/engine/HitboxCollisionContract.test.mjs
-D	tests/playwright/tools/HitboxesTool.spec.mjs
-M	toolbox/hitboxes/index.html

@@ -6,7 +6,7 @@
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Hitboxes - GameFoundryStudio</title>
-    <meta name="description" content="Hitboxes Toolbox wireframe. Plan collision, hurtbox, and interaction region workflows.">
+    <meta name="description" content="Creator-facing Hitboxes tool for object-owned collision, hurtbox, trigger, sensor, and motion preview regions.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -18,7 +18,7 @@
             <div class="container">
                 <div class="kicker">Toolbox / Hitboxes</div>
                 <h1>Hitboxes</h1>
-                <p class="lede">Plan collision, hurtbox, and interaction region workflows. Static wireframe only; no database, persistence, save, load, or runtime behavior is implemented.</p>
+                <p class="lede">Author Object-owned hitboxes and preview static or swept collision through the Local API contract.</p>
             </div>
         </section>
         <section class="section">
@@ -26,18 +26,78 @@
                 <div class="tool-workspace tool-workspace--wide">
                     <aside class="tool-column tool-group-platform">
                         <div class="tool-column-header">
-                            <h2>Hitboxes</h2>
+                            <h2>Sources</h2>
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Setup</summary>
-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
+                                <summary>Objects</summary>
+                                <div class="accordion-body content-stack">
+                                    <p>Source: <span data-hitboxes-source-status>Loading Objects.</span></p>
+                                    <label>
+                                        Object A
+                                        <select data-hitboxes-object-a></select>
+                                    </label>
+                                    <label>
+                                        Object B
+                                        <select data-hitboxes-object-b></select>
+                                    </label>
+                                    <p data-hitboxes-object-summary>Create an Object and assign a sprite or vector before editing hitboxes.</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Hitboxes</summary>
+                                <div class="accordion-body content-stack">
+                                    <div class="toolbar">
+                                        <button class="btn btn--compact primary" type="button" data-hitboxes-add-rectangle>Add Rectangle</button>
+                                        <button class="btn btn--compact" type="button" data-hitboxes-delete>Delete</button>
+                                    </div>
+                                    <label>
+                                        Filter
+                                        <select data-hitboxes-filter>
+                                            <option value="all">All</option>
+                                            <option value="hitbox">Hitboxes</option>
+                                            <option value="hurtbox">Hurtboxes</option>
+                                            <option value="trigger">Triggers</option>
+                                            <option value="sensor">Sensors</option>
+                                            <option value="disabled">Disabled</option>
+                                        </select>
+                                    </label>
+                                    <div class="table-wrapper">
+                                        <table class="data-table" aria-label="Hitboxes for selected Object A">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Name</th>
+                                                    <th scope="col">Role</th>
+                                                    <th scope="col">State</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody data-hitboxes-list>
+                                                <tr><td colspan="3">Select Object A.</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </details>
                         </div>
                     </aside>
-                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="hitboxes" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
-                    <section class="tool-center-panel"><h2>Workspace</h2>
-                        <p>Plan collision, hurtbox, and interaction region workflows. This page preserves the shared Theme V2 tool template structure for future rebuild work.</p>
+                    <section class="tool-center-panel">
+                        <div class="surface-header">
+                            <div>
+                                <div class="kicker">Visual Editor</div>
+                                <h2 data-hitboxes-preview-title>No Object selected</h2>
+                            </div>
+                            <div class="toolbar">
+                                <button class="btn btn--compact" type="button" data-hitboxes-run-static>Test Static</button>
+                                <button class="btn btn--compact" type="button" data-hitboxes-run-motion>Run Preview</button>
+                            </div>
+                        </div>
+                        <canvas data-hitboxes-canvas width="760" height="440" aria-label="Hitboxes visual editor canvas"></canvas>
+                        <p data-hitboxes-preview-summary>Select Object A to begin.</p>
+                        <div class="grid cols-3" aria-label="Hitboxes editor status">
+                            <article class="mini-stat"><strong data-hitboxes-object-count>0</strong>Source Objects</article>
+                            <article class="mini-stat"><strong data-hitboxes-collision-result>Not tested</strong>Collision</article>
+                            <article class="mini-stat"><strong data-hitboxes-motion-result>Not run</strong>Motion</article>
+                        </div>
                     </section>
                     <aside class="tool-column tool-group-platform">
                         <div class="tool-column-header">
@@ -45,11 +105,83 @@
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Output</summary>
-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
+                                <summary>Object Metadata</summary>
+                                <div class="accordion-body content-stack">
+                                    <p>Name: <span data-hitboxes-meta-name>None</span></p>
+                                    <p>Key: <span data-hitboxes-meta-key>None</span></p>
+                                    <p>Visual: <span data-hitboxes-meta-visual>None</span></p>
+                                    <p>Bounds: <span data-hitboxes-meta-bounds>None</span></p>
+                                    <p>Origin: <span data-hitboxes-meta-origin>None</span></p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Hitbox Properties</summary>
+                                <div class="accordion-body content-stack">
+                                    <label>
+                                        Name
+                                        <input type="text" data-hitboxes-field="name">
+                                    </label>
+                                    <label>
+                                        Role
+                                        <select data-hitboxes-field="role">
+                                            <option value="hitbox">hitbox</option>
+                                            <option value="hurtbox">hurtbox</option>
+                                            <option value="trigger">trigger</option>
+                                            <option value="sensor">sensor</option>
+                                            <option value="physics">physics</option>
+                                        </select>
+                                    </label>
+                                    <div class="grid cols-2">
+                                        <label>X <input type="number" step="1" data-hitboxes-field="x"></label>
+                                        <label>Y <input type="number" step="1" data-hitboxes-field="y"></label>
+                                        <label>Width <input type="number" min="1" step="1" data-hitboxes-field="width"></label>
+                                        <label>Height <input type="number" min="1" step="1" data-hitboxes-field="height"></label>
+                                    </div>
+                                    <label><input type="checkbox" data-hitboxes-field="enabled"> Enabled</label>
+                                    <label><input type="checkbox" data-hitboxes-field="visible"> Visible</label>
+                                    <button class="btn primary" type="button" data-hitboxes-save>Save Hitboxes</button>
+                                    <div class="status" role="status" data-hitboxes-save-status>Unsaved changes: none</div>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Collision Preview</summary>
+                                <div class="accordion-body content-stack">
+                                    <div class="grid cols-2">
+                                        <label>Object A X <input type="number" step="1" data-hitboxes-collision-field="objectAX"></label>
+                                        <label>Object A Y <input type="number" step="1" data-hitboxes-collision-field="objectAY"></label>
+                                        <label>Object B X <input type="number" step="1" data-hitboxes-collision-field="objectBX"></label>
+                                        <label>Object B Y <input type="number" step="1" data-hitboxes-collision-field="objectBY"></label>
+                                    </div>
+                                    <p>Static: <span data-hitboxes-static-output>Not tested</span></p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Motion Preview</summary>
+                                <div class="accordion-body content-stack">
+                                    <div class="grid cols-2">
+                                        <label>A Start X <input type="number" step="1" data-hitboxes-motion-field="startX"></label>
+                                        <label>A Start Y <input type="number" step="1" data-hitboxes-motion-field="startY"></label>
+                                        <label>A Velocity X <input type="number" step="1" data-hitboxes-motion-field="velocityX"></label>
+                                        <label>A Velocity Y <input type="number" step="1" data-hitboxes-motion-field="velocityY"></label>
+                                        <label>Speed <input type="number" min="0" step="1" data-hitboxes-motion-field="speed"></label>
+                                        <label>Object B X <input type="number" step="1" data-hitboxes-motion-field="targetX"></label>
+                                        <label>Object B Y <input type="number" step="1" data-hitboxes-motion-field="targetY"></label>
+                                        <label>Frame Rate <input type="number" min="1" step="1" data-hitboxes-motion-field="frameRate"></label>
+                                        <label>Step Count <input type="number" min="1" step="1" data-hitboxes-motion-field="stepCount"></label>
+                                    </div>
+                                    <div class="toolbar">
+                                        <button class="btn btn--compact primary" type="button" data-hitboxes-run-motion-alt>Run Preview</button>
+                                        <button class="btn btn--compact" type="button" data-hitboxes-step-motion>Step Frame</button>
+                                        <button class="btn btn--compact" type="button" data-hitboxes-reset-motion>Reset</button>
+                                    </div>
+                                    <p data-hitboxes-motion-output>No collision on path.</p>
+                                </div>
                             </details>
                         </div>
                     </aside>
+                </div>
+                <div class="status" role="status" data-hitboxes-status>
+                    Object A: None | Object B: None | Hitbox: None | Collision: Not tested | Save: idle
                 </div>
             </div>
         </section>
@@ -57,6 +189,6 @@
     <div data-partial="footer"></div>
     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+    <script type="module" src="assets/toolbox/hitboxes/js/index.js"></script>
 </body>
-
 </html>
