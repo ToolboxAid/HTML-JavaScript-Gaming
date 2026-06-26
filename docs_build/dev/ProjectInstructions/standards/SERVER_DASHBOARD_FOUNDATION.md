@@ -1,8 +1,3 @@
-Toolbox Aid
-David Quesenberry
-04/06/2026
-docs_build/dev/toolbox/server-dashboard/README.md
-
 # Server Dashboard Foundation (Docs-First)
 
 ## Purpose

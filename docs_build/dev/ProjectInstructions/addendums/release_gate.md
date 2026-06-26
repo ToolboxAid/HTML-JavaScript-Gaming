@@ -20,6 +20,7 @@ Before a governance, documentation, or administrative PR is merged, validate:
 - Required source-of-truth files still exist.
 - Governance Phase 1 completion guidance remains intact.
 - PR workflow guidance remains intact.
+- Documentation ownership guidance remains intact.
 - Team assignment governance remains intact.
 - Active team registry guidance remains compatible with temporary active teams.
 - Canonical START / WORK / END branch lifecycle guidance remains intact.
@@ -38,6 +39,7 @@ The release gate should confirm these files when relevant to the PR:
 - `docs_build/dev/ProjectInstructions/addendums/governance_phase1_complete.md`
 - `docs_build/dev/ProjectInstructions/addendums/pr_workflow.md`
 - `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`
+- `docs_build/dev/ProjectInstructions/addendums/documentation_ownership.md`
 - `docs_build/dev/ProjectInstructions/addendums/project_reference_files.md`
 - `docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md`
 - `docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md`
@@ -47,8 +49,8 @@ The release gate should confirm these files when relevant to the PR:
 - `docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md`
 - `docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md`
 - `docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md`
-- `docs_build/dev/admin-notes/Installs required.txt` when present
-- `docs_build/dev/admin-notes/Table layout.txt` when present
+- `archive/docs_build/dev/admin-notes/Installs required.txt` when present
+- `archive/docs_build/dev/admin-notes/Table layout.txt` when present
 
 ## Validation Result
 

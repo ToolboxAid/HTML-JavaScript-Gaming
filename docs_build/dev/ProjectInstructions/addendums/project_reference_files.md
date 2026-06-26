@@ -5,19 +5,19 @@ Owner: OWNER
 
 ## Purpose
 
-Define recognized project instruction and reference documents that may live outside the active `docs_build/dev/ProjectInstructions/` addendum tree but still belong in Project Instructions reviews.
+Define recognized project instruction and reference documents that may live in the active `docs_build/dev/ProjectInstructions/` tree or in root `archive/` reference material but still belong in Project Instructions reviews.
 
 ## Recognized Files
 
-The following files are valid project instruction/reference documents when present in `ProjectInstructions.zip`, `docs_build/dev/ProjectInstructions/`, or the project instruction/admin-notes directory:
+The following files are valid project instruction/reference documents when present in `ProjectInstructions.zip`, `docs_build/dev/ProjectInstructions/`, or the archived project instruction/admin-notes reference tree:
 
 - `Installs required.txt`
 - `Table layout.txt`
 
-Canonical repository locations:
+Canonical repository reference locations:
 
-- `docs_build/dev/admin-notes/Installs required.txt`
-- `docs_build/dev/admin-notes/Table layout.txt`
+- `archive/docs_build/dev/admin-notes/Installs required.txt`
+- `archive/docs_build/dev/admin-notes/Table layout.txt`
 
 ## Review Rule
 
@@ -25,7 +25,9 @@ Future Project Instructions reviews must include these files automatically when 
 
 - an extracted `ProjectInstructions.zip` bundle
 - the active project instruction directory
-- `docs_build/dev/admin-notes/`
+- `archive/docs_build/dev/admin-notes/`
+
+Archived reference files are not active governance. If they conflict with active Project Instructions, `docs_build/dev/ProjectInstructions/` wins unless OWNER explicitly approves a newer governance change.
 
 Treat these files the same as existing instruction documents for read-set, review, preservation, and reporting purposes.
 

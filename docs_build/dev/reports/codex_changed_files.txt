@@ -1,87 +1,164 @@
-﻿R100	docs_build/dev/dod/tool_ui_readiness_dod.md	archive/docs_build/dev/dod/tool_ui_readiness_dod.md
-R100	docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md
-R100	docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_APPEND.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_APPEND.md
-R100	docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE.md
-R100	docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE_8_19.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE_8_19.md
-R100	docs_build/dev/roadmaps/MASTER_ROADMAP_RECOVERY.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_RECOVERY.md
-R100	docs_build/dev/roadmaps/MASTER_ROADMAP_SAMPLES2TOOLS.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_SAMPLES2TOOLS.md
-R100	docs_build/dev/roadmaps/MASTER_ROADMAP_TOOLS.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_TOOLS.md
-R100	docs_build/dev/roadmaps/MIDI_STUDIO_V2_ROADMAP.md	archive/docs_build/dev/roadmaps/MIDI_STUDIO_V2_ROADMAP.md
-R100	docs_build/dev/roadmaps/README.md	archive/docs_build/dev/roadmaps/README.md
-R100	docs_build/dev/roadmaps/phases.txt	archive/docs_build/dev/roadmaps/phases.txt
-D	docs_build/dev/BUILD_PR.md
-D	docs_build/dev/BUILD_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT.md
-D	docs_build/dev/NEXT_RESTART.md
-D	docs_build/dev/PLAN_PR.md
-D	docs_build/dev/PLAN_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT.md
-D	docs_build/dev/PROJECT_INSTRUCTIONS.md
-D	docs_build/dev/PROJECT_MULTI_PC.txt
+﻿A	archive/docs_build/dev/ProjectInstructions/archive/README.md
+R100	docs_build/dev/ProjectInstructions/archive/history/.gitkeep	archive/docs_build/dev/ProjectInstructions/archive/history/.gitkeep
+R100	docs_build/dev/ProjectInstructions/archive/history/20260621_144555.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_144555.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260621_153126.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_153126.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260621_153759.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_153759.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260621_154153.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_154153.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260621_154830.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_154830.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260621_155907.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_155907.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260621_161414.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_161414.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260621_161520.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_161520.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260621_161703.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_161703.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260621_163009.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_163009.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260621_231154.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_231154.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260621_231757.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_231757.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260621_233733.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_233733.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260621_235757.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_235757.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260621_235932.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260621_235932.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260622_000449.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260622_000449.md
+R100	docs_build/dev/ProjectInstructions/archive/history/20260622_002424.md	archive/docs_build/dev/ProjectInstructions/archive/history/20260622_002424.md
+R100	docs_build/dev/admin-notes/BusinessPlan.txt	archive/docs_build/dev/admin-notes/BusinessPlan.txt
+R100	docs_build/dev/admin-notes/GFS-AI-Credits-Reseller-Strategy.pdf	archive/docs_build/dev/admin-notes/GFS-AI-Credits-Reseller-Strategy.pdf
+R100	docs_build/dev/admin-notes/GFS-Connected-Play-Second-Screen-Turn-Based-Design-26170-001.pdf	archive/docs_build/dev/admin-notes/GFS-Connected-Play-Second-Screen-Turn-Based-Design-26170-001.pdf
+R100	docs_build/dev/admin-notes/GFS_Design_Messages_Tool_And_Platform_Reference_Rules.pdf	archive/docs_build/dev/admin-notes/GFS_Design_Messages_Tool_And_Platform_Reference_Rules.pdf
+R100	docs_build/dev/admin-notes/GFS_Game_Identity_Strategy.pdf.pdf	archive/docs_build/dev/admin-notes/GFS_Game_Identity_Strategy.pdf.pdf
+R100	docs_build/dev/admin-notes/GFS_Game_Journey_Master_Plan.txt	archive/docs_build/dev/admin-notes/GFS_Game_Journey_Master_Plan.txt
+R100	docs_build/dev/admin-notes/Installs required.txt	archive/docs_build/dev/admin-notes/Installs required.txt
+R100	docs_build/dev/admin-notes/PS_commands.txt	archive/docs_build/dev/admin-notes/PS_commands.txt
+R100	docs_build/dev/admin-notes/Table layout.txt	archive/docs_build/dev/admin-notes/Table layout.txt
+R100	docs_build/dev/admin-notes/admin/index.txt	archive/docs_build/dev/admin-notes/admin/index.txt
+R100	docs_build/dev/admin-notes/colors/colos.txt	archive/docs_build/dev/admin-notes/colors/colos.txt
+R100	docs_build/dev/admin-notes/colors/index.txt	archive/docs_build/dev/admin-notes/colors/index.txt
+R100	docs_build/dev/admin-notes/deployment-uat-prod/index.txt	archive/docs_build/dev/admin-notes/deployment-uat-prod/index.txt
+R100	docs_build/dev/admin-notes/email/index.txt	archive/docs_build/dev/admin-notes/email/index.txt
+R100	docs_build/dev/admin-notes/engine/GameLoop.txt	archive/docs_build/dev/admin-notes/engine/GameLoop.txt
+R100	docs_build/dev/admin-notes/engine/ProjectDifficulty.txt	archive/docs_build/dev/admin-notes/engine/ProjectDifficulty.txt
+R100	docs_build/dev/admin-notes/engine/ProjectLifeCycle.txt	archive/docs_build/dev/admin-notes/engine/ProjectLifeCycle.txt
+R100	docs_build/dev/admin-notes/engine/index.txt	archive/docs_build/dev/admin-notes/engine/index.txt
+R100	docs_build/dev/admin-notes/fonts/index.txt	archive/docs_build/dev/admin-notes/fonts/index.txt
+R100	docs_build/dev/admin-notes/index.txt	archive/docs_build/dev/admin-notes/index.txt
+R100	docs_build/dev/admin-notes/notes/index.txt	archive/docs_build/dev/admin-notes/notes/index.txt
+R100	docs_build/dev/admin-notes/other/index.txt	archive/docs_build/dev/admin-notes/other/index.txt
+R100	docs_build/dev/admin-notes/roadmap2MVP.txt	archive/docs_build/dev/admin-notes/roadmap2MVP.txt
+R100	docs_build/dev/admin-notes/sample.txt	archive/docs_build/dev/admin-notes/sample.txt
+R100	docs_build/dev/admin-notes/tools/ObjectConfigurationRules.txt	archive/docs_build/dev/admin-notes/tools/ObjectConfigurationRules.txt
+R100	docs_build/dev/admin-notes/tools/TestDebug.txt	archive/docs_build/dev/admin-notes/tools/TestDebug.txt
+R100	docs_build/dev/admin-notes/tools/Tools.txt	archive/docs_build/dev/admin-notes/tools/Tools.txt
+R100	docs_build/dev/admin-notes/tools/achievements.txt	archive/docs_build/dev/admin-notes/tools/achievements.txt
+R100	docs_build/dev/admin-notes/tools/edit_input.txt	archive/docs_build/dev/admin-notes/tools/edit_input.txt
+R100	docs_build/dev/admin-notes/tools/game config.txt	archive/docs_build/dev/admin-notes/tools/game config.txt
+R100	docs_build/dev/admin-notes/tools/game design.txt	archive/docs_build/dev/admin-notes/tools/game design.txt
+R100	docs_build/dev/admin-notes/tools/game publisher.txt	archive/docs_build/dev/admin-notes/tools/game publisher.txt
+R098	docs_build/dev/admin-notes/tools/index.txt	archive/docs_build/dev/admin-notes/tools/index.txt
+R100	docs_build/dev/roadmaps/MASTER_ROADMAP_FEATURES.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_FEATURES.md
+R100	docs_build/dev/roadmaps/MASTER_ROADMAP_STYLE.md	archive/docs_build/dev/roadmaps/MASTER_ROADMAP_STYLE.md
+R100	docs_build/dev/roadmaps/POST_MIGRATION_PLATFORM_ROADMAP.md	archive/docs_build/dev/roadmaps/POST_MIGRATION_PLATFORM_ROADMAP.md
+D	assets/toolbox/hitboxes/js/index.js
+A	docs_build/dev/PR/README.md
+R100	docs_build/dev/pr/BUILD_PR.md	docs_build/dev/PR/examples/OWNER_007_BUILD_PR.md
+R100	docs_build/dev/pr/PLAN_PR.md	docs_build/dev/PR/examples/OWNER_007_PLAN_PR.md
+A	docs_build/dev/PR/examples/README.md
+R100	docs_build/dev/pr/plan_pr_tool_workspace_manifest_boundaries.md	docs_build/dev/PR/examples/plan_pr_tool_workspace_manifest_boundaries.md
+R100	docs_build/dev/pr/pr_koti_layout_contract.md	docs_build/dev/PR/examples/pr_koti_layout_contract.md
+R100	docs_build/dev/pr/pr_tool_fix_asset_browser_1505.md	docs_build/dev/PR/examples/pr_tool_fix_asset_browser_1505.md
+R100	docs_build/dev/pr/pr_tool_fix_fullscreen_exit_state.md	docs_build/dev/PR/examples/pr_tool_fix_fullscreen_exit_state.md
+R100	docs_build/dev/pr/pr_tool_fix_parallax_header_metadata.md	docs_build/dev/PR/examples/pr_tool_fix_parallax_header_metadata.md
+R100	docs_build/dev/pr/pr_tool_header_singleline.md	docs_build/dev/PR/examples/pr_tool_header_singleline.md
+R100	docs_build/dev/pr/pr_tool_interactive_uat.md	docs_build/dev/PR/examples/pr_tool_interactive_uat.md
+R100	docs_build/dev/pr/pr_tool_layout_workflow_baseline.md	docs_build/dev/PR/examples/pr_tool_layout_workflow_baseline.md
+R100	docs_build/dev/pr/pr_tool_remove_future_import_hints.md	docs_build/dev/PR/examples/pr_tool_remove_future_import_hints.md
+R100	docs_build/dev/pr/pr_tool_remove_static_header_intro.md	docs_build/dev/PR/examples/pr_tool_remove_static_header_intro.md
+R100	docs_build/dev/pr/pr_tool_stabilization.md	docs_build/dev/PR/examples/pr_tool_stabilization.md
+R100	docs_build/dev/pr/pr_tool_uat_closeout.md	docs_build/dev/PR/examples/pr_tool_uat_closeout.md
+R100	docs_build/dev/pr/pr_tool_uat_fix_fullscreen_header_wiring.md	docs_build/dev/PR/examples/pr_tool_uat_fix_fullscreen_header_wiring.md
+R100	docs_build/dev/pr/pr_tool_uat_fix_header_asset_browser.md	docs_build/dev/PR/examples/pr_tool_uat_fix_header_asset_browser.md
+R100	docs_build/dev/pr/pr_tool_uat_fixes.md	docs_build/dev/PR/examples/pr_tool_uat_fixes.md
+A	docs_build/dev/PR/templates/BUILD_PR.md
+A	docs_build/dev/PR/templates/PLAN_PR.md
+R100	docs_build/dev/templates/pr_capability_bundle_checklist.md	docs_build/dev/PR/templates/pr_capability_bundle_checklist.md
 M	docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 M	docs_build/dev/ProjectInstructions/README.txt
-M	docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
-A	docs_build/dev/ProjectInstructions/addendums/assistant_execution_modes.md
-M	docs_build/dev/ProjectInstructions/addendums/branch_context_governance.md
-M	docs_build/dev/ProjectInstructions/addendums/branch_lock_governance.md
-A	docs_build/dev/ProjectInstructions/addendums/canonical_repository_structure.md
-A	docs_build/dev/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
-A	docs_build/dev/ProjectInstructions/addendums/codex_project_instructions_startup.md
-R100	docs_build/dev/koti_layout_contract.md	docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md
-A	docs_build/dev/ProjectInstructions/addendums/legacy_migration_policy.md
-M	docs_build/dev/ProjectInstructions/addendums/multi_team.md
-A	docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md
-M	docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
-M	docs_build/dev/ProjectInstructions/addendums/preservation.md
-A	docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
+M	docs_build/dev/ProjectInstructions/addendums/codex_project_instructions_startup.md
+A	docs_build/dev/ProjectInstructions/addendums/documentation_ownership.md
+M	docs_build/dev/ProjectInstructions/addendums/project_reference_files.md
 M	docs_build/dev/ProjectInstructions/addendums/release_gate.md
-R100	docs_build/dev/samples2tools_adapter_guidance.md	docs_build/dev/ProjectInstructions/addendums/samples2tools_adapter_guidance.md
-M	docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
-M	docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
-A	docs_build/dev/ProjectInstructions/addendums/test_structure_standardization.md
-A	docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md
-R100	docs_build/dev/workspace_v2_playwright_gate.md	docs_build/dev/ProjectInstructions/addendums/workspace_v2_playwright_gate.md
-M	docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
-D	docs_build/dev/bundle_readme.md
-D	docs_build/dev/codex_commands.md
-D	docs_build/dev/codex_rules.md
-D	docs_build/dev/commit_comment.txt
-A	docs_build/dev/pr/BUILD_PR.md
-A	docs_build/dev/pr/PLAN_PR.md
-R100	docs_build/dev/plan_pr_tool_workspace_manifest_boundaries.md	docs_build/dev/pr/plan_pr_tool_workspace_manifest_boundaries.md
-R096	docs_build/dev/pr_koti_layout_contract.md	docs_build/dev/pr/pr_koti_layout_contract.md
-R100	docs_build/dev/pr_tool_fix_asset_browser_1505.md	docs_build/dev/pr/pr_tool_fix_asset_browser_1505.md
-R100	docs_build/dev/pr_tool_fix_fullscreen_exit_state.md	docs_build/dev/pr/pr_tool_fix_fullscreen_exit_state.md
-R100	docs_build/dev/pr_tool_fix_parallax_header_metadata.md	docs_build/dev/pr/pr_tool_fix_parallax_header_metadata.md
-R100	docs_build/dev/pr_tool_header_singleline.md	docs_build/dev/pr/pr_tool_header_singleline.md
-R100	docs_build/dev/pr_tool_interactive_uat.md	docs_build/dev/pr/pr_tool_interactive_uat.md
-R100	docs_build/dev/pr_tool_layout_workflow_baseline.md	docs_build/dev/pr/pr_tool_layout_workflow_baseline.md
-R100	docs_build/dev/pr_tool_remove_future_import_hints.md	docs_build/dev/pr/pr_tool_remove_future_import_hints.md
-R100	docs_build/dev/pr_tool_remove_static_header_intro.md	docs_build/dev/pr/pr_tool_remove_static_header_intro.md
-R100	docs_build/dev/pr_tool_stabilization.md	docs_build/dev/pr/pr_tool_stabilization.md
-R100	docs_build/dev/pr_tool_uat_closeout.md	docs_build/dev/pr/pr_tool_uat_closeout.md
-R100	docs_build/dev/pr_tool_uat_fix_fullscreen_header_wiring.md	docs_build/dev/pr/pr_tool_uat_fix_fullscreen_header_wiring.md
-R100	docs_build/dev/pr_tool_uat_fix_header_asset_browser.md	docs_build/dev/pr/pr_tool_uat_fix_header_asset_browser.md
-R100	docs_build/dev/pr_tool_uat_fixes.md	docs_build/dev/pr/pr_tool_uat_fixes.md
-A	docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock.md
-A	docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_branch-validation.md
-A	docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_manual-validation-notes.md
-A	docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_requirement-checklist.md
-A	docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_validation-lane.md
-R100	docs_build/dev/component-audit.md	docs_build/dev/reports/audits/component-audit.md
-R100	docs_build/dev/css-audit.md	docs_build/dev/reports/audits/css-audit.md
-R100	docs_build/dev/security-audit.md	docs_build/dev/reports/audits/security-audit.md
+D	docs_build/dev/ProjectInstructions/archive/README.md
+R100	docs_build/dev/specs/AUDIT_EVENT_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/AUDIT_EVENT_CONTRACT.md
+R100	docs_build/dev/specs/BACKUP_SNAPSHOT_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/BACKUP_SNAPSHOT_CONTRACT.md
+R100	docs_build/dev/specs/COLLABORATION_ROLE_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/COLLABORATION_ROLE_CONTRACT.md
+R100	docs_build/dev/specs/CREATOR_PROFILE_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/CREATOR_PROFILE_CONTRACT.md
+R100	docs_build/dev/specs/DOWNLOAD_GRANT_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/DOWNLOAD_GRANT_CONTRACT.md
+R100	docs_build/dev/specs/ENTITLEMENT_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/ENTITLEMENT_CONTRACT.md
+R100	docs_build/dev/specs/GAME_MANIFEST_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/GAME_MANIFEST_CONTRACT.md
+R100	docs_build/dev/specs/IDENTITY_PERMISSIONS_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/IDENTITY_PERMISSIONS_CONTRACT.md
+R100	docs_build/dev/specs/IDENTITY_PERMISSIONS_MODEL.md	docs_build/dev/ProjectInstructions/standards/IDENTITY_PERMISSIONS_MODEL.md
+R100	docs_build/dev/specs/INSTALL_RECEIPT_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/INSTALL_RECEIPT_CONTRACT.md
+R100	docs_build/dev/specs/LAUNCHER_PAIRING_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/LAUNCHER_PAIRING_CONTRACT.md
+R100	docs_build/dev/specs/LIBRARY_ITEM_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/LIBRARY_ITEM_CONTRACT.md
+R100	docs_build/dev/specs/MARKETPLACE_LISTING_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/MARKETPLACE_LISTING_CONTRACT.md
+R100	docs_build/dev/specs/MARKETPLACE_TRANSACTION_BOUNDARY_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/MARKETPLACE_TRANSACTION_BOUNDARY_CONTRACT.md
+R100	docs_build/dev/specs/MIGRATION_PLAN_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/MIGRATION_PLAN_CONTRACT.md
+R100	docs_build/dev/specs/MODERATION_QUEUE_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/MODERATION_QUEUE_CONTRACT.md
+R100	docs_build/dev/specs/NOTIFICATION_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/NOTIFICATION_CONTRACT.md
+R100	docs_build/dev/specs/ORGANIZATION_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/ORGANIZATION_CONTRACT.md
+R100	docs_build/dev/specs/PLATFORM_DATA_OWNERSHIP_MODEL.md	docs_build/dev/ProjectInstructions/standards/PLATFORM_DATA_OWNERSHIP_MODEL.md
+R100	docs_build/dev/specs/PROJECTWORKSPACE_VALIDATION_BOUNDARIES.md	docs_build/dev/ProjectInstructions/standards/PROJECTWORKSPACE_VALIDATION_BOUNDARIES.md
+R100	docs_build/dev/specs/PROJECT_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/PROJECT_CONTRACT.md
+R100	docs_build/dev/specs/PROJECT_LIFECYCLE_MODEL.md	docs_build/dev/ProjectInstructions/standards/PROJECT_LIFECYCLE_MODEL.md
+R100	docs_build/dev/specs/PROJECT_TYPE_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/PROJECT_TYPE_CONTRACT.md
+R100	docs_build/dev/specs/PROJECT_WORKSPACE_RUNTIME_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/PROJECT_WORKSPACE_RUNTIME_CONTRACT.md
+R100	docs_build/dev/specs/PUBLISH_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/PUBLISH_CONTRACT.md
+A	docs_build/dev/ProjectInstructions/standards/README.md
+R100	docs_build/dev/specs/RELEASE_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/RELEASE_CONTRACT.md
+R100	docs_build/dev/specs/RESTORE_SNAPSHOT_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/RESTORE_SNAPSHOT_CONTRACT.md
+R100	docs_build/dev/specs/REVIEW_RATING_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/REVIEW_RATING_CONTRACT.md
+R095	docs_build/dev/toolbox/server-dashboard/README.md	docs_build/dev/ProjectInstructions/standards/SERVER_DASHBOARD_FOUNDATION.md
+R100	docs_build/dev/specs/TOOL_LAUNCH_SSOT.md	docs_build/dev/ProjectInstructions/standards/TOOL_LAUNCH_SSOT.md
+R100	docs_build/dev/specs/TOOL_STATE_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/TOOL_STATE_CONTRACT.md
+R100	docs_build/dev/specs/UPDATE_CHANNEL_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/UPDATE_CHANNEL_CONTRACT.md
+R100	docs_build/dev/specs/VERSION_COMPATIBILITY_CONTRACT.md	docs_build/dev/ProjectInstructions/standards/VERSION_COMPATIBILITY_CONTRACT.md
+D	docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_manual-validation-notes.md
+D	docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_requirement-checklist.md
+D	docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_validation-lane.md
+D	docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation.md
+D	docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation_branch-validation.md
+D	docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation_manual-validation-notes.md
+D	docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation_requirement-checklist.md
+D	docs_build/dev/reports/PR_26177_DELTA_002-hitboxes-foundation_validation-lane.md
+D	docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract.md
+D	docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_branch-validation.md
+D	docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_manual-validation-notes.md
+D	docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_requirement-checklist.md
+D	docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_validation-lane.md
+D	docs_build/dev/reports/PR_26177_DELTA_004-hitboxes-real-object-source.md
+D	docs_build/dev/reports/PR_26177_DELTA_004-hitboxes-real-object-source_branch-validation.md
+D	docs_build/dev/reports/PR_26177_DELTA_004-hitboxes-real-object-source_manual-validation-notes.md
+D	docs_build/dev/reports/PR_26177_DELTA_004-hitboxes-real-object-source_requirement-checklist.md
+D	docs_build/dev/reports/PR_26177_DELTA_004-hitboxes-real-object-source_validation-lane.md
+D	docs_build/dev/reports/PR_26177_DELTA_005-hitboxes-testable-mvp.md
+D	docs_build/dev/reports/PR_26177_DELTA_005-hitboxes-testable-mvp_branch_validation.md
+D	docs_build/dev/reports/PR_26177_DELTA_005-hitboxes-testable-mvp_manual_validation.md
+D	docs_build/dev/reports/PR_26177_DELTA_005-hitboxes-testable-mvp_requirements_checklist.md
+D	docs_build/dev/reports/PR_26177_DELTA_005-hitboxes-testable-mvp_validation_lane.md
+D	docs_build/dev/reports/PR_26177_DELTA_hitboxes_chain_eod_2026-06-26.md
+A	docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_branch-validation.md
+A	docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_manual-validation-notes.md
+A	docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_requirement-checklist.md
+A	docs_build/dev/reports/PR_26177_OWNER_008-dev-documentation-ownership-cleanup_validation-lane.md
 M	docs_build/dev/reports/codex_changed_files.txt
 M	docs_build/dev/reports/codex_review.diff
-A	docs_build/dev/reports/legacy-docs-archive-report.md
-D	docs_build/dev/restart_notes_11_105.md
-D	docs_build/dev/restart_notes_11_110.md
-D	docs_build/dev/restart_notes_11_111.md
-D	docs_build/dev/restart_notes_11_112.md
-D	docs_build/dev/restart_notes_11_116.md
-D	docs_build/dev/restart_notes_11_118.md
-D	docs_build/dev/restart_notes_11_119.md
-D	docs_build/dev/restart_notes_11_120.md
-D	docs_build/dev/restart_notes_11_121.md
-D	docs_build/dev/restart_notes_11_122.md
-D	docs_build/dev/restart_notes_11_123.md
-D	docs_build/dev/validation_checklist.txt
-A	project-instructions/README.md
+A	docs_build/dev/reports/documentation-ownership-report.md
+D	project-instructions/addendums/assistant-execution-modes.md
+D	project-instructions/addendums/canonical-repository-structure.md
+D	project-instructions/addendums/codex-artifact-and-reporting-standard.md
+D	project-instructions/addendums/codex-project-instructions-startup.md
+D	project-instructions/addendums/legacy-migration-policy.md
+D	project-instructions/addendums/test-structure-standardization.md
+M	src/dev-runtime/persistence/mock-db-store.js
+D	src/dev-runtime/persistence/tool-repositories/hitboxes-mock-repository.js
+M	src/dev-runtime/server/local-api-router.mjs
+D	src/engine/collision/hitboxCollision.js
+M	src/shared/toolbox/tool-metadata-inventory.js
+D	tests/engine/HitboxCollisionContract.test.mjs
+D	tests/playwright/tools/HitboxesTool.spec.mjs
+M	toolbox/hitboxes/index.html

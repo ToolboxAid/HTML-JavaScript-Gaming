@@ -17,9 +17,11 @@ The Project Instructions operating system provides additive governance for:
 - backlog ownership
 - team assignments
 - multi-team branch and scope rules
+- documentation ownership
 - Build Path status synchronization
 - tile overlay status behavior
 - deprecation workflow
+- contract and platform standards
 - archive and history preservation
 - recognized project instruction/reference files
 - environment governance
@@ -34,13 +36,23 @@ Existing Project Instructions outside `docs_build/dev/ProjectInstructions/` rema
 - `addendums/` contains additive governance rules.
 - `backlog/` contains the central backlog file, `BACKLOG_MASTER.md`.
 - `team_assignments/` contains current team assignment records.
+- `standards/` contains active contract, model, and platform standards.
 - `deprecation/` contains deprecation workflow documentation.
 - Retained reference material belongs under the repository root `archive/` tree, not under `docs_build/dev/`.
 - History snapshots belong under `archive/docs_build/dev/ProjectInstructions/history/`.
 
 ## Recognized Project Reference Files
 
-`docs_build/dev/ProjectInstructions/addendums/project_reference_files.md` defines additional valid project instruction/reference files that must be included in future Project Instructions reviews when present in `ProjectInstructions.zip`, the active project instruction directory, or `docs_build/dev/admin-notes/`.
+`docs_build/dev/ProjectInstructions/addendums/project_reference_files.md` defines additional valid project instruction/reference files that must be included in future Project Instructions reviews when present in `ProjectInstructions.zip`, the active project instruction directory, or the root archive reference tree.
+
+## Documentation Ownership
+
+`docs_build/dev/ProjectInstructions/addendums/documentation_ownership.md` defines the active documentation ownership model:
+
+- `docs_build/dev/ProjectInstructions/` owns governance, team instructions, standards, and addendums.
+- `docs_build/dev/PR/` owns PR workflow documents, templates, and examples.
+- `docs_build/dev/reports/` owns generated reports, audits, and validation artifacts.
+- root `archive/` owns historical reference material only.
 
 ## Environment Governance
 
@@ -59,6 +71,12 @@ Existing Project Instructions outside `docs_build/dev/ProjectInstructions/` rema
 `docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md` defines the Creator-facing stacked PR standard for tool MVP work.
 
 `docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md` defines the Browser → API → Database product-data rule and mock repository technical debt boundary.
+
+## Standards
+
+Active contract, model, and platform standards live under:
+
+`docs_build/dev/ProjectInstructions/standards/`
 
 ## Single Source and Main Lock Governance
 

@@ -1,10 +1,10 @@
 Read this file first.
 
 Folder purpose:
-This folder is the only active Project Instructions source for Game Foundry Studio. It organizes active governance, backlog, team assignment, deprecation, and history material under `docs_build/dev/ProjectInstructions/`.
+This folder is the only active Project Instructions source for Game Foundry Studio. It organizes active governance, backlog, team assignment, standards, deprecation, and history material under `docs_build/dev/ProjectInstructions/`.
 
 Preservation rules:
-Preserve historical Project Instructions material as deprecated reference only. Do not treat root-level copies in `docs_build/dev/`, `project-instructions/`, or archived snapshots as active instruction sources. When a conflict appears, `docs_build/dev/ProjectInstructions/` wins unless OWNER explicitly approves a newer governance change.
+Preserve historical Project Instructions material as deprecated reference only. Do not treat root-level copies in `docs_build/dev/`, `project-instructions/`, `archive/`, or archived snapshots as active instruction sources. When a conflict appears, `docs_build/dev/ProjectInstructions/` wins unless OWNER explicitly approves a newer governance change.
 
 Backlog workflow:
 Backlog work is tracked under backlog/. BACKLOG_MASTER.md is the planned source for backlog item status, notes, and references. Backlog item text is treated as immutable once created; status and notes may change under the governance addendums.
@@ -46,6 +46,7 @@ READ THIS FIRST
 12. Follow the canonical START / WORK / END lifecycle.
 
 Addendum index:
+- Documentation Ownership: docs_build/dev/ProjectInstructions/addendums/documentation_ownership.md
 - Single Source and EOD Main Lock: docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
 - Canonical Repository Structure: docs_build/dev/ProjectInstructions/addendums/canonical_repository_structure.md
 - Test Structure Standardization: docs_build/dev/ProjectInstructions/addendums/test_structure_standardization.md
@@ -61,3 +62,10 @@ Addendum index:
 - King of the Iceberg Layout Contract: docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md
 - Tool MVP Stacked PR Standard: docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md
 - No Mock Repository Runtime Source: docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md
+
+Standards index:
+- Active contract, model, and platform standards: docs_build/dev/ProjectInstructions/standards/
+
+PR documentation:
+- Reusable PR templates: docs_build/dev/PR/templates/
+- Historical/example PR documents: docs_build/dev/PR/examples/
