@@ -7,8 +7,11 @@ const elements = {
   add: document.querySelector("[data-sprites-add]"),
   apiStatus: document.querySelector("[data-sprites-api-status]"),
   count: document.querySelector("[data-sprites-count]"),
+  categoryFilter: document.querySelector("[data-sprites-category-filter]"),
+  clearFilters: document.querySelector("[data-sprites-clear-filters]"),
   emptyState: document.querySelector("[data-sprites-empty-state]"),
   errorState: document.querySelector("[data-sprites-error-state]"),
+  filterStatus: document.querySelector("[data-sprites-filter-status]"),
   libraryStatus: document.querySelector("[data-sprites-library-status]"),
   metadata: document.querySelector("[data-sprites-metadata]"),
   outputStatus: document.querySelector("[data-sprites-output-status]"),
@@ -19,8 +22,11 @@ const elements = {
   refresh: document.querySelector("[data-sprites-refresh]"),
   replace: document.querySelector("[data-sprites-replace]"),
   replaceStatus: document.querySelector("[data-sprites-replace-status]"),
+  search: document.querySelector("[data-sprites-search]"),
   storageStatus: document.querySelector("[data-sprites-storage-status]"),
+  statusFilter: document.querySelector("[data-sprites-status-filter]"),
   tableBody: document.querySelector("[data-sprites-table-body]"),
+  tagFilter: document.querySelector("[data-sprites-tag-filter]"),
   updated: document.querySelector("[data-sprites-updated]"),
   validation: document.querySelector("[data-sprites-validation]"),
   duplicate: document.querySelector("[data-sprites-duplicate]"),
@@ -172,6 +178,16 @@ function paletteKeysFor(sprite) {
   return [];
 }
 
+function tagKeysFor(sprite) {
+  if (Array.isArray(sprite?.tagKeys)) {
+    return sprite.tagKeys.map((key) => String(key || "").trim()).filter(Boolean);
+  }
+  if (Array.isArray(sprite?.tag_keys)) {
+    return sprite.tag_keys.map((key) => String(key || "").trim()).filter(Boolean);
+  }
+  return [];
+}
+
 function usageCountFor(sprite) {
   const count = Number(sprite?.usageCount ?? sprite?.usage_count ?? sprite?.references?.length);
   return Number.isFinite(count) && count >= 0 ? String(count) : "0";
@@ -192,12 +208,93 @@ function spriteRowsFromPayload(payload) {
   return [];
 }
 
+function uniqueSorted(values) {
+  return [...new Set(values.map((value) => String(value || "").trim()).filter(Boolean))]
+    .sort((left, right) => left.localeCompare(right, undefined, { sensitivity: "base" }));
+}
+
+function setSelectOptions(select, values, allLabel) {
+  if (!select) {
+    return;
+  }
+  const current = select.value;
+  const options = [""].concat(values);
+  select.replaceChildren(...options.map((value) => {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = value || allLabel;
+    return option;
+  }));
+  select.value = options.includes(current) ? current : "";
+}
+
+function renderFilterOptions(sprites) {
+  setSelectOptions(elements.statusFilter, SPRITE_STATUSES, "All statuses");
+  setSelectOptions(elements.categoryFilter, uniqueSorted(sprites.map((sprite) => sprite.category)), "All categories");
+  setSelectOptions(elements.tagFilter, uniqueSorted(sprites.flatMap(tagKeysFor)), "All tag keys");
+}
+
+function filterValues() {
+  return {
+    category: String(elements.categoryFilter?.value || "").trim(),
+    search: String(elements.search?.value || "").trim().toLowerCase(),
+    status: String(elements.statusFilter?.value || "").trim(),
+    tagKey: String(elements.tagFilter?.value || "").trim(),
+  };
+}
+
+function spriteMatchesFilters(sprite, filters) {
+  if (filters.status && sprite.status !== filters.status) {
+    return false;
+  }
+  if (filters.category && sprite.category !== filters.category) {
+    return false;
+  }
+  if (filters.tagKey && !tagKeysFor(sprite).includes(filters.tagKey)) {
+    return false;
+  }
+  if (!filters.search) {
+    return true;
+  }
+  const haystack = [
+    sprite.name,
+    sprite.status,
+    sprite.category,
+    sprite.source,
+    sprite.storagePath,
+    ...tagKeysFor(sprite),
+    ...paletteKeysFor(sprite),
+  ].map((value) => String(value || "").toLowerCase()).join(" ");
+  return haystack.includes(filters.search);
+}
+
+function filteredSprites() {
+  const filters = filterValues();
+  return currentSprites.filter((sprite) => spriteMatchesFilters(sprite, filters));
+}
+
+function renderFilterStatus(visibleCount, totalCount) {
+  if (totalCount === 0) {
+    setText(elements.filterStatus, "No API-backed Sprites records are available to filter.");
+    return;
+  }
+  const filters = filterValues();
+  const activeFilters = Object.values(filters).filter(Boolean).length;
+  setText(
+    elements.filterStatus,
+    activeFilters > 0
+      ? `${visibleCount} of ${totalCount} Sprites records match current filters.`
+      : `${totalCount} Sprites records available.`
+  );
+}
+
 function renderLoading() {
   setText(elements.apiStatus, "Loading");
   setText(elements.libraryStatus, "Loading");
   setText(elements.outputStatus, "Loading");
   setText(elements.outputSummary, "Waiting for Sprites API response.");
   setActionStatus("Loading Sprites records.");
+  setText(elements.filterStatus, "Filters load with API-backed Sprites records.");
   setText(elements.storageStatus, "Storage import is checking API capabilities.");
   setText(elements.replaceStatus, "Select a sprite to update source metadata through the API.");
   setText(elements.emptyState, "Loading Sprites records.");
@@ -226,6 +323,7 @@ function renderUnavailable(message) {
   setText(elements.paletteStatus, "Palette/Colors references unavailable until Sprites records load from the API.");
   setText(elements.paletteSelectionStatus, "Palette/Colors selection unavailable until API-backed key records are available.");
   setText(elements.storageStatus, "Storage import unavailable because the Sprites API is not responding.");
+  setText(elements.filterStatus, "Filters unavailable until Sprites records load from the API.");
   setText(elements.replaceStatus, "Replace metadata unavailable until the Sprites API responds.");
   renderPreviewPanel(null);
   setText(elements.updated, new Date().toLocaleTimeString());
@@ -316,13 +414,13 @@ function selectSprite(sprite) {
   renderPreviewPanel(sprite);
 }
 
-function renderRows(sprites) {
+function renderRows(sprites, emptyMessage = "No Sprites records returned by the API.") {
   if (!elements.tableBody) {
     return;
   }
   if (sprites.length === 0) {
     const row = document.createElement("tr");
-    const cell = createCell("No Sprites records returned by the API.");
+    const cell = createCell(emptyMessage);
     cell.colSpan = 9;
     row.append(cell);
     elements.tableBody.replaceChildren(...(editingKey === "__new__" ? [createEditRow(), row] : [row]));
@@ -425,11 +523,13 @@ function renderSprites(payload) {
   const sprites = spriteRowsFromPayload(payload);
   currentSprites = sprites;
   const count = sprites.length;
+  renderFilterOptions(sprites);
+  const visibleSprites = filteredSprites();
   setText(elements.apiStatus, "Ready");
   setText(elements.libraryStatus, count > 0 ? "Ready" : "Empty");
   setText(elements.count, String(count));
   setText(elements.outputStatus, count > 0 ? "Ready" : "Empty");
-  setText(elements.outputSummary, count > 0 ? `${count} sprite record${count === 1 ? "" : "s"} loaded from the API.` : "Sprites API responded with no records.");
+  setText(elements.outputSummary, count > 0 ? `${visibleSprites.length} of ${count} sprite record${count === 1 ? "" : "s"} displayed from the API.` : "Sprites API responded with no records.");
   setText(elements.emptyState, count > 0 ? "" : "No Sprites records returned by the API.");
   setText(elements.updated, new Date().toLocaleTimeString());
   setText(elements.metadata, count > 0 ? "Select a sprite row to review its metadata." : "No sprite metadata available yet.");
@@ -440,7 +540,11 @@ function renderSprites(payload) {
   setHidden(elements.emptyState, count > 0);
   setHidden(elements.errorState, true);
   renderPaletteStatus(sprites);
-  renderRows(sprites);
+  renderFilterStatus(visibleSprites.length, count);
+  renderRows(
+    visibleSprites,
+    count > 0 ? "No Sprites records match current filters." : "No Sprites records returned by the API."
+  );
 }
 
 function bodyFromSprite(sprite, overrides = {}) {
@@ -648,7 +752,7 @@ elements.refresh?.addEventListener("click", () => {
 
 elements.add?.addEventListener("click", () => {
   editingKey = "__new__";
-  renderRows(currentSprites);
+  renderRows(filteredSprites());
   setActionStatus("New sprite row ready. Name and status are required.");
 });
 
@@ -665,13 +769,13 @@ elements.tableBody?.addEventListener("click", (event) => {
   const duplicateKey = target.dataset.spritesDuplicateRow;
   if (editKey !== undefined) {
     editingKey = editKey;
-    renderRows(currentSprites);
+    renderRows(filteredSprites());
     setActionStatus("Editing sprite row. Name and status are required.");
     return;
   }
   if (cancelKey !== undefined) {
     editingKey = "";
-    renderRows(currentSprites);
+    renderRows(filteredSprites());
     setActionStatus("Sprite edit cancelled.");
     return;
   }
@@ -701,6 +805,39 @@ elements.duplicate?.addEventListener("click", () => {
 
 elements.replace?.addEventListener("click", () => {
   void replaceSpriteMetadata(selectedSpriteKey);
+});
+
+[elements.search, elements.statusFilter, elements.categoryFilter, elements.tagFilter].forEach((control) => {
+  control?.addEventListener("input", () => {
+    editingKey = "";
+    const visibleSprites = filteredSprites();
+    renderFilterStatus(visibleSprites.length, currentSprites.length);
+    renderRows(visibleSprites, "No Sprites records match current filters.");
+  });
+  control?.addEventListener("change", () => {
+    editingKey = "";
+    const visibleSprites = filteredSprites();
+    renderFilterStatus(visibleSprites.length, currentSprites.length);
+    renderRows(visibleSprites, "No Sprites records match current filters.");
+  });
+});
+
+elements.clearFilters?.addEventListener("click", () => {
+  if (elements.search) {
+    elements.search.value = "";
+  }
+  if (elements.statusFilter) {
+    elements.statusFilter.value = "";
+  }
+  if (elements.categoryFilter) {
+    elements.categoryFilter.value = "";
+  }
+  if (elements.tagFilter) {
+    elements.tagFilter.value = "";
+  }
+  const visibleSprites = filteredSprites();
+  renderFilterStatus(visibleSprites.length, currentSprites.length);
+  renderRows(visibleSprites);
 });
 
 void loadSprites();

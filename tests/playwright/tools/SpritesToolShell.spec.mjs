@@ -391,3 +391,74 @@ test("Sprites shell duplicates with API-owned key and replaces metadata through 
     await server.close();
   }
 });
+
+test("Sprites shell filters API-backed records by search, category, status, and tag key", async ({ page }) => {
+  const server = await openSpritesPage(page, async (currentPage) => {
+    await currentPage.route("**/api/sprites/records", async (route) => {
+      await route.fulfill({
+        body: JSON.stringify({
+          data: {
+            sprites: [
+              {
+                category: "Characters",
+                key: "01J1FILTERHERO000000000000",
+                name: "Hero Walk",
+                source: "hero-walk.png",
+                status: "ready",
+                tagKeys: ["hero", "player"],
+                updatedAt: "2026-06-26T13:00:00.000Z",
+                usageCount: 0,
+              },
+              {
+                category: "Effects",
+                key: "01J1FILTERSPARK00000000000",
+                name: "Spark Burst",
+                source: "spark.png",
+                status: "draft",
+                tagKeys: ["effect"],
+                updatedAt: "2026-06-26T13:05:00.000Z",
+                usageCount: 0,
+              },
+              {
+                category: "Characters",
+                key: "01J1FILTERVILLAIN000000000",
+                name: "Boss Idle",
+                source: "boss-idle.png",
+                status: "published",
+                tagKeys: ["boss"],
+                updatedAt: "2026-06-26T13:10:00.000Z",
+                usageCount: 0,
+              },
+            ],
+          },
+          ok: true,
+        }),
+        contentType: "application/json",
+        status: 200,
+      });
+    });
+  });
+
+  try {
+    await expect(page.locator("[data-sprites-filter-status]")).toHaveText("3 Sprites records available.");
+    await page.getByLabel("Search Sprites").fill("hero");
+    await expect(page.locator("[data-sprites-table-body]")).toContainText("Hero Walk");
+    await expect(page.locator("[data-sprites-table-body]")).not.toContainText("Spark Burst");
+    await expect(page.locator("[data-sprites-filter-status]")).toHaveText("1 of 3 Sprites records match current filters.");
+    await page.getByRole("button", { name: "Clear Filters" }).click();
+    await page.getByLabel("Filter Sprites by category").selectOption("Characters");
+    await expect(page.locator("[data-sprites-table-body]")).toContainText("Hero Walk");
+    await expect(page.locator("[data-sprites-table-body]")).toContainText("Boss Idle");
+    await expect(page.locator("[data-sprites-table-body]")).not.toContainText("Spark Burst");
+    await page.getByLabel("Filter Sprites by status").selectOption("published");
+    await expect(page.locator("[data-sprites-table-body]")).toContainText("Boss Idle");
+    await expect(page.locator("[data-sprites-table-body]")).not.toContainText("Hero Walk");
+    await page.getByRole("button", { name: "Clear Filters" }).click();
+    await page.getByLabel("Filter Sprites by tag key").selectOption("effect");
+    await expect(page.locator("[data-sprites-table-body]")).toContainText("Spark Burst");
+    await expect(page.locator("[data-sprites-table-body]")).not.toContainText("Hero Walk");
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await server.close();
+  }
+});

@@ -3,22 +3,22 @@ M assets/toolbox/sprites/js/index.js
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
  M tests/playwright/tools/SpritesToolShell.spec.mjs
  M toolbox/sprites/index.html
-?? docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-branch-validation.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-manual-validation-notes.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-requirements-checklist.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-validation-lane.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-branch-validation.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-manual-validation-notes.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-requirements-checklist.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-validation-lane.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-branch-validation.md
-docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-manual-validation-notes.md
-docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-requirements-checklist.md
-docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette-validation-lane.md
-docs_build/dev/reports/PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette.md
+docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-branch-validation.md
+docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-manual-validation-notes.md
+docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-requirements-checklist.md
+docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-validation-lane.md
+docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search.md
 
 # git diff --stat
-assets/toolbox/sprites/js/index.js                 | 183 ++++++++++++++++++++-
+assets/toolbox/sprites/js/index.js                 | 151 ++++++++++++++++++++-
  .../dev/reports/playwright_v8_coverage_report.txt  |   4 +-
- tests/playwright/tools/SpritesToolShell.spec.mjs   | 138 ++++++++++++++++
+ tests/playwright/tools/SpritesToolShell.spec.mjs   |  71 ++++++++++
  toolbox/sprites/index.html                         |  15 ++
- 4 files changed, 334 insertions(+), 6 deletions(-)
+ 4 files changed, 232 insertions(+), 9 deletions(-)
