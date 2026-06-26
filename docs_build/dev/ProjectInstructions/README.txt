@@ -50,3 +50,4 @@ Addendum index:
 - Codex Project Instructions Startup: project-instructions/addendums/codex-project-instructions-startup.md
 - Project Reference Files Governance: docs_build/dev/ProjectInstructions/addendums/project_reference_files.md
 - Environment Governance Model: docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md
+- Environment Configuration Standards: docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md

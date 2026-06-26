@@ -112,3 +112,7 @@ Rules:
 ## Scope Boundary
 
 This governance addendum defines documentation and configuration contract rules only. It does not change runtime code, API implementation code, storage implementation code, database DDL, or secret values.
+
+## Related Configuration Standard
+
+`docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md` defines the official `.env` file names, allowed `GAMEFOUNDRY_ENVIRONMENT` values, display-only environment label rule, host/domain configuration, API URL configuration, and feature flag governance.

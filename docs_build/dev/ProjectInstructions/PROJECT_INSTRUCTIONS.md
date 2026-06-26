@@ -39,6 +39,8 @@ Existing Project Instructions remain preserved in their current locations. This 
 
 `docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md` defines the official environment model, environment invariance rule, shared API/service contract rule, required Supabase/Postgres/R2 services, required R2 prefixes, and SQLite retired status.
 
+`docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md` defines official `.env` file names, environment variable values, host/domain configuration, API URL configuration, R2 prefix configuration, and feature flag governance.
+
 ## Merge Control
 
 No PR in this operating system is merged without explicit owner approval.
