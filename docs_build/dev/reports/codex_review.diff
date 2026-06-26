@@ -1,101 +1,182 @@
-﻿diff --git a/admin/system-health.html b/admin/system-health.html
-index 5294d7d6e..0810945e9 100644
---- a/admin/system-health.html
-+++ b/admin/system-health.html
-@@ -6,7 +6,7 @@
-     <base href="/">
-     <meta name="viewport" content="width=device-width, initial-scale=1">
-     <title>System Health - Game Foundry Studio LLC</title>
--    <meta name="description" content="Admin system health foundation for environment, Postgres, R2, runtime, limits, and diagnostics planning.">
-+    <meta name="description" content="Admin system health dashboard for environment, Postgres, R2, runtime, limits, and diagnostics.">
-     <link rel="icon" href="/favicon.svg">
-     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
- </head>
-@@ -18,7 +18,7 @@
-             <div class="container">
-                 <div class="kicker">Admin</div>
-                 <h1>System Health</h1>
--                <p class="lede">Review the foundation view for environment, Postgres, Cloudflare R2, runtime configuration, capacity, and diagnostics.</p>
-+                <p class="lede">Review current deployment health for environment, Postgres, Cloudflare R2, runtime configuration, capacity, and diagnostics.</p>
-             </div>
-         </section>
-         <section class="section">
-@@ -67,7 +67,7 @@
-                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="admin-system-health" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
-                     <section class="tool-center-panel content-stack" aria-labelledby="admin-system-health-title">
-                         <div>
--                            <div class="kicker">Foundation</div>
-+                            <div class="kicker">Current Deployment</div>
-                             <h2 id="admin-system-health-title">System Health Tables</h2>
-                         </div>
-                         <div class="table-wrapper">
-@@ -400,7 +400,7 @@
-                                 </thead>
-                                 <tbody data-admin-system-health-runtime-rows>
-                                     <tr><td>CLOUDFLARE_R2_ACCESS_KEY_ID</td><td>********</td><td data-health-status="PASS">PASS</td></tr>
--                                    <tr><td>CLOUDFLARE_R2_BUCKET</td><td>Configured bucket placeholder</td><td data-health-status="PENDING" title="Reason: R2 bucket value reader is intentionally not wired in this foundation PR." aria-label="PENDING: R2 bucket value reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
-+                                    <tr><td>CLOUDFLARE_R2_BUCKET</td><td>Loading</td><td data-health-status="PENDING" title="Reason: Runtime environment diagnostics have not loaded the safe R2 bucket status yet." aria-label="PENDING: Runtime environment diagnostics have not loaded the safe R2 bucket status yet.">PENDING</td></tr>
-                                     <tr><td>CLOUDFLARE_R2_SECRET_ACCESS_KEY</td><td>********</td><td data-health-status="PASS">PASS</td></tr>
-                                     <tr><td>DATABASE_URL</td><td>********</td><td data-health-status="PASS">PASS</td></tr>
-                                     <tr><td>GAMEFOUNDRY_ENVIRONMENT</td><td>DEV / IST / UAT / PRD</td><td data-health-status="PASS">PASS</td></tr>
-@@ -419,11 +419,11 @@
-                                     </tr>
-                                 </thead>
-                                 <tbody>
--                                    <tr><td>DB Size</td><td>Pending metric</td><td>Threshold not connected</td><td data-health-status="PENDING" title="Reason: DB size metric is intentionally not wired in this foundation PR." aria-label="PENDING: DB size metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
--                                    <tr><td>Connections</td><td>Pending metric</td><td>Pool usage not connected</td><td data-health-status="PENDING" title="Reason: connection pool metric is intentionally not wired in this foundation PR." aria-label="PENDING: connection pool metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
--                                    <tr><td>Storage</td><td>Pending metric</td><td>Bucket usage not connected</td><td data-health-status="PENDING" title="Reason: R2 storage usage metric is intentionally not wired in this foundation PR." aria-label="PENDING: R2 storage usage metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
--                                    <tr><td>Class A Ops</td><td>Pending metric</td><td>R2 write/list budget not connected</td><td data-health-status="PENDING" title="Reason: R2 Class A operation metric is intentionally not wired in this foundation PR." aria-label="PENDING: R2 Class A operation metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
--                                    <tr><td>Class B Ops</td><td>Pending metric</td><td>R2 read budget not connected</td><td data-health-status="PENDING" title="Reason: R2 Class B operation metric is intentionally not wired in this foundation PR." aria-label="PENDING: R2 Class B operation metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
-+                                    <tr><td>DB Size</td><td>Unavailable</td><td>Provider telemetry not configured</td><td data-health-status="PENDING" title="Reason: DB size is unavailable until safe Postgres provider telemetry is configured." aria-label="PENDING: DB size is unavailable until safe Postgres provider telemetry is configured.">PENDING</td></tr>
-+                                    <tr><td>Connections</td><td>Unavailable</td><td>Pool telemetry not configured</td><td data-health-status="PENDING" title="Reason: Connection pool usage is unavailable until safe Postgres provider telemetry is configured." aria-label="PENDING: Connection pool usage is unavailable until safe Postgres provider telemetry is configured.">PENDING</td></tr>
-+                                    <tr><td>Storage</td><td>Unavailable</td><td>Bucket usage telemetry not configured</td><td data-health-status="PENDING" title="Reason: R2 storage usage is unavailable until safe provider telemetry is configured." aria-label="PENDING: R2 storage usage is unavailable until safe provider telemetry is configured.">PENDING</td></tr>
-+                                    <tr><td>Class A Ops</td><td>Unavailable</td><td>R2 write/list telemetry not configured</td><td data-health-status="PENDING" title="Reason: R2 Class A operation usage is unavailable until safe provider telemetry is configured." aria-label="PENDING: R2 Class A operation usage is unavailable until safe provider telemetry is configured.">PENDING</td></tr>
-+                                    <tr><td>Class B Ops</td><td>Unavailable</td><td>R2 read telemetry not configured</td><td data-health-status="PENDING" title="Reason: R2 Class B operation usage is unavailable until safe provider telemetry is configured." aria-label="PENDING: R2 Class B operation usage is unavailable until safe provider telemetry is configured.">PENDING</td></tr>
-                                 </tbody>
-                             </table>
-                         </div>
-@@ -439,15 +439,15 @@
-                                     </tr>
-                                 </thead>
-                                 <tbody>
--                                    <tr><td>Postgres Connection</td><td>Connection success, latency, and actionable failure detail</td><td>Server-owned Postgres health reader</td><td data-health-status="PENDING" title="Reason: live Postgres connection diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: live Postgres connection diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
--                                    <tr><td>Postgres Migration Reader</td><td>Current migration version and pending migration signal</td><td>Server-owned Postgres migration reader</td><td data-health-status="PENDING" title="Reason: Postgres migration diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: Postgres migration diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
--                                    <tr><td>R2 Bucket Configured</td><td>Configured bucket name presence without exposing secrets</td><td>Server-owned Cloudflare R2 configuration reader</td><td data-health-status="PENDING" title="Reason: R2 bucket configuration diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 bucket configuration diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
--                                    <tr><td>R2 List</td><td>List operation availability and scoped prefix result</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 list diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 list diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
--                                    <tr><td>R2 Read</td><td>Health object read availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 read diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 read diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
--                                    <tr><td>R2 Write</td><td>Health object write availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 write diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 write diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
--                                    <tr><td>R2 Delete</td><td>Health object cleanup availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 delete diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 delete diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
--                                    <tr><td>Runtime Environment Masking</td><td>Masked display verification for secret-bearing variables</td><td>Server-owned runtime environment diagnostic</td><td data-health-status="PENDING" title="Reason: automated runtime masking diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: automated runtime masking diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
--                                    <tr><td>Limits/Capacity Metrics</td><td>DB size, connections, storage usage, and R2 Class A/Class B operation signals</td><td>Server-owned metrics diagnostic</td><td data-health-status="PENDING" title="Reason: limits and capacity diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: limits and capacity diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
-+                                    <tr><td>Postgres Connection</td><td>Connection success, latency, and actionable failure detail</td><td>Server-owned Postgres health reader</td><td data-health-status="PENDING" title="Reason: Postgres connection diagnostics load through the safe Admin System Health API." aria-label="PENDING: Postgres connection diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
-+                                    <tr><td>Postgres Migration Reader</td><td>Current migration version and migration signal</td><td>Server-owned Postgres migration reader</td><td data-health-status="PENDING" title="Reason: Postgres migration diagnostics load through the safe Admin System Health API." aria-label="PENDING: Postgres migration diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
-+                                    <tr><td>R2 Bucket Configured</td><td>Configured bucket name presence without exposing secrets</td><td>Server-owned Cloudflare R2 configuration reader</td><td data-health-status="PENDING" title="Reason: R2 bucket configuration diagnostics load through the safe Admin System Health API." aria-label="PENDING: R2 bucket configuration diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
-+                                    <tr><td>R2 List</td><td>List operation availability and scoped prefix result</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 list diagnostics load through the safe Admin System Health API." aria-label="PENDING: R2 list diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
-+                                    <tr><td>R2 Read</td><td>Diagnostic object read availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 read diagnostics load through the safe Admin System Health API." aria-label="PENDING: R2 read diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
-+                                    <tr><td>R2 Write</td><td>Diagnostic object write availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 write diagnostics load through the safe Admin System Health API." aria-label="PENDING: R2 write diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
-+                                    <tr><td>R2 Delete</td><td>Diagnostic object cleanup availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 delete diagnostics load through the safe Admin System Health API." aria-label="PENDING: R2 delete diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
-+                                    <tr><td>Runtime Environment Masking</td><td>Masked display verification for secret-bearing variables</td><td>Server-owned runtime environment diagnostic</td><td data-health-status="PENDING" title="Reason: Runtime masking diagnostics load through the safe Admin System Health API." aria-label="PENDING: Runtime masking diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
-+                                    <tr><td>Limits/Capacity Metrics</td><td>DB size, connections, storage usage, and R2 Class A/Class B operation signals</td><td>Server-owned metrics diagnostic</td><td data-health-status="PENDING" title="Reason: Limits and capacity diagnostics are unavailable until safe provider telemetry is configured." aria-label="PENDING: Limits and capacity diagnostics are unavailable until safe provider telemetry is configured.">PENDING</td></tr>
-                                 </tbody>
-                             </table>
-                         </div>
-@@ -472,8 +472,8 @@
-                                             </thead>
-                                             <tbody>
-                                                 <tr><td data-health-status="PASS">PASS</td><td>Database Health</td><td>Postgres is the only planned database provider.</td></tr>
--                                                <tr><td data-health-status="PASS">PASS</td><td>Runtime Environment</td><td>Secret values are masked in the foundation view.</td></tr>
--                                                <tr><td data-health-status="PENDING" title="Reason: live diagnostics log wiring is intentionally not active in this foundation PR." aria-label="PENDING: live diagnostics log wiring is intentionally not active in this foundation PR.">PENDING</td><td>Diagnostics</td><td>Live diagnostics log wiring is intentionally deferred.</td></tr>
-+                                                <tr><td data-health-status="PASS">PASS</td><td>Runtime Environment</td><td>Secret values are masked in System Health.</td></tr>
-+                                                <tr><td data-health-status="PENDING" title="Reason: expanded diagnostics streaming is not configured for this deployment." aria-label="PENDING: expanded diagnostics streaming is not configured for this deployment.">PENDING</td><td>Diagnostics</td><td>Expanded diagnostics streaming is not configured.</td></tr>
-                                             </tbody>
-                                         </table>
-                                     </div>
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_007-runtime-configuration-complete.md b/docs_build/dev/reports/PR_26177_CHARLIE_007-runtime-configuration-complete.md
+new file mode 100644
+index 000000000..4ca0e48ee
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_007-runtime-configuration-complete.md
+@@ -0,0 +1,56 @@
++# PR_26177_CHARLIE_007-runtime-configuration-complete
++
++## Summary
++
++Team Charlie completed the Runtime Configuration closeout slice for System Health.
++
++Runtime configuration now reports explicit server-owned sources for:
++
++- Local API URL
++- static/site URL
++- Storage/R2 endpoint
++- Storage/R2 projects prefix
++- startup/runtime configuration source
++
++The Local API startup report now distinguishes a configured `GAMEFOUNDRY_API_URL` from the derived Local API URL used for diagnostics. Missing configured values are reported as `not configured` or `WARN`; no silent configured defaults were added.
++
++## Changed Files
++
++- `scripts/start-local-api-server.mjs`
++- `src/dev-runtime/server/local-api-router.mjs`
++- `src/dev-runtime/storage/storage-config.mjs`
++- `tests/dev-runtime/AdminHealthOperations.test.mjs`
++- `tests/dev-runtime/LocalApiStartupLogging.test.mjs`
++- `tests/dev-runtime/StorageConfig.test.mjs`
++- `docs_build/dev/reports/PR_26177_CHARLIE_007-runtime-configuration-complete.md`
++- `docs_build/dev/reports/PR_26177_CHARLIE_007-runtime-configuration-complete_branch-validation.md`
++- `docs_build/dev/reports/PR_26177_CHARLIE_007-runtime-configuration-complete_manual-validation-notes.md`
++- `docs_build/dev/reports/PR_26177_CHARLIE_007-runtime-configuration-complete_requirements-checklist.md`
++- `docs_build/dev/reports/PR_26177_CHARLIE_007-runtime-configuration-complete_validation-lane.md`
++- `docs_build/dev/reports/codex_changed_files.txt`
++- `docs_build/dev/reports/codex_review.diff`
++
++## Implementation Notes
++
++- Added runtime configuration source rows to System Health Local API startup diagnostics.
++- Added configuration summary rows for API URL source, site URL source, Storage endpoint, and Storage projects prefix.
++- Preserved the Web UI -> API/service contract -> database/runtime flow; browser code does not own infrastructure health state.
++- Added `/local/projects/` to approved project asset storage prefixes to match the current Local environment model.
++- Preserved safe partial Storage/R2 diagnostics while keeping access key and secret key values hidden.
++- Left browser public config fallback behavior unchanged because it already records an explicit diagnostic and changing routing semantics would be outside this PR scope.
++
++## Validation
++
++- PASS: `node --check scripts/start-local-api-server.mjs`
++- PASS: `node --check src/dev-runtime/server/local-api-router.mjs`
++- PASS: `node --check src/dev-runtime/storage/storage-config.mjs`
++- PASS: `node --check tests/dev-runtime/AdminHealthOperations.test.mjs`
++- PASS: `node --check tests/dev-runtime/LocalApiStartupLogging.test.mjs`
++- PASS: `node --check tests/dev-runtime/StorageConfig.test.mjs`
++- PASS: `node --test tests/dev-runtime/LocalApiStartupLogging.test.mjs tests/dev-runtime/StorageConfig.test.mjs tests/dev-runtime/PublicEnvironmentConfig.test.mjs tests/dev-runtime/PublicApiUrlClient.test.mjs tests/dev-runtime/AdminHealthOperations.test.mjs tests/api/admin-system-health/contract.test.mjs`
++- PASS: `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1`
++- PASS: `git diff --check`
++
++## ZIP
++
++- `tmp/PR_26177_CHARLIE_007-runtime-configuration-complete_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_007-runtime-configuration-complete_branch-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_007-runtime-configuration-complete_branch-validation.md
+new file mode 100644
+index 000000000..9190a10c5
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_007-runtime-configuration-complete_branch-validation.md
+@@ -0,0 +1,23 @@
++# PR_26177_CHARLIE_007 Branch Validation
++
++## Branch
++
++- Branch: `PR_26177_CHARLIE_007-runtime-configuration-complete`
++- Start branch: `main`
++- Main start commit: `8cdd87bf2eb2b9c0625e80881f1d359e902fa8fc`
++
++## Checks
++
++| Check | Result | Notes |
++| --- | --- | --- |
++| Started from `main` | PASS | Branch was created after `main` was clean and synchronized. |
++| Worktree clean before branch work | PASS | Startup status check returned no changes. |
++| One PR purpose only | PASS | Runtime configuration diagnostics and tests only. |
++| No `start_of_day` changes | PASS | Changed-file list contains no `start_of_day` paths. |
++| No runtime data ownership regression | PASS | Browser remains a consumer of API/service contracts only. |
++| No secrets exposed | PASS | Tests confirm URL credentials and storage credentials are not serialized. |
++| Repo-structured ZIP created | PASS | `tmp/PR_26177_CHARLIE_007-runtime-configuration-complete_delta.zip`. |
++
++## Result
++
++PASS
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_007-runtime-configuration-complete_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_CHARLIE_007-runtime-configuration-complete_manual-validation-notes.md
+new file mode 100644
+index 000000000..cdaacd6bd
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_007-runtime-configuration-complete_manual-validation-notes.md
+@@ -0,0 +1,20 @@
++# PR_26177_CHARLIE_007 Manual Validation Notes
++
++## Manual Review
++
++- Confirmed changed files are limited to runtime configuration diagnostics, storage configuration, targeted tests, and required reports.
++- Confirmed no `start_of_day` paths were modified.
++- Confirmed no inline styles, style blocks, script blocks, page-local CSS, or inline event handlers were introduced.
++- Confirmed no browser-owned infrastructure health state was added.
++- Confirmed no secret values are printed in startup diagnostics or System Health payloads.
++
++## Operator Behavior
++
++- When `GAMEFOUNDRY_API_URL` is configured, both startup logging and System Health show it as the configured API URL source.
++- When `GAMEFOUNDRY_API_URL` is missing, startup logging shows `Configured API URL: (not configured)` and separately shows the derived Local API URL.
++- Storage/R2 diagnostics preserve safe non-secret partial values such as bucket, endpoint origin, and projects prefix while keeping credentials hidden.
++- `/local/projects/` is accepted as an approved project asset prefix for the Local environment model.
++
++## Result
++
++PASS
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_007-runtime-configuration-complete_requirements-checklist.md b/docs_build/dev/reports/PR_26177_CHARLIE_007-runtime-configuration-complete_requirements-checklist.md
+new file mode 100644
+index 000000000..88f9f4ab4
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_007-runtime-configuration-complete_requirements-checklist.md
+@@ -0,0 +1,20 @@
++# PR_26177_CHARLIE_007 Requirements Checklist
++
++| Requirement | Result | Evidence |
++| --- | --- | --- |
++| Complete Runtime Configuration from 80% to 100% | PASS | Runtime source, URL, storage, and startup diagnostics are explicit. |
++| Single runtime configuration source where appropriate | PASS | Local API and System Health read server environment configuration through API/runtime contracts. |
++| Local API URL configuration | PASS | Startup log and System Health distinguish configured API URL from derived Local API URL. |
++| Static/site URL configuration | PASS | Startup log and System Health report `GAMEFOUNDRY_SITE_URL` source/status. |
++| Storage/R2 endpoint configuration | PASS | System Health and startup diagnostics report endpoint and projects prefix source/status. |
++| Startup/runtime validation | PASS | Startup logging and `/api/admin/system-health/status` expose source and status rows. |
++| Duplicated config removal only where safely in scope | PASS | No broad refactor; aligned existing startup and System Health diagnostics. |
++| No silent fallback behavior | PASS | Missing `GAMEFOUNDRY_API_URL` remains `not configured`; Local API URL derivation is explicitly labeled. |
++| No MEM DB/local-mem/fake-login/browser SSoT | PASS | No product-data ownership changes. |
++| No SQLite direction | PASS | No SQLite additions or terminology. |
++| Theme V2 rules | PASS | No UI/CSS changes in this PR. |
++| Targeted tests | PASS | Node and Playwright targeted lanes passed. |
++
++## Result
++
++PASS
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_007-runtime-configuration-complete_validation-lane.md b/docs_build/dev/reports/PR_26177_CHARLIE_007-runtime-configuration-complete_validation-lane.md
+new file mode 100644
+index 000000000..abef20994
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_007-runtime-configuration-complete_validation-lane.md
+@@ -0,0 +1,25 @@
++# PR_26177_CHARLIE_007 Validation Lane
++
++## Commands
++
++| Command | Result |
++| --- | --- |
++| `node --check scripts/start-local-api-server.mjs` | PASS |
++| `node --check src/dev-runtime/server/local-api-router.mjs` | PASS |
++| `node --check src/dev-runtime/storage/storage-config.mjs` | PASS |
++| `node --check tests/dev-runtime/AdminHealthOperations.test.mjs` | PASS |
++| `node --check tests/dev-runtime/LocalApiStartupLogging.test.mjs` | PASS |
++| `node --check tests/dev-runtime/StorageConfig.test.mjs` | PASS |
++| `node --test tests/dev-runtime/LocalApiStartupLogging.test.mjs tests/dev-runtime/StorageConfig.test.mjs tests/dev-runtime/PublicEnvironmentConfig.test.mjs tests/dev-runtime/PublicApiUrlClient.test.mjs tests/dev-runtime/AdminHealthOperations.test.mjs tests/api/admin-system-health/contract.test.mjs` | PASS, 19 tests |
++| `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1` | PASS, 3 tests |
++| `git diff --check` | PASS |
++
++## Playwright
++
++Impacted: Yes, System Health renders the changed API rows.
++
++Result: PASS.
++
++## Full Samples Smoke
++
++Not run. Not required for this targeted runtime configuration PR.
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 48675b782..713a4c0d7 100644
+index 48675b782..bc47f41b9 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,14 +1,28 @@
+@@ -1,14 +1,13 @@
 -docs_build/dev/BUILD_PR.md
 -docs_build/dev/PLAN_PR.md
 -docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
@@ -107,1034 +188,437 @@ index 48675b782..713a4c0d7 100644
 -docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_requirement-checklist.md
 -docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_validation-lane.md
 -docs_build/dev/reports/codex_changed_files.txt
--docs_build/dev/reports/codex_review.diff
++﻿docs_build/dev/reports/codex_changed_files.txt
+ docs_build/dev/reports/codex_review.diff
 -src/shared/math/randomHelpers.js
 -src/shared/validation/assert.js
-+# git status --short
-+M admin/system-health.html
-+ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+ M docs_build/dev/reports/playwright_v8_coverage_report.txt
-+ M src/dev-runtime/server/local-api-router.mjs
-+ M tests/dev-runtime/AdminHealthOperations.test.mjs
-+ M tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-+?? docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete.md
-+?? docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_branch-validation.md
-+?? docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_manual-validation-notes.md
-+?? docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_requirements-checklist.md
-+?? docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_validation-lane.md
-+
-+# git ls-files --others --exclude-standard
-+docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete.md
-+docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_branch-validation.md
-+docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_manual-validation-notes.md
-+docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_requirements-checklist.md
-+docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_validation-lane.md
-+
-+# git diff --stat
-+admin/system-health.html                           | 40 +++++++++++-----------
-+ .../dev/reports/coverage_changed_js_guardrail.txt  |  6 ++--
-+ .../dev/reports/playwright_v8_coverage_report.txt  | 33 ++++++++----------
-+ src/dev-runtime/server/local-api-router.mjs        | 10 +++---
-+ tests/dev-runtime/AdminHealthOperations.test.mjs   |  3 +-
-+ .../tools/AdminHealthOperationsPage.spec.mjs       |  4 ++-
-+ 6 files changed, 47 insertions(+), 49 deletions(-)
-\ No newline at end of file
-diff --git a/docs_build/dev/reports/codex_review.diff b/docs_build/dev/reports/codex_review.diff
-index 8534f5bf7..963b44f35 100644
---- a/docs_build/dev/reports/codex_review.diff
-+++ b/docs_build/dev/reports/codex_review.diff
-@@ -1,458 +1,363 @@
--diff --git a/docs_build/dev/BUILD_PR.md b/docs_build/dev/BUILD_PR.md
--index 2f3f00812..edc9a0b75 100644
----- a/docs_build/dev/BUILD_PR.md
--+++ b/docs_build/dev/BUILD_PR.md
--@@ -1,39 +1,40 @@
---# PR_26177_DELTA_055-random-seed-enhancements
--+# PR_26177_DELTA_056-shared-validation-assertions
--
-- ## Purpose
--
---Enhance `RandomSeed` with matching procedural convenience methods.
--+Move generic validation/assertion helpers out of random helper code into a shared validation module.
--
-- ## Source Of Truth
--
---This `BUILD_PR.md`, `PLAN_PR.md`, the user request, and `docs_build/dev/ProjectInstructions.zip` are the source of truth for `PR_26177_DELTA_055-random-seed-enhancements`.
--+This `BUILD_PR.md`, `PLAN_PR.md`, the user request, and `docs_build/dev/ProjectInstructions.zip` are the source of truth for `PR_26177_DELTA_056-shared-validation-assertions`.
--
-- ## OWNER Override And Team Assignment
--
---OWNER override approved: Continue Team Delta random utility stack with `PR_26177_DELTA_055-random-seed-enhancements`.
--+OWNER override approved: Continue Team Delta random utility stack with `PR_26177_DELTA_056-shared-validation-assertions`.
--
-- Team Delta owns Shared JS, runtime utilities, technical debt remediation, and runtime test coverage.
--
-- ## Stack
--
---- Base branch: `PR_26177_DELTA_054-random-utility`
---- This PR depends on the shared helper module from PR_053 and the stack context from PR_054.
--+- Base branch: `PR_26177_DELTA_055-random-seed-enhancements`
--+- This PR depends on the random helper module from PR_053, `Random` from PR_054, and `RandomSeed` enhancements from PR_055.
--
-- ## Exact Scope
--
---- Update `RandomSeed` to use shared helper logic where appropriate.
---- Add:
---  - `shuffle(array)`
---  - `chance(percent)`
---  - `weightedPick(weightedItems)`
---  - `saveState()`
---  - `restoreState(state)`
---- Preserve existing `RandomSeed` sequence compatibility.
---- Same seed must still reproduce same sequence.
---- Reseeding must still reproduce same sequence.
---- Add targeted unit tests for new methods.
---- No adoption changes in existing game logic.
--+- Create `src/shared/validation/assert.js`.
--+- Move generic assertion helpers from random helper code into `assert.js`.
--+- Include only generic reusable validation functions needed by current random helpers:
--+  - `assertArray`
--+  - `assertFiniteNumber`
--+  - `assertOrderedRange`
--+- Update random helper code to import from `src/shared/validation/assert.js`.
--+- Preserve existing `Random` and `RandomSeed` behavior.
--+- Do not change public API.
--+- Do not expand into unrelated validation functions yet.
--+- Add/update targeted unit tests if needed.
-- - No UI changes.
--+- No API/database changes.
--+- No unrelated cleanup.
-- - Create required Codex reports under `docs_build/dev/reports/`.
-- - Create repo-structured delta ZIP under `tmp/`.
--
--@@ -43,20 +44,21 @@ Team Delta owns Shared JS, runtime utilities, technical debt remediation, and ru
-- - `docs_build/dev/BUILD_PR.md`
-- - `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md`
-- - `docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md`
---- `src/shared/math/RandomSeed.js`
---- `tests/shared/RandomSeed.test.mjs`
---- `docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements.md`
---- `docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_branch-validation.md`
---- `docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_requirement-checklist.md`
---- `docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_validation-lane.md`
---- `docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_manual-validation-notes.md`
---- `docs_build/dev/reports/PR_26177_DELTA_055-random-seed-enhancements_instruction-compliance-checklist.md`
--+- `src/shared/validation/assert.js`
--+- `src/shared/math/randomHelpers.js`
--+- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions.md`
--+- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_branch-validation.md`
--+- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_requirement-checklist.md`
--+- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_validation-lane.md`
--+- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_manual-validation-notes.md`
--+- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_instruction-compliance-checklist.md`
-- - `docs_build/dev/reports/codex_review.diff`
-- - `docs_build/dev/reports/codex_changed_files.txt`
--
-- ## Out Of Scope
--
---- No seeded `next()` algorithm changes.
--+- No public API changes.
--+- No new unrelated validation helpers.
-- - No existing game logic adoption changes.
-- - No UI changes.
-- - No browser storage changes.
--@@ -70,9 +72,9 @@ Team Delta owns Shared JS, runtime utilities, technical debt remediation, and ru
-- Run exactly:
--
-- ```powershell
---node ./scripts/run-node-test-files.mjs tests/shared/RandomSeed.test.mjs tests/shared/RandomHelpers.test.mjs
---node --check src/shared/math/RandomSeed.js
---node --check tests/shared/RandomSeed.test.mjs
--+node ./scripts/run-node-test-files.mjs tests/shared/RandomHelpers.test.mjs tests/shared/Random.test.mjs tests/shared/RandomSeed.test.mjs
--+node --check src/shared/validation/assert.js
--+node --check src/shared/math/randomHelpers.js
-- git diff --check
-- ```
--
--@@ -83,5 +85,5 @@ Playwright is not required because this PR does not change UI or browser runtime
-- Create repo-structured delta ZIP:
--
-- ```text
---tmp/PR_26177_DELTA_055-random-seed-enhancements_delta.zip
--+tmp/PR_26177_DELTA_056-shared-validation-assertions_delta.zip
-- ```
--diff --git a/docs_build/dev/PLAN_PR.md b/docs_build/dev/PLAN_PR.md
--index 87120e264..de53f9020 100644
----- a/docs_build/dev/PLAN_PR.md
--+++ b/docs_build/dev/PLAN_PR.md
--@@ -1,42 +1,43 @@
---# PLAN_PR: PR_26177_DELTA_055-random-seed-enhancements
--+# PLAN_PR: PR_26177_DELTA_056-shared-validation-assertions
--
-- ## Purpose
--
---Enhance `RandomSeed` with matching procedural convenience methods.
--+Move generic validation/assertion helpers out of random helper code into a shared validation module.
--
-- ## Owner And Assignment
--
-- - Team: Delta
---- OWNER override approved: Continue Team Delta random utility stack with `PR_26177_DELTA_055-random-seed-enhancements`.
---- Stack base: `PR_26177_DELTA_054-random-utility`.
--+- OWNER override approved: Continue Team Delta random utility stack with `PR_26177_DELTA_056-shared-validation-assertions`.
--+- Stack base: `PR_26177_DELTA_055-random-seed-enhancements`.
--
-- ## Scope
--
---- Update `RandomSeed` to use shared helper logic where appropriate.
---- Add:
---  - `shuffle(array)`
---  - `chance(percent)`
---  - `weightedPick(weightedItems)`
---  - `saveState()`
---  - `restoreState(state)`
---- Preserve existing `RandomSeed` sequence compatibility.
---- Same seed must still reproduce same sequence.
---- Reseeding must still reproduce same sequence.
---- Add targeted unit tests for new methods.
---- No adoption changes in existing game logic.
--+- Create `src/shared/validation/assert.js`.
--+- Move generic assertion helpers from random helper code into `assert.js`.
--+- Include only generic reusable validation functions needed by current random helpers:
--+  - `assertArray`
--+  - `assertFiniteNumber`
--+  - `assertOrderedRange`
--+- Update random helper code to import from `src/shared/validation/assert.js`.
--+- Preserve existing `Random` and `RandomSeed` behavior.
--+- Do not change public API.
--+- Do not expand into unrelated validation functions yet.
--+- Add/update targeted unit tests if needed.
-- - No UI changes.
--+- No API/database changes.
--+- No unrelated cleanup.
--
-- ## Implementation Plan
--
---1. Update `src/shared/math/RandomSeed.js` to reuse `randomHelpers.js` for procedural helper methods.
---2. Keep the existing seeded `next()` algorithm unchanged.
---3. Add state save/restore methods.
---4. Extend `tests/shared/RandomSeed.test.mjs` with sequence compatibility, new method, and state tests.
--+1. Add `src/shared/validation/assert.js` with only the required generic assertion helpers.
--+2. Remove duplicated generic assertions from `src/shared/math/randomHelpers.js`.
--+3. Import the shared assertions from `randomHelpers.js`.
--+4. Run targeted random helper, `Random`, and `RandomSeed` tests.
-- 5. Produce required PR reports and repo-structured ZIP.
--
-- ## Acceptance Criteria
--
---- Existing seeded sequence values remain compatible.
---- Same seed and reseeding behavior remain deterministic.
---- New procedural methods use the same seeded random stream.
---- State save/restore resumes the sequence from the saved point.
--+- Existing random helper behavior is preserved.
--+- Existing `Random` and `RandomSeed` behavior is preserved.
--+- Public random APIs are unchanged.
--+- Shared assertion module stays limited to the current reusable validation helpers.
--diff --git a/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md b/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
--index 9dcd7244d..6341fdf34 100644
----- a/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
--+++ b/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
--@@ -31,7 +31,7 @@ If a team has no assignment, no active branch, and no active PR, it is inactive
-- | Team Alfa | none | none | none | Available | Active ownership lane |
-- | Team Bravo | none | none | none | Available | Active ownership lane |
-- | Team Charlie | none | none | none | Available | Active ownership lane |
---| Team Delta | PR_26177_DELTA_055-random-seed-enhancements | PR_26177_DELTA_055-random-seed-enhancements | PR_26177_DELTA_055-random-seed-enhancements | Active | OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_055-random-seed-enhancements |
--+| Team Delta | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | Active | OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_056-shared-validation-assertions |
-- | Team Golf | none | none | none | Available | Replacement active ownership lane for retired Team Gamma |
-- | Team OWNER | none | none | none | Available | Governance Phase 1 complete |
--
--diff --git a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
--index 3b49412c4..9735b4bd4 100644
----- a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
--+++ b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
--@@ -7,7 +7,7 @@
-- | Team Alfa | none | none | none | Available |
-- | Team Bravo | none | none | none | Available |
-- | Team Charlie | none | none | none | Available |
---| Team Delta | PR_26177_DELTA_055-random-seed-enhancements | PR_26177_DELTA_055-random-seed-enhancements | PR_26177_DELTA_055-random-seed-enhancements | Active |
--+| Team Delta | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | Active |
-- | Team Golf | none | none | none | Available |
-- | Team OWNER | none | none | none | Available |
--
--@@ -50,13 +50,13 @@ Current OWNER clarification:
--
-- Status: Active
--
---Active assignment: PR_26177_DELTA_055-random-seed-enhancements.
--+Active assignment: PR_26177_DELTA_056-shared-validation-assertions.
--
---Active branch: PR_26177_DELTA_055-random-seed-enhancements.
--+Active branch: PR_26177_DELTA_056-shared-validation-assertions.
--
---Active PR: PR_26177_DELTA_055-random-seed-enhancements.
--+Active PR: PR_26177_DELTA_056-shared-validation-assertions.
--
---OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_055-random-seed-enhancements.
--+OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_056-shared-validation-assertions.
--
-- ## Team Bravo
--
--diff --git a/src/shared/math/randomHelpers.js b/src/shared/math/randomHelpers.js
--index 5df891668..103ae7db5 100644
----- a/src/shared/math/randomHelpers.js
--+++ b/src/shared/math/randomHelpers.js
--@@ -1,3 +1,5 @@
--+import { assertArray, assertFiniteNumber, assertOrderedRange } from "../validation/assert.js";
--+
-- function assertRandomNext(randomNext) {
--   if (typeof randomNext !== "function") {
--     throw new TypeError("randomNext must be a function.");
--@@ -15,27 +17,6 @@ function readRandomValue(randomNext) {
--   return value;
-+ï»¿diff --git a/admin/system-health.html b/admin/system-health.html
-+index 5294d7d6e..0810945e9 100644
-+--- a/admin/system-health.html
-++++ b/admin/system-health.html
-+@@ -6,7 +6,7 @@
-+     <base href="/">
-+     <meta name="viewport" content="width=device-width, initial-scale=1">
-+     <title>System Health - Game Foundry Studio LLC</title>
-+-    <meta name="description" content="Admin system health foundation for environment, Postgres, R2, runtime, limits, and diagnostics planning.">
-++    <meta name="description" content="Admin system health dashboard for environment, Postgres, R2, runtime, limits, and diagnostics.">
-+     <link rel="icon" href="/favicon.svg">
-+     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
-+ </head>
-+@@ -18,7 +18,7 @@
-+             <div class="container">
-+                 <div class="kicker">Admin</div>
-+                 <h1>System Health</h1>
-+-                <p class="lede">Review the foundation view for environment, Postgres, Cloudflare R2, runtime configuration, capacity, and diagnostics.</p>
-++                <p class="lede">Review current deployment health for environment, Postgres, Cloudflare R2, runtime configuration, capacity, and diagnostics.</p>
-+             </div>
-+         </section>
-+         <section class="section">
-+@@ -67,7 +67,7 @@
-+                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="admin-system-health" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
-+                     <section class="tool-center-panel content-stack" aria-labelledby="admin-system-health-title">
-+                         <div>
-+-                            <div class="kicker">Foundation</div>
-++                            <div class="kicker">Current Deployment</div>
-+                             <h2 id="admin-system-health-title">System Health Tables</h2>
-+                         </div>
-+                         <div class="table-wrapper">
-+@@ -400,7 +400,7 @@
-+                                 </thead>
-+                                 <tbody data-admin-system-health-runtime-rows>
-+                                     <tr><td>CLOUDFLARE_R2_ACCESS_KEY_ID</td><td>********</td><td data-health-status="PASS">PASS</td></tr>
-+-                                    <tr><td>CLOUDFLARE_R2_BUCKET</td><td>Configured bucket placeholder</td><td data-health-status="PENDING" title="Reason: R2 bucket value reader is intentionally not wired in this foundation PR." aria-label="PENDING: R2 bucket value reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
-++                                    <tr><td>CLOUDFLARE_R2_BUCKET</td><td>Loading</td><td data-health-status="PENDING" title="Reason: Runtime environment diagnostics have not loaded the safe R2 bucket status yet." aria-label="PENDING: Runtime environment diagnostics have not loaded the safe R2 bucket status yet.">PENDING</td></tr>
-+                                     <tr><td>CLOUDFLARE_R2_SECRET_ACCESS_KEY</td><td>********</td><td data-health-status="PASS">PASS</td></tr>
-+                                     <tr><td>DATABASE_URL</td><td>********</td><td data-health-status="PASS">PASS</td></tr>
-+                                     <tr><td>GAMEFOUNDRY_ENVIRONMENT</td><td>DEV / IST / UAT / PRD</td><td data-health-status="PASS">PASS</td></tr>
-+@@ -419,11 +419,11 @@
-+                                     </tr>
-+                                 </thead>
-+                                 <tbody>
-+-                                    <tr><td>DB Size</td><td>Pending metric</td><td>Threshold not connected</td><td data-health-status="PENDING" title="Reason: DB size metric is intentionally not wired in this foundation PR." aria-label="PENDING: DB size metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
-+-                                    <tr><td>Connections</td><td>Pending metric</td><td>Pool usage not connected</td><td data-health-status="PENDING" title="Reason: connection pool metric is intentionally not wired in this foundation PR." aria-label="PENDING: connection pool metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
-+-                                    <tr><td>Storage</td><td>Pending metric</td><td>Bucket usage not connected</td><td data-health-status="PENDING" title="Reason: R2 storage usage metric is intentionally not wired in this foundation PR." aria-label="PENDING: R2 storage usage metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
-+-                                    <tr><td>Class A Ops</td><td>Pending metric</td><td>R2 write/list budget not connected</td><td data-health-status="PENDING" title="Reason: R2 Class A operation metric is intentionally not wired in this foundation PR." aria-label="PENDING: R2 Class A operation metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
-+-                                    <tr><td>Class B Ops</td><td>Pending metric</td><td>R2 read budget not connected</td><td data-health-status="PENDING" title="Reason: R2 Class B operation metric is intentionally not wired in this foundation PR." aria-label="PENDING: R2 Class B operation metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
-++                                    <tr><td>DB Size</td><td>Unavailable</td><td>Provider telemetry not configured</td><td data-health-status="PENDING" title="Reason: DB size is unavailable until safe Postgres provider telemetry is configured." aria-label="PENDING: DB size is unavailable until safe Postgres provider telemetry is configured.">PENDING</td></tr>
-++                                    <tr><td>Connections</td><td>Unavailable</td><td>Pool telemetry not configured</td><td data-health-status="PENDING" title="Reason: Connection pool usage is unavailable until safe Postgres provider telemetry is configured." aria-label="PENDING: Connection pool usage is unavailable until safe Postgres provider telemetry is configured.">PENDING</td></tr>
-++                                    <tr><td>Storage</td><td>Unavailable</td><td>Bucket usage telemetry not configured</td><td data-health-status="PENDING" title="Reason: R2 storage usage is unavailable until safe provider telemetry is configured." aria-label="PENDING: R2 storage usage is unavailable until safe provider telemetry is configured.">PENDING</td></tr>
-++                                    <tr><td>Class A Ops</td><td>Unavailable</td><td>R2 write/list telemetry not configured</td><td data-health-status="PENDING" title="Reason: R2 Class A operation usage is unavailable until safe provider telemetry is configured." aria-label="PENDING: R2 Class A operation usage is unavailable until safe provider telemetry is configured.">PENDING</td></tr>
-++                                    <tr><td>Class B Ops</td><td>Unavailable</td><td>R2 read telemetry not configured</td><td data-health-status="PENDING" title="Reason: R2 Class B operation usage is unavailable until safe provider telemetry is configured." aria-label="PENDING: R2 Class B operation usage is unavailable until safe provider telemetry is configured.">PENDING</td></tr>
-+                                 </tbody>
-+                             </table>
-+                         </div>
-+@@ -439,15 +439,15 @@
-+                                     </tr>
-+                                 </thead>
-+                                 <tbody>
-+-                                    <tr><td>Postgres Connection</td><td>Connection success, latency, and actionable failure detail</td><td>Server-owned Postgres health reader</td><td data-health-status="PENDING" title="Reason: live Postgres connection diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: live Postgres connection diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
-+-                                    <tr><td>Postgres Migration Reader</td><td>Current migration version and pending migration signal</td><td>Server-owned Postgres migration reader</td><td data-health-status="PENDING" title="Reason: Postgres migration diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: Postgres migration diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
-+-                                    <tr><td>R2 Bucket Configured</td><td>Configured bucket name presence without exposing secrets</td><td>Server-owned Cloudflare R2 configuration reader</td><td data-health-status="PENDING" title="Reason: R2 bucket configuration diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 bucket configuration diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
-+-                                    <tr><td>R2 List</td><td>List operation availability and scoped prefix result</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 list diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 list diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
-+-                                    <tr><td>R2 Read</td><td>Health object read availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 read diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 read diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
-+-                                    <tr><td>R2 Write</td><td>Health object write availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 write diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 write diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
-+-                                    <tr><td>R2 Delete</td><td>Health object cleanup availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 delete diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 delete diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
-+-                                    <tr><td>Runtime Environment Masking</td><td>Masked display verification for secret-bearing variables</td><td>Server-owned runtime environment diagnostic</td><td data-health-status="PENDING" title="Reason: automated runtime masking diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: automated runtime masking diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
-+-                                    <tr><td>Limits/Capacity Metrics</td><td>DB size, connections, storage usage, and R2 Class A/Class B operation signals</td><td>Server-owned metrics diagnostic</td><td data-health-status="PENDING" title="Reason: limits and capacity diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: limits and capacity diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
-++                                    <tr><td>Postgres Connection</td><td>Connection success, latency, and actionable failure detail</td><td>Server-owned Postgres health reader</td><td data-health-status="PENDING" title="Reason: Postgres connection diagnostics load through the safe Admin System Health API." aria-label="PENDING: Postgres connection diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
-++                                    <tr><td>Postgres Migration Reader</td><td>Current migration version and migration signal</td><td>Server-owned Postgres migration reader</td><td data-health-status="PENDING" title="Reason: Postgres migration diagnostics load through the safe Admin System Health API." aria-label="PENDING: Postgres migration diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
-++                                    <tr><td>R2 Bucket Configured</td><td>Configured bucket name presence without exposing secrets</td><td>Server-owned Cloudflare R2 configuration reader</td><td data-health-status="PENDING" title="Reason: R2 bucket configuration diagnostics load through the safe Admin System Health API." aria-label="PENDING: R2 bucket configuration diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
-++                                    <tr><td>R2 List</td><td>List operation availability and scoped prefix result</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 list diagnostics load through the safe Admin System Health API." aria-label="PENDING: R2 list diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
-++                                    <tr><td>R2 Read</td><td>Diagnostic object read availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 read diagnostics load through the safe Admin System Health API." aria-label="PENDING: R2 read diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
-++                                    <tr><td>R2 Write</td><td>Diagnostic object write availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 write diagnostics load through the safe Admin System Health API." aria-label="PENDING: R2 write diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
-++                                    <tr><td>R2 Delete</td><td>Diagnostic object cleanup availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 delete diagnostics load through the safe Admin System Health API." aria-label="PENDING: R2 delete diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
-++                                    <tr><td>Runtime Environment Masking</td><td>Masked display verification for secret-bearing variables</td><td>Server-owned runtime environment diagnostic</td><td data-health-status="PENDING" title="Reason: Runtime masking diagnostics load through the safe Admin System Health API." aria-label="PENDING: Runtime masking diagnostics load through the safe Admin System Health API.">PENDING</td></tr>
-++                                    <tr><td>Limits/Capacity Metrics</td><td>DB size, connections, storage usage, and R2 Class A/Class B operation signals</td><td>Server-owned metrics diagnostic</td><td data-health-status="PENDING" title="Reason: Limits and capacity diagnostics are unavailable until safe provider telemetry is configured." aria-label="PENDING: Limits and capacity diagnostics are unavailable until safe provider telemetry is configured.">PENDING</td></tr>
-+                                 </tbody>
-+                             </table>
-+                         </div>
-+@@ -472,8 +472,8 @@
-+                                             </thead>
-+                                             <tbody>
-+                                                 <tr><td data-health-status="PASS">PASS</td><td>Database Health</td><td>Postgres is the only planned database provider.</td></tr>
-+-                                                <tr><td data-health-status="PASS">PASS</td><td>Runtime Environment</td><td>Secret values are masked in the foundation view.</td></tr>
-+-                                                <tr><td data-health-status="PENDING" title="Reason: live diagnostics log wiring is intentionally not active in this foundation PR." aria-label="PENDING: live diagnostics log wiring is intentionally not active in this foundation PR.">PENDING</td><td>Diagnostics</td><td>Live diagnostics log wiring is intentionally deferred.</td></tr>
-++                                                <tr><td data-health-status="PASS">PASS</td><td>Runtime Environment</td><td>Secret values are masked in System Health.</td></tr>
-++                                                <tr><td data-health-status="PENDING" title="Reason: expanded diagnostics streaming is not configured for this deployment." aria-label="PENDING: expanded diagnostics streaming is not configured for this deployment.">PENDING</td><td>Diagnostics</td><td>Expanded diagnostics streaming is not configured.</td></tr>
-+                                             </tbody>
-+                                         </table>
-+                                     </div>
-+diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+index 01a698376..74a29674c 100644
-+--- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-++++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+@@ -6,9 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
-+ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
-+
-+ Changed runtime JS files considered:
-+-(0%) src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+-(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+
-+ Guardrail warnings:
-+-(0%) src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-+-(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-+diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-+index da369bcdb..cc856ba25 100644
-+--- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
-++++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-+@@ -12,33 +12,30 @@ Note: entry percentages use function coverage when available, otherwise line cov
-+ Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
-+
-+ Exercised tool entry points detected:
-+-(76%) Toolbox Index - exercised 1 runtime JS files
-++(46%) Toolbox Index - exercised 1 runtime JS files
-+ (0%) Tool Template V2 - not exercised by this Playwright run
-+-(72%) Theme V2 Shared JS - exercised 4 runtime JS files
-++(78%) Theme V2 Shared JS - exercised 5 runtime JS files
-+
-+ Changed runtime JS files covered:
-+-(0%) src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+-(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+
-+ Files with executed line/function counts where available:
-+-(36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2041/2041; executed functions 12/33
-+-(53%) src/api/server-api-client.js - executed lines 168/168; executed functions 10/19
-+-(64%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 63/98
-++(36%) src/api/server-api-client.js - executed lines 168/168; executed functions 5/14
-++(46%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 12/26
-+ (65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
-+-(67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
-+-(73%) assets/toolbox/game-journey/js/index.js - executed lines 1662/1662; executed functions 108/148
-+-(76%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 22/29
-++(75%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 76/102
-+ (77%) assets/theme-v2/js/tool-display-mode.js - executed lines 304/304; executed functions 23/30
-++(80%) assets/theme-v2/js/admin-system-health.js - executed lines 920/920; executed functions 74/92
-+ (80%) assets/theme-v2/js/theme-icons.js - executed lines 69/69; executed functions 4/5
-+-(89%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 32/36
-+-(100%) assets/js/shared/game-journey-api-client.js - executed lines 19/19; executed functions 2/2
-++(80%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 4/5
-++(83%) assets/js/shared/status.js - executed lines 37/37; executed functions 5/6
-++(91%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 10/11
-++(100%) src/api/admin-system-health-api-client.js - executed lines 31/31; executed functions 5/5
-+
-+ Uncovered or low-coverage changed JS files:
-+-(0%) src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs - WARNING: uncovered changed runtime JS file; advisory only
-+-(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - WARNING: uncovered changed runtime JS file; advisory only
-++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
-+
-+ Changed JS files considered:
-+-(0%) scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs - changed JS file not collected as browser runtime coverage
-+-(0%) src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs - changed JS file not collected as browser runtime coverage
-+-(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - changed JS file not collected as browser runtime coverage
-+-(0%) tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs - changed JS file not collected as browser runtime coverage
-++(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
-++(0%) tests/dev-runtime/AdminHealthOperations.test.mjs - changed JS file not collected as browser runtime coverage
-++(0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
-+diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-+index f2f927aff..f20e47b4c 100644
-+--- a/src/dev-runtime/server/local-api-router.mjs
-++++ b/src/dev-runtime/server/local-api-router.mjs
-+@@ -1416,16 +1416,16 @@ function systemHealthRuntimeHealth(environmentIdentity = {}, checkedAt = new Dat
-+
-+ function systemHealthServiceDisplayStatus(status, configured = true) {
-+   if (configured === false) {
-+-    return { healthStatus: "PENDING", status: "Not Configured" };
-++    return { healthStatus: "PENDING", status: "NOT CONFIGURED" };
-+   }
-+   const normalized = normalizeHealthStatus(status);
-+   if (normalized === "PASS") {
-+-    return { healthStatus: "PASS", status: "Healthy" };
-++    return { healthStatus: "PASS", status: "PASS" };
-+   }
-+   if (normalized === "FAIL") {
-+-    return { healthStatus: "FAIL", status: "Failed" };
-++    return { healthStatus: "FAIL", status: "FAIL" };
-+   }
-+-  return { healthStatus: "WARN", status: "Warning" };
-++  return { healthStatus: "WARN", status: "WARN" };
-  }
-
---function assertFiniteNumber(value, name) {
---  if (!Number.isFinite(value)) {
---    throw new TypeError(`${name} must be a finite number.`);
---  }
---}
---
---function assertOrderedRange(min, max) {
---  assertFiniteNumber(min, "min");
---  assertFiniteNumber(max, "max");
---
---  if (max < min) {
---    throw new RangeError("max must be greater than or equal to min.");
---  }
---}
---
---function assertArray(value, name) {
---  if (!Array.isArray(value)) {
---    throw new TypeError(`${name} must be an array.`);
---  }
---}
---
-- function readWeightedItem(entry) {
--   if (!entry || typeof entry !== "object") {
--     throw new TypeError("weightedItems entries must be objects.");
--diff --git a/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions.md b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions.md
-+ function systemHealthServiceCard({ configured = true, id, label, lastChecked, status = "WARN", summary }) {
-+@@ -1694,7 +1694,7 @@ function systemHealthNotificationsFoundation(checkedAt = new Date().toISOString(
-+   ];
-+   return {
-+     lastChecked: checkedAt,
-+-    message: "Notifications and alerts are placeholders only; no alert sending contract is configured for this deployment.",
-++    message: "Notifications and alerts are Not Configured; no alert sending contract is configured for this deployment.",
-+     rows,
-+     secretEditingAllowed: false,
-+     secretsExposed: false,
-+diff --git a/tests/dev-runtime/AdminHealthOperations.test.mjs b/tests/dev-runtime/AdminHealthOperations.test.mjs
-+index 59bea182c..57a4af267 100644
-+--- a/tests/dev-runtime/AdminHealthOperations.test.mjs
-++++ b/tests/dev-runtime/AdminHealthOperations.test.mjs
-+@@ -172,9 +172,10 @@ test("Admin can view operational health while Creator sessions are blocked", asy
-+         ["Runtime", "API", "Database", "Storage", "Authentication", "Email", "Background Jobs"],
-+       );
-+       assert.equal(
-+-        health.serviceHealth.services.every((service) => ["Healthy", "Warning", "Failed", "Not Configured"].includes(service.status)),
-++        health.serviceHealth.services.every((service) => ["PASS", "WARN", "FAIL", "NOT CONFIGURED"].includes(service.status)),
-+         true,
-+       );
-++      assert.equal(health.serviceHealth.services.some((service) => service.status === "PASS"), true);
-+       assert.equal(health.serviceHealth.services.every((service) => typeof service.summary === "string"), true);
-+       assert.equal(JSON.stringify(health.serviceHealth).includes("/uat"), false);
-+       assert.deepEqual(
-+diff --git a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-+index cf54c49d3..3527df130 100644
-+--- a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-++++ b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-+@@ -188,7 +188,8 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
-+       expect(serviceCardText).toContain(label);
-+     });
-+     const serviceStatuses = await serviceCards.locator("[data-health-status]").allTextContents();
-+-    expect(serviceStatuses.every((status) => ["Healthy", "Warning", "Failed", "Not Configured"].includes(status.trim()))).toBe(true);
-++    expect(serviceStatuses.every((status) => ["PASS", "WARN", "FAIL", "NOT CONFIGURED"].includes(status.trim()))).toBe(true);
-++    expect(serviceStatuses).toContain("PASS");
-+     const configurationTable = page.getByRole("table", { name: "Configuration summary" });
-+     await expect(configurationTable).toContainText("Current environment");
-+     await expect(configurationTable).toContainText("Hosting model");
-+@@ -350,6 +351,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
-+   expect(pageSource).not.toMatch(/\sstyle\s*=/i);
-+   expect(pageSource).not.toMatch(/data-health-status="(?:WARN|FAIL)"/);
-+   expect(pageSource).not.toContain("No active failure is declared");
-++  expect(pageSource).not.toMatch(/foundation PR|foundation view|placeholder|Pending metric|intentionally not wired/i);
-+   expect(pageSource).not.toContain("SQLite");
-+   expect(pageSource).toContain("Environment Identity");
-+   expect(pageSource).toContain("Environment Map");
-+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete.md b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete.md
- new file mode 100644
--index 000000000..726310533
-+index 000000000..7cbe75d98
- --- /dev/null
--+++ b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions.md
--@@ -0,0 +1,50 @@
--+# PR_26177_DELTA_056-shared-validation-assertions
-++++ b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete.md
-+@@ -0,0 +1,40 @@
-++# PR_26177_CHARLIE_006-system-health-dashboard-complete
- +
--+Date: 2026-06-26
--+Team: Delta
--+Scope: Shared validation assertions extracted from random helper code
--+Status: PASS
-++Team: Charlie
-++Branch: PR_26177_CHARLIE_006-system-health-dashboard-complete
-++Base: main
-++Scope: System Health Dashboard completion polish
- +
- +## Summary
- +
--+- Added `src/shared/validation/assert.js`.
--+- Moved generic reusable assertion helpers out of `src/shared/math/randomHelpers.js`.
--+- Included only the current generic assertion helpers needed by random helpers: `assertArray`, `assertFiniteNumber`, and `assertOrderedRange`.
--+- Updated `randomHelpers.js` to import those assertions from the shared validation module.
--+- Preserved existing `Random`, `RandomSeed`, and random helper behavior.
--+- Did not change public API.
--+- Did not add unrelated validation helpers.
--+- No UI, API, database, or unrelated cleanup changes were made.
--+
--+## Branch Validation
--+
--+PASS. Branch `PR_26177_DELTA_056-shared-validation-assertions` was created from clean `PR_26177_DELTA_055-random-seed-enhancements`.
-++- Removed stale foundation and placeholder wording from the Admin System Health dashboard source.
-++- Kept unavailable provider metrics explicit with safe `PENDING` status and clear reasons.
-++- Updated service health cards to display `PASS`, `WARN`, `FAIL`, or `NOT CONFIGURED` directly.
-++- Preserved the Web UI to API/service contract flow; the browser still renders only server-owned System Health data.
-++- Added targeted assertions for placeholder removal, service status display, secret masking, current-environment-only checks, and externalized Theme V2 script/style rules.
- +
- +## Changed Files
- +
--+- `docs_build/dev/PLAN_PR.md`
--+- `docs_build/dev/BUILD_PR.md`
--+- `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md`
--+- `docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md`
--+- `src/shared/validation/assert.js`
--+- `src/shared/math/randomHelpers.js`
--+- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions.md`
--+- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_branch-validation.md`
--+- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_requirement-checklist.md`
--+- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_validation-lane.md`
--+- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_manual-validation-notes.md`
--+- `docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_instruction-compliance-checklist.md`
-++- `admin/system-health.html`
-++- `src/dev-runtime/server/local-api-router.mjs`
-++- `tests/dev-runtime/AdminHealthOperations.test.mjs`
-++- `tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
-++- `docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete.md`
-++- `docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_branch-validation.md`
-++- `docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_requirements-checklist.md`
-++- `docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_validation-lane.md`
-++- `docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_manual-validation-notes.md`
- +- `docs_build/dev/reports/codex_changed_files.txt`
- +- `docs_build/dev/reports/codex_review.diff`
- +
- +## Validation
- +
--+- PASS: `node ./scripts/run-node-test-files.mjs tests/shared/RandomHelpers.test.mjs tests/shared/Random.test.mjs tests/shared/RandomSeed.test.mjs`
--+- PASS: `node --check src/shared/validation/assert.js`
--+- PASS: `node --check src/shared/math/randomHelpers.js`
--+- PASS: `git diff --check`
--+- SKIP: Playwright was not run because this PR does not change UI or browser runtime flows.
-++- PASS: `node --check src/dev-runtime/server/local-api-router.mjs`
-++- PASS: `node --check tests/dev-runtime/AdminHealthOperations.test.mjs`
-++- PASS: `node --check tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
-++- PASS: `node --test tests/dev-runtime/AdminHealthOperations.test.mjs tests/api/admin-system-health/contract.test.mjs`
-++- PASS: `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1`
- +
- +## Artifact
- +
--+- `tmp/PR_26177_DELTA_056-shared-validation-assertions_delta.zip`
--diff --git a/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_branch-validation.md b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_branch-validation.md
-++- `tmp/PR_26177_CHARLIE_006-system-health-dashboard-complete_delta.zip`
-+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_branch-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_branch-validation.md
- new file mode 100644
--index 000000000..f41b57b1d
-+index 000000000..2368a289b
- --- /dev/null
--+++ b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_branch-validation.md
--@@ -0,0 +1,15 @@
--+# PR_26177_DELTA_056-shared-validation-assertions Branch Validation
--+
--+Status: PASS
--+
--+## Start Gates
--+
--+- PASS: Current branch was `PR_26177_DELTA_055-random-seed-enhancements`.
--+- PASS: Worktree was clean before creating PR_056.
--+- PASS: Branch `PR_26177_DELTA_056-shared-validation-assertions` was created from PR_055.
--+
--+## Scope Confirmation
--+
--+- PASS: Work is assigned to Team Delta.
--+- PASS: Work is limited to extracting generic assertions used by random helpers.
--+- PASS: No public API, UI, browser storage, API, database, or unrelated cleanup changes were made.
--diff --git a/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_instruction-compliance-checklist.md
-++++ b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_branch-validation.md
-+@@ -0,0 +1,13 @@
-++# PR_26177_CHARLIE_006 Branch Validation
-++
-++Result: PASS
-++
-++Checks:
-++- PASS: Started from `main`.
-++- PASS: Worktree was clean before branch creation.
-++- PASS: Local/origin sync was `0/0` before branch creation.
-++- PASS: Branch `PR_26177_CHARLIE_006-system-health-dashboard-complete` was created from current `main`.
-++- PASS: Scope stayed within System Health Dashboard completion.
-++- PASS: No `start_of_day` files changed.
-++- PASS: No direct commits to `main`.
-++- PASS: PR branch retained for review.
-+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_manual-validation-notes.md
- new file mode 100644
--index 000000000..a34dbd5f3
-+index 000000000..75244edcf
- --- /dev/null
--+++ b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_instruction-compliance-checklist.md
--@@ -0,0 +1,11 @@
--+# PR_26177_DELTA_056-shared-validation-assertions Instruction Compliance Checklist
--+
--+| Instruction | Status | Notes |
--+|---|---:|---|
--+| Read `ProjectInstructions.zip` and `README.txt` first | PASS | Read `ProjectInstructions/README.txt` before work. |
--+| Create PR_056 as stacked PR on current branch | PASS | Branch was created from `PR_26177_DELTA_055-random-seed-enhancements`. |
--+| Hard stop if branch/worktree gates fail | PASS | Branch and clean worktree gates passed. |
--+| Keep one PR purpose only | PASS | Scope is shared validation assertion extraction. |
--+| Do not change public API | PASS | No public API changes were made. |
--+| Produce required reports | PASS | Reports were added under `docs_build/dev/reports/`. |
--+| Produce repo-structured ZIP under `tmp/` | PASS | ZIP path is `tmp/PR_26177_DELTA_056-shared-validation-assertions_delta.zip`. |
--diff --git a/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_manual-validation-notes.md
-++++ b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_manual-validation-notes.md
-+@@ -0,0 +1,9 @@
-++# PR_26177_CHARLIE_006 Manual Validation Notes
-++
-++- Confirmed System Health dashboard copy no longer contains stale `foundation PR`, `foundation view`, `placeholder`, `Pending metric`, or `intentionally not wired` wording.
-++- Confirmed provider metrics that are not available remain visibly marked `PENDING` with explanatory reasons.
-++- Confirmed service cards retain existing Theme V2 card layout while displaying direct health status values.
-++- Confirmed secret-like runtime variables remain masked as `********`.
-++- Confirmed current-environment System Health behavior remains intact; peer environments are reference-only.
-++- Confirmed no runtime/UI/API/database files outside the scoped System Health files were changed.
-++- Confirmed no `start_of_day` files were changed.
-+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_requirements-checklist.md b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_requirements-checklist.md
- new file mode 100644
--index 000000000..1d5548e3b
-+index 000000000..1127e0ea8
- --- /dev/null
--+++ b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_manual-validation-notes.md
--@@ -0,0 +1,11 @@
--+# PR_26177_DELTA_056-shared-validation-assertions Manual Validation Notes
--+
--+Status: PASS
--+
--+Manual review confirmed:
--+
--+- The extracted assertions are generic and reusable.
--+- `assert.js` intentionally contains only `assertArray`, `assertFiniteNumber`, and `assertOrderedRange`.
--+- Random helper behavior is preserved through imports from the shared validation module.
--+- `Random` and `RandomSeed` public APIs are unchanged.
--+- No UI, browser storage, API, database, or unrelated files changed.
--diff --git a/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_requirement-checklist.md b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_requirement-checklist.md
-++++ b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_requirements-checklist.md
-+@@ -0,0 +1,17 @@
-++# PR_26177_CHARLIE_006 Requirement Checklist
-++
-++- PASS: Environment Summary remains current-deployment only.
-++- PASS: Postgres Health remains API/service-owned and displays safe values only.
-++- PASS: R2/Storage Health remains current-environment only.
-++- PASS: Runtime Environment Variables render from server-owned diagnostics.
-++- PASS: Runtime variables remain alphabetically sorted by key.
-++- PASS: Secret-like runtime values remain masked.
-++- PASS: Service Health cards now display direct `PASS`, `WARN`, `FAIL`, or `NOT CONFIGURED` text.
-++- PASS: Stale foundation and placeholder wording removed from the dashboard source.
-++- PASS: Empty/error states remain explicit `PENDING`, `WARN`, or `FAIL` with reasons.
-++- PASS: Theme V2 layout and externalized scripts/styles preserved.
-++- PASS: No inline styles, style blocks, script blocks, or inline event handlers introduced.
-++- PASS: Browser does not own authoritative product data.
-++- PASS: No MEM DB, local-mem, fake-login, browser storage SSoT, silent fallback, hidden default, or SQLite direction introduced.
-++- PASS: Targeted tests updated and run.
-++- PASS: Required reports and delta ZIP created.
-+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_validation-lane.md b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_validation-lane.md
- new file mode 100644
--index 000000000..00d322ad0
-+index 000000000..408c9ac5d
- --- /dev/null
--+++ b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_requirement-checklist.md
--@@ -0,0 +1,16 @@
--+# PR_26177_DELTA_056-shared-validation-assertions Requirement Checklist
--+
--+| Requirement | Status | Notes |
--+|---|---:|---|
--+| Create `src/shared/validation/assert.js` | PASS | New shared validation module added. |
--+| Move generic assertion helpers from random helper code into `assert.js` | PASS | `assertArray`, `assertFiniteNumber`, and `assertOrderedRange` were extracted. |
--+| Include only generic reusable validation functions needed by current random helpers | PASS | No unrelated validation helpers were added. |
--+| Update random helper code to import from `src/shared/validation/assert.js` | PASS | `randomHelpers.js` now imports from shared validation. |
--+| Preserve existing `Random` behavior | PASS | Targeted `Random` tests pass. |
--+| Preserve existing `RandomSeed` behavior | PASS | Targeted `RandomSeed` tests pass. |
--+| Do not change public API | PASS | No public API methods or call sites changed. |
--+| Do not expand into unrelated validation functions yet | PASS | Module includes only the requested assertions. |
--+| Add/update targeted unit tests if needed | PASS | Existing targeted random tests cover behavior after extraction. |
--+| No UI changes | PASS | No UI files changed. |
--+| No API/database changes | PASS | No API or database files changed. |
--+| No unrelated cleanup | PASS | Changes stayed scoped to assertion extraction and reports. |
--diff --git a/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_validation-lane.md b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_validation-lane.md
--new file mode 100644
--index 000000000..01500c267
----- /dev/null
--+++ b/docs_build/dev/reports/PR_26177_DELTA_056-shared-validation-assertions_validation-lane.md
--@@ -0,0 +1,25 @@
--+# PR_26177_DELTA_056-shared-validation-assertions Validation Lane
--+
--+Status: PASS
--+
--+## Commands
--+
--+```powershell
--+node ./scripts/run-node-test-files.mjs tests/shared/RandomHelpers.test.mjs tests/shared/Random.test.mjs tests/shared/RandomSeed.test.mjs
--+node --check src/shared/validation/assert.js
--+node --check src/shared/math/randomHelpers.js
--+git diff --check
--+```
--+
--+## Results
--+
--+- PASS: `tests/shared/RandomHelpers.test.mjs`
--+- PASS: `tests/shared/Random.test.mjs`
--+- PASS: `tests/shared/RandomSeed.test.mjs`
--+- PASS: `src/shared/validation/assert.js` syntax check
--+- PASS: `src/shared/math/randomHelpers.js` syntax check
--+- PASS: `git diff --check`
--+
--+## Playwright
--+
--+SKIP. Playwright was not run because this PR does not change UI or browser runtime flows.
--diff --git a/src/shared/validation/assert.js b/src/shared/validation/assert.js
--new file mode 100644
--index 000000000..ee8974cbc
----- /dev/null
--+++ b/src/shared/validation/assert.js
-++++ b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_validation-lane.md
- @@ -0,0 +1,20 @@
--+export function assertArray(value, name) {
--+  if (!Array.isArray(value)) {
--+    throw new TypeError(`${name} must be an array.`);
--+  }
--+}
--+
--+export function assertFiniteNumber(value, name) {
--+  if (!Number.isFinite(value)) {
--+    throw new TypeError(`${name} must be a finite number.`);
--+  }
--+}
--+
--+export function assertOrderedRange(min, max) {
--+  assertFiniteNumber(min, "min");
--+  assertFiniteNumber(max, "max");
--+
--+  if (max < min) {
--+    throw new RangeError("max must be greater than or equal to min.");
--+  }
--+}
-++# PR_26177_CHARLIE_006 Validation Lane
-++
-++Impacted lanes:
-++- Admin System Health page
-++- Local API Admin System Health status contract
-++- System Health Playwright page coverage
-++
-++Commands:
-++- PASS: `node --check src/dev-runtime/server/local-api-router.mjs`
-++- PASS: `node --check tests/dev-runtime/AdminHealthOperations.test.mjs`
-++- PASS: `node --check tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
-++- PASS: `node --test tests/dev-runtime/AdminHealthOperations.test.mjs tests/api/admin-system-health/contract.test.mjs`
-++  - 6 tests passed.
-++- PASS: `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1`
-++  - 3 tests passed.
-++
-++Skipped lanes:
-++- Full samples smoke was not run; this PR only touches targeted Admin System Health dashboard behavior and tests.
-++
-++Result: PASS
-diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index f2f927aff..f20e47b4c 100644
---- a/src/dev-runtime/server/local-api-router.mjs
-+++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -1416,16 +1416,16 @@ function systemHealthRuntimeHealth(environmentIdentity = {}, checkedAt = new Dat
-
- function systemHealthServiceDisplayStatus(status, configured = true) {
-   if (configured === false) {
--    return { healthStatus: "PENDING", status: "Not Configured" };
-+    return { healthStatus: "PENDING", status: "NOT CONFIGURED" };
-   }
-   const normalized = normalizeHealthStatus(status);
-   if (normalized === "PASS") {
--    return { healthStatus: "PASS", status: "Healthy" };
-+    return { healthStatus: "PASS", status: "PASS" };
-   }
-   if (normalized === "FAIL") {
--    return { healthStatus: "FAIL", status: "Failed" };
-+    return { healthStatus: "FAIL", status: "FAIL" };
-   }
--  return { healthStatus: "WARN", status: "Warning" };
-+  return { healthStatus: "WARN", status: "WARN" };
++docs_build/dev/reports/PR_26177_CHARLIE_007-runtime-configuration-complete.md
++docs_build/dev/reports/PR_26177_CHARLIE_007-runtime-configuration-complete_branch-validation.md
++docs_build/dev/reports/PR_26177_CHARLIE_007-runtime-configuration-complete_manual-validation-notes.md
++docs_build/dev/reports/PR_26177_CHARLIE_007-runtime-configuration-complete_requirements-checklist.md
++docs_build/dev/reports/PR_26177_CHARLIE_007-runtime-configuration-complete_validation-lane.md
++scripts/start-local-api-server.mjs
++src/dev-runtime/server/local-api-router.mjs
++src/dev-runtime/storage/storage-config.mjs
++tests/dev-runtime/AdminHealthOperations.test.mjs
++tests/dev-runtime/LocalApiStartupLogging.test.mjs
++tests/dev-runtime/StorageConfig.test.mjs
+diff --git a/scripts/start-local-api-server.mjs b/scripts/start-local-api-server.mjs
+index 3a4d5ef3e..68afc1c5e 100644
+--- a/scripts/start-local-api-server.mjs
++++ b/scripts/start-local-api-server.mjs
+@@ -102,6 +102,14 @@ function defaultApiUrl(baseUrl) {
+   return `${String(baseUrl || "").replace(/\/+$/, "")}/api`;
  }
 
- function systemHealthServiceCard({ configured = true, id, label, lastChecked, status = "WARN", summary }) {
-@@ -1694,7 +1694,7 @@ function systemHealthNotificationsFoundation(checkedAt = new Date().toISOString(
-   ];
++function configuredSourceLine(label, key, configured) {
++  return `${label} source: ${configured ? key : "not configured"}`;
++}
++
++function derivedSourceLine(label, key, configured, derivedSource) {
++  return `${label} source: ${configured ? key : `not configured; derived from ${derivedSource}`}`;
++}
++
+ function connectionStatusLine(label, connection) {
+   return `Configured ${label} connection: ${connection.ready ? "configured" : `missing ${connection.missingKeys.join(", ")}`}.`;
+ }
+@@ -168,7 +176,7 @@ function portFromUrl(value) {
+ }
+
+ function formatRuntimePortLogLines({ env, localServer }) {
+-  const configuredApiUrl = String(env.GAMEFOUNDRY_API_URL || "").trim() || defaultApiUrl(localServer.baseUrl);
++  const configuredApiUrl = String(env.GAMEFOUNDRY_API_URL || "").trim();
+   return [
+     SECTION_DIVIDER,
+     "All Runtime Ports being used by Service",
+@@ -176,6 +184,7 @@ function formatRuntimePortLogLines({ env, localServer }) {
+     `live server port: ${portFromUrl(env.GAMEFOUNDRY_SITE_URL)}`,
+     `API server port: ${portFromUrl(localServer.baseUrl)}`,
+     `configured API URL port: ${portFromUrl(configuredApiUrl)}`,
++    `local API URL port: ${portFromUrl(configuredApiUrl || defaultApiUrl(localServer.baseUrl))}`,
+     `DB/Postgres port: ${portFromUrl(env.GAMEFOUNDRY_DATABASE_URL)}`,
+     `Supabase service port: ${portFromUrl(env.GAMEFOUNDRY_SUPABASE_URL)}`,
+     `Storage service port: ${portFromUrl(env.GAMEFOUNDRY_STORAGE_ENDPOINT)}`,
+@@ -213,15 +222,21 @@ export function formatStartupLogLines({
+   localServer,
+   runtimeEnv,
+ }) {
+-  const configuredApiUrl = String(env.GAMEFOUNDRY_API_URL || "").trim() || defaultApiUrl(localServer.baseUrl);
++  const configuredApiUrl = String(env.GAMEFOUNDRY_API_URL || "").trim();
++  const localApiUrl = configuredApiUrl || defaultApiUrl(localServer.baseUrl);
+   const configuredSiteUrl = configuredValue(env.GAMEFOUNDRY_SITE_URL);
+   return [
+     `GameFoundry API runtime server running at ${localServer.baseUrl}`,
+     `Configured site URL: ${configuredSiteUrl}`,
+-    `Configured API URL: ${configuredApiUrl}`,
+-    `Local API URL: ${configuredApiUrl}`,
++    `Configured API URL: ${configuredValue(configuredApiUrl)}`,
++    `Local API URL: ${localApiUrl}`,
+     `Local site URL: ${configuredSiteUrl}`,
+     `Local site URL port: ${portFromUrl(env.GAMEFOUNDRY_SITE_URL)}`,
++    "Runtime configuration source: .env + process environment",
++    derivedSourceLine("Local API URL", "GAMEFOUNDRY_API_URL", Boolean(configuredApiUrl), "Local API bind URL"),
++    configuredSourceLine("Local site URL", "GAMEFOUNDRY_SITE_URL", Boolean(String(env.GAMEFOUNDRY_SITE_URL || "").trim())),
++    configuredSourceLine("Storage/R2 endpoint", "GAMEFOUNDRY_STORAGE_ENDPOINT", Boolean(String(env.GAMEFOUNDRY_STORAGE_ENDPOINT || "").trim())),
++    configuredSourceLine("Storage/R2 projects prefix", "GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX", Boolean(String(env.GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX || "").trim())),
+     ...formatEnvironmentVariableLogLines(runtimeEnv),
+     ...formatRuntimePortLogLines({ env, localServer }),
+     connectionStatusLine("auth", accountConnection),
+diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
+index f2f927aff..8377f0229 100644
+--- a/src/dev-runtime/server/local-api-router.mjs
++++ b/src/dev-runtime/server/local-api-router.mjs
+@@ -964,15 +964,33 @@ function localApiStartupStorageStatus(env = process.env) {
+   };
+ }
+
++function localApiStartupConfigSourceRow({ configured, derivedSource = "", field, key }) {
++  const value = configured
++    ? key
++    : derivedSource
++      ? `not configured; derived from ${derivedSource}`
++      : "not configured";
++  return {
++    field,
++    reason: configured
++      ? `${key} is configured for runtime diagnostics.`
++      : `${key} is not configured for runtime diagnostics.`,
++    status: configured ? "PASS" : "WARN",
++    value,
++  };
++}
++
+ function systemHealthLocalApiStartupDiagnostics(env = process.env) {
+   const bindTarget = localApiStartupBindTarget(env);
+   const configuredApiUrl = String(env.GAMEFOUNDRY_API_URL || "").trim();
+   const derivedApiUrl = `http://${bindTarget.value}/api`;
+   const siteUrl = String(env.GAMEFOUNDRY_SITE_URL || "").trim();
+   const apiUrlDisplay = localApiStartupUrlDisplay(configuredApiUrl || derivedApiUrl);
++  const configuredApiUrlDisplay = localApiStartupUrlDisplay(configuredApiUrl);
+   const siteUrlDisplay = localApiStartupUrlDisplay(siteUrl);
+   const siteUrlPort = localApiStartupPortFromUrl(siteUrl);
+   const databaseMode = localApiStartupDatabaseMode(env);
++  const storageConfig = loadStorageConfig(env);
+   const storageStatus = localApiStartupStorageStatus(env);
+   const rows = [
+     {
+@@ -999,6 +1017,12 @@ function systemHealthLocalApiStartupDiagnostics(env = process.env) {
+       status: "PASS",
+       value: "PASSWORD, SECRET, TOKEN, KEY, SERVICE_ROLE, JWT",
+     },
++    {
++      field: "Runtime configuration source",
++      reason: "Runtime configuration is read from process environment values loaded from .env before startup.",
++      status: "PASS",
++      value: ".env + process environment",
++    },
+     {
+       field: "Configured startup bind target",
+       reason: bindTarget.status === "PASS"
+@@ -1007,11 +1031,35 @@ function systemHealthLocalApiStartupDiagnostics(env = process.env) {
+       status: bindTarget.status,
+       value: bindTarget.value,
+     },
++    localApiStartupConfigSourceRow({
++      configured: Boolean(configuredApiUrl),
++      derivedSource: "Local API bind target",
++      field: "Local API URL source",
++      key: "GAMEFOUNDRY_API_URL",
++    }),
++    localApiStartupConfigSourceRow({
++      configured: Boolean(siteUrl),
++      field: "Local site URL source",
++      key: "GAMEFOUNDRY_SITE_URL",
++    }),
++    localApiStartupConfigSourceRow({
++      configured: Boolean(String(env.GAMEFOUNDRY_STORAGE_ENDPOINT || "").trim()),
++      field: "Storage/R2 endpoint source",
++      key: "GAMEFOUNDRY_STORAGE_ENDPOINT",
++    }),
++    {
++      field: "Storage/R2 projects prefix source",
++      reason: storageConfig.configured
++        ? "GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX matches an approved environment prefix."
++        : storageConfig.validationError || `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX is ${storageConfig.missingKeys?.includes("GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX") ? "not configured" : "not ready"} for runtime diagnostics.`,
++      status: storageConfig.configured ? "PASS" : "WARN",
++      value: storageConfig.safe?.projectsPrefix || "not configured",
++    },
+     {
+       field: "Local API URL",
+       reason: configuredApiUrl
+         ? "GAMEFOUNDRY_API_URL is configured and displayed without URL credentials."
+-        : "GAMEFOUNDRY_API_URL is not configured; startup diagnostics derive /api from the bind target.",
++        : "GAMEFOUNDRY_API_URL is not configured; Local API URL is explicitly derived from the bind target for diagnostics.",
+       status: apiUrlDisplay === "invalid URL" ? "FAIL" : "PASS",
+       value: apiUrlDisplay,
+     },
+@@ -1041,14 +1089,20 @@ function systemHealthLocalApiStartupDiagnostics(env = process.env) {
+       field: "Configured API URL",
+       reason: configuredApiUrl
+         ? "GAMEFOUNDRY_API_URL is configured and displayed without URL credentials."
+-        : "GAMEFOUNDRY_API_URL is not configured; startup diagnostics derive /api from the bind target.",
+-      status: "PASS",
+-      value: apiUrlDisplay,
++        : "GAMEFOUNDRY_API_URL is not configured; the configured API URL remains not configured.",
++      status: configuredApiUrl ? (configuredApiUrlDisplay === "invalid URL" ? "FAIL" : "PASS") : "WARN",
++      value: configuredApiUrlDisplay,
+     },
+     {
+       field: "Configured API URL port",
+-      reason: "Port is derived from the configured or startup-derived API URL for display only.",
+-      status: "PASS",
++      reason: "Port is derived from GAMEFOUNDRY_API_URL only; the Local API URL row shows the bind-target derived URL.",
++      status: localApiStartupPortStatus(localApiStartupPortFromUrl(configuredApiUrl)),
++      value: localApiStartupPortFromUrl(configuredApiUrl),
++    },
++    {
++      field: "Local API URL port",
++      reason: "Port is derived from the configured API URL or the explicit Local API bind-target URL.",
++      status: localApiStartupPortStatus(localApiStartupPortFromUrl(configuredApiUrl || derivedApiUrl)),
+       value: localApiStartupPortFromUrl(configuredApiUrl || derivedApiUrl),
+     },
+     {
+@@ -1222,13 +1276,15 @@ function systemHealthEnvironmentIdentity(env = process.env, lastHealthCheck = ne
+   const bindTarget = localApiStartupBindTarget(env);
+   const configuredApiUrl = String(env.GAMEFOUNDRY_API_URL || "").trim();
+   const apiUrl = localApiStartupUrlDisplay(configuredApiUrl || `http://${bindTarget.value}/api`);
++  const apiUrlSource = configuredApiUrl ? "GAMEFOUNDRY_API_URL" : "derived from Local API bind target";
+   const storageFolderMatches = !inferred.configuredStorageFolder
+     || inferred.configuredStorageFolder === model.storageFolder
+     || (model.name === "PRD" && inferred.configuredStorageFolder === "/prod");
+
    return {
-     lastChecked: checkedAt,
--    message: "Notifications and alerts are placeholders only; no alert sending contract is configured for this deployment.",
-+    message: "Notifications and alerts are Not Configured; no alert sending contract is configured for this deployment.",
-     rows,
-     secretEditingAllowed: false,
-     secretsExposed: false,
+     apiUrl,
+-    apiUrlStatus: apiUrl === "not configured" || apiUrl === "invalid URL" ? "WARN" : "PASS",
++    apiUrlSource,
++    apiUrlStatus: apiUrl === "invalid URL" ? "FAIL" : configuredApiUrl ? "PASS" : "WARN",
+     databaseModel: model.databaseModel,
+     hostingModel: model.hostingModel,
+     lastHealthCheck,
+@@ -1237,6 +1293,7 @@ function systemHealthEnvironmentIdentity(env = process.env, lastHealthCheck = ne
+       : `Current deployment identity defaulted to ${model.name}; ${STORAGE_PROJECTS_PREFIX_ENV_KEY} did not match an approved environment folder.`,
+     name: model.name,
+     siteUrl,
++    siteUrlSource: siteUrl === "not configured" ? "not configured" : "GAMEFOUNDRY_SITE_URL",
+     siteUrlStatus: siteUrl === "not configured" || siteUrl === "invalid URL" ? "WARN" : "PASS",
+     source: inferred.source,
+     status: storageFolderMatches ? inferred.status : "WARN",
+@@ -1549,6 +1606,16 @@ function systemHealthConfigurationSummary({
+       status: environmentIdentity.apiUrlStatus || "WARN",
+       value: environmentIdentity.apiUrl || "not configured",
+     },
++    {
++      field: "API URL source",
++      status: environmentIdentity.apiUrlSource === "GAMEFOUNDRY_API_URL" ? "PASS" : "WARN",
++      value: environmentIdentity.apiUrlSource || "not configured",
++    },
++    {
++      field: "Site URL source",
++      status: environmentIdentity.siteUrlSource === "GAMEFOUNDRY_SITE_URL" ? "PASS" : "WARN",
++      value: environmentIdentity.siteUrlSource || "not configured",
++    },
+     {
+       field: "Database provider/type",
+       status: databaseStatus.databaseType || environmentIdentity.databaseModel ? "PASS" : "WARN",
+@@ -1559,6 +1626,16 @@ function systemHealthConfigurationSummary({
+       status: storageStatus.environmentFolderStatus || environmentIdentity.storageFolderStatus || "WARN",
+       value: `Cloudflare R2 ${storageStatus.environmentFolder || environmentIdentity.storageFolder || "not configured"}`,
+     },
++    {
++      field: "Storage endpoint",
++      status: storageStatus.endpointStatus || "WARN",
++      value: storageStatus.endpoint || "not configured",
++    },
++    {
++      field: "Storage projects prefix",
++      status: storageStatus.projectsPrefixStatus || "WARN",
++      value: storageStatus.projectsPrefix || "not configured",
++    },
+     {
+       field: "Auth provider/status",
+       status: authConfigured ? "PASS" : "PENDING",
+diff --git a/src/dev-runtime/storage/storage-config.mjs b/src/dev-runtime/storage/storage-config.mjs
+index ceecc8469..e1f2a9f09 100644
+--- a/src/dev-runtime/storage/storage-config.mjs
++++ b/src/dev-runtime/storage/storage-config.mjs
+@@ -9,6 +9,7 @@ export const STORAGE_ENV_KEYS = Object.freeze([
+   "GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX",
+ ]);
+ export const STORAGE_PROJECTS_PREFIX_LANES = Object.freeze([
++  Object.freeze({ lane: "LOCAL", path: "/local/projects/" }),
+   Object.freeze({ lane: "DEV", path: "/dev/projects/" }),
+   Object.freeze({ lane: "IST", path: "/ist/projects/" }),
+   Object.freeze({ lane: "UAT", path: "/uat/projects/" }),
+@@ -51,6 +52,18 @@ function storageProjectsPrefixValidationError() {
+   return `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX must be one of ${STORAGE_PROJECTS_ALLOWED_PREFIXES.join(", ")}.`;
+ }
+
++function safeStorageEndpointValue(value) {
++  const rawValue = String(value || "").trim();
++  if (!rawValue) {
++    return "";
++  }
++  try {
++    return new URL(rawValue).origin;
++  } catch {
++    return "invalid endpoint";
++  }
++}
++
+ export function loadStorageConfig(env = process.env) {
+   const missingKeys = STORAGE_ENV_KEYS.filter((key) => !envValue(env, key));
+   if (missingKeys.length) {
+@@ -58,9 +71,9 @@ export function loadStorageConfig(env = process.env) {
+       configured: false,
+       missingKeys,
+       safe: {
+-        bucket: "",
+-        endpoint: "",
+-        projectsPrefix: "",
++        bucket: envValue(env, "GAMEFOUNDRY_STORAGE_BUCKET"),
++        endpoint: safeStorageEndpointValue(envValue(env, "GAMEFOUNDRY_STORAGE_ENDPOINT")),
++        projectsPrefix: normalizeStorageProjectsPrefix(envValue(env, "GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX")),
+       },
+     };
+   }
 diff --git a/tests/dev-runtime/AdminHealthOperations.test.mjs b/tests/dev-runtime/AdminHealthOperations.test.mjs
-index 59bea182c..57a4af267 100644
+index 59bea182c..a7a23accd 100644
 --- a/tests/dev-runtime/AdminHealthOperations.test.mjs
 +++ b/tests/dev-runtime/AdminHealthOperations.test.mjs
-@@ -172,9 +172,10 @@ test("Admin can view operational health while Creator sessions are blocked", asy
-         ["Runtime", "API", "Database", "Storage", "Authentication", "Email", "Background Jobs"],
+@@ -184,11 +184,18 @@ test("Admin can view operational health while Creator sessions are blocked", asy
+           "Hosting model",
+           "Site URL",
+           "API URL",
++          "API URL source",
++          "Site URL source",
+           "Database provider/type",
+           "Storage provider/folder",
++          "Storage endpoint",
++          "Storage projects prefix",
+           "Auth provider/status",
+         ],
        );
-       assert.equal(
--        health.serviceHealth.services.every((service) => ["Healthy", "Warning", "Failed", "Not Configured"].includes(service.status)),
-+        health.serviceHealth.services.every((service) => ["PASS", "WARN", "FAIL", "NOT CONFIGURED"].includes(service.status)),
-         true,
-       );
-+      assert.equal(health.serviceHealth.services.some((service) => service.status === "PASS"), true);
-       assert.equal(health.serviceHealth.services.every((service) => typeof service.summary === "string"), true);
-       assert.equal(JSON.stringify(health.serviceHealth).includes("/uat"), false);
-       assert.deepEqual(
-diff --git a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-index cf54c49d3..3527df130 100644
---- a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-+++ b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-@@ -188,7 +188,8 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
-       expect(serviceCardText).toContain(label);
-     });
-     const serviceStatuses = await serviceCards.locator("[data-health-status]").allTextContents();
--    expect(serviceStatuses.every((status) => ["Healthy", "Warning", "Failed", "Not Configured"].includes(status.trim()))).toBe(true);
-+    expect(serviceStatuses.every((status) => ["PASS", "WARN", "FAIL", "NOT CONFIGURED"].includes(status.trim()))).toBe(true);
-+    expect(serviceStatuses).toContain("PASS");
-     const configurationTable = page.getByRole("table", { name: "Configuration summary" });
-     await expect(configurationTable).toContainText("Current environment");
-     await expect(configurationTable).toContainText("Hosting model");
-@@ -350,6 +351,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
-   expect(pageSource).not.toMatch(/\sstyle\s*=/i);
-   expect(pageSource).not.toMatch(/data-health-status="(?:WARN|FAIL)"/);
-   expect(pageSource).not.toContain("No active failure is declared");
-+  expect(pageSource).not.toMatch(/foundation PR|foundation view|placeholder|Pending metric|intentionally not wired/i);
-   expect(pageSource).not.toContain("SQLite");
-   expect(pageSource).toContain("Environment Identity");
-   expect(pageSource).toContain("Environment Map");
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete.md b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete.md
-new file mode 100644
-index 000000000..7cbe75d98
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete.md
-@@ -0,0 +1,40 @@
-+# PR_26177_CHARLIE_006-system-health-dashboard-complete
++      assert.equal(health.configurationSummary.rows.find((row) => row.field === "API URL source")?.value, "GAMEFOUNDRY_API_URL");
++      assert.equal(health.configurationSummary.rows.find((row) => row.field === "Site URL source")?.value, "GAMEFOUNDRY_SITE_URL");
++      assert.equal(health.configurationSummary.rows.find((row) => row.field === "Storage projects prefix")?.value, "/local/projects/");
+       assert.equal(JSON.stringify(health.configurationSummary).includes("site-user"), false);
+       assert.equal(JSON.stringify(health.configurationSummary).includes("site-secret"), false);
+       assert.equal(JSON.stringify(health.configurationSummary).includes("api-user"), false);
+@@ -302,7 +309,12 @@ test("Admin can view operational health while Creator sessions are blocked", asy
+       const startupRows = new Map(health.localApiStartup.rows.map((row) => [row.field, row]));
+       assert.equal(startupRows.get("Environment variable order")?.value, "alphabetical");
+       assert.equal(startupRows.get("Secret masking markers")?.value, "PASSWORD, SECRET, TOKEN, KEY, SERVICE_ROLE, JWT");
++      assert.equal(startupRows.get("Runtime configuration source")?.value, ".env + process environment");
++      assert.equal(startupRows.get("Local API URL source")?.value, "GAMEFOUNDRY_API_URL");
++      assert.equal(startupRows.get("Local site URL source")?.value, "GAMEFOUNDRY_SITE_URL");
++      assert.equal(startupRows.get("Storage/R2 projects prefix source")?.value, "/local/projects/");
+       assert.equal(startupRows.get("Local API URL")?.status, "PASS");
++      assert.equal(startupRows.get("Configured API URL")?.status, "PASS");
+       assert.equal(startupRows.get("Local site URL port")?.value, "5500");
+       assert.ok(["Postgres", "not configured", "invalid database URL"].includes(startupRows.get("Database mode")?.value));
+       assert.equal(startupRows.get("Storage status")?.value, "not configured");
+diff --git a/tests/dev-runtime/LocalApiStartupLogging.test.mjs b/tests/dev-runtime/LocalApiStartupLogging.test.mjs
+index 5362b40d2..fd4239962 100644
+--- a/tests/dev-runtime/LocalApiStartupLogging.test.mjs
++++ b/tests/dev-runtime/LocalApiStartupLogging.test.mjs
+@@ -83,6 +83,11 @@ test("local API startup log separates bind URL from configured public URLs", ()
+     "Local API URL: http://127.0.0.1:5501/api",
+     "Local site URL: http://127.0.0.1:5500",
+     "Local site URL port: 5500",
++    "Runtime configuration source: .env + process environment",
++    "Local API URL source: GAMEFOUNDRY_API_URL",
++    "Local site URL source: GAMEFOUNDRY_SITE_URL",
++    "Storage/R2 endpoint source: GAMEFOUNDRY_STORAGE_ENDPOINT",
++    "Storage/R2 projects prefix source: GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX",
+     "=========================================",
+     "Environment Variables",
+     "=========================================",
+@@ -100,6 +105,7 @@ test("local API startup log separates bind URL from configured public URLs", ()
+     "live server port: 5500",
+     "API server port: 5501",
+     "configured API URL port: 5501",
++    "local API URL port: 5501",
+     "DB/Postgres port: 5432",
+     "Supabase service port: 443",
+     "Storage service port: 9000",
+@@ -145,17 +151,23 @@ test("local API startup log shows missing site URL and derives API URL from bind
+   assert.deepEqual(lines, [
+     "GameFoundry API runtime server running at http://127.0.0.1:5599",
+     "Configured site URL: (not configured)",
+-    "Configured API URL: http://127.0.0.1:5599/api",
++    "Configured API URL: (not configured)",
+     "Local API URL: http://127.0.0.1:5599/api",
+     "Local site URL: (not configured)",
+     "Local site URL port: not configured",
++    "Runtime configuration source: .env + process environment",
++    "Local API URL source: not configured; derived from Local API bind URL",
++    "Local site URL source: not configured",
++    "Storage/R2 endpoint source: not configured",
++    "Storage/R2 projects prefix source: not configured",
+     ".env was not found for API runtime.",
+     "=========================================",
+     "All Runtime Ports being used by Service",
+     "=========================================",
+     "live server port: not configured",
+     "API server port: 5599",
+-    "configured API URL port: 5599",
++    "configured API URL port: not configured",
++    "local API URL port: 5599",
+     "DB/Postgres port: not configured",
+     "Supabase service port: not configured",
+     "Storage service port: not configured",
+diff --git a/tests/dev-runtime/StorageConfig.test.mjs b/tests/dev-runtime/StorageConfig.test.mjs
+index b7e30cd6f..051cfef7e 100644
+--- a/tests/dev-runtime/StorageConfig.test.mjs
++++ b/tests/dev-runtime/StorageConfig.test.mjs
+@@ -17,6 +17,7 @@ function validStorageEnv(projectsPrefix = "/dev/projects/") {
+ }
+
+ test("storage projects prefix normalizes slash variants", () => {
++  assert.equal(normalizeStorageProjectsPrefix("local/projects"), "/local/projects/");
+   assert.equal(normalizeStorageProjectsPrefix("dev/projects"), "/dev/projects/");
+   assert.equal(normalizeStorageProjectsPrefix("\\ist\\projects\\"), "/ist/projects/");
+   assert.equal(normalizeStorageProjectsPrefix(" /uat/projects/ "), "/uat/projects/");
+@@ -25,6 +26,7 @@ test("storage projects prefix normalizes slash variants", () => {
+
+ test("storage config accepts only approved project storage prefixes", () => {
+   assert.deepEqual(STORAGE_PROJECTS_ALLOWED_PREFIXES, [
++    "/local/projects/",
+     "/dev/projects/",
+     "/ist/projects/",
+     "/uat/projects/",
+@@ -44,6 +46,7 @@ test("storage config rejects unapproved project storage prefixes", () => {
+     assert.equal(config.configured, false);
+     assert.equal(config.safe.projectsPrefix, projectsPrefix);
+     assert.match(config.validationError, /GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX must be one of/);
++    assert.equal(config.validationError.includes("/local/projects/"), true);
+     assert.equal(config.validationError.includes("/prod/projects/"), true);
+   });
+ });
+@@ -56,6 +59,26 @@ test("storage config reports missing project storage prefix", () => {
+   assert.equal(config.safe.projectsPrefix, "");
+ });
+
++test("storage config preserves safe partial values without exposing credentials", () => {
++  const config = loadStorageConfig({
++    GAMEFOUNDRY_STORAGE_BUCKET: "gamefoundry-test-assets",
++    GAMEFOUNDRY_STORAGE_ENDPOINT: "https://r2.example.invalid/path-ignored",
++    GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX: "/local/projects/",
++  });
++  assert.equal(config.configured, false);
++  assert.deepEqual(config.missingKeys, [
++    "GAMEFOUNDRY_STORAGE_ACCESS_KEY_ID",
++    "GAMEFOUNDRY_STORAGE_SECRET_ACCESS_KEY",
++  ]);
++  assert.deepEqual(config.safe, {
++    bucket: "gamefoundry-test-assets",
++    endpoint: "https://r2.example.invalid",
++    projectsPrefix: "/local/projects/",
++  });
++  assert.equal(JSON.stringify(config.safe).includes("ACCESS_KEY"), false);
++  assert.equal(JSON.stringify(config.safe).includes("SECRET"), false);
++});
 +
-+Team: Charlie
-+Branch: PR_26177_CHARLIE_006-system-health-dashboard-complete
-+Base: main
-+Scope: System Health Dashboard completion polish
-+
-+## Summary
-+
-+- Removed stale foundation and placeholder wording from the Admin System Health dashboard source.
-+- Kept unavailable provider metrics explicit with safe `PENDING` status and clear reasons.
-+- Updated service health cards to display `PASS`, `WARN`, `FAIL`, or `NOT CONFIGURED` directly.
-+- Preserved the Web UI to API/service contract flow; the browser still renders only server-owned System Health data.
-+- Added targeted assertions for placeholder removal, service status display, secret masking, current-environment-only checks, and externalized Theme V2 script/style rules.
-+
-+## Changed Files
-+
-+- `admin/system-health.html`
-+- `src/dev-runtime/server/local-api-router.mjs`
-+- `tests/dev-runtime/AdminHealthOperations.test.mjs`
-+- `tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
-+- `docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete.md`
-+- `docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_branch-validation.md`
-+- `docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_requirements-checklist.md`
-+- `docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_validation-lane.md`
-+- `docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_manual-validation-notes.md`
-+- `docs_build/dev/reports/codex_changed_files.txt`
-+- `docs_build/dev/reports/codex_review.diff`
-+
-+## Validation
-+
-+- PASS: `node --check src/dev-runtime/server/local-api-router.mjs`
-+- PASS: `node --check tests/dev-runtime/AdminHealthOperations.test.mjs`
-+- PASS: `node --check tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
-+- PASS: `node --test tests/dev-runtime/AdminHealthOperations.test.mjs tests/api/admin-system-health/contract.test.mjs`
-+- PASS: `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1`
-+
-+## Artifact
-+
-+- `tmp/PR_26177_CHARLIE_006-system-health-dashboard-complete_delta.zip`
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_branch-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_branch-validation.md
-new file mode 100644
-index 000000000..2368a289b
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_branch-validation.md
-@@ -0,0 +1,13 @@
-+# PR_26177_CHARLIE_006 Branch Validation
-+
-+Result: PASS
-+
-+Checks:
-+- PASS: Started from `main`.
-+- PASS: Worktree was clean before branch creation.
-+- PASS: Local/origin sync was `0/0` before branch creation.
-+- PASS: Branch `PR_26177_CHARLIE_006-system-health-dashboard-complete` was created from current `main`.
-+- PASS: Scope stayed within System Health Dashboard completion.
-+- PASS: No `start_of_day` files changed.
-+- PASS: No direct commits to `main`.
-+- PASS: PR branch retained for review.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_manual-validation-notes.md
-new file mode 100644
-index 000000000..75244edcf
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_manual-validation-notes.md
-@@ -0,0 +1,9 @@
-+# PR_26177_CHARLIE_006 Manual Validation Notes
-+
-+- Confirmed System Health dashboard copy no longer contains stale `foundation PR`, `foundation view`, `placeholder`, `Pending metric`, or `intentionally not wired` wording.
-+- Confirmed provider metrics that are not available remain visibly marked `PENDING` with explanatory reasons.
-+- Confirmed service cards retain existing Theme V2 card layout while displaying direct health status values.
-+- Confirmed secret-like runtime variables remain masked as `********`.
-+- Confirmed current-environment System Health behavior remains intact; peer environments are reference-only.
-+- Confirmed no runtime/UI/API/database files outside the scoped System Health files were changed.
-+- Confirmed no `start_of_day` files were changed.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_requirements-checklist.md b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_requirements-checklist.md
-new file mode 100644
-index 000000000..1127e0ea8
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_requirements-checklist.md
-@@ -0,0 +1,17 @@
-+# PR_26177_CHARLIE_006 Requirement Checklist
-+
-+- PASS: Environment Summary remains current-deployment only.
-+- PASS: Postgres Health remains API/service-owned and displays safe values only.
-+- PASS: R2/Storage Health remains current-environment only.
-+- PASS: Runtime Environment Variables render from server-owned diagnostics.
-+- PASS: Runtime variables remain alphabetically sorted by key.
-+- PASS: Secret-like runtime values remain masked.
-+- PASS: Service Health cards now display direct `PASS`, `WARN`, `FAIL`, or `NOT CONFIGURED` text.
-+- PASS: Stale foundation and placeholder wording removed from the dashboard source.
-+- PASS: Empty/error states remain explicit `PENDING`, `WARN`, or `FAIL` with reasons.
-+- PASS: Theme V2 layout and externalized scripts/styles preserved.
-+- PASS: No inline styles, style blocks, script blocks, or inline event handlers introduced.
-+- PASS: Browser does not own authoritative product data.
-+- PASS: No MEM DB, local-mem, fake-login, browser storage SSoT, silent fallback, hidden default, or SQLite direction introduced.
-+- PASS: Targeted tests updated and run.
-+- PASS: Required reports and delta ZIP created.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_validation-lane.md b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_validation-lane.md
-new file mode 100644
-index 000000000..408c9ac5d
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_validation-lane.md
-@@ -0,0 +1,20 @@
-+# PR_26177_CHARLIE_006 Validation Lane
-+
-+Impacted lanes:
-+- Admin System Health page
-+- Local API Admin System Health status contract
-+- System Health Playwright page coverage
-+
-+Commands:
-+- PASS: `node --check src/dev-runtime/server/local-api-router.mjs`
-+- PASS: `node --check tests/dev-runtime/AdminHealthOperations.test.mjs`
-+- PASS: `node --check tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
-+- PASS: `node --test tests/dev-runtime/AdminHealthOperations.test.mjs tests/api/admin-system-health/contract.test.mjs`
-+  - 6 tests passed.
-+- PASS: `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1`
-+  - 3 tests passed.
-+
-+Skipped lanes:
-+- Full samples smoke was not run; this PR only touches targeted Admin System Health dashboard behavior and tests.
-+
-+Result: PASS
+ test("storage safe config does not expose credential values", () => {
+   const env = validStorageEnv("/prod/projects/");
+   const config = loadStorageConfig(env);

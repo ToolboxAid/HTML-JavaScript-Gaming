@@ -964,15 +964,33 @@ function localApiStartupStorageStatus(env = process.env) {
   };
 }
 
+function localApiStartupConfigSourceRow({ configured, derivedSource = "", field, key }) {
+  const value = configured
+    ? key
+    : derivedSource
+      ? `not configured; derived from ${derivedSource}`
+      : "not configured";
+  return {
+    field,
+    reason: configured
+      ? `${key} is configured for runtime diagnostics.`
+      : `${key} is not configured for runtime diagnostics.`,
+    status: configured ? "PASS" : "WARN",
+    value,
+  };
+}
+
 function systemHealthLocalApiStartupDiagnostics(env = process.env) {
   const bindTarget = localApiStartupBindTarget(env);
   const configuredApiUrl = String(env.GAMEFOUNDRY_API_URL || "").trim();
   const derivedApiUrl = `http://${bindTarget.value}/api`;
   const siteUrl = String(env.GAMEFOUNDRY_SITE_URL || "").trim();
   const apiUrlDisplay = localApiStartupUrlDisplay(configuredApiUrl || derivedApiUrl);
+  const configuredApiUrlDisplay = localApiStartupUrlDisplay(configuredApiUrl);
   const siteUrlDisplay = localApiStartupUrlDisplay(siteUrl);
   const siteUrlPort = localApiStartupPortFromUrl(siteUrl);
   const databaseMode = localApiStartupDatabaseMode(env);
+  const storageConfig = loadStorageConfig(env);
   const storageStatus = localApiStartupStorageStatus(env);
   const rows = [
     {
@@ -1000,6 +1018,12 @@ function systemHealthLocalApiStartupDiagnostics(env = process.env) {
       value: "PASSWORD, SECRET, TOKEN, KEY, SERVICE_ROLE, JWT",
     },
     {
+      field: "Runtime configuration source",
+      reason: "Runtime configuration is read from process environment values loaded from .env before startup.",
+      status: "PASS",
+      value: ".env + process environment",
+    },
+    {
       field: "Configured startup bind target",
       reason: bindTarget.status === "PASS"
         ? "Local API startup uses the configured or default host and port for the bind target."
@@ -1007,11 +1031,35 @@ function systemHealthLocalApiStartupDiagnostics(env = process.env) {
       status: bindTarget.status,
       value: bindTarget.value,
     },
+    localApiStartupConfigSourceRow({
+      configured: Boolean(configuredApiUrl),
+      derivedSource: "Local API bind target",
+      field: "Local API URL source",
+      key: "GAMEFOUNDRY_API_URL",
+    }),
+    localApiStartupConfigSourceRow({
+      configured: Boolean(siteUrl),
+      field: "Local site URL source",
+      key: "GAMEFOUNDRY_SITE_URL",
+    }),
+    localApiStartupConfigSourceRow({
+      configured: Boolean(String(env.GAMEFOUNDRY_STORAGE_ENDPOINT || "").trim()),
+      field: "Storage/R2 endpoint source",
+      key: "GAMEFOUNDRY_STORAGE_ENDPOINT",
+    }),
+    {
+      field: "Storage/R2 projects prefix source",
+      reason: storageConfig.configured
+        ? "GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX matches an approved environment prefix."
+        : storageConfig.validationError || `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX is ${storageConfig.missingKeys?.includes("GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX") ? "not configured" : "not ready"} for runtime diagnostics.`,
+      status: storageConfig.configured ? "PASS" : "WARN",
+      value: storageConfig.safe?.projectsPrefix || "not configured",
+    },
     {
       field: "Local API URL",
       reason: configuredApiUrl
         ? "GAMEFOUNDRY_API_URL is configured and displayed without URL credentials."
-        : "GAMEFOUNDRY_API_URL is not configured; startup diagnostics derive /api from the bind target.",
+        : "GAMEFOUNDRY_API_URL is not configured; Local API URL is explicitly derived from the bind target for diagnostics.",
       status: apiUrlDisplay === "invalid URL" ? "FAIL" : "PASS",
       value: apiUrlDisplay,
     },
@@ -1041,14 +1089,20 @@ function systemHealthLocalApiStartupDiagnostics(env = process.env) {
       field: "Configured API URL",
       reason: configuredApiUrl
         ? "GAMEFOUNDRY_API_URL is configured and displayed without URL credentials."
-        : "GAMEFOUNDRY_API_URL is not configured; startup diagnostics derive /api from the bind target.",
-      status: "PASS",
-      value: apiUrlDisplay,
+        : "GAMEFOUNDRY_API_URL is not configured; the configured API URL remains not configured.",
+      status: configuredApiUrl ? (configuredApiUrlDisplay === "invalid URL" ? "FAIL" : "PASS") : "WARN",
+      value: configuredApiUrlDisplay,
     },
     {
       field: "Configured API URL port",
-      reason: "Port is derived from the configured or startup-derived API URL for display only.",
-      status: "PASS",
+      reason: "Port is derived from GAMEFOUNDRY_API_URL only; the Local API URL row shows the bind-target derived URL.",
+      status: localApiStartupPortStatus(localApiStartupPortFromUrl(configuredApiUrl)),
+      value: localApiStartupPortFromUrl(configuredApiUrl),
+    },
+    {
+      field: "Local API URL port",
+      reason: "Port is derived from the configured API URL or the explicit Local API bind-target URL.",
+      status: localApiStartupPortStatus(localApiStartupPortFromUrl(configuredApiUrl || derivedApiUrl)),
       value: localApiStartupPortFromUrl(configuredApiUrl || derivedApiUrl),
     },
     {
@@ -1222,13 +1276,15 @@ function systemHealthEnvironmentIdentity(env = process.env, lastHealthCheck = ne
   const bindTarget = localApiStartupBindTarget(env);
   const configuredApiUrl = String(env.GAMEFOUNDRY_API_URL || "").trim();
   const apiUrl = localApiStartupUrlDisplay(configuredApiUrl || `http://${bindTarget.value}/api`);
+  const apiUrlSource = configuredApiUrl ? "GAMEFOUNDRY_API_URL" : "derived from Local API bind target";
   const storageFolderMatches = !inferred.configuredStorageFolder
     || inferred.configuredStorageFolder === model.storageFolder
     || (model.name === "PRD" && inferred.configuredStorageFolder === "/prod");
 
   return {
     apiUrl,
-    apiUrlStatus: apiUrl === "not configured" || apiUrl === "invalid URL" ? "WARN" : "PASS",
+    apiUrlSource,
+    apiUrlStatus: apiUrl === "invalid URL" ? "FAIL" : configuredApiUrl ? "PASS" : "WARN",
     databaseModel: model.databaseModel,
     hostingModel: model.hostingModel,
     lastHealthCheck,
@@ -1237,6 +1293,7 @@ function systemHealthEnvironmentIdentity(env = process.env, lastHealthCheck = ne
       : `Current deployment identity defaulted to ${model.name}; ${STORAGE_PROJECTS_PREFIX_ENV_KEY} did not match an approved environment folder.`,
     name: model.name,
     siteUrl,
+    siteUrlSource: siteUrl === "not configured" ? "not configured" : "GAMEFOUNDRY_SITE_URL",
     siteUrlStatus: siteUrl === "not configured" || siteUrl === "invalid URL" ? "WARN" : "PASS",
     source: inferred.source,
     status: storageFolderMatches ? inferred.status : "WARN",
@@ -1550,6 +1607,16 @@ function systemHealthConfigurationSummary({
       value: environmentIdentity.apiUrl || "not configured",
     },
     {
+      field: "API URL source",
+      status: environmentIdentity.apiUrlSource === "GAMEFOUNDRY_API_URL" ? "PASS" : "WARN",
+      value: environmentIdentity.apiUrlSource || "not configured",
+    },
+    {
+      field: "Site URL source",
+      status: environmentIdentity.siteUrlSource === "GAMEFOUNDRY_SITE_URL" ? "PASS" : "WARN",
+      value: environmentIdentity.siteUrlSource || "not configured",
+    },
+    {
       field: "Database provider/type",
       status: databaseStatus.databaseType || environmentIdentity.databaseModel ? "PASS" : "WARN",
       value: databaseStatus.databaseType || environmentIdentity.databaseModel || "PostgreSQL",
@@ -1558,6 +1625,16 @@ function systemHealthConfigurationSummary({
       field: "Storage provider/folder",
       status: storageStatus.environmentFolderStatus || environmentIdentity.storageFolderStatus || "WARN",
       value: `Cloudflare R2 ${storageStatus.environmentFolder || environmentIdentity.storageFolder || "not configured"}`,
+    },
+    {
+      field: "Storage endpoint",
+      status: storageStatus.endpointStatus || "WARN",
+      value: storageStatus.endpoint || "not configured",
+    },
+    {
+      field: "Storage projects prefix",
+      status: storageStatus.projectsPrefixStatus || "WARN",
+      value: storageStatus.projectsPrefix || "not configured",
     },
     {
       field: "Auth provider/status",

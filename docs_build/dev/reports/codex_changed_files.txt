@@ -1,28 +1,13 @@
-# git status --short
-M admin/system-health.html
- M docs_build/dev/reports/codex_changed_files.txt
- M docs_build/dev/reports/codex_review.diff
- M src/dev-runtime/server/local-api-router.mjs
- M tests/dev-runtime/AdminHealthOperations.test.mjs
- M tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-?? docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_branch-validation.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_manual-validation-notes.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_requirements-checklist.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_validation-lane.md
-
-# git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete.md
-docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_branch-validation.md
-docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_manual-validation-notes.md
-docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_requirements-checklist.md
-docs_build/dev/reports/PR_26177_CHARLIE_006-system-health-dashboard-complete_validation-lane.md
-
-# git diff --stat
-admin/system-health.html                           |  40 +-
- docs_build/dev/reports/codex_changed_files.txt     |  42 +-
- docs_build/dev/reports/codex_review.diff           | 765 +++++++++------------
- src/dev-runtime/server/local-api-router.mjs        |  10 +-
- tests/dev-runtime/AdminHealthOperations.test.mjs   |   3 +-
- .../tools/AdminHealthOperationsPage.spec.mjs       |   4 +-
- 6 files changed, 393 insertions(+), 471 deletions(-)
+﻿docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/codex_review.diff
+docs_build/dev/reports/PR_26177_CHARLIE_007-runtime-configuration-complete.md
+docs_build/dev/reports/PR_26177_CHARLIE_007-runtime-configuration-complete_branch-validation.md
+docs_build/dev/reports/PR_26177_CHARLIE_007-runtime-configuration-complete_manual-validation-notes.md
+docs_build/dev/reports/PR_26177_CHARLIE_007-runtime-configuration-complete_requirements-checklist.md
+docs_build/dev/reports/PR_26177_CHARLIE_007-runtime-configuration-complete_validation-lane.md
+scripts/start-local-api-server.mjs
+src/dev-runtime/server/local-api-router.mjs
+src/dev-runtime/storage/storage-config.mjs
+tests/dev-runtime/AdminHealthOperations.test.mjs
+tests/dev-runtime/LocalApiStartupLogging.test.mjs
+tests/dev-runtime/StorageConfig.test.mjs

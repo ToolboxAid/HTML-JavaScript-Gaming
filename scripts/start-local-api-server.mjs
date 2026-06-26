@@ -102,6 +102,14 @@ function defaultApiUrl(baseUrl) {
   return `${String(baseUrl || "").replace(/\/+$/, "")}/api`;
 }
 
+function configuredSourceLine(label, key, configured) {
+  return `${label} source: ${configured ? key : "not configured"}`;
+}
+
+function derivedSourceLine(label, key, configured, derivedSource) {
+  return `${label} source: ${configured ? key : `not configured; derived from ${derivedSource}`}`;
+}
+
 function connectionStatusLine(label, connection) {
   return `Configured ${label} connection: ${connection.ready ? "configured" : `missing ${connection.missingKeys.join(", ")}`}.`;
 }
@@ -168,7 +176,7 @@ function portFromUrl(value) {
 }
 
 function formatRuntimePortLogLines({ env, localServer }) {
-  const configuredApiUrl = String(env.GAMEFOUNDRY_API_URL || "").trim() || defaultApiUrl(localServer.baseUrl);
+  const configuredApiUrl = String(env.GAMEFOUNDRY_API_URL || "").trim();
   return [
     SECTION_DIVIDER,
     "All Runtime Ports being used by Service",
@@ -176,6 +184,7 @@ function formatRuntimePortLogLines({ env, localServer }) {
     `live server port: ${portFromUrl(env.GAMEFOUNDRY_SITE_URL)}`,
     `API server port: ${portFromUrl(localServer.baseUrl)}`,
     `configured API URL port: ${portFromUrl(configuredApiUrl)}`,
+    `local API URL port: ${portFromUrl(configuredApiUrl || defaultApiUrl(localServer.baseUrl))}`,
     `DB/Postgres port: ${portFromUrl(env.GAMEFOUNDRY_DATABASE_URL)}`,
     `Supabase service port: ${portFromUrl(env.GAMEFOUNDRY_SUPABASE_URL)}`,
     `Storage service port: ${portFromUrl(env.GAMEFOUNDRY_STORAGE_ENDPOINT)}`,
@@ -213,15 +222,21 @@ export function formatStartupLogLines({
   localServer,
   runtimeEnv,
 }) {
-  const configuredApiUrl = String(env.GAMEFOUNDRY_API_URL || "").trim() || defaultApiUrl(localServer.baseUrl);
+  const configuredApiUrl = String(env.GAMEFOUNDRY_API_URL || "").trim();
+  const localApiUrl = configuredApiUrl || defaultApiUrl(localServer.baseUrl);
   const configuredSiteUrl = configuredValue(env.GAMEFOUNDRY_SITE_URL);
   return [
     `GameFoundry API runtime server running at ${localServer.baseUrl}`,
     `Configured site URL: ${configuredSiteUrl}`,
-    `Configured API URL: ${configuredApiUrl}`,
-    `Local API URL: ${configuredApiUrl}`,
+    `Configured API URL: ${configuredValue(configuredApiUrl)}`,
+    `Local API URL: ${localApiUrl}`,
     `Local site URL: ${configuredSiteUrl}`,
     `Local site URL port: ${portFromUrl(env.GAMEFOUNDRY_SITE_URL)}`,
+    "Runtime configuration source: .env + process environment",
+    derivedSourceLine("Local API URL", "GAMEFOUNDRY_API_URL", Boolean(configuredApiUrl), "Local API bind URL"),
+    configuredSourceLine("Local site URL", "GAMEFOUNDRY_SITE_URL", Boolean(String(env.GAMEFOUNDRY_SITE_URL || "").trim())),
+    configuredSourceLine("Storage/R2 endpoint", "GAMEFOUNDRY_STORAGE_ENDPOINT", Boolean(String(env.GAMEFOUNDRY_STORAGE_ENDPOINT || "").trim())),
+    configuredSourceLine("Storage/R2 projects prefix", "GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX", Boolean(String(env.GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX || "").trim())),
     ...formatEnvironmentVariableLogLines(runtimeEnv),
     ...formatRuntimePortLogLines({ env, localServer }),
     connectionStatusLine("auth", accountConnection),

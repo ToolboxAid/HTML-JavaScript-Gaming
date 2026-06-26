@@ -9,6 +9,7 @@ export const STORAGE_ENV_KEYS = Object.freeze([
   "GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX",
 ]);
 export const STORAGE_PROJECTS_PREFIX_LANES = Object.freeze([
+  Object.freeze({ lane: "LOCAL", path: "/local/projects/" }),
   Object.freeze({ lane: "DEV", path: "/dev/projects/" }),
   Object.freeze({ lane: "IST", path: "/ist/projects/" }),
   Object.freeze({ lane: "UAT", path: "/uat/projects/" }),
@@ -51,6 +52,18 @@ function storageProjectsPrefixValidationError() {
   return `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX must be one of ${STORAGE_PROJECTS_ALLOWED_PREFIXES.join(", ")}.`;
 }
 
+function safeStorageEndpointValue(value) {
+  const rawValue = String(value || "").trim();
+  if (!rawValue) {
+    return "";
+  }
+  try {
+    return new URL(rawValue).origin;
+  } catch {
+    return "invalid endpoint";
+  }
+}
+
 export function loadStorageConfig(env = process.env) {
   const missingKeys = STORAGE_ENV_KEYS.filter((key) => !envValue(env, key));
   if (missingKeys.length) {
@@ -58,9 +71,9 @@ export function loadStorageConfig(env = process.env) {
       configured: false,
       missingKeys,
       safe: {
-        bucket: "",
-        endpoint: "",
-        projectsPrefix: "",
+        bucket: envValue(env, "GAMEFOUNDRY_STORAGE_BUCKET"),
+        endpoint: safeStorageEndpointValue(envValue(env, "GAMEFOUNDRY_STORAGE_ENDPOINT")),
+        projectsPrefix: normalizeStorageProjectsPrefix(envValue(env, "GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX")),
       },
     };
   }
