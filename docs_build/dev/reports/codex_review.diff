@@ -1,36 +1,36 @@
 diff --git a/docs_build/dev/BUILD_PR.md b/docs_build/dev/BUILD_PR.md
-index cc725fb0f..8e003cf3d 100644
+index 8e003cf3d..d47106b59 100644
 --- a/docs_build/dev/BUILD_PR.md
 +++ b/docs_build/dev/BUILD_PR.md
 @@ -1,23 +1,23 @@
--# PR_26177_003-shared-geometry-foundation
-+# PR_26177_004-shared-color-foundation
+-# PR_26177_004-shared-color-foundation
++# PR_26177_005-shared-text-foundation
 
  ## Purpose
 
--Add a small shared geometry foundation.
-+Add a small shared color foundation.
+-Add a small shared color foundation.
++Add a small shared text foundation.
 
  ## Source Of Truth
 
--This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth for `PR_26177_003-shared-geometry-foundation`.
-+This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth for `PR_26177_004-shared-color-foundation`.
+-This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth for `PR_26177_004-shared-color-foundation`.
++This `BUILD_PR.md`, `PLAN_PR.md`, and the user request are the source of truth for `PR_26177_005-shared-text-foundation`.
 
  ## Stack
 
--- Base branch: `PR_26177_002-shared-noise-foundation`
-+- Base branch: `PR_26177_003-shared-geometry-foundation`
+-- Base branch: `PR_26177_003-shared-geometry-foundation`
++- Base branch: `PR_26177_004-shared-color-foundation`
 
  ## Exact Scope
 
--- Add `src/shared/geometry/` foundation.
--- Include small reusable primitives/helpers such as vectors, rectangles, bounds, distance, clamp/intersection basics.
--- Add targeted tests for the shared geometry area.
--- No engine refactor.
-+- Add `src/shared/color/` foundation.
-+- Include hex/rgb/hsl conversion, clamp, lerp/blend helpers, luminance/contrast basics.
-+- Add targeted tests for the shared color area.
-+- No page styling changes.
+-- Add `src/shared/color/` foundation.
+-- Include hex/rgb/hsl conversion, clamp, lerp/blend helpers, luminance/contrast basics.
+-- Add targeted tests for the shared color area.
+-- No page styling changes.
++- Add `src/shared/text/` foundation.
++- Include safe string helpers such as slugify, casing, truncate, escapeHtml, and normalizeWhitespace.
++- Add targeted tests for the shared text area.
++- No copy rewrites outside tests/docs.
  - Create required Codex reports under `docs_build/dev/reports/`.
  - Create repo-structured delta ZIP under `tmp/`.
 
@@ -38,27 +38,27 @@ index cc725fb0f..8e003cf3d 100644
 
  - `docs_build/dev/PLAN_PR.md`
  - `docs_build/dev/BUILD_PR.md`
--- `src/shared/geometry/geometry.js`
--- `tests/shared/GeometryFoundation.test.mjs`
--- `docs_build/dev/reports/PR_26177_003-shared-geometry-foundation.md`
--- `docs_build/dev/reports/PR_26177_003-shared-geometry-foundation_branch-validation.md`
--- `docs_build/dev/reports/PR_26177_003-shared-geometry-foundation_requirement-checklist.md`
--- `docs_build/dev/reports/PR_26177_003-shared-geometry-foundation_validation-lane.md`
--- `docs_build/dev/reports/PR_26177_003-shared-geometry-foundation_manual-validation-notes.md`
-+- `src/shared/color/color.js`
-+- `tests/shared/ColorFoundation.test.mjs`
-+- `docs_build/dev/reports/PR_26177_004-shared-color-foundation.md`
-+- `docs_build/dev/reports/PR_26177_004-shared-color-foundation_branch-validation.md`
-+- `docs_build/dev/reports/PR_26177_004-shared-color-foundation_requirement-checklist.md`
-+- `docs_build/dev/reports/PR_26177_004-shared-color-foundation_validation-lane.md`
-+- `docs_build/dev/reports/PR_26177_004-shared-color-foundation_manual-validation-notes.md`
+-- `src/shared/color/color.js`
+-- `tests/shared/ColorFoundation.test.mjs`
+-- `docs_build/dev/reports/PR_26177_004-shared-color-foundation.md`
+-- `docs_build/dev/reports/PR_26177_004-shared-color-foundation_branch-validation.md`
+-- `docs_build/dev/reports/PR_26177_004-shared-color-foundation_requirement-checklist.md`
+-- `docs_build/dev/reports/PR_26177_004-shared-color-foundation_validation-lane.md`
+-- `docs_build/dev/reports/PR_26177_004-shared-color-foundation_manual-validation-notes.md`
++- `src/shared/text/text.js`
++- `tests/shared/TextFoundation.test.mjs`
++- `docs_build/dev/reports/PR_26177_005-shared-text-foundation.md`
++- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_branch-validation.md`
++- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_requirement-checklist.md`
++- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_validation-lane.md`
++- `docs_build/dev/reports/PR_26177_005-shared-text-foundation_manual-validation-notes.md`
  - `docs_build/dev/reports/codex_review.diff`
  - `docs_build/dev/reports/codex_changed_files.txt`
 
  ## Out Of Scope
 
--- No engine refactor.
-+- No page styling changes.
+-- No page styling changes.
++- No copy rewrites outside tests/docs.
  - No browser-owned product data.
  - No runtime UI changes.
  - No browser storage changes.
@@ -66,12 +66,12 @@ index cc725fb0f..8e003cf3d 100644
  Run exactly:
 
  ```powershell
--node ./scripts/run-node-test-files.mjs tests/shared/GeometryFoundation.test.mjs
--node --check src/shared/geometry/geometry.js
--node --check tests/shared/GeometryFoundation.test.mjs
-+node ./scripts/run-node-test-files.mjs tests/shared/ColorFoundation.test.mjs
-+node --check src/shared/color/color.js
-+node --check tests/shared/ColorFoundation.test.mjs
+-node ./scripts/run-node-test-files.mjs tests/shared/ColorFoundation.test.mjs
+-node --check src/shared/color/color.js
+-node --check tests/shared/ColorFoundation.test.mjs
++node ./scripts/run-node-test-files.mjs tests/shared/TextFoundation.test.mjs
++node --check src/shared/text/text.js
++node --check tests/shared/TextFoundation.test.mjs
  git diff --check
  ```
 
@@ -79,361 +79,260 @@ index cc725fb0f..8e003cf3d 100644
  Create repo-structured delta ZIP:
 
  ```text
--tmp/PR_26177_003-shared-geometry-foundation_delta.zip
-+tmp/PR_26177_004-shared-color-foundation_delta.zip
+-tmp/PR_26177_004-shared-color-foundation_delta.zip
++tmp/PR_26177_005-shared-text-foundation_delta.zip
  ```
 diff --git a/docs_build/dev/PLAN_PR.md b/docs_build/dev/PLAN_PR.md
-index b9bb1a6d3..62670625e 100644
+index 62670625e..0682bd3cf 100644
 --- a/docs_build/dev/PLAN_PR.md
 +++ b/docs_build/dev/PLAN_PR.md
-@@ -1,22 +1,23 @@
--# PLAN_PR: PR_26177_003-shared-geometry-foundation
-+# PLAN_PR: PR_26177_004-shared-color-foundation
+@@ -1,23 +1,22 @@
+-# PLAN_PR: PR_26177_004-shared-color-foundation
++# PLAN_PR: PR_26177_005-shared-text-foundation
 
  ## Purpose
 
--Add a small shared geometry foundation.
-+Add a small shared color foundation.
+-Add a small shared color foundation.
++Add a small shared text foundation.
 
  ## Scope
 
--- Add `src/shared/geometry/` foundation.
--- Include reusable primitives/helpers for vectors, rectangles, bounds, distance, clamp, containment, and intersection basics.
-+- Add `src/shared/color/` foundation.
-+- Include hex/rgb/hsl conversion helpers.
-+- Include clamp, lerp/blend helpers, luminance, and contrast basics.
+-- Add `src/shared/color/` foundation.
+-- Include hex/rgb/hsl conversion helpers.
+-- Include clamp, lerp/blend helpers, luminance, and contrast basics.
++- Add `src/shared/text/` foundation.
++- Include safe string helpers for whitespace normalization, slug/casing, truncation, and HTML escaping.
  - Add targeted tests.
--- No engine refactor.
-+- No page styling changes.
+-- No page styling changes.
++- No copy rewrites outside tests/docs.
  - No browser-owned product data.
  - No runtime UI changes.
  - No unrelated cleanup.
 
  ## Implementation Plan
 
--1. Add `src/shared/geometry/geometry.js`.
--2. Add `tests/shared/GeometryFoundation.test.mjs`.
--3. Validate vector, rectangle, bounds, distance, clamp, containment, and intersection behavior.
-+1. Add `src/shared/color/color.js`.
-+2. Add `tests/shared/ColorFoundation.test.mjs`.
-+3. Validate conversion, blending, luminance, and contrast helpers.
+-1. Add `src/shared/color/color.js`.
+-2. Add `tests/shared/ColorFoundation.test.mjs`.
+-3. Validate conversion, blending, luminance, and contrast helpers.
++1. Add `src/shared/text/text.js`.
++2. Add `tests/shared/TextFoundation.test.mjs`.
++3. Validate safe string helpers.
  4. Produce required Codex reports and repo-structured ZIP.
-diff --git a/docs_build/dev/reports/PR_26177_004-shared-color-foundation.md b/docs_build/dev/reports/PR_26177_004-shared-color-foundation.md
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index 1b00743a4..b115685ce 100644
+--- a/docs_build/dev/reports/codex_changed_files.txt
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -1,11 +1,11 @@
+ docs_build/dev/BUILD_PR.md
+ docs_build/dev/PLAN_PR.md
+-docs_build/dev/reports/PR_26177_004-shared-color-foundation.md
+-docs_build/dev/reports/PR_26177_004-shared-color-foundation_branch-validation.md
+-docs_build/dev/reports/PR_26177_004-shared-color-foundation_manual-validation-notes.md
+-docs_build/dev/reports/PR_26177_004-shared-color-foundation_requirement-checklist.md
+-docs_build/dev/reports/PR_26177_004-shared-color-foundation_validation-lane.md
++docs_build/dev/reports/PR_26177_005-shared-text-foundation.md
++docs_build/dev/reports/PR_26177_005-shared-text-foundation_branch-validation.md
++docs_build/dev/reports/PR_26177_005-shared-text-foundation_manual-validation-notes.md
++docs_build/dev/reports/PR_26177_005-shared-text-foundation_requirement-checklist.md
++docs_build/dev/reports/PR_26177_005-shared-text-foundation_validation-lane.md
+ docs_build/dev/reports/codex_changed_files.txt
+ docs_build/dev/reports/codex_review.diff
+-src/shared/color/color.js
+-tests/shared/ColorFoundation.test.mjs
++src/shared/text/text.js
++tests/shared/TextFoundation.test.mjs
+diff --git a/docs_build/dev/reports/PR_26177_005-shared-text-foundation.md b/docs_build/dev/reports/PR_26177_005-shared-text-foundation.md
 new file mode 100644
-index 000000000..976ea2c1f
+index 000000000..c8fce16be
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_004-shared-color-foundation.md
++++ b/docs_build/dev/reports/PR_26177_005-shared-text-foundation.md
 @@ -0,0 +1,23 @@
-+# PR_26177_004-shared-color-foundation
++# PR_26177_005-shared-text-foundation
 +
 +Date: 2026-06-26
-+Scope: Shared color foundation
++Scope: Shared text foundation
 +Status: PASS
 +
 +## Summary
 +
-+- Added `src/shared/color/color.js`.
-+- Added hex/rgb/hsl conversion, clamp, lerp/blend, luminance, and contrast helpers.
-+- Added targeted tests in `tests/shared/ColorFoundation.test.mjs`.
-+- No page styling, runtime UI, API, database, or unrelated cleanup changes were made.
++- Added `src/shared/text/text.js`.
++- Added safe string helpers for whitespace normalization, slug/casing, truncation, and HTML escaping.
++- Added targeted tests in `tests/shared/TextFoundation.test.mjs`.
++- No copy rewrites, runtime UI, browser product-data ownership, API/database, or unrelated cleanup changes were made.
 +
 +## Validation
 +
-+- PASS: `node ./scripts/run-node-test-files.mjs tests/shared/ColorFoundation.test.mjs`.
-+- PASS: `node --check src/shared/color/color.js`.
-+- PASS: `node --check tests/shared/ColorFoundation.test.mjs`.
++- PASS: `node ./scripts/run-node-test-files.mjs tests/shared/TextFoundation.test.mjs`.
++- PASS: `node --check src/shared/text/text.js`.
++- PASS: `node --check tests/shared/TextFoundation.test.mjs`.
 +- PASS: `git diff --check`.
 +
 +## Artifact
 +
-+- `tmp/PR_26177_004-shared-color-foundation_delta.zip`
-diff --git a/docs_build/dev/reports/PR_26177_004-shared-color-foundation_branch-validation.md b/docs_build/dev/reports/PR_26177_004-shared-color-foundation_branch-validation.md
++- `tmp/PR_26177_005-shared-text-foundation_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26177_005-shared-text-foundation_branch-validation.md b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_branch-validation.md
 new file mode 100644
-index 000000000..d4699efd9
+index 000000000..04f5b7ca5
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_004-shared-color-foundation_branch-validation.md
-@@ -0,0 +1,8 @@
-+# PR_26177_004-shared-color-foundation Branch Validation
-+
-+Status: PASS
-+
-+- PASS: Branch `PR_26177_004-shared-color-foundation` was created from `PR_26177_003-shared-geometry-foundation`.
-+- PASS: Stack base was clean before branch creation.
-+- PASS: One PR purpose only: shared color foundation.
-+- PASS: No `start_of_day` files changed.
-diff --git a/docs_build/dev/reports/PR_26177_004-shared-color-foundation_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_004-shared-color-foundation_manual-validation-notes.md
-new file mode 100644
-index 000000000..7c1b6d1be
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_004-shared-color-foundation_manual-validation-notes.md
++++ b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_branch-validation.md
 @@ -0,0 +1,5 @@
-+# PR_26177_004-shared-color-foundation Manual Validation Notes
++# PR_26177_005-shared-text-foundation Branch Validation
 +
-+Status: PASS
-+
-+Manual review confirmed this PR only adds shared color helpers and targeted tests. It does not change page styling, runtime UI, browser product-data ownership, API, or database behavior.
-diff --git a/docs_build/dev/reports/PR_26177_004-shared-color-foundation_requirement-checklist.md b/docs_build/dev/reports/PR_26177_004-shared-color-foundation_requirement-checklist.md
++- PASS: Current branch is `PR_26177_005-shared-text-foundation`.
++- PASS: Branch is stacked on `PR_26177_004-shared-color-foundation`.
++- PASS: Scope is documentation/report files plus shared text code and tests only.
+diff --git a/docs_build/dev/reports/PR_26177_005-shared-text-foundation_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_manual-validation-notes.md
 new file mode 100644
-index 000000000..48c379881
+index 000000000..c93ec9d94
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_004-shared-color-foundation_requirement-checklist.md
-@@ -0,0 +1,11 @@
-+# PR_26177_004-shared-color-foundation Requirement Checklist
++++ b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_manual-validation-notes.md
+@@ -0,0 +1,6 @@
++# PR_26177_005-shared-text-foundation Manual Validation Notes
 +
-+| Requirement | Status | Notes |
-+|---|---:|---|
-+| Add `src/shared/color/` foundation | PASS | Added `src/shared/color/color.js`. |
-+| Include hex/rgb/hsl conversion | PASS | Added conversion helpers. |
-+| Include clamp helpers | PASS | Added `clamp01` and `clampByte`. |
-+| Include lerp/blend helpers | PASS | Added `lerpColor` and `blendColors`. |
-+| Include luminance/contrast basics | PASS | Added relative luminance and contrast ratio helpers. |
-+| No page styling changes | PASS | No CSS or page styling files changed. |
-+| Add targeted tests | PASS | Added `tests/shared/ColorFoundation.test.mjs`. |
-diff --git a/docs_build/dev/reports/PR_26177_004-shared-color-foundation_validation-lane.md b/docs_build/dev/reports/PR_26177_004-shared-color-foundation_validation-lane.md
++- Reviewed scope against the user request and BUILD document.
++- Confirmed the change does not alter UI, storage, API, database, scheduler, or engine behavior.
++- Confirmed no `start_of_day` files were modified.
++- Confirmed ZIP artifact path: `tmp/PR_26177_005-shared-text-foundation_delta.zip`.
+diff --git a/docs_build/dev/reports/PR_26177_005-shared-text-foundation_requirement-checklist.md b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_requirement-checklist.md
 new file mode 100644
-index 000000000..dd80db48b
+index 000000000..87ebe2d92
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_004-shared-color-foundation_validation-lane.md
-@@ -0,0 +1,22 @@
-+# PR_26177_004-shared-color-foundation Validation Lane
++++ b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_requirement-checklist.md
+@@ -0,0 +1,13 @@
++# PR_26177_005-shared-text-foundation Requirement Checklist
 +
-+Status: PASS
++- PASS: One PR purpose only.
++- PASS: Smallest valid scoped change.
++- PASS: No unrelated cleanup.
++- PASS: Did not modify `start_of_day` folders.
++- PASS: Did not add browser product-data ownership.
++- PASS: Used ES modules consistent with repo style.
++- PASS: Added `src/shared/text/` foundation.
++- PASS: Included `slugify`, casing, `truncate`, `escapeHtml`, and `normalizeWhitespace` helpers.
++- PASS: No copy rewrites outside tests/docs.
++- PASS: Added targeted tests for the shared text area.
++- PASS: Did not run full samples smoke by default.
+diff --git a/docs_build/dev/reports/PR_26177_005-shared-text-foundation_validation-lane.md b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_validation-lane.md
+new file mode 100644
+index 000000000..8fa44a0c0
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_005-shared-text-foundation_validation-lane.md
+@@ -0,0 +1,8 @@
++# PR_26177_005-shared-text-foundation Validation Lane
 +
-+## Commands
-+
-+```powershell
-+node ./scripts/run-node-test-files.mjs tests/shared/ColorFoundation.test.mjs
-+node --check src/shared/color/color.js
-+node --check tests/shared/ColorFoundation.test.mjs
-+git diff --check
-+```
-+
-+## Results
-+
-+- PASS: Targeted color foundation test.
-+- PASS: Changed JS syntax checks.
++- PASS: `node ./scripts/run-node-test-files.mjs tests/shared/TextFoundation.test.mjs`.
++- PASS: `node --check src/shared/text/text.js`.
++- PASS: `node --check tests/shared/TextFoundation.test.mjs`.
 +- PASS: `git diff --check`.
 +
-+## Not Run
-+
-+- Full samples smoke was not run by default.
-diff --git a/src/shared/color/color.js b/src/shared/color/color.js
++Full samples smoke was intentionally not run because this PR changes only a shared helper module and targeted tests.
+diff --git a/src/shared/text/text.js b/src/shared/text/text.js
 new file mode 100644
-index 000000000..61bdbfd5e
+index 000000000..3e387388f
 --- /dev/null
-+++ b/src/shared/color/color.js
-@@ -0,0 +1,160 @@
-+function finiteOrZero(value) {
-+  const number = Number(value);
-+  return Number.isFinite(number) ? number : 0;
++++ b/src/shared/text/text.js
+@@ -0,0 +1,63 @@
++const HTML_ESCAPE_MAP = Object.freeze({
++  "&": "&amp;",
++  "<": "&lt;",
++  ">": "&gt;",
++  "\"": "&quot;",
++  "'": "&#39;",
++});
++
++function toText(value) {
++  return value == null ? "" : String(value);
 +}
 +
-+export function clamp01(value) {
-+  return Math.max(0, Math.min(1, finiteOrZero(value)));
++function stripDiacritics(value) {
++  return value.normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
 +}
 +
-+export function clampByte(value) {
-+  return Math.round(Math.max(0, Math.min(255, finiteOrZero(value))));
++export function normalizeWhitespace(value) {
++  return toText(value).replace(/\s+/g, " ").trim();
 +}
 +
-+function normalizeRgb(color) {
-+  return {
-+    r: clampByte(color?.r),
-+    g: clampByte(color?.g),
-+    b: clampByte(color?.b),
-+  };
++export function slugify(value) {
++  return stripDiacritics(normalizeWhitespace(value))
++    .toLowerCase()
++    .replace(/[^a-z0-9]+/g, "-")
++    .replace(/^-+|-+$/g, "");
 +}
 +
-+function normalizeHue(value) {
-+  return ((finiteOrZero(value) % 360) + 360) % 360;
++export function toTitleCase(value) {
++  return normalizeWhitespace(value).replace(/\b[\p{L}\p{N}][\p{L}\p{N}'-]*/gu, (word) => (
++    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
++  ));
 +}
 +
-+function percentToUnit(value) {
-+  const number = finiteOrZero(value);
-+  return clamp01(number > 1 ? number / 100 : number);
++export function toCamelCase(value) {
++  const words = stripDiacritics(normalizeWhitespace(value))
++    .split(/[^A-Za-z0-9]+/)
++    .filter(Boolean);
++
++  return words.map((word, index) => {
++    const lower = word.toLowerCase();
++    return index === 0 ? lower : lower.charAt(0).toUpperCase() + lower.slice(1);
++  }).join("");
 +}
 +
-+function componentToHex(value) {
-+  return clampByte(value).toString(16).padStart(2, "0");
-+}
++export function truncate(value, maxLength, options = {}) {
++  const text = toText(value);
++  const length = Math.max(0, Math.floor(Number(maxLength) || 0));
++  const suffix = options.suffix == null ? "..." : String(options.suffix);
 +
-+/**
-+ * Converts a hex color string to RGB components.
-+ *
-+ * @param {string} hex Hex color such as "#336699" or "#369".
-+ * @returns {{r: number, g: number, b: number}} RGB color.
-+ */
-+export function hexToRgb(hex) {
-+  const text = String(hex || "").trim().replace(/^#/, "");
-+  const expanded = text.length === 3
-+    ? text.split("").map((character) => `${character}${character}`).join("")
-+    : text;
-+
-+  if (!/^[\da-f]{6}$/i.test(expanded)) {
-+    throw new TypeError("hex must be a 3 or 6 digit color string.");
++  if (text.length <= length) {
++    return text;
 +  }
 +
-+  return {
-+    r: Number.parseInt(expanded.slice(0, 2), 16),
-+    g: Number.parseInt(expanded.slice(2, 4), 16),
-+    b: Number.parseInt(expanded.slice(4, 6), 16),
-+  };
-+}
-+
-+export function rgbToHex(color) {
-+  const rgb = normalizeRgb(color);
-+  return `#${componentToHex(rgb.r)}${componentToHex(rgb.g)}${componentToHex(rgb.b)}`;
-+}
-+
-+export function rgbToHsl(color) {
-+  const rgb = normalizeRgb(color);
-+  const r = rgb.r / 255;
-+  const g = rgb.g / 255;
-+  const b = rgb.b / 255;
-+  const max = Math.max(r, g, b);
-+  const min = Math.min(r, g, b);
-+  const lightness = (max + min) / 2;
-+  const delta = max - min;
-+
-+  if (delta === 0) {
-+    return { h: 0, s: 0, l: Number((lightness * 100).toFixed(6)) };
++  if (length <= suffix.length) {
++    return suffix.slice(0, length);
 +  }
 +
-+  const saturation = delta / (1 - Math.abs(2 * lightness - 1));
-+  let hue = 0;
-+  if (max === r) {
-+    hue = 60 * (((g - b) / delta) % 6);
-+  } else if (max === g) {
-+    hue = 60 * ((b - r) / delta + 2);
-+  } else {
-+    hue = 60 * ((r - g) / delta + 4);
-+  }
-+
-+  return {
-+    h: Number(normalizeHue(hue).toFixed(6)),
-+    s: Number((saturation * 100).toFixed(6)),
-+    l: Number((lightness * 100).toFixed(6)),
-+  };
++  return `${text.slice(0, length - suffix.length)}${suffix}`;
 +}
 +
-+export function hslToRgb(color) {
-+  const h = normalizeHue(color?.h);
-+  const s = percentToUnit(color?.s);
-+  const l = percentToUnit(color?.l);
-+  const chroma = (1 - Math.abs(2 * l - 1)) * s;
-+  const x = chroma * (1 - Math.abs(((h / 60) % 2) - 1));
-+  const m = l - chroma / 2;
-+  let r = 0;
-+  let g = 0;
-+  let b = 0;
-+
-+  if (h < 60) {
-+    [r, g, b] = [chroma, x, 0];
-+  } else if (h < 120) {
-+    [r, g, b] = [x, chroma, 0];
-+  } else if (h < 180) {
-+    [r, g, b] = [0, chroma, x];
-+  } else if (h < 240) {
-+    [r, g, b] = [0, x, chroma];
-+  } else if (h < 300) {
-+    [r, g, b] = [x, 0, chroma];
-+  } else {
-+    [r, g, b] = [chroma, 0, x];
-+  }
-+
-+  return normalizeRgb({
-+    r: (r + m) * 255,
-+    g: (g + m) * 255,
-+    b: (b + m) * 255,
-+  });
++export function escapeHtml(value) {
++  return toText(value).replace(/[&<>"']/g, (character) => HTML_ESCAPE_MAP[character]);
 +}
-+
-+export function lerp(start, end, amount) {
-+  return finiteOrZero(start) + (finiteOrZero(end) - finiteOrZero(start)) * clamp01(amount);
-+}
-+
-+export function lerpColor(start, end, amount) {
-+  const a = normalizeRgb(start);
-+  const b = normalizeRgb(end);
-+  return normalizeRgb({
-+    r: lerp(a.r, b.r, amount),
-+    g: lerp(a.g, b.g, amount),
-+    b: lerp(a.b, b.b, amount),
-+  });
-+}
-+
-+export function blendColors(start, end, amount = 0.5) {
-+  return rgbToHex(lerpColor(start, end, amount));
-+}
-+
-+function linearizeChannel(value) {
-+  const channel = clampByte(value) / 255;
-+  return channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
-+}
-+
-+export function relativeLuminance(color) {
-+  const rgb = normalizeRgb(color);
-+  return 0.2126 * linearizeChannel(rgb.r) + 0.7152 * linearizeChannel(rgb.g) + 0.0722 * linearizeChannel(rgb.b);
-+}
-+
-+export function contrastRatio(first, second) {
-+  const a = relativeLuminance(first);
-+  const b = relativeLuminance(second);
-+  const lighter = Math.max(a, b);
-+  const darker = Math.min(a, b);
-+  return Number(((lighter + 0.05) / (darker + 0.05)).toFixed(6));
-+}
-diff --git a/tests/shared/ColorFoundation.test.mjs b/tests/shared/ColorFoundation.test.mjs
+diff --git a/tests/shared/TextFoundation.test.mjs b/tests/shared/TextFoundation.test.mjs
 new file mode 100644
-index 000000000..4a96d3a35
+index 000000000..893c5edfd
 --- /dev/null
-+++ b/tests/shared/ColorFoundation.test.mjs
-@@ -0,0 +1,50 @@
++++ b/tests/shared/TextFoundation.test.mjs
+@@ -0,0 +1,37 @@
 +/*
 +Toolbox Aid
 +David Quesenberry
 +06/26/2026
-+ColorFoundation.test.mjs
++TextFoundation.test.mjs
 +*/
 +import assert from "node:assert/strict";
 +import {
-+  blendColors,
-+  clamp01,
-+  clampByte,
-+  contrastRatio,
-+  hexToRgb,
-+  hslToRgb,
-+  lerpColor,
-+  relativeLuminance,
-+  rgbToHex,
-+  rgbToHsl,
-+} from "../../src/shared/color/color.js";
++  escapeHtml,
++  normalizeWhitespace,
++  slugify,
++  toCamelCase,
++  toTitleCase,
++  truncate,
++} from "../../src/shared/text/text.js";
 +
 +export function run() {
-+  assert.equal(clamp01(2), 1);
-+  assert.equal(clamp01(-1), 0);
-+  assert.equal(clampByte(260), 255);
-+  assert.equal(clampByte(12.4), 12);
++  assert.equal(normalizeWhitespace("  Alpha\n\tBeta   Gamma  "), "Alpha Beta Gamma");
++  assert.equal(normalizeWhitespace(null), "");
 +
-+  assert.deepEqual(hexToRgb("#369"), { r: 51, g: 102, b: 153 });
-+  assert.deepEqual(hexToRgb("#336699"), { r: 51, g: 102, b: 153 });
-+  assert.equal(rgbToHex({ r: 51, g: 102, b: 153 }), "#336699");
-+  assert.throws(() => hexToRgb("not-a-color"), TypeError);
++  assert.equal(slugify(" Café Racer: Level 12! "), "cafe-racer-level-12");
++  assert.equal(slugify(" -- "), "");
 +
-+  assert.deepEqual(rgbToHsl({ r: 255, g: 0, b: 0 }), { h: 0, s: 100, l: 50 });
-+  assert.deepEqual(hslToRgb({ h: 120, s: 100, l: 50 }), { r: 0, g: 255, b: 0 });
-+  assert.equal(rgbToHex(hslToRgb(rgbToHsl({ r: 51, g: 102, b: 153 }))), "#336699");
++  assert.equal(toTitleCase("the QUICK-brown fox"), "The Quick-brown Fox");
++  assert.equal(toCamelCase("Café racer level 12"), "cafeRacerLevel12");
 +
-+  assert.deepEqual(lerpColor({ r: 0, g: 0, b: 0 }, { r: 255, g: 255, b: 255 }, 0.5), {
-+    r: 128,
-+    g: 128,
-+    b: 128,
-+  });
-+  assert.equal(blendColors({ r: 255, g: 0, b: 0 }, { r: 0, g: 0, b: 255 }, 0.5), "#800080");
++  assert.equal(truncate("Hello world", 8), "Hello...");
++  assert.equal(truncate("Hello", 8), "Hello");
++  assert.equal(truncate("Hello world", 2), "..");
++  assert.equal(truncate("Hello world", 8, { suffix: "!" }), "Hello w!");
 +
-+  assert.equal(relativeLuminance({ r: 0, g: 0, b: 0 }), 0);
-+  assert.equal(Number(relativeLuminance({ r: 255, g: 255, b: 255 }).toFixed(6)), 1);
-+  assert.equal(contrastRatio({ r: 0, g: 0, b: 0 }, { r: 255, g: 255, b: 255 }), 21);
++  assert.equal(escapeHtml("<button data-name=\"A&B\">It's</button>"), "&lt;button data-name=&quot;A&amp;B&quot;&gt;It&#39;s&lt;/button&gt;");
 +}
 +
 +if (import.meta.url === `file://${process.argv[1]}`) {
