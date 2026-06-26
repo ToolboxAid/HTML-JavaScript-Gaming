@@ -1,414 +1,679 @@
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract.md b/docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract.md
+diff --git a/assets/toolbox/hitboxes/js/index.js b/assets/toolbox/hitboxes/js/index.js
+index d5030997a..c85e0ea15 100644
+--- a/assets/toolbox/hitboxes/js/index.js
++++ b/assets/toolbox/hitboxes/js/index.js
+@@ -1,66 +1,292 @@
+-const FOUNDATION_MILESTONES = Object.freeze([
+-  Object.freeze({
+-    milestone: "Tool shell",
+-    notes: "Theme V2 page shell is available from the toolbox.",
+-    status: "Ready",
+-  }),
+-  Object.freeze({
+-    milestone: "Local API contract",
+-    notes: "Placeholder service boundary is reserved for later persistence work.",
+-    status: "Placeholder",
+-  }),
+-  Object.freeze({
+-    milestone: "Editor",
+-    notes: "Drawing and editing start in a later focused PR.",
+-    status: "Deferred",
+-  }),
+-]);
++import { createServerRepositoryClient } from "../../../../src/api/server-api-client.js";
++
++const EMPTY_STATE = "Create an Object and assign a sprite or vector before editing hitboxes.";
++const DEFAULT_BOUNDS = Object.freeze({ height: 64, width: 64, x: 0, y: 0 });
++const DEFAULT_ORIGIN = Object.freeze({ x: 0, y: 0 });
+
+ const elements = {
+-  contractCount: document.querySelector("[data-hitboxes-contract-count]"),
+-  foundationStatus: document.querySelector("[data-hitboxes-foundation-status]"),
++  boundingBox: document.querySelector("[data-hitboxes-bounding-box]"),
++  list: document.querySelector("[data-hitboxes-object-list]"),
+   log: document.querySelector("[data-hitboxes-log]"),
+-  mode: document.querySelector("[data-hitboxes-mode]"),
+-  owner: document.querySelector("[data-hitboxes-owner]"),
+-  persistence: document.querySelector("[data-hitboxes-persistence]"),
+-  scopeCount: document.querySelector("[data-hitboxes-scope-count]"),
+-  service: document.querySelector("[data-hitboxes-service]"),
+-  table: document.querySelector("[data-hitboxes-foundation-table]"),
+-  toolState: document.querySelector("[data-hitboxes-tool-state]"),
++  metaBounds: document.querySelector("[data-hitboxes-meta-bounds]"),
++  metaKey: document.querySelector("[data-hitboxes-meta-key]"),
++  metaName: document.querySelector("[data-hitboxes-meta-name]"),
++  metaOrigin: document.querySelector("[data-hitboxes-meta-origin]"),
++  metaVisual: document.querySelector("[data-hitboxes-meta-visual]"),
++  objectCount: document.querySelector("[data-hitboxes-object-count]"),
++  originMarker: document.querySelector("[data-hitboxes-origin-marker]"),
++  previewFallback: document.querySelector("[data-hitboxes-preview-fallback]"),
++  previewFrame: document.querySelector("[data-hitboxes-preview-frame]"),
++  previewImage: document.querySelector("[data-hitboxes-preview-image]"),
++  previewSummary: document.querySelector("[data-hitboxes-preview-summary]"),
++  previewTitle: document.querySelector("[data-hitboxes-preview-title]"),
++  selectedKey: document.querySelector("[data-hitboxes-selected-key]"),
++  sourceStatus: document.querySelector("[data-hitboxes-source-status]"),
++  visualType: document.querySelector("[data-hitboxes-visual-type]"),
++};
++
++const objectsRepository = createServerRepositoryClient("objects");
++const state = {
++  eligibleObjects: [],
++  selectedKey: "",
+ };
+
++function normalizeText(value) {
++  return String(value || "").trim();
++}
++
++function objectKey(object = {}) {
++  return normalizeText(object.id || object.key || object.objectKey || object.name)
++    .toLowerCase()
++    .replace(/[^a-z0-9]+/g, "-")
++    .replace(/^-+|-+$/g, "");
++}
++
+ function setText(element, value) {
+   if (element) {
+     element.textContent = value;
+   }
+ }
+
+-function createCell(text) {
++function finiteNumber(value, fallback) {
++  return Number.isFinite(value) ? value : fallback;
++}
++
++function normalizeBounds(source = {}) {
++  const bounds = source.bounds && typeof source.bounds === "object" ? source.bounds : {};
++  const size = source.size && typeof source.size === "object" ? source.size : {};
++  return Object.freeze({
++    height: Math.max(1, finiteNumber(bounds.height ?? size.height, DEFAULT_BOUNDS.height)),
++    width: Math.max(1, finiteNumber(bounds.width ?? size.width, DEFAULT_BOUNDS.width)),
++    x: finiteNumber(bounds.x ?? source.x, DEFAULT_BOUNDS.x),
++    y: finiteNumber(bounds.y ?? source.y, DEFAULT_BOUNDS.y),
++  });
++}
++
++function normalizeOrigin(source = {}) {
++  const origin = source.origin && typeof source.origin === "object"
++    ? source.origin
++    : source.objectOrigin && typeof source.objectOrigin === "object"
++      ? source.objectOrigin
++      : DEFAULT_ORIGIN;
++  return Object.freeze({
++    x: finiteNumber(origin.x, DEFAULT_ORIGIN.x),
++    y: finiteNumber(origin.y, DEFAULT_ORIGIN.y),
++  });
++}
++
++function visualMetadataForObject(object = {}) {
++  const render = object.render && typeof object.render === "object" ? object.render : {};
++  const assignedVisual = object.assignedVisualAsset && typeof object.assignedVisualAsset === "object" ? object.assignedVisualAsset : {};
++  const visualAsset = object.visualAsset && typeof object.visualAsset === "object" ? object.visualAsset : {};
++  const candidates = [render, assignedVisual, visualAsset, object];
++  const assetKey = candidates.map((candidate) => normalizeText(candidate.assetKey || candidate.assetId || candidate.id)).find(Boolean) || "";
++  const previewPath = candidates.map((candidate) => normalizeText(candidate.previewPath || candidate.path || candidate.storedPath || candidate.imagePath)).find(Boolean) || "";
++  const type = candidates.map((candidate) => normalizeText(candidate.type || candidate.assetType || candidate.kind)).find(Boolean) || "";
++  const label = candidates.map((candidate) => normalizeText(candidate.label || candidate.name || candidate.assetName)).find(Boolean) || assetKey;
++
++  if (!assetKey && !previewPath) {
++    return null;
++  }
++
++  return Object.freeze({
++    assetKey,
++    label: label || assetKey || "Assigned visual asset",
++    previewPath,
++    type: type || "Asset",
++  });
++}
++
++function eligibleObjectFromSource(object = {}) {
++  const visual = visualMetadataForObject(object);
++  if (!visual) {
++    return null;
++  }
++  const key = objectKey(object);
++  if (!key) {
++    return null;
++  }
++  return Object.freeze({
++    bounds: normalizeBounds(object),
++    key,
++    name: normalizeText(object.name) || key,
++    origin: normalizeOrigin(object),
++    source: Object.freeze({ ...object }),
++    visual,
++  });
++}
++
++function tableMessage(text) {
++  const row = document.createElement("tr");
++  const cell = document.createElement("td");
++  cell.colSpan = 3;
++  cell.textContent = text;
++  row.append(cell);
++  return row;
++}
++
++function tableCell(text) {
+   const cell = document.createElement("td");
+   cell.textContent = text;
+   return cell;
+ }
+
+-function createRow(milestone) {
++function visualLabel(visual) {
++  const type = normalizeText(visual.type);
++  const label = normalizeText(visual.label);
++  const key = normalizeText(visual.assetKey);
++  return `${label || key || "Assigned visual"}${type ? ` / ${type}` : ""}`;
++}
++
++function sourceButton(object) {
++  const button = document.createElement("button");
++  button.className = object.key === state.selectedKey ? "btn btn--compact primary" : "btn btn--compact";
++  button.type = "button";
++  button.dataset.hitboxesSelectObject = object.key;
++  button.textContent = object.name;
++  return button;
++}
++
++function objectRow(object) {
+   const row = document.createElement("tr");
+-  const heading = document.createElement("th");
+-  heading.scope = "row";
+-  heading.textContent = milestone.milestone;
+-  row.append(heading, createCell(milestone.status), createCell(milestone.notes));
++  row.dataset.hitboxesObjectRow = object.key;
++  const nameCell = document.createElement("th");
++  nameCell.scope = "row";
++  nameCell.append(sourceButton(object));
++  row.append(nameCell, tableCell(object.key), tableCell(visualLabel(object.visual)));
+   return row;
+ }
+
+-function renderFoundation() {
+-  elements.table?.replaceChildren(...FOUNDATION_MILESTONES.map(createRow));
+-  setText(elements.contractCount, String(FOUNDATION_MILESTONES.length));
+-  setText(elements.scopeCount, "0");
+-  setText(elements.foundationStatus, "Foundation ready");
+-  setText(elements.owner, "Team Delta");
+-  setText(elements.persistence, "Local API contract pending");
+-  setText(elements.service, "hitboxes-service-placeholder");
+-  setText(elements.mode, "read-only foundation");
+-  setText(elements.toolState, "Foundation");
+-  setText(elements.log, "Hitboxes foundation loaded. Drawing and editing are intentionally deferred.");
++function previewImageUrl(visual) {
++  const path = normalizeText(visual.previewPath);
++  if (!path) {
++    return "";
++  }
++  if (/^(https?:|data:|blob:|\/)/i.test(path)) {
++    return path;
++  }
++  return `/api/storage/project-assets/read?key=${encodeURIComponent(path)}`;
++}
++
++function boundsText(bounds) {
++  return `${bounds.width}x${bounds.height} at ${bounds.x},${bounds.y}`;
++}
++
++function originText(origin) {
++  return `${origin.x},${origin.y}`;
++}
++
++function selectedObject() {
++  return state.eligibleObjects.find((object) => object.key === state.selectedKey) || null;
++}
++
++function renderList() {
++  if (!elements.list) {
++    return;
++  }
++  if (!state.eligibleObjects.length) {
++    elements.list.replaceChildren(tableMessage(EMPTY_STATE));
++    return;
++  }
++  elements.list.replaceChildren(...state.eligibleObjects.map(objectRow));
++}
++
++function renderSelectedObject() {
++  const object = selectedObject();
++  setText(elements.objectCount, String(state.eligibleObjects.length));
++
++  if (!object) {
++    setText(elements.selectedKey, "None");
++    setText(elements.visualType, "None");
++    setText(elements.previewTitle, "No Object selected");
++    setText(elements.previewSummary, state.eligibleObjects.length ? "Select an Object with assigned visual metadata to prepare hitbox editing." : EMPTY_STATE);
++    setText(elements.previewFallback, state.eligibleObjects.length ? "Select an Object to preview assigned visual metadata." : EMPTY_STATE);
++    setText(elements.boundingBox, "Bounding box: none");
++    setText(elements.originMarker, "Origin: none");
++    setText(elements.metaName, "None");
++    setText(elements.metaKey, "None");
++    setText(elements.metaVisual, "None");
++    setText(elements.metaBounds, "None");
++    setText(elements.metaOrigin, "None");
++    setText(elements.log, state.eligibleObjects.length ? "Select Object A." : EMPTY_STATE);
++    if (elements.previewImage) {
++      elements.previewImage.hidden = true;
++      elements.previewImage.removeAttribute("src");
++    }
++    return;
++  }
++
++  const imageUrl = previewImageUrl(object.visual);
++  setText(elements.selectedKey, object.key);
++  setText(elements.visualType, object.visual.type);
++  setText(elements.previewTitle, object.name);
++  setText(elements.previewSummary, `Object A uses ${visualLabel(object.visual)} from the Objects service contract.`);
++  setText(elements.previewFallback, `Assigned visual metadata exists for ${object.name}; rendering is pending if no image appears.`);
++  setText(elements.boundingBox, `Bounding box: ${boundsText(object.bounds)}`);
++  setText(elements.originMarker, `Origin: ${originText(object.origin)}`);
++  setText(elements.metaName, object.name);
++  setText(elements.metaKey, object.key);
++  setText(elements.metaVisual, visualLabel(object.visual));
++  setText(elements.metaBounds, boundsText(object.bounds));
++  setText(elements.metaOrigin, originText(object.origin));
++  setText(elements.log, `Selected Object A: ${object.name}.`);
++
++  if (elements.previewImage) {
++    if (imageUrl) {
++      elements.previewImage.alt = `${object.name} assigned visual preview`;
++      elements.previewImage.src = imageUrl;
++      elements.previewImage.hidden = false;
++    } else {
++      elements.previewImage.hidden = true;
++      elements.previewImage.removeAttribute("src");
++    }
++  }
++}
++
++function render() {
++  setText(elements.sourceStatus, state.eligibleObjects.length ? "Objects loaded from Local API." : EMPTY_STATE);
++  renderList();
++  renderSelectedObject();
+ }
+
+-renderFoundation();
++function loadObjects() {
++  const result = objectsRepository.listObjects();
++  if (!Array.isArray(result)) {
++    const message = result?.message || result?.validation?.findings?.[0]?.action || "Objects service is unavailable.";
++    state.eligibleObjects = [];
++    state.selectedKey = "";
++    render();
++    setText(elements.sourceStatus, message);
++    setText(elements.log, message);
++    return;
++  }
++
++  state.eligibleObjects = result.map(eligibleObjectFromSource).filter(Boolean);
++  const params = new URLSearchParams(window.location.search);
++  const requestedKey = normalizeText(params.get("objectKey"));
++  state.selectedKey = state.eligibleObjects.some((object) => object.key === requestedKey)
++    ? requestedKey
++    : state.eligibleObjects[0]?.key || "";
++  render();
++}
++
++elements.list?.addEventListener("click", (event) => {
++  const button = event.target instanceof HTMLElement ? event.target.closest("[data-hitboxes-select-object]") : null;
++  if (!button) {
++    return;
++  }
++  state.selectedKey = button.dataset.hitboxesSelectObject || "";
++  render();
++});
++
++elements.previewImage?.addEventListener("error", () => {
++  const object = selectedObject();
++  if (!object || !elements.previewImage) {
++    return;
++  }
++  elements.previewImage.hidden = true;
++  elements.previewImage.removeAttribute("src");
++  setText(elements.previewFallback, `Assigned visual metadata exists for ${object.name}; rendering is pending for ${object.visual.previewPath || object.visual.assetKey}.`);
++});
++
++loadObjects();
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_004-hitboxes-real-object-source.md b/docs_build/dev/reports/PR_26177_DELTA_004-hitboxes-real-object-source.md
 new file mode 100644
-index 000000000..ec0a1246a
+index 000000000..e62a141e2
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract.md
-@@ -0,0 +1,31 @@
-+# PR_26177_DELTA_003-hitboxes-engine-collision-contract
++++ b/docs_build/dev/reports/PR_26177_DELTA_004-hitboxes-real-object-source.md
+@@ -0,0 +1,26 @@
++# PR_26177_DELTA_004-hitboxes-real-object-source
 +
 +Team: Delta
-+Branch: PR_26177_DELTA_003-hitboxes-engine-collision-contract
-+Base: PR_26177_DELTA_002-hitboxes-foundation
-+Scope: Shared engine collision contract only
++Branch: PR_26177_DELTA_004-hitboxes-real-object-source
++Base: PR_26177_DELTA_003-hitboxes-engine-collision-contract
++Scope: Hitboxes real Object source selection only
 +
 +## Summary
 +
-+Added an engine-owned Hitboxes collision contract for future Hitboxes preview/testing and runtime reuse. The logic is shared under `src/engine/collision/` and is not page-local.
++Hitboxes now loads real Objects from the Objects Local API/service contract and filters the source list to Objects with assigned visual asset metadata. Selecting an eligible Object loads it as Object A and renders creator-facing preview, bounding box, origin, and metadata panels.
 +
-+## Changes
++## Changed Files Summary
 +
-+- Added `src/engine/collision/hitboxCollision.js`.
-+- Added AABB normalization and overlap helpers.
-+- Added swept AABB collision calculation with collision time, impact normal, impact point, and before/after/impact positions.
-+- Added focused unit tests in `tests/engine/HitboxCollisionContract.test.mjs`.
++- `toolbox/hitboxes/index.html`: replaced foundation-only messaging with Object A source selection, preview, and metadata panels.
++- `assets/toolbox/hitboxes/js/index.js`: reads Objects via `createServerRepositoryClient("objects")`, filters eligible visual-backed Objects, and renders selection/preview state.
++- `tests/playwright/tools/HitboxesTool.spec.mjs`: adds targeted creator-facing Object selection coverage.
++- `docs_build/dev/reports/*`: required PR reports and Codex review artifacts.
 +
-+## Deferred
++## Scope Guard
 +
-+- No Hitboxes editor UI.
-+- No object source selection.
-+- No two-object preview UI.
-+- No swept-motion preview UI.
-+- No Hitboxes persistence changes.
-+
-+## Validation
-+
-+- PASS: `node --check src/engine/collision/hitboxCollision.js`
-+- PASS: `node --check tests/engine/HitboxCollisionContract.test.mjs`
-+- PASS: `node ./scripts/run-node-test-files.mjs tests/engine/HitboxCollisionContract.test.mjs`
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_branch-validation.md b/docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_branch-validation.md
++- No hitbox drawing or editing added.
++- No Object B support added.
++- No browser-owned product data added.
++- No fake standalone Object source data added.
++- No unrelated tools changed.
++- No `start_of_day` files changed.
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_004-hitboxes-real-object-source_branch-validation.md b/docs_build/dev/reports/PR_26177_DELTA_004-hitboxes-real-object-source_branch-validation.md
 new file mode 100644
-index 000000000..812d21423
+index 000000000..fa27e291b
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_branch-validation.md
++++ b/docs_build/dev/reports/PR_26177_DELTA_004-hitboxes-real-object-source_branch-validation.md
 @@ -0,0 +1,16 @@
-+# PR_26177_DELTA_003 Hitboxes Engine Collision Contract Branch Validation
++# PR_26177_DELTA_004 Hitboxes Real Object Source Branch Validation
 +
-+Branch: PR_26177_DELTA_003-hitboxes-engine-collision-contract
-+Base: PR_26177_DELTA_002-hitboxes-foundation
++Branch: PR_26177_DELTA_004-hitboxes-real-object-source
++Base: PR_26177_DELTA_003-hitboxes-engine-collision-contract
 +
 +Result: PASS
 +
 +| Check | Status | Notes |
 +|---|---|---|
-+| Current branch inside Delta Hitboxes chain | PASS | Started from `PR_26177_DELTA_002-hitboxes-foundation`. |
++| Current branch inside Delta Hitboxes chain | PASS | Started from `PR_26177_DELTA_003-hitboxes-engine-collision-contract`. |
 +| Working tree clean before branch | PASS | No dirty files before branch creation. |
-+| Stacked branch created | PASS | Work is on `PR_26177_DELTA_003-hitboxes-engine-collision-contract`. |
++| Stacked branch created | PASS | Work is on `PR_26177_DELTA_004-hitboxes-real-object-source`. |
 +| No return to main | PASS | This PR was stacked from the active Delta Hitboxes branch. |
-+| Scope is engine collision contract only | PASS | Changed shared engine collision module, unit test, and reports only. |
-+| No Hitboxes editor UI | PASS | No `toolbox/hitboxes` or `assets/toolbox/hitboxes` files changed. |
++| Scope is real Object source selection only | PASS | Changed Hitboxes page, Hitboxes JS, targeted Playwright test, and reports. |
++| No unrelated tools | PASS | No unrelated tool source files changed. |
 +| start_of_day untouched | PASS | No `start_of_day` files changed. |
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_manual-validation-notes.md
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_004-hitboxes-real-object-source_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_DELTA_004-hitboxes-real-object-source_manual-validation-notes.md
 new file mode 100644
-index 000000000..f24c14910
+index 000000000..dbf2fa864
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_manual-validation-notes.md
-@@ -0,0 +1,8 @@
-+# PR_26177_DELTA_003 Hitboxes Engine Collision Contract Manual Validation Notes
++++ b/docs_build/dev/reports/PR_26177_DELTA_004-hitboxes-real-object-source_manual-validation-notes.md
+@@ -0,0 +1,9 @@
++# PR_26177_DELTA_004 Hitboxes Real Object Source Manual Validation Notes
 +
-+- Confirmed this PR is stacked from `PR_26177_DELTA_002-hitboxes-foundation`, not from `main`.
-+- Confirmed the implementation is engine-owned shared collision logic under `src/engine/collision/`.
-+- Confirmed no Hitboxes editor UI files were modified.
-+- Confirmed the high-speed vertical swept AABB regression detects impact at time `0.4`.
-+- Confirmed impact normal for downward motion is `{ x: 0, y: -1 }`.
-+- Confirmed before, after, and impact positions are exposed by the contract result.
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_requirement-checklist.md b/docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_requirement-checklist.md
++- Open `toolbox/objects/index.html`.
++- Add or use an Object with render type `Sprite` so the Objects service assigns visual asset metadata.
++- Open `toolbox/hitboxes/index.html?objectKey=<object-key>&sourceTool=objects`.
++- Confirm the left panel lists only Objects with assigned visual metadata.
++- Select an Object and confirm Object A preview, bounding box, origin, and metadata update.
++- If the assigned asset image cannot render, confirm the fallback says metadata exists and rendering is pending.
++- Confirm no hitbox drawing/editing controls are present in this PR.
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_004-hitboxes-real-object-source_requirement-checklist.md b/docs_build/dev/reports/PR_26177_DELTA_004-hitboxes-real-object-source_requirement-checklist.md
 new file mode 100644
-index 000000000..36e244272
+index 000000000..0b8dd3eb6
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_requirement-checklist.md
-@@ -0,0 +1,19 @@
-+# PR_26177_DELTA_003 Hitboxes Engine Collision Contract Requirement Checklist
++++ b/docs_build/dev/reports/PR_26177_DELTA_004-hitboxes-real-object-source_requirement-checklist.md
+@@ -0,0 +1,21 @@
++# PR_26177_DELTA_004 Hitboxes Real Object Source Requirement Checklist
 +
 +| Requirement | Status | Notes |
 +|---|---|---|
-+| Add shared collision module | PASS | Added `src/engine/collision/hitboxCollision.js`. |
-+| Collision logic not page-local | PASS | Logic lives under engine collision source, not Hitboxes page JS. |
-+| AABB overlap contract | PASS | `aabbOverlap(...)` returns normalized boxes, overlap state, and intersection. |
-+| Bounding box normalization | PASS | `normalizeBoundingBox(...)` supports negative dimensions and left/top/right/bottom. |
-+| Swept AABB contract | PASS | `sweptAabb(...)` evaluates moving AABB against target AABB over a delta. |
-+| Collision time | PASS | Swept result includes `collisionTime`; helper `collisionTime(...)` is exported. |
-+| Impact normal | PASS | Swept result includes `impactNormal`. |
-+| Impact point | PASS | Swept result includes `impactPoint`. |
-+| Before/after positions | PASS | Swept result includes `beforePosition`, `afterPosition`, `startPosition`, and `endPosition`. |
-+| Regression high-speed vertical impact | PASS | Test covers moving 10x10 box from `0,0` toward target at `0,50` without skipping. |
-+| Unit tests | PASS | Added `tests/engine/HitboxCollisionContract.test.mjs`. |
-+| No Hitboxes editor UI | PASS | No UI files changed in this PR. |
-+| No unrelated tools | PASS | No unrelated tool files changed. |
-+| No start_of_day folders | PASS | No `start_of_day` files changed. |
-+| Required reports and ZIP | PASS | Reports and `tmp/PR_26177_DELTA_003-hitboxes-engine-collision-contract_delta.zip` produced. |
-diff --git a/docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_validation-lane.md b/docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_validation-lane.md
++| Replace read-only foundation messaging | PASS | Hitboxes now presents Object A source selection and preview panels. |
++| Left panel lists Objects from API/service contract | PASS | Hitboxes uses `createServerRepositoryClient("objects")`. |
++| Only include Objects with assigned visuals | PASS | Source list filters to Objects with visual asset key or preview metadata. |
++| Show object name | PASS | Object source table and preview title show the Object name. |
++| Show object key | PASS | Object source table and metadata panel show the Object key. |
++| Show visual asset label/type | PASS | Object source table and metadata panel show visual label/type. |
++| Required empty state | PASS | Empty state uses: `Create an Object and assign a sprite or vector before editing hitboxes.` |
++| Selecting Object loads Object A | PASS | Source buttons set selected Object A and update center/right panels. |
++| Center visual preview area | PASS | Center panel includes assigned visual image hook, fallback frame, bounding box, and origin marker. |
++| Actual assigned visual if available | PASS | Preview image uses assigned preview path when provided by the Objects contract. |
++| Safe fallback when rendering pending | PASS | Fallback states that assigned visual metadata exists and rendering is pending. |
++| Right panel selected metadata | PASS | Inspector shows selected name, key, visual, bounds, and origin. |
++| Remove deferred drawing/editing copy | PASS | Foundation-only deferred copy was removed from Hitboxes UI. |
++| No hitbox drawing | PASS | No drawing, rectangle creation, or hitbox persistence added. |
++| No Object B | PASS | UI only supports Object A. |
++| No unrelated cleanup | PASS | Scope remained limited to Hitboxes and tests/reports. |
++| Playwright coverage added | PASS | `tests/playwright/tools/HitboxesTool.spec.mjs` covers source selection and metadata/preview assertions. |
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_004-hitboxes-real-object-source_validation-lane.md b/docs_build/dev/reports/PR_26177_DELTA_004-hitboxes-real-object-source_validation-lane.md
 new file mode 100644
-index 000000000..32061f85f
+index 000000000..02b78460e
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_DELTA_003-hitboxes-engine-collision-contract_validation-lane.md
-@@ -0,0 +1,14 @@
-+# PR_26177_DELTA_003 Hitboxes Engine Collision Contract Validation Lane
++++ b/docs_build/dev/reports/PR_26177_DELTA_004-hitboxes-real-object-source_validation-lane.md
+@@ -0,0 +1,18 @@
++# PR_26177_DELTA_004 Hitboxes Real Object Source Validation Lane
 +
 +## Commands
 +
 +| Command | Status | Notes |
 +|---|---|---|
-+| `git branch --show-current` | PASS | Confirmed `PR_26177_DELTA_003-hitboxes-engine-collision-contract`. |
-+| `node --check src/engine/collision/hitboxCollision.js` | PASS | Shared collision module parses. |
-+| `node --check tests/engine/HitboxCollisionContract.test.mjs` | PASS | Unit test parses. |
-+| `node ./scripts/run-node-test-files.mjs tests/engine/HitboxCollisionContract.test.mjs` | PASS | `1/1 targeted node test file(s) passed.` |
++| `git branch --show-current` | PASS | Confirmed `PR_26177_DELTA_004-hitboxes-real-object-source`. |
++| `node --check assets/toolbox/hitboxes/js/index.js` | PASS | Hitboxes browser module parses. |
++| `node --check tests/playwright/tools/HitboxesTool.spec.mjs` | PASS | Targeted Playwright spec parses. |
++| `rg -n "style=|<style| onclick=| onchange=| oninput=| onsubmit=| onload=" toolbox/hitboxes/index.html assets/toolbox/hitboxes/js/index.js tests/playwright/tools/HitboxesTool.spec.mjs` | PASS | No inline styles or event handlers found. |
++| `rg -n "<script" toolbox/hitboxes/index.html` | PASS | Script tags all use external `src` files. |
++| `rg -n "intentionally deferred|read-only foundation|foundation only|fake|standalone preview" toolbox/hitboxes/index.html assets/toolbox/hitboxes/js/index.js` | PASS | Foundation-only/deferred and fake-source copy absent. |
++| `npx playwright test tests/playwright/tools/HitboxesTool.spec.mjs` | BLOCKED | Local Playwright Chromium executable is missing. |
++| `npx playwright install chromium` | BLOCKED | Timed out twice, first at 120 seconds and then at 300 seconds. |
 +
 +## Result
 +
-+PASS. Focused engine collision contract validation completed.
-diff --git a/src/engine/collision/hitboxCollision.js b/src/engine/collision/hitboxCollision.js
++PASS for static and contract-scope validation. Browser execution is blocked by missing local Playwright Chromium installation.
+diff --git a/tests/playwright/tools/HitboxesTool.spec.mjs b/tests/playwright/tools/HitboxesTool.spec.mjs
 new file mode 100644
-index 000000000..ed5eaafa3
+index 000000000..2a69599ec
 --- /dev/null
-+++ b/src/engine/collision/hitboxCollision.js
-@@ -0,0 +1,198 @@
-+function finiteNumber(value, fallback = 0) {
-+  return Number.isFinite(value) ? value : fallback;
-+}
-+
-+function normalizeAxisBounds(start, size, end) {
-+  if (Number.isFinite(end)) {
-+    return {
-+      max: Math.max(finiteNumber(start), end),
-+      min: Math.min(finiteNumber(start), end),
-+    };
-+  }
-+  const safeStart = finiteNumber(start);
-+  const safeEnd = safeStart + finiteNumber(size);
-+  return {
-+    max: Math.max(safeStart, safeEnd),
-+    min: Math.min(safeStart, safeEnd),
-+  };
-+}
-+
-+function freezePoint(x, y) {
-+  return Object.freeze({
-+    x: finiteNumber(x),
-+    y: finiteNumber(y),
-+  });
-+}
-+
-+export function normalizeBoundingBox(box = {}) {
-+  const xBounds = normalizeAxisBounds(box.x ?? box.left, box.width, box.right);
-+  const yBounds = normalizeAxisBounds(box.y ?? box.top, box.height, box.bottom);
-+  const width = xBounds.max - xBounds.min;
-+  const height = yBounds.max - yBounds.min;
-+  return Object.freeze({
-+    bottom: yBounds.max,
-+    centerX: xBounds.min + width / 2,
-+    centerY: yBounds.min + height / 2,
-+    height,
-+    left: xBounds.min,
-+    right: xBounds.max,
-+    top: yBounds.min,
-+    width,
-+    x: xBounds.min,
-+    y: yBounds.min,
-+  });
-+}
-+
-+export function aabbOverlap(leftBox, rightBox) {
-+  const left = normalizeBoundingBox(leftBox);
-+  const right = normalizeBoundingBox(rightBox);
-+  const overlap = left.left < right.right
-+    && left.right > right.left
-+    && left.top < right.bottom
-+    && left.bottom > right.top;
-+  const intersection = overlap
-+    ? normalizeBoundingBox({
-+      bottom: Math.min(left.bottom, right.bottom),
-+      left: Math.max(left.left, right.left),
-+      right: Math.min(left.right, right.right),
-+      top: Math.max(left.top, right.top),
-+    })
-+    : null;
-+  return Object.freeze({
-+    intersection,
-+    left,
-+    overlap,
-+    right,
-+  });
-+}
-+
-+function positionBox(box, position) {
-+  const normalized = normalizeBoundingBox(box);
-+  return normalizeBoundingBox({
-+    height: normalized.height,
-+    width: normalized.width,
-+    x: position.x,
-+    y: position.y,
-+  });
-+}
-+
-+function entryExitTimes(movingMin, movingMax, targetMin, targetMax, velocity) {
-+  if (velocity > 0) {
-+    return {
-+      entry: (targetMin - movingMax) / velocity,
-+      exit: (targetMax - movingMin) / velocity,
-+    };
-+  }
-+  if (velocity < 0) {
-+    return {
-+      entry: (targetMax - movingMin) / velocity,
-+      exit: (targetMin - movingMax) / velocity,
-+    };
-+  }
-+  if (movingMax <= targetMin || movingMin >= targetMax) {
-+    return {
-+      entry: Number.POSITIVE_INFINITY,
-+      exit: Number.NEGATIVE_INFINITY,
-+    };
-+  }
-+  return {
-+    entry: Number.NEGATIVE_INFINITY,
-+    exit: Number.POSITIVE_INFINITY,
-+  };
-+}
-+
-+function normalForImpact(entryX, entryY, velocity) {
-+  if (entryX > entryY) {
-+    return freezePoint(velocity.x > 0 ? -1 : 1, 0);
-+  }
-+  if (entryY > entryX) {
-+    return freezePoint(0, velocity.y > 0 ? -1 : 1);
-+  }
-+  return freezePoint(0, 0);
-+}
-+
-+function impactPointFor(movingBox, targetBox, normal) {
-+  if (normal.x < 0) {
-+    return freezePoint(targetBox.left, movingBox.centerY);
-+  }
-+  if (normal.x > 0) {
-+    return freezePoint(targetBox.right, movingBox.centerY);
-+  }
-+  if (normal.y < 0) {
-+    return freezePoint(movingBox.centerX, targetBox.top);
-+  }
-+  if (normal.y > 0) {
-+    return freezePoint(movingBox.centerX, targetBox.bottom);
-+  }
-+  return freezePoint(movingBox.centerX, movingBox.centerY);
-+}
-+
-+export function sweptAabb({
-+  deltaTime = 1,
-+  movingBox,
-+  targetBox,
-+  velocity = {},
-+} = {}) {
-+  const moving = normalizeBoundingBox(movingBox);
-+  const target = normalizeBoundingBox(targetBox);
-+  const duration = Math.max(0, finiteNumber(deltaTime, 1));
-+  const safeVelocity = freezePoint(velocity.x, velocity.y);
-+  const displacement = freezePoint(safeVelocity.x * duration, safeVelocity.y * duration);
-+  const startPosition = freezePoint(moving.x, moving.y);
-+  const endPosition = freezePoint(moving.x + displacement.x, moving.y + displacement.y);
-+  const startOverlap = aabbOverlap(moving, target).overlap;
-+
-+  if (startOverlap) {
-+    const impactPosition = startPosition;
-+    const impactBox = positionBox(moving, impactPosition);
-+    return Object.freeze({
-+      afterPosition: endPosition,
-+      beforePosition: startPosition,
-+      collided: true,
-+      collisionTime: 0,
-+      endBox: positionBox(moving, endPosition),
-+      endPosition,
-+      impactNormal: freezePoint(0, 0),
-+      impactPoint: impactPointFor(impactBox, target, freezePoint(0, 0)),
-+      impactPosition,
-+      startBox: moving,
-+      startPosition,
-+      targetBox: target,
-+    });
-+  }
-+
-+  const xTimes = entryExitTimes(moving.left, moving.right, target.left, target.right, displacement.x);
-+  const yTimes = entryExitTimes(moving.top, moving.bottom, target.top, target.bottom, displacement.y);
-+  const entryTime = Math.max(xTimes.entry, yTimes.entry);
-+  const exitTime = Math.min(xTimes.exit, yTimes.exit);
-+  const collided = entryTime >= 0
-+    && entryTime <= 1
-+    && entryTime <= exitTime
-+    && xTimes.entry !== Number.POSITIVE_INFINITY
-+    && yTimes.entry !== Number.POSITIVE_INFINITY;
-+  const collisionTime = collided ? entryTime : null;
-+  const impactPosition = collided
-+    ? freezePoint(moving.x + displacement.x * entryTime, moving.y + displacement.y * entryTime)
-+    : null;
-+  const impactBox = impactPosition ? positionBox(moving, impactPosition) : null;
-+  const impactNormal = collided ? normalForImpact(xTimes.entry, yTimes.entry, displacement) : freezePoint(0, 0);
-+
-+  return Object.freeze({
-+    afterPosition: endPosition,
-+    beforePosition: startPosition,
-+    collided,
-+    collisionTime,
-+    endBox: positionBox(moving, endPosition),
-+    endPosition,
-+    impactNormal,
-+    impactPoint: impactBox ? impactPointFor(impactBox, target, impactNormal) : null,
-+    impactPosition,
-+    startBox: moving,
-+    startPosition,
-+    targetBox: target,
-+  });
-+}
-+
-+export function collisionTime(sweptResult = {}) {
-+  return Number.isFinite(sweptResult.collisionTime) ? sweptResult.collisionTime : null;
-+}
-diff --git a/tests/engine/HitboxCollisionContract.test.mjs b/tests/engine/HitboxCollisionContract.test.mjs
-new file mode 100644
-index 000000000..20394081a
---- /dev/null
-+++ b/tests/engine/HitboxCollisionContract.test.mjs
-@@ -0,0 +1,86 @@
-+import assert from "node:assert/strict";
++++ b/tests/playwright/tools/HitboxesTool.spec.mjs
+@@ -0,0 +1,99 @@
++import { expect, test } from "@playwright/test";
++import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 +import {
-+  aabbOverlap,
-+  collisionTime,
-+  normalizeBoundingBox,
-+  sweptAabb,
-+} from "../../src/engine/collision/hitboxCollision.js";
++  clearPlaywrightStorage,
++  installPlaywrightStorageIsolation,
++} from "../../helpers/playwrightStorageIsolation.mjs";
 +
-+export function run() {
-+  const normalized = normalizeBoundingBox({ height: -8, width: 10, x: 5, y: 12 });
-+  assert.deepEqual(
-+    {
-+      bottom: normalized.bottom,
-+      height: normalized.height,
-+      left: normalized.left,
-+      right: normalized.right,
-+      top: normalized.top,
-+      width: normalized.width,
-+      x: normalized.x,
-+      y: normalized.y,
-+    },
-+    {
-+      bottom: 12,
-+      height: 8,
-+      left: 5,
-+      right: 15,
-+      top: 4,
-+      width: 10,
-+      x: 5,
-+      y: 4,
-+    },
-+  );
-+
-+  const overlap = aabbOverlap(
-+    { x: 0, y: 0, width: 10, height: 10 },
-+    { x: 5, y: 5, width: 10, height: 10 },
-+  );
-+  assert.equal(overlap.overlap, true);
-+  assert.deepEqual(
-+    {
-+      height: overlap.intersection.height,
-+      width: overlap.intersection.width,
-+      x: overlap.intersection.x,
-+      y: overlap.intersection.y,
-+    },
-+    { height: 5, width: 5, x: 5, y: 5 },
-+  );
-+  assert.equal(aabbOverlap({ x: 0, y: 0, width: 4, height: 4 }, { x: 5, y: 0, width: 4, height: 4 }).overlap, false);
-+
-+  const highSpeedImpact = sweptAabb({
-+    movingBox: { x: 0, y: 0, width: 10, height: 10 },
-+    targetBox: { x: 0, y: 50, width: 10, height: 10 },
-+    velocity: { x: 0, y: 100 },
++test.beforeEach(async ({ page }) => {
++  await installPlaywrightStorageIsolation(page, {
++    lane: "hitboxes",
++    surface: "Hitboxes real Object source selection",
 +  });
-+  assert.equal(highSpeedImpact.collided, true);
-+  assert.equal(highSpeedImpact.collisionTime, 0.4);
-+  assert.deepEqual(highSpeedImpact.impactNormal, { x: 0, y: -1 });
-+  assert.deepEqual(highSpeedImpact.beforePosition, { x: 0, y: 0 });
-+  assert.deepEqual(highSpeedImpact.afterPosition, { x: 0, y: 100 });
-+  assert.deepEqual(highSpeedImpact.impactPosition, { x: 0, y: 40 });
-+  assert.deepEqual(highSpeedImpact.impactPoint, { x: 5, y: 50 });
-+  assert.equal(collisionTime(highSpeedImpact), 0.4);
++});
 +
-+  const horizontalImpact = sweptAabb({
-+    movingBox: { x: 0, y: 0, width: 10, height: 10 },
-+    targetBox: { x: 30, y: 0, width: 10, height: 10 },
-+    velocity: { x: 40, y: 0 },
-+  });
-+  assert.equal(horizontalImpact.collided, true);
-+  assert.equal(horizontalImpact.collisionTime, 0.5);
-+  assert.deepEqual(horizontalImpact.impactNormal, { x: -1, y: 0 });
-+  assert.deepEqual(horizontalImpact.impactPoint, { x: 30, y: 5 });
++test.afterEach(async ({ page }) => {
++  await clearPlaywrightStorage(page);
++});
 +
-+  const miss = sweptAabb({
-+    movingBox: { x: 0, y: 0, width: 10, height: 10 },
-+    targetBox: { x: 0, y: 50, width: 10, height: 10 },
-+    velocity: { x: 100, y: 0 },
++function collectPageFailures(page) {
++  const failedRequests = [];
++  const pageErrors = [];
++  const consoleErrors = [];
++
++  page.on("pageerror", (error) => {
++    pageErrors.push(error.message);
 +  });
-+  assert.equal(miss.collided, false);
-+  assert.equal(miss.collisionTime, null);
-+  assert.equal(miss.impactPoint, null);
++  page.on("console", (message) => {
++    if (message.type() === "error") {
++      consoleErrors.push(message.text());
++    }
++  });
++  page.on("response", (response) => {
++    if (response.status() >= 400 && !response.url().includes("/api/storage/project-assets/read")) {
++      failedRequests.push(`${response.status()} ${response.url()}`);
++    }
++  });
++  page.on("requestfailed", (request) => {
++    if (!request.url().includes("/api/storage/project-assets/read")) {
++      failedRequests.push(`FAILED ${request.url()}`);
++    }
++  });
++
++  return { consoleErrors, failedRequests, pageErrors };
 +}
 +
-+if (import.meta.url === `file://${process.argv[1]}`) {
-+  run();
++async function openRepoPage(page, pathName) {
++  const server = await startRepoServer();
++  const failures = collectPageFailures(page);
++  await page.addInitScript(({ apiUrl, siteUrl }) => {
++    window.GameFoundryPublicConfig = {
++      apiUrl,
++      environmentLabel: "Development Environment",
++      siteUrl,
++    };
++  }, { apiUrl: `${server.baseUrl}/api`, siteUrl: server.baseUrl });
++  await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
++  return { ...failures, server };
 +}
++
++async function expectNoPageFailures(failures) {
++  expect(failures.failedRequests).toEqual([]);
++  expect(failures.pageErrors).toEqual([]);
++  expect(failures.consoleErrors).toEqual([]);
++}
++
++async function createSpriteObject(page, name) {
++  await page.locator("[data-objects-add-row]").click();
++  await page.locator("[data-objects-row-name]").fill(name);
++  await page.locator("[data-objects-row-type]").selectOption("Projectile");
++  await page.locator("[data-objects-row-render-type]").selectOption("Sprite");
++  await page.locator("[data-objects-save-row]").click();
++  await expect(page.locator("[data-objects-log]")).toContainText(`Added ${name}.`);
++}
++
++test("Hitboxes selects real Objects with assigned visual assets", async ({ page }) => {
++  const failures = await openRepoPage(page, "/toolbox/objects/index.html");
++
++  try {
++    await createSpriteObject(page, "Bolt");
++    await page.goto(`${failures.server.baseUrl}/toolbox/hitboxes/index.html?objectKey=bolt&sourceTool=objects`, { waitUntil: "networkidle" });
++
++    await expect(page.locator("[data-hitboxes-object-list]")).toContainText("Bolt");
++    await expect(page.locator("[data-hitboxes-object-list]")).toContainText("bolt");
++    await expect(page.locator("[data-hitboxes-object-list]")).toContainText("Sprite");
++    await expect(page.locator("[data-hitboxes-selected-key]")).toHaveText("bolt");
++    await expect(page.locator("[data-hitboxes-preview-title]")).toHaveText("Bolt");
++    await expect(page.locator("[data-hitboxes-preview-summary]")).toContainText("Object A uses");
++    await expect(page.locator("[data-hitboxes-preview-fallback]")).toContainText("Assigned visual metadata exists");
++    await expect(page.locator("[data-hitboxes-bounding-box]")).toContainText("Bounding box:");
++    await expect(page.locator("[data-hitboxes-origin-marker]")).toContainText("Origin:");
++    await expect(page.locator("[data-hitboxes-meta-name]")).toHaveText("Bolt");
++    await expect(page.locator("[data-hitboxes-meta-key]")).toHaveText("bolt");
++    await expect(page.locator("[data-hitboxes-meta-visual]")).toContainText("sprite_bolt");
++    await expect(page.locator("[data-hitboxes-log]")).toContainText("Selected Object A: Bolt.");
++    await expectNoPageFailures(failures);
++  } finally {
++    await failures.server.stop();
++  }
++});
+diff --git a/toolbox/hitboxes/index.html b/toolbox/hitboxes/index.html
+index 4d092731d..1924cfdfd 100644
+--- a/toolbox/hitboxes/index.html
++++ b/toolbox/hitboxes/index.html
+@@ -6,7 +6,7 @@
+     <base href="/">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+     <title>Hitboxes - GameFoundryStudio</title>
+-    <meta name="description" content="Hitboxes toolbox foundation for Team Delta-owned collision, hurtbox, and interaction region setup.">
++    <meta name="description" content="Hitboxes toolbox for selecting real Objects with assigned visual assets before editing collision regions.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+ </head>
+@@ -18,7 +18,7 @@
+             <div class="container">
+                 <div class="kicker">Toolbox / Hitboxes</div>
+                 <h1>Hitboxes</h1>
+-                <p class="lede">Review the Team Delta hitbox foundation for collision, hurtbox, and interaction region workflows.</p>
++                <p class="lede">Select a real Object with an assigned sprite or vector before editing collision, hurtbox, trigger, or sensor regions.</p>
+             </div>
+         </section>
+         <section class="section">
+@@ -30,45 +30,49 @@
+                         </div>
+                         <div class="accordion-stack">
+                             <details class="vertical-accordion" open>
+-                                <summary>Setup</summary>
++                                <summary>Object A Source</summary>
+                                 <div class="accordion-body content-stack">
+-                                    <p>Status: <span data-hitboxes-foundation-status>Foundation ready</span></p>
+-                                    <p>Owner: <span data-hitboxes-owner>Team Delta</span></p>
+-                                    <p>Persistence: <span data-hitboxes-persistence>Local API contract pending</span></p>
++                                    <p>Source: <span data-hitboxes-source-status>Loading Objects.</span></p>
++                                    <div class="table-wrapper">
++                                        <table class="data-table" aria-label="Object A source objects">
++                                            <thead>
++                                                <tr>
++                                                    <th scope="col">Object</th>
++                                                    <th scope="col">Key</th>
++                                                    <th scope="col">Visual Asset</th>
++                                                </tr>
++                                            </thead>
++                                            <tbody data-hitboxes-object-list>
++                                                <tr><td colspan="3">Loading Objects.</td></tr>
++                                            </tbody>
++                                        </table>
++                                    </div>
+                                 </div>
+                             </details>
+                         </div>
+                     </aside>
+                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="hitboxes" data-tool-icon-src="assets/theme-v2/images/badges/hitboxes.png" data-tool-character-src="assets/theme-v2/images/tools/hitboxes.png"></div>
+                     <section class="tool-center-panel">
+-                        <h2>Hitbox Foundation</h2>
+-                        <p>Establish the tool shell and contract surface before drawing, editing, binding, validation, and preview work begins.</p>
+-                        <div class="grid cols-3" aria-label="Hitboxes foundation summary">
+-                            <article class="mini-stat"><strong data-hitboxes-contract-count>3</strong>Contracts</article>
+-                            <article class="mini-stat"><strong data-hitboxes-scope-count>0</strong>Editable Regions</article>
+-                            <article class="mini-stat"><strong data-hitboxes-tool-state>Foundation</strong>Status</article>
++                        <h2>Object A Preview</h2>
++                        <p data-hitboxes-preview-summary>Select an Object with assigned visual metadata to prepare hitbox editing.</p>
++                        <div class="grid cols-3" aria-label="Hitboxes object source summary">
++                            <article class="mini-stat"><strong data-hitboxes-object-count>0</strong>Eligible Objects</article>
++                            <article class="mini-stat"><strong data-hitboxes-selected-key>None</strong>Selected Object</article>
++                            <article class="mini-stat"><strong data-hitboxes-visual-type>None</strong>Visual Type</article>
+                         </div>
+                         <article class="card">
+                             <div class="card-body content-stack">
+                                 <div class="surface-header">
+                                     <div>
+-                                        <div class="kicker">MVP Sequence</div>
+-                                        <h3>Foundation Scope</h3>
++                                        <div class="kicker">Object A</div>
++                                        <h3 data-hitboxes-preview-title>No Object selected</h3>
+                                     </div>
+                                 </div>
+-                                <div class="table-wrapper">
+-                                    <table class="data-table" aria-label="Hitboxes foundation milestones">
+-                                        <thead>
+-                                            <tr>
+-                                                <th scope="col">Milestone</th>
+-                                                <th scope="col">Status</th>
+-                                                <th scope="col">Notes</th>
+-                                            </tr>
+-                                        </thead>
+-                                        <tbody data-hitboxes-foundation-table>
+-                                            <tr><td colspan="3">Loading Hitboxes foundation.</td></tr>
+-                                        </tbody>
+-                                    </table>
++                                <div class="tool-preview-frame" data-hitboxes-preview-frame>
++                                    <img alt="" hidden data-hitboxes-preview-image>
++                                    <div class="status" role="status" data-hitboxes-preview-fallback>Select an Object to preview assigned visual metadata.</div>
++                                    <div class="status" data-hitboxes-bounding-box>Bounding box: none</div>
++                                    <div class="status" data-hitboxes-origin-marker>Origin: none</div>
+                                 </div>
+                             </div>
+                         </article>
+@@ -81,9 +85,12 @@
+                             <details class="vertical-accordion" open>
+                                 <summary>Output</summary>
+                                 <div class="accordion-body content-stack">
+-                                    <p>Service: <span data-hitboxes-service>placeholder</span></p>
+-                                    <p>Mode: <span data-hitboxes-mode>read-only foundation</span></p>
+-                                    <div class="status" role="status" data-hitboxes-log>Loading Hitboxes foundation.</div>
++                                    <p>Name: <span data-hitboxes-meta-name>None</span></p>
++                                    <p>Key: <span data-hitboxes-meta-key>None</span></p>
++                                    <p>Visual: <span data-hitboxes-meta-visual>None</span></p>
++                                    <p>Bounds: <span data-hitboxes-meta-bounds>None</span></p>
++                                    <p>Origin: <span data-hitboxes-meta-origin>None</span></p>
++                                    <div class="status" role="status" data-hitboxes-log>Loading Objects from the Local API.</div>
+                                 </div>
+                             </details>
+                         </div>
