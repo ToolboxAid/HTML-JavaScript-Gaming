@@ -26,6 +26,34 @@ Define the standard pull request workflow for Game Foundry Studio.
 15. Pull latest main before starting the next PR.
 16. Verify Main Verified and Closed gates.
 
+## Branch Lifecycle (Canonical)
+
+Every PR follows exactly three phases:
+
+```text
+START
+WORK
+END
+```
+
+The canonical START, WORK, END, Daily Synchronization, and Mandatory Hard Stops rules live in:
+
+`docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`
+
+PR workflow must follow that lifecycle exactly.
+
+Summary:
+- START happens on synchronized `main` only and creates the PR branch only after all required gates pass.
+- WORK happens only on the PR branch.
+- END validates, commits, pushes, opens/updates the PR, merges, returns to synchronized `main`, publishes branch, HEAD SHA, and date/time, then stops all work.
+- No commits on `main`.
+- No implementation on `main`.
+- No validation on `main` except start validation.
+- Never checkout `main` during WORK.
+- STOP before commit if current branch is `main`.
+- STOP if current branch changes unexpectedly.
+- STOP if attempting to push `main`.
+
 ## PR Lifecycle States
 
 Required state order:
@@ -90,6 +118,28 @@ For governance, documentation, and administrative work, use Batch Governance Mod
 
 Use stacked sequential PRs only when dependency order requires it.
 
+## Tool MVP Stacked PRs
+
+Tool MVP work must follow:
+
+`docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md`
+
+For tool MVPs, use one large Codex command, multiple focused stacked PRs, and one testable Creator outcome per PR.
+
+Do not create one giant PR.
+
+Do not stop after every small PR unless blocked by branch state, failed validation, missing source files, Project Instructions conflict, or an unresolved dependency from a prior PR.
+
+Each tool MVP PR plan or template must include:
+- Creator-testable outcome
+- What Playwright tests
+- What Mr. Q should manually test
+- Whether the PR is part of a stacked MVP sequence
+- Previous PR dependency
+- Next PR dependency
+
+Visible acceptance must be Creator-facing first. Architecture can be handled under the covers, but the PR purpose must be user-testable.
+
 ## OWNER Shortcut: PRs
 
 Keyword:
@@ -129,3 +179,40 @@ Stop only for:
 - Merge conflict
 - Validation failure
 - OWNER decision
+
+## EOD Main Lock
+
+End of Day:
+
+```text
+git checkout main
+git fetch origin
+git pull --ff-only origin main
+git status
+git rev-list --left-right --count main...origin/main
+```
+
+Required:
+
+```text
+On branch main
+nothing to commit, working tree clean
+0 0
+```
+
+## Next Day Start
+
+```text
+git checkout main
+git fetch origin
+git pull --ff-only origin main
+git status
+git rev-list --left-right --count main...origin/main
+git rev-parse HEAD
+```
+
+No team creates a PR branch until:
+- Current branch: `main`
+- Worktree: clean
+- `main...origin/main`: `0 0`
+- `HEAD` SHA matches published EOD SHA

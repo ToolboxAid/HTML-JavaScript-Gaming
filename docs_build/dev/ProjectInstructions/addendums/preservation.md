@@ -37,6 +37,6 @@ When material is no longer active, archive it instead of deleting it. Archive en
 
 History snapshots go to:
 
-`docs_build/dev/ProjectInstructions/archive/history/CCYYMMDD_HHMMSS.md`
+`archive/docs_build/dev/ProjectInstructions/history/CCYYMMDD_HHMMSS.md`
 
 Use 24-hour local time for `HHMMSS` unless the owner specifies another time basis.

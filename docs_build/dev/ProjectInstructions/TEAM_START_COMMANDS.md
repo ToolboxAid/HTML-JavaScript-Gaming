@@ -1,5 +1,26 @@
 # TEAM_START_COMMANDS
 
+## Required Main Reset Gate For Every Team
+
+No team creates a PR branch until all checks pass:
+
+- Current branch: `main`
+- Worktree: clean
+- `main...origin/main`: `0 0`
+- `HEAD` SHA matches the published EOD SHA
+
+Use `docs_build/dev/ProjectInstructions/` as the only active Project Instructions source.
+
+Branch Lifecycle (Canonical):
+- Every PR follows exactly three phases: START, WORK, END.
+- Follow `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`.
+- START begins on synchronized `main` and creates the PR branch only after all gates pass.
+- WORK remains on the PR branch. Never checkout `main`.
+- END merges, returns to synchronized `main`, publishes branch, HEAD SHA, and date/time, then stops all work.
+- No commits on `main`.
+- No implementation on `main`.
+- No validation on `main` except start validation.
+
 ## Start Team Alfa
 
 Ready-to-copy command:
@@ -123,4 +144,26 @@ Merge to main is EOD-only and owner-approved, unless the owner explicitly says:
 "Merge this PR now."
 
 Do not treat sequential PR completion as merge approval.
+
+End of Day:
+git checkout main
+git fetch origin
+git pull --ff-only origin main
+git status
+git rev-list --left-right --count main...origin/main
+
+Required:
+On branch main
+nothing to commit, working tree clean
+0 0
+
+Next Day Start:
+git checkout main
+git fetch origin
+git pull --ff-only origin main
+git status
+git rev-list --left-right --count main...origin/main
+git rev-parse HEAD
+
+Publish Branch, HEAD SHA, and Date/time. This becomes tomorrow's official baseline.
 ```

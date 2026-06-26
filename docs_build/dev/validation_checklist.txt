@@ -1,5 +1,0 @@
-Validation Checklist
-
-[ ] Roadmap locked
-[ ] Guard rules documented
-[ ] No further structural edits allowed

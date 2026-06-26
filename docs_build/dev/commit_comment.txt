@@ -1,5 +1,0 @@
-PR_26171_033 idea board inline accordion cell
-
-- move accordion chevron into the Idea table cell
-- keep Notes count informational instead of a toggle
-- update targeted Playwright coverage and reports
