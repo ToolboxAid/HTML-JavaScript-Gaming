@@ -90,8 +90,10 @@ This repo is designed as a learning system, not just a code dump.
 
 ## 🏗️ Architecture Overview
 
-- Engine Layer → [src/engine/](src/engine/)
-- Advanced Systems → [src/advanced/](src/advanced/)
+- Web layer target → `src/web/`
+- API runtime target → `src/api-runtime/`
+- Runtime layer target → `src/runtime/`
+- Existing `src/engine/`, `src/advanced/`, `src/shared/`, `src/tools/`, `src/api/`, and `src/dev-runtime/` folders are legacy transition buckets until dedicated migration PRs move them.
 - Tools, samples, and games consume public contracts only
 
 ---
@@ -122,8 +124,8 @@ PLAN_PR → BUILD_PR → APPLY_PR
 
 ## ⚠️ Runtime Boundary Rules
 
-- Engine code lives in [src/engine/](src/engine/)
-- Advanced systems live in [src/advanced/](src/advanced/)
+- New deployable source belongs under `src/web/`, `src/api-runtime/`, or `src/runtime/`.
+- Existing legacy `src/*` buckets remain transition-only until scoped migration PRs move them.
 - Tools, samples, and games must use public contracts only
 - Engine boundaries should not be bypassed
 
