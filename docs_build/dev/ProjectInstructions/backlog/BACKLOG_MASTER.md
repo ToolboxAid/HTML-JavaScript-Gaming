@@ -26,7 +26,10 @@
 0% Complete — Create the visual look of your game
 
 - [ ] Bravo - Asset Studio V2
-- [ ] Bravo - Sprite Studio V2
+- [ ] Charlie - Sprites canvas editor MVP
+  - Sprites is a creator tool, not only an asset metadata library.
+  - MVP requires canvas/grid editor behavior, width/height controls, Palette/Colors-only reusable colors, color selection from Palette/Colors, pixel painting, save/load sprite grid data through the API/database, and Product Owner manual validation.
+  - Category is removed from Sprites MVP planning.
 - [ ] Bravo - Animation Studio V2
 - [ ] Bravo - Palette Manager
 - [ ] Bravo - Video Studio

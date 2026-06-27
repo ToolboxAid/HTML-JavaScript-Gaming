@@ -23,8 +23,25 @@ Define the standard pull request workflow for Game Foundry Studio.
 12. Review the PR.
 13. OWNER approves merge.
 14. Merge to main.
-15. Pull latest main before starting the next PR.
+15. Pull latest main before starting the next unrelated workstream, or before a new PR when the work is not an OWNER-approved stacked/sequential workstream.
 16. Verify Main Verified and Closed gates.
+
+## Daily Branch Workflow
+
+OWNER-approved daily workflow:
+
+- SOD starts from the latest synchronized `main`.
+- SOD creates or updates one active team, OWNER, or scoped workstream branch.
+- All implementation commits go to the active branch, not `main`.
+- Sequential PRs stay on the active branch/workstream during the day when OWNER assigned a stacked or sequential workstream.
+- Do not return to `main` between stacked/sequential PRs in the same active workstream.
+- `main` is only the SOD baseline and the EOD return target, unless OWNER explicitly approves an intermediate merge checkpoint.
+- EOD merges or closes OWNER-approved work, pushes, returns to `main`, and verifies:
+  - current branch is `main`
+  - worktree clean
+  - local/origin sync is `0 0`
+
+This section supersedes older active wording that implies returning to `main` between every PR inside an OWNER-approved stacked/sequential workstream.
 
 ## Branch Lifecycle (Canonical)
 
@@ -101,7 +118,8 @@ Closed gates:
 - Source branches are retained by default after merge and closeout.
 - Do not mix unrelated scopes.
 - Do not start dependent PRs until the required base PR is merged.
-- Always return to main before starting the next PR.
+- Return to `main` before starting an unrelated PR or new workstream.
+- Do not return to `main` between PRs in the same OWNER-approved stacked/sequential workstream unless OWNER approves an EOD or intermediate merge checkpoint.
 - A team must not begin another PR if its previous PR is not Closed.
 - Exception is allowed only for explicitly documented stacked PR chains.
 - If validation fails, stop and report.
@@ -139,6 +157,29 @@ Each tool MVP PR plan or template must include:
 - Next PR dependency
 
 Visible acceptance must be Creator-facing first. Architecture can be handled under the covers, but the PR purpose must be user-testable.
+
+## Product Owner Testable Definition
+
+A request to complete a page, tool, or testable MVP means Product Owner testable.
+
+Not acceptable as a completed/testable page or tool:
+
+- shell-only page
+- `Not implemented yet`
+- placeholder-only workspace, inspector, or output sections
+- planned-only tile
+- template-only page
+- route that loads but cannot be used
+
+Required for Product Owner testable completion:
+
+- visible working controls
+- API-backed data where required
+- validation and error states
+- empty states
+- save/load behavior where applicable
+- manual validation steps for Product Owner
+- targeted Playwright coverage where impacted.
 
 ## OWNER Shortcut: PRs
 

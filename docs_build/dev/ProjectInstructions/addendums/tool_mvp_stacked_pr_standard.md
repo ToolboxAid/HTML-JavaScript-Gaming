@@ -40,6 +40,27 @@ For tool MVP PR planning, visible acceptance must be Creator-facing first.
 
 Architecture can be handled under the covers, but PR purpose must be user-testable.
 
+A request to complete a page, tool, or testable MVP means Product Owner testable.
+
+Not acceptable as complete/testable:
+
+- shell-only page
+- `Not implemented yet`
+- placeholder-only workspace, inspector, or output sections
+- planned-only tile
+- template-only page
+- route that loads but cannot be used
+
+Required for Product Owner testable completion:
+
+- visible working controls
+- API-backed data where required
+- validation and error states
+- empty states
+- save/load behavior where applicable
+- manual validation steps for Product Owner
+- targeted Playwright coverage where impacted.
+
 Each tool MVP PR must state:
 - Creator-testable outcome
 - What Playwright tests
@@ -81,4 +102,6 @@ Each PR in the stack still follows the canonical START / WORK / END lifecycle an
 
 When OWNER gives one large Codex command for a tool MVP stack, Codex may continue from one completed PR to the next without stopping for a conversational checkpoint, unless a blocker listed in this standard occurs.
 
-The final PR in the stack must perform normal closeout and stop all work after returning to synchronized main.
+During an OWNER-approved day workstream, sequential PRs stay on the active workstream branch and do not return to `main` between PRs.
+
+The final PR in the stack must perform normal EOD closeout or OWNER-approved merge-checkpoint closeout and stop all work after returning to synchronized main.

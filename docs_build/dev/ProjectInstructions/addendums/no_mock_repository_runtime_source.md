@@ -11,6 +11,12 @@ Browser → API → Database
 
 Runtime product data must flow through the API/service contract backed by the database.
 
+Canonical ASCII wording for this required flow is:
+
+```text
+Browser -> API -> Database
+```
+
 ## Rules
 
 - Mock repositories are 100% technical debt.
