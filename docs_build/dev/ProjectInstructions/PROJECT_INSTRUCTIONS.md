@@ -54,6 +54,10 @@ Existing Project Instructions outside `docs_build/dev/ProjectInstructions/` rema
 - `docs_build/dev/reports/` owns generated reports, audits, and validation artifacts.
 - root `archive/` owns historical reference material only.
 
+## Team Backlog, SOD, And EOD Governance
+
+`docs_build/dev/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md` defines required Start of Day team briefings, End of Day team summaries, active team backlog fields, completion percentage update points, backlog-driven next PR selection, and official military team-name spelling.
+
 ## Environment Governance
 
 `docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md` defines the official environment model, environment invariance rule, shared API/service contract rule, required Supabase/Postgres/R2 services, required R2 prefixes, and SQLite retired status.

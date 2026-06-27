@@ -101,13 +101,24 @@ This current rule supersedes any prior permanent discipline ownership assumption
 
 Team names must use NATO phonetic naming.
 
+Official active team codes:
+
+- OWNER
+- ALFA
+- BRAVO
+- CHARLIE
+- DELTA
+
 Examples:
+- Team OWNER
 - Team Alfa
 - Team Bravo
 - Team Charlie
 - Team Delta
 - Team Echo
 - Team Foxtrot
+
+Use `Alfa` spelling when referring to Team Alfa.
 
 ## Assignment Rule
 

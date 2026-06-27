@@ -23,6 +23,8 @@ Before a team starts, validate:
 - work remains with the assigned team until complete or OWNER reassignment
 - the team's previous PR is Closed, unless OWNER documented an explicit stacked PR chain
 
+Before implementation begins, ChatGPT/Codex must provide the SOD briefing defined in `docs_build/dev/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md`.
+
 ## Current Four-Team Start Set
 
 The current active delivery teams for backlog start commands are:
@@ -111,6 +113,8 @@ Closed readiness requires:
 - required repo-structured ZIP under `tmp/` exists
 - backlog updated
 - tool state updated when applicable
+
+At EOD, ChatGPT/Codex must provide the team summary defined in `docs_build/dev/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md`.
 
 ## Gate Behavior
 
