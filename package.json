@@ -1,7 +1,7 @@
 {
   "type": "module",
   "scripts": {
-    "pretest": "node docs_build/dev/toolbox/checkSharedExtractionGuard.mjs",
+    "pretest": "node dev/docs_build/dev/toolbox/checkSharedExtractionGuard.mjs",
     "test": "node ./scripts/run-node-tests.mjs",
     "test:service:api": "node ./scripts/run-node-test-files.mjs tests/dev-runtime/ServerApiClientStandardization.test.mjs tests/dev-runtime/PublicApiUrlClient.test.mjs",
     "test:audit:locations": "node ./scripts/audit-playwright-test-locations.mjs",
@@ -35,11 +35,11 @@
     "apply:database-dml": "node ./scripts/apply-database-dml.mjs",
     "seed:database-dev": "node --use-system-ca ./scripts/apply-database-seed.mjs",
     "cleanup:supabase-dev-auth-test-users": "node --use-system-ca ./scripts/cleanup-supabase-dev-auth-test-users.mjs",
-    "check:shared-extraction-guard": "node docs_build/dev/toolbox/checkSharedExtractionGuard.mjs",
-    "check:phase24-closeout-guard": "node docs_build/dev/toolbox/checkPhase24CloseoutExecutionGuard.mjs",
-    "check:style-system-guard": "node docs_build/dev/toolbox/checkStyleSystemGuard.mjs",
-    "check:intentional-alias-ledger": "node docs_build/dev/toolbox/checkIntentionalAliasLedgerGuard.mjs",
-    "check:internal-barrel-guard": "node docs_build/dev/toolbox/checkInternalBarrelGuard.mjs",
+    "check:shared-extraction-guard": "node dev/docs_build/dev/toolbox/checkSharedExtractionGuard.mjs",
+    "check:phase24-closeout-guard": "node dev/docs_build/dev/toolbox/checkPhase24CloseoutExecutionGuard.mjs",
+    "check:style-system-guard": "node dev/docs_build/dev/toolbox/checkStyleSystemGuard.mjs",
+    "check:intentional-alias-ledger": "node dev/docs_build/dev/toolbox/checkIntentionalAliasLedgerGuard.mjs",
+    "check:internal-barrel-guard": "node dev/docs_build/dev/toolbox/checkInternalBarrelGuard.mjs",
     "codex:review-artifacts": "node ./scripts/write-codex-review-artifacts.mjs",
     "test:workspace-v2": "node ./scripts/run-targeted-test-lanes.mjs --lane workspace-contract",
     "test:launch-smoke": "node ./tests/runtime/LaunchSmokeAllEntries.test.mjs"

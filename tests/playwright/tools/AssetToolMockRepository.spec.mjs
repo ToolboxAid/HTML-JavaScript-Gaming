@@ -1269,7 +1269,7 @@ test("Assets guest upload action shows account prompt and creates no record", as
 });
 
 test("codex review diff artifact is readable UTF-8 text", () => {
-  const reviewDiffPath = resolve(REPO_ROOT, "docs_build", "dev", "reports", "codex_review.diff");
+  const reviewDiffPath = resolve(REPO_ROOT, "dev", "docs_build", "dev", "reports", "codex_review.diff");
   expect(existsSync(reviewDiffPath)).toBe(true);
   const bytes = readFileSync(reviewDiffPath);
   const text = new TextDecoder("utf-8", { fatal: true }).decode(bytes);

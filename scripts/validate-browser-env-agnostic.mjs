@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 const repoRoot = process.cwd();
-const reportPath = path.join(repoRoot, "docs_build", "dev", "reports", "environment_agnostic_browser_gate_report.md");
+const reportPath = path.join(repoRoot, "dev", "docs_build", "dev", "reports", "environment_agnostic_browser_gate_report.md");
 const browserScanRoots = [
   "account",
   "admin",
@@ -14,7 +14,7 @@ const environmentScanRoots = [
   ...browserScanRoots,
   "src",
   "scripts",
-  "docs_build/database",
+  "dev/docs_build/database",
 ];
 const environmentScanFiles = [
   ".env.example",
@@ -102,7 +102,7 @@ function repoPath(absolutePath) {
 
 function isExcluded(absolutePath) {
   const normalizedPath = repoPath(absolutePath);
-  if (normalizedPath.startsWith("docs_build/database/")) {
+  if (normalizedPath.startsWith("dev/docs_build/database/")) {
     return false;
   }
   return normalizedPath

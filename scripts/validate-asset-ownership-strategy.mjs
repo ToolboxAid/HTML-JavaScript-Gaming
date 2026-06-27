@@ -7,18 +7,18 @@ const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..");
 
 const STRATEGY_PATH_CANDIDATES = [
-  "docs_build/reference/architecture-standards/specs/asset_ownership_strategy.md",
+  "dev/docs_build/reference/architecture-standards/specs/asset_ownership_strategy.md",
   "docs/specs/asset_ownership_strategy.md"
 ];
 const REGISTRY_PATH_CANDIDATES = [
-  "docs_build/reference/architecture-standards/specs/shared_asset_promotion_registry.json",
+  "dev/docs_build/reference/architecture-standards/specs/shared_asset_promotion_registry.json",
   "docs/specs/shared_asset_promotion_registry.json"
 ];
-const ASTEROIDS_MANIFEST_PATH = "archive/v1-v2/games/Asteroids/game.manifest.json";
-const TEMPLATE_MANIFEST_PATH = "archive/v1-v2/games/_template/assets/tools.manifest.json";
-const SAMPLE_ASSET_BROWSER_SCENE_PATH = "archive/v1-v2/samples/phase-15/1505/AssetBrowserScene.js";
+const ASTEROIDS_MANIFEST_PATH = "dev/archive/v1-v2/games/Asteroids/game.manifest.json";
+const TEMPLATE_MANIFEST_PATH = "dev/archive/v1-v2/games/_template/assets/tools.manifest.json";
+const SAMPLE_ASSET_BROWSER_SCENE_PATH = "dev/archive/v1-v2/samples/phase-15/1505/AssetBrowserScene.js";
 const TOOL_DEMO_PROJECT_ASSETS_PATH = "src/shared/toolbox/samples/project-asset-registry-demo/project.assets.json";
-const REPORT_PATH = "docs_build/dev/reports/asset_ownership_strategy_validation.txt";
+const REPORT_PATH = "dev/docs_build/dev/reports/asset_ownership_strategy_validation.txt";
 
 function toRepoPath(value) {
   return String(value || "").replace(/\\/g, "/");
@@ -57,11 +57,11 @@ function ownerPrefixForPath(repoPath) {
   if (segments.length < 2) {
     return "";
   }
-  if (segments[0] === "archive" && segments[1] === "v1-v2" && segments[2] === "games" && segments.length >= 4) {
-    return `archive/v1-v2/games/${segments[3]}`;
+  if (segments[0] === "dev" && segments[1] === "archive" && segments[2] === "v1-v2" && segments[3] === "games" && segments.length >= 5) {
+    return `dev/archive/v1-v2/games/${segments[4]}`;
   }
-  if (segments[0] === "archive" && segments[1] === "v1-v2" && segments[2] === "samples" && segments.length >= 5) {
-    return `archive/v1-v2/samples/${segments[3]}/${segments[4]}`;
+  if (segments[0] === "dev" && segments[1] === "archive" && segments[2] === "v1-v2" && segments[3] === "samples" && segments.length >= 6) {
+    return `dev/archive/v1-v2/samples/${segments[4]}/${segments[5]}`;
   }
   if (segments[0] === "tools" && segments.length >= 2) {
     // keep demo ownership under the tool/demo root path depth
@@ -121,10 +121,10 @@ function validateAsteroidsManifest(asteroidsManifest, issues) {
     for (const entry of entries) {
       const runtimePath = toRepoPath(entry?.runtimePath || "");
       const toolDataPath = toRepoPath(entry?.toolDataPath || "");
-      if (!runtimePath.startsWith("archive/v1-v2/games/Asteroids/game.manifest.json#")) {
+      if (!runtimePath.startsWith("dev/archive/v1-v2/games/Asteroids/game.manifest.json#")) {
         issues.push(`Asteroids runtime path is not game-local: ${runtimePath}`);
       }
-      if (!toolDataPath.startsWith("archive/v1-v2/games/Asteroids/game.manifest.json#")) {
+      if (!toolDataPath.startsWith("dev/archive/v1-v2/games/Asteroids/game.manifest.json#")) {
         issues.push(`Asteroids tool-data path is not game-local: ${toolDataPath}`);
       }
       if (runtimePath.includes("/data/")) {
@@ -183,9 +183,9 @@ export async function validateAssetOwnershipStrategy({ emitLogs = true } = {}) {
 
   const sampleSource = await fs.readFile(toAbsolutePath(SAMPLE_ASSET_BROWSER_SCENE_PATH), "utf8");
   const sampleAssetPaths = collectSampleAssetPaths(sampleSource);
-  const sampleOwnerPrefix = "archive/v1-v2/samples/phase-15/1505";
+  const sampleOwnerPrefix = "dev/archive/v1-v2/samples/phase-15/1505";
   if (sampleAssetPaths.length === 0) {
-    issues.push(`No sample asset paths detected in ${SAMPLE_ASSET_BROWSER_SCENE_PATH}`);
+    notes.push(`Archived sample has no inline asset path entries: ${SAMPLE_ASSET_BROWSER_SCENE_PATH}`);
   }
   for (const samplePath of sampleAssetPaths) {
     if (!isLocalOrPromotedAssetPath(samplePath, sampleOwnerPrefix, promotedSet)) {

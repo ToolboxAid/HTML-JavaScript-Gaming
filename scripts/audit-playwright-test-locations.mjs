@@ -9,10 +9,10 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repoRoot = fileURLToPath(new URL("..", import.meta.url));
-const defaultReportPath = "docs_build/dev/reports/playwright_structure_audit.md";
-const defaultDiscoveryReportPath = "docs_build/dev/reports/playwright_discovery_ownership_report.md";
-const defaultDiscoveryScopeReportPath = "docs_build/dev/reports/playwright_discovery_scope_report.md";
-const defaultFilesystemScanReportPath = "docs_build/dev/reports/filesystem_scan_reduction_report.md";
+const defaultReportPath = "dev/docs_build/dev/reports/playwright_structure_audit.md";
+const defaultDiscoveryReportPath = "dev/docs_build/dev/reports/playwright_discovery_ownership_report.md";
+const defaultDiscoveryScopeReportPath = "dev/docs_build/dev/reports/playwright_discovery_scope_report.md";
+const defaultFilesystemScanReportPath = "dev/docs_build/dev/reports/filesystem_scan_reduction_report.md";
 const playwrightRoot = "tests/playwright";
 const sharedHelpersDir = "tests/helpers";
 const textCache = new Map();
