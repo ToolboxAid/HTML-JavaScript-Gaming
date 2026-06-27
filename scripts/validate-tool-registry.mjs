@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..");
 const toolboxRoot = path.join(repoRoot, "toolbox");
-const reportPath = path.join(repoRoot, "docs_build", "dev", "reports", "tool_registry_validation.txt");
+const reportPath = path.join(repoRoot, "dev", "docs_build", "dev", "reports", "tool_registry_validation.txt");
 
 const IGNORED_DIRECTORIES = new Set([
   "_tool_template-v2",
@@ -147,7 +147,7 @@ async function main() {
 
   console.log("TOOL_REGISTRY_VALID");
   visibleActiveEntries.forEach((entry) => console.log(`- ACTIVE ${entry.displayName}`));
-  console.log(`- REPORT docs_build/dev/reports/${path.basename(reportPath)}`);
+  console.log(`- REPORT dev/docs_build/dev/reports/${path.basename(reportPath)}`);
 }
 
 await main();

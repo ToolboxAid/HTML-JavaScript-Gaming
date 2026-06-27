@@ -723,7 +723,7 @@ function systemHealthPostgresMetrics(databaseStatus = {}, checkedAt = new Date()
 }
 
 function projectPackageReadinessStatus() {
-  const decisionPath = path.join(process.cwd(), "docs_build", "codex", "decisions", "project-packages.md");
+  const decisionPath = path.join(process.cwd(), "dev", "docs_build", "codex", "decisions", "project-packages.md");
   const contract = projectPackageReadinessContract();
   try {
     const contents = readFileSync(decisionPath, "utf8");
@@ -742,7 +742,7 @@ function projectPackageReadinessStatus() {
     const missing = requiredContent.filter((item) => !contents.includes(item));
     return {
       contract,
-      decisionPath: "docs_build/codex/decisions/project-packages.md",
+      decisionPath: "dev/docs_build/codex/decisions/project-packages.md",
       message: missing.length
         ? `Project package decision note is missing: ${missing.join(", ")}.`
         : "Project package decision note and runtime scaffold are ready for .gfsp export/import/validate package workflows.",
@@ -751,8 +751,8 @@ function projectPackageReadinessStatus() {
   } catch {
     return {
       contract,
-      decisionPath: "docs_build/codex/decisions/project-packages.md",
-      message: "Project package decision note is missing. Restore docs_build/codex/decisions/project-packages.md.",
+      decisionPath: "dev/docs_build/codex/decisions/project-packages.md",
+      message: "Project package decision note is missing. Restore dev/docs_build/codex/decisions/project-packages.md.",
       status: "WARN",
     };
   }
@@ -2235,7 +2235,7 @@ function providerFailureMessage(providerContract, providerId) {
 }
 
 function readDocsBuildGuestSeedPackages() {
-  const guestSeedDir = path.join(process.cwd(), "docs_build", "database", "seed", "guest");
+  const guestSeedDir = path.join(process.cwd(), "dev", "docs_build", "database", "seed", "guest");
   try {
     return readdirSync(guestSeedDir)
       .filter((fileName) => fileName.endsWith(".json"))
@@ -2248,7 +2248,7 @@ function readDocsBuildGuestSeedPackages() {
           group: seed.group,
           groupKey: seed.groupKey,
           readOnly: true,
-          source: `docs_build/database/seed/guest/${fileName}`,
+          source: `dev/docs_build/database/seed/guest/${fileName}`,
           writableByGuest: false,
         }));
       });
@@ -3914,7 +3914,7 @@ class ApiRuntimeDataSource {
     } catch (error) {
       const rawMessage = String(error?.message || error || "");
       const setupDiagnostic = rawMessage.includes("Supabase Postgres") && rawMessage.includes("HTTP 404")
-        ? "Identity tables are missing. Run docs_build/database/ddl/account/supabase-identity-tables.sql through the approved Supabase SQL setup path."
+        ? "Identity tables are missing. Run dev/docs_build/database/ddl/account/supabase-identity-tables.sql through the approved Supabase SQL setup path."
         : "";
       const diagnostic = sanitizedAuthErrorDiagnostic(error);
       const fallbackDiagnostic = diagnostic.httpStatus
@@ -5942,10 +5942,10 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
     return {
       readOnly: true,
       route: "/api/guest/seed",
-      source: "docs_build/database/seed/guest/",
+      source: "dev/docs_build/database/seed/guest/",
       packages,
       status: packages.length ? "PASS" : "WARN",
-      warning: packages.length ? "" : "No docs_build guest seed packages were found.",
+      warning: packages.length ? "" : "No dev/docs_build guest seed packages were found.",
     };
   }
 

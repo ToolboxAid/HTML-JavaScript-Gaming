@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
-const ADMIN_NOTES_DIRECTORY = "docs_build/dev/admin-notes";
+const ADMIN_NOTES_DIRECTORY = "dev/archive/docs_build/dev/admin-notes";
 const DIRECTORY_LIST_QUERY = "adminNotesDirectory";
 const DIRECTORY_API_PATH = "/api/dev/admin-notes/directory";
 const NOTE_INDEX_FILE = "index.txt";
@@ -54,7 +54,7 @@ async function adminNotesDirectoryResult(repoRoot, folderPath) {
     return {
       payload: {
         entries: [],
-        error: "Admin Notes directory listing is restricted to docs_build/dev/admin-notes/.",
+        error: "Admin Notes directory listing is restricted to dev/archive/docs_build/dev/admin-notes/.",
         ok: false,
       },
       statusCode: 403,

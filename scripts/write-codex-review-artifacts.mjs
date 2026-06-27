@@ -4,7 +4,7 @@ import { dirname, resolve } from "node:path";
 import { mkdirSync, writeFileSync } from "node:fs";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const reportsDirectory = resolve(repoRoot, "docs_build", "dev", "reports");
+const reportsDirectory = resolve(repoRoot, "dev", "docs_build", "dev", "reports");
 const reviewDiffPath = resolve(reportsDirectory, "codex_review.diff");
 const changedFilesPath = resolve(reportsDirectory, "codex_changed_files.txt");
 

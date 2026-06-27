@@ -1,6 +1,0 @@
-{
-  "roadmapPath": "docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md",
-  "statusInsensitiveSha256": "1fb2ead588a71e63291463c04fb012c76749ff929a7ed1b4b3aac015b94dcc16",
-  "fullscreenAllowedRoot": "archive/v1-v2/samples/phase-07/0713",
-  "fullscreenPatterns": ["requestFullscreen", "webkitRequestFullscreen", "engine.fullscreen", "fullscreenPreferred", "settings-fullscreen"]
-}
