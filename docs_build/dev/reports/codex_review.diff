@@ -1,288 +1,154 @@
-diff --git a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-index 55f4a69ec..d6617c986 100644
---- a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-+++ b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-@@ -54,6 +54,10 @@ Existing Project Instructions outside `docs_build/dev/ProjectInstructions/` rema
- - `docs_build/dev/reports/` owns generated reports, audits, and validation artifacts.
- - root `archive/` owns historical reference material only.
+diff --git a/docs_build/dev/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md b/docs_build/dev/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
+index 1c3671363..17be32ada 100644
+--- a/docs_build/dev/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
++++ b/docs_build/dev/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
+@@ -6,20 +6,31 @@ Standardize Codex deliverables, completion reporting, and artifact generation.
  
-+## Team Backlog, SOD, And EOD Governance
+ ## ZIP Artifact Requirement
+ 
+-Every Codex task must produce a ZIP artifact.
++Every Codex execution must produce a repo-structured ZIP artifact and the required reports.
+ 
+-Applies to:
+-- Success
+-- Failure
+-- Stop Gate
+-- Partial Completion
+-- Review Deliverables
+-- Governance Deliverables
++This applies regardless of result:
 +
-+`docs_build/dev/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md` defines required Start of Day team briefings, End of Day team summaries, active team backlog fields, completion percentage update points, backlog-driven next PR selection, and official military team-name spelling.
++- success
++- completion
++- partial completion
++- hard stop
++- blocked
++- validation failure
++- new information discovered
++- no files changed
++- review deliverables
++- governance deliverables
 +
- ## Environment Governance
++No exceptions.
  
- `docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md` defines the official environment model, environment invariance rule, shared API/service contract rule, required Supabase/Postgres/R2 services, required R2 prefixes, and SQLite retired status.
-diff --git a/docs_build/dev/ProjectInstructions/README.txt b/docs_build/dev/ProjectInstructions/README.txt
-index 3a2830219..1b647c6fd 100644
---- a/docs_build/dev/ProjectInstructions/README.txt
-+++ b/docs_build/dev/ProjectInstructions/README.txt
-@@ -47,6 +47,7 @@ READ THIS FIRST
- 
- Addendum index:
- - Documentation Ownership: docs_build/dev/ProjectInstructions/addendums/documentation_ownership.md
-+- Team Backlog, SOD, And EOD Standard: docs_build/dev/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
- - Single Source and EOD Main Lock: docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
- - Canonical Repository Structure: docs_build/dev/ProjectInstructions/addendums/canonical_repository_structure.md
- - Test Structure Standardization: docs_build/dev/ProjectInstructions/addendums/test_structure_standardization.md
-diff --git a/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md b/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
-index 292540043..5fe1c43e4 100644
---- a/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
-+++ b/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
-@@ -10,6 +10,7 @@ No team creates a PR branch until all checks pass:
- - `HEAD` SHA matches the published EOD SHA
- 
- Use `docs_build/dev/ProjectInstructions/` as the only active Project Instructions source.
-+Read `docs_build/dev/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md` before implementation.
- 
- Branch Lifecycle (Canonical):
- - Every PR follows exactly three phases: START, WORK, END.
-@@ -166,4 +167,16 @@ git rev-list --left-right --count main...origin/main
- git rev-parse HEAD
- 
- Publish Branch, HEAD SHA, and Date/time. This becomes tomorrow's official baseline.
+ Minimum ZIP contents:
+-- summary.md
 +
-+Also provide the required EOD team summary:
-+- Team name
-+- Date
-+- PRs completed
-+- PRs merged
-+- Validation summary
-+- Overall completion percentage
-+- Remaining backlog
-+- Completion percentage for each remaining backlog item
-+- Recommended first PRs for the next day
-+- Repository status
- ```
-diff --git a/docs_build/dev/ProjectInstructions/addendums/naming_registry.md b/docs_build/dev/ProjectInstructions/addendums/naming_registry.md
-index a269f204a..b08863149 100644
---- a/docs_build/dev/ProjectInstructions/addendums/naming_registry.md
-+++ b/docs_build/dev/ProjectInstructions/addendums/naming_registry.md
-@@ -43,7 +43,16 @@ Capture approved Game Foundry Studio names to reduce rename churn.
++- changed or preserved repo files from the run, stored at repo-relative paths
++- required reports under `docs_build/dev/reports/`
  
- Teams must use NATO phonetic naming.
- 
-+Official active team codes:
+ Optional:
 +
-+- OWNER
-+- ALFA
-+- BRAVO
-+- CHARLIE
-+- DELTA
-+
- Examples:
-+- Team OWNER
- - Team Alfa
- - Team Bravo
- - Team Charlie
-@@ -51,6 +60,10 @@ Examples:
- - Team Echo
- - Team Foxtrot
++- summary.md
+ - changed-files.txt
+ - findings.md
+ - validation.txt
+@@ -28,11 +39,16 @@ Optional:
+ ## Completion Reporting
  
-+Rule:
-+- Use `Alfa` spelling when referring to Team Alfa.
-+- Do not rewrite historical snapshots, archived references, or non-team phrases such as `Alpha/Beta/User isolation framework` unless OWNER explicitly scopes that work.
+ Codex responses must include:
 +
- ## Rule
+ - ZIP filename
+ - ZIP location
++- repo-structured ZIP path
++- reports
++- changed file list
+ - PR number(s)
+ - Merge commit(s)
+ - Validation results
++- branch, worktree, and local/origin sync status when relevant
  
- Do not rename approved terms without OWNER approval.
+ ## Tool MVP PR Report Requirements
+ 
+@@ -82,3 +98,5 @@ unless explicitly requested.
+ ## No ZIP Means Incomplete
+ 
+ A task is not considered complete until the ZIP artifact is generated and reported.
++
++If execution stops before implementation, validation, or commit, the stop result must still include the repo-structured ZIP and reports that document the hard stop, blocker, validation failure, or no-change result.
+diff --git a/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md b/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
+index 145d08536..bee8bdd75 100644
+--- a/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
++++ b/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
+@@ -126,10 +126,11 @@ Closed gates:
+ - If validation fails, stop and report.
+ - If conflict occurs, stop and report.
+ - If OWNER decision is required, stop and report.
+-- Every completed Codex PR run must produce a repo-structured ZIP under `tmp/`.
+-- The ZIP rule applies to implementation, audit, report-only, validation-only, governance, and cleanup PRs.
++- Every Codex execution must produce a repo-structured ZIP under `tmp/`.
++- The ZIP rule applies to implementation, audit, report-only, validation-only, governance, cleanup, hard-stop, blocked, validation-failure, partial-completion, new-information, and no-change runs.
+ - The ZIP must include all changed or preserved repo files from the run and must not replace required reports under `docs_build/dev/reports/`.
+-- If no repo files changed, Codex must still create a ZIP containing the PR report that proves the no-change result, unless the run hard-stopped before producing outputs.
++- If no repo files changed, Codex must still create a ZIP containing the report that proves the no-change, hard-stop, blocked, validation-failure, or partial-completion result.
++- No exceptions.
+ 
+ ## Batch Governance Mode
+ 
+@@ -240,6 +241,35 @@ Stop only for:
+ - Validation failure
+ - OWNER decision
+ 
++## Completed PR ZIP Review And Next Logical PRs
++
++Whenever the Product Owner provides a completed PR ZIP to ChatGPT, ChatGPT shall:
++
++- review the completed work
++- identify completed scope
++- identify remaining scope
++- update the team backlog and completion percentages
++- determine the next logical PRs
++- recommend the execution order
++- generate each recommended PR with:
++  - PR summary
++  - Codex command
++  - commit comment
++  - Playwright scope
++  - manual validation steps
++
++Use plural wording: `next logical PRs`.
++
++Unless blocked by dependencies or directed otherwise by the Product Owner, ChatGPT should generate enough sequential PRs to complete the current backlog item to a Product Owner testable state rather than stopping after a single PR.
++
++The Product Owner should not have to ask:
++
++- `What is next?`
++- `Create the next PR.`
++- `Continue.`
++
++The backlog drives the next recommended PRs automatically.
++
+ ## EOD Main Lock
+ 
+ End of Day:
 diff --git a/docs_build/dev/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md b/docs_build/dev/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
-new file mode 100644
-index 000000000..437c01800
---- /dev/null
+index 437c01800..be3555469 100644
+--- a/docs_build/dev/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
 +++ b/docs_build/dev/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
-@@ -0,0 +1,98 @@
-+# Team Backlog, SOD, And EOD Standard
-+
-+Status: Approved
-+Owner: OWNER
-+
-+## Purpose
-+
-+Define the required Start of Day briefing, End of Day summary, team backlog ownership, completion percentage tracking, and official military team-name spelling for all active teams.
-+
-+This standard is governance/documentation only. It does not change runtime behavior, API implementation, storage implementation, database DDL, or secret values.
-+
-+## Official Team Names
-+
-+Use military phonetic spelling for active team names:
-+
-+- OWNER
-+- ALFA
-+- BRAVO
-+- CHARLIE
-+- DELTA
-+
-+Display labels may use title case:
-+
-+- Team OWNER
-+- Team Alfa
-+- Team Bravo
-+- Team Charlie
-+- Team Delta
-+
-+Do not substitute Greek spelling for team names. Use `Alfa` spelling when referring to Team Alfa.
-+
-+Historical snapshots, archived references, and non-team phrases such as `Alpha/Beta/User isolation framework` must not be rewritten unless OWNER explicitly scopes that work.
-+
-+## Team Backlog Ownership
-+
-+Every active team owns an active backlog when it has assigned work.
-+
-+Each backlog item must track:
-+
-+- name
-+- description
-+- current completion percentage
-+- remaining work
-+- blocking dependencies
-+
-+Completion percentages are updated:
-+
-+- at SOD
-+- after each accepted PR
-+- at EOD
-+
-+The backlog is the authoritative source for determining the next PRs.
-+
-+If the backlog and a generated report conflict, the backlog wins unless OWNER explicitly approves a newer governance decision.
-+
-+## Start Of Day Team Briefing
-+
-+When a team is assigned, ChatGPT/Codex must provide this briefing before implementation begins:
-+
-+- team name
-+- active workstream
-+- current overall completion percentage
-+- assigned backlog items
-+- completion percentage for each backlog item
-+- remaining work for each backlog item
-+- recommended execution order
-+- current active branch
-+- blocking dependencies, if any
-+
-+This briefing is required before implementation begins.
-+
-+## End Of Day Team Summary
-+
-+At EOD, ChatGPT/Codex must provide:
-+
-+- team name
-+- date
-+- PRs completed
-+- PRs merged
-+- validation summary
-+- overall completion percentage
-+- remaining backlog
-+- completion percentage for each remaining backlog item
-+- recommended first PRs for the next day
-+- repository status:
-+  - current branch
-+  - worktree
-+  - local/origin sync
-+
-+## Relationship To Existing Workflow
-+
-+This standard preserves the existing branch workflow:
-+
-+- SOD starts from latest `main`.
-+- SOD creates or uses the active team branch.
-+- All commits go to the active team branch, not `main`.
-+- Sequential PRs stay on the active team branch/workstream during the day.
-+- EOD merges OWNER-approved work, pushes, returns to `main`, and verifies clean worktree and local/origin sync `0 0`.
-diff --git a/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md b/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
-index e2d6b7226..c4a3ffd9d 100644
---- a/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
-+++ b/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
-@@ -23,6 +23,8 @@ Before a team starts, validate:
- - work remains with the assigned team until complete or OWNER reassignment
- - the team's previous PR is Closed, unless OWNER documented an explicit stacked PR chain
+@@ -53,6 +53,8 @@ The backlog is the authoritative source for determining the next PRs.
  
-+Before implementation begins, ChatGPT/Codex must provide the SOD briefing defined in `docs_build/dev/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md`.
-+
- ## Current Four-Team Start Set
+ If the backlog and a generated report conflict, the backlog wins unless OWNER explicitly approves a newer governance decision.
  
- The current active delivery teams for backlog start commands are:
-@@ -112,6 +114,8 @@ Closed readiness requires:
- - backlog updated
- - tool state updated when applicable
++When the Product Owner provides a completed PR ZIP, ChatGPT must review that ZIP, update the active team backlog and completion percentages, and recommend the next logical PRs needed to keep moving toward a Product Owner testable outcome.
++
+ ## Start Of Day Team Briefing
  
-+At EOD, ChatGPT/Codex must provide the team summary defined in `docs_build/dev/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md`.
-+
- ## Gate Behavior
- 
- Release readiness is a validation gate.
-diff --git a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-index 10ed1c93e..cc9ddc88c 100644
---- a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-+++ b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-@@ -1,5 +1,21 @@
- # BACKLOG_MASTER
- 
-+## Backlog Item Tracking Standard
-+
-+Every active team owns an active backlog when it has assigned work.
-+
-+Each backlog item must track:
-+
-+- Name
-+- Description
-+- Current completion percentage
-+- Remaining work
-+- Blocking dependencies
-+
-+Completion percentages are updated at SOD, after each accepted PR, and at EOD.
-+
-+The backlog is the authoritative source for determining the next PRs.
-+
- ## Game Journey MVP
- 
- ### Idea
-diff --git a/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md b/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-index 4e6548811..30b4f2dfe 100644
---- a/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-+++ b/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-@@ -101,7 +101,16 @@ This current rule supersedes any prior permanent discipline ownership assumption
- 
- Team names must use NATO phonetic naming.
- 
-+Official active team codes:
-+
-+- OWNER
-+- ALFA
-+- BRAVO
-+- CHARLIE
-+- DELTA
-+
- Examples:
-+- Team OWNER
- - Team Alfa
- - Team Bravo
- - Team Charlie
-@@ -109,6 +118,8 @@ Examples:
- - Team Echo
- - Team Foxtrot
- 
-+Use `Alfa` spelling when referring to Team Alfa.
-+
- ## Assignment Rule
- 
- Work stays with the assigned team until either:
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_010-team-backlog-sod-eod-standard.md b/docs_build/dev/reports/PR_26177_OWNER_010-team-backlog-sod-eod-standard.md
+ When a team is assigned, ChatGPT/Codex must provide this briefing before implementation begins:
+diff --git a/docs_build/dev/reports/PR_26177_OWNER_011-codex-zip-and-next-pr-standard.md b/docs_build/dev/reports/PR_26177_OWNER_011-codex-zip-and-next-pr-standard.md
 new file mode 100644
-index 000000000..952857d11
+index 000000000..bc4213d30
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_OWNER_010-team-backlog-sod-eod-standard.md
-@@ -0,0 +1,55 @@
-+# PR_26177_OWNER_010-team-backlog-sod-eod-standard
++++ b/docs_build/dev/reports/PR_26177_OWNER_011-codex-zip-and-next-pr-standard.md
+@@ -0,0 +1,56 @@
++# PR_26177_OWNER_011-codex-zip-and-next-pr-standard
 +
 +Date: 2026-06-27
 +Team: OWNER
-+Branch: PR_26177_OWNER_010-team-backlog-sod-eod-standard
++Branch: PR_26177_OWNER_011-codex-zip-and-next-pr-standard
 +
 +## Purpose
 +
-+Add active governance for team backlog ownership, Start of Day briefings, End of Day summaries, completion percentage tracking, and official military team-name spelling.
++Add governance that every Codex execution produces reports and a repo-structured ZIP, and that completed PR ZIP review automatically drives the next logical PRs.
 +
 +## Scope
 +
@@ -292,54 +158,55 @@ index 000000000..952857d11
 +
 +## Changes
 +
-+- Added `team_backlog_sod_eod_standard.md` as an active Project Instructions addendum.
-+- Added Start of Day team briefing requirements before implementation begins.
-+- Added End of Day team summary requirements.
-+- Defined active team backlog ownership fields:
-+  - name
-+  - description
-+  - current completion percentage
-+  - remaining work
-+  - blocking dependencies
-+- Defined completion percentage update points at SOD, after each accepted PR, and at EOD.
-+- Confirmed the backlog is authoritative for determining next PRs.
-+- Added official active team codes: OWNER, ALFA, BRAVO, CHARLIE, and DELTA.
-+- Confirmed active team-name spelling uses `Alfa`, while historical snapshots and non-team phrases are not rewritten unless OWNER explicitly scopes that work.
-+- Linked the addendum from active Project Instructions index and team start guidance.
++- Strengthened the Codex artifact standard so every Codex execution produces required reports and a repo-structured ZIP.
++- Made the ZIP/report rule apply to success, completion, partial completion, hard stop, blocked, validation failure, new information, no-change, review, and governance results.
++- Removed the previous exception that allowed hard stops before outputs to skip ZIP/report delivery.
++- Required Codex responses to return ZIP path, reports, changed file list, validation results, and branch/worktree/sync status when relevant.
++- Added completed PR ZIP review governance:
++  - review completed work
++  - identify completed and remaining scope
++  - update team backlog and completion percentages
++  - determine the next logical PRs
++  - recommend execution order
++  - generate each recommended PR with summary, Codex command, commit comment, Playwright scope, and manual validation steps
++- Confirmed the backlog drives next recommended PRs automatically.
++- Preserved the existing SOD, active team branch, sequential workstream, EOD, Product Owner testable, and page-level Playwright workflow rules.
 +
 +## Validation
 +
 +- PASS: `git diff --cached --check -- . :(exclude)docs_build/dev/reports/codex_review.diff`
 +- PASS: documentation/governance-only changed-file check.
-+- PASS: SOD briefing rule exists.
-+- PASS: EOD summary rule exists.
-+- PASS: backlog ownership rule exists.
-+- PASS: active team codes include ALFA.
-+- PASS: active `Alpha` references are limited to the non-team cancelled `Alpha/Beta/User isolation framework` phrase.
++- PASS: ZIP-on-every-result rule exists.
++- PASS: hard stops require ZIP/report output.
++- PASS: `next logical PRs` plural wording exists.
++- PASS: automatic next PR planning is tied to completed PR ZIP review.
++- PASS: SOD starts from latest synchronized `main`.
++- PASS: SOD creates or uses the active team branch.
++- PASS: all commits go to the active team branch, not `main`.
++- PASS: sequential PRs stay on the active team branch/workstream during the day.
++- PASS: EOD returns to `main` and verifies clean sync `0 0`.
++- PASS: Product Owner testable completion rule remains present.
++- PASS: page-level Playwright completion gate remains present.
 +- PASS: no runtime files changed.
-+- PASS: no UI files changed.
-+- PASS: no API files changed.
-+- PASS: no database files changed.
-+- PASS: no `start_of_day` files changed.
 +
 +## Artifact
 +
-+- `tmp/PR_26177_OWNER_010-team-backlog-sod-eod-standard_delta.zip`
++- `tmp/PR_26177_OWNER_011-codex-zip-and-next-pr-standard_delta.zip`
 +
 +## Manual Validation Notes
 +
-+Reviewers should confirm active team work now has a required SOD briefing, required EOD summary, explicit backlog ownership fields, completion percentage update cadence, and the official team spelling standard.
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_010-team-backlog-sod-eod-standard_branch-validation.md b/docs_build/dev/reports/PR_26177_OWNER_010-team-backlog-sod-eod-standard_branch-validation.md
++Reviewers should confirm the active governance now makes ZIP/report delivery mandatory for every Codex result and makes completed PR ZIP review produce the next logical PRs without requiring the Product Owner to ask for continuation.
+diff --git a/docs_build/dev/reports/PR_26177_OWNER_011-codex-zip-and-next-pr-standard_branch-validation.md b/docs_build/dev/reports/PR_26177_OWNER_011-codex-zip-and-next-pr-standard_branch-validation.md
 new file mode 100644
-index 000000000..902ef571d
+index 000000000..cd2754f9f
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_OWNER_010-team-backlog-sod-eod-standard_branch-validation.md
++++ b/docs_build/dev/reports/PR_26177_OWNER_011-codex-zip-and-next-pr-standard_branch-validation.md
 @@ -0,0 +1,23 @@
-+# PR_26177_OWNER_010 Branch Validation
++# PR_26177_OWNER_011 Branch Validation
 +
 +Date: 2026-06-27
 +Team: OWNER
-+Branch: PR_26177_OWNER_010-team-backlog-sod-eod-standard
++Branch: PR_26177_OWNER_011-codex-zip-and-next-pr-standard
 +
 +## Result
 +
@@ -348,48 +215,49 @@ index 000000000..902ef571d
 +## Checks
 +
 +- PASS: Work was performed on the active OWNER PR branch, not `main`.
-+- PASS: Branch is stacked on the active OWNER workstream branch.
++- PASS: Branch is stacked on `PR_26177_OWNER_010-team-backlog-sod-eod-standard`.
 +- PASS: Changes are limited to active Project Instructions and generated reports.
 +- PASS: No runtime, UI, API, database, or `start_of_day` files changed.
-+- PASS: staged whitespace validation passed with generated `codex_review.diff` excluded.
++- PASS: Staged whitespace validation passed with generated `codex_review.diff` excluded.
 +- PASS: Required report files were generated.
 +- PASS: Repo-structured ZIP artifact path is defined under `tmp/`.
 +
 +## Notes
 +
 +This PR remains in the OWNER workstream and must not be merged to `main` until EOD closeout or explicit OWNER approval.
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_010-team-backlog-sod-eod-standard_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_OWNER_010-team-backlog-sod-eod-standard_manual-validation-notes.md
+diff --git a/docs_build/dev/reports/PR_26177_OWNER_011-codex-zip-and-next-pr-standard_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_OWNER_011-codex-zip-and-next-pr-standard_manual-validation-notes.md
 new file mode 100644
-index 000000000..7acfa05a9
+index 000000000..af329a4cb
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_OWNER_010-team-backlog-sod-eod-standard_manual-validation-notes.md
-@@ -0,0 +1,19 @@
-+# PR_26177_OWNER_010 Manual Validation Notes
++++ b/docs_build/dev/reports/PR_26177_OWNER_011-codex-zip-and-next-pr-standard_manual-validation-notes.md
+@@ -0,0 +1,20 @@
++# PR_26177_OWNER_011 Manual Validation Notes
 +
 +Date: 2026-06-27
 +Team: OWNER
 +
 +## Manual Review
 +
-+Review `docs_build/dev/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md` and confirm it defines:
++Review these files:
 +
-+- Start of Day team briefing fields.
-+- End of Day team summary fields.
-+- Active team backlog ownership.
-+- Completion percentage update cadence.
-+- Official team names: OWNER, ALFA, BRAVO, CHARLIE, DELTA.
-+- Existing SOD, active team branch, stacked PR, and EOD return-to-main workflow.
++- `docs_build/dev/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md`
++- `docs_build/dev/ProjectInstructions/addendums/pr_workflow.md`
++- `docs_build/dev/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md`
++
++Confirm they require every Codex result to include reports and a repo-structured ZIP, including hard stops and no-change results.
++
++Confirm completed PR ZIP review now drives the next logical PRs and produces enough sequential PRs to reach a Product Owner testable outcome unless blocked or directed otherwise.
 +
 +## Expected Reviewer Outcome
 +
-+The Product Owner should be able to use the active Project Instructions to start and close a team day with explicit backlog percentages, remaining work, recommended execution order, and repository status.
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_010-team-backlog-sod-eod-standard_requirements-checklist.md b/docs_build/dev/reports/PR_26177_OWNER_010-team-backlog-sod-eod-standard_requirements-checklist.md
++The Product Owner should no longer need to ask for continuation after handing ChatGPT a completed PR ZIP; the backlog and ZIP review should automatically drive the next recommended PRs.
+diff --git a/docs_build/dev/reports/PR_26177_OWNER_011-codex-zip-and-next-pr-standard_requirements-checklist.md b/docs_build/dev/reports/PR_26177_OWNER_011-codex-zip-and-next-pr-standard_requirements-checklist.md
 new file mode 100644
-index 000000000..299da2ffd
+index 000000000..0dc03d042
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_OWNER_010-team-backlog-sod-eod-standard_requirements-checklist.md
-@@ -0,0 +1,29 @@
-+# PR_26177_OWNER_010 Requirements Checklist
++++ b/docs_build/dev/reports/PR_26177_OWNER_011-codex-zip-and-next-pr-standard_requirements-checklist.md
+@@ -0,0 +1,30 @@
++# PR_26177_OWNER_011 Requirements Checklist
 +
 +Date: 2026-06-27
 +Team: OWNER
@@ -401,15 +269,16 @@ index 000000000..299da2ffd
 +- PASS: Active instruction files updated only.
 +- PASS: Historical snapshots were not rewritten.
 +- PASS: No runtime changes.
-+- PASS: Start of Day team briefing rule added.
-+- PASS: End of Day team summary rule added.
-+- PASS: Team backlog ownership rule added.
-+- PASS: Backlog item fields include name, description, current completion percentage, remaining work, and blocking dependencies.
-+- PASS: Completion percentage update cadence added for SOD, accepted PRs, and EOD.
-+- PASS: Backlog is documented as authoritative for determining next PRs.
-+- PASS: Official team names use OWNER, ALFA, BRAVO, CHARLIE, and DELTA.
-+- PASS: Active team references use `Alfa` spelling.
-+- PASS: Historical and non-team `Alpha/Beta/User isolation framework` wording was preserved.
++- PASS: ZIP-on-every-result governance added.
++- PASS: Rule applies to success, completion, partial completion, hard stop, blocked, validation failure, new information, and no files changed.
++- PASS: Every Codex execution must return repo-structured ZIP path, reports, changed file list, validation results, and branch/worktree/sync status when relevant.
++- PASS: `No exceptions` wording added.
++- PASS: Automatic next PR planning tied to Product Owner completed PR ZIP review.
++- PASS: `next logical PRs` plural wording exists.
++- PASS: Recommended PR output includes PR summary, Codex command, commit comment, Playwright scope, and manual validation steps.
++- PASS: Product Owner should not need to ask `What is next?`, `Create the next PR.`, or `Continue.`
++- PASS: Backlog drives next recommended PRs automatically.
++- PASS: Existing SOD/main, active team branch, stacked PR, EOD, Product Owner testable, and page-level Playwright rules remain present.
 +- PASS: Required reports were generated.
 +- PASS: Repo-structured ZIP artifact will be generated under `tmp/`.
 +
@@ -418,13 +287,13 @@ index 000000000..299da2ffd
 +- PASS: No commit was made to `main`.
 +- PASS: No `start_of_day` folders changed.
 +- PASS: No unrelated cleanup.
-diff --git a/docs_build/dev/reports/PR_26177_OWNER_010-team-backlog-sod-eod-standard_validation-lane.md b/docs_build/dev/reports/PR_26177_OWNER_010-team-backlog-sod-eod-standard_validation-lane.md
+diff --git a/docs_build/dev/reports/PR_26177_OWNER_011-codex-zip-and-next-pr-standard_validation-lane.md b/docs_build/dev/reports/PR_26177_OWNER_011-codex-zip-and-next-pr-standard_validation-lane.md
 new file mode 100644
-index 000000000..591dc6d70
+index 000000000..0eae5bc5a
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_OWNER_010-team-backlog-sod-eod-standard_validation-lane.md
-@@ -0,0 +1,41 @@
-+# PR_26177_OWNER_010 Validation Lane
++++ b/docs_build/dev/reports/PR_26177_OWNER_011-codex-zip-and-next-pr-standard_validation-lane.md
+@@ -0,0 +1,43 @@
++# PR_26177_OWNER_011 Validation Lane
 +
 +Date: 2026-06-27
 +Team: OWNER
@@ -444,19 +313,21 @@ index 000000000..591dc6d70
 +Result: PASS
 +
 +```powershell
-+node -e "required SOD/EOD/backlog/team-name governance checks"
++node -e "required ZIP, next logical PRs, workflow preservation checks"
 +```
 +
 +Result: PASS
 +
 +## Targeted Results
 +
-+- PASS: SOD briefing rule exists.
-+- PASS: EOD summary rule exists.
-+- PASS: backlog ownership rule exists.
-+- PASS: required backlog fields exist.
-+- PASS: official active team code `ALFA` exists.
-+- PASS: active `Alpha` references are limited to the non-team cancelled initiative phrase.
++- PASS: ZIP-on-every-result rule exists.
++- PASS: hard stops require ZIP/report output.
++- PASS: `next logical PRs` plural wording exists.
++- PASS: automatic next PR planning is tied to completed PR ZIP review.
++- PASS: SOD/main active branch workflow remains present.
++- PASS: EOD clean main sync rule remains present.
++- PASS: Product Owner testable rule remains present.
++- PASS: page-level Playwright completion gate remains present.
 +- PASS: no runtime files changed.
 +- PASS: no UI files changed.
 +- PASS: no API files changed.
@@ -465,35 +336,3 @@ index 000000000..591dc6d70
 +## Playwright
 +
 +Not impacted. This PR is documentation/governance only.
-diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 98a71e332..e97560092 100644
---- a/docs_build/dev/reports/codex_changed_files.txt
-+++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,11 +1,15 @@
--﻿docs_build/dev/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
--docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md
--docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
--docs_build/dev/ProjectInstructions/addendums/test_structure_standardization.md
--docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md
--docs_build/dev/reports/PR_26177_OWNER_009-project-instructions-workflow-testable-tests-alignment.md
--docs_build/dev/reports/PR_26177_OWNER_009-project-instructions-workflow-testable-tests-alignment_manual-validation-notes.md
--docs_build/dev/reports/PR_26177_OWNER_009-project-instructions-workflow-testable-tests-alignment_requirements-checklist.md
--docs_build/dev/reports/PR_26177_OWNER_009-project-instructions-workflow-testable-tests-alignment_validation-lane.md
-+docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-+docs_build/dev/ProjectInstructions/README.txt
-+docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
-+docs_build/dev/ProjectInstructions/addendums/naming_registry.md
-+docs_build/dev/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
-+docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
-+docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-+docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-+docs_build/dev/reports/PR_26177_OWNER_010-team-backlog-sod-eod-standard.md
-+docs_build/dev/reports/PR_26177_OWNER_010-team-backlog-sod-eod-standard_branch-validation.md
-+docs_build/dev/reports/PR_26177_OWNER_010-team-backlog-sod-eod-standard_manual-validation-notes.md
-+docs_build/dev/reports/PR_26177_OWNER_010-team-backlog-sod-eod-standard_requirements-checklist.md
-+docs_build/dev/reports/PR_26177_OWNER_010-team-backlog-sod-eod-standard_validation-lane.md
- docs_build/dev/reports/codex_changed_files.txt
- docs_build/dev/reports/codex_review.diff
-diff --git a/docs_build/dev/reports/codex_review.diff b/docs_build/dev/reports/codex_review.diff
-index 246e75adf..b6f411e41 100644
-Binary files a/docs_build/dev/reports/codex_review.diff and b/docs_build/dev/reports/codex_review.diff differ
