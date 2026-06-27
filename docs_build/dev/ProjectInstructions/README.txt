@@ -16,7 +16,7 @@ No direct commits to main:
 Do not commit directly to main. Normal work must use PR branches, draft PRs, validation evidence, and owner-controlled merge approval.
 
 Branch lifecycle:
-Every PR follows exactly three phases: START, WORK, END. The canonical lifecycle is `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`.
+The canonical START / WORK / END lifecycle is `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`.
 
 OWNER override rule:
 An OWNER override must use this wording:

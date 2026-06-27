@@ -1,5 +1,11 @@
 # Multi-Team Codex Execution Governance
 
+Canonical workflow reference: `docs_build/dev/ProjectInstructions/addendums/pr_workflow.md`.
+
+Canonical branch lifecycle reference: `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`.
+
+This file owns multi-team execution coordination and must not create competing workflow or branch lifecycle rules.
+
 ## Four Active Delivery Teams
 
 The single authoritative four-team ownership definition is:
@@ -65,7 +71,7 @@ Rules:
 ## Day Work / EOD Merge Rule
 
 During active work:
-- Work happens on assigned team branches, OWNER branches, or scoped PR branches.
+- Work happens on active non-main team branches or scoped PR branches.
 - Commits are allowed only on assigned non-main branches.
 - Pushes are allowed and expected.
 - Draft PRs are allowed and expected.

@@ -23,25 +23,13 @@ Codex must use this as the only active source of truth for:
 
 ## Branch Lifecycle Start Gate
 
-Every PR follows exactly three phases:
-
-```text
-START
-WORK
-END
-```
-
 Codex must follow the canonical lifecycle in:
 
-`docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`
+```text
+docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
+```
 
-Startup enforcement:
-- START begins on synchronized `main`.
-- WORK remains on the PR branch. Never checkout `main`.
-- END merges, returns to synchronized `main`, publishes branch, HEAD SHA, and date/time, then stops all work.
-- STOP if current branch is `main` before commit.
-- STOP if attempting to push `main`.
-- STOP if a new PR starts before returning to synchronized `main`.
+This startup addendum only requires Codex to read and apply that canonical lifecycle; it must not define a competing lifecycle rule.
 
 Deprecated Project Instructions material outside `docs_build/dev/ProjectInstructions/` is reference-only and must not override active governance.
 

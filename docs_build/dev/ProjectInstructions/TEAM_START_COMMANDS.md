@@ -13,14 +13,7 @@ Use `docs_build/dev/ProjectInstructions/` as the only active Project Instruction
 Read `docs_build/dev/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md` before implementation.
 
 Branch Lifecycle (Canonical):
-- Every PR follows exactly three phases: START, WORK, END.
-- Follow `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`.
-- START begins on synchronized `main` and creates the PR branch only after all gates pass.
-- WORK remains on the PR branch. Never checkout `main`.
-- END merges, returns to synchronized `main`, publishes branch, HEAD SHA, and date/time, then stops all work.
-- No commits on `main`.
-- No implementation on `main`.
-- No validation on `main` except start validation.
+- Follow `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md` for START / WORK / END lifecycle, branch gates, mandatory hard stops, and EOD main lock.
 
 ## Start Team Alfa
 
