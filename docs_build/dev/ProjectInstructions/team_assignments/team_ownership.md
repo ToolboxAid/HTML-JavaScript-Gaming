@@ -34,6 +34,7 @@ This section is the current OWNER-approved active ownership alignment.
 - Environment management
 - System Health
 - Operations
+- Sprites canvas editor MVP
 
 Team Charlie System Health owns:
 - Environment Summary
@@ -41,6 +42,11 @@ Team Charlie System Health owns:
 - Storage Health
 - Runtime Health
 - Health Check History
+
+Team Charlie Sprites ownership:
+- Sprites is a creator tool, not only an asset metadata library.
+- Sprites MVP requires canvas/grid editor behavior, width/height controls, Palette/Colors-only reusable colors, color selection from Palette/Colors, pixel painting, save/load sprite grid data through the API/database, and Product Owner manual validation.
+- Sprites must not own reusable color definitions.
 
 ## Team Delta
 

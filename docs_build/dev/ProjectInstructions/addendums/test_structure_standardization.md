@@ -6,6 +6,9 @@ Standardize testing locations and ensure independent tool validation.
 
 ## Canonical Test Structure
 
+Page-level Playwright tests:
+- tests/playwright/{runtime-page-path}/index.spec.mjs
+
 Tool tests:
 - tests/toolbox/{tool-name}/
 
@@ -31,3 +34,38 @@ Regression tests:
 - Tool tests validate tool functionality.
 - Regression tests validate platform behavior.
 - New tests follow the canonical structure.
+- Every user-accessible page must have at least one matching page-level Playwright test before it can be considered complete.
+- Runtime page path determines the page-level Playwright test path.
+- Primary page-level Playwright test file should be `index.spec.mjs`.
+- Do not organize new page-level Playwright tests only by feature nickname or technology bucket when a page path exists.
+- Legacy broad tests may remain while migration is planned; document migration/deprecation instead of moving broad legacy tests unless the PR scope requires it.
+
+## Page-Level Playwright Examples
+
+- `/admin/index.html` -> `tests/playwright/admin/index/index.spec.mjs`
+- `/toolbox/sprites/index.html` -> `tests/playwright/toolbox/sprites/index.spec.mjs`
+- `/toolbox/game-hub/index.html` -> `tests/playwright/toolbox/game-hub/index.spec.mjs`
+- `/toolbox/messages/index.html` -> `tests/playwright/toolbox/messages/index.spec.mjs`
+- `/toolbox/game-configuration/index.html` -> `tests/playwright/toolbox/game-configuration/index.spec.mjs`
+
+## Minimum Page-Level Playwright Coverage
+
+Minimum page-level test:
+
+- route loads
+- page renders
+- navigation works
+- no visible placeholder-only state for completed/testable pages
+- primary workflow is covered where the PR claims Product Owner testable completion
+- save/load and validation are covered where applicable
+- no runtime console errors when feasible
+
+Additional scenario files may use:
+
+- `create.spec.mjs`
+- `edit.spec.mjs`
+- `delete.spec.mjs`
+- `archive.spec.mjs`
+- `navigation.spec.mjs`
+- `permissions.spec.mjs`
+- `validation.spec.mjs`

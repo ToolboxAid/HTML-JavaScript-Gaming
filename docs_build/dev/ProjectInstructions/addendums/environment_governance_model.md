@@ -48,7 +48,9 @@ One shared API/service contract is required across all environments.
 
 Rules:
 
+- Browser/UI/runtime product data must flow through `Browser -> API -> Database`.
 - Browser/UI/runtime code must consume the same API/service contract in Local (VS Code), DEV, IST, UAT, and PROD.
+- `Local API` means the shared API/service contract running locally, not a separate API implementation.
 - Environment-specific endpoints, keys, buckets, credentials, and prefixes are configuration values only.
 - Do not create environment-specific API/service contracts.
 - Do not branch API/service behavior by environment name.

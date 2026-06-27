@@ -68,7 +68,7 @@ END
 
 ## START
 
-Every team begins on `main`.
+Every team begins SOD from `main`.
 
 Required:
 
@@ -91,7 +91,7 @@ main...origin/main
 HEAD equals published EOD SHA
 ```
 
-Only after ALL four pass may a branch be created.
+Only after ALL four pass may a branch be created or the active team branch/workstream be updated.
 
 Create the PR branch:
 
@@ -112,9 +112,13 @@ From branch creation until merge:
 - Remain on the PR branch.
 - Never checkout `main`.
 - Commit only on the PR branch.
+- Work must be committed only to the active team branch.
 - Push only the PR branch.
 - Execute validation from the PR branch.
 - Open/update the PR from the PR branch.
+- For OWNER-approved stacked/sequential workstreams, PR branches/commits stay on the active team branch/workstream between sequential PRs during the day.
+- Do not return to `main` between sequential PRs in the same active workstream unless OWNER explicitly approves an EOD or intermediate merge checkpoint.
+- This rule applies to all teams: OWNER, Team Alfa, Team Bravo, Team Charlie, Team Delta, and any future team.
 
 Hard Stops:
 
@@ -192,7 +196,8 @@ STOP if:
 - `main...origin/main` is not `0 0` before creating PR branch
 - `HEAD` SHA differs from published baseline
 - merge attempted without successful validation
-- new PR started before returning to synchronized `main`
+- new unrelated PR or workstream started before returning to synchronized `main`
+- sequential work continues without an OWNER-approved stacked/sequential workstream model
 
 ## Start Of Day Boundary
 

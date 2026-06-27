@@ -9,11 +9,12 @@ Keep active work attached to the correct assigned team, branch, and OWNER decisi
 
 ## Active Work Lock
 
-- Work must occur on the assigned team or OWNER branch.
+- Work must occur on the active team branch.
+- This rule applies to all teams: OWNER, Team Alfa, Team Bravo, Team Charlie, Team Delta, and any future team.
 - An assigned work item keeps its owner of record until complete or OWNER reassignment.
 - Work must not move to another team, branch, or PR without OWNER approval.
 - A team with no active assignment, active branch, or active PR is inactive.
-- A team with a previous PR that is not Closed must not begin another PR unless OWNER documented an explicit stacked PR chain.
+- A team with a previous PR that is not Closed must not begin another unrelated PR unless OWNER documented an explicit stacked/sequential workstream.
 - PR Open begins only after the branch and PR identity are named.
 - Plan, Build, validation, reports, ZIP packaging, and closeout stay tied to the same PR identity and source branch.
 - Closed ends only after the final main-return, clean-worktree, local/origin `0/0`, no-untracked-files, required-report, required-ZIP, backlog, applicable tool-state, and branch-disposition gates pass.
@@ -25,7 +26,8 @@ Keep active work attached to the correct assigned team, branch, and OWNER decisi
 - Pull latest `origin/main` before creating a work branch.
 - Do not create a PR branch unless current branch is `main`, worktree is clean, `main...origin/main` is `0 0`, and `HEAD` SHA matches the published EOD SHA.
 - Follow the canonical START / WORK / END lifecycle in `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`.
-- Keep work on the active branch until the PR is merged, the branch is retired, or OWNER says to return to `main`.
+- Keep work on the active branch until the PR is merged, the branch is retired, EOD closeout begins, or OWNER says to return to `main`.
+- For OWNER-approved stacked/sequential workstreams, PR branches/commits stay on the active team branch/workstream during the day and do not return to `main` between PRs.
 - Do not commit directly to `main`.
 - HARD STOP before committing if current branch is `main`.
 - HARD STOP if the branch changes unexpectedly during implementation.
@@ -51,7 +53,7 @@ Branch lock governance enforces:
 - START on synchronized `main`.
 - WORK only on the PR branch.
 - END by merging, returning to synchronized `main`, publishing branch, HEAD SHA, and date/time, then stopping all work.
-- Mandatory hard stops before commits on `main`, dirty branch creation, non-`0 0` main sync, baseline SHA mismatch, unvalidated merge, or new PR work before synchronized main return.
+- Mandatory hard stops before commits on `main`, dirty branch creation, non-`0 0` main sync, baseline SHA mismatch, unvalidated merge, or new unrelated workstream before synchronized main return.
 
 ## OWNER Override
 

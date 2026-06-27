@@ -92,6 +92,8 @@ One shared API/service contract is required across Local (VS Code), DEV, IST, UA
 
 Rules:
 
+- Browser/UI/runtime code must follow `Browser -> API -> Database` for authoritative product data.
+- `Local API` means the same shared API/service contract running locally, not a separate local-only API implementation.
 - API URLs may differ by `.env` only.
 - Do not split Local API and Public API contracts.
 - Do not create environment-specific API/service contracts.

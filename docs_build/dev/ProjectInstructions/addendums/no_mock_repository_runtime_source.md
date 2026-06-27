@@ -11,10 +11,16 @@ Browser → API → Database
 
 Runtime product data must flow through the API/service contract backed by the database.
 
+Canonical ASCII wording for this required flow is:
+
+```text
+Browser -> API -> Database
+```
+
 ## Rules
 
 - Mock repositories are 100% technical debt.
-- "Mock repository ready" is not a valid Creator-testable completion state.
+- "Mock repository ready" is not a valid Product Owner testable completion state.
 - Page arrays are not product-data sources of truth.
 - JSON source files are not product-data sources of truth.
 - `/tmp` files are not product-data sources of truth.
@@ -32,7 +38,7 @@ If a temporary mock repository exists for transition, it must be documented as t
 - affected files
 - removal PR
 - replacement API/DB path
-- Creator-testable limitation
+- Product Owner testable limitation
 
 Temporary mock repositories do not make a feature complete. They may only document a transition state.
 
@@ -46,4 +52,4 @@ Completion requires Game Configuration data to load through:
 Browser → API → Database
 ```
 
-The Creator-testable completion state must prove that browser-visible Game Configuration data was read back through the API/service contract backed by the database.
+The Product Owner testable completion state must prove that browser-visible Game Configuration data was read back through the API/service contract backed by the database.

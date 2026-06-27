@@ -12,7 +12,7 @@ Define how Codex plans and executes Creator-facing tool MVP work without creatin
 For tool MVPs, use:
 
 ```text
-One large Codex command -> multiple focused stacked PRs -> each PR has a testable Creator outcome.
+One large Codex command -> multiple focused stacked PRs -> each PR has a Product Owner testable outcome.
 ```
 
 ## Rules
@@ -20,7 +20,7 @@ One large Codex command -> multiple focused stacked PRs -> each PR has a testabl
 - Do not create one giant PR.
 - Do not stop after every small PR unless blocked.
 - Each PR must be independently scoped.
-- Each PR must produce a Creator-testable outcome.
+- Each PR must produce a Product Owner testable outcome.
 - Each PR must answer:
 
 ```text
@@ -40,8 +40,43 @@ For tool MVP PR planning, visible acceptance must be Creator-facing first.
 
 Architecture can be handled under the covers, but PR purpose must be user-testable.
 
+A request to complete a page, tool, MVP, or testable experience means Product Owner testable by default. Codex must deliver a working Product Owner testable feature, not a shell or foundation page, unless the Product Owner explicitly requests a shell/foundation PR.
+
+A Product Owner testable outcome means the Product Owner can:
+
+- open the page/tool
+- perform the primary workflow
+- save/load data where applicable
+- observe expected results
+- validate success and failure states
+- follow manual validation steps from the PR report
+
+Not acceptable as complete/testable:
+
+- shell-only page
+- route-only page
+- navigation-only PR
+- template-only page
+- placeholder controls
+- static table with no workflow
+- `Not implemented yet`
+- `coming soon`
+- placeholder-only workspace, inspector, or output sections
+- planned-only tile
+- route that loads but cannot be used
+
+Required for Product Owner testable completion:
+
+- visible working controls
+- API-backed data where required
+- validation and error states
+- empty states
+- save/load behavior where applicable
+- manual validation steps for Product Owner
+- targeted Playwright coverage where impacted.
+
 Each tool MVP PR must state:
-- Creator-testable outcome
+- Product Owner testable outcome
 - What Playwright tests
 - What Mr. Q should manually test
 - Whether the PR is part of a stacked MVP sequence
@@ -49,6 +84,8 @@ Each tool MVP PR must state:
 - Next PR dependency
 
 ## Runtime Data Completion Boundary
+
+A PR requested to complete a page, tool, MVP, or testable experience must not stop after route creation, shell creation, placeholder UI, static mock layout, or navigation activation unless the Product Owner explicitly requested a shell/foundation PR.
 
 A PR outcome must not be described as complete if the visible data is coming from:
 
@@ -81,4 +118,8 @@ Each PR in the stack still follows the canonical START / WORK / END lifecycle an
 
 When OWNER gives one large Codex command for a tool MVP stack, Codex may continue from one completed PR to the next without stopping for a conversational checkpoint, unless a blocker listed in this standard occurs.
 
-The final PR in the stack must perform normal closeout and stop all work after returning to synchronized main.
+During an OWNER-approved day workstream, PR branches/commits stay on the active team branch/workstream and do not return to `main` between PRs.
+
+This rule applies to all teams: OWNER, Team Alfa, Team Bravo, Team Charlie, Team Delta, and any future team.
+
+The final PR in the stack must perform normal EOD closeout or OWNER-approved merge-checkpoint closeout and stop all work after returning to synchronized main.

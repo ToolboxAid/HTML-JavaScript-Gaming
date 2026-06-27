@@ -48,15 +48,11 @@ Current OWNER clarification:
 
 ## Team Alfa
 
-Status: Active
+Status: Available
 
-Active assignment: PR_26177_DELTA_056-shared-validation-assertions.
+Active assignment: none.
 
-Active branch: PR_26177_DELTA_056-shared-validation-assertions.
-
-Active PR: PR_26177_DELTA_056-shared-validation-assertions.
-
-OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_056-shared-validation-assertions.
+Active branch: none.
 
 ## Team Bravo
 
@@ -76,11 +72,15 @@ Active branch: none.
 
 ## Team Delta
 
-Status: Available
+Status: Active
 
-Active assignment: none.
+Active assignment: PR_26177_DELTA_056-shared-validation-assertions.
 
-Active branch: none.
+Active branch: PR_26177_DELTA_056-shared-validation-assertions.
+
+Active PR: PR_26177_DELTA_056-shared-validation-assertions.
+
+OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_056-shared-validation-assertions.
 
 ## Team Golf
 
