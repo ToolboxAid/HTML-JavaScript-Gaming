@@ -273,6 +273,13 @@ Current OWNER clarification:
     - observability integrations
 - [ ] Charlie - Infrastructure dashboard
 - [ ] Charlie - Environment validation
+- [ ] Charlie - Runtime Reliability implementation
+  - Current completion percentage: 0%.
+  - Description: implement the Runtime Reliability Architecture covering resilient page loading, runtime availability events, Admin Logs, runtime logs, future telemetry, correlation IDs, dependency health, retry policies, duplicate suppression, notification routing, resolution lifecycle, diagnostic snapshots, privacy guardrails, and creator-facing runtime failure messaging.
+  - Remaining work: define event/API/database contracts, implement API-backed runtime availability records, add Admin Logs read model, add privacy-safe diagnostic snapshots, wire System Health aggregation, and add targeted validation.
+  - Blocking dependencies: PR_26179_001-runtime-reliability-architecture merged.
+  - Owning team: Team Charlie.
+  - Cross-team dependency: Team Delta owns future shared runtime/event hook implementation when engine/runtime/shared JS changes are required.
 - [ ] Charlie - Palette / Colors
   - Current completion percentage: 40%.
   - Remaining work: color management, API/database integration, reusable color source of truth, Palette references for Sprites and Objects, and Product Owner testable workflow.

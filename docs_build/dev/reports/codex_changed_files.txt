@@ -1,22 +1,12 @@
-docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-docs_build/dev/ProjectInstructions/README.txt
-docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
-docs_build/dev/ProjectInstructions/addendums/branch_context_governance.md
-docs_build/dev/ProjectInstructions/addendums/branch_lock_governance.md
-docs_build/dev/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
-docs_build/dev/ProjectInstructions/addendums/codex_project_instructions_startup.md
-docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md
-docs_build/dev/ProjectInstructions/addendums/multi_team.md
-docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
-docs_build/dev/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
-docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md
-docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
-docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-docs_build/dev/reports/PR_26177_OWNER_012-project-instructions-cleanup-backlog-canonicalization.md
-docs_build/dev/reports/PR_26177_OWNER_012-project-instructions-cleanup-backlog-canonicalization_branch-validation.md
-docs_build/dev/reports/PR_26177_OWNER_012-project-instructions-cleanup-backlog-canonicalization_manual-validation-notes.md
-docs_build/dev/reports/PR_26177_OWNER_012-project-instructions-cleanup-backlog-canonicalization_requirements-checklist.md
-docs_build/dev/reports/PR_26177_OWNER_012-project-instructions-cleanup-backlog-canonicalization_validation-lane.md
-docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/codex_review.diff
+M	docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
+M	docs_build/dev/ProjectInstructions/standards/README.md
+A	docs_build/dev/ProjectInstructions/standards/RUNTIME_RELIABILITY_ARCHITECTURE.md
+M	docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
+M	docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
+A	docs_build/dev/reports/PR_26179_001-runtime-reliability-architecture.md
+A	docs_build/dev/reports/PR_26179_001-runtime-reliability-architecture_branch-validation.md
+A	docs_build/dev/reports/PR_26179_001-runtime-reliability-architecture_manual-validation-notes.md
+A	docs_build/dev/reports/PR_26179_001-runtime-reliability-architecture_requirement-checklist.md
+A	docs_build/dev/reports/PR_26179_001-runtime-reliability-architecture_validation-report.md
+M	docs_build/dev/reports/codex_changed_files.txt
+M	docs_build/dev/reports/codex_review.diff

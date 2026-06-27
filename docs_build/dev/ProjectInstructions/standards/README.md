@@ -8,3 +8,7 @@ Rules:
 - Generated validation evidence belongs under `docs_build/dev/reports/`.
 - Historical reference material belongs under the root `archive/` tree.
 - Reusable PR templates belong under `docs_build/dev/PR/templates/`.
+
+## Active Architecture Standards
+
+- Runtime Reliability Architecture: `docs_build/dev/ProjectInstructions/standards/RUNTIME_RELIABILITY_ARCHITECTURE.md`

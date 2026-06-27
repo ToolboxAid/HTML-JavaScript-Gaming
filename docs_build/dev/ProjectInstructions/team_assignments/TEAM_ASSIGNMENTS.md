@@ -15,7 +15,7 @@ This file records active assignments and registry state. Workflow summaries here
 | Team Charlie | none | none | none | Available |
 | Team Delta | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | Active |
 | Team Golf | none | none | none | Available |
-| Team OWNER | none | none | none | Available |
+| Team OWNER | PR_26179_001-runtime-reliability-architecture | PR_26179_001-runtime-reliability-architecture | PR_26179_001-runtime-reliability-architecture | Active |
 
 Rules:
 - Registry is the authoritative active-work view.
@@ -100,11 +100,13 @@ OWNER decision: Replacement active ownership lane for retired Team Gamma.
 
 ## Team OWNER
 
-Status: Available
+Status: Active
 
-Active assignment: none.
+Active assignment: PR_26179_001-runtime-reliability-architecture.
 
-Active branch: none.
+Active branch: PR_26179_001-runtime-reliability-architecture.
+
+Active PR: PR_26179_001-runtime-reliability-architecture.
 
 ## Team Name Registry
 

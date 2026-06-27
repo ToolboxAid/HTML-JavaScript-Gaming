@@ -33,7 +33,7 @@ If a team has no assignment, no active branch, and no active PR, it is inactive 
 | Team Charlie | none | none | none | Available | Active ownership lane |
 | Team Delta | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | Active | OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_056-shared-validation-assertions |
 | Team Golf | none | none | none | Available | Replacement active ownership lane for retired Team Gamma |
-| Team OWNER | none | none | none | Available | Governance Phase 1 complete |
+| Team OWNER | PR_26179_001-runtime-reliability-architecture | PR_26179_001-runtime-reliability-architecture | PR_26179_001-runtime-reliability-architecture | Active | OWNER-assigned documentation/governance architecture PR |
 
 ## Current Active Ownership Lanes
 
