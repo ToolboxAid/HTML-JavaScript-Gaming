@@ -14,6 +14,7 @@ Move local/test bootstrap scripts and dev-only runner scripts/config into the de
 - Moved tracked root `scripts/` files to `dev/scripts/`.
 - Moved root Playwright configs to `dev/config/`.
 - Updated `package.json` scripts to call `dev/scripts/`.
+- Updated GitHub Actions platform validation to call `node ./dev/scripts/run-platform-validation-suite.mjs`.
 - Updated moved script repo-root calculations, script self-references, PowerShell helper paths, and tests that import script modules.
 - Kept application runtime/business logic out of `dev/`.
 
@@ -45,6 +46,8 @@ Documentation/dev-runner/config only. No product UI, API, database, `src/`, `doc
 | PASS | Playwright structure audit through moved runner | npm run test:audit:locations |
 | PASS | Playwright moved config discovery | npx playwright test --config=dev/config/playwright.config.cjs --list |
 | PASS | Canonical structure validation | npm run validate:canonical-structure |
+| PASS | GitHub Actions platform-validation path | Workflow now calls node ./dev/scripts/run-platform-validation-suite.mjs; targeted grep confirms no .github workflow still calls node ./scripts/run-platform-validation-suite.mjs. |
+| PASS | Platform validation suite | node ./dev/scripts/run-platform-validation-suite.mjs completed 8/8 scenarios. |
 | PASS | Whitespace validation | git diff --check -- . |
 
 ## Manual Validation Notes
@@ -52,6 +55,7 @@ Documentation/dev-runner/config only. No product UI, API, database, `src/`, `doc
 - No UI changes were made.
 - Full browser Playwright execution was not run; PR_006 changed runner/config placement, so validation used structure audit and `--list` discovery with the moved config.
 - `npm run dev:local-api` was not left running; the moved startup module was imported successfully and the package script points to the moved file.
+- PR #241 CI blocker was a workflow script path issue only; no runtime behavior or file moves were changed for this fix.
 
 ## Changed Files
 

@@ -11,4 +11,6 @@
 | PASS | Playwright structure audit through moved runner | npm run test:audit:locations |
 | PASS | Playwright moved config discovery | npx playwright test --config=dev/config/playwright.config.cjs --list |
 | PASS | Canonical structure validation | npm run validate:canonical-structure |
+| PASS | GitHub Actions platform-validation path | Workflow now calls node ./dev/scripts/run-platform-validation-suite.mjs; targeted grep confirms no .github workflow still calls node ./scripts/run-platform-validation-suite.mjs. |
+| PASS | Platform validation suite | node ./dev/scripts/run-platform-validation-suite.mjs completed 8/8 scenarios. |
 | PASS | Whitespace validation | git diff --check -- . |
