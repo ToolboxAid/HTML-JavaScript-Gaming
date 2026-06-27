@@ -15,7 +15,7 @@ import { REQUIRED_LEGAL_DOCUMENTS } from "../legal/legal-document-service.mjs";
 import { SEED_DB_KEYS } from "./seed-db-keys.mjs";
 
 const ULID_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
-const SEED_SOURCE_DIRECTORY = path.join("dev", "docs_build", "database", "seed");
+const SEED_SOURCE_DIRECTORY = path.join("dev", "build", "database", "seed");
 const DEV_SEED_AUDIT_USER_KEY = SEED_DB_KEYS.users.admin;
 
 function encodeBase32(value, length) {

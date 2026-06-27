@@ -13,14 +13,14 @@ This folder is the destination shell for non-deployable development workspace ma
 
 ## Governance Workspace
 
-- `dev/docs_build/` owns active development governance and PR workflow material.
+- `dev/build/` owns active development governance and PR workflow material.
 - `dev/reports/` owns generated reports.
 - `dev/workspace/artifacts/` owns generated non-report artifacts and local temporary workspace output.
 - `dev/tests/` owns non-deployable tests.
 - `dev/scripts/` owns development-only scripts and runners.
 - `dev/config/` owns development-only runner and tooling configuration.
 - `dev/archive/` owns historical development reference material.
-- `dev/project-instructions/` is deprecated reference only; active Project Instructions live under `dev/docs_build/dev/ProjectInstructions/`.
+- `dev/project-instructions/` is deprecated reference only; active Project Instructions live under `dev/build/ProjectInstructions/`.
 
 ## Data Boundary
 

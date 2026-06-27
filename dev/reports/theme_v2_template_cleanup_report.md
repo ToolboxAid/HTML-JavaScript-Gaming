@@ -4,7 +4,7 @@
 
 Completed the focused Theme V2 template cleanup.
 
-- Moved the Theme V2 page template to the repository root as `/_page_template_v2.html`.
+- Moved the Theme V2 page template to the repository root as `/dev/templates/page-template-v2.html`.
 - Deleted the retired Theme V2 tool template.
 - Removed the old Theme V2 templates folder after it became empty.
 - Updated historical report references that still pointed to the old template folder or retired tool template.
@@ -17,7 +17,7 @@ Completed the focused Theme V2 template cleanup.
 
 Moved:
 
-- Theme V2 page template from the old template folder -> `/_page_template_v2.html`
+- Theme V2 page template from the old template folder -> `/dev/templates/page-template-v2.html`
 
 Deleted:
 
@@ -36,7 +36,7 @@ Results:
 
 - No references remain to the old Theme V2 templates folder, excluding generated review artifacts and `tmp/`.
 - No references remain to the retired tool template filename, excluding generated review artifacts and `tmp/`.
-- The page template resolves at the repository root as `/_page_template_v2.html`.
+- The page template resolves at the repository root as `/dev/templates/page-template-v2.html`.
 - Historical report references were normalized to point to the root page template or to describe the retired tool template without preserving stale paths.
 
 Files with historical reference cleanup:

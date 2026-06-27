@@ -5,7 +5,7 @@ import process from "node:process";
 import { createPostgresConnectionClient } from "../../src/dev-runtime/persistence/postgres-connection-client.mjs";
 
 const ENV_FILE = ".env";
-const DDL_DIRECTORY = "dev/docs_build/database/ddl";
+const DDL_DIRECTORY = "dev/build/database/ddl";
 const ACTION = "Run node .\\dev\\scripts\\apply-database-ddl.mjs against the current .env, then rerun drift validation.";
 const REQUIRED_PLATFORM_SETTING_KEYS = Object.freeze([
   "platform.banner.enabled",

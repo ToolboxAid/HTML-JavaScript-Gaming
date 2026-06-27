@@ -3,8 +3,8 @@ BUILD_PR_LEVEL_10_26 asset ownership strategy validation report
 STATUS: PASS
 
 Checks:
-- Strategy doc present: dev/docs_build/reference/architecture-standards/specs/asset_ownership_strategy.md
-- Promotion registry present: dev/docs_build/reference/architecture-standards/specs/shared_asset_promotion_registry.json
+- Strategy doc present: dev/build/reference/architecture-standards/specs/asset_ownership_strategy.md
+- Promotion registry present: dev/build/reference/architecture-standards/specs/shared_asset_promotion_registry.json
 - Validated game ownership manifest: dev/archive/v1-v2/games/Asteroids/game.manifest.json
 - Validated template ownership manifest: dev/archive/v1-v2/games/_template/assets/tools.manifest.json
 - Archived sample has no inline asset path entries: dev/archive/v1-v2/samples/phase-15/1505/AssetBrowserScene.js

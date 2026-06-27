@@ -18,8 +18,8 @@ const EXCLUDED_DIRS = new Set([
   ".next"
 ]);
 
-const JSON_REPORT_PATH = path.join(repoRoot, "dev", "docs_build", "dev", "reports", "repo_duplicate_file_content_audit.json");
-const MD_REPORT_PATH = path.join(repoRoot, "dev", "docs_build", "dev", "reports", "PR_10_26_REPO_DUPLICATE_FILE_CONTENT_AUDIT_report.md");
+const JSON_REPORT_PATH = path.join(repoRoot, "dev", "reports", "repo_duplicate_file_content_audit.json");
+const MD_REPORT_PATH = path.join(repoRoot, "dev", "reports", "PR_10_26_REPO_DUPLICATE_FILE_CONTENT_AUDIT_report.md");
 
 function toPosixPath(value) {
   return value.split(path.sep).join("/");

@@ -1,0 +1,12 @@
+{
+  "group": "Game Hub",
+  "groupKey": "game-hub",
+  "owner": "dev/build/database/seed",
+  "serverSideSeedRequired": true,
+  "browserAuthoritativeKeyGenerationAllowed": false,
+  "tables": {
+    "game_workspace_games": [],
+    "game_workspace_progress": []
+  },
+  "note": "Seed records for this group are intentionally empty until an Admin-owned server API seeds them."
+}

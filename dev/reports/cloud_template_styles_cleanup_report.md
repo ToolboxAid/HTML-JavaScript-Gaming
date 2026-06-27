@@ -43,7 +43,7 @@ Actions:
 
 - Replaced remaining public/root `styles.css` links with `theme.css`.
 - Removed duplicate `styles.css` links from active toolbox pages that already had `theme.css`.
-- Removed the `styles.css` link from `toolbox/_tool_template-v2/index.html`.
+- Removed the `styles.css` link from `dev/templates/tool-template-v2.html`.
 - Removed the `styles.css` link from `toolbox/localization/index.html` as shared reference cleanup from the PR024 rebuilt template.
 - Confirmed zero active HTML references remain to `assets/theme/v2/css/styles.css`.
 

@@ -10,7 +10,7 @@
 
 - PASS - Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before implementation.
 - PASS - Created PR scope `PR_26163_056-account-aside-template-toggle-alignment`.
-- PASS - Inspected `toolbox/_tool_template-v2/index.html` and current Toolbox left column behavior.
+- PASS - Inspected `dev/templates/tool-template-v2.html` and current Toolbox left column behavior.
 - PASS - Mirrored the Toolbox left column collapse pattern for `account/user-controls.html` through the shared account side-nav partial wiring.
 - PASS - Added the missing right-side header toggle button beside the Account left-column heading.
 - PASS - Toggle collapses and expands the Account left column using the existing `horizontal-accordion-toggle`, `is-collapsed`, and `is-left-collapsed` class pattern.
@@ -32,7 +32,7 @@
 
 ## Implementation Notes
 
-- `toolbox/_tool_template-v2/index.html` uses `tool-workspace`, `tool-column`, `tool-column-header`, and `accordion-stack` for side columns.
+- `dev/templates/tool-template-v2.html` uses `tool-workspace`, `tool-column`, `tool-column-header`, and `accordion-stack` for side columns.
 - Toolbox collapse behavior is injected by `assets/theme-v2/js/tool-display-mode.js` with `horizontal-accordion-toggle`, `is-collapsed`, and workspace `is-left-collapsed` classes.
 - Account pages do not host ToolDisplayMode, so the account side-nav partial is wired by `assets/theme-v2/js/gamefoundry-partials.js` using the same toggle class names, aria states, text indicators, and collapse classes.
 - `assets/theme-v2/css/layout.css` now includes `.account-panel.is-left-collapsed` so the account center card expands into the available space when the Account side column collapses.
@@ -78,7 +78,7 @@
 
 ## Search Evidence
 
-- PASS - `rg -n "horizontal-accordion-toggle|is-left-collapsed|tool-column-header|tool-workspace" toolbox/_tool_template-v2/index.html assets/theme-v2/js/tool-display-mode.js assets/theme-v2/css/layout.css assets/theme-v2/css/accordion.css assets/theme-v2/css/panels.css` confirms the existing Toolbox/template collapse class pattern.
+- PASS - `rg -n "horizontal-accordion-toggle|is-left-collapsed|tool-column-header|tool-workspace" dev/templates/tool-template-v2.html assets/theme-v2/js/tool-display-mode.js assets/theme-v2/css/layout.css assets/theme-v2/css/accordion.css assets/theme-v2/css/panels.css` confirms the existing Toolbox/template collapse class pattern.
 - PASS - `rg -n "wireAccountSideNavigationCollapse|accountSideNavCollapse|is-left-collapsed|horizontal-accordion-toggle|tool-column-header|data-account-side-nav-accordion-layout|style=|<style|onclick=" assets/theme-v2/js/gamefoundry-partials.js assets/theme-v2/css/layout.css assets/theme-v2/partials/account-side-nav.html account/user-controls.html tests/playwright/tools/InputMappingV2Tool.spec.mjs` confirms the account wiring uses existing Theme V2 classes and no page-local style or inline handler additions.
 
 ## Manual Validation Steps

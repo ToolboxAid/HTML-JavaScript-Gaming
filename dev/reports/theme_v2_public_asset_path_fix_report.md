@@ -31,7 +31,7 @@ No exact `index.png` source existed under the old source tree. The required publ
 
 Opened:
 
-- `toolbox/_tool_template-v2/index.html`
+- `dev/templates/tool-template-v2.html`
 
 Observed image sources:
 
@@ -91,7 +91,7 @@ Passed:
 - Required public asset existence checks for `badges/index.png` and `characters/index.png`
 - Targeted reference checks for the public Theme V2 image root, `badges/index.png`, and `characters/index.png`
 - Static validation for the changed JS file
-- Local browser validation of `toolbox/_tool_template-v2/index.html` confirming both display-mode image requests returned `200`
+- Local browser validation of `dev/templates/tool-template-v2.html` confirming both display-mode image requests returned `200`
 
 Skipped:
 

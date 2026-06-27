@@ -33,7 +33,7 @@ Scanned active surfaces for:
 Included active roots:
 
 - `index.html`
-- `_page_template_v2.html`
+- `dev/templates/page-template-v2.html`
 - `account/`
 - `admin/`
 - `community/`

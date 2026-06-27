@@ -7,4 +7,4 @@ This folder contains user-facing documentation pages for the public site.
 - `docs/reference.html`
 - `docs/support.html`
 
-Development, build, workflow, PR, governance, audit, and report documentation lives under `dev/docs_build/`.
+Development, build, workflow, PR, governance, audit, and report documentation lives under `dev/build/`.

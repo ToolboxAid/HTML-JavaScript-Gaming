@@ -7,11 +7,11 @@ const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "../..");
 
 const STRATEGY_PATH_CANDIDATES = [
-  "dev/docs_build/reference/architecture-standards/specs/asset_ownership_strategy.md",
+  "dev/build/reference/architecture-standards/specs/asset_ownership_strategy.md",
   "docs/specs/asset_ownership_strategy.md"
 ];
 const REGISTRY_PATH_CANDIDATES = [
-  "dev/docs_build/reference/architecture-standards/specs/shared_asset_promotion_registry.json",
+  "dev/build/reference/architecture-standards/specs/shared_asset_promotion_registry.json",
   "docs/specs/shared_asset_promotion_registry.json"
 ];
 const ASTEROIDS_MANIFEST_PATH = "dev/archive/v1-v2/games/Asteroids/game.manifest.json";

@@ -415,7 +415,7 @@ const laneDefinitions = Object.freeze({
 const representativeRoutingCases = Object.freeze([
   {
     caseName: "docs-only change",
-    changedFiles: ["dev/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md"],
+    changedFiles: ["dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md"],
     expectedLanes: [],
     reason: "Docs/workflow-only changes use static review evidence; runtime lanes, Workspace V2, and samples stay explicit/on-request."
   },

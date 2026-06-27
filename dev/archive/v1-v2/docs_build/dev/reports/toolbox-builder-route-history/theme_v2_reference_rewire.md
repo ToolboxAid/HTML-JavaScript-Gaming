@@ -10,7 +10,7 @@ Task: PR_26152_280-theme-v2-reference-rewire
 
 ## Rewired Files
 
-- `toolbox/_tool_template-v2/index.html`
+- `dev/templates/tool-template-v2.html`
 - `toolbox/ai-assistant.html`
 - `toolbox/animation-studio.html`
 - `toolbox/asset-studio.html`
@@ -65,7 +65,7 @@ Task: PR_26152_280-theme-v2-reference-rewire
 - `GameFoundryStudio/tools/publisher.html`
 - `GameFoundryStudio/tools/world-vector-studio.html`
 - `GameFoundryStudio/tools.html`
-- `/_page_template_v2.html`
+- `/dev/templates/page-template-v2.html`
 - `retired Theme V2 tool template`
 - `toolbox/tools-page-accordions.js`
 

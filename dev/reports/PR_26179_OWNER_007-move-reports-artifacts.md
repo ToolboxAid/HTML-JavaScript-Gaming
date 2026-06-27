@@ -11,7 +11,7 @@ Move generated report and artifact ownership to the new dev workspace locations 
 
 ## Changes
 
-- Moved tracked generated reports from `dev/docs_build/dev/reports/` to flat `dev/reports/`.
+- Moved tracked generated reports from `dev/reports/` to flat `dev/reports/`.
 - Added `dev/workspace/artifacts/` ownership documentation for non-report generated artifacts.
 - Updated Codex/PR/reporting governance to require flat `dev/reports/` and ZIPs under `dev/workspace/artifacts/tmp/`.
 - Updated dev script defaults, Playwright output, report writers, and report-related tests to the new paths.
@@ -28,7 +28,7 @@ Move generated report and artifact ownership to the new dev workspace locations 
 | --- | --- | --- |
 | PASS | Current branch is PR_26179_OWNER_007-move-reports-artifacts | confirmed |
 | PASS | No product/runtime/API/database files changed | git diff against production/runtime scopes returned no files |
-| PASS | Tracked reports moved out of dev/docs_build/dev/reports | 0 tracked files remain in old report tree |
+| PASS | Tracked reports moved out of dev/reports | 0 tracked files remain in old report tree |
 | PASS | Tracked reports are flat under dev/reports | 3578 tracked report files, 0 nested report paths |
 | PASS | Generated ZIP/report/artifact expectations updated | active instructions and helper defaults use dev/reports and dev/workspace/artifacts |
 | PASS | git diff --check | passed |

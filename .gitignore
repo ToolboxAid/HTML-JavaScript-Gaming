@@ -21,6 +21,8 @@ dev/workspace/artifacts/tmp/
 dev/workspace/artifacts/tmp/**
 dev/workspace/artifacts/tmp/test-results/
 dev/workspace/artifacts/tmp/test-results/**
+dev/workspace/artifacts/zips/
+dev/workspace/artifacts/zips/**
 tmp/
 scripts/untracked/
 projects/
@@ -49,4 +51,4 @@ docs/dev/reports/playwright_v8_coverage_report.txt
 
 # Game Foundry Studio project files
 assets/*.gfsp
-dev/docs_build/dev/ProjectInstructions.zip
+dev/build/ProjectInstructions.zip

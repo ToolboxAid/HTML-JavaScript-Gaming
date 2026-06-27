@@ -206,7 +206,7 @@ Task: PR_26152_278-theme-v2-asset-ssot-inventory
 - `src` -> `../assets/js/gamefoundry-partials.js`
 - `src` -> `../assets/js/tool-display-mode.js`
 
-### `/_page_template_v2.html`
+### `/dev/templates/page-template-v2.html`
 - `href` -> `assets/images/favicon.svg`
 - `href` -> `assets/css/theme/v2/theme.css`
 - `src` -> `assets/js/gamefoundry-partials.js`
@@ -219,7 +219,7 @@ Task: PR_26152_278-theme-v2-asset-ssot-inventory
 - `src` -> `assets/js/tool-display-mode.js`
 - `base` -> `../../../../../GameFoundryStudio/`
 
-### `toolbox/_tool_template-v2/index.html`
+### `dev/templates/tool-template-v2.html`
 - `href` -> `assets/images/favicon.svg`
 - `href` -> `assets/css/styles.css`
 - `href` -> `assets/css/theme/v2/theme.css`

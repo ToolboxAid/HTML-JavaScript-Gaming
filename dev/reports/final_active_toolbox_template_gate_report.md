@@ -4,7 +4,7 @@ Task: `PR_26154_044-final-active-toolbox-template-gate`
 
 ## Summary
 
-The final active Toolbox inventory contains 18 active tool pages. Each page satisfies the template-critical markers from `toolbox/_tool_template-v2/index.html`, uses `assets/theme-v2`, has no local `css/` or `js/` folder, and appears in both the shared header navigation and Toolbox index grouping.
+The final active Toolbox inventory contains 18 active tool pages. Each page satisfies the template-critical markers from `dev/templates/tool-template-v2.html`, uses `assets/theme-v2`, has no local `css/` or `js/` folder, and appears in both the shared header navigation and Toolbox index grouping.
 
 ## Template Audit Counts
 

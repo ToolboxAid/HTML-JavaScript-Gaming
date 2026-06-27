@@ -31,7 +31,7 @@ Active Validation Changes
 - The previous WorkspaceManagerV2.spec.mjs route set is not scheduled by npm run test:workspace-v2 because it exercises deprecated current-folder paths that were renamed under toolbox/old_*.
 - toolbox/dev/checkStyleSystemGuard.mjs now checks current/future tool surfaces:
   toolbox/index.html
-  toolbox/_tool_template-v2/index.html
+  dev/templates/tool-template-v2.html
   toolbox/localization-studio/index.html
 - The guard no longer checks toolbox/old_State Inspector, toolbox/old_Performance Profiler, toolbox/old_Replay Visualizer, or toolbox/old_Physics Sandbox as active pages.
 

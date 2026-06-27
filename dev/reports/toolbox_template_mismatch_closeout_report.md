@@ -4,7 +4,7 @@ Baseline used: latest applied root/theme/toolbox migration state after `PR_26154
 
 ## Scope
 
-- Re-ran the public/root page template consistency audit against `_page_template_v2.html`.
+- Re-ran the public/root page template consistency audit against `dev/templates/page-template-v2.html`.
 - Re-ran the active toolbox page template consistency audit against `toolbox/_tool_template-v2`.
 - Checked active `styles.css` usage.
 - Fixed only clear template/path contract gaps.

@@ -3,7 +3,7 @@
 This folder is historical reference only.
 
 ```text
-dev/docs_build/dev/ProjectInstructions/
+dev/build/ProjectInstructions/
 ```
 
 Use the path above as the only active Project Instructions source.

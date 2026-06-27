@@ -4,7 +4,7 @@ Baseline used: `PR_26154_025-cloud-template-styles-cleanup`.
 
 ## Scope
 
-- Re-ran the public/root page audit against `_page_template_v2.html`.
+- Re-ran the public/root page audit against `dev/templates/page-template-v2.html`.
 - Re-ran the active toolbox page audit against `toolbox/_tool_template-v2`.
 - Fixed only clear template contract gaps.
 

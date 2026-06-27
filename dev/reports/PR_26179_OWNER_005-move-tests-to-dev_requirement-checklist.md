@@ -8,5 +8,5 @@
 | Update imports, paths, and test references | PASS | Scripts, ProjectInstructions, and moved test relative paths updated. |
 | Keep tests working from new path | PASS | Targeted node tests, service API script, and Playwright discovery passed. |
 | Keep product/runtime paths unchanged | PASS | No product runtime files moved by PR_005. |
-| Produce required reports | PASS | Report set, changed files, and review diff generated under `dev/docs_build/dev/reports/`. |
+| Produce required reports | PASS | Report set, changed files, and review diff generated under `dev/reports/`. |
 | Produce repo-structured ZIP | PASS | `tmp/PR_26179_OWNER_005-move-tests-to-dev_delta.zip` refreshed. |
