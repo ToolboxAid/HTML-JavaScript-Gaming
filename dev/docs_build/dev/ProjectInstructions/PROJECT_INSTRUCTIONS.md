@@ -66,7 +66,7 @@ When active guidance overlaps, use these canonical owner documents:
 
 - Workflow and Product Owner testable completion: `dev/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md`
 - START / WORK / END lifecycle, branch gates, mandatory hard stops, and EOD main lock: `dev/docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`
-- Repository directory ownership and restructure boundaries: `dev/docs_build/dev/ProjectInstructions/addendums/repository_directory_standard.md`
+- Repository directory ownership, final root standard, final `src/` layer standard, final `dev/` workspace standard, and restructure boundaries: `dev/docs_build/dev/ProjectInstructions/addendums/repository_directory_standard.md`
 - Page-level Playwright organization and completion coverage: `dev/docs_build/dev/ProjectInstructions/addendums/test_structure_standardization.md`
 - API/environment model and `Browser -> API -> Database` rule: `dev/docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md`
 - Environment variable, URL, R2 prefix, and feature flag configuration: `dev/docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md`

@@ -6,6 +6,29 @@ Establish the canonical repository structure for future development and reduce t
 
 ## Canonical Structure
 
+Root product sections:
+- docs/
+- games/
+- toolbox/
+- account/
+- admin/
+- legal/
+- assets/
+
+Deployable application source:
+- src/web/{feature-name}/
+- src/api-runtime/{feature-name}/
+- src/runtime/{feature-name}/
+
+Development workspace:
+- dev/docs_build/
+- dev/reports/
+- dev/tests/
+- dev/scripts/
+- dev/config/
+- dev/archive/
+- dev/workspace/artifacts/
+
 Tools:
 - toolbox/{tool-name}/index.html
 
@@ -20,14 +43,15 @@ Themes:
 Shared JavaScript:
 - assets/js/shared/
 
-Engine:
-- src/engine/{feature-name}/
+Legacy transition buckets:
+- src/advanced/
+- src/api/
+- src/dev-runtime/
+- src/engine/
+- src/shared/
+- src/tools/
 
-API:
-- api/{feature-name}/
-
-Serverside:
-- serverside/{feature-name}/
+These legacy transition buckets may remain until explicit migration PRs move them into `src/web/`, `src/api-runtime/`, or `src/runtime/`.
 
 ## Rules
 
@@ -37,3 +61,7 @@ Serverside:
 - No new scattered JS folders.
 - No new scattered CSS folders.
 - New development follows the canonical structure.
+- New deployable `src/` work follows `src/web/`, `src/api-runtime/`, or `src/runtime/`.
+- New non-deployable work belongs under `dev/`.
+- Required reports belong under flat `dev/reports/`.
+- Required ZIPs and generated temporary artifacts belong under `dev/workspace/artifacts/tmp/`.
