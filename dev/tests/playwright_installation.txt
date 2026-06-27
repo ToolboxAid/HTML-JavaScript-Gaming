@@ -65,7 +65,7 @@ npx playwright test --headed
 Create file at repo root:
 
 ```text
-playwright.config.cjs
+dev/config/playwright.config.cjs
 ```
 
 ```javascript
@@ -103,7 +103,7 @@ HTML-JavaScript-Gaming/
 ├── tests/
 │   └── ui/
 │       └── workspace-v2.asset-manager.spec.js <<<< test code goes here
-├── playwright.config.cjs
+├── dev/config/playwright.config.cjs
 ├── package.json
 ```
 

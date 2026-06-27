@@ -4,7 +4,7 @@ import test from "node:test";
 import {
   auditCanonicalRepositoryStructure,
   formatCanonicalStructureReport,
-} from "../../../scripts/validate-canonical-repository-structure.mjs";
+} from "../../scripts/validate-canonical-repository-structure.mjs";
 
 test("canonical repository structure guardrail accepts canonical paths and approved legacy exceptions", () => {
   const result = auditCanonicalRepositoryStructure([
@@ -16,8 +16,8 @@ test("canonical repository structure guardrail accepts canonical paths and appro
     "assets/toolbox/assets/js/assets-upload-worker.js",
     "src/engine/rendering/Renderer.js",
     "src/engine/ui/baseLayout.css",
-    "tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs",
-    "tests/runtime/V2SessionValidation.test.mjs",
+    "dev/tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs",
+    "dev/tests/runtime/V2SessionValidation.test.mjs",
   ]);
 
   assert.equal(result.status, "PASS");
@@ -32,8 +32,8 @@ test("canonical repository structure guardrail fails unapproved violation fixtur
     "assets/toolbox/new-tool/js/view.js",
     "src/engine/rootRuntime.js",
     "src/engine/ui/newPanel.css",
-    "tests/results/generated-result.json",
-    "tests/new-lane/NewLane.test.mjs",
+    "dev/tests/results/generated-result.json",
+    "dev/tests/new-lane/NewLane.test.mjs",
   ]);
 
   assert.equal(result.status, "FAIL");
