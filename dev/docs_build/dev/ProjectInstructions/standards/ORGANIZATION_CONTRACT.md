@@ -15,6 +15,6 @@ Organization records describe a user-owned group identity for collaboration and 
 ## Validation
 
 - Contract: `src/shared/contracts/organizationContract.js`
-- Test: `tests/shared/OrganizationContract.test.mjs`
-- Fixture: `tests/fixtures/organizations/organization-scenarios.json`
+- Test: `dev/tests/shared/OrganizationContract.test.mjs`
+- Fixture: `dev/tests/fixtures/organizations/organization-scenarios.json`
 

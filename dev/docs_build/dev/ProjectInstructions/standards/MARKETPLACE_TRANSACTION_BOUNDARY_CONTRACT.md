@@ -16,5 +16,5 @@ Marketplace Transaction Boundary records describe the platform linkage around ma
 ## Validation
 
 - Contract: `src/shared/contracts/marketplaceTransactionBoundaryContract.js`
-- Test: `tests/shared/MarketplaceTransactionBoundaryContract.test.mjs`
-- Fixture: `tests/fixtures/marketplace-transaction-boundaries/marketplace-transaction-boundary-scenarios.json`
+- Test: `dev/tests/shared/MarketplaceTransactionBoundaryContract.test.mjs`
+- Fixture: `dev/tests/fixtures/marketplace-transaction-boundaries/marketplace-transaction-boundary-scenarios.json`

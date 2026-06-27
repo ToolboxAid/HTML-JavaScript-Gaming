@@ -7,25 +7,25 @@ Standardize testing locations and ensure independent tool validation.
 ## Canonical Test Structure
 
 Page-level Playwright tests:
-- tests/playwright/{runtime-page-path}/index.spec.mjs
+- dev/tests/playwright/{runtime-page-path}/index.spec.mjs
 
 Tool tests:
-- tests/toolbox/{tool-name}/
+- dev/tests/toolbox/{tool-name}/
 
 Engine tests:
-- tests/engine/{feature-name}/
+- dev/tests/engine/{feature-name}/
 
 API tests:
-- tests/api/{feature-name}/
+- dev/tests/api/{feature-name}/
 
 Server tests:
-- tests/server/{feature-name}/
+- dev/tests/server/{feature-name}/
 
 Shared JavaScript tests:
-- tests/js/shared/
+- dev/tests/js/shared/
 
 Regression tests:
-- tests/regression/
+- dev/tests/regression/
 
 ## Rules
 
@@ -42,11 +42,11 @@ Regression tests:
 
 ## Page-Level Playwright Examples
 
-- `/admin/index.html` -> `tests/playwright/admin/index/index.spec.mjs`
-- `/toolbox/sprites/index.html` -> `tests/playwright/toolbox/sprites/index.spec.mjs`
-- `/toolbox/game-hub/index.html` -> `tests/playwright/toolbox/game-hub/index.spec.mjs`
-- `/toolbox/messages/index.html` -> `tests/playwright/toolbox/messages/index.spec.mjs`
-- `/toolbox/game-configuration/index.html` -> `tests/playwright/toolbox/game-configuration/index.spec.mjs`
+- `/admin/index.html` -> `dev/tests/playwright/admin/index/index.spec.mjs`
+- `/toolbox/sprites/index.html` -> `dev/tests/playwright/toolbox/sprites/index.spec.mjs`
+- `/toolbox/game-hub/index.html` -> `dev/tests/playwright/toolbox/game-hub/index.spec.mjs`
+- `/toolbox/messages/index.html` -> `dev/tests/playwright/toolbox/messages/index.spec.mjs`
+- `/toolbox/game-configuration/index.html` -> `dev/tests/playwright/toolbox/game-configuration/index.spec.mjs`
 
 ## Minimum Page-Level Playwright Coverage
 

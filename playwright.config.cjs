@@ -4,12 +4,12 @@ module.exports = {
   projects: [
     {
       name: "ui",
-      testDir: "tests/ui",
+      testDir: "dev/tests/ui",
       outputDir: "tmp/test-results/artifacts"
     },
     {
       name: "playwright",
-      testDir: "tests/playwright",
+      testDir: "dev/tests/playwright",
       outputDir: "tmp/test-results/artifacts"
     }
   ],

@@ -47,6 +47,6 @@ Backup Snapshot records must not contain:
 Targeted validation lives in:
 
 - `src/shared/contracts/backupSnapshotContract.js`
-- `tests/shared/BackupSnapshotContract.test.mjs`
-- `tests/fixtures/backup-snapshots/backup-snapshot-scenarios.json`
+- `dev/tests/shared/BackupSnapshotContract.test.mjs`
+- `dev/tests/fixtures/backup-snapshots/backup-snapshot-scenarios.json`
 

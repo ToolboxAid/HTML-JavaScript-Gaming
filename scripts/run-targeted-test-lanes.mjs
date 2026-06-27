@@ -106,11 +106,11 @@ const laneDefinitions = Object.freeze({
   "workspace-contract": {
     affectedSurface: "Root tools future-state navigation and Tool Template V2 contract",
     commands: [
-      playwrightCommand("tests/playwright/tools/RootToolsFutureState.spec.mjs")
+      playwrightCommand("dev/tests/playwright/tools/RootToolsFutureState.spec.mjs")
     ],
     dependencies: [],
     discoveryTargets: [
-      "tests/playwright/tools/RootToolsFutureState.spec.mjs"
+      "dev/tests/playwright/tools/RootToolsFutureState.spec.mjs"
     ],
     fixtures: [
       "repo-served root tools page",
@@ -125,11 +125,11 @@ const laneDefinitions = Object.freeze({
   "game-hub": {
     affectedSurface: "Game Hub mock repository, Game Hub UI, and Toolbox Progress/Build Path game-state bridge",
     commands: [
-      playwrightCommand("tests/playwright/tools/GameHubMockRepository.spec.mjs")
+      playwrightCommand("dev/tests/playwright/tools/GameHubMockRepository.spec.mjs")
     ],
     dependencies: [],
     discoveryTargets: [
-      "tests/playwright/tools/GameHubMockRepository.spec.mjs"
+      "dev/tests/playwright/tools/GameHubMockRepository.spec.mjs"
     ],
     fixtures: [
       "repo-served Game Hub page",
@@ -138,18 +138,18 @@ const laneDefinitions = Object.freeze({
     ],
     fixturePaths: [],
     ownership: "tools",
-    playwrightDir: "tests/playwright/tools",
+    playwrightDir: "dev/tests/playwright/tools",
     requiresPreflight: true,
     reason: "Game Hub rebuild slice validates mock users/games/game_members data actions, game lifecycle controls, and game-driven Progress/Build Path copy without exercising unrelated toolbox routes."
   },
   "game-design": {
     affectedSurface: "Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff",
     commands: [
-      playwrightCommand("tests/playwright/tools/GameDesignMockRepository.spec.mjs")
+      playwrightCommand("dev/tests/playwright/tools/GameDesignMockRepository.spec.mjs")
     ],
     dependencies: [],
     discoveryTargets: [
-      "tests/playwright/tools/GameDesignMockRepository.spec.mjs"
+      "dev/tests/playwright/tools/GameDesignMockRepository.spec.mjs"
     ],
     fixtures: [
       "repo-served Game Design page",
@@ -159,18 +159,18 @@ const laneDefinitions = Object.freeze({
     ],
     fixturePaths: [],
     ownership: "tools",
-    playwrightDir: "tests/playwright/tools",
+    playwrightDir: "dev/tests/playwright/tools",
     requiresPreflight: true,
     reason: "Game Design rebuild slice validates the active game context, design save/update, actionable validation, capability demo authoring, and Toolbox progress handoff without exercising unrelated toolbox routes."
   },
   "game-configuration": {
     affectedSurface: "Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff",
     commands: [
-      playwrightCommand("tests/playwright/tools/GameConfigurationMockRepository.spec.mjs")
+      playwrightCommand("dev/tests/playwright/tools/GameConfigurationMockRepository.spec.mjs")
     ],
     dependencies: [],
     discoveryTargets: [
-      "tests/playwright/tools/GameConfigurationMockRepository.spec.mjs"
+      "dev/tests/playwright/tools/GameConfigurationMockRepository.spec.mjs"
     ],
     fixtures: [
       "repo-served Game Configuration page",
@@ -181,18 +181,18 @@ const laneDefinitions = Object.freeze({
     ],
     fixturePaths: [],
     ownership: "tools",
-    playwrightDir: "tests/playwright/tools",
+    playwrightDir: "dev/tests/playwright/tools",
     requiresPreflight: true,
     reason: "Game Configuration rebuild slice validates the valid Game Design handoff, blocked invalid handoffs, configuration save/update, actionable validation, user-facing output, and Toolbox progress handoff without exercising unrelated toolbox routes."
   },
   "asset-tool": {
     affectedSurface: "Asset Tool mock repository, Game Configuration readiness handoff, library records, import preview, and visible failure handling",
     commands: [
-      playwrightCommand("tests/playwright/tools/AssetToolMockRepository.spec.mjs")
+      playwrightCommand("dev/tests/playwright/tools/AssetToolMockRepository.spec.mjs")
     ],
     dependencies: [],
     discoveryTargets: [
-      "tests/playwright/tools/AssetToolMockRepository.spec.mjs"
+      "dev/tests/playwright/tools/AssetToolMockRepository.spec.mjs"
     ],
     fixtures: [
       "repo-served Assets page",
@@ -202,18 +202,18 @@ const laneDefinitions = Object.freeze({
     ],
     fixturePaths: [],
     ownership: "tools",
-    playwrightDir: "tests/playwright/tools",
+    playwrightDir: "dev/tests/playwright/tools",
     requiresPreflight: true,
     reason: "Asset Tool rebuild slice validates SQL-shaped asset tables, ready Game Configuration handoff, import/preview workflow, and visible validation errors without exercising unrelated toolbox routes."
   },
   "build-path": {
     affectedSurface: "Toolbox Build Path simplification, workflow status table, and Admin Tools Progress navigation",
     commands: [
-      playwrightCommand("tests/playwright/tools/BuildPathProgressSimplification.spec.mjs")
+      playwrightCommand("dev/tests/playwright/tools/BuildPathProgressSimplification.spec.mjs")
     ],
     dependencies: [],
     discoveryTargets: [
-      "tests/playwright/tools/BuildPathProgressSimplification.spec.mjs"
+      "dev/tests/playwright/tools/BuildPathProgressSimplification.spec.mjs"
     ],
     fixtures: [
       "repo-served Toolbox page",
@@ -223,18 +223,18 @@ const laneDefinitions = Object.freeze({
     ],
     fixturePaths: [],
     ownership: "tools",
-    playwrightDir: "tests/playwright/tools",
+    playwrightDir: "dev/tests/playwright/tools",
     requiresPreflight: true,
     reason: "Build Path simplification validates removal of the separate Progress view, workflow-order status/completion table behavior, contributor N/A rows, and Admin Tools Progress navigation without exercising unrelated toolbox routes."
   },
   "tools-progress": {
     affectedSurface: "Admin Tools Progress hydration, Toolbox Group view color model, and Game Build Path separation",
     commands: [
-      playwrightCommand("tests/playwright/tools/ToolsProgressHydration.spec.mjs")
+      playwrightCommand("dev/tests/playwright/tools/ToolsProgressHydration.spec.mjs")
     ],
     dependencies: [],
     discoveryTargets: [
-      "tests/playwright/tools/ToolsProgressHydration.spec.mjs"
+      "dev/tests/playwright/tools/ToolsProgressHydration.spec.mjs"
     ],
     fixtures: [
       "repo-served Admin Tools Progress page",
@@ -244,18 +244,18 @@ const laneDefinitions = Object.freeze({
     ],
     fixturePaths: [],
     ownership: "tools",
-    playwrightDir: "tests/playwright/tools",
+    playwrightDir: "dev/tests/playwright/tools",
     requiresPreflight: true,
     reason: "Tools Progress validates that Admin platform progress hydrates every planned/active Toolbox registry entry in build order, the restored semantic group colors render in Toolbox Group view, and Game Build Path stays workflow-order and project-specific."
   },
   "tool-navigation": {
     affectedSurface: "Admin Tools Progress tool route links, Tool Display Mode build-order previous/next controls, and Toolbox group fallback routing",
     commands: [
-      playwrightCommand("tests/playwright/tools/ToolNavigationPrevNext.spec.mjs")
+      playwrightCommand("dev/tests/playwright/tools/ToolNavigationPrevNext.spec.mjs")
     ],
     dependencies: [],
     discoveryTargets: [
-      "tests/playwright/tools/ToolNavigationPrevNext.spec.mjs"
+      "dev/tests/playwright/tools/ToolNavigationPrevNext.spec.mjs"
     ],
     fixtures: [
       "repo-served Admin Tools Progress page",
@@ -265,18 +265,18 @@ const laneDefinitions = Object.freeze({
     ],
     fixturePaths: [],
     ownership: "tools",
-    playwrightDir: "tests/playwright/tools",
+    playwrightDir: "dev/tests/playwright/tools",
     requiresPreflight: true,
     reason: "Tool navigation validates registry-owned tool routes, disabled rendering for route-less tools, build-order previous/next controls, multi-path fallback to Toolbox Group view, and role query preservation without exercising unrelated toolbox routes."
   },
   "tool-display-mode": {
     affectedSurface: "Tool Display Mode identity row, registry-owned previous/next links, disabled text fallback, and multi-path group routing",
     commands: [
-      playwrightCommand("tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs")
+      playwrightCommand("dev/tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs")
     ],
     dependencies: [],
     discoveryTargets: [
-      "tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs"
+      "dev/tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs"
     ],
     fixtures: [
       "repo-served Game Hub, Game Design, Game Configuration, and AI Assistant tool pages",
@@ -286,18 +286,18 @@ const laneDefinitions = Object.freeze({
     ],
     fixturePaths: [],
     ownership: "tools",
-    playwrightDir: "tests/playwright/tools",
+    playwrightDir: "dev/tests/playwright/tools",
     requiresPreflight: true,
     reason: "Tool Display Mode validates the two-row identity/navigation layout, anchors for previous/next targets, disabled text for missing targets, registry build-order labels, role preservation, and multi-path fallback without exercising unrelated toolbox routes."
   },
   "tool-images": {
     affectedSurface: "Toolbox registry image contract, Toolbox card image rendering, and Tool Display Mode image fallback",
     commands: [
-      playwrightCommand("tests/playwright/tools/ToolImageRegistry.spec.mjs")
+      playwrightCommand("dev/tests/playwright/tools/ToolImageRegistry.spec.mjs")
     ],
     dependencies: [],
     discoveryTargets: [
-      "tests/playwright/tools/ToolImageRegistry.spec.mjs"
+      "dev/tests/playwright/tools/ToolImageRegistry.spec.mjs"
     ],
     fixtures: [
       "Toolbox registry badge/tool image contract",
@@ -307,18 +307,18 @@ const laneDefinitions = Object.freeze({
     ],
     fixturePaths: [],
     ownership: "tools",
-    playwrightDir: "tests/playwright/tools",
+    playwrightDir: "dev/tests/playwright/tools",
     requiresPreflight: true,
     reason: "Tool image registry validates every active/planned tool image contract, approved Theme V2 image paths, no size-suffix registry references, registry-owned fallback for missing art, and representative Toolbox image consumption without exercising unrelated toolbox routes."
   },
   "tool-runtime": {
     affectedSurface: "Active public toolbox and Tool Template V2 contract",
     commands: [
-      playwrightCommand("tests/playwright/tools/RootToolsFutureState.spec.mjs")
+      playwrightCommand("dev/tests/playwright/tools/RootToolsFutureState.spec.mjs")
     ],
     dependencies: [],
     discoveryTargets: [
-      "tests/playwright/tools/RootToolsFutureState.spec.mjs"
+      "dev/tests/playwright/tools/RootToolsFutureState.spec.mjs"
     ],
     fixtures: [
       "repo-served root toolbox page",
@@ -327,7 +327,7 @@ const laneDefinitions = Object.freeze({
     ],
     fixturePaths: [],
     ownership: "tools",
-    playwrightDir: "tests/playwright/tools",
+    playwrightDir: "dev/tests/playwright/tools",
     requiresPreflight: true,
     reason: "Tool runtime lane now validates the active public toolbox/template surface and excludes removed V2 tool routes."
   },
@@ -353,7 +353,7 @@ const laneDefinitions = Object.freeze({
     ],
     fixturePaths: [],
     ownership: "integration",
-    playwrightDir: "tests/playwright/integration",
+    playwrightDir: "dev/tests/playwright/integration",
     requiresPreflight: false,
     reason: "Removed integration specs targeted deleted V2 tool routes or removed game manifest pages; future active integration specs should be added when a current handoff contract exists."
   },
@@ -362,32 +362,32 @@ const laneDefinitions = Object.freeze({
     commands: [
       nodeCommand(
         "scripts/run-node-test-files.mjs",
-        "tests/core/EngineCoreBoundaryBaseline.test.mjs",
-        "tests/engine/core/FrameClock.test.mjs",
-        "tests/engine/core/FixedTicker.test.mjs",
-        "tests/assets/AssetLoaderSystem.test.mjs",
-        "tests/audio/AudioService.test.mjs",
-        "tests/input/InputMap.test.mjs",
-        "tests/input/KeyboardState.test.mjs",
-        "tests/input/MouseState.test.mjs",
-        "tests/input/GamepadInputAdapter.test.mjs",
-        "tests/input/GamepadHapticsService.test.mjs",
-        "tests/render/Renderer.test.mjs"
+        "dev/tests/core/EngineCoreBoundaryBaseline.test.mjs",
+        "dev/tests/engine/core/FrameClock.test.mjs",
+        "dev/tests/engine/core/FixedTicker.test.mjs",
+        "dev/tests/assets/AssetLoaderSystem.test.mjs",
+        "dev/tests/audio/AudioService.test.mjs",
+        "dev/tests/input/InputMap.test.mjs",
+        "dev/tests/input/KeyboardState.test.mjs",
+        "dev/tests/input/MouseState.test.mjs",
+        "dev/tests/input/GamepadInputAdapter.test.mjs",
+        "dev/tests/input/GamepadHapticsService.test.mjs",
+        "dev/tests/render/Renderer.test.mjs"
       )
     ],
     dependencies: [],
     discoveryTargets: [
-      "tests/assets/AssetLoaderSystem.test.mjs",
-      "tests/audio/AudioService.test.mjs",
-      "tests/core/EngineCoreBoundaryBaseline.test.mjs",
-      "tests/engine/core/FixedTicker.test.mjs",
-      "tests/engine/core/FrameClock.test.mjs",
-      "tests/input/GamepadHapticsService.test.mjs",
-      "tests/input/GamepadInputAdapter.test.mjs",
-      "tests/input/InputMap.test.mjs",
-      "tests/input/KeyboardState.test.mjs",
-      "tests/input/MouseState.test.mjs",
-      "tests/render/Renderer.test.mjs"
+      "dev/tests/assets/AssetLoaderSystem.test.mjs",
+      "dev/tests/audio/AudioService.test.mjs",
+      "dev/tests/core/EngineCoreBoundaryBaseline.test.mjs",
+      "dev/tests/engine/core/FixedTicker.test.mjs",
+      "dev/tests/engine/core/FrameClock.test.mjs",
+      "dev/tests/input/GamepadHapticsService.test.mjs",
+      "dev/tests/input/GamepadInputAdapter.test.mjs",
+      "dev/tests/input/InputMap.test.mjs",
+      "dev/tests/input/KeyboardState.test.mjs",
+      "dev/tests/input/MouseState.test.mjs",
+      "dev/tests/render/Renderer.test.mjs"
     ],
     fixtures: [
       "explicit node unit fixtures",
@@ -413,7 +413,7 @@ const laneDefinitions = Object.freeze({
 const representativeRoutingCases = Object.freeze([
   {
     caseName: "docs-only change",
-    changedFiles: ["dev/docs_build/dev/PROJECT_INSTRUCTIONS.md"],
+    changedFiles: ["dev/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md"],
     expectedLanes: [],
     reason: "Docs/workflow-only changes use static review evidence; runtime lanes, Workspace V2, and samples stay explicit/on-request."
   },
@@ -437,7 +437,7 @@ const representativeRoutingCases = Object.freeze([
   },
   {
     caseName: "active toolbox Playwright change",
-    changedFiles: ["tests/playwright/tools/RootToolsFutureState.spec.mjs"],
+    changedFiles: ["dev/tests/playwright/tools/RootToolsFutureState.spec.mjs"],
     expectedLanes: ["tool-runtime"],
     reason: "Active toolbox Playwright coverage routes to the tool-runtime lane only."
   }
@@ -809,23 +809,23 @@ function routeLanesForChangedFiles(changedFiles) {
     if (!normalized || normalized.startsWith("docs/")) {
       continue;
     }
-    if (normalized.startsWith("tests/playwright/integration/")) {
+    if (normalized.startsWith("dev/tests/playwright/integration/")) {
       routed.add("integration");
-    } else if (normalized.startsWith("tests/playwright/games/")
+    } else if (normalized.startsWith("dev/tests/playwright/games/")
       || normalized.startsWith("games/")
       || normalized.startsWith("dev/archive/v1-v2/games/")) {
       continue;
-    } else if (normalized.startsWith("tests/playwright/tools/") || normalized.startsWith("toolbox/")) {
+    } else if (normalized.startsWith("dev/tests/playwright/tools/") || normalized.startsWith("toolbox/")) {
       routed.add("tool-runtime");
     } else if (normalized.startsWith("src/")
-      || normalized.startsWith("tests/core/")
-      || normalized.startsWith("tests/assets/")
-      || normalized.startsWith("tests/audio/")
-      || normalized.startsWith("tests/input/")
-      || normalized.startsWith("tests/render/")) {
+      || normalized.startsWith("dev/tests/core/")
+      || normalized.startsWith("dev/tests/assets/")
+      || normalized.startsWith("dev/tests/audio/")
+      || normalized.startsWith("dev/tests/input/")
+      || normalized.startsWith("dev/tests/render/")) {
       routed.add("engine-src");
     } else if (normalized.startsWith("dev/archive/v1-v2/samples/")
-      || normalized.startsWith("tests/samples/")) {
+      || normalized.startsWith("dev/tests/samples/")) {
       continue;
     }
   }
@@ -860,7 +860,7 @@ function buildRoutingValidation({ includeSamples, runtimeSchedule, scripts }) {
     scopedDiscovery: {
       fixtureFiles: [],
       helperFiles: [],
-      targetFiles: ["tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs"]
+      targetFiles: ["dev/tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs"]
     }
   });
   const laneScriptRows = Object.entries(scripts)
@@ -917,7 +917,7 @@ function directPlaywrightScriptRows(scripts) {
     .map(([scriptName, scriptCommand]) => {
       const commandText = String(scriptCommand);
       const isWide = /\bplaywright\s+test\s*(?:--|$)/.test(commandText)
-        || /\bplaywright\s+test\s+tests\/playwright(?:\s|$)/.test(commandText)
+        || /\bplaywright\s+test\s+dev\/tests\/playwright(?:\s|$)/.test(commandText)
         || /\bplaywright\s+test\s+tests(?:\s|$)/.test(commandText);
       return {
         command: commandText,
@@ -1075,7 +1075,7 @@ const deterministicFailureRules = Object.freeze([
   },
   {
     key: "lane-compilation-failures",
-    pattern: /compilation|unknown lane|invalid lane|targets a missing file|outside tests\/playwright/i,
+    pattern: /compilation|unknown lane|invalid lane|targets a missing file|outside dev\/tests\/playwright/i,
     source: "lane compilation",
     summary: "Lane compilation failures"
   },
@@ -1498,7 +1498,7 @@ async function resolveRelativeImportPath(importerPath, specifier) {
 function referencedFixturePaths(content) {
   const fixtures = new Set();
   const patterns = [
-    /\btests\/fixtures\/[A-Za-z0-9_./-]+/g,
+    /\bdev\/tests\/fixtures\/[A-Za-z0-9_./-]+/g,
     /\barchive\/v1-v2\/games\/[A-Za-z0-9_-]+\/game\.manifest\.json\b/g,
     /\/archive\/v1-v2\/games\/([A-Za-z0-9_-]+)\/game\.manifest\.json\b/g
   ];
@@ -1527,24 +1527,24 @@ function laneManifestTests(lane, definition) {
 function expectedPrefixesForOwnership(ownership) {
   const prefixes = {
     engine: [
-      "tests/assets/",
-      "tests/audio/",
-      "tests/core/",
-      "tests/input/",
-      "tests/render/",
-      "tests/playwright/engine/"
+      "dev/tests/assets/",
+      "dev/tests/audio/",
+      "dev/tests/core/",
+      "dev/tests/input/",
+      "dev/tests/render/",
+      "dev/tests/playwright/engine/"
     ],
     games: [
-      "tests/playwright/games/"
+      "dev/tests/playwright/games/"
     ],
     integration: [
-      "tests/playwright/integration/"
+      "dev/tests/playwright/integration/"
     ],
     samples: [
-      "tests/samples/"
+      "dev/tests/samples/"
     ],
     tools: [
-      "tests/playwright/tools/"
+      "dev/tests/playwright/tools/"
     ]
   };
   return prefixes[ownership] || [];
@@ -1552,7 +1552,7 @@ function expectedPrefixesForOwnership(ownership) {
 
 function fixtureAllowedForOwnership(fixturePath, ownership) {
   const normalizedPath = normalizeRelativePath(fixturePath);
-  if (normalizedPath.startsWith("tests/fixtures/")) {
+  if (normalizedPath.startsWith("dev/tests/fixtures/")) {
     return true;
   }
   if (/^games\/[^/]+\/game\.manifest\.json$/.test(normalizedPath)) {
@@ -1567,7 +1567,7 @@ function fixtureIsVirtualForDefinition(fixturePath, definition) {
 }
 
 function helperAllowedForManifest(helperPath) {
-  return normalizeRelativePath(helperPath).startsWith("tests/helpers/");
+  return normalizeRelativePath(helperPath).startsWith("dev/tests/helpers/");
 }
 
 function manifestCore({ definition, fileHashes, fixtures, helpers, imports, lane, laneDefinitionHash, tests }) {
@@ -2046,10 +2046,10 @@ async function buildScopedDiscoveryPlan({ includeSamples, laneDefinitionHash, la
           continue;
         }
         laneImportFiles.add(resolvedPath);
-        if (isUnderPath(resolvedPath, "tests/helpers") && !laneHelperFiles.has(resolvedPath)) {
+        if (isUnderPath(resolvedPath, "dev/tests/helpers") && !laneHelperFiles.has(resolvedPath)) {
           laneHelperFiles.add(resolvedPath);
           helperQueue.push(resolvedPath);
-        } else if (isUnderPath(resolvedPath, "tests/fixtures")) {
+        } else if (isUnderPath(resolvedPath, "dev/tests/fixtures")) {
           laneFixtureFiles.add(resolvedPath);
         }
       }
@@ -2263,19 +2263,19 @@ function validateScopedDiscoveryPlan({ includeSamples, lanes, scopedDiscovery })
   for (const targetFile of scopedDiscovery.targetFiles) {
     const matchingLane = [...laneOwnership.entries()]
       .find(([lane, prefixes]) => selectedLaneSet.has(lane) && prefixes.some((prefix) => targetFile.startsWith(prefix)));
-    const isDirectoryTarget = targetFile === "tests/playwright"
+    const isDirectoryTarget = targetFile === "dev/tests/playwright"
       || targetFile.endsWith("/")
       || [
-        "tests/playwright/tools",
-        "tests/playwright/games",
-        "tests/playwright/integration",
-        "tests/playwright/engine",
-        "tests/core",
-        "tests/assets",
-        "tests/audio",
-        "tests/input",
-        "tests/render",
-        "tests/samples"
+        "dev/tests/playwright/tools",
+        "dev/tests/playwright/games",
+        "dev/tests/playwright/integration",
+        "dev/tests/playwright/engine",
+        "dev/tests/core",
+        "dev/tests/assets",
+        "dev/tests/audio",
+        "dev/tests/input",
+        "dev/tests/render",
+        "dev/tests/samples"
       ].includes(targetFile);
     const status = matchingLane && !isDirectoryTarget ? "PASS" : "FAIL";
     targetRows.push({
@@ -2292,8 +2292,8 @@ function validateScopedDiscoveryPlan({ includeSamples, lanes, scopedDiscovery })
   }
 
   for (const helperFile of scopedDiscovery.helperFiles) {
-    if (!helperFile.startsWith("tests/helpers/")) {
-      findings.push(`Scoped helper is outside tests/helpers: ${helperFile}.`);
+    if (!helperFile.startsWith("dev/tests/helpers/")) {
+      findings.push(`Scoped helper is outside dev/tests/helpers: ${helperFile}.`);
     }
   }
 
@@ -2384,7 +2384,7 @@ async function validateTargetedFileManifests({ includeSamples, lanes, scopedDisc
         lane,
         reason: helperStatus === "PASS"
           ? "Reusable helper is explicit, present, and shared-helper owned."
-          : "Helper is missing or outside tests/helpers.",
+          : "Helper is missing or outside dev/tests/helpers.",
         role: "helper",
         status: helperStatus
       });
@@ -4554,8 +4554,8 @@ function makeZeroBrowserPreflightReport({
     "",
     "## Corrected Ownership Drift",
     "",
-    "- Asteroids Playwright runtime specs are enforced under `tests/playwright/games`.",
-    "- Game index preview manifest handoff is enforced under `tests/playwright/integration`.",
+    "- Asteroids Playwright runtime specs are enforced under `dev/tests/playwright/games`.",
+    "- Game index preview manifest handoff is enforced under `dev/tests/playwright/integration`.",
     "- Tool-owned specs may reference games only as documented explicit fixtures.",
     "",
     "## Runtime Savings Observations",
@@ -5248,12 +5248,12 @@ const structureAuditInput = {
   discoveryOwnershipReportPath: options.discoveryOwnershipReportPath,
   discoveryScopeReportPath: options.discoveryScopeReportPath,
   filesystemScanReportPath: options.filesystemScanReportPath,
-  helperGraph: "tests/helpers",
+  helperGraph: "dev/tests/helpers",
   laneDefinitionHash,
   lanes: options.lanes,
   locationAuditScript,
   persistentManifestEvents: scopedDiscovery.persistentManifestEvents,
-  playwrightRoot: "tests/playwright",
+  playwrightRoot: "dev/tests/playwright",
   scopedDiscovery
 };
 if (unknownLanes.length === 0 && needsPreflight && !options.dryRun && !options.skipPreflight) {
@@ -5272,7 +5272,7 @@ if (unknownLanes.length === 0 && needsPreflight && !options.dryRun && !options.s
         "--lanes",
         options.lanes.join(",")
       ];
-      const playwrightAuditTargets = scopedDiscovery.targetFiles.filter((targetFile) => isUnderPath(targetFile, "tests/playwright"));
+      const playwrightAuditTargets = scopedDiscovery.targetFiles.filter((targetFile) => isUnderPath(targetFile, "dev/tests/playwright"));
       if (playwrightAuditTargets.length > 0) {
         auditArgs.push("--targets", playwrightAuditTargets.join(","));
       }

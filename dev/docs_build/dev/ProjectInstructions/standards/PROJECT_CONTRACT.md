@@ -24,6 +24,6 @@ Project may contain Tool States, Assets, Palettes, Game Manifest, Releases, and 
 
 ## Validation
 
-- Contract test: `tests/shared/ProjectContract.test.mjs`
-- Fixture file: `tests/fixtures/projects/project-scenarios.json`
+- Contract test: `dev/tests/shared/ProjectContract.test.mjs`
+- Fixture file: `dev/tests/fixtures/projects/project-scenarios.json`
 - Validation report: `dev/docs_build/dev/reports/project_contract_tests_validation.md`

@@ -63,12 +63,12 @@ export const APPROVED_LEGACY_TEST_SEGMENTS = Object.freeze(new Set([
 ]));
 
 const canonicalTestPrefixes = Object.freeze([
-  "tests/toolbox/",
-  "tests/engine/",
-  "tests/api/",
-  "tests/server/",
-  "tests/js/shared/",
-  "tests/regression/",
+  "dev/tests/toolbox/",
+  "dev/tests/engine/",
+  "dev/tests/api/",
+  "dev/tests/server/",
+  "dev/tests/js/shared/",
+  "dev/tests/regression/",
 ]);
 
 function normalizeRepoPath(filePath) {
@@ -94,7 +94,7 @@ function relevantPath(filePath) {
   return filePath.startsWith("assets/") ||
     filePath.startsWith("toolbox/") ||
     filePath.startsWith("src/engine/") ||
-    filePath.startsWith("tests/");
+    filePath.startsWith("dev/tests/");
 }
 
 function record(severity, area, file, message, expected) {
@@ -210,19 +210,19 @@ function auditCss(filePath) {
 }
 
 function auditTestPath(filePath) {
-  if (!filePath.startsWith("tests/")) {
+  if (!filePath.startsWith("dev/tests/")) {
     return null;
   }
   if (canonicalTestPrefixes.some((prefix) => filePath.startsWith(prefix))) {
     return null;
   }
-  const segment = filePath.slice("tests/".length).split("/")[0] || "";
+  const segment = filePath.slice("dev/tests/".length).split("/")[0] || "";
   if (segment === "results") {
     return record(
       "FAIL",
       "Tests",
       filePath,
-      "Generated test result artifacts must not be tracked under active tests/results/.",
+      "Generated test result artifacts must not be tracked under active dev/tests/results/.",
       "ignored tmp/test-results/ or dev/docs_build/dev/reports/",
     );
   }
@@ -232,7 +232,7 @@ function auditTestPath(filePath) {
       "Tests",
       filePath,
       "Approved legacy test location awaiting canonical test structure migration.",
-      "tests/toolbox/, tests/engine/, tests/api/, tests/server/, tests/js/shared/, or tests/regression/",
+      "dev/tests/toolbox/, dev/tests/engine/, dev/tests/api/, dev/tests/server/, dev/tests/js/shared/, or dev/tests/regression/",
     );
   }
   return record(
@@ -240,7 +240,7 @@ function auditTestPath(filePath) {
     "Tests",
     filePath,
     "New or unapproved test location is outside canonical test roots.",
-    "tests/toolbox/, tests/engine/, tests/api/, tests/server/, tests/js/shared/, or tests/regression/",
+    "dev/tests/toolbox/, dev/tests/engine/, dev/tests/api/, dev/tests/server/, dev/tests/js/shared/, or dev/tests/regression/",
   );
 }
 

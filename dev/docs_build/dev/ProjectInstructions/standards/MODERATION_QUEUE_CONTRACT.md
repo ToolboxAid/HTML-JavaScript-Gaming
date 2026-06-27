@@ -15,5 +15,5 @@ Moderation Queue records describe admin-only moderation intake metadata for mark
 ## Validation
 
 - Contract: `src/shared/contracts/moderationQueueContract.js`
-- Test: `tests/shared/ModerationQueueContract.test.mjs`
-- Fixture: `tests/fixtures/moderation-queues/moderation-queue-scenarios.json`
+- Test: `dev/tests/shared/ModerationQueueContract.test.mjs`
+- Fixture: `dev/tests/fixtures/moderation-queues/moderation-queue-scenarios.json`

@@ -23,6 +23,6 @@ Identity and permission rules validate database object ownership and access deci
 
 ## Validation
 
-- Contract test: `tests/shared/IdentityPermissionsContract.test.mjs`
-- Fixture file: `tests/fixtures/identity-permissions/permission-scenarios.json`
+- Contract test: `dev/tests/shared/IdentityPermissionsContract.test.mjs`
+- Fixture file: `dev/tests/fixtures/identity-permissions/permission-scenarios.json`
 - Validation report: `dev/docs_build/dev/reports/identity_permissions_contract_tests_validation.md`
