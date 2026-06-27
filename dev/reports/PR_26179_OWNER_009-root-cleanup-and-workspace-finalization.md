@@ -12,6 +12,7 @@ Scope: root cleanup/workspace finalization; dev taxonomy cleanup only.
 - Corrected GDD typo folders/files: Konani -> Konami, Nameco -> Namco, gdd.tt -> gdd.txt, and gdg.txt -> gdd.txt.
 - Updated references in dev build reports and PR reports for the corrected generated/reference paths.
 - Removed empty directories under dev/, including the stale schema wrappers and one empty GDD sprite leaf path.
+- Pre-EOD review confirmed admin/site-setup.html only updates visible DDL/DML path references from dev/docs_build/database/... to dev/build/database/...; no production UI structure or runtime behavior changed.
 
 ## Moved Folders
 - dev/build/tools-images-generated/ -> dev/workspace/generated/tool-images/
