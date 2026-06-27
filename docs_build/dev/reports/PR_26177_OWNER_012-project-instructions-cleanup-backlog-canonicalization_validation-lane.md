@@ -43,7 +43,7 @@ Result: PASS
 - PASS: API/environment owner is canonicalized.
 - PASS: branch lifecycle owner is canonicalized.
 - PASS: backlog includes owning team and next logical PR wording.
-- PASS: Team Charlie owns Sprites and Objects.
+- PASS: Team Charlie owns Palette / Colors, Sprites, and Objects.
 - PASS: no runtime files changed.
 
 ## Playwright

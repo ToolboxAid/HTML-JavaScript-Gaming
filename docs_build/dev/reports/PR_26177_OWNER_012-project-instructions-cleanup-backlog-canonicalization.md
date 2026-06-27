@@ -29,9 +29,11 @@ No runtime code, UI code, API code, database code, `start_of_day` files, history
 - Expanded backlog item requirements with owning team.
 - Updated backlog percentage cadence to SOD, after every accepted PR, and EOD.
 - Confirmed the backlog drives the next logical PRs.
-- Updated active Team Charlie ownership for Runtime, System Health, Environment Management, Sprites, and Objects.
-- Updated Sprites MVP scope to include canvas/grid editor, width/height controls, Palette/Colors references only, pixel painting, save/load sprite grid data, and Product Owner testable workflow.
-- Added Objects scope for object library, object editor, Sprite assignment, object properties, collision configuration, runtime object metadata, and Object API/database contracts.
+- Updated active Team Charlie ownership for Runtime, System Health, Environment Management, Palette / Colors, Sprites, and Objects.
+- Added Charlie backlog status: Runtime 100%, System Health 100%, Environment Management 100%, Palette / Colors 40%, Sprites 5%, and Objects 0%.
+- Updated Palette / Colors remaining work: color management, API/database integration, reusable color source of truth, Palette references for Sprites and Objects, and Product Owner testable workflow.
+- Updated Sprites MVP scope to include canvas/grid editor, width/height controls, Palette/Colors-only color selection, pixel painting, save/load sprite grid data through API/database, Product Owner testable workflow, and remove Category from Sprites planning.
+- Added Objects scope for object library, object editor, Sprite assignment, object properties, collision configuration, runtime object metadata, Object API/database contracts, and Product Owner testable workflow.
 
 ## Validation
 
@@ -50,7 +52,7 @@ No runtime code, UI code, API code, database code, `start_of_day` files, history
 - PASS: page-level Playwright canonical owner remains `test_structure_standardization.md`.
 - PASS: API/environment canonical owner remains `environment_governance_model.md`.
 - PASS: branch lifecycle canonical owner remains `project_instructions_single_source_eod_lock.md`.
-- PASS: Team Charlie owns both Sprites and Objects.
+- PASS: Team Charlie owns Palette / Colors, Sprites, and Objects.
 - PASS: repo-structured ZIP produced for documentation-only changes.
 
 ## Artifact

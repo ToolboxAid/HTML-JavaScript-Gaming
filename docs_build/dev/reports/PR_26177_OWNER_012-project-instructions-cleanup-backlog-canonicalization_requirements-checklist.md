@@ -19,9 +19,11 @@ Team: OWNER
 - PASS: Backlog item fields include owning team.
 - PASS: Backlog percentages update at SOD, after every accepted PR, and at EOD.
 - PASS: Backlog is authoritative for determining the next logical PRs.
-- PASS: Team Charlie owns Runtime, System Health, Environment Management, Sprites, and Objects.
-- PASS: Sprites MVP scope includes canvas/grid editor, width/height controls, Palette/Colors references only, pixel painting, save/load sprite grid data, and Product Owner testable workflow.
-- PASS: Objects scope includes object library, object editor, Sprite assignment, object properties, collision configuration, runtime object metadata, and Object API/database contracts.
+- PASS: Team Charlie owns Runtime, System Health, Environment Management, Palette / Colors, Sprites, and Objects.
+- PASS: Charlie backlog status records Runtime 100%, System Health 100%, Environment Management 100%, Palette / Colors 40%, Sprites 5%, and Objects 0%.
+- PASS: Palette / Colors remaining work includes color management, API/database integration, reusable color source of truth, Palette references for Sprites and Objects, and Product Owner testable workflow.
+- PASS: Sprites remaining work includes canvas/grid editor, width/height controls, Palette/Colors-only color selection, pixel painting, save/load sprite grid data through API/database, Product Owner testable workflow, and remove Category from Sprites planning.
+- PASS: Objects scope includes object library, object editor, Sprite assignment, object properties, collision configuration, runtime object metadata, Object API/database contracts, and Product Owner testable workflow.
 - PASS: Existing SOD, active team branch, sequential PR, no-return-to-main, and EOD clean main sync workflow remains present.
 - PASS: Required reports were generated.
 - PASS: Repo-structured ZIP artifact will be generated under `tmp/`.

@@ -15,7 +15,7 @@ Review these files:
 
 Confirm the canonical governance owner map is clear and that overlap files point back to canonical owner documents.
 
-Confirm Team Charlie owns Runtime, System Health, Environment Management, Sprites, and Objects.
+Confirm Team Charlie owns Runtime, System Health, Environment Management, Palette / Colors, Sprites, and Objects with the requested completion percentages and remaining work.
 
 Confirm active backlog wording uses Product Owner validation language and drives the next logical PRs.
 
