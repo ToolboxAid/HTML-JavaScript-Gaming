@@ -47,6 +47,7 @@ READ THIS FIRST
 
 Addendum index:
 - Documentation Ownership: docs_build/dev/ProjectInstructions/addendums/documentation_ownership.md
+- Repository Directory Standard: docs_build/dev/ProjectInstructions/addendums/repository_directory_standard.md
 - Team Backlog, SOD, And EOD Standard: docs_build/dev/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
 - Single Source and EOD Main Lock: docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
 - Canonical Repository Structure: docs_build/dev/ProjectInstructions/addendums/canonical_repository_structure.md
