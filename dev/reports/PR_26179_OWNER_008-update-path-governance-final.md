@@ -1,33 +1,27 @@
 # PR_26179_OWNER_008-update-path-governance-final
 
-Generated: 2026-06-27T19:38:31.874Z
+Updated: 2026-06-27T20:36:34.395Z
 Branch: PR_26179_OWNER_008-update-path-governance-final
-Base stack head before PR_008: f3c2e7a02
 ZIP: dev/workspace/artifacts/tmp/PR_26179_OWNER_008-update-path-governance-final_delta.zip
 
 ## Purpose
 
-Finalize path governance after the dev workspace restructure chain and document the final root, src, and dev workspace standards.
+Finalize path governance after the dev workspace restructure chain and correct the PR #243 GitHub Actions platform-validation script path after the root `scripts/` directory moved to `dev/scripts/`.
 
 ## Changes
 
-- Updated repository directory governance with final root ownership and legacy path exceptions.
-- Added the final `src/web/`, `src/api-runtime/`, and `src/runtime/` layer standard.
-- Updated canonical repository structure governance to point new work at final paths.
-- Updated README architecture wording to describe target src layers without moving current source directories.
+- Updated `.github/workflows/platform-validation.yml` from `node ./scripts/run-platform-validation-suite.mjs` to `node ./dev/scripts/run-platform-validation-suite.mjs`.
+- Confirmed no other GitHub Actions workflow references still call moved root `./scripts/` paths.
+- Preserved PR_008 governance-only path standard updates.
 
 ## Validation Summary
 
 | Status | Item | Notes |
 | --- | --- | --- |
-| PASS | Current branch is PR_26179_OWNER_008-update-path-governance-final | confirmed |
-| PASS | Documentation/governance-only scope | no protected runtime/product/API/database/test/script/config diffs |
-| PASS | Final root directory standard documented | repository_directory_standard.md names product root, src, dev, docs, games, toolbox, and public product roots |
-| PASS | Final src layer standard documented | src/web, src/api-runtime, and src/runtime documented with legacy transition buckets |
-| PASS | Final dev workspace standard documented | dev/docs_build, dev/reports, dev/tests, dev/scripts, dev/config, dev/archive, and dev/workspace/artifacts documented |
-| PASS | Old report root references absent from active target search | (no matches) |
-| PASS | Old <project folder>/tmp ZIP reference absent from active target search | (no matches) |
-| PASS | Final src path grep | 15 matching lines |
+| PASS | Current branch | PR_26179_OWNER_008-update-path-governance-final |
+| PASS | GitHub Actions platform-validation path | .github/workflows/platform-validation.yml uses node ./dev/scripts/run-platform-validation-suite.mjs |
+| PASS | Old moved root scripts path grep | No .github workflow references to node ./scripts/, run: ./scripts/, or standalone ./scripts/ remain. |
 | PASS | npm run validate:canonical-structure | passed |
 | PASS | git diff --check | passed |
-| PASS | Playwright impacted | not impacted; no runtime/test/browser behavior changed |
+| PASS | node ./dev/scripts/run-platform-validation-suite.mjs | passed locally: 8/8 deterministic platform scenarios; CI gate green message emitted |
+| PASS | Runtime/product scope | No runtime/business logic, production pages, or routes modified. |

@@ -1,292 +1,129 @@
-diff --git a/README.md b/README.md
-index a1ce33d09..e29c74907 100644
---- a/README.md
-+++ b/README.md
-@@ -90,8 +90,10 @@ This repo is designed as a learning system, not just a code dump.
+diff --git a/.github/workflows/platform-validation.yml b/.github/workflows/platform-validation.yml
+index e618de60b..c08529826 100644
+--- a/.github/workflows/platform-validation.yml
++++ b/.github/workflows/platform-validation.yml
+@@ -20,4 +20,4 @@ jobs:
+           node-version: "20"
 
- ## 🏗️ Architecture Overview
+       - name: Run Platform Validation Suite
+-        run: node ./scripts/run-platform-validation-suite.mjs
++        run: node ./dev/scripts/run-platform-validation-suite.mjs
+diff --git a/dev/reports/PR_26179_OWNER_008-update-path-governance-final.md b/dev/reports/PR_26179_OWNER_008-update-path-governance-final.md
+index 747697f52..d385f5fc1 100644
+--- a/dev/reports/PR_26179_OWNER_008-update-path-governance-final.md
++++ b/dev/reports/PR_26179_OWNER_008-update-path-governance-final.md
+@@ -1,33 +1,27 @@
+ # PR_26179_OWNER_008-update-path-governance-final
 
--- Engine Layer → [src/engine/](src/engine/)
--- Advanced Systems → [src/advanced/](src/advanced/)
-+- Web layer target → `src/web/`
-+- API runtime target → `src/api-runtime/`
-+- Runtime layer target → `src/runtime/`
-+- Existing `src/engine/`, `src/advanced/`, `src/shared/`, `src/tools/`, `src/api/`, and `src/dev-runtime/` folders are legacy transition buckets until dedicated migration PRs move them.
- - Tools, samples, and games consume public contracts only
-
- ---
-@@ -122,8 +124,8 @@ PLAN_PR → BUILD_PR → APPLY_PR
-
- ## ⚠️ Runtime Boundary Rules
-
--- Engine code lives in [src/engine/](src/engine/)
--- Advanced systems live in [src/advanced/](src/advanced/)
-+- New deployable source belongs under `src/web/`, `src/api-runtime/`, or `src/runtime/`.
-+- Existing legacy `src/*` buckets remain transition-only until scoped migration PRs move them.
- - Tools, samples, and games must use public contracts only
- - Engine boundaries should not be bypassed
-
-diff --git a/dev/README.md b/dev/README.md
-index c5220fc99..38c4687dc 100644
---- a/dev/README.md
-+++ b/dev/README.md
-@@ -16,6 +16,9 @@ This folder is the destination shell for non-deployable development workspace ma
- - `dev/docs_build/` owns active development governance and PR workflow material.
- - `dev/reports/` owns generated reports.
- - `dev/workspace/artifacts/` owns generated non-report artifacts and local temporary workspace output.
-+- `dev/tests/` owns non-deployable tests.
-+- `dev/scripts/` owns development-only scripts and runners.
-+- `dev/config/` owns development-only runner and tooling configuration.
- - `dev/archive/` owns historical development reference material.
- - `dev/project-instructions/` is deprecated reference only; active Project Instructions live under `dev/docs_build/dev/ProjectInstructions/`.
-
-diff --git a/dev/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/dev/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-index e26df0978..f14002820 100644
---- a/dev/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-+++ b/dev/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-@@ -66,7 +66,7 @@ When active guidance overlaps, use these canonical owner documents:
-
- - Workflow and Product Owner testable completion: `dev/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md`
- - START / WORK / END lifecycle, branch gates, mandatory hard stops, and EOD main lock: `dev/docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`
--- Repository directory ownership and restructure boundaries: `dev/docs_build/dev/ProjectInstructions/addendums/repository_directory_standard.md`
-+- Repository directory ownership, final root standard, final `src/` layer standard, final `dev/` workspace standard, and restructure boundaries: `dev/docs_build/dev/ProjectInstructions/addendums/repository_directory_standard.md`
- - Page-level Playwright organization and completion coverage: `dev/docs_build/dev/ProjectInstructions/addendums/test_structure_standardization.md`
- - API/environment model and `Browser -> API -> Database` rule: `dev/docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md`
- - Environment variable, URL, R2 prefix, and feature flag configuration: `dev/docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md`
-diff --git a/dev/docs_build/dev/ProjectInstructions/addendums/canonical_repository_structure.md b/dev/docs_build/dev/ProjectInstructions/addendums/canonical_repository_structure.md
-index e26939469..ced3fe354 100644
---- a/dev/docs_build/dev/ProjectInstructions/addendums/canonical_repository_structure.md
-+++ b/dev/docs_build/dev/ProjectInstructions/addendums/canonical_repository_structure.md
-@@ -6,6 +6,29 @@ Establish the canonical repository structure for future development and reduce t
-
- ## Canonical Structure
-
-+Root product sections:
-+- docs/
-+- games/
-+- toolbox/
-+- account/
-+- admin/
-+- legal/
-+- assets/
-+
-+Deployable application source:
-+- src/web/{feature-name}/
-+- src/api-runtime/{feature-name}/
-+- src/runtime/{feature-name}/
-+
-+Development workspace:
-+- dev/docs_build/
-+- dev/reports/
-+- dev/tests/
-+- dev/scripts/
-+- dev/config/
-+- dev/archive/
-+- dev/workspace/artifacts/
-+
- Tools:
- - toolbox/{tool-name}/index.html
-
-@@ -20,14 +43,15 @@ Themes:
- Shared JavaScript:
- - assets/js/shared/
-
--Engine:
--- src/engine/{feature-name}/
--
--API:
--- api/{feature-name}/
-+Legacy transition buckets:
-+- src/advanced/
-+- src/api/
-+- src/dev-runtime/
-+- src/engine/
-+- src/shared/
-+- src/tools/
-
--Serverside:
--- serverside/{feature-name}/
-+These legacy transition buckets may remain until explicit migration PRs move them into `src/web/`, `src/api-runtime/`, or `src/runtime/`.
-
- ## Rules
-
-@@ -37,3 +61,7 @@ Serverside:
- - No new scattered JS folders.
- - No new scattered CSS folders.
- - New development follows the canonical structure.
-+- New deployable `src/` work follows `src/web/`, `src/api-runtime/`, or `src/runtime/`.
-+- New non-deployable work belongs under `dev/`.
-+- Required reports belong under flat `dev/reports/`.
-+- Required ZIPs and generated temporary artifacts belong under `dev/workspace/artifacts/tmp/`.
-diff --git a/dev/docs_build/dev/ProjectInstructions/addendums/repository_directory_standard.md b/dev/docs_build/dev/ProjectInstructions/addendums/repository_directory_standard.md
-index 82efbf588..c1ce4d859 100644
---- a/dev/docs_build/dev/ProjectInstructions/addendums/repository_directory_standard.md
-+++ b/dev/docs_build/dev/ProjectInstructions/addendums/repository_directory_standard.md
-@@ -5,25 +5,57 @@ Owner: OWNER
+-Generated: 2026-06-27T19:38:31.874Z
++Updated: 2026-06-27T20:36:34.395Z
+ Branch: PR_26179_OWNER_008-update-path-governance-final
+-Base stack head before PR_008: f3c2e7a02
+ ZIP: dev/workspace/artifacts/tmp/PR_26179_OWNER_008-update-path-governance-final_delta.zip
 
  ## Purpose
 
--Define the target repository directory ownership model before the development workspace restructure chain begins.
-+Define the target repository directory ownership model for the post-restructure repository.
+-Finalize path governance after the dev workspace restructure chain and document the final root, src, and dev workspace standards.
++Finalize path governance after the dev workspace restructure chain and correct the PR #243 GitHub Actions platform-validation script path after the root `scripts/` directory moved to `dev/scripts/`.
 
- This document is governance only. It does not move runtime, UI, API, tests, or production files by itself.
+ ## Changes
 
- ## Directory Ownership
+-- Updated repository directory governance with final root ownership and legacy path exceptions.
+-- Added the final `src/web/`, `src/api-runtime/`, and `src/runtime/` layer standard.
+-- Updated canonical repository structure governance to point new work at final paths.
+-- Updated README architecture wording to describe target src layers without moving current source directories.
++- Updated `.github/workflows/platform-validation.yml` from `node ./scripts/run-platform-validation-suite.mjs` to `node ./dev/scripts/run-platform-validation-suite.mjs`.
++- Confirmed no other GitHub Actions workflow references still call moved root `./scripts/` paths.
++- Preserved PR_008 governance-only path standard updates.
 
--- Repository root contains production/public product sections and standard repository configuration.
-+- Repository root contains production/public product sections and standard repository configuration only.
- - `src/` contains deployable application code.
- - `dev/` contains non-deployable build, test, bootstrap, governance, report, and local workspace items.
- - `docs/` remains at root because it is production Docs & Help.
- - `games/` remains at root because it is public game discovery.
- - `toolbox/` remains at root because it is the Creator toolbox/workspace.
-+- Other public product roots such as `account/`, `admin/`, `legal/`, and `assets/` remain root-level product sections when present.
-+
-+## Final Src Layer Standard
-+
-+The final `src/` ownership model is:
-+
-+- `src/web/` for browser-facing deployable application modules used by public pages, account/admin surfaces, and Creator tools.
-+- `src/api-runtime/` for deployable API/runtime service modules that back the shared Browser -> API -> Postgres/R2 contract.
-+- `src/runtime/` for deployable game, tool, engine, and shared runtime capabilities.
-+
-+Transition rule:
-+
-+- Existing top-level `src/advanced/`, `src/api/`, `src/dev-runtime/`, `src/engine/`, `src/shared/`, and `src/tools/` directories are legacy transition buckets until explicit migration PRs move them.
-+- Do not add new top-level `src/` layer names outside `src/web/`, `src/api-runtime/`, or `src/runtime/` without OWNER approval.
-+- Do not use team names in runtime source filenames.
+ ## Validation Summary
 
- ## Development Workspace Paths
-
--- `dev/docs_build/` owns active development governance, Project Instructions, PR workflow material, validation reports, and generated documentation-workspace artifacts.
-+- `dev/docs_build/` owns active development governance, Project Instructions, and PR workflow material.
-+- `dev/reports/` owns generated reports using flat filenames.
-+- `dev/tests/` owns non-deployable test suites.
-+- `dev/scripts/` owns development-only scripts and runners.
-+- `dev/config/` owns development-only runner and tooling configuration.
-+- `dev/workspace/artifacts/` owns generated non-report artifacts and ignored local temporary workspace output.
- - `dev/archive/` owns historical development reference material that is not active governance.
- - `dev/project-instructions/` is deprecated reference only when retained; it must point to `dev/docs_build/dev/ProjectInstructions/`.
--- Root `docs_build/`, root `archive/`, and root `project-instructions/` are not active workspace locations after the governance workspace move.
-+- Root `docs_build/`, root `tests/`, root `archive/`, root `tmp/`, and root `project-instructions/` are not active workspace locations after the restructure.
-+- Root `tmp/` may remain ignored as legacy local scratch only; required Codex ZIPs and generated temporary artifacts belong under `dev/workspace/artifacts/tmp/`.
-+
-+## Legacy Reference Exceptions
-+
-+Path references to old root `docs_build/`, `tests/`, `archive/`, or `tmp/` locations are allowed only when they are:
-+
-+- historical/reference content under `dev/archive/` or `dev/docs_build/dev/PR/reference/`
-+- explicit legacy exception notes in active governance
-+- ignore rules that keep obsolete local scratch from entering commits
-+- migration reports documenting the old path and its replacement
-+
-+Active commands, templates, and Project Instructions must use the final `dev/`, `dev/reports/`, and `dev/workspace/artifacts/` paths.
-
- ## Creator Data Boundary
-
-@@ -42,3 +74,5 @@ This document is governance only. It does not move runtime, UI, API, tests, or p
- ## PR Chain Boundary
-
- The development workspace restructure must proceed through sequential scoped PRs. A PR may only move or update the paths named in its purpose.
-+
-+Final path-governance PRs may document target paths and legacy exceptions, but they must not move deployable application code unless explicitly scoped.
-diff --git a/dev/reports/PR_26179_OWNER_008-update-path-governance-final.md b/dev/reports/PR_26179_OWNER_008-update-path-governance-final.md
-new file mode 100644
-index 000000000..747697f52
---- /dev/null
-+++ b/dev/reports/PR_26179_OWNER_008-update-path-governance-final.md
-@@ -0,0 +1,33 @@
-+# PR_26179_OWNER_008-update-path-governance-final
-+
-+Generated: 2026-06-27T19:38:31.874Z
-+Branch: PR_26179_OWNER_008-update-path-governance-final
-+Base stack head before PR_008: f3c2e7a02
-+ZIP: dev/workspace/artifacts/tmp/PR_26179_OWNER_008-update-path-governance-final_delta.zip
-+
-+## Purpose
-+
-+Finalize path governance after the dev workspace restructure chain and document the final root, src, and dev workspace standards.
-+
-+## Changes
-+
-+- Updated repository directory governance with final root ownership and legacy path exceptions.
-+- Added the final `src/web/`, `src/api-runtime/`, and `src/runtime/` layer standard.
-+- Updated canonical repository structure governance to point new work at final paths.
-+- Updated README architecture wording to describe target src layers without moving current source directories.
-+
-+## Validation Summary
-+
-+| Status | Item | Notes |
-+| --- | --- | --- |
-+| PASS | Current branch is PR_26179_OWNER_008-update-path-governance-final | confirmed |
-+| PASS | Documentation/governance-only scope | no protected runtime/product/API/database/test/script/config diffs |
-+| PASS | Final root directory standard documented | repository_directory_standard.md names product root, src, dev, docs, games, toolbox, and public product roots |
-+| PASS | Final src layer standard documented | src/web, src/api-runtime, and src/runtime documented with legacy transition buckets |
-+| PASS | Final dev workspace standard documented | dev/docs_build, dev/reports, dev/tests, dev/scripts, dev/config, dev/archive, and dev/workspace/artifacts documented |
-+| PASS | Old report root references absent from active target search | (no matches) |
-+| PASS | Old <project folder>/tmp ZIP reference absent from active target search | (no matches) |
-+| PASS | Final src path grep | 15 matching lines |
-+| PASS | npm run validate:canonical-structure | passed |
-+| PASS | git diff --check | passed |
-+| PASS | Playwright impacted | not impacted; no runtime/test/browser behavior changed |
+ | Status | Item | Notes |
+ | --- | --- | --- |
+-| PASS | Current branch is PR_26179_OWNER_008-update-path-governance-final | confirmed |
+-| PASS | Documentation/governance-only scope | no protected runtime/product/API/database/test/script/config diffs |
+-| PASS | Final root directory standard documented | repository_directory_standard.md names product root, src, dev, docs, games, toolbox, and public product roots |
+-| PASS | Final src layer standard documented | src/web, src/api-runtime, and src/runtime documented with legacy transition buckets |
+-| PASS | Final dev workspace standard documented | dev/docs_build, dev/reports, dev/tests, dev/scripts, dev/config, dev/archive, and dev/workspace/artifacts documented |
+-| PASS | Old report root references absent from active target search | (no matches) |
+-| PASS | Old <project folder>/tmp ZIP reference absent from active target search | (no matches) |
+-| PASS | Final src path grep | 15 matching lines |
++| PASS | Current branch | PR_26179_OWNER_008-update-path-governance-final |
++| PASS | GitHub Actions platform-validation path | .github/workflows/platform-validation.yml uses node ./dev/scripts/run-platform-validation-suite.mjs |
++| PASS | Old moved root scripts path grep | No .github workflow references to node ./scripts/, run: ./scripts/, or standalone ./scripts/ remain. |
+ | PASS | npm run validate:canonical-structure | passed |
+ | PASS | git diff --check | passed |
+-| PASS | Playwright impacted | not impacted; no runtime/test/browser behavior changed |
++| PASS | node ./dev/scripts/run-platform-validation-suite.mjs | passed locally: 8/8 deterministic platform scenarios; CI gate green message emitted |
++| PASS | Runtime/product scope | No runtime/business logic, production pages, or routes modified. |
 diff --git a/dev/reports/PR_26179_OWNER_008-update-path-governance-final_branch-validation.md b/dev/reports/PR_26179_OWNER_008-update-path-governance-final_branch-validation.md
-new file mode 100644
-index 000000000..572d86235
---- /dev/null
+index 572d86235..9aa2f3847 100644
+--- a/dev/reports/PR_26179_OWNER_008-update-path-governance-final_branch-validation.md
 +++ b/dev/reports/PR_26179_OWNER_008-update-path-governance-final_branch-validation.md
-@@ -0,0 +1,8 @@
-+# PR_26179_OWNER_008-update-path-governance-final Branch Validation
-+
-+| Status | Item | Notes |
-+| --- | --- | --- |
-+| PASS | Current branch is PR_26179_OWNER_008-update-path-governance-final | confirmed |
-+| PASS | Documentation/governance-only scope | no protected runtime/product/API/database/test/script/config diffs |
-+
-+Result: PASS
+@@ -2,7 +2,7 @@
+
+ | Status | Item | Notes |
+ | --- | --- | --- |
+-| PASS | Current branch is PR_26179_OWNER_008-update-path-governance-final | confirmed |
+-| PASS | Documentation/governance-only scope | no protected runtime/product/API/database/test/script/config diffs |
++| PASS | Current branch | PR_26179_OWNER_008-update-path-governance-final |
++| PASS | GitHub Actions platform-validation path | .github/workflows/platform-validation.yml uses node ./dev/scripts/run-platform-validation-suite.mjs |
+
+ Result: PASS
 diff --git a/dev/reports/PR_26179_OWNER_008-update-path-governance-final_manual-validation-notes.md b/dev/reports/PR_26179_OWNER_008-update-path-governance-final_manual-validation-notes.md
-new file mode 100644
-index 000000000..5e2ef2c4f
---- /dev/null
+index 5e2ef2c4f..c4b864fe3 100644
+--- a/dev/reports/PR_26179_OWNER_008-update-path-governance-final_manual-validation-notes.md
 +++ b/dev/reports/PR_26179_OWNER_008-update-path-governance-final_manual-validation-notes.md
-@@ -0,0 +1,8 @@
-+# PR_26179_OWNER_008-update-path-governance-final Manual Validation Notes
-+
-+- Confirmed branch: PR_26179_OWNER_008-update-path-governance-final
-+- Confirmed no product/runtime/API/database/test/script/config files changed in this PR.
-+- Confirmed final target src layers are documented only; no source folders were moved.
-+- Confirmed old report root search returned no active matches.
-+- Playwright was not run beyond impact assessment because this PR is documentation/governance-only.
-+- Repo-structured ZIP path: `dev/workspace/artifacts/tmp/PR_26179_OWNER_008-update-path-governance-final_delta.zip`
+@@ -1,8 +1,10 @@
+ # PR_26179_OWNER_008-update-path-governance-final Manual Validation Notes
+
+ - Confirmed branch: PR_26179_OWNER_008-update-path-governance-final
+-- Confirmed no product/runtime/API/database/test/script/config files changed in this PR.
+-- Confirmed final target src layers are documented only; no source folders were moved.
+-- Confirmed old report root search returned no active matches.
+-- Playwright was not run beyond impact assessment because this PR is documentation/governance-only.
++- Worktree was clean at start before the workflow patch.
++- Changed only `.github/workflows/platform-validation.yml` and PR_008 report artifacts for the CI path correction.
++- Confirmed no old root `./scripts/` GitHub Actions workflow calls remain.
++- Ran `node ./dev/scripts/run-platform-validation-suite.mjs`; local platform validation passed 8/8 scenarios and emitted CI gate green.
++- Ran `npm run validate:canonical-structure`; passed.
++- Ran `git diff --check`; passed.
+ - Repo-structured ZIP path: `dev/workspace/artifacts/tmp/PR_26179_OWNER_008-update-path-governance-final_delta.zip`
 diff --git a/dev/reports/PR_26179_OWNER_008-update-path-governance-final_requirement-checklist.md b/dev/reports/PR_26179_OWNER_008-update-path-governance-final_requirement-checklist.md
-new file mode 100644
-index 000000000..d817114c3
---- /dev/null
+index d817114c3..b9d563f5b 100644
+--- a/dev/reports/PR_26179_OWNER_008-update-path-governance-final_requirement-checklist.md
 +++ b/dev/reports/PR_26179_OWNER_008-update-path-governance-final_requirement-checklist.md
-@@ -0,0 +1,12 @@
-+# PR_26179_OWNER_008-update-path-governance-final Requirement Checklist
-+
-+| Status | Item | Notes |
-+| --- | --- | --- |
-+| PASS | Finalize all Project Instructions and governance references to the new paths | Active governance references final dev/report/artifact paths and documents legacy exceptions. |
-+| PASS | Document final root directory standard | repository_directory_standard.md and README updated. |
-+| PASS | Document final src/ layer standard | src/web, src/api-runtime, src/runtime documented. Existing top-level src buckets are legacy transition only. |
-+| PASS | Document final dev/ workspace standard | dev ownership for docs_build, reports, tests, scripts, config, archive, workspace/artifacts documented. |
-+| PASS | Confirm no old docs_build/, tests/, archive/, or tmp/ path references remain unless documented as legacy exceptions | Old root paths are documented as legacy exceptions; active output/report refs use new paths. |
-+| PASS | No runtime/product/API/database changes | Protected diff check returned no files. |
-+
-+Result: PASS
+@@ -2,11 +2,11 @@
+
+ | Status | Item | Notes |
+ | --- | --- | --- |
+-| PASS | Finalize all Project Instructions and governance references to the new paths | Active governance references final dev/report/artifact paths and documents legacy exceptions. |
+-| PASS | Document final root directory standard | repository_directory_standard.md and README updated. |
+-| PASS | Document final src/ layer standard | src/web, src/api-runtime, src/runtime documented. Existing top-level src buckets are legacy transition only. |
+-| PASS | Document final dev/ workspace standard | dev ownership for docs_build, reports, tests, scripts, config, archive, workspace/artifacts documented. |
+-| PASS | Confirm no old docs_build/, tests/, archive/, or tmp/ path references remain unless documented as legacy exceptions | Old root paths are documented as legacy exceptions; active output/report refs use new paths. |
+-| PASS | No runtime/product/API/database changes | Protected diff check returned no files. |
++| PASS | Find workflow references to node ./scripts/run-platform-validation-suite.mjs | Located one reference in .github/workflows/platform-validation.yml. |
++| PASS | Update to node ./dev/scripts/run-platform-validation-suite.mjs | Updated only the moved CI script path. |
++| PASS | Check for other GitHub Actions moved root scripts/ references | Targeted grep found no remaining old root ./scripts/ workflow calls. |
++| PASS | Do not move files | No files moved. |
++| PASS | Do not change runtime behavior | Only GitHub Actions workflow path and reports changed. |
++| PASS | Do not change production pages | No production page files changed. |
+
+ Result: PASS
 diff --git a/dev/reports/PR_26179_OWNER_008-update-path-governance-final_validation-lane.md b/dev/reports/PR_26179_OWNER_008-update-path-governance-final_validation-lane.md
-new file mode 100644
-index 000000000..a0d7ee8e6
---- /dev/null
+index a0d7ee8e6..c52132f60 100644
+--- a/dev/reports/PR_26179_OWNER_008-update-path-governance-final_validation-lane.md
 +++ b/dev/reports/PR_26179_OWNER_008-update-path-governance-final_validation-lane.md
-@@ -0,0 +1,9 @@
-+# PR_26179_OWNER_008-update-path-governance-final Validation Lane
-+
-+| Status | Item | Notes |
-+| --- | --- | --- |
-+| PASS | npm run validate:canonical-structure | passed |
-+| PASS | git diff --check | passed |
-+| PASS | Playwright impacted | not impacted; no runtime/test/browser behavior changed |
-+
-+Scoped validation result: PASS
+@@ -2,8 +2,10 @@
+
+ | Status | Item | Notes |
+ | --- | --- | --- |
++| PASS | Old moved root scripts path grep | No .github workflow references to node ./scripts/, run: ./scripts/, or standalone ./scripts/ remain. |
+ | PASS | npm run validate:canonical-structure | passed |
+ | PASS | git diff --check | passed |
+-| PASS | Playwright impacted | not impacted; no runtime/test/browser behavior changed |
++| PASS | node ./dev/scripts/run-platform-validation-suite.mjs | passed locally: 8/8 deterministic platform scenarios; CI gate green message emitted |
++| PASS | Runtime/product scope | No runtime/business logic, production pages, or routes modified. |
+
+ Scoped validation result: PASS
