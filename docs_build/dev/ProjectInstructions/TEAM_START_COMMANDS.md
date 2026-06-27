@@ -10,6 +10,7 @@ No team creates a PR branch until all checks pass:
 - `HEAD` SHA matches the published EOD SHA
 
 Use `docs_build/dev/ProjectInstructions/` as the only active Project Instructions source.
+Read `docs_build/dev/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md` before implementation.
 
 Branch Lifecycle (Canonical):
 - Every PR follows exactly three phases: START, WORK, END.
@@ -166,4 +167,16 @@ git rev-list --left-right --count main...origin/main
 git rev-parse HEAD
 
 Publish Branch, HEAD SHA, and Date/time. This becomes tomorrow's official baseline.
+
+Also provide the required EOD team summary:
+- Team name
+- Date
+- PRs completed
+- PRs merged
+- Validation summary
+- Overall completion percentage
+- Remaining backlog
+- Completion percentage for each remaining backlog item
+- Recommended first PRs for the next day
+- Repository status
 ```

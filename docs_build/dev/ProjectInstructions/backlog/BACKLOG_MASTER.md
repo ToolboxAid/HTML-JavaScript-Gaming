@@ -1,5 +1,21 @@
 # BACKLOG_MASTER
 
+## Backlog Item Tracking Standard
+
+Every active team owns an active backlog when it has assigned work.
+
+Each backlog item must track:
+
+- Name
+- Description
+- Current completion percentage
+- Remaining work
+- Blocking dependencies
+
+Completion percentages are updated at SOD, after each accepted PR, and at EOD.
+
+The backlog is the authoritative source for determining the next PRs.
+
 ## Game Journey MVP
 
 ### Idea

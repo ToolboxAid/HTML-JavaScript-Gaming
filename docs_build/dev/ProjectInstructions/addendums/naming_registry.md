@@ -43,13 +43,26 @@ Capture approved Game Foundry Studio names to reduce rename churn.
 
 Teams must use NATO phonetic naming.
 
+Official active team codes:
+
+- OWNER
+- ALFA
+- BRAVO
+- CHARLIE
+- DELTA
+
 Examples:
+- Team OWNER
 - Team Alfa
 - Team Bravo
 - Team Charlie
 - Team Delta
 - Team Echo
 - Team Foxtrot
+
+Rule:
+- Use `Alfa` spelling when referring to Team Alfa.
+- Do not rewrite historical snapshots, archived references, or non-team phrases such as `Alpha/Beta/User isolation framework` unless OWNER explicitly scopes that work.
 
 ## Rule
 
