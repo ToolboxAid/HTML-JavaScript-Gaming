@@ -1,11 +1,13 @@
 # Manual Validation Notes - PR_26179_OWNER_009-root-cleanup-and-workspace-finalization
 
-Updated: 2026-06-27T22:54:01.881Z
+Updated: 2026-06-27T23:16:02.248Z
 
-- Confirmed dev/archive/docs_build/ is absent and dev/archive/legacy-docs-build/ exists.
-- Confirmed dev/build/dev/PR/ is absent and dev/build/pr/ exists.
-- Confirmed dev/build/operations/dev/ is absent and dev/build/operations/ contains the moved operations files.
-- Confirmed dev/build/schemas/docs/dev/reports/ is absent and dev/reports/history/schemas/ exists.
+- Confirmed dev/build/dev/start_of_day/ is absent.
+- Confirmed dev/build/dev/ is absent after moving/deleting its contents.
+- Confirmed dev/tools/toolbox-dev/ exists.
+- Confirmed production root toolbox/ was not modified by this cleanup pass.
+- Confirmed src/shared/toolbox/ was not modified by this cleanup pass.
 - Confirmed dev/tools-images-generated/ is absent.
-- Confirmed dev/config/tmp/ is absent.
+- Confirmed dev/config/ contains only configuration files.
+- Confirmed no root artifacts/ output was left by platform validation.
 - Blockers: none.

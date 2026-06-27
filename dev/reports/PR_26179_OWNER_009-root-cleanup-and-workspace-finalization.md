@@ -1,29 +1,34 @@
 # PR_26179_OWNER_009-root-cleanup-and-workspace-finalization
 
-Updated: 2026-06-27T22:54:01.881Z
+Updated: 2026-06-27T23:16:02.248Z
 Team: OWNER
 Branch: PR_26179_OWNER_009-root-cleanup-and-workspace-finalization
-Scope: dev folder taxonomy cleanup and accidental wrapper flattening.
+Scope: root cleanup/workspace finalization; dev taxonomy cleanup only.
 
 ## Summary
-- Flattened legacy docs_build archive content into dev/archive/legacy-docs-build/.
-- Moved PR workflow/reference material out of dev/build/dev/PR into dev/build/pr/.
-- Moved operations documents out of dev/build/operations/dev into dev/build/operations/.
-- Moved the schema legacy report from dev/build/schemas/docs/dev/reports into dev/reports/history/schemas/.
-- Updated active references for the new archive and PR template paths.
-- Confirmed dev/tools-images-generated/ was already absent.
+- Removed obsolete start_of_day material under dev/build/dev/ after replacing active validation-script expectations with dev/build/ProjectInstructions/.
+- Moved the dev-only toolbox support code from dev/build/dev/toolbox/ to dev/tools/toolbox-dev/.
+- Updated active package scripts, dev-tool self references, and DevConsoleIntegration test imports to the new dev/tools/toolbox-dev/ path.
+- Removed the empty dev/build/dev/ wrapper after its contents were deleted or moved.
+- Confirmed dev/tools-images-generated/ is absent and dev/config/ contains config files only.
 
 ## Moved Folders
-- dev/archive/docs_build/dev/* -> dev/archive/legacy-docs-build/
-- dev/build/dev/PR/* -> dev/build/pr/
-- dev/build/operations/dev/* -> dev/build/operations/
-- dev/build/schemas/docs/dev/reports/* -> dev/reports/history/schemas/
+- dev/build/dev/toolbox/ -> dev/tools/toolbox-dev/
+
+## Deleted Folders
+- dev/build/dev/start_of_day/
+- dev/build/dev/ (empty wrapper removed)
 
 ## Deleted Files
-None. Empty wrapper directories were removed after their contents moved.
+- Obsolete start_of_day files under dev/build/dev/start_of_day/.
 
 ## Changed Files
+```
+M	.gitignore
 M	README.md
+M	admin/site-setup.html
+R100	docker-compose.override.yml	deploy/docker-compose.override.yml
+M	dev/README.md
 R100	dev/archive/docs_build/dev/ProjectInstructions/history/.gitkeep	dev/archive/legacy-docs-build/ProjectInstructions/history/.gitkeep
 R100	dev/archive/docs_build/dev/ProjectInstructions/history/20260621_144555.md	dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_144555.md
 R100	dev/archive/docs_build/dev/ProjectInstructions/history/20260621_153126.md	dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_153126.md
@@ -90,118 +95,2119 @@ R100	dev/archive/docs_build/dev/roadmaps/MIDI_STUDIO_V2_ROADMAP.md	dev/archive/l
 R100	dev/archive/docs_build/dev/roadmaps/POST_MIGRATION_PLATFORM_ROADMAP.md	dev/archive/legacy-docs-build/roadmaps/POST_MIGRATION_PLATFORM_ROADMAP.md
 R100	dev/archive/docs_build/dev/roadmaps/README.md	dev/archive/legacy-docs-build/roadmaps/README.md
 R100	dev/archive/docs_build/dev/roadmaps/phases.txt	dev/archive/legacy-docs-build/roadmaps/phases.txt
-M	dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-M	dev/build/ProjectInstructions/README.txt
-M	dev/build/ProjectInstructions/addendums/codex_project_instructions_startup.md
-M	dev/build/ProjectInstructions/addendums/documentation_ownership.md
-M	dev/build/ProjectInstructions/addendums/preservation.md
-M	dev/build/ProjectInstructions/addendums/project_reference_files.md
-M	dev/build/ProjectInstructions/addendums/release_gate.md
-M	dev/build/ProjectInstructions/addendums/repository_directory_standard.md
-M	dev/build/ProjectInstructions/standards/README.md
-M	dev/build/dev/toolbox/checkDocsStructureGuard.mjs
-M	dev/build/dev/toolbox/checkPhase24CloseoutExecutionGuard.baseline.json
-R100	dev/build/operations/dev/3D_SAMPLE_ADAPTER_HARNESS.md	dev/build/operations/3D_SAMPLE_ADAPTER_HARNESS.md
-R100	dev/build/operations/dev/APPLY_VALIDATION_SPEC.md	dev/build/operations/APPLY_VALIDATION_SPEC.md
-R100	dev/build/operations/dev/AUTHORITATIVE_INJECTION_SPEC.md	dev/build/operations/AUTHORITATIVE_INJECTION_SPEC.md
-R100	dev/build/operations/dev/CODEX_PLAN_AND_API_KEY_SCRIPTING.md	dev/build/operations/CODEX_PLAN_AND_API_KEY_SCRIPTING.md
-R100	dev/build/operations/dev/CODEX_TEMPLATE_GAME_CREATION_SCRIPTING.md	dev/build/operations/CODEX_TEMPLATE_GAME_CREATION_SCRIPTING.md
-R100	dev/build/operations/dev/CODEX_WEBSITE_REPO_DEPLOYMENT_SCRIPTING.md	dev/build/operations/CODEX_WEBSITE_REPO_DEPLOYMENT_SCRIPTING.md
-R100	dev/build/operations/dev/DAILY_STARTUP_ONE_SHOT.md	dev/build/operations/DAILY_STARTUP_ONE_SHOT.md
-R100	dev/build/operations/dev/DAILY_STARTUP_V4.md	dev/build/operations/DAILY_STARTUP_V4.md
-R100	dev/build/operations/dev/DEBUG_MULTI_ENTITY_SPEC.md	dev/build/operations/DEBUG_MULTI_ENTITY_SPEC.md
-R100	dev/build/operations/dev/DEBUG_REPLAY_VISUALS.md	dev/build/operations/DEBUG_REPLAY_VISUALS.md
-R100	dev/build/operations/dev/DEBUG_SURFACE_CONTRACT.md	dev/build/operations/DEBUG_SURFACE_CONTRACT.md
-R100	dev/build/operations/dev/DEBUG_TIMELINE_VISUALIZATION.md	dev/build/operations/DEBUG_TIMELINE_VISUALIZATION.md
-R100	dev/build/operations/dev/DETERMINISTIC_REPLAY_RULES.md	dev/build/operations/DETERMINISTIC_REPLAY_RULES.md
-R100	dev/build/operations/dev/ENGINE_MATURITY_API_INVENTORY.md	dev/build/operations/ENGINE_MATURITY_API_INVENTORY.md
-R100	dev/build/operations/dev/ENGINE_MATURITY_DOCUMENTATION_MAP.md	dev/build/operations/ENGINE_MATURITY_DOCUMENTATION_MAP.md
-R100	dev/build/operations/dev/ENGINE_MATURITY_PERFORMANCE_RULES.md	dev/build/operations/ENGINE_MATURITY_PERFORMANCE_RULES.md
-R100	dev/build/operations/dev/ENGINE_MATURITY_VERSIONING_STRATEGY.md	dev/build/operations/ENGINE_MATURITY_VERSIONING_STRATEGY.md
-R100	dev/build/operations/dev/ENTITY_RECONCILIATION_SPEC.md	dev/build/operations/ENTITY_RECONCILIATION_SPEC.md
-R100	dev/build/operations/dev/FINAL_OPTIMIZATION_INSTRUCTIONS.md	dev/build/operations/FINAL_OPTIMIZATION_INSTRUCTIONS.md
-R100	dev/build/operations/dev/FRAME_HISTORY_SPEC.md	dev/build/operations/FRAME_HISTORY_SPEC.md
-R100	dev/build/operations/dev/FULL_AUTOMATION_NOTES.md	dev/build/operations/FULL_AUTOMATION_NOTES.md
-R100	dev/build/operations/dev/GITHUB_CONNECTOR_USAGE.md	dev/build/operations/GITHUB_CONNECTOR_USAGE.md
-R100	dev/build/operations/dev/INTEGRATION_NOTES.md	dev/build/operations/INTEGRATION_NOTES.md
-R100	dev/build/operations/dev/LEVEL_20_TRACK_A_BUILD_PIPELINE.md	dev/build/operations/LEVEL_20_TRACK_A_BUILD_PIPELINE.md
-R100	dev/build/operations/dev/LEVEL_20_TRACK_A_RELEASE_CRITERIA.md	dev/build/operations/LEVEL_20_TRACK_A_RELEASE_CRITERIA.md
-R100	dev/build/operations/dev/MULTI_ENTITY_TIMELINE_SPEC.md	dev/build/operations/MULTI_ENTITY_TIMELINE_SPEC.md
-R100	dev/build/operations/dev/NETWORK_SAMPLE_ADAPTER_HARNESS.md	dev/build/operations/NETWORK_SAMPLE_ADAPTER_HARNESS.md
-R100	dev/build/operations/dev/ONE_SHOT_MODE.md	dev/build/operations/ONE_SHOT_MODE.md
-R100	dev/build/operations/dev/PLANNING_SYSTEM_RULES.md	dev/build/operations/PLANNING_SYSTEM_RULES.md
-R100	dev/build/operations/dev/POWERSHELL_SCRIPT_STRUCTURE.md	dev/build/operations/POWERSHELL_SCRIPT_STRUCTURE.md
-R100	dev/build/operations/dev/PROJECT_V2_NOTES.md	dev/build/operations/PROJECT_V2_NOTES.md
-R100	dev/build/operations/dev/README.md	dev/build/operations/README.md
-R100	dev/build/operations/dev/RECONCILIATION_LAYER_SPEC.md	dev/build/operations/RECONCILIATION_LAYER_SPEC.md
-R100	dev/build/operations/dev/REWIND_EXECUTION_SPEC.md	dev/build/operations/REWIND_EXECUTION_SPEC.md
-R100	dev/build/operations/dev/REWIND_STRATEGY_SPEC.md	dev/build/operations/REWIND_STRATEGY_SPEC.md
-R100	dev/build/operations/dev/ROADMAP_GUARDRAILS.md	dev/build/operations/ROADMAP_GUARDRAILS.md
-R100	dev/build/operations/dev/ROADMAP_RULES.md	dev/build/operations/ROADMAP_RULES.md
-R100	dev/build/operations/dev/ROLLBACK_GUARDRAILS.md	dev/build/operations/ROLLBACK_GUARDRAILS.md
-R100	dev/build/operations/dev/RULES_OF_ENGAGEMENT.md	dev/build/operations/RULES_OF_ENGAGEMENT.md
-R100	dev/build/operations/dev/SELECTIVE_REWIND_SPEC.md	dev/build/operations/SELECTIVE_REWIND_SPEC.md
-R100	dev/build/operations/dev/SHARED_EXTRACTION_GUARD_USAGE.md	dev/build/operations/SHARED_EXTRACTION_GUARD_USAGE.md
-R100	dev/build/operations/dev/STATE_TIMELINE_SPEC.md	dev/build/operations/STATE_TIMELINE_SPEC.md
-R100	dev/build/operations/dev/TIMELINE_UPDATE_SPEC.md	dev/build/operations/TIMELINE_UPDATE_SPEC.md
-R100	dev/build/operations/dev/TOKEN_OPTIMIZATION_NOTES.md	dev/build/operations/TOKEN_OPTIMIZATION_NOTES.md
-R100	dev/build/operations/dev/V4_AUTOMATION.md	dev/build/operations/V4_AUTOMATION.md
-R100	dev/build/operations/dev/change_summary.txt	dev/build/operations/change_summary.txt
-R100	dev/build/operations/dev/codex_commands.md	dev/build/operations/codex_commands.md
-R100	dev/build/operations/dev/codex_execution_template.md	dev/build/operations/codex_execution_template.md
-R100	dev/build/operations/dev/commit_comment.txt	dev/build/operations/commit_comment.txt
-R100	dev/build/operations/dev/file_tree.txt	dev/build/operations/file_tree.txt
-R100	dev/build/operations/dev/paths.md	dev/build/operations/paths.md
-R100	dev/build/operations/dev/pr_naming_convention.md	dev/build/operations/pr_naming_convention.md
-R100	dev/build/operations/dev/run_commands.ps1	dev/build/operations/run_commands.ps1
-R100	dev/build/operations/dev/run_commands.txt	dev/build/operations/run_commands.txt
-R100	dev/build/operations/dev/templates/BUILD_FROM_PLAN_TEMPLATE.md	dev/build/operations/templates/BUILD_FROM_PLAN_TEMPLATE.md
-R100	dev/build/operations/dev/templates/BUILD_TEMPLATE_PROTECTED.md	dev/build/operations/templates/BUILD_TEMPLATE_PROTECTED.md
-R100	dev/build/operations/dev/templates/CHATGPT_ONE_SHOT_PROMPT.md	dev/build/operations/templates/CHATGPT_ONE_SHOT_PROMPT.md
-R100	dev/build/operations/dev/templates/CHATGPT_START_PROMPT_V4.md	dev/build/operations/templates/CHATGPT_START_PROMPT_V4.md
-R100	dev/build/operations/dev/templates/CODEX_AUTO_COMMAND.md	dev/build/operations/templates/CODEX_AUTO_COMMAND.md
-R100	dev/build/operations/dev/templates/CODEX_COMMAND_TEMPLATE.md	dev/build/operations/templates/CODEX_COMMAND_TEMPLATE.md
-R100	dev/build/operations/dev/templates/CODEX_ONE_LINE_COMMAND.md	dev/build/operations/templates/CODEX_ONE_LINE_COMMAND.md
-R100	dev/build/operations/dev/templates/CODEX_ONE_LINE_EXAMPLE.md	dev/build/operations/templates/CODEX_ONE_LINE_EXAMPLE.md
-R100	dev/build/operations/dev/templates/CODEX_ONE_SHOT_COMMAND.md	dev/build/operations/templates/CODEX_ONE_SHOT_COMMAND.md
-R100	dev/build/operations/dev/templates/SESSION_TEMPLATE.md	dev/build/operations/templates/SESSION_TEMPLATE.md
-R100	dev/build/operations/dev/validation_checklist.txt	dev/build/operations/validation_checklist.txt
-R088	dev/build/dev/PR/README.md	dev/build/pr/README.md
-R100	dev/build/dev/PR/reference/OWNER_007_BUILD_PR.md	dev/build/pr/reference/OWNER_007_BUILD_PR.md
-R100	dev/build/dev/PR/reference/OWNER_007_PLAN_PR.md	dev/build/pr/reference/OWNER_007_PLAN_PR.md
-R078	dev/build/dev/PR/reference/README.md	dev/build/pr/reference/README.md
-R100	dev/build/dev/PR/reference/plan_pr_tool_workspace_manifest_boundaries.md	dev/build/pr/reference/plan_pr_tool_workspace_manifest_boundaries.md
-R100	dev/build/dev/PR/reference/pr_koti_layout_contract.md	dev/build/pr/reference/pr_koti_layout_contract.md
-R100	dev/build/dev/PR/reference/pr_tool_fix_asset_browser_1505.md	dev/build/pr/reference/pr_tool_fix_asset_browser_1505.md
-R100	dev/build/dev/PR/reference/pr_tool_fix_fullscreen_exit_state.md	dev/build/pr/reference/pr_tool_fix_fullscreen_exit_state.md
-R100	dev/build/dev/PR/reference/pr_tool_fix_parallax_header_metadata.md	dev/build/pr/reference/pr_tool_fix_parallax_header_metadata.md
-R100	dev/build/dev/PR/reference/pr_tool_header_singleline.md	dev/build/pr/reference/pr_tool_header_singleline.md
-R100	dev/build/dev/PR/reference/pr_tool_interactive_uat.md	dev/build/pr/reference/pr_tool_interactive_uat.md
-R100	dev/build/dev/PR/reference/pr_tool_layout_workflow_baseline.md	dev/build/pr/reference/pr_tool_layout_workflow_baseline.md
-R100	dev/build/dev/PR/reference/pr_tool_remove_future_import_hints.md	dev/build/pr/reference/pr_tool_remove_future_import_hints.md
-R100	dev/build/dev/PR/reference/pr_tool_remove_static_header_intro.md	dev/build/pr/reference/pr_tool_remove_static_header_intro.md
-R100	dev/build/dev/PR/reference/pr_tool_stabilization.md	dev/build/pr/reference/pr_tool_stabilization.md
-R100	dev/build/dev/PR/reference/pr_tool_uat_closeout.md	dev/build/pr/reference/pr_tool_uat_closeout.md
-R100	dev/build/dev/PR/reference/pr_tool_uat_fix_fullscreen_header_wiring.md	dev/build/pr/reference/pr_tool_uat_fix_fullscreen_header_wiring.md
-R100	dev/build/dev/PR/reference/pr_tool_uat_fix_header_asset_browser.md	dev/build/pr/reference/pr_tool_uat_fix_header_asset_browser.md
-R100	dev/build/dev/PR/reference/pr_tool_uat_fixes.md	dev/build/pr/reference/pr_tool_uat_fixes.md
-R100	dev/build/dev/PR/templates/BUILD_PR.md	dev/build/pr/templates/BUILD_PR.md
-R100	dev/build/dev/PR/templates/PLAN_PR.md	dev/build/pr/templates/PLAN_PR.md
-R100	dev/build/dev/PR/templates/pr_capability_bundle_checklist.md	dev/build/pr/templates/pr_capability_bundle_checklist.md
-R100	dev/build/schemas/docs/dev/reports/REPORT_PR_11_17.md	dev/reports/history/schemas/REPORT_PR_11_17.md
+M	dev/archive/v1-v2/docs_build/dev/reports/toolbox-builder-route-history/deprecated_games_docs_tools_normalize_report.md
+M	dev/archive/v1-v2/docs_build/dev/reports/toolbox-builder-route-history/template_consistency_audit_report.md
+M	dev/archive/v1-v2/docs_build/dev/reports/toolbox-builder-route-history/template_convergence_closeout_report.md
+M	dev/archive/v1-v2/docs_build/dev/reports/toolbox-builder-route-history/theme_v2_asset_ssot_inventory.md
+M	dev/archive/v1-v2/docs_build/dev/reports/toolbox-builder-route-history/theme_v2_asset_wiring_closeout_report.md
+M	dev/archive/v1-v2/docs_build/dev/reports/toolbox-builder-route-history/theme_v2_reference_rewire.md
+R050	dev/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md	dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+A	dev/build/ProjectInstructions/README.txt
+R071	dev/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md	dev/build/ProjectInstructions/TEAM_START_COMMANDS.md
+R100	dev/docs_build/dev/ProjectInstructions/addendums/assistant_execution_modes.md	dev/build/ProjectInstructions/addendums/assistant_execution_modes.md
+R100	dev/docs_build/dev/ProjectInstructions/addendums/batch_governance_mode.md	dev/build/ProjectInstructions/addendums/batch_governance_mode.md
+R088	dev/docs_build/dev/ProjectInstructions/addendums/branch_context_governance.md	dev/build/ProjectInstructions/addendums/branch_context_governance.md
+R090	dev/docs_build/dev/ProjectInstructions/addendums/branch_lock_governance.md	dev/build/ProjectInstructions/addendums/branch_lock_governance.md
+R094	dev/docs_build/dev/ProjectInstructions/addendums/build_path_sync.md	dev/build/ProjectInstructions/addendums/build_path_sync.md
+R090	dev/docs_build/dev/ProjectInstructions/addendums/canonical_repository_structure.md	dev/build/ProjectInstructions/addendums/canonical_repository_structure.md
+R098	dev/docs_build/dev/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md	dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
+R079	dev/docs_build/dev/ProjectInstructions/addendums/codex_project_instructions_startup.md	dev/build/ProjectInstructions/addendums/codex_project_instructions_startup.md
+R100	dev/docs_build/dev/ProjectInstructions/addendums/deprecation.md	dev/build/ProjectInstructions/addendums/deprecation.md
+R054	dev/docs_build/dev/ProjectInstructions/addendums/documentation_ownership.md	dev/build/ProjectInstructions/addendums/documentation_ownership.md
+R093	dev/docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md	dev/build/ProjectInstructions/addendums/environment_configuration_standards.md
+R092	dev/docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md	dev/build/ProjectInstructions/addendums/environment_governance_model.md
+R100	dev/docs_build/dev/ProjectInstructions/addendums/governance_phase1_complete.md	dev/build/ProjectInstructions/addendums/governance_phase1_complete.md
+R100	dev/docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md	dev/build/ProjectInstructions/addendums/koti_layout_contract.md
+R100	dev/docs_build/dev/ProjectInstructions/addendums/legacy_migration_policy.md	dev/build/ProjectInstructions/addendums/legacy_migration_policy.md
+R093	dev/docs_build/dev/ProjectInstructions/addendums/multi_team.md	dev/build/ProjectInstructions/addendums/multi_team.md
+R100	dev/docs_build/dev/ProjectInstructions/addendums/naming_registry.md	dev/build/ProjectInstructions/addendums/naming_registry.md
+R100	dev/docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md	dev/build/ProjectInstructions/addendums/no_mock_repository_runtime_source.md
+R100	dev/docs_build/dev/ProjectInstructions/addendums/postgres_only.md	dev/build/ProjectInstructions/addendums/postgres_only.md
+R097	dev/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md	dev/build/ProjectInstructions/addendums/pr_workflow.md
+R093	dev/docs_build/dev/ProjectInstructions/addendums/preservation.md	dev/build/ProjectInstructions/addendums/preservation.md
+R088	dev/docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md	dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
+R060	dev/docs_build/dev/ProjectInstructions/addendums/project_reference_files.md	dev/build/ProjectInstructions/addendums/project_reference_files.md
+R100	dev/docs_build/dev/ProjectInstructions/addendums/referenced_asset_protection.md	dev/build/ProjectInstructions/addendums/referenced_asset_protection.md
+R050	dev/docs_build/dev/ProjectInstructions/addendums/release_gate.md	dev/build/ProjectInstructions/addendums/release_gate.md
+R091	dev/docs_build/dev/ProjectInstructions/addendums/repository_directory_standard.md	dev/build/ProjectInstructions/addendums/repository_directory_standard.md
+R100	dev/docs_build/dev/ProjectInstructions/addendums/samples2tools_adapter_guidance.md	dev/build/ProjectInstructions/addendums/samples2tools_adapter_guidance.md
+R100	dev/docs_build/dev/ProjectInstructions/addendums/status_model.md	dev/build/ProjectInstructions/addendums/status_model.md
+R100	dev/docs_build/dev/ProjectInstructions/addendums/table_first_ui.md	dev/build/ProjectInstructions/addendums/table_first_ui.md
+R100	dev/docs_build/dev/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md	dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
+R091	dev/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md	dev/build/ProjectInstructions/addendums/team_release_readiness.md
+R090	dev/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md	dev/build/ProjectInstructions/addendums/team_start_and_release.md
+R100	dev/docs_build/dev/ProjectInstructions/addendums/test_structure_standardization.md	dev/build/ProjectInstructions/addendums/test_structure_standardization.md
+R100	dev/docs_build/dev/ProjectInstructions/addendums/tile_overlay_status.md	dev/build/ProjectInstructions/addendums/tile_overlay_status.md
+R100	dev/docs_build/dev/ProjectInstructions/addendums/tool_imagery.md	dev/build/ProjectInstructions/addendums/tool_imagery.md
+R087	dev/docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md	dev/build/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md
+R100	dev/docs_build/dev/ProjectInstructions/addendums/workspace_v2_playwright_gate.md	dev/build/ProjectInstructions/addendums/workspace_v2_playwright_gate.md
+R098	dev/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md	dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
+R100	dev/docs_build/dev/ProjectInstructions/chatGPT_command.txt	dev/build/ProjectInstructions/chatGPT_command.txt
+R100	dev/docs_build/dev/ProjectInstructions/deprecation/README.md	dev/build/ProjectInstructions/deprecation/README.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/AUDIT_EVENT_CONTRACT.md	dev/build/ProjectInstructions/standards/AUDIT_EVENT_CONTRACT.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/BACKUP_SNAPSHOT_CONTRACT.md	dev/build/ProjectInstructions/standards/BACKUP_SNAPSHOT_CONTRACT.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/COLLABORATION_ROLE_CONTRACT.md	dev/build/ProjectInstructions/standards/COLLABORATION_ROLE_CONTRACT.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/CREATOR_PROFILE_CONTRACT.md	dev/build/ProjectInstructions/standards/CREATOR_PROFILE_CONTRACT.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/DOWNLOAD_GRANT_CONTRACT.md	dev/build/ProjectInstructions/standards/DOWNLOAD_GRANT_CONTRACT.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/ENTITLEMENT_CONTRACT.md	dev/build/ProjectInstructions/standards/ENTITLEMENT_CONTRACT.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/GAME_MANIFEST_CONTRACT.md	dev/build/ProjectInstructions/standards/GAME_MANIFEST_CONTRACT.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/IDENTITY_PERMISSIONS_CONTRACT.md	dev/build/ProjectInstructions/standards/IDENTITY_PERMISSIONS_CONTRACT.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/IDENTITY_PERMISSIONS_MODEL.md	dev/build/ProjectInstructions/standards/IDENTITY_PERMISSIONS_MODEL.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/INSTALL_RECEIPT_CONTRACT.md	dev/build/ProjectInstructions/standards/INSTALL_RECEIPT_CONTRACT.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/LAUNCHER_PAIRING_CONTRACT.md	dev/build/ProjectInstructions/standards/LAUNCHER_PAIRING_CONTRACT.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/LIBRARY_ITEM_CONTRACT.md	dev/build/ProjectInstructions/standards/LIBRARY_ITEM_CONTRACT.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/MARKETPLACE_LISTING_CONTRACT.md	dev/build/ProjectInstructions/standards/MARKETPLACE_LISTING_CONTRACT.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/MARKETPLACE_TRANSACTION_BOUNDARY_CONTRACT.md	dev/build/ProjectInstructions/standards/MARKETPLACE_TRANSACTION_BOUNDARY_CONTRACT.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/MIGRATION_PLAN_CONTRACT.md	dev/build/ProjectInstructions/standards/MIGRATION_PLAN_CONTRACT.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/MODERATION_QUEUE_CONTRACT.md	dev/build/ProjectInstructions/standards/MODERATION_QUEUE_CONTRACT.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/NOTIFICATION_CONTRACT.md	dev/build/ProjectInstructions/standards/NOTIFICATION_CONTRACT.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/ORGANIZATION_CONTRACT.md	dev/build/ProjectInstructions/standards/ORGANIZATION_CONTRACT.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/PLATFORM_DATA_OWNERSHIP_MODEL.md	dev/build/ProjectInstructions/standards/PLATFORM_DATA_OWNERSHIP_MODEL.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/PROJECTWORKSPACE_VALIDATION_BOUNDARIES.md	dev/build/ProjectInstructions/standards/PROJECTWORKSPACE_VALIDATION_BOUNDARIES.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/PROJECT_CONTRACT.md	dev/build/ProjectInstructions/standards/PROJECT_CONTRACT.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/PROJECT_LIFECYCLE_MODEL.md	dev/build/ProjectInstructions/standards/PROJECT_LIFECYCLE_MODEL.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/PROJECT_TYPE_CONTRACT.md	dev/build/ProjectInstructions/standards/PROJECT_TYPE_CONTRACT.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/PROJECT_WORKSPACE_RUNTIME_CONTRACT.md	dev/build/ProjectInstructions/standards/PROJECT_WORKSPACE_RUNTIME_CONTRACT.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/PUBLISH_CONTRACT.md	dev/build/ProjectInstructions/standards/PUBLISH_CONTRACT.md
+R082	dev/docs_build/dev/ProjectInstructions/standards/README.md	dev/build/ProjectInstructions/standards/README.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/RELEASE_CONTRACT.md	dev/build/ProjectInstructions/standards/RELEASE_CONTRACT.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/RESTORE_SNAPSHOT_CONTRACT.md	dev/build/ProjectInstructions/standards/RESTORE_SNAPSHOT_CONTRACT.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/REVIEW_RATING_CONTRACT.md	dev/build/ProjectInstructions/standards/REVIEW_RATING_CONTRACT.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/SERVER_DASHBOARD_FOUNDATION.md	dev/build/ProjectInstructions/standards/SERVER_DASHBOARD_FOUNDATION.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/TOOL_LAUNCH_SSOT.md	dev/build/ProjectInstructions/standards/TOOL_LAUNCH_SSOT.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/TOOL_STATE_CONTRACT.md	dev/build/ProjectInstructions/standards/TOOL_STATE_CONTRACT.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/UPDATE_CHANNEL_CONTRACT.md	dev/build/ProjectInstructions/standards/UPDATE_CHANNEL_CONTRACT.md
+R100	dev/docs_build/dev/ProjectInstructions/standards/VERSION_COMPATIBILITY_CONTRACT.md	dev/build/ProjectInstructions/standards/VERSION_COMPATIBILITY_CONTRACT.md
+R100	dev/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md	dev/build/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
+R095	dev/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md	dev/build/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
+R100	dev/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md	dev/build/ProjectInstructions/team_assignments/team_ownership.md
+R100	dev/docs_build/account/design-system.html	dev/build/account/design-system.html
+R100	dev/docs_build/account/grouping-colors.html	dev/build/account/grouping-colors.html
+R100	dev/docs_build/codex/decisions/project-packages.md	dev/build/codex/decisions/project-packages.md
+R100	dev/docs_build/codex/decisions/system-health-usage-reporting.md	dev/build/codex/decisions/system-health-usage-reporting.md
+R100	dev/docs_build/database/README.md	dev/build/database/README.md
+R100	dev/docs_build/database/backup-restore-lane.md	dev/build/database/backup-restore-lane.md
+R100	dev/docs_build/database/ddl/account.sql	dev/build/database/ddl/account.sql
+R100	dev/docs_build/database/ddl/account/supabase-identity-tables.sql	dev/build/database/ddl/account/supabase-identity-tables.sql
+R100	dev/docs_build/database/ddl/admin.sql	dev/build/database/ddl/admin.sql
+R100	dev/docs_build/database/ddl/asset.sql	dev/build/database/ddl/asset.sql
+R100	dev/docs_build/database/ddl/controls.sql	dev/build/database/ddl/controls.sql
+R100	dev/docs_build/database/ddl/game-configuration.sql	dev/build/database/ddl/game-configuration.sql
+R100	dev/docs_build/database/ddl/game-crew.sql	dev/build/database/ddl/game-crew.sql
+R100	dev/docs_build/database/ddl/game-design.sql	dev/build/database/ddl/game-design.sql
+R100	dev/docs_build/database/ddl/game-journey.sql	dev/build/database/ddl/game-journey.sql
+R100	dev/docs_build/database/ddl/game-workspace.sql	dev/build/database/ddl/game-workspace.sql
+R100	dev/docs_build/database/ddl/messages.sql	dev/build/database/ddl/messages.sql
+R100	dev/docs_build/database/ddl/objects.sql	dev/build/database/ddl/objects.sql
+R100	dev/docs_build/database/ddl/palette.sql	dev/build/database/ddl/palette.sql
+R100	dev/docs_build/database/ddl/support-tickets.sql	dev/build/database/ddl/support-tickets.sql
+R100	dev/docs_build/database/ddl/tags.sql	dev/build/database/ddl/tags.sql
+R100	dev/docs_build/database/ddl/tool-metadata.sql	dev/build/database/ddl/tool-metadata.sql
+R100	dev/docs_build/database/ddl/tool-planning.sql	dev/build/database/ddl/tool-planning.sql
+R100	dev/docs_build/database/ddl/toolbox-votes.sql	dev/build/database/ddl/toolbox-votes.sql
+R100	dev/docs_build/database/dml/DML_INDEX.md	dev/build/database/dml/DML_INDEX.md
+R100	dev/docs_build/database/dml/account.sql	dev/build/database/dml/account.sql
+R100	dev/docs_build/database/dml/admin.sql	dev/build/database/dml/admin.sql
+R100	dev/docs_build/database/dml/asset.sql	dev/build/database/dml/asset.sql
+R100	dev/docs_build/database/dml/controls.sql	dev/build/database/dml/controls.sql
+R100	dev/docs_build/database/dml/game-configuration.sql	dev/build/database/dml/game-configuration.sql
+R100	dev/docs_build/database/dml/game-crew.sql	dev/build/database/dml/game-crew.sql
+R100	dev/docs_build/database/dml/game-design.sql	dev/build/database/dml/game-design.sql
+R100	dev/docs_build/database/dml/game-journey.sql	dev/build/database/dml/game-journey.sql
+R100	dev/docs_build/database/dml/game-workspace.sql	dev/build/database/dml/game-workspace.sql
+R100	dev/docs_build/database/dml/messages.sql	dev/build/database/dml/messages.sql
+R100	dev/docs_build/database/dml/objects.sql	dev/build/database/dml/objects.sql
+R100	dev/docs_build/database/dml/palette.sql	dev/build/database/dml/palette.sql
+R100	dev/docs_build/database/dml/support-tickets.sql	dev/build/database/dml/support-tickets.sql
+R100	dev/docs_build/database/dml/tags.sql	dev/build/database/dml/tags.sql
+R100	dev/docs_build/database/dml/tool-metadata.sql	dev/build/database/dml/tool-metadata.sql
+R100	dev/docs_build/database/dml/tool-planning.sql	dev/build/database/dml/tool-planning.sql
+R100	dev/docs_build/database/dml/toolbox-votes.sql	dev/build/database/dml/toolbox-votes.sql
+R100	dev/docs_build/database/promotion-lane.md	dev/build/database/promotion-lane.md
+R100	dev/docs_build/database/runbook.md	dev/build/database/runbook.md
+R097	dev/docs_build/database/seed/account.json	dev/build/database/seed/account.json
+R100	dev/docs_build/database/seed/account/supabase-dev-identity-bootstrap.md	dev/build/database/seed/account/supabase-dev-identity-bootstrap.md
+R095	dev/docs_build/database/seed/admin.json	dev/build/database/seed/admin.json
+R091	dev/docs_build/database/seed/asset.json	dev/build/database/seed/asset.json
+R091	dev/docs_build/database/seed/controls.json	dev/build/database/seed/controls.json
+R091	dev/docs_build/database/seed/game-configuration.json	dev/build/database/seed/game-configuration.json
+R089	dev/docs_build/database/seed/game-crew.json	dev/build/database/seed/game-crew.json
+R091	dev/docs_build/database/seed/game-design.json	dev/build/database/seed/game-design.json
+R092	dev/docs_build/database/seed/game-journey.json	dev/build/database/seed/game-journey.json
+R089	dev/docs_build/database/seed/game-workspace.json	dev/build/database/seed/game-workspace.json
+R100	dev/docs_build/database/seed/guest/achievements.json	dev/build/database/seed/guest/achievements.json
+R100	dev/docs_build/database/seed/guest/ai-assistant.json	dev/build/database/seed/guest/ai-assistant.json
+R100	dev/docs_build/database/seed/guest/animations.json	dev/build/database/seed/guest/animations.json
+R100	dev/docs_build/database/seed/guest/asset.json	dev/build/database/seed/guest/asset.json
+R100	dev/docs_build/database/seed/guest/audio.json	dev/build/database/seed/guest/audio.json
+R100	dev/docs_build/database/seed/guest/build-game.json	dev/build/database/seed/guest/build-game.json
+R100	dev/docs_build/database/seed/guest/characters.json	dev/build/database/seed/guest/characters.json
+R100	dev/docs_build/database/seed/guest/community.json	dev/build/database/seed/guest/community.json
+R100	dev/docs_build/database/seed/guest/controls.json	dev/build/database/seed/guest/controls.json
+R100	dev/docs_build/database/seed/guest/debug.json	dev/build/database/seed/guest/debug.json
+R100	dev/docs_build/database/seed/guest/events.json	dev/build/database/seed/guest/events.json
+R100	dev/docs_build/database/seed/guest/fonts.json	dev/build/database/seed/guest/fonts.json
+R100	dev/docs_build/database/seed/guest/game-configuration.json	dev/build/database/seed/guest/game-configuration.json
+R100	dev/docs_build/database/seed/guest/game-crew.json	dev/build/database/seed/guest/game-crew.json
+R100	dev/docs_build/database/seed/guest/game-design.json	dev/build/database/seed/guest/game-design.json
+R100	dev/docs_build/database/seed/guest/game-journey.json	dev/build/database/seed/guest/game-journey.json
+R100	dev/docs_build/database/seed/guest/game-testing.json	dev/build/database/seed/guest/game-testing.json
+R100	dev/docs_build/database/seed/guest/game-workspace.json	dev/build/database/seed/guest/game-workspace.json
+R100	dev/docs_build/database/seed/guest/hitboxes.json	dev/build/database/seed/guest/hitboxes.json
+R100	dev/docs_build/database/seed/guest/idea-board.json	dev/build/database/seed/guest/idea-board.json
+R100	dev/docs_build/database/seed/guest/languages.json	dev/build/database/seed/guest/languages.json
+R100	dev/docs_build/database/seed/guest/learn.json	dev/build/database/seed/guest/learn.json
+R100	dev/docs_build/database/seed/guest/marketplace.json	dev/build/database/seed/guest/marketplace.json
+R100	dev/docs_build/database/seed/guest/messages.json	dev/build/database/seed/guest/messages.json
+R100	dev/docs_build/database/seed/guest/music.json	dev/build/database/seed/guest/music.json
+R100	dev/docs_build/database/seed/guest/objects.json	dev/build/database/seed/guest/objects.json
+R100	dev/docs_build/database/seed/guest/palette.json	dev/build/database/seed/guest/palette.json
+R100	dev/docs_build/database/seed/guest/performance.json	dev/build/database/seed/guest/performance.json
+R100	dev/docs_build/database/seed/guest/publish.json	dev/build/database/seed/guest/publish.json
+R100	dev/docs_build/database/seed/guest/ratings.json	dev/build/database/seed/guest/ratings.json
+R100	dev/docs_build/database/seed/guest/saved-data.json	dev/build/database/seed/guest/saved-data.json
+R100	dev/docs_build/database/seed/guest/sprites.json	dev/build/database/seed/guest/sprites.json
+R100	dev/docs_build/database/seed/guest/tags.json	dev/build/database/seed/guest/tags.json
+R100	dev/docs_build/database/seed/guest/text-to-speech.json	dev/build/database/seed/guest/text-to-speech.json
+R100	dev/docs_build/database/seed/guest/users.json	dev/build/database/seed/guest/users.json
+R100	dev/docs_build/database/seed/guest/videos.json	dev/build/database/seed/guest/videos.json
+R100	dev/docs_build/database/seed/guest/voices.json	dev/build/database/seed/guest/voices.json
+R100	dev/docs_build/database/seed/guest/worlds.json	dev/build/database/seed/guest/worlds.json
+R096	dev/docs_build/database/seed/messages.json	dev/build/database/seed/messages.json
+R088	dev/docs_build/database/seed/objects.json	dev/build/database/seed/objects.json
+R091	dev/docs_build/database/seed/palette.json	dev/build/database/seed/palette.json
+R092	dev/docs_build/database/seed/support-tickets.json	dev/build/database/seed/support-tickets.json
+R092	dev/docs_build/database/seed/tags.json	dev/build/database/seed/tags.json
+R088	dev/docs_build/database/seed/tool-metadata.json	dev/build/database/seed/tool-metadata.json
+R088	dev/docs_build/database/seed/tool-planning.json	dev/build/database/seed/tool-planning.json
+R088	dev/docs_build/database/seed/toolbox-votes.json	dev/build/database/seed/toolbox-votes.json
+R100	dev/docs_build/design/gdd/Atari/Area_51/gdd.txt	dev/build/design/gdd/Atari/Area_51/gdd.txt
+R100	dev/docs_build/design/gdd/Atari/Asteroids/gdd.txt	dev/build/design/gdd/Atari/Asteroids/gdd.txt
+R100	dev/docs_build/design/gdd/Atari/Centipede/gdd.txt	dev/build/design/gdd/Atari/Centipede/gdd.txt
+R100	dev/docs_build/design/gdd/Atari/Marble_Madness/gdd.txt	dev/build/design/gdd/Atari/Marble_Madness/gdd.txt
+R100	dev/docs_build/design/gdd/Atari/Missile_Command/gdd.txt	dev/build/design/gdd/Atari/Missile_Command/gdd.txt
+R100	dev/docs_build/design/gdd/Atari/Paperboy/gdd.txt	dev/build/design/gdd/Atari/Paperboy/gdd.txt
+R100	dev/docs_build/design/gdd/Atari/San_Francisco_Rush/gdd.txt	dev/build/design/gdd/Atari/San_Francisco_Rush/gdd.txt
+R100	dev/docs_build/design/gdd/Atari/atari.txt	dev/build/design/gdd/Atari/atari.txt
+R100	dev/docs_build/design/gdd/Capcom/Bionic Commando/gdd.txt	dev/build/design/gdd/Capcom/Bionic Commando/gdd.txt
+R100	dev/docs_build/design/gdd/Capcom/Commando/gdd.txt	dev/build/design/gdd/Capcom/Commando/gdd.txt
+R100	dev/docs_build/design/gdd/Capcom/Final Fight/gdd.txt	dev/build/design/gdd/Capcom/Final Fight/gdd.txt
+R100	dev/docs_build/design/gdd/Capcom/Ghosts 'n Goblins/gdd.txt	dev/build/design/gdd/Capcom/Ghosts 'n Goblins/gdd.txt
+R100	dev/docs_build/design/gdd/Capcom/Marvel_vs_Capcom/gdd.txt	dev/build/design/gdd/Capcom/Marvel_vs_Capcom/gdd.txt
+R100	dev/docs_build/design/gdd/Capcom/capcom.txt	dev/build/design/gdd/Capcom/capcom.txt
+R100	dev/docs_build/design/gdd/Konani/Contra/gdd.tt	dev/build/design/gdd/Konani/Contra/gdd.tt
+R100	dev/docs_build/design/gdd/Konani/Frogger/gdd.txt	dev/build/design/gdd/Konani/Frogger/gdd.txt
+R100	dev/docs_build/design/gdd/Konani/Gradius/gdd.txt	dev/build/design/gdd/Konani/Gradius/gdd.txt
+R100	dev/docs_build/design/gdd/Konani/Konani.txt	dev/build/design/gdd/Konani/Konani.txt
+R100	dev/docs_build/design/gdd/Konani/The Simpsons Game/gdd.txt	dev/build/design/gdd/Konani/The Simpsons Game/gdd.txt
+R100	dev/docs_build/design/gdd/Konani/Track_&_Field/gdd.txt	dev/build/design/gdd/Konani/Track_&_Field/gdd.txt
+R100	dev/docs_build/design/gdd/Midway/Cruis'n USA/gdd.txt	dev/build/design/gdd/Midway/Cruis'n USA/gdd.txt
+R100	dev/docs_build/design/gdd/Midway/Defender/gdd.txt	dev/build/design/gdd/Midway/Defender/gdd.txt
+R100	dev/docs_build/design/gdd/Midway/Joust/gdd.txt	dev/build/design/gdd/Midway/Joust/gdd.txt
+R100	dev/docs_build/design/gdd/Midway/Midway.txt	dev/build/design/gdd/Midway/Midway.txt
+R100	dev/docs_build/design/gdd/Midway/NBA Jam/gdd.txt	dev/build/design/gdd/Midway/NBA Jam/gdd.txt
+R100	dev/docs_build/design/gdd/Midway/Robotron/gdd.txt	dev/build/design/gdd/Midway/Robotron/gdd.txt
+R100	dev/docs_build/design/gdd/Midway/Spy Hunter/gdd.txt	dev/build/design/gdd/Midway/Spy Hunter/gdd.txt
+R100	dev/docs_build/design/gdd/Nameco/Dig Dug/gdd.txt	dev/build/design/gdd/Nameco/Dig Dug/gdd.txt
+R100	dev/docs_build/design/gdd/Nameco/Galaga/gdd.txt	dev/build/design/gdd/Nameco/Galaga/gdd.txt
+R100	dev/docs_build/design/gdd/Nameco/Ms. Pac-Man/gdd.txt	dev/build/design/gdd/Nameco/Ms. Pac-Man/gdd.txt
+R100	dev/docs_build/design/gdd/Nameco/Nameco.txt	dev/build/design/gdd/Nameco/Nameco.txt
+R100	dev/docs_build/design/gdd/Nameco/Pac-Man/gdd.txt	dev/build/design/gdd/Nameco/Pac-Man/gdd.txt
+R100	dev/docs_build/design/gdd/Nameco/Pole Position/gdd.txt	dev/build/design/gdd/Nameco/Pole Position/gdd.txt
+R100	dev/docs_build/design/gdd/Nameco/Ridge Racer/gdd.txt	dev/build/design/gdd/Nameco/Ridge Racer/gdd.txt
+R100	dev/docs_build/design/gdd/Nameco/Time Crisis/gdd.txt	dev/build/design/gdd/Nameco/Time Crisis/gdd.txt
+R100	dev/docs_build/design/gdd/Nintendo/Donkey Kong/gdd.txt	dev/build/design/gdd/Nintendo/Donkey Kong/gdd.txt
+R100	dev/docs_build/design/gdd/Nintendo/Killer Instinct/gdd.txt	dev/build/design/gdd/Nintendo/Killer Instinct/gdd.txt
+R100	dev/docs_build/design/gdd/Nintendo/Mario Bros/gdd.txt	dev/build/design/gdd/Nintendo/Mario Bros/gdd.txt
+R100	dev/docs_build/design/gdd/Nintendo/Nintendo.txt	dev/build/design/gdd/Nintendo/Nintendo.txt
+R100	dev/docs_build/design/gdd/Nintendo/Popeye/gdd.txt	dev/build/design/gdd/Nintendo/Popeye/gdd.txt
+R100	dev/docs_build/design/gdd/Nintendo/Punch-Out!/gdd.txt	dev/build/design/gdd/Nintendo/Punch-Out!/gdd.txt
+R100	dev/docs_build/design/gdd/Sega/After Burner/gdd.txt	dev/build/design/gdd/Sega/After Burner/gdd.txt
+R100	dev/docs_build/design/gdd/Sega/Altered Beast/gdd.txt	dev/build/design/gdd/Sega/Altered Beast/gdd.txt
+R100	dev/docs_build/design/gdd/Sega/Daytona USA/gdg.txt	dev/build/design/gdd/Sega/Daytona USA/gdg.txt
+R100	dev/docs_build/design/gdd/Sega/Golden Axe/gdd.txt	dev/build/design/gdd/Sega/Golden Axe/gdd.txt
+R100	dev/docs_build/design/gdd/Sega/Hang-On/gdd.txt	dev/build/design/gdd/Sega/Hang-On/gdd.txt
+R100	dev/docs_build/design/gdd/Sega/Out Run/gdd.txt	dev/build/design/gdd/Sega/Out Run/gdd.txt
+R100	dev/docs_build/design/gdd/Sega/Sega.txt	dev/build/design/gdd/Sega/Sega.txt
+R100	dev/docs_build/design/gdd/Sega/Virtua Racing/gdd.txt	dev/build/design/gdd/Sega/Virtua Racing/gdd.txt
+R100	dev/docs_build/design/gdd/Taito/Arkanoid/arkanoid.png	dev/build/design/gdd/Taito/Arkanoid/arkanoid.png
+R100	dev/docs_build/design/gdd/Taito/Arkanoid/gdd.txt	dev/build/design/gdd/Taito/Arkanoid/gdd.txt
+R100	dev/docs_build/design/gdd/Taito/Bubble Bobble/gdd.txt	dev/build/design/gdd/Taito/Bubble Bobble/gdd.txt
+R100	dev/docs_build/design/gdd/Taito/Darius Gaiden/gdd.txt	dev/build/design/gdd/Taito/Darius Gaiden/gdd.txt
+R100	dev/docs_build/design/gdd/Taito/Operation Wolf/gdd.txt	dev/build/design/gdd/Taito/Operation Wolf/gdd.txt
+R100	dev/docs_build/design/gdd/Taito/Qix/gdd.txt	dev/build/design/gdd/Taito/Qix/gdd.txt
+R100	dev/docs_build/design/gdd/Taito/Taito.txt	dev/build/design/gdd/Taito/Taito.txt
+R100	dev/docs_build/design/gdd/ToolboxAid/Bats/gdd.txt	dev/build/design/gdd/ToolboxAid/Bats/gdd.txt
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/KOTI_GDD_MERGE_ONLY.zip	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/KOTI_GDD_MERGE_ONLY.zip
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/King_of_the_Iceberg_GDD.md	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/King_of_the_Iceberg_GDD.md
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/King_of_the_Iceberg_image_def.txt	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/King_of_the_Iceberg_image_def.txt
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprite sheets/Armored penguin in action.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprite sheets/Armored penguin in action.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprite sheets/Armored penguin in icy stride.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprite sheets/Armored penguin in icy stride.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprite sheets/Armored penguin walking on ice.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprite sheets/Armored penguin walking on ice.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprite sheets/Icy whirlwind spin animation.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprite sheets/Icy whirlwind spin animation.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprite sheets/King_of_the_Iceberg_missing.txt	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprite sheets/King_of_the_Iceberg_missing.txt
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprite sheets/Magical penguin running cycle illustration.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprite sheets/Magical penguin running cycle illustration.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprite sheets/Penguin adventurer with water blaster.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprite sheets/Penguin adventurer with water blaster.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprite sheets/Penguin in powered armor sprinting.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprite sheets/Penguin in powered armor sprinting.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprite sheets/Pixel art penguin walking animation.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprite sheets/Pixel art penguin walking animation.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprite sheets/Racing penguin sprinting through icy trail.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprite sheets/Racing penguin sprinting through icy trail.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprite sheets/Sliding penguin animation sprite sheet.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprite sheets/Sliding penguin animation sprite sheet.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprite sheets/Sorcerer penguin with fiery ice effects.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprite sheets/Sorcerer penguin with fiery ice effects.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprite sheets/Tactical penguin walking on ice.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprite sheets/Tactical penguin walking on ice.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Armored penguin on icy terrain - anchor_grip_mode_sprite_sheet_8f_256.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Armored penguin on icy terrain - anchor_grip_mode_sprite_sheet_8f_256.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Armored penguin sliding on ice - bombard_belly_bomb_sprite_sheet_8f_256.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Armored penguin sliding on ice - bombard_belly_bomb_sprite_sheet_8f_256.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Armored penguin warrior bomb attack - bombard_belly_bomb_sprite_sheet_8f_256.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Armored penguin warrior bomb attack - bombard_belly_bomb_sprite_sheet_8f_256.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Epic penguin warriors in action.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Epic penguin warriors in action.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Floating icebergs sprite sheet.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Floating icebergs sprite sheet.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Heroic penguins in pixel art.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Heroic penguins in pixel art.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Icy battle arena on a floating iceberg.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Icy battle arena on a floating iceberg.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Icy power-up icons grid.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Icy power-up icons grid.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Icy pyramid battlefield in the ocean.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Icy pyramid battlefield in the ocean.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Icy waterfall animation sprite sheet.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Icy waterfall animation sprite sheet.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Layered animated ocean tiles.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Layered animated ocean tiles.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Layered ocean tile animation sprites.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Layered ocean tile animation sprites.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Penguin adventurer with water blaster - splash_pucker_blaster_sprite_sheet_8f_256.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Penguin adventurer with water blaster - splash_pucker_blaster_sprite_sheet_8f_256.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Penguin in powered armor dash - dash_slipstream_dash_sprite_sheet_8f_256.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Penguin in powered armor dash - dash_slipstream_dash_sprite_sheet_8f_256.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Penguin in powered armor walking - dash_slipstream_dash_sprite_sheet_8f_256.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Penguin in powered armor walking - dash_slipstream_dash_sprite_sheet_8f_256.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Penguin walk cycle in pixel art.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Penguin walk cycle in pixel art.png
+R100	"dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Penguin warrior\342\200\231s icy smash attack - glacier_mega_weight_sprite_sheet_8f_256 v1.png"	"dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Penguin warrior\342\200\231s icy smash attack - glacier_mega_weight_sprite_sheet_8f_256 v1.png"
+R100	"dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Penguin warrior\342\200\231s icy smash attack - glacier_mega_weight_sprite_sheet_8f_256 v2.png"	"dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Penguin warrior\342\200\231s icy smash attack - glacier_mega_weight_sprite_sheet_8f_256 v2.png"
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Penguin wizard casting frostbite spell - frostbite_freeze_blast_sprite_sheet_8f_256.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Penguin wizard casting frostbite spell - frostbite_freeze_blast_sprite_sheet_8f_256.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Penguin wizard's icy whirlwind attack- cyclone_spin_attack_sprite_sheet_8f_256.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Penguin wizard's icy whirlwind attack- cyclone_spin_attack_sprite_sheet_8f_256.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Pixel art iceberg tileset.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Pixel art iceberg tileset.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Pixel art penguin walking cycle.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Pixel art penguin walking cycle.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Pixelated penguin warriors in action.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Pixelated penguin warriors in action.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Sorcerer penguin casting an icy spell - frostbite_freeze_blast_sprite_sheet_8f_256.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Sorcerer penguin casting an icy spell - frostbite_freeze_blast_sprite_sheet_8f_256.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Tactical penguin on icy walk - sniper_crystal_shot_sprite_sheet_8f_256.png	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/Tactical penguin on icy walk - sniper_crystal_shot_sprite_sheet_8f_256.png
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/nvm-setup.exe	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/sprites/nvm-setup.exe
+R100	dev/docs_build/design/gdd/ToolboxAid/King_of_the_Iceberg/walking_pattern_overlay_frames_256.zip	dev/build/design/gdd/ToolboxAid/King_of_the_Iceberg/walking_pattern_overlay_frames_256.zip
+R100	dev/docs_build/design/gdd/ToolboxAid/Neon_Maze_Protocol/Neon_Maze_Protocol_GDD.md	dev/build/design/gdd/ToolboxAid/Neon_Maze_Protocol/Neon_Maze_Protocol_GDD.md
+R100	dev/docs_build/design/gdd/ToolboxAid/Vertex_Void/vertex_void_gdd.md	dev/build/design/gdd/ToolboxAid/Vertex_Void/vertex_void_gdd.md
+R100	dev/docs_build/design/gdd/gdd.txt	dev/build/design/gdd/gdd.txt
+R100	dev/docs_build/design/theme-v2-icons/theme-v2-icon-style-guide.md	dev/build/design/theme-v2-icons/theme-v2-icon-style-guide.md
+R100	dev/docs_build/operations/dev/3D_SAMPLE_ADAPTER_HARNESS.md	dev/build/operations/3D_SAMPLE_ADAPTER_HARNESS.md
+R100	dev/docs_build/operations/dev/APPLY_VALIDATION_SPEC.md	dev/build/operations/APPLY_VALIDATION_SPEC.md
+R100	dev/docs_build/operations/dev/AUTHORITATIVE_INJECTION_SPEC.md	dev/build/operations/AUTHORITATIVE_INJECTION_SPEC.md
+R100	dev/docs_build/operations/dev/CODEX_PLAN_AND_API_KEY_SCRIPTING.md	dev/build/operations/CODEX_PLAN_AND_API_KEY_SCRIPTING.md
+R100	dev/docs_build/operations/dev/CODEX_TEMPLATE_GAME_CREATION_SCRIPTING.md	dev/build/operations/CODEX_TEMPLATE_GAME_CREATION_SCRIPTING.md
+R100	dev/docs_build/operations/dev/CODEX_WEBSITE_REPO_DEPLOYMENT_SCRIPTING.md	dev/build/operations/CODEX_WEBSITE_REPO_DEPLOYMENT_SCRIPTING.md
+R100	dev/docs_build/operations/dev/DAILY_STARTUP_ONE_SHOT.md	dev/build/operations/DAILY_STARTUP_ONE_SHOT.md
+R100	dev/docs_build/operations/dev/DAILY_STARTUP_V4.md	dev/build/operations/DAILY_STARTUP_V4.md
+R100	dev/docs_build/operations/dev/DEBUG_MULTI_ENTITY_SPEC.md	dev/build/operations/DEBUG_MULTI_ENTITY_SPEC.md
+R100	dev/docs_build/operations/dev/DEBUG_REPLAY_VISUALS.md	dev/build/operations/DEBUG_REPLAY_VISUALS.md
+R100	dev/docs_build/operations/dev/DEBUG_SURFACE_CONTRACT.md	dev/build/operations/DEBUG_SURFACE_CONTRACT.md
+R100	dev/docs_build/operations/dev/DEBUG_TIMELINE_VISUALIZATION.md	dev/build/operations/DEBUG_TIMELINE_VISUALIZATION.md
+R100	dev/docs_build/operations/dev/DETERMINISTIC_REPLAY_RULES.md	dev/build/operations/DETERMINISTIC_REPLAY_RULES.md
+R100	dev/docs_build/operations/dev/ENGINE_MATURITY_API_INVENTORY.md	dev/build/operations/ENGINE_MATURITY_API_INVENTORY.md
+R100	dev/docs_build/operations/dev/ENGINE_MATURITY_DOCUMENTATION_MAP.md	dev/build/operations/ENGINE_MATURITY_DOCUMENTATION_MAP.md
+R100	dev/docs_build/operations/dev/ENGINE_MATURITY_PERFORMANCE_RULES.md	dev/build/operations/ENGINE_MATURITY_PERFORMANCE_RULES.md
+R100	dev/docs_build/operations/dev/ENGINE_MATURITY_VERSIONING_STRATEGY.md	dev/build/operations/ENGINE_MATURITY_VERSIONING_STRATEGY.md
+R100	dev/docs_build/operations/dev/ENTITY_RECONCILIATION_SPEC.md	dev/build/operations/ENTITY_RECONCILIATION_SPEC.md
+R100	dev/docs_build/operations/dev/FINAL_OPTIMIZATION_INSTRUCTIONS.md	dev/build/operations/FINAL_OPTIMIZATION_INSTRUCTIONS.md
+R100	dev/docs_build/operations/dev/FRAME_HISTORY_SPEC.md	dev/build/operations/FRAME_HISTORY_SPEC.md
+R100	dev/docs_build/operations/dev/FULL_AUTOMATION_NOTES.md	dev/build/operations/FULL_AUTOMATION_NOTES.md
+R100	dev/docs_build/operations/dev/GITHUB_CONNECTOR_USAGE.md	dev/build/operations/GITHUB_CONNECTOR_USAGE.md
+R100	dev/docs_build/operations/dev/INTEGRATION_NOTES.md	dev/build/operations/INTEGRATION_NOTES.md
+R100	dev/docs_build/operations/dev/LEVEL_20_TRACK_A_BUILD_PIPELINE.md	dev/build/operations/LEVEL_20_TRACK_A_BUILD_PIPELINE.md
+R100	dev/docs_build/operations/dev/LEVEL_20_TRACK_A_RELEASE_CRITERIA.md	dev/build/operations/LEVEL_20_TRACK_A_RELEASE_CRITERIA.md
+R100	dev/docs_build/operations/dev/MULTI_ENTITY_TIMELINE_SPEC.md	dev/build/operations/MULTI_ENTITY_TIMELINE_SPEC.md
+R100	dev/docs_build/operations/dev/NETWORK_SAMPLE_ADAPTER_HARNESS.md	dev/build/operations/NETWORK_SAMPLE_ADAPTER_HARNESS.md
+R100	dev/docs_build/operations/dev/ONE_SHOT_MODE.md	dev/build/operations/ONE_SHOT_MODE.md
+R100	dev/docs_build/operations/dev/PLANNING_SYSTEM_RULES.md	dev/build/operations/PLANNING_SYSTEM_RULES.md
+R100	dev/docs_build/operations/dev/POWERSHELL_SCRIPT_STRUCTURE.md	dev/build/operations/POWERSHELL_SCRIPT_STRUCTURE.md
+R100	dev/docs_build/operations/dev/PROJECT_V2_NOTES.md	dev/build/operations/PROJECT_V2_NOTES.md
+R100	dev/docs_build/operations/dev/README.md	dev/build/operations/README.md
+R100	dev/docs_build/operations/dev/RECONCILIATION_LAYER_SPEC.md	dev/build/operations/RECONCILIATION_LAYER_SPEC.md
+R100	dev/docs_build/operations/dev/REWIND_EXECUTION_SPEC.md	dev/build/operations/REWIND_EXECUTION_SPEC.md
+R100	dev/docs_build/operations/dev/REWIND_STRATEGY_SPEC.md	dev/build/operations/REWIND_STRATEGY_SPEC.md
+R100	dev/docs_build/operations/dev/ROADMAP_GUARDRAILS.md	dev/build/operations/ROADMAP_GUARDRAILS.md
+R100	dev/docs_build/operations/dev/ROADMAP_RULES.md	dev/build/operations/ROADMAP_RULES.md
+R100	dev/docs_build/operations/dev/ROLLBACK_GUARDRAILS.md	dev/build/operations/ROLLBACK_GUARDRAILS.md
+R100	dev/docs_build/operations/dev/RULES_OF_ENGAGEMENT.md	dev/build/operations/RULES_OF_ENGAGEMENT.md
+R100	dev/docs_build/operations/dev/SELECTIVE_REWIND_SPEC.md	dev/build/operations/SELECTIVE_REWIND_SPEC.md
+R100	dev/docs_build/operations/dev/SHARED_EXTRACTION_GUARD_USAGE.md	dev/build/operations/SHARED_EXTRACTION_GUARD_USAGE.md
+R100	dev/docs_build/operations/dev/STATE_TIMELINE_SPEC.md	dev/build/operations/STATE_TIMELINE_SPEC.md
+R100	dev/docs_build/operations/dev/TIMELINE_UPDATE_SPEC.md	dev/build/operations/TIMELINE_UPDATE_SPEC.md
+R100	dev/docs_build/operations/dev/TOKEN_OPTIMIZATION_NOTES.md	dev/build/operations/TOKEN_OPTIMIZATION_NOTES.md
+R100	dev/docs_build/operations/dev/V4_AUTOMATION.md	dev/build/operations/V4_AUTOMATION.md
+R100	dev/docs_build/operations/dev/change_summary.txt	dev/build/operations/change_summary.txt
+R100	dev/docs_build/operations/dev/codex_commands.md	dev/build/operations/codex_commands.md
+R100	dev/docs_build/operations/dev/codex_execution_template.md	dev/build/operations/codex_execution_template.md
+R100	dev/docs_build/operations/dev/commit_comment.txt	dev/build/operations/commit_comment.txt
+R100	dev/docs_build/operations/dev/file_tree.txt	dev/build/operations/file_tree.txt
+R100	dev/docs_build/operations/dev/paths.md	dev/build/operations/paths.md
+R100	dev/docs_build/operations/dev/pr_naming_convention.md	dev/build/operations/pr_naming_convention.md
+R100	dev/docs_build/operations/dev/run_commands.ps1	dev/build/operations/run_commands.ps1
+R100	dev/docs_build/operations/dev/run_commands.txt	dev/build/operations/run_commands.txt
+R100	dev/docs_build/operations/system-health-v1-operational-guide.md	dev/build/operations/system-health-v1-operational-guide.md
+R100	dev/docs_build/operations/dev/templates/BUILD_FROM_PLAN_TEMPLATE.md	dev/build/operations/templates/BUILD_FROM_PLAN_TEMPLATE.md
+R100	dev/docs_build/operations/dev/templates/BUILD_TEMPLATE_PROTECTED.md	dev/build/operations/templates/BUILD_TEMPLATE_PROTECTED.md
+R100	dev/docs_build/operations/dev/templates/CHATGPT_ONE_SHOT_PROMPT.md	dev/build/operations/templates/CHATGPT_ONE_SHOT_PROMPT.md
+R100	dev/docs_build/operations/dev/templates/CHATGPT_START_PROMPT_V4.md	dev/build/operations/templates/CHATGPT_START_PROMPT_V4.md
+R100	dev/docs_build/operations/dev/templates/CODEX_AUTO_COMMAND.md	dev/build/operations/templates/CODEX_AUTO_COMMAND.md
+R100	dev/docs_build/operations/dev/templates/CODEX_COMMAND_TEMPLATE.md	dev/build/operations/templates/CODEX_COMMAND_TEMPLATE.md
+R100	dev/docs_build/operations/dev/templates/CODEX_ONE_LINE_COMMAND.md	dev/build/operations/templates/CODEX_ONE_LINE_COMMAND.md
+R100	dev/docs_build/operations/dev/templates/CODEX_ONE_LINE_EXAMPLE.md	dev/build/operations/templates/CODEX_ONE_LINE_EXAMPLE.md
+R100	dev/docs_build/operations/dev/templates/CODEX_ONE_SHOT_COMMAND.md	dev/build/operations/templates/CODEX_ONE_SHOT_COMMAND.md
+R100	dev/docs_build/operations/dev/templates/SESSION_TEMPLATE.md	dev/build/operations/templates/SESSION_TEMPLATE.md
+R100	dev/docs_build/operations/dev/validation_checklist.txt	dev/build/operations/validation_checklist.txt
+R100	dev/docs_build/pr/APPLY_PR_26171_026-idea-board-template-cleanup.md	dev/build/pr/APPLY_PR_26171_026-idea-board-template-cleanup.md
+R100	dev/docs_build/pr/APPLY_PR_26171_027-idea-board-table-work-surface.md	dev/build/pr/APPLY_PR_26171_027-idea-board-table-work-surface.md
+R100	dev/docs_build/pr/APPLY_PR_26171_028-idea-board-notes-table-governance.md	dev/build/pr/APPLY_PR_26171_028-idea-board-notes-table-governance.md
+R100	dev/docs_build/pr/APPLY_PR_26171_029-idea-board-validation-playwright.md	dev/build/pr/APPLY_PR_26171_029-idea-board-validation-playwright.md
+R094	dev/docs_build/pr/APPLY_PR_26171_030-idea-board-workflow-fix.md	dev/build/pr/APPLY_PR_26171_030-idea-board-workflow-fix.md
+R100	dev/docs_build/pr/APPLY_PR_26171_031-idea-board-inline-tree-grid-actions.md	dev/build/pr/APPLY_PR_26171_031-idea-board-inline-tree-grid-actions.md
+R100	dev/docs_build/pr/APPLY_PR_26171_032-idea-board-accordion-table-model.md	dev/build/pr/APPLY_PR_26171_032-idea-board-accordion-table-model.md
+R100	dev/docs_build/pr/APPLY_PR_26171_033-idea-board-inline-accordion-cell.md	dev/build/pr/APPLY_PR_26171_033-idea-board-inline-accordion-cell.md
+R100	dev/docs_build/pr/APPLY_PR_26175_ALFA_047-theme-v2-svg-icon-registry.md	dev/build/pr/APPLY_PR_26175_ALFA_047-theme-v2-svg-icon-registry.md
+R100	dev/docs_build/pr/APPLY_PR_DEBUG_SURFACES_SERVER_CONTAINERIZATION.md	dev/build/pr/APPLY_PR_DEBUG_SURFACES_SERVER_CONTAINERIZATION.md
+R100	dev/docs_build/pr/APPLY_PR_DEBUG_SURFACES_SERVER_DASHBOARD_ADVANCED.md	dev/build/pr/APPLY_PR_DEBUG_SURFACES_SERVER_DASHBOARD_ADVANCED.md
+R100	dev/docs_build/pr/APPLY_PR_ENGINE_IMPORT_BASELINE_AND_CONTRACT_VALIDATE.md	dev/build/pr/APPLY_PR_ENGINE_IMPORT_BASELINE_AND_CONTRACT_VALIDATE.md
+R100	dev/docs_build/pr/APPLY_PR_GAMES_AITARGETDUMMY_FULL_FOLDER_MIGRATION.md	dev/build/pr/APPLY_PR_GAMES_AITARGETDUMMY_FULL_FOLDER_MIGRATION.md
+R100	dev/docs_build/pr/APPLY_PR_GAMES_BOUNCING_BALL_FULL_FOLDER_MIGRATION.md	dev/build/pr/APPLY_PR_GAMES_BOUNCING_BALL_FULL_FOLDER_MIGRATION.md
+R100	dev/docs_build/pr/APPLY_PR_GAMES_BREAKOUT_FULL_FOLDER_MIGRATION.md	dev/build/pr/APPLY_PR_GAMES_BREAKOUT_FULL_FOLDER_MIGRATION.md
+R100	dev/docs_build/pr/APPLY_PR_GAMES_GRAVITYWELL_FULL_FOLDER_MIGRATION.md	dev/build/pr/APPLY_PR_GAMES_GRAVITYWELL_FULL_FOLDER_MIGRATION.md
+R100	dev/docs_build/pr/APPLY_PR_GAMES_GRAVITY_FULL_FOLDER_MIGRATION.md	dev/build/pr/APPLY_PR_GAMES_GRAVITY_FULL_FOLDER_MIGRATION.md
+R100	dev/docs_build/pr/APPLY_PR_GAMES_MULTIBALLCHAOS_FULL_FOLDER_MIGRATION.md	dev/build/pr/APPLY_PR_GAMES_MULTIBALLCHAOS_FULL_FOLDER_MIGRATION.md
+R100	dev/docs_build/pr/APPLY_PR_GAMES_ORBIT_FULL_FOLDER_MIGRATION.md	dev/build/pr/APPLY_PR_GAMES_ORBIT_FULL_FOLDER_MIGRATION.md
+R100	dev/docs_build/pr/APPLY_PR_GAMES_PACMANFULLAI_FULL_FOLDER_MIGRATION.md	dev/build/pr/APPLY_PR_GAMES_PACMANFULLAI_FULL_FOLDER_MIGRATION.md
+R100	dev/docs_build/pr/APPLY_PR_GAMES_PACMANLITE_REMOVE_NEXT.md	dev/build/pr/APPLY_PR_GAMES_PACMANLITE_REMOVE_NEXT.md
+R100	dev/docs_build/pr/APPLY_PR_GAMES_PADDLEINTERCEPT_FULL_FOLDER_MIGRATION.md	dev/build/pr/APPLY_PR_GAMES_PADDLEINTERCEPT_FULL_FOLDER_MIGRATION.md
+R100	dev/docs_build/pr/APPLY_PR_GAMES_PONG_FULL_FOLDER_MIGRATION.md	dev/build/pr/APPLY_PR_GAMES_PONG_FULL_FOLDER_MIGRATION.md
+R100	dev/docs_build/pr/APPLY_PR_GAMES_PROJECTILELAB_FULL_FOLDER_MIGRATION.md	dev/build/pr/APPLY_PR_GAMES_PROJECTILELAB_FULL_FOLDER_MIGRATION.md
+R100	dev/docs_build/pr/APPLY_PR_GAMES_SOLARSYSTEM_FULL_FOLDER_MIGRATION.md	dev/build/pr/APPLY_PR_GAMES_SOLARSYSTEM_FULL_FOLDER_MIGRATION.md
+R100	dev/docs_build/pr/APPLY_PR_GAMES_SPACEDUEL_FULL_FOLDER_MIGRATION.md	dev/build/pr/APPLY_PR_GAMES_SPACEDUEL_FULL_FOLDER_MIGRATION.md
+R100	dev/docs_build/pr/APPLY_PR_GAMES_SPACE_INVADERS_REMOVE_NEXT.md	dev/build/pr/APPLY_PR_GAMES_SPACE_INVADERS_REMOVE_NEXT.md
+R100	dev/docs_build/pr/APPLY_PR_GAMES_TEMPLATE_CONTRACT_ENFORCEMENT.md	dev/build/pr/APPLY_PR_GAMES_TEMPLATE_CONTRACT_ENFORCEMENT.md
+R100	dev/docs_build/pr/APPLY_PR_GAMES_TEMPLATE_ENGINE_THEME_CANVAS_STATUS_TEXT.md	dev/build/pr/APPLY_PR_GAMES_TEMPLATE_ENGINE_THEME_CANVAS_STATUS_TEXT.md
+R100	dev/docs_build/pr/APPLY_PR_GAMES_THRUSTER_FULL_FOLDER_MIGRATION.md	dev/build/pr/APPLY_PR_GAMES_THRUSTER_FULL_FOLDER_MIGRATION.md
+R100	dev/docs_build/pr/APPLY_PR_LEVEL_11_1_AUTHORITATIVE_STATE_HANDOFF_CANDIDATE.md	dev/build/pr/APPLY_PR_LEVEL_11_1_AUTHORITATIVE_STATE_HANDOFF_CANDIDATE.md
+R100	dev/docs_build/pr/APPLY_PR_LEVEL_11_4_REWIND_EXECUTION_CANDIDATE.md	dev/build/pr/APPLY_PR_LEVEL_11_4_REWIND_EXECUTION_CANDIDATE.md
+R100	dev/docs_build/pr/APPLY_PR_LEVEL_11_7_FINAL_PROMOTION_GATE.md	dev/build/pr/APPLY_PR_LEVEL_11_7_FINAL_PROMOTION_GATE.md
+R100	dev/docs_build/pr/APPLY_PR_LEVEL_12_1_REAL_NETWORK_FOUNDATION.md	dev/build/pr/APPLY_PR_LEVEL_12_1_REAL_NETWORK_FOUNDATION.md
+R100	dev/docs_build/pr/APPLY_PR_LEVEL_12_2_AUTHORITATIVE_SERVER_RUNTIME.md	dev/build/pr/APPLY_PR_LEVEL_12_2_AUTHORITATIVE_SERVER_RUNTIME.md
+R100	dev/docs_build/pr/APPLY_PR_LEVEL_12_4_PLAYABLE_MULTIPLAYER_VALIDATION.md	dev/build/pr/APPLY_PR_LEVEL_12_4_PLAYABLE_MULTIPLAYER_VALIDATION.md
+R100	dev/docs_build/pr/APPLY_PR_LEVEL_12_5_SERVER_HOSTING_DOCKER_RUNTIME.md	dev/build/pr/APPLY_PR_LEVEL_12_5_SERVER_HOSTING_DOCKER_RUNTIME.md
+R100	dev/docs_build/pr/APPLY_PR_LEVEL_12_6_REMOTE_DEPLOYMENT_CANDIDATE.md	dev/build/pr/APPLY_PR_LEVEL_12_6_REMOTE_DEPLOYMENT_CANDIDATE.md
+R100	dev/docs_build/pr/APPLY_PR_LEVEL_12_7_REAL_NETWORK_COMPLETION_GATE.md	dev/build/pr/APPLY_PR_LEVEL_12_7_REAL_NETWORK_COMPLETION_GATE.md
+R100	dev/docs_build/pr/APPLY_PR_LEVEL_12_8_NETWORK_DIRECTORY_NORMALIZATION.md	dev/build/pr/APPLY_PR_LEVEL_12_8_NETWORK_DIRECTORY_NORMALIZATION.md
+R100	dev/docs_build/pr/APPLY_PR_LEVEL_12_9_NETWORK_USAGE_SAMPLE_STANDARDIZATION.md	dev/build/pr/APPLY_PR_LEVEL_12_9_NETWORK_USAGE_SAMPLE_STANDARDIZATION.md
+R100	dev/docs_build/pr/APPLY_PR_LEVEL_6_1_SAMPLES_PHASE_ALIGNMENT.md	dev/build/pr/APPLY_PR_LEVEL_6_1_SAMPLES_PHASE_ALIGNMENT.md
+R100	dev/docs_build/pr/APPLY_PR_LEVEL_6_2_SAMPLE_CURRICULUM_VALIDATION.md	dev/build/pr/APPLY_PR_LEVEL_6_2_SAMPLE_CURRICULUM_VALIDATION.md
+R100	dev/docs_build/pr/APPLY_PR_LEVEL_6_3_SAMPLE_SHARED_BOUNDARIES.md	dev/build/pr/APPLY_PR_LEVEL_6_3_SAMPLE_SHARED_BOUNDARIES.md
+R100	dev/docs_build/pr/APPLY_PR_LEVEL_6_4_RUNTIME_VALIDATION_PLUS_HARNESS_FIX.md	dev/build/pr/APPLY_PR_LEVEL_6_4_RUNTIME_VALIDATION_PLUS_HARNESS_FIX.md
+R100	dev/docs_build/pr/APPLY_PR_LOW_TOKEN_START_OF_DAY_AND_ROADMAP_MOVE.md	dev/build/pr/APPLY_PR_LOW_TOKEN_START_OF_DAY_AND_ROADMAP_MOVE.md
+R100	dev/docs_build/pr/APPLY_PR_NETWORK_SAMPLES_RELOCATION_FROM_GAMES_TO_SAMPLES.md	dev/build/pr/APPLY_PR_NETWORK_SAMPLES_RELOCATION_FROM_GAMES_TO_SAMPLES.md
+R100	dev/docs_build/pr/APPLY_PR_REPO_STRUCTURE_NORMALIZATION_02_IMPORT_SWITCH.md	dev/build/pr/APPLY_PR_REPO_STRUCTURE_NORMALIZATION_02_IMPORT_SWITCH.md
+R100	dev/docs_build/pr/APPLY_PR_REPO_STRUCTURE_NORMALIZATION_03_REMOVE_OLD_ENGINE.md	dev/build/pr/APPLY_PR_REPO_STRUCTURE_NORMALIZATION_03_REMOVE_OLD_ENGINE.md
+R100	dev/docs_build/pr/APPLY_PR_SAMPLES_BROWSE_VISUALS_AND_NAVIGATION.md	dev/build/pr/APPLY_PR_SAMPLES_BROWSE_VISUALS_AND_NAVIGATION.md
+R100	dev/docs_build/pr/APPLY_PR_SAMPLES_DISCOVERY_DATA_AND_FINDABILITY.md	dev/build/pr/APPLY_PR_SAMPLES_DISCOVERY_DATA_AND_FINDABILITY.md
+R100	dev/docs_build/pr/APPLY_PR_SAMPLE_NUMBER_NORMALIZATION.md	dev/build/pr/APPLY_PR_SAMPLE_NUMBER_NORMALIZATION.md
+R100	dev/docs_build/pr/APPLY_PR_SHARED_EXTRACTION_02_EXACT_HELPER_MOVE.md	dev/build/pr/APPLY_PR_SHARED_EXTRACTION_02_EXACT_HELPER_MOVE.md
+R100	dev/docs_build/pr/APPLY_PR_SHARED_EXTRACTION_03_IMPORT_NORMALIZATION_RETRY.md	dev/build/pr/APPLY_PR_SHARED_EXTRACTION_03_IMPORT_NORMALIZATION_RETRY.md
+R100	dev/docs_build/pr/APPLY_PR_SPRITEEDITOR_ARCHIVE_VALIDATE_v2.md	dev/build/pr/APPLY_PR_SPRITEEDITOR_ARCHIVE_VALIDATE_v2.md
+R100	dev/docs_build/pr/APPLY_PR_TARGETED_REPO_CLEANUP_PASS_2.md	dev/build/pr/APPLY_PR_TARGETED_REPO_CLEANUP_PASS_2.md
+R100	dev/docs_build/pr/APPLY_PR_TARGETED_REPO_CLEANUP_PASS_7_DECISION_v2.md	dev/build/pr/APPLY_PR_TARGETED_REPO_CLEANUP_PASS_7_DECISION_v2.md
+R100	dev/docs_build/pr/APPLY_PR_TEMPLATES_VECTOR_NATIVE_ACTIVE_RELOCATION_VALIDATE.md	dev/build/pr/APPLY_PR_TEMPLATES_VECTOR_NATIVE_ACTIVE_RELOCATION_VALIDATE.md
+R100	dev/docs_build/pr/BUILD_PR.md	dev/build/pr/BUILD_PR.md
+R100	dev/docs_build/pr/BUILD_PR_11_189B_SVG_V2_SHARED_THEME_HEADER_CORRECTION.md	dev/build/pr/BUILD_PR_11_189B_SVG_V2_SHARED_THEME_HEADER_CORRECTION.md
+R100	dev/docs_build/pr/BUILD_PR_11_189_SVG_ASSET_STUDIO_V2.md	dev/build/pr/BUILD_PR_11_189_SVG_ASSET_STUDIO_V2.md
+R100	dev/docs_build/pr/BUILD_PR_11_193_V2_HTML_FIRST_BATCH.md	dev/build/pr/BUILD_PR_11_193_V2_HTML_FIRST_BATCH.md
+R100	dev/docs_build/pr/BUILD_PR_11_261_WORKSPACE_V2_MERGE_STATE_STATUS_RESET_AND_FINAL_UX_POLISH.md	dev/build/pr/BUILD_PR_11_261_WORKSPACE_V2_MERGE_STATE_STATUS_RESET_AND_FINAL_UX_POLISH.md
+R100	dev/docs_build/pr/BUILD_PR_11_262_WORKSPACE_V2_MERGE_STATE_SINGLE_SOURCE_OF_TRUTH_ENFORCEMENT.md	dev/build/pr/BUILD_PR_11_262_WORKSPACE_V2_MERGE_STATE_SINGLE_SOURCE_OF_TRUTH_ENFORCEMENT.md
+R100	dev/docs_build/pr/BUILD_PR_11_263_WORKSPACE_V2_SESSION_UX_STABILIZATION_BUNDLE.md	dev/build/pr/BUILD_PR_11_263_WORKSPACE_V2_SESSION_UX_STABILIZATION_BUNDLE.md
+R100	dev/docs_build/pr/BUILD_PR_11_264_WORKSPACE_V2_SESSION_STATE_MODEL_CONSOLIDATION.md	dev/build/pr/BUILD_PR_11_264_WORKSPACE_V2_SESSION_STATE_MODEL_CONSOLIDATION.md
+R100	dev/docs_build/pr/BUILD_PR_11_265_WORKSPACE_V2_DETERMINISTIC_STATE_TRANSITION_ENFORCEMENT.md	dev/build/pr/BUILD_PR_11_265_WORKSPACE_V2_DETERMINISTIC_STATE_TRANSITION_ENFORCEMENT.md
+R100	dev/docs_build/pr/BUILD_PR_11_266_WORKSPACE_V2_SESSION_TOOLS_CLOSEOUT_BUNDLE.md	dev/build/pr/BUILD_PR_11_266_WORKSPACE_V2_SESSION_TOOLS_CLOSEOUT_BUNDLE.md
+R100	dev/docs_build/pr/BUILD_PR_11_267_WORKSPACE_V2_DEFAULT_TOOL_PRODUCER_INIT_FIX.md	dev/build/pr/BUILD_PR_11_267_WORKSPACE_V2_DEFAULT_TOOL_PRODUCER_INIT_FIX.md
+R100	dev/docs_build/pr/BUILD_PR_11_268_WORKSPACE_V2_SESSION_LIBRARY_ACTION_CLEANUP.md	dev/build/pr/BUILD_PR_11_268_WORKSPACE_V2_SESSION_LIBRARY_ACTION_CLEANUP.md
+R100	dev/docs_build/pr/BUILD_PR_11_269_WORKSPACE_V2_SESSION_LIBRARY_SAVE_GUARD_AND_LOAD_EXPLANATION_UX.md	dev/build/pr/BUILD_PR_11_269_WORKSPACE_V2_SESSION_LIBRARY_SAVE_GUARD_AND_LOAD_EXPLANATION_UX.md
+R100	dev/docs_build/pr/BUILD_PR_11_270_WORKSPACE_V2_SESSION_LIBRARY_OVERWRITE_ACTION.md	dev/build/pr/BUILD_PR_11_270_WORKSPACE_V2_SESSION_LIBRARY_OVERWRITE_ACTION.md
+R100	dev/docs_build/pr/BUILD_PR_11_273_WORKSPACE_V2_WORDING_CLARITY.md	dev/build/pr/BUILD_PR_11_273_WORKSPACE_V2_WORDING_CLARITY.md
+R100	dev/docs_build/pr/BUILD_PR_11_274_WORKSPACE_V2_DIFF_VIEWER_SUMMARY_COUNTS.md	dev/build/pr/BUILD_PR_11_274_WORKSPACE_V2_DIFF_VIEWER_SUMMARY_COUNTS.md
+R100	dev/docs_build/pr/BUILD_PR_11_275_WORKSPACE_V2_CURRENT_SESSION_EXPORT_FIX.md	dev/build/pr/BUILD_PR_11_275_WORKSPACE_V2_CURRENT_SESSION_EXPORT_FIX.md
+R100	dev/docs_build/pr/BUILD_PR_11_276_WORKSPACE_V2_FULL_SESSION_EXPORT_CONTRACT_CORRECTION.md	dev/build/pr/BUILD_PR_11_276_WORKSPACE_V2_FULL_SESSION_EXPORT_CONTRACT_CORRECTION.md
+R100	dev/docs_build/pr/BUILD_PR_11_276_WORKSPACE_V2_NAV_MODE_SEPARATION_AND_EXPORT_CONTRACT_CORRECTION.md	dev/build/pr/BUILD_PR_11_276_WORKSPACE_V2_NAV_MODE_SEPARATION_AND_EXPORT_CONTRACT_CORRECTION.md
+R100	dev/docs_build/pr/BUILD_PR_11_277_WORKSPACE_V2_MANIFEST_ONLY_EXPORT_ENFORCEMENT.md	dev/build/pr/BUILD_PR_11_277_WORKSPACE_V2_MANIFEST_ONLY_EXPORT_ENFORCEMENT.md
+R100	dev/docs_build/pr/BUILD_PR_11_278_WORKSPACE_V2_WORKSPACE_SCHEMA_EXPORT_ENFORCEMENT_AND_SAME_TOOL_DIFF_GUARD.md	dev/build/pr/BUILD_PR_11_278_WORKSPACE_V2_WORKSPACE_SCHEMA_EXPORT_ENFORCEMENT_AND_SAME_TOOL_DIFF_GUARD.md
+R100	dev/docs_build/pr/BUILD_PR_11_279_WORKSPACE_SCHEMA_RESTORE_PLUS_MINIMAL_WORKSPACE_SESSION_BLOCK.md	dev/build/pr/BUILD_PR_11_279_WORKSPACE_SCHEMA_RESTORE_PLUS_MINIMAL_WORKSPACE_SESSION_BLOCK.md
+R100	dev/docs_build/pr/BUILD_PR_11_80_DEAD_UTILS_AUDIT.md	dev/build/pr/BUILD_PR_11_80_DEAD_UTILS_AUDIT.md
+R100	dev/docs_build/pr/BUILD_PR_11_87_MANIFEST_BACKGROUND_ALWAYS_VISIBLE.md	dev/build/pr/BUILD_PR_11_87_MANIFEST_BACKGROUND_ALWAYS_VISIBLE.md
+R100	dev/docs_build/pr/BUILD_PR_26124_020-workspace-tools-reengineering-design-docs.md	dev/build/pr/BUILD_PR_26124_020-workspace-tools-reengineering-design-docs.md
+R100	dev/docs_build/pr/BUILD_PR_26169_002-auth-preview-signin-regression.md	dev/build/pr/BUILD_PR_26169_002-auth-preview-signin-regression.md
+R100	dev/docs_build/pr/BUILD_PR_26169_003-beta-invitations-admin.md	dev/build/pr/BUILD_PR_26169_003-beta-invitations-admin.md
+R100	dev/docs_build/pr/BUILD_PR_26169_004-membership-data-model.md	dev/build/pr/BUILD_PR_26169_004-membership-data-model.md
+R100	dev/docs_build/pr/BUILD_PR_26169_005-membership-assignment.md	dev/build/pr/BUILD_PR_26169_005-membership-assignment.md
+R100	dev/docs_build/pr/BUILD_PR_26169_006-memberships-page-v2.md	dev/build/pr/BUILD_PR_26169_006-memberships-page-v2.md
+R100	dev/docs_build/pr/BUILD_PR_26169_007-ai-credit-foundation.md	dev/build/pr/BUILD_PR_26169_007-ai-credit-foundation.md
+R100	dev/docs_build/pr/BUILD_PR_26169_008-ai-credit-display.md	dev/build/pr/BUILD_PR_26169_008-ai-credit-display.md
+R100	dev/docs_build/pr/BUILD_PR_26169_009-marketplace-membership-rules.md	dev/build/pr/BUILD_PR_26169_009-marketplace-membership-rules.md
+R100	dev/docs_build/pr/BUILD_PR_26169_010-marketplace-revenue-model.md	dev/build/pr/BUILD_PR_26169_010-marketplace-revenue-model.md
+R100	dev/docs_build/pr/BUILD_PR_26169_011-marketplace-categories.md	dev/build/pr/BUILD_PR_26169_011-marketplace-categories.md
+R100	dev/docs_build/pr/BUILD_PR_26169_012-teams-foundation.md	dev/build/pr/BUILD_PR_26169_012-teams-foundation.md
+R100	dev/docs_build/pr/BUILD_PR_26169_013-team-enforcement.md	dev/build/pr/BUILD_PR_26169_013-team-enforcement.md
+R100	dev/docs_build/pr/BUILD_PR_26169_014-legal-foundation.md	dev/build/pr/BUILD_PR_26169_014-legal-foundation.md
+R100	dev/docs_build/pr/BUILD_PR_26169_015-terms-of-service.md	dev/build/pr/BUILD_PR_26169_015-terms-of-service.md
+R100	dev/docs_build/pr/BUILD_PR_26169_016-privacy-cookies-community-copyright-dmca.md	dev/build/pr/BUILD_PR_26169_016-privacy-cookies-community-copyright-dmca.md
+R100	dev/docs_build/pr/BUILD_PR_26169_017-owner-memberships.md	dev/build/pr/BUILD_PR_26169_017-owner-memberships.md
+R100	dev/docs_build/pr/BUILD_PR_26169_018-owner-ai-credits.md	dev/build/pr/BUILD_PR_26169_018-owner-ai-credits.md
+R100	dev/docs_build/pr/BUILD_PR_26169_019-admin-health-operations.md	dev/build/pr/BUILD_PR_26169_019-admin-health-operations.md
+R100	dev/docs_build/pr/BUILD_PR_26169_020-architecture-cleanup-api-nav-invitations.md	dev/build/pr/BUILD_PR_26169_020-architecture-cleanup-api-nav-invitations.md
+R100	dev/docs_build/pr/BUILD_PR_26169_023-api-menu-path-cleanup.md	dev/build/pr/BUILD_PR_26169_023-api-menu-path-cleanup.md
+R100	dev/docs_build/pr/BUILD_PR_26169_024-environment-banner-all-pages.md	dev/build/pr/BUILD_PR_26169_024-environment-banner-all-pages.md
+R100	dev/docs_build/pr/BUILD_PR_26169_025-browser-api-url-config.md	dev/build/pr/BUILD_PR_26169_025-browser-api-url-config.md
+R100	dev/docs_build/pr/BUILD_PR_26169_026-local-api-startup-url-logging.md	dev/build/pr/BUILD_PR_26169_026-local-api-startup-url-logging.md
+R100	dev/docs_build/pr/BUILD_PR_26169_027-owner-notes-restoration.md	dev/build/pr/BUILD_PR_26169_027-owner-notes-restoration.md
+R100	dev/docs_build/pr/BUILD_PR_26169_028-admin-owner-notes-source.md	dev/build/pr/BUILD_PR_26169_028-admin-owner-notes-source.md
+R100	dev/docs_build/pr/BUILD_PR_26169_029-db-viewer-table-groups-regression.md	dev/build/pr/BUILD_PR_26169_029-db-viewer-table-groups-regression.md
+R100	dev/docs_build/pr/BUILD_PR_26170_001-toolbox-game-journey-navigation.md	dev/build/pr/BUILD_PR_26170_001-toolbox-game-journey-navigation.md
+R100	dev/docs_build/pr/BUILD_PR_26170_002-idea-board-tool.md	dev/build/pr/BUILD_PR_26170_002-idea-board-tool.md
+R100	dev/docs_build/pr/BUILD_PR_26170_003-toolbox-create-group.md	dev/build/pr/BUILD_PR_26170_003-toolbox-create-group.md
+R100	dev/docs_build/pr/BUILD_PR_26170_005-toolbox-create-idea-color-model.md	dev/build/pr/BUILD_PR_26170_005-toolbox-create-idea-color-model.md
+R100	dev/docs_build/pr/BUILD_PR_26170_006-toolbox-workflow-order-and-project-team.md	dev/build/pr/BUILD_PR_26170_006-toolbox-workflow-order-and-project-team.md
+R100	dev/docs_build/pr/BUILD_PR_26170_007-toolbox-workflow-render-order-project-team.md	dev/build/pr/BUILD_PR_26170_007-toolbox-workflow-render-order-project-team.md
+R100	dev/docs_build/pr/BUILD_PR_26170_008-workflow-order-governance.md	dev/build/pr/BUILD_PR_26170_008-workflow-order-governance.md
+R100	dev/docs_build/pr/BUILD_PR_26170_009-friendly-naming-audit.md	dev/build/pr/BUILD_PR_26170_009-friendly-naming-audit.md
+R100	dev/docs_build/pr/BUILD_PR_26170_010-friendly-visible-copy.md	dev/build/pr/BUILD_PR_26170_010-friendly-visible-copy.md
+R100	dev/docs_build/pr/BUILD_PR_26170_011-friendly-metadata-vars.md	dev/build/pr/BUILD_PR_26170_011-friendly-metadata-vars.md
+R100	dev/docs_build/pr/BUILD_PR_26170_012-friendly-routes-folders.md	dev/build/pr/BUILD_PR_26170_012-friendly-routes-folders.md
+R100	dev/docs_build/pr/BUILD_PR_26170_013-game-journey-friendly-descriptions.md	dev/build/pr/BUILD_PR_26170_013-game-journey-friendly-descriptions.md
+R100	dev/docs_build/pr/BUILD_PR_26170_014-game-journey-master-plan.md	dev/build/pr/BUILD_PR_26170_014-game-journey-master-plan.md
+R100	dev/docs_build/pr/BUILD_PR_26171_002-messages-tool-foundation.md	dev/build/pr/BUILD_PR_26171_002-messages-tool-foundation.md
+R100	dev/docs_build/pr/BUILD_PR_26171_004-messages-emotion-segments.md	dev/build/pr/BUILD_PR_26171_004-messages-emotion-segments.md
+R100	dev/docs_build/pr/BUILD_PR_26171_006-message-emotion-profile-management.md	dev/build/pr/BUILD_PR_26171_006-message-emotion-profile-management.md
+R100	dev/docs_build/pr/BUILD_PR_26171_008-message-tts-profile-foundation.md	dev/build/pr/BUILD_PR_26171_008-message-tts-profile-foundation.md
+R100	dev/docs_build/pr/BUILD_PR_26171_010-message-speech-preview.md	dev/build/pr/BUILD_PR_26171_010-message-speech-preview.md
+R100	dev/docs_build/pr/BUILD_PR_26171_012-message-voice-provider-adapters.md	dev/build/pr/BUILD_PR_26171_012-message-voice-provider-adapters.md
+R100	dev/docs_build/pr/BUILD_PR_26171_014-runtime-message-playback-foundation.md	dev/build/pr/BUILD_PR_26171_014-runtime-message-playback-foundation.md
+R100	dev/docs_build/pr/BUILD_PR_26171_016-midi-studio-roadmap-foundation.md	dev/build/pr/BUILD_PR_26171_016-midi-studio-roadmap-foundation.md
+R100	dev/docs_build/pr/BUILD_PR_26171_026-idea-board-template-cleanup.md	dev/build/pr/BUILD_PR_26171_026-idea-board-template-cleanup.md
+R100	dev/docs_build/pr/BUILD_PR_26171_027-idea-board-table-work-surface.md	dev/build/pr/BUILD_PR_26171_027-idea-board-table-work-surface.md
+R100	dev/docs_build/pr/BUILD_PR_26171_028-idea-board-notes-table-governance.md	dev/build/pr/BUILD_PR_26171_028-idea-board-notes-table-governance.md
+R100	dev/docs_build/pr/BUILD_PR_26171_029-idea-board-validation-playwright.md	dev/build/pr/BUILD_PR_26171_029-idea-board-validation-playwright.md
+R100	dev/docs_build/pr/BUILD_PR_26171_030-idea-board-workflow-fix.md	dev/build/pr/BUILD_PR_26171_030-idea-board-workflow-fix.md
+R100	dev/docs_build/pr/BUILD_PR_26171_031-idea-board-inline-tree-grid-actions.md	dev/build/pr/BUILD_PR_26171_031-idea-board-inline-tree-grid-actions.md
+R100	dev/docs_build/pr/BUILD_PR_26171_032-idea-board-accordion-table-model.md	dev/build/pr/BUILD_PR_26171_032-idea-board-accordion-table-model.md
+R100	dev/docs_build/pr/BUILD_PR_26171_033-idea-board-inline-accordion-cell.md	dev/build/pr/BUILD_PR_26171_033-idea-board-inline-accordion-cell.md
+R100	dev/docs_build/pr/BUILD_PR_ASSET_PIPELINE_CONVERTERS.md	dev/build/pr/BUILD_PR_ASSET_PIPELINE_CONVERTERS.md
+R100	dev/docs_build/pr/BUILD_PR_ASSET_PIPELINE_FOUNDATION.md	dev/build/pr/BUILD_PR_ASSET_PIPELINE_FOUNDATION.md
+R100	dev/docs_build/pr/BUILD_PR_ASSET_PIPELINE_VALIDATION_OUTPUT.md	dev/build/pr/BUILD_PR_ASSET_PIPELINE_VALIDATION_OUTPUT.md
+R100	dev/docs_build/pr/BUILD_PR_ASTEROIDS_GAME_CANVAS_FIX.md	dev/build/pr/BUILD_PR_ASTEROIDS_GAME_CANVAS_FIX.md
+R100	dev/docs_build/pr/BUILD_PR_ASTEROIDS_LINK_TARGET_CORRECTION.md	dev/build/pr/BUILD_PR_ASTEROIDS_LINK_TARGET_CORRECTION.md
+R100	dev/docs_build/pr/BUILD_PR_DEBUG_INSPECTOR_TOOLS.md	dev/build/pr/BUILD_PR_DEBUG_INSPECTOR_TOOLS.md
+R100	dev/docs_build/pr/BUILD_PR_DOCS_ARCHIVE_CLEANUP.md	dev/build/pr/BUILD_PR_DOCS_ARCHIVE_CLEANUP.md
+R100	dev/docs_build/pr/BUILD_PR_ENGINE_IMPORT_BASELINE_AND_CONTRACT.md	dev/build/pr/BUILD_PR_ENGINE_IMPORT_BASELINE_AND_CONTRACT.md
+R100	dev/docs_build/pr/BUILD_PR_ENGINE_IMPORT_ENFORCE_MINIMAL.md	dev/build/pr/BUILD_PR_ENGINE_IMPORT_ENFORCE_MINIMAL.md
+R100	dev/docs_build/pr/BUILD_PR_FINAL_NON_3D_ACTIVE_LANES_AND_STATUS_CLOSEOUT.md	dev/build/pr/BUILD_PR_FINAL_NON_3D_ACTIVE_LANES_AND_STATUS_CLOSEOUT.md
+R100	dev/docs_build/pr/BUILD_PR_FINAL_REPO_CLEANUP_AND_ROADMAP_RENAME_V2.md	dev/build/pr/BUILD_PR_FINAL_REPO_CLEANUP_AND_ROADMAP_RENAME_V2.md
+R100	dev/docs_build/pr/BUILD_PR_FINAL_REPO_CLEANUP_AND_ROADMAP_RENAME_V3.md	dev/build/pr/BUILD_PR_FINAL_REPO_CLEANUP_AND_ROADMAP_RENAME_V3.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_100A_ASTEROIDS_NEW_HTML_ENTRYPOINT.md	dev/build/pr/BUILD_PR_GAMES_100A_ASTEROIDS_NEW_HTML_ENTRYPOINT.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_102A_ASTEROIDS_NEW_GAME_OVER_EXIT_TIMER.md	dev/build/pr/BUILD_PR_GAMES_102A_ASTEROIDS_NEW_GAME_OVER_EXIT_TIMER.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_102B_ASTEROIDS_NEW_GAME_OVER_RETURN_PATH_FIX.md	dev/build/pr/BUILD_PR_GAMES_102B_ASTEROIDS_NEW_GAME_OVER_RETURN_PATH_FIX.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_102C_ASTEROIDS_NEW_GAME_OVER_SCREEN_TIMER.md	dev/build/pr/BUILD_PR_GAMES_102C_ASTEROIDS_NEW_GAME_OVER_SCREEN_TIMER.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_103A_ASTEROIDS_NEW_DEBUG_INSTALL_AND_KEYBINDINGS.md	dev/build/pr/BUILD_PR_GAMES_103A_ASTEROIDS_NEW_DEBUG_INSTALL_AND_KEYBINDINGS.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_77_CREATE_TEMPLATE_STRUCTURE.md	dev/build/pr/BUILD_PR_GAMES_77_CREATE_TEMPLATE_STRUCTURE.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_78_TEMPLATE_FLOW_WIRING.md	dev/build/pr/BUILD_PR_GAMES_78_TEMPLATE_FLOW_WIRING.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_79_TEMPLATE_README_AND_USAGE.md	dev/build/pr/BUILD_PR_GAMES_79_TEMPLATE_README_AND_USAGE.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_80_TEMPLATE_VALIDATION.md	dev/build/pr/BUILD_PR_GAMES_80_TEMPLATE_VALIDATION.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_81_TEMPLATE_FULL_STRUCTURE.md	dev/build/pr/BUILD_PR_GAMES_81_TEMPLATE_FULL_STRUCTURE.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_82_TEMPLATE_PLACEHOLDERS.md	dev/build/pr/BUILD_PR_GAMES_82_TEMPLATE_PLACEHOLDERS.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_83_TEMPLATE_IMPORT_RULES.md	dev/build/pr/BUILD_PR_GAMES_83_TEMPLATE_IMPORT_RULES.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_84_TEMPLATE_GITKEEP_STANDARDIZATION.md	dev/build/pr/BUILD_PR_GAMES_84_TEMPLATE_GITKEEP_STANDARDIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_85_ASTEROIDS_TEMPLATE_ADOPTION_SCAFFOLD.md	dev/build/pr/BUILD_PR_GAMES_85_ASTEROIDS_TEMPLATE_ADOPTION_SCAFFOLD.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_86_ASTEROIDS_TEMPLATE_MINIMAL_WIRING.md	dev/build/pr/BUILD_PR_GAMES_86_ASTEROIDS_TEMPLATE_MINIMAL_WIRING.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_87_ASTEROIDS_SINGLE_SLICE_MIGRATION.md	dev/build/pr/BUILD_PR_GAMES_87_ASTEROIDS_SINGLE_SLICE_MIGRATION.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_88A_ASTEROIDS_ENTITY_COPY_STEP2.md	dev/build/pr/BUILD_PR_GAMES_88A_ASTEROIDS_ENTITY_COPY_STEP2.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_89A_ASTEROIDS_ENTITY_IMPORT_FIX_STEP2.md	dev/build/pr/BUILD_PR_GAMES_89A_ASTEROIDS_ENTITY_IMPORT_FIX_STEP2.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_90A_ASTEROIDS_ENTITY_VALIDATE_STEP2.md	dev/build/pr/BUILD_PR_GAMES_90A_ASTEROIDS_ENTITY_VALIDATE_STEP2.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_91A_ASTEROIDS_NEW_CORE_WORLD_ADOPTION.md	dev/build/pr/BUILD_PR_GAMES_91A_ASTEROIDS_NEW_CORE_WORLD_ADOPTION.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_92A_ASTEROIDS_NEW_FLOW_AND_DEBUG_PARALLEL_ADOPTION.md	dev/build/pr/BUILD_PR_GAMES_92A_ASTEROIDS_NEW_FLOW_AND_DEBUG_PARALLEL_ADOPTION.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_93A_ASTEROIDS_NEW_PARALLEL_BOOT_VALIDATION.md	dev/build/pr/BUILD_PR_GAMES_93A_ASTEROIDS_NEW_PARALLEL_BOOT_VALIDATION.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_94A_ASTEROIDS_NEW_PARALLEL_BURST_ALPHA.md	dev/build/pr/BUILD_PR_GAMES_94A_ASTEROIDS_NEW_PARALLEL_BURST_ALPHA.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_95B_ASTEROIDS_NEW_TESTABLE_VERTICAL_SLICE_EXISTING_SOURCES_ONLY.md	dev/build/pr/BUILD_PR_GAMES_95B_ASTEROIDS_NEW_TESTABLE_VERTICAL_SLICE_EXISTING_SOURCES_ONLY.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_95C_ASTEROIDS_NEW_FULL_EXISTING_SUBFOLDER_COPY.md	dev/build/pr/BUILD_PR_GAMES_95C_ASTEROIDS_NEW_FULL_EXISTING_SUBFOLDER_COPY.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_96A_ASTEROIDS_NEW_FLATTEN_DUPLICATE_SUBFOLDERS.md	dev/build/pr/BUILD_PR_GAMES_96A_ASTEROIDS_NEW_FLATTEN_DUPLICATE_SUBFOLDERS.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_97A_ASTEROIDS_NEW_RUNTIME_SMOKE_STABILIZATION.md	dev/build/pr/BUILD_PR_GAMES_97A_ASTEROIDS_NEW_RUNTIME_SMOKE_STABILIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_98A_ASTEROIDS_NEW_GAMEPLAY_SLICE_COMPLETION.md	dev/build/pr/BUILD_PR_GAMES_98A_ASTEROIDS_NEW_GAMEPLAY_SLICE_COMPLETION.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_99A_ASTEROIDS_NEW_BOOT_ENTRY_VISIBILITY_AND_EXECUTION_CHECK.md	dev/build/pr/BUILD_PR_GAMES_99A_ASTEROIDS_NEW_BOOT_ENTRY_VISIBILITY_AND_EXECUTION_CHECK.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_AITARGETDUMMY_FULL_FOLDER_MIGRATION.md	dev/build/pr/BUILD_PR_GAMES_AITARGETDUMMY_FULL_FOLDER_MIGRATION.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_ASTEROIDS_CLEAR_DESTINATION.md	dev/build/pr/BUILD_PR_GAMES_ASTEROIDS_CLEAR_DESTINATION.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_ASTEROIDS_COPY_FROM_ASTEROIDS_NEW.md	dev/build/pr/BUILD_PR_GAMES_ASTEROIDS_COPY_FROM_ASTEROIDS_NEW.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_BOUNCING_BALL_FULL_FOLDER_MIGRATION.md	dev/build/pr/BUILD_PR_GAMES_BOUNCING_BALL_FULL_FOLDER_MIGRATION.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_BREAKOUT_FULL_FOLDER_MIGRATION.md	dev/build/pr/BUILD_PR_GAMES_BREAKOUT_FULL_FOLDER_MIGRATION.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_GRAVITYWELL_FULL_FOLDER_MIGRATION.md	dev/build/pr/BUILD_PR_GAMES_GRAVITYWELL_FULL_FOLDER_MIGRATION.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_GRAVITY_FULL_FOLDER_MIGRATION.md	dev/build/pr/BUILD_PR_GAMES_GRAVITY_FULL_FOLDER_MIGRATION.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_MULTIBALLCHAOS_FULL_FOLDER_MIGRATION.md	dev/build/pr/BUILD_PR_GAMES_MULTIBALLCHAOS_FULL_FOLDER_MIGRATION.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_ORBIT_FULL_FOLDER_MIGRATION.md	dev/build/pr/BUILD_PR_GAMES_ORBIT_FULL_FOLDER_MIGRATION.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_PACMANFULLAI_FULL_FOLDER_MIGRATION.md	dev/build/pr/BUILD_PR_GAMES_PACMANFULLAI_FULL_FOLDER_MIGRATION.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_PACMANLITE_CLEAR_DESTINATION.md	dev/build/pr/BUILD_PR_GAMES_PACMANLITE_CLEAR_DESTINATION.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_PACMANLITE_COPY_FROM_NEXT.md	dev/build/pr/BUILD_PR_GAMES_PACMANLITE_COPY_FROM_NEXT.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_PACMANLITE_GAMEPLAY_MIGRATION_TO_NEXT.md	dev/build/pr/BUILD_PR_GAMES_PACMANLITE_GAMEPLAY_MIGRATION_TO_NEXT.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_PACMANLITE_NEXT_TEMPLATE_BASELINE.md	dev/build/pr/BUILD_PR_GAMES_PACMANLITE_NEXT_TEMPLATE_BASELINE.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_PACMANLITE_REMOVE_NEXT.md	dev/build/pr/BUILD_PR_GAMES_PACMANLITE_REMOVE_NEXT.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_PADDLEINTERCEPT_FULL_FOLDER_MIGRATION.md	dev/build/pr/BUILD_PR_GAMES_PADDLEINTERCEPT_FULL_FOLDER_MIGRATION.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_PONG_FULL_FOLDER_MIGRATION.md	dev/build/pr/BUILD_PR_GAMES_PONG_FULL_FOLDER_MIGRATION.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_PROJECTILELAB_FULL_FOLDER_MIGRATION.md	dev/build/pr/BUILD_PR_GAMES_PROJECTILELAB_FULL_FOLDER_MIGRATION.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_SOLARSYSTEM_FULL_FOLDER_MIGRATION.md	dev/build/pr/BUILD_PR_GAMES_SOLARSYSTEM_FULL_FOLDER_MIGRATION.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_SPACEDUEL_FULL_FOLDER_MIGRATION.md	dev/build/pr/BUILD_PR_GAMES_SPACEDUEL_FULL_FOLDER_MIGRATION.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_SPACE_INVADERS_CLEAR_DESTINATION.md	dev/build/pr/BUILD_PR_GAMES_SPACE_INVADERS_CLEAR_DESTINATION.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_SPACE_INVADERS_COPY_FROM_NEXT.md	dev/build/pr/BUILD_PR_GAMES_SPACE_INVADERS_COPY_FROM_NEXT.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_SPACE_INVADERS_GAMEPLAY_MIGRATION_TO_NEXT.md	dev/build/pr/BUILD_PR_GAMES_SPACE_INVADERS_GAMEPLAY_MIGRATION_TO_NEXT.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_SPACE_INVADERS_NEXT_TEMPLATE_BASELINE.md	dev/build/pr/BUILD_PR_GAMES_SPACE_INVADERS_NEXT_TEMPLATE_BASELINE.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_SPACE_INVADERS_REMOVE_NEXT.md	dev/build/pr/BUILD_PR_GAMES_SPACE_INVADERS_REMOVE_NEXT.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_TEMPLATE_CONTRACT_ENFORCEMENT.md	dev/build/pr/BUILD_PR_GAMES_TEMPLATE_CONTRACT_ENFORCEMENT.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_TEMPLATE_ENGINE_THEME_BOOTSTRAP_ALIGNMENT.md	dev/build/pr/BUILD_PR_GAMES_TEMPLATE_ENGINE_THEME_BOOTSTRAP_ALIGNMENT.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_TEMPLATE_ENGINE_THEME_CANVAS_STATUS_TEXT.md	dev/build/pr/BUILD_PR_GAMES_TEMPLATE_ENGINE_THEME_CANVAS_STATUS_TEXT.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_TEMPLATE_FROM_ASTEROIDS.md	dev/build/pr/BUILD_PR_GAMES_TEMPLATE_FROM_ASTEROIDS.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_TEMPLATE_FROM_ASTEROIDS_V2_INDEX_SHELL.md	dev/build/pr/BUILD_PR_GAMES_TEMPLATE_FROM_ASTEROIDS_V2_INDEX_SHELL.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_TEMPLATE_INDEX_CANVAS_FIX.md	dev/build/pr/BUILD_PR_GAMES_TEMPLATE_INDEX_CANVAS_FIX.md
+R100	dev/docs_build/pr/BUILD_PR_GAMES_THRUSTER_FULL_FOLDER_MIGRATION.md	dev/build/pr/BUILD_PR_GAMES_THRUSTER_FULL_FOLDER_MIGRATION.md
+R100	dev/docs_build/pr/BUILD_PR_GAME_PAGES_HEADER_STRUCTURE_PARITY.md	dev/build/pr/BUILD_PR_GAME_PAGES_HEADER_STRUCTURE_PARITY.md
+R100	dev/docs_build/pr/BUILD_PR_HEADER_INTRO_OVERLAY_COLLAPSED_HEADER_RESTYLE.md	dev/build/pr/BUILD_PR_HEADER_INTRO_OVERLAY_COLLAPSED_HEADER_RESTYLE.md
+R100	dev/docs_build/pr/BUILD_PR_INDEX_FULL_HEIGHT_AND_SEO_CONTENT.md	dev/build/pr/BUILD_PR_INDEX_FULL_HEIGHT_AND_SEO_CONTENT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_01_COLLISION_BOUNDARY_DEFINITION_AND_NORMALIZATION.md	dev/build/pr/BUILD_PR_LEVEL_01_COLLISION_BOUNDARY_DEFINITION_AND_NORMALIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_01_COMBINED_STRUCTURE_CLOSEOUT.md	dev/build/pr/BUILD_PR_LEVEL_01_COMBINED_STRUCTURE_CLOSEOUT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_01_ENGINE_VECTOR_RESIDUE_CLEANUP.md	dev/build/pr/BUILD_PR_LEVEL_01_ENGINE_VECTOR_RESIDUE_CLEANUP.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_01_FINAL_RESIDUE_ONLY.md	dev/build/pr/BUILD_PR_LEVEL_01_FINAL_RESIDUE_ONLY.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_01_RENDERER_RENDERING_BOUNDARY_NORMALIZATION.md	dev/build/pr/BUILD_PR_LEVEL_01_RENDERER_RENDERING_BOUNDARY_NORMALIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_01_RENDERING_VECTOR_BOUNDARY_AND_PHYSICS_CLOSEOUT.md	dev/build/pr/BUILD_PR_LEVEL_01_RENDERING_VECTOR_BOUNDARY_AND_PHYSICS_CLOSEOUT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_01_SCENE_SCENES_BOUNDARY_NORMALIZATION.md	dev/build/pr/BUILD_PR_LEVEL_01_SCENE_SCENES_BOUNDARY_NORMALIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_01_STRUCTURE_FINALIZATION_AND_ROADMAP_CORRECTION.md	dev/build/pr/BUILD_PR_LEVEL_01_STRUCTURE_FINALIZATION_AND_ROADMAP_CORRECTION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_02_2D_CAPABILITY_COMBINED_FOUNDATION.md	dev/build/pr/BUILD_PR_LEVEL_02_2D_CAPABILITY_COMBINED_FOUNDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_02_ENGINE_CORE_BASELINE_AND_BOUNDARY_PASS.md	dev/build/pr/BUILD_PR_LEVEL_02_ENGINE_CORE_BASELINE_AND_BOUNDARY_PASS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_03_DUPLICATE_RENAME_COMBINED_PASS.md	dev/build/pr/BUILD_PR_LEVEL_03_DUPLICATE_RENAME_COMBINED_PASS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_03_EXACT_CLUSTER_NUMBER_STRING_ID_CLOSEOUT.md	dev/build/pr/BUILD_PR_LEVEL_03_EXACT_CLUSTER_NUMBER_STRING_ID_CLOSEOUT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_03_SHARED_FOUNDATION_COMBINED_PASS.md	dev/build/pr/BUILD_PR_LEVEL_03_SHARED_FOUNDATION_COMBINED_PASS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_04_STATE_REPLAY_TIMELINE_COMBINED_PASS.md	dev/build/pr/BUILD_PR_LEVEL_04_STATE_REPLAY_TIMELINE_COMBINED_PASS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_06_SAMPLES_PROGRAM_COMBINED_PASS.md	dev/build/pr/BUILD_PR_LEVEL_06_SAMPLES_PROGRAM_COMBINED_PASS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_06_SAMPLE_PHASE_TRACKS_AND_2D_SAMPLE_BUILDS_INSPECT_FIRST.md	dev/build/pr/BUILD_PR_LEVEL_06_SAMPLE_PHASE_TRACKS_AND_2D_SAMPLE_BUILDS_INSPECT_FIRST.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_07_NETWORK_DEBUG_AND_SERVER_DASHBOARD_COMBINED_CLOSEOUT.md	dev/build/pr/BUILD_PR_LEVEL_07_NETWORK_DEBUG_AND_SERVER_DASHBOARD_COMBINED_CLOSEOUT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_08_04_PUCKMAN_BOUNDARY_NORMALIZATION.md	dev/build/pr/BUILD_PR_LEVEL_08_04_PUCKMAN_BOUNDARY_NORMALIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_08_05_SPACE_INVADERS_COMPLETION.md	dev/build/pr/BUILD_PR_LEVEL_08_05_SPACE_INVADERS_COMPLETION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_08_06_BOUNDARY_ENFORCEMENT.md	dev/build/pr/BUILD_PR_LEVEL_08_06_BOUNDARY_ENFORCEMENT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_08_07_ROADMAP_SCOPE_CORRECTION.md	dev/build/pr/BUILD_PR_LEVEL_08_07_ROADMAP_SCOPE_CORRECTION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_08_08_REPO_WIDE_GAME_NORMALIZATION_WAVE_1.md	dev/build/pr/BUILD_PR_LEVEL_08_08_REPO_WIDE_GAME_NORMALIZATION_WAVE_1.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_08_09_REPO_WIDE_GAME_NORMALIZATION_WAVE_2.md	dev/build/pr/BUILD_PR_LEVEL_08_09_REPO_WIDE_GAME_NORMALIZATION_WAVE_2.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_08_10_REPO_WIDE_GAME_NORMALIZATION_WAVE_3.md	dev/build/pr/BUILD_PR_LEVEL_08_10_REPO_WIDE_GAME_NORMALIZATION_WAVE_3.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_08_11_PHASE_08_COMPLETION.md	dev/build/pr/BUILD_PR_LEVEL_08_11_PHASE_08_COMPLETION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_01_FLOW_RULES_VS_FLOW_CONTENT_SPLIT.md	dev/build/pr/BUILD_PR_LEVEL_09_01_FLOW_RULES_VS_FLOW_CONTENT_SPLIT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_02_ASSET_OWNERSHIP_NORMALIZATION.md	dev/build/pr/BUILD_PR_LEVEL_09_02_ASSET_OWNERSHIP_NORMALIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_03_ASSET_BUCKET_TAXONOMY_STANDARD.md	dev/build/pr/BUILD_PR_LEVEL_09_03_ASSET_BUCKET_TAXONOMY_STANDARD.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_04_ASSET_STRUCTURE_SIMPLIFICATION.md	dev/build/pr/BUILD_PR_LEVEL_09_04_ASSET_STRUCTURE_SIMPLIFICATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_05_SHARED_ASSET_HANDOFF_ENFORCEMENT.md	dev/build/pr/BUILD_PR_LEVEL_09_05_SHARED_ASSET_HANDOFF_ENFORCEMENT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_06_TOOL_LAUNCH_CONTRACT_ALIGNMENT.md	dev/build/pr/BUILD_PR_LEVEL_09_06_TOOL_LAUNCH_CONTRACT_ALIGNMENT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_07_TOOL_BOUNDARY_NORMALIZATION.md	dev/build/pr/BUILD_PR_LEVEL_09_07_TOOL_BOUNDARY_NORMALIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_08_TOOL_DATA_CONTRACTS.md	dev/build/pr/BUILD_PR_LEVEL_09_08_TOOL_DATA_CONTRACTS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_09_ASSET_PIPELINE_TOOLING.md	dev/build/pr/BUILD_PR_LEVEL_09_09_ASSET_PIPELINE_TOOLING.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_10_GAME_ASSET_MANIFEST_COORDINATION.md	dev/build/pr/BUILD_PR_LEVEL_09_10_GAME_ASSET_MANIFEST_COORDINATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_11_RUNTIME_ASSET_BINDING.md	dev/build/pr/BUILD_PR_LEVEL_09_11_RUNTIME_ASSET_BINDING.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_12_ASSET_REFERENCE_ADOPTION.md	dev/build/pr/BUILD_PR_LEVEL_09_12_ASSET_REFERENCE_ADOPTION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_13_ASSET_LOOKUP_CONSOLIDATION.md	dev/build/pr/BUILD_PR_LEVEL_09_13_ASSET_LOOKUP_CONSOLIDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_14_RUNTIME_ASSET_VALIDATION.md	dev/build/pr/BUILD_PR_LEVEL_09_14_RUNTIME_ASSET_VALIDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_15_ASSET_ERROR_HANDLING.md	dev/build/pr/BUILD_PR_LEVEL_09_15_ASSET_ERROR_HANDLING.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_16_ASSET_DEBUG_VISIBILITY.md	dev/build/pr/BUILD_PR_LEVEL_09_16_ASSET_DEBUG_VISIBILITY.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_17_ASSET_PERFORMANCE_OPTIMIZATION.md	dev/build/pr/BUILD_PR_LEVEL_09_17_ASSET_PERFORMANCE_OPTIMIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_18_CODEX_PLAN_SWITCH_AND_API_KEY_SCRIPTING.md	dev/build/pr/BUILD_PR_LEVEL_09_18_CODEX_PLAN_SWITCH_AND_API_KEY_SCRIPTING.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_19_TEMPLATE_GAME_CREATION_SCRIPTING.md	dev/build/pr/BUILD_PR_LEVEL_09_19_TEMPLATE_GAME_CREATION_SCRIPTING.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_20_WEBSITE_REPO_PREP_SCRIPTING.md	dev/build/pr/BUILD_PR_LEVEL_09_20_WEBSITE_REPO_PREP_SCRIPTING.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_21_SCRIPT_VALIDATION_AND_SAFETY.md	dev/build/pr/BUILD_PR_LEVEL_09_21_SCRIPT_VALIDATION_AND_SAFETY.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_22_DEPLOYMENT_PIPELINE_INTEGRATION.md	dev/build/pr/BUILD_PR_LEVEL_09_22_DEPLOYMENT_PIPELINE_INTEGRATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_23_SCRIPT_STRUCTURE_FINALIZATION.md	dev/build/pr/BUILD_PR_LEVEL_09_23_SCRIPT_STRUCTURE_FINALIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_24_SCRIPT_STRUCTURE_VALIDATION_LAYER.md	dev/build/pr/BUILD_PR_LEVEL_09_24_SCRIPT_STRUCTURE_VALIDATION_LAYER.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_25_DOCKER_DEPLOY_SCRIPT_REFINEMENT.md	dev/build/pr/BUILD_PR_LEVEL_09_25_DOCKER_DEPLOY_SCRIPT_REFINEMENT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_26_DEPLOY_VALIDATION_AND_DRYRUN.md	dev/build/pr/BUILD_PR_LEVEL_09_26_DEPLOY_VALIDATION_AND_DRYRUN.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_27_DEPLOY_ENV_CONFIG_STANDARDIZATION.md	dev/build/pr/BUILD_PR_LEVEL_09_27_DEPLOY_ENV_CONFIG_STANDARDIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_28_DEPLOY_EXECUTION_WRAPPER.md	dev/build/pr/BUILD_PR_LEVEL_09_28_DEPLOY_EXECUTION_WRAPPER.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_29_DEPLOY_PIPELINE_FINALIZATION.md	dev/build/pr/BUILD_PR_LEVEL_09_29_DEPLOY_PIPELINE_FINALIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_30_DEPLOY_RELEASE_FLOW.md	dev/build/pr/BUILD_PR_LEVEL_09_30_DEPLOY_RELEASE_FLOW.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_31_DEPLOY_MONITORING_AND_OPERATIONS.md	dev/build/pr/BUILD_PR_LEVEL_09_31_DEPLOY_MONITORING_AND_OPERATIONS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_32_DEPLOY_DOCUMENTATION_AND_HANDOFF.md	dev/build/pr/BUILD_PR_LEVEL_09_32_DEPLOY_DOCUMENTATION_AND_HANDOFF.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_TOOLS_NORMALIZATION_AND_REQUIRED_TOOLS_COMBINED_PASS.md	dev/build/pr/BUILD_PR_LEVEL_09_TOOLS_NORMALIZATION_AND_REQUIRED_TOOLS_COMBINED_PASS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_09_TOOLS_RESIDUE_ONLY.md	dev/build/pr/BUILD_PR_LEVEL_09_TOOLS_RESIDUE_ONLY.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_02_SCRIPT_VALIDATION_RUNNER.md	dev/build/pr/BUILD_PR_LEVEL_10_02_SCRIPT_VALIDATION_RUNNER.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_03_VALIDATION_INTEGRATION.md	dev/build/pr/BUILD_PR_LEVEL_10_03_VALIDATION_INTEGRATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_04_VALIDATION_EXTENSIONS.md	dev/build/pr/BUILD_PR_LEVEL_10_04_VALIDATION_EXTENSIONS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_05_ASSET_STRUCTURE_MIGRATION_ASTEROIDS.md	dev/build/pr/BUILD_PR_LEVEL_10_05_ASSET_STRUCTURE_MIGRATION_ASTEROIDS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_06_ASSET_DATA_BOOTSTRAP_ASTEROIDS.md	dev/build/pr/BUILD_PR_LEVEL_10_06_ASSET_DATA_BOOTSTRAP_ASTEROIDS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_08_ASTEROIDS_DATA_MANIFEST_DISCOVERY.md	dev/build/pr/BUILD_PR_LEVEL_10_08_ASTEROIDS_DATA_MANIFEST_DISCOVERY.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_09_ASTEROIDS_MANIFEST_LOADER_INTEGRATION.md	dev/build/pr/BUILD_PR_LEVEL_10_09_ASTEROIDS_MANIFEST_LOADER_INTEGRATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_10_SHARED_MANIFEST_LOADER_NORMALIZATION.md	dev/build/pr/BUILD_PR_LEVEL_10_10_SHARED_MANIFEST_LOADER_NORMALIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_12_ASSET_FILE_NAMING_NORMALIZATION_GLOBAL.md	dev/build/pr/BUILD_PR_LEVEL_10_12_ASSET_FILE_NAMING_NORMALIZATION_GLOBAL.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_13_ASSET_DEDUP_AND_BEZEL_ROADMAP.md	dev/build/pr/BUILD_PR_LEVEL_10_13_ASSET_DEDUP_AND_BEZEL_ROADMAP.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_14_ASTEROIDS_RUNTIME_VALIDATION_PASS.md	dev/build/pr/BUILD_PR_LEVEL_10_14_ASTEROIDS_RUNTIME_VALIDATION_PASS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_15_TEMPLATE_ASSET_STRUCTURE_AND_FULLSCREEN_BEZEL_FOUNDATION.md	dev/build/pr/BUILD_PR_LEVEL_10_15_TEMPLATE_ASSET_STRUCTURE_AND_FULLSCREEN_BEZEL_FOUNDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_16_AUTODISCOVER_FULLSCREEN_BEZEL_AND_BACKGROUND.md	dev/build/pr/BUILD_PR_LEVEL_10_16_AUTODISCOVER_FULLSCREEN_BEZEL_AND_BACKGROUND.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_17_HTML_FULLSCREEN_BEZEL_AND_CANVAS_BACKGROUND_SPLIT.md	dev/build/pr/BUILD_PR_LEVEL_10_17_HTML_FULLSCREEN_BEZEL_AND_CANVAS_BACKGROUND_SPLIT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_19_REAL_IMPLEMENTATION_DELTA_FULLSCREEN_BEZEL_AND_BACKGROUND.md	dev/build/pr/BUILD_PR_LEVEL_10_19_REAL_IMPLEMENTATION_DELTA_FULLSCREEN_BEZEL_AND_BACKGROUND.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_1A_PALETTE_STANDALONE_SINGLETON_CORRECTION.md	dev/build/pr/BUILD_PR_LEVEL_10_1A_PALETTE_STANDALONE_SINGLETON_CORRECTION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_1B_TOOL_SECTION_METADATA_AND_PALETTE_TOOL_SINGLETON.md	dev/build/pr/BUILD_PR_LEVEL_10_1B_TOOL_SECTION_METADATA_AND_PALETTE_TOOL_SINGLETON.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_1_GAME_PALETTE_COMPLETENESS_AND_TOOL_INPUT_ALIGNMENT.md	dev/build/pr/BUILD_PR_LEVEL_10_1_GAME_PALETTE_COMPLETENESS_AND_TOOL_INPUT_ALIGNMENT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_20_FIX_BEZEL_PATH_AND_BACKGROUND_DRAW_ORDER.md	dev/build/pr/BUILD_PR_LEVEL_10_20_FIX_BEZEL_PATH_AND_BACKGROUND_DRAW_ORDER.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_20_FIX_BEZEL_PATH_AND_BACKGROUND_DRAW_ORDER_ADDENDUM.md	dev/build/pr/BUILD_PR_LEVEL_10_20_FIX_BEZEL_PATH_AND_BACKGROUND_DRAW_ORDER_ADDENDUM.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_21_VERIFY_CENTERED_CANVAS_BEZEL_AND_GAMEPLAY_BACKGROUND.md	dev/build/pr/BUILD_PR_LEVEL_10_21_VERIFY_CENTERED_CANVAS_BEZEL_AND_GAMEPLAY_BACKGROUND.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_22_TEMPLATE_BEZEL_BACKGROUND_CONVENTION_FOUNDATION.md	dev/build/pr/BUILD_PR_LEVEL_10_22_TEMPLATE_BEZEL_BACKGROUND_CONVENTION_FOUNDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_23_RESTORE_MASTER_ROADMAP_STATUS_ONLY.md	dev/build/pr/BUILD_PR_LEVEL_10_23_RESTORE_MASTER_ROADMAP_STATUS_ONLY.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_24_MULTI_GAME_VALIDATION_PASS.md	dev/build/pr/BUILD_PR_LEVEL_10_24_MULTI_GAME_VALIDATION_PASS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_25_POLISH_AND_EDGE_CASES.md	dev/build/pr/BUILD_PR_LEVEL_10_25_POLISH_AND_EDGE_CASES.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_26_LEVEL_10_CLOSEOUT_SAMPLE_TOOL_NORMALIZATION_AND_SHARED_STRATEGY.md	dev/build/pr/BUILD_PR_LEVEL_10_26_LEVEL_10_CLOSEOUT_SAMPLE_TOOL_NORMALIZATION_AND_SHARED_STRATEGY.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_2A_WORKSPACE_MANAGER_ASSET_PRESENCE_VALIDATION.md	dev/build/pr/BUILD_PR_LEVEL_10_2A_WORKSPACE_MANAGER_ASSET_PRESENCE_VALIDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_2B_WORKSPACE_MANAGER_PALETTE_BINDING_FIX.md	dev/build/pr/BUILD_PR_LEVEL_10_2B_WORKSPACE_MANAGER_PALETTE_BINDING_FIX.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_2C_MANIFEST_PAYLOAD_EXPECTATION_TESTS_AND_CLEANUP.md	dev/build/pr/BUILD_PR_LEVEL_10_2C_MANIFEST_PAYLOAD_EXPECTATION_TESTS_AND_CLEANUP.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_2D_GRAVITY_WELL_SHIP_VECTOR_MAP_FIX.md	dev/build/pr/BUILD_PR_LEVEL_10_2D_GRAVITY_WELL_SHIP_VECTOR_MAP_FIX.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_2F_VECTOR_ASSET_PALETTE_PAINT_BINDING_FIX.md	dev/build/pr/BUILD_PR_LEVEL_10_2F_VECTOR_ASSET_PALETTE_PAINT_BINDING_FIX.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_2_WORKSPACE_MANAGER_OPEN_TEST_AND_SHARED_BOUNDARY_AUDIT.md	dev/build/pr/BUILD_PR_LEVEL_10_2_WORKSPACE_MANAGER_OPEN_TEST_AND_SHARED_BOUNDARY_AUDIT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_3_MIGRATE_TOOL_LOCAL_SAMPLES_TO_SAMPLES.md	dev/build/pr/BUILD_PR_LEVEL_10_3_MIGRATE_TOOL_LOCAL_SAMPLES_TO_SAMPLES.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_4_REMOVE_REMAINING_TOOL_SAMPLE_DROPDOWNS.md	dev/build/pr/BUILD_PR_LEVEL_10_4_REMOVE_REMAINING_TOOL_SAMPLE_DROPDOWNS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_5_NO_HIDDEN_TOOL_COUPLING_VALIDATION.md	dev/build/pr/BUILD_PR_LEVEL_10_5_NO_HIDDEN_TOOL_COUPLING_VALIDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT.md	dev/build/pr/BUILD_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_6D_PALETTE_CONTRACT_EVIDENCE_CAPTURE.md	dev/build/pr/BUILD_PR_LEVEL_10_6D_PALETTE_CONTRACT_EVIDENCE_CAPTURE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_6E_PALETTE_SSOT_NORMALIZATION.md	dev/build/pr/BUILD_PR_LEVEL_10_6E_PALETTE_SSOT_NORMALIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_6F_ALL_SAMPLE_PALETTE_SSOT_NORMALIZATION.md	dev/build/pr/BUILD_PR_LEVEL_10_6F_ALL_SAMPLE_PALETTE_SSOT_NORMALIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_6G_TOOL_INPUT_FETCH_LOAD_DIAGNOSTICS.md	dev/build/pr/BUILD_PR_LEVEL_10_6G_TOOL_INPUT_FETCH_LOAD_DIAGNOSTICS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_6H_TOOL_LOAD_EXPECTED_DIAGNOSTICS.md	dev/build/pr/BUILD_PR_LEVEL_10_6H_TOOL_LOAD_EXPECTED_DIAGNOSTICS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_6I_TOOL_LOAD_EXPECTED_VS_ACTUAL_CLASSIFICATION_V3.md	dev/build/pr/BUILD_PR_LEVEL_10_6I_TOOL_LOAD_EXPECTED_VS_ACTUAL_CLASSIFICATION_V3.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_6J_SPRITE_EDITOR_REQUIRED_PALETTE_INPUT.md	dev/build/pr/BUILD_PR_LEVEL_10_6J_SPRITE_EDITOR_REQUIRED_PALETTE_INPUT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_6K_SPRITE_EDITOR_PALETTE_PATH_RESOLUTION_FROM_MANIFEST.md	dev/build/pr/BUILD_PR_LEVEL_10_6K_SPRITE_EDITOR_PALETTE_PATH_RESOLUTION_FROM_MANIFEST.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_6M_TOOL_UI_READINESS_DOD.md	dev/build/pr/BUILD_PR_LEVEL_10_6M_TOOL_UI_READINESS_DOD.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_6N_TOOL_UI_DOD_AUDIT.md	dev/build/pr/BUILD_PR_LEVEL_10_6N_TOOL_UI_DOD_AUDIT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_6O_TOOL_UAT_FAILURE_STABILIZATION.md	dev/build/pr/BUILD_PR_LEVEL_10_6O_TOOL_UAT_FAILURE_STABILIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_6P_COMPLETE_TOOL_UI_READINESS_DOD.md	dev/build/pr/BUILD_PR_LEVEL_10_6P_COMPLETE_TOOL_UI_READINESS_DOD.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_6Q_TOOL_UI_READINESS_DOD_COMPLETION.md	dev/build/pr/BUILD_PR_LEVEL_10_6Q_TOOL_UI_READINESS_DOD_COMPLETION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_6R_TOOL_UI_CONTROL_INVENTORY_COMPLETION.md	dev/build/pr/BUILD_PR_LEVEL_10_6R_TOOL_UI_CONTROL_INVENTORY_COMPLETION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_6S_TOOL_UI_GAP_CLOSURE.md	dev/build/pr/BUILD_PR_LEVEL_10_6S_TOOL_UI_GAP_CLOSURE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_6T_VECTOR_TOOL_UI_STATE_FINALIZATION.md	dev/build/pr/BUILD_PR_LEVEL_10_6T_VECTOR_TOOL_UI_STATE_FINALIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_6U_TOOL_UAT_GAP_CLOSURE.md	dev/build/pr/BUILD_PR_LEVEL_10_6U_TOOL_UAT_GAP_CLOSURE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_10_6_SAMPLE_SCHEMA_AND_STANDALONE_TOOL_DATA_FLOW_VALIDATION.md	dev/build/pr/BUILD_PR_LEVEL_10_6_SAMPLE_SCHEMA_AND_STANDALONE_TOOL_DATA_FLOW_VALIDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_103_PALETTE_BROWSER_NORMALIZATION.md	dev/build/pr/BUILD_PR_LEVEL_11_103_PALETTE_BROWSER_NORMALIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_104_SCHEMA_FILENAME_CANONICALIZATION_AND_ARRAY_RULE_RESTORE.md	dev/build/pr/BUILD_PR_LEVEL_11_104_SCHEMA_FILENAME_CANONICALIZATION_AND_ARRAY_RULE_RESTORE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_105_REMOVE_BROKEN_SAMPLE_TOOL_BINDINGS.md	dev/build/pr/BUILD_PR_LEVEL_11_105_REMOVE_BROKEN_SAMPLE_TOOL_BINDINGS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_106_CANONICAL_ASSET_KIND_ENFORCEMENT.md	dev/build/pr/BUILD_PR_LEVEL_11_106_CANONICAL_ASSET_KIND_ENFORCEMENT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_107_TOOL_VS_ASSET_KIND_CLARIFICATION.md	dev/build/pr/BUILD_PR_LEVEL_11_107_TOOL_VS_ASSET_KIND_CLARIFICATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_108_RUNTIME_INPUT_CONTRACT_ENFORCEMENT.md	dev/build/pr/BUILD_PR_LEVEL_11_108_RUNTIME_INPUT_CONTRACT_ENFORCEMENT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_110_SCHEMA_ONLY_VALIDATION_SCREEN_ERRORS.md	dev/build/pr/BUILD_PR_LEVEL_11_110_SCHEMA_ONLY_VALIDATION_SCREEN_ERRORS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_111_TEST_SCHEMA_RELOCATION_AND_INFER_PATH_REMOVAL.md	dev/build/pr/BUILD_PR_LEVEL_11_111_TEST_SCHEMA_RELOCATION_AND_INFER_PATH_REMOVAL.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_112_REMOVE_NORMALIZE_PRESET_REPLACE_PATHS.md	dev/build/pr/BUILD_PR_LEVEL_11_112_REMOVE_NORMALIZE_PRESET_REPLACE_PATHS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_113_CODEX_REPAIR_OR_REPORT_ENFORCEMENT.md	dev/build/pr/BUILD_PR_LEVEL_11_113_CODEX_REPAIR_OR_REPORT_ENFORCEMENT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_114_ENFORCE_JSON_FIX_ON_FAILURE.md	dev/build/pr/BUILD_PR_LEVEL_11_114_ENFORCE_JSON_FIX_ON_FAILURE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_116_REMOVE_KNOWN_BAD_SAMPLES2TOOLS_ENTRIES.md	dev/build/pr/BUILD_PR_LEVEL_11_116_REMOVE_KNOWN_BAD_SAMPLES2TOOLS_ENTRIES.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_118_SAMPLE_TILE_LINK_SSOT_ENFORCEMENT.md	dev/build/pr/BUILD_PR_LEVEL_11_118_SAMPLE_TILE_LINK_SSOT_ENFORCEMENT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_119_SAMPLE_METADATA_SSOT_AND_RENDERER_GUARD_REMOVAL.md	dev/build/pr/BUILD_PR_LEVEL_11_119_SAMPLE_METADATA_SSOT_AND_RENDERER_GUARD_REMOVAL.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_120_SAMPLE_TOOL_LINK_COUNT_RECONCILIATION.md	dev/build/pr/BUILD_PR_LEVEL_11_120_SAMPLE_TOOL_LINK_COUNT_RECONCILIATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_121_VALIDATE_SSOT_TOOL_RELATIONSHIPS_LOAD_DIRECT_JSON.md	dev/build/pr/BUILD_PR_LEVEL_11_121_VALIDATE_SSOT_TOOL_RELATIONSHIPS_LOAD_DIRECT_JSON.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_122_TOOL_SCHEMA_BOUNDARY_AND_PAYLOAD_ROUTING.md	dev/build/pr/BUILD_PR_LEVEL_11_122_TOOL_SCHEMA_BOUNDARY_AND_PAYLOAD_ROUTING.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_123_RESTORE_SCHEMA_SEPARATION_OF_DUTIES.md	dev/build/pr/BUILD_PR_LEVEL_11_123_RESTORE_SCHEMA_SEPARATION_OF_DUTIES.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_124_FORCE_SCHEMA_FILE_CHANGES_NOT_DOCS.md	dev/build/pr/BUILD_PR_LEVEL_11_124_FORCE_SCHEMA_FILE_CHANGES_NOT_DOCS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_125_ENFORCE_FILE_WRITE_AND_BLOCK_NOOP.md	dev/build/pr/BUILD_PR_LEVEL_11_125_ENFORCE_FILE_WRITE_AND_BLOCK_NOOP.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_126_STRICT_SCHEMA_BOUNDARY_FIX_EXECUTION.md	dev/build/pr/BUILD_PR_LEVEL_11_126_STRICT_SCHEMA_BOUNDARY_FIX_EXECUTION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_127_VERIFY_AND_ENFORCE_SCHEMA_BOUNDARY_AT_RUNTIME.md	dev/build/pr/BUILD_PR_LEVEL_11_127_VERIFY_AND_ENFORCE_SCHEMA_BOUNDARY_AT_RUNTIME.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_128_ENFORCE_NO_TRANSFORM_ROUTING.md	dev/build/pr/BUILD_PR_LEVEL_11_128_ENFORCE_NO_TRANSFORM_ROUTING.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_129_VERIFY_ALL_TOOLS_DIRECT_JSON_INPUT.md	dev/build/pr/BUILD_PR_LEVEL_11_129_VERIFY_ALL_TOOLS_DIRECT_JSON_INPUT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_130_TOOL_INPUT_CONTRACT_WITH_PALETTE_DEPENDENCY.md	dev/build/pr/BUILD_PR_LEVEL_11_130_TOOL_INPUT_CONTRACT_WITH_PALETTE_DEPENDENCY.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_131_ENFORCE_PALETTE_PASS_THROUGH_ROUTING.md	dev/build/pr/BUILD_PR_LEVEL_11_131_ENFORCE_PALETTE_PASS_THROUGH_ROUTING.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_132_FINAL_TOOL_INPUT_ENFORCEMENT.md	dev/build/pr/BUILD_PR_LEVEL_11_132_FINAL_TOOL_INPUT_ENFORCEMENT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_133_RUNTIME_ASSERTION_NO_HIDDEN_INPUT.md	dev/build/pr/BUILD_PR_LEVEL_11_133_RUNTIME_ASSERTION_NO_HIDDEN_INPUT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_134_REMOVE_GLOBAL_INPUT_PATHS.md	dev/build/pr/BUILD_PR_LEVEL_11_134_REMOVE_GLOBAL_INPUT_PATHS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_135_REMOVE_PRESET_AND_DEFAULT_PATHS.md	dev/build/pr/BUILD_PR_LEVEL_11_135_REMOVE_PRESET_AND_DEFAULT_PATHS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_136_FINAL_VERIFICATION_NO_FALLBACK_NO_GLOBAL.md	dev/build/pr/BUILD_PR_LEVEL_11_136_FINAL_VERIFICATION_NO_FALLBACK_NO_GLOBAL.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_137_LOCK_RUNTIME_CONTRACT.md	dev/build/pr/BUILD_PR_LEVEL_11_137_LOCK_RUNTIME_CONTRACT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_140_MINIMAL_VALIDATE_INPUT_ONLY.md	dev/build/pr/BUILD_PR_LEVEL_11_140_MINIMAL_VALIDATE_INPUT_ONLY.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_141_CLOSE_CURRENT_DIRECT_JSON_ROUTE.md	dev/build/pr/BUILD_PR_LEVEL_11_141_CLOSE_CURRENT_DIRECT_JSON_ROUTE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_142_PREPARE_NEXT_PHASE_SCHEMA_LOCK.md	dev/build/pr/BUILD_PR_LEVEL_11_142_PREPARE_NEXT_PHASE_SCHEMA_LOCK.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_143_SCHEMA_LOCK_ENFORCEMENT.md	dev/build/pr/BUILD_PR_LEVEL_11_143_SCHEMA_LOCK_ENFORCEMENT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_144_SCHEMA_LOCK_VALIDATION_SWEEP.md	dev/build/pr/BUILD_PR_LEVEL_11_144_SCHEMA_LOCK_VALIDATION_SWEEP.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_145_VALIDATE_END_TO_END_SAMPLE_TOOL_EXECUTION.md	dev/build/pr/BUILD_PR_LEVEL_11_145_VALIDATE_END_TO_END_SAMPLE_TOOL_EXECUTION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_146_RESTORE_SAMPLE_1902_WORKSPACE_MANIFEST_LAUNCH.md	dev/build/pr/BUILD_PR_LEVEL_11_146_RESTORE_SAMPLE_1902_WORKSPACE_MANIFEST_LAUNCH.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_147_FIX_SAMPLE_1902_DIRECT_TOOL_PAYLOADS.md	dev/build/pr/BUILD_PR_LEVEL_11_147_FIX_SAMPLE_1902_DIRECT_TOOL_PAYLOADS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_148_WORKSPACE_MANAGER_USE_TOOL_KEY_AS_ID.md	dev/build/pr/BUILD_PR_LEVEL_11_148_WORKSPACE_MANAGER_USE_TOOL_KEY_AS_ID.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_149_WORKSPACE_MANAGER_DIRECT_PAYLOAD_CARD_STATUS.md	dev/build/pr/BUILD_PR_LEVEL_11_149_WORKSPACE_MANAGER_DIRECT_PAYLOAD_CARD_STATUS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_150_FIX_WORKSPACE_VECTOR_MAP_DIRECT_OBJECT_RENDER.md	dev/build/pr/BUILD_PR_LEVEL_11_150_FIX_WORKSPACE_VECTOR_MAP_DIRECT_OBJECT_RENDER.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_151_FIX_VECTOR_MAP_HOSTED_PAYLOAD_BOOT.md	dev/build/pr/BUILD_PR_LEVEL_11_151_FIX_VECTOR_MAP_HOSTED_PAYLOAD_BOOT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_152_FIX_SVG_ASSET_STUDIO_HOSTED_PAYLOAD_BOOT.md	dev/build/pr/BUILD_PR_LEVEL_11_152_FIX_SVG_ASSET_STUDIO_HOSTED_PAYLOAD_BOOT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_153_FIX_WORKSPACE_SVG_ASSET_STATUS_LABEL.md	dev/build/pr/BUILD_PR_LEVEL_11_153_FIX_WORKSPACE_SVG_ASSET_STATUS_LABEL.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_154_FIX_SVG_PAYLOAD_DETECTION_NOT_LABEL.md	dev/build/pr/BUILD_PR_LEVEL_11_154_FIX_SVG_PAYLOAD_DETECTION_NOT_LABEL.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_155_TRACE_SVG_ASSET_NONE_SOURCE.md	dev/build/pr/BUILD_PR_LEVEL_11_155_TRACE_SVG_ASSET_NONE_SOURCE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_156_INSTRUMENT_SVG_CARD_RENDER_SOURCE.md	dev/build/pr/BUILD_PR_LEVEL_11_156_INSTRUMENT_SVG_CARD_RENDER_SOURCE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_157_FIX_WORKSPACE_TILE_SUMMARY_DISPLAY_MODEL.md	dev/build/pr/BUILD_PR_LEVEL_11_157_FIX_WORKSPACE_TILE_SUMMARY_DISPLAY_MODEL.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_158_FORCE_FIX_LITERAL_ASSET_NONE_RENDERER.md	dev/build/pr/BUILD_PR_LEVEL_11_158_FORCE_FIX_LITERAL_ASSET_NONE_RENDERER.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_159_FIX_ACTIVE_SHARED_ASSET_TILE_RENDERER.md	dev/build/pr/BUILD_PR_LEVEL_11_159_FIX_ACTIVE_SHARED_ASSET_TILE_RENDERER.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_160_FIX_SHARED_SHELL_SVG_ASSET_BADGE_COMPATIBILITY.md	dev/build/pr/BUILD_PR_LEVEL_11_160_FIX_SHARED_SHELL_SVG_ASSET_BADGE_COMPATIBILITY.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_161_WIRE_SVG_PAYLOAD_TO_SHARED_ASSET_BADGE.md	dev/build/pr/BUILD_PR_LEVEL_11_161_WIRE_SVG_PAYLOAD_TO_SHARED_ASSET_BADGE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_166_FIX_HOSTED_BADGE_CLEAR_ORDER.md	dev/build/pr/BUILD_PR_LEVEL_11_166_FIX_HOSTED_BADGE_CLEAR_ORDER.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_167_USE_HOST_SESSION_CONTEXT_FOR_BADGE.md	dev/build/pr/BUILD_PR_LEVEL_11_167_USE_HOST_SESSION_CONTEXT_FOR_BADGE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_169_NEW_WORKSPACE_SHELL_CONTRACT_FIRST.md	dev/build/pr/BUILD_PR_LEVEL_11_169_NEW_WORKSPACE_SHELL_CONTRACT_FIRST.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_170_WORKSPACE_TILE_READS_WORKSPACE_SHELL_STATE.md	dev/build/pr/BUILD_PR_LEVEL_11_170_WORKSPACE_TILE_READS_WORKSPACE_SHELL_STATE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_171_TRACE_ALL_SVG_TILE_WRITES.md	dev/build/pr/BUILD_PR_LEVEL_11_171_TRACE_ALL_SVG_TILE_WRITES.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_172_DISABLE_PLATFORM_BADGE_FOR_HOSTED_SVG.md	dev/build/pr/BUILD_PR_LEVEL_11_172_DISABLE_PLATFORM_BADGE_FOR_HOSTED_SVG.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_174_WIRE_SVG_HOSTED_ENTRY_TO_WORKSPACE_SHELL.md	dev/build/pr/BUILD_PR_LEVEL_11_174_WIRE_SVG_HOSTED_ENTRY_TO_WORKSPACE_SHELL.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_175_SVG_EARLY_EXIT_WORKSPACE_ENTRY.md	dev/build/pr/BUILD_PR_LEVEL_11_175_SVG_EARLY_EXIT_WORKSPACE_ENTRY.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_176_GUT_HOSTED_PLATFORM_BADGE_ROW.md	dev/build/pr/BUILD_PR_LEVEL_11_176_GUT_HOSTED_PLATFORM_BADGE_ROW.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_177_REMOVE_SHARED_DEPENDENCY_MODEL.md	dev/build/pr/BUILD_PR_LEVEL_11_177_REMOVE_SHARED_DEPENDENCY_MODEL.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_178_DISABLE_ASSET_USAGE_IN_HOSTED_MODE.md	dev/build/pr/BUILD_PR_LEVEL_11_178_DISABLE_ASSET_USAGE_IN_HOSTED_MODE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_179_WRITE_SVG_TILE_FROM_WORKSPACE_SHELL.md	dev/build/pr/BUILD_PR_LEVEL_11_179_WRITE_SVG_TILE_FROM_WORKSPACE_SHELL.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_180_FIX_SVG_LAUNCH_ENTRY_PATH.md	dev/build/pr/BUILD_PR_LEVEL_11_180_FIX_SVG_LAUNCH_ENTRY_PATH.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_181_AUDIT_WORKSPACE_TOOL_MAPPING_REGISTRY_CLICK.md	dev/build/pr/BUILD_PR_LEVEL_11_181_AUDIT_WORKSPACE_TOOL_MAPPING_REGISTRY_CLICK.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_182_FIX_CLICK_HANDLER_TOOL_ID.md	dev/build/pr/BUILD_PR_LEVEL_11_182_FIX_CLICK_HANDLER_TOOL_ID.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_183_HARD_REPLACE_WORKSPACE_CLICK_DISPATCH.md	dev/build/pr/BUILD_PR_LEVEL_11_183_HARD_REPLACE_WORKSPACE_CLICK_DISPATCH.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_184_REMOVE_CROSS_TOOL_ALIAS.md	dev/build/pr/BUILD_PR_LEVEL_11_184_REMOVE_CROSS_TOOL_ALIAS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_187_COMMIT_AND_RESTART_TOOL_V2_LANE.md	dev/build/pr/BUILD_PR_LEVEL_11_187_COMMIT_AND_RESTART_TOOL_V2_LANE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_188_PALETTE_MANAGER_REVERSE_ENGINEER_AND_REBUILD.md	dev/build/pr/BUILD_PR_LEVEL_11_188_PALETTE_MANAGER_REVERSE_ENGINEER_AND_REBUILD.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_188_PALETTE_REVERSE_ENGINEER_AND_REBUILD.md	dev/build/pr/BUILD_PR_LEVEL_11_188_PALETTE_REVERSE_ENGINEER_AND_REBUILD.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_1_AUTHORITATIVE_APPLY_GUARD.md	dev/build/pr/BUILD_PR_LEVEL_11_1_AUTHORITATIVE_APPLY_GUARD.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_1_AUTHORITATIVE_STATE_HANDOFF_CANDIDATE.md	dev/build/pr/BUILD_PR_LEVEL_11_1_AUTHORITATIVE_STATE_HANDOFF_CANDIDATE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_1_EVENT_WHITELIST_GUARD.md	dev/build/pr/BUILD_PR_LEVEL_11_1_EVENT_WHITELIST_GUARD.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_1_HANDOFF_VALIDATION_TIGHTEN.md	dev/build/pr/BUILD_PR_LEVEL_11_1_HANDOFF_VALIDATION_TIGHTEN.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_1_PASSIVE_MODE_GUARD.md	dev/build/pr/BUILD_PR_LEVEL_11_1_PASSIVE_MODE_GUARD.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_1_POST_LEVEL_10_HANDOFF_AND_ROADMAP_RULE_CLEANUP.md	dev/build/pr/BUILD_PR_LEVEL_11_1_POST_LEVEL_10_HANDOFF_AND_ROADMAP_RULE_CLEANUP.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_1_STATE_CONTRACT_FINALIZATION.md	dev/build/pr/BUILD_PR_LEVEL_11_1_STATE_CONTRACT_FINALIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_2_AUTHORITATIVE_STATE_EXPANSION_REVIEW.md	dev/build/pr/BUILD_PR_LEVEL_11_2_AUTHORITATIVE_STATE_EXPANSION_REVIEW.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_2_COMBINED_RUNTIME_DIRECTION_AND_RULE_MOVE_GUARDS.md	dev/build/pr/BUILD_PR_LEVEL_11_2_COMBINED_RUNTIME_DIRECTION_AND_RULE_MOVE_GUARDS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_2_RECONCILIATION_LAYER_FOUNDATION.md	dev/build/pr/BUILD_PR_LEVEL_11_2_RECONCILIATION_LAYER_FOUNDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_3_AUTHORITATIVE_STATE_NEXT_SLICE.md	dev/build/pr/BUILD_PR_LEVEL_11_3_AUTHORITATIVE_STATE_NEXT_SLICE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_4_AUTHORITATIVE_STATE_SCORE_IMPLEMENTATION.md	dev/build/pr/BUILD_PR_LEVEL_11_4_AUTHORITATIVE_STATE_SCORE_IMPLEMENTATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_4_REWIND_EXECUTION.md	dev/build/pr/BUILD_PR_LEVEL_11_4_REWIND_EXECUTION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_54_CONTROLLED_JSON_CLEANUP_8.md	dev/build/pr/BUILD_PR_LEVEL_11_54_CONTROLLED_JSON_CLEANUP_8.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_5_MULTI_ENTITY_SUPPORT.md	dev/build/pr/BUILD_PR_LEVEL_11_5_MULTI_ENTITY_SUPPORT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_64_MISSING_REFERENCE_REPAIR_AND_AUDIT_COUNTS_ONLY.md	dev/build/pr/BUILD_PR_LEVEL_11_64_MISSING_REFERENCE_REPAIR_AND_AUDIT_COUNTS_ONLY.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_67_FINAL_SAMPLE_JSON_AUDIT_CLOSURE.md	dev/build/pr/BUILD_PR_LEVEL_11_67_FINAL_SAMPLE_JSON_AUDIT_CLOSURE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_74_UTILS_CONSOLIDATION_INVENTORY.md	dev/build/pr/BUILD_PR_LEVEL_11_74_UTILS_CONSOLIDATION_INVENTORY.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_78_ENGINE_UTILS_REFERENCE_CLOSURE.md	dev/build/pr/BUILD_PR_LEVEL_11_78_ENGINE_UTILS_REFERENCE_CLOSURE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_7_FINAL_PROMOTION_GATE.md	dev/build/pr/BUILD_PR_LEVEL_11_7_FINAL_PROMOTION_GATE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_11_89_ASTEROIDS_ENGINE_RENDER_OWNERSHIP_STABILIZATION.md	dev/build/pr/BUILD_PR_LEVEL_11_89_ASTEROIDS_ENGINE_RENDER_OWNERSHIP_STABILIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_12_10_REAL_NETWORK_SAMPLE_AND_DASHBOARD.md	dev/build/pr/BUILD_PR_LEVEL_12_10_REAL_NETWORK_SAMPLE_AND_DASHBOARD.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_12_11_SAMPLE_SHARED_DIRECTORY_NORMALIZATION.md	dev/build/pr/BUILD_PR_LEVEL_12_11_SAMPLE_SHARED_DIRECTORY_NORMALIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_12_12_SAMPLE_1319_SERVER_TEST_RELOCATION.md	dev/build/pr/BUILD_PR_LEVEL_12_12_SAMPLE_1319_SERVER_TEST_RELOCATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_12_13_SAMPLE_1319_ROOT_TESTS_AND_PS_RUNBOOK.md	dev/build/pr/BUILD_PR_LEVEL_12_13_SAMPLE_1319_ROOT_TESTS_AND_PS_RUNBOOK.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_12_14_RUNTIME_LAUNCH_DIRECTORY_RENAME.md	dev/build/pr/BUILD_PR_LEVEL_12_14_RUNTIME_LAUNCH_DIRECTORY_RENAME.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_12_15_SAMPLE_1319_RUNTIME_RETURN_TO_SERVER.md	dev/build/pr/BUILD_PR_LEVEL_12_15_SAMPLE_1319_RUNTIME_RETURN_TO_SERVER.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_12_1_REAL_NETWORK_FOUNDATION.md	dev/build/pr/BUILD_PR_LEVEL_12_1_REAL_NETWORK_FOUNDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_12_2D_CAPABILITY_TRACK_COMBINED_CLOSEOUT.md	dev/build/pr/BUILD_PR_LEVEL_12_2D_CAPABILITY_TRACK_COMBINED_CLOSEOUT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_12_2D_CAPABILITY_TRACK_RESIDUE_ONLY.md	dev/build/pr/BUILD_PR_LEVEL_12_2D_CAPABILITY_TRACK_RESIDUE_ONLY.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_12_2_AUTHORITATIVE_SERVER_RUNTIME.md	dev/build/pr/BUILD_PR_LEVEL_12_2_AUTHORITATIVE_SERVER_RUNTIME.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_12_3_REPLICATION_CLIENT_APPLICATION.md	dev/build/pr/BUILD_PR_LEVEL_12_3_REPLICATION_CLIENT_APPLICATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_12_4_PLAYABLE_MULTIPLAYER_VALIDATION.md	dev/build/pr/BUILD_PR_LEVEL_12_4_PLAYABLE_MULTIPLAYER_VALIDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_12_5_SERVER_HOSTING_DOCKER_RUNTIME.md	dev/build/pr/BUILD_PR_LEVEL_12_5_SERVER_HOSTING_DOCKER_RUNTIME.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_12_6_REMOTE_DEPLOYMENT_CANDIDATE.md	dev/build/pr/BUILD_PR_LEVEL_12_6_REMOTE_DEPLOYMENT_CANDIDATE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_12_7_REAL_NETWORK_COMPLETION_GATE.md	dev/build/pr/BUILD_PR_LEVEL_12_7_REAL_NETWORK_COMPLETION_GATE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_12_7_REAL_NETWORK_COMPLETION_GATE_EVIDENCE.md	dev/build/pr/BUILD_PR_LEVEL_12_7_REAL_NETWORK_COMPLETION_GATE_EVIDENCE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_12_8_NETWORK_DIRECTORY_NORMALIZATION.md	dev/build/pr/BUILD_PR_LEVEL_12_8_NETWORK_DIRECTORY_NORMALIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_12_9_NETWORK_USAGE_SAMPLE_STANDARDIZATION.md	dev/build/pr/BUILD_PR_LEVEL_12_9_NETWORK_USAGE_SAMPLE_STANDARDIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_12_9_NETWORK_USAGE_SAMPLE_STANDARDIZATION_EVIDENCE.md	dev/build/pr/BUILD_PR_LEVEL_12_9_NETWORK_USAGE_SAMPLE_STANDARDIZATION_EVIDENCE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_14_TESTS_VALIDATION_COMBINED_PASS.md	dev/build/pr/BUILD_PR_LEVEL_14_TESTS_VALIDATION_COMBINED_PASS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_14_TESTS_VALIDATION_RESIDUE_ONLY.md	dev/build/pr/BUILD_PR_LEVEL_14_TESTS_VALIDATION_RESIDUE_ONLY.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_15_16_LEGACY_REDUCTION_AND_DOCUMENTATION_SYSTEM_COMBINED_CLOSEOUT.md	dev/build/pr/BUILD_PR_LEVEL_15_16_LEGACY_REDUCTION_AND_DOCUMENTATION_SYSTEM_COMBINED_CLOSEOUT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_16_1_PHASE16_NETWORK_GATE_COMPLETION.md	dev/build/pr/BUILD_PR_LEVEL_16_1_PHASE16_NETWORK_GATE_COMPLETION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_16_PHASE_DESCRIPTIONS_REPO_WIDE_NORMALIZATION.md	dev/build/pr/BUILD_PR_LEVEL_16_PHASE_DESCRIPTIONS_REPO_WIDE_NORMALIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_10_SAMPLE_1605_CHASE_CAMERA_AND_VEHICLE_FACING.md	dev/build/pr/BUILD_PR_LEVEL_17_10_SAMPLE_1605_CHASE_CAMERA_AND_VEHICLE_FACING.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_11_SAMPLE_1605_HARD_LOCK_CHASE_AND_ASYMMETRIC_VEHICLE.md	dev/build/pr/BUILD_PR_LEVEL_17_11_SAMPLE_1605_HARD_LOCK_CHASE_AND_ASYMMETRIC_VEHICLE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_12_SAMPLE_1606_PHYSICS_PLAYGROUND_IMPLEMENTATION.md	dev/build/pr/BUILD_PR_LEVEL_17_12_SAMPLE_1606_PHYSICS_PLAYGROUND_IMPLEMENTATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_13_SAMPLE_1607_SPACE_SHOOTER_CORE_LOOP.md	dev/build/pr/BUILD_PR_LEVEL_17_13_SAMPLE_1607_SPACE_SHOOTER_CORE_LOOP.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_14_SAMPLE_1608_DUNGEON_CRAWLER_CORE_LOOP.md	dev/build/pr/BUILD_PR_LEVEL_17_14_SAMPLE_1608_DUNGEON_CRAWLER_CORE_LOOP.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_15_ADVANCED_3D_SAMPLE_EXTENSIONS.md	dev/build/pr/BUILD_PR_LEVEL_17_15_ADVANCED_3D_SAMPLE_EXTENSIONS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_16_FINAL_3D_STABILITY_AND_HANDOFF_GATE.md	dev/build/pr/BUILD_PR_LEVEL_17_16_FINAL_3D_STABILITY_AND_HANDOFF_GATE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_17_CAMERA_DEBUG_PANEL.md	dev/build/pr/BUILD_PR_LEVEL_17_17_CAMERA_DEBUG_PANEL.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_17_MASTER_ROADMAP_STATUS_SYNC.md	dev/build/pr/BUILD_PR_LEVEL_17_17_MASTER_ROADMAP_STATUS_SYNC.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_17_ROADMAP_GUARDRAILS_STATUS_SYNC.md	dev/build/pr/BUILD_PR_LEVEL_17_17_ROADMAP_GUARDRAILS_STATUS_SYNC.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_18_RENDER_PIPELINE_STAGES.md	dev/build/pr/BUILD_PR_LEVEL_17_18_RENDER_PIPELINE_STAGES.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_19_COLLISION_OVERLAYS.md	dev/build/pr/BUILD_PR_LEVEL_17_19_COLLISION_OVERLAYS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_20_SCENE_GRAPH_INSPECTOR.md	dev/build/pr/BUILD_PR_LEVEL_17_20_SCENE_GRAPH_INSPECTOR.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_21_TRACK_H_3D_DEBUG_SUPPORT_CLOSEOUT.md	dev/build/pr/BUILD_PR_LEVEL_17_21_TRACK_H_3D_DEBUG_SUPPORT_CLOSEOUT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_22_PHASE16_3D_DEBUG_AND_ROADMAP_REBASELINE.md	dev/build/pr/BUILD_PR_LEVEL_17_22_PHASE16_3D_DEBUG_AND_ROADMAP_REBASELINE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_23_PHASE16_VALIDATION_SWEEP.md	dev/build/pr/BUILD_PR_LEVEL_17_23_PHASE16_VALIDATION_SWEEP.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_25_ADVANCED_3D_SAMPLES_BATCH_1.md	dev/build/pr/BUILD_PR_LEVEL_17_25_ADVANCED_3D_SAMPLES_BATCH_1.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_26_ADVANCED_3D_SAMPLES_BATCH_2.md	dev/build/pr/BUILD_PR_LEVEL_17_26_ADVANCED_3D_SAMPLES_BATCH_2.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_27_ADVANCED_3D_SAMPLES_BATCH_3.md	dev/build/pr/BUILD_PR_LEVEL_17_27_ADVANCED_3D_SAMPLES_BATCH_3.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_29_SAMPLE_1610_HYBRID_FIX.md	dev/build/pr/BUILD_PR_LEVEL_17_29_SAMPLE_1610_HYBRID_FIX.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_2_RENDER_SCENE_BOOT_VALIDATION.md	dev/build/pr/BUILD_PR_LEVEL_17_2_RENDER_SCENE_BOOT_VALIDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_30_ADVANCED_3D_SAMPLES_BATCH_4.md	dev/build/pr/BUILD_PR_LEVEL_17_30_ADVANCED_3D_SAMPLES_BATCH_4.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_31_ADVANCED_3D_SAMPLES_BATCH_5.md	dev/build/pr/BUILD_PR_LEVEL_17_31_ADVANCED_3D_SAMPLES_BATCH_5.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_33_RENDERING_AND_ANIMATION_TRACK.md	dev/build/pr/BUILD_PR_LEVEL_17_33_RENDERING_AND_ANIMATION_TRACK.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_34_RENDERING_TECHNIQUE_EXPANSION.md	dev/build/pr/BUILD_PR_LEVEL_17_34_RENDERING_TECHNIQUE_EXPANSION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_35_SAMPLE_RENUMBER_AND_INDEX_ALIGNMENT.md	dev/build/pr/BUILD_PR_LEVEL_17_35_SAMPLE_RENUMBER_AND_INDEX_ALIGNMENT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_36_RENDERING_TRACK_FINAL_POLISH.md	dev/build/pr/BUILD_PR_LEVEL_17_36_RENDERING_TRACK_FINAL_POLISH.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_37_LEVEL17_RENDERING_COMPLETION_GATE.md	dev/build/pr/BUILD_PR_LEVEL_17_37_LEVEL17_RENDERING_COMPLETION_GATE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_38_REAL_GAMEPLAY_SAMPLE.md	dev/build/pr/BUILD_PR_LEVEL_17_38_REAL_GAMEPLAY_SAMPLE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_39_SAMPLE_1709_MOVEMENT_MODELS_LAB.md	dev/build/pr/BUILD_PR_LEVEL_17_39_SAMPLE_1709_MOVEMENT_MODELS_LAB.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_3_CAMERA_FOUNDATION.md	dev/build/pr/BUILD_PR_LEVEL_17_3_CAMERA_FOUNDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_40_SAMPLE_1710_REAL_GAMEPLAY_POLISH.md	dev/build/pr/BUILD_PR_LEVEL_17_40_SAMPLE_1710_REAL_GAMEPLAY_POLISH.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_42_SAMPLE_1712_GAMEPLAY_METRICS_AND_TELEMETRY.md	dev/build/pr/BUILD_PR_LEVEL_17_42_SAMPLE_1712_GAMEPLAY_METRICS_AND_TELEMETRY.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_44_SAMPLE_SEQUENCE_REPAIR_1707_1712.md	dev/build/pr/BUILD_PR_LEVEL_17_44_SAMPLE_SEQUENCE_REPAIR_1707_1712.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_45_SAMPLE_1713_FINAL_REFERENCE_GAME.md	dev/build/pr/BUILD_PR_LEVEL_17_45_SAMPLE_1713_FINAL_REFERENCE_GAME.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_48_APPLY_TAB_DEBUG_TO_SAMPLES_1707_PLUS.md	dev/build/pr/BUILD_PR_LEVEL_17_48_APPLY_TAB_DEBUG_TO_SAMPLES_1707_PLUS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_4_MOVEMENT_COLLISION_BASE.md	dev/build/pr/BUILD_PR_LEVEL_17_4_MOVEMENT_COLLISION_BASE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_51_DEBUG_OVERLAY_POSITION_BOTTOM_RIGHT.md	dev/build/pr/BUILD_PR_LEVEL_17_51_DEBUG_OVERLAY_POSITION_BOTTOM_RIGHT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_52_DEBUG_OVERLAY_CYCLE_KEY_AND_SAMPLE_STACK_MAP.md	dev/build/pr/BUILD_PR_LEVEL_17_52_DEBUG_OVERLAY_CYCLE_KEY_AND_SAMPLE_STACK_MAP.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_5_PHYSICS_BASE_AND_SAMPLE_1601.md	dev/build/pr/BUILD_PR_LEVEL_17_5_PHYSICS_BASE_AND_SAMPLE_1601.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_6_SAMPLES_1602_TO_1604_PROGRESSIVE.md	dev/build/pr/BUILD_PR_LEVEL_17_6_SAMPLES_1602_TO_1604_PROGRESSIVE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_7_3D_VISIBILITY_CALIBRATION_AND_SANITY.md	dev/build/pr/BUILD_PR_LEVEL_17_7_3D_VISIBILITY_CALIBRATION_AND_SANITY.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_8_SAMPLES_1605_TO_1608_CORE_TRACK.md	dev/build/pr/BUILD_PR_LEVEL_17_8_SAMPLES_1605_TO_1608_CORE_TRACK.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_17_9_SAMPLE_1605_DRIVING_CONTROL_FIX.md	dev/build/pr/BUILD_PR_LEVEL_17_9_SAMPLE_1605_DRIVING_CONTROL_FIX.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_10_REMOVE_SAMPLE_SPECIFIC_LOGIC_FROM_ENGINE_PATHS.md	dev/build/pr/BUILD_PR_LEVEL_18_10_REMOVE_SAMPLE_SPECIFIC_LOGIC_FROM_ENGINE_PATHS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_11_TRACK_A_FINAL_CONFIRMATION.md	dev/build/pr/BUILD_PR_LEVEL_18_11_TRACK_A_FINAL_CONFIRMATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_13_TRACK_E_CSS_UI_NORMALIZATION_FOUNDATION.md	dev/build/pr/BUILD_PR_LEVEL_18_13_TRACK_E_CSS_UI_NORMALIZATION_FOUNDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_14_TRACK_E_CSS_UI_NORMALIZATION_COMPLETION.md	dev/build/pr/BUILD_PR_LEVEL_18_14_TRACK_E_CSS_UI_NORMALIZATION_COMPLETION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_15_TRACK_F_DOCS_SYSTEM_CLASSIFICATION_FOUNDATION.md	dev/build/pr/BUILD_PR_LEVEL_18_15_TRACK_F_DOCS_SYSTEM_CLASSIFICATION_FOUNDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_16_TRACK_F_DOCS_SYSTEM_MOVE_EXECUTION.md	dev/build/pr/BUILD_PR_LEVEL_18_16_TRACK_F_DOCS_SYSTEM_MOVE_EXECUTION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_18_TRACK_F_DOCS_SYSTEM_COMPLETION.md	dev/build/pr/BUILD_PR_LEVEL_18_18_TRACK_F_DOCS_SYSTEM_COMPLETION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_19_TRACK_G_REPO_HYGIENE_COMPLETION.md	dev/build/pr/BUILD_PR_LEVEL_18_19_TRACK_G_REPO_HYGIENE_COMPLETION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_1_ENGINE_USAGE_ENFORCEMENT_AUDIT_SLICE.md	dev/build/pr/BUILD_PR_LEVEL_18_1_ENGINE_USAGE_ENFORCEMENT_AUDIT_SLICE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_1_ENGINE_USAGE_ENFORCEMENT_COMPLETION.md	dev/build/pr/BUILD_PR_LEVEL_18_1_ENGINE_USAGE_ENFORCEMENT_COMPLETION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_1_ENGINE_USAGE_ENFORCEMENT_PROGRESS.md	dev/build/pr/BUILD_PR_LEVEL_18_1_ENGINE_USAGE_ENFORCEMENT_PROGRESS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_1_NEXT_PHASE_BOOTSTRAP.md	dev/build/pr/BUILD_PR_LEVEL_18_1_NEXT_PHASE_BOOTSTRAP.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_20_TRACK_H_PR_CONSOLIDATION_EXECUTION.md	dev/build/pr/BUILD_PR_LEVEL_18_20_TRACK_H_PR_CONSOLIDATION_EXECUTION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_2_BOUNDARY_HARDENING_ENFORCEMENT.md	dev/build/pr/BUILD_PR_LEVEL_18_2_BOUNDARY_HARDENING_ENFORCEMENT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_2_BOUNDARY_HARDENING_OVERLAY_SLICE.md	dev/build/pr/BUILD_PR_LEVEL_18_2_BOUNDARY_HARDENING_OVERLAY_SLICE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_2_PHASE18_FOUNDATION.md	dev/build/pr/BUILD_PR_LEVEL_18_2_PHASE18_FOUNDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_2_REMOVE_SAMPLE_LOGIC_FROM_ENGINE.md	dev/build/pr/BUILD_PR_LEVEL_18_2_REMOVE_SAMPLE_LOGIC_FROM_ENGINE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_3_CONTRACT_STABILIZATION_OVERLAY_SLICE.md	dev/build/pr/BUILD_PR_LEVEL_18_3_CONTRACT_STABILIZATION_OVERLAY_SLICE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_3_GAME_TO_SAMPLE_RECLASSIFICATION_RECOMMENDATIONS.md	dev/build/pr/BUILD_PR_LEVEL_18_3_GAME_TO_SAMPLE_RECLASSIFICATION_RECOMMENDATIONS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_3_PHASE18_CORE_SERVICES.md	dev/build/pr/BUILD_PR_LEVEL_18_3_PHASE18_CORE_SERVICES.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_4_CODEBASE_CONSISTENCY_OVERLAY_SLICE.md	dev/build/pr/BUILD_PR_LEVEL_18_4_CODEBASE_CONSISTENCY_OVERLAY_SLICE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_4_GAME_TO_SAMPLE_RECLASSIFICATION_EXECUTION.md	dev/build/pr/BUILD_PR_LEVEL_18_4_GAME_TO_SAMPLE_RECLASSIFICATION_EXECUTION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_4_PHASE18_RUNTIME_LAYER.md	dev/build/pr/BUILD_PR_LEVEL_18_4_PHASE18_RUNTIME_LAYER.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_5_CONTRACT_STABILIZATION_PROGRESS.md	dev/build/pr/BUILD_PR_LEVEL_18_5_CONTRACT_STABILIZATION_PROGRESS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_5_CSS_UI_NORMALIZATION_OVERLAY_SLICE.md	dev/build/pr/BUILD_PR_LEVEL_18_5_CSS_UI_NORMALIZATION_OVERLAY_SLICE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_5_PHASE18_INTEGRATION_PASS.md	dev/build/pr/BUILD_PR_LEVEL_18_5_PHASE18_INTEGRATION_PASS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_6_DOCS_SYSTEM_CLEANUP_OVERLAY_SLICE.md	dev/build/pr/BUILD_PR_LEVEL_18_6_DOCS_SYSTEM_CLEANUP_OVERLAY_SLICE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_6_PHASE18_VALIDATION_SWEEP.md	dev/build/pr/BUILD_PR_LEVEL_18_6_PHASE18_VALIDATION_SWEEP.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_6_SELECTOR_PROVIDER_STABILITY_ENFORCEMENT.md	dev/build/pr/BUILD_PR_LEVEL_18_6_SELECTOR_PROVIDER_STABILITY_ENFORCEMENT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_7_PHASE18_COMPLETION_GATE.md	dev/build/pr/BUILD_PR_LEVEL_18_7_PHASE18_COMPLETION_GATE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_7_REPO_HYGIENE_OVERLAY_SLICE.md	dev/build/pr/BUILD_PR_LEVEL_18_7_REPO_HYGIENE_OVERLAY_SLICE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_7_UNSTABLE_SURFACE_REMOVAL_OR_ISOLATION.md	dev/build/pr/BUILD_PR_LEVEL_18_7_UNSTABLE_SURFACE_REMOVAL_OR_ISOLATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_8_PR_CONSOLIDATION_OVERLAY_SLICE.md	dev/build/pr/BUILD_PR_LEVEL_18_8_PR_CONSOLIDATION_OVERLAY_SLICE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_18_9_TRACK_C_FINALIZATION.md	dev/build/pr/BUILD_PR_LEVEL_18_9_TRACK_C_FINALIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_19_10_VALIDATE_PACMAN_RENAME_AND_TESTS.md	dev/build/pr/BUILD_PR_LEVEL_19_10_VALIDATE_PACMAN_RENAME_AND_TESTS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_19_11_FULL_VALIDATION_AND_PROMOTION.md	dev/build/pr/BUILD_PR_LEVEL_19_11_FULL_VALIDATION_AND_PROMOTION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_19_12_REVALIDATE_AND_PROMOTE.md	dev/build/pr/BUILD_PR_LEVEL_19_12_REVALIDATE_AND_PROMOTE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_19_13_RUNTIME_LIFECYCLE_VALIDATION.md	dev/build/pr/BUILD_PR_LEVEL_19_13_RUNTIME_LIFECYCLE_VALIDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_19_14_TEST_COMMAND_DEDUP.md	dev/build/pr/BUILD_PR_LEVEL_19_14_TEST_COMMAND_DEDUP.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_19_15_DEBUG_OBSERVABILITY_VALIDATION.md	dev/build/pr/BUILD_PR_LEVEL_19_15_DEBUG_OBSERVABILITY_VALIDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_19_16_TOOLCHAIN_ENGINE_INTEGRATION_VALIDATION.md	dev/build/pr/BUILD_PR_LEVEL_19_16_TOOLCHAIN_ENGINE_INTEGRATION_VALIDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_19_17_TOOLCHAIN_PIPELINE_VALIDATION.md	dev/build/pr/BUILD_PR_LEVEL_19_17_TOOLCHAIN_PIPELINE_VALIDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_19_19_TOOLCHAIN_EDITOR_RUNTIME_CONSISTENCY_VALIDATION.md	dev/build/pr/BUILD_PR_LEVEL_19_19_TOOLCHAIN_EDITOR_RUNTIME_CONSISTENCY_VALIDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_19_1_NEXT_PHASE_BOOTSTRAP.md	dev/build/pr/BUILD_PR_LEVEL_19_1_NEXT_PHASE_BOOTSTRAP.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_19_1_SYSTEM_INTEGRATION_VALIDATION.md	dev/build/pr/BUILD_PR_LEVEL_19_1_SYSTEM_INTEGRATION_VALIDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_19_20_TOOLCHAIN_ROADMAP_GUARD_ENFORCEMENT.md	dev/build/pr/BUILD_PR_LEVEL_19_20_TOOLCHAIN_ROADMAP_GUARD_ENFORCEMENT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_19_21_PROJECT_INSTRUCTIONS_ROADMAP_GUARD_EMBED.md	dev/build/pr/BUILD_PR_LEVEL_19_21_PROJECT_INSTRUCTIONS_ROADMAP_GUARD_EMBED.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_19_22_TOOLCHAIN_VALIDATION_SUMMARY_GATE.md	dev/build/pr/BUILD_PR_LEVEL_19_22_TOOLCHAIN_VALIDATION_SUMMARY_GATE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_19_23_ENGINE_TOOL_BOUNDARY_LEAK_VALIDATION.md	dev/build/pr/BUILD_PR_LEVEL_19_23_ENGINE_TOOL_BOUNDARY_LEAK_VALIDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_19_24_ENGINE_TOOL_LEAK_REMEDIATION_GATE.md	dev/build/pr/BUILD_PR_LEVEL_19_24_ENGINE_TOOL_LEAK_REMEDIATION_GATE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_19_25_ENGINE_TOOL_BOUNDARY_FINAL_CONFIRMATION.md	dev/build/pr/BUILD_PR_LEVEL_19_25_ENGINE_TOOL_BOUNDARY_FINAL_CONFIRMATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_19_2_PHASE19_FOUNDATION.md	dev/build/pr/BUILD_PR_LEVEL_19_2_PHASE19_FOUNDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_19_2_RUNTIME_LIFECYCLE_VALIDATION.md	dev/build/pr/BUILD_PR_LEVEL_19_2_RUNTIME_LIFECYCLE_VALIDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_19_3_PERFORMANCE_SCALING_VALIDATION.md	dev/build/pr/BUILD_PR_LEVEL_19_3_PERFORMANCE_SCALING_VALIDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_19_3_PHASE19_CORE_SERVICES.md	dev/build/pr/BUILD_PR_LEVEL_19_3_PHASE19_CORE_SERVICES.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_19_4_PERFORMANCE_SCALING_ROADMAP_PROMOTION.md	dev/build/pr/BUILD_PR_LEVEL_19_4_PERFORMANCE_SCALING_ROADMAP_PROMOTION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_19_4_PHASE19_RUNTIME_LAYER.md	dev/build/pr/BUILD_PR_LEVEL_19_4_PHASE19_RUNTIME_LAYER.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_19_5_PHASE19_INTEGRATION_PASS.md	dev/build/pr/BUILD_PR_LEVEL_19_5_PHASE19_INTEGRATION_PASS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_19_5_VALIDATION_BLOCKERS_ALIGNMENT.md	dev/build/pr/BUILD_PR_LEVEL_19_5_VALIDATION_BLOCKERS_ALIGNMENT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_19_6_SAMPLE_VALIDATION_PROGRESS.md	dev/build/pr/BUILD_PR_LEVEL_19_6_SAMPLE_VALIDATION_PROGRESS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_19_7_FIX_SAMPLE_PHASE_EXPECTATION.md	dev/build/pr/BUILD_PR_LEVEL_19_7_FIX_SAMPLE_PHASE_EXPECTATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_19_8_FIX_SHARED_EXTRACTION_GUARD_BASELINE.md	dev/build/pr/BUILD_PR_LEVEL_19_8_FIX_SHARED_EXTRACTION_GUARD_BASELINE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_19_9_RENAME_PUCKMAN_TO_PACMAN.md	dev/build/pr/BUILD_PR_LEVEL_19_9_RENAME_PUCKMAN_TO_PACMAN.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_10_REMOVE_LEGACY_LAUNCH_FALLBACK_RESIDUE.md	dev/build/pr/BUILD_PR_LEVEL_20_10_REMOVE_LEGACY_LAUNCH_FALLBACK_RESIDUE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_11_RECOVERY_STATUS_GATE.md	dev/build/pr/BUILD_PR_LEVEL_20_11_RECOVERY_STATUS_GATE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_12_UAT_VALIDATE_AND_LOCK_RECOVERY_GATE.md	dev/build/pr/BUILD_PR_LEVEL_20_12_UAT_VALIDATE_AND_LOCK_RECOVERY_GATE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_13_REMOVE_WORKSPACE_MANAGER_DEFAULT_AND_QUERY_FALLBACKS.md	dev/build/pr/BUILD_PR_LEVEL_20_13_REMOVE_WORKSPACE_MANAGER_DEFAULT_AND_QUERY_FALLBACKS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_14_WORKSPACE_MANAGER_SHOW_TOOLS_ON_GAME_LAUNCH.md	dev/build/pr/BUILD_PR_LEVEL_20_14_WORKSPACE_MANAGER_SHOW_TOOLS_ON_GAME_LAUNCH.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_15_REPAIR_WORKSPACE_MANAGER_BLANK_GAME_LAUNCH.md	dev/build/pr/BUILD_PR_LEVEL_20_15_REPAIR_WORKSPACE_MANAGER_BLANK_GAME_LAUNCH.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_16_EMBED_TOOL_SELECTOR_IN_WORKSPACE_SURFACE.md	dev/build/pr/BUILD_PR_LEVEL_20_16_EMBED_TOOL_SELECTOR_IN_WORKSPACE_SURFACE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_17_HIDE_TOOL_BANNER_UNTIL_TOOL_SELECTED.md	dev/build/pr/BUILD_PR_LEVEL_20_17_HIDE_TOOL_BANNER_UNTIL_TOOL_SELECTED.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_18_AUTO_MOUNT_TOOL_SELECTION_WORKSPACE_SURFACE.md	dev/build/pr/BUILD_PR_LEVEL_20_18_AUTO_MOUNT_TOOL_SELECTION_WORKSPACE_SURFACE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_19_FORCE_WORKSPACE_TOOL_PAGER_ABOVE_EDITORS.md	dev/build/pr/BUILD_PR_LEVEL_20_19_FORCE_WORKSPACE_TOOL_PAGER_ABOVE_EDITORS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_1_PHASE20_TOOL_PRESET_INTEGRATION.md	dev/build/pr/BUILD_PR_LEVEL_20_1_PHASE20_TOOL_PRESET_INTEGRATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_1_RELEASE_READINESS_DEFINITION.md	dev/build/pr/BUILD_PR_LEVEL_20_1_RELEASE_READINESS_DEFINITION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_1_TOOLS_BLAH_BLAH_BLAH.md	dev/build/pr/BUILD_PR_LEVEL_20_1_TOOLS_BLAH_BLAH_BLAH.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_1_TOOL_SAMPLE_DROPDOWN_FOUNDATION.md	dev/build/pr/BUILD_PR_LEVEL_20_1_TOOL_SAMPLE_DROPDOWN_FOUNDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_1_TRACK_A_RELEASE_READINESS_EXECUTION.md	dev/build/pr/BUILD_PR_LEVEL_20_1_TRACK_A_RELEASE_READINESS_EXECUTION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_20_ROLLBACK_WORKSPACE_HEADER_AND_ADD_TOOL_PAGER.md	dev/build/pr/BUILD_PR_LEVEL_20_20_ROLLBACK_WORKSPACE_HEADER_AND_ADD_TOOL_PAGER.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_21_REPAIR_WORKSPACE_MOUNT_CONTAINER_PAGER.md	dev/build/pr/BUILD_PR_LEVEL_20_21_REPAIR_WORKSPACE_MOUNT_CONTAINER_PAGER.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_23_MOVE_TOOL_HOST_PAGER_INSIDE_MOUNT_CONTAINER.md	dev/build/pr/BUILD_PR_LEVEL_20_23_MOVE_TOOL_HOST_PAGER_INSIDE_MOUNT_CONTAINER.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_24_PLACE_PAGER_AT_PLATFORM_SHELL_MARKER.md	dev/build/pr/BUILD_PR_LEVEL_20_24_PLACE_PAGER_AT_PLATFORM_SHELL_MARKER.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_25_FIX_WORKSPACE_HOST_SIZE_AND_TOOL_RESOLUTION.md	dev/build/pr/BUILD_PR_LEVEL_20_25_FIX_WORKSPACE_HOST_SIZE_AND_TOOL_RESOLUTION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_26_REPAIR_WORKSPACE_PAGER_BUTTON_EVENTS.md	dev/build/pr/BUILD_PR_LEVEL_20_26_REPAIR_WORKSPACE_PAGER_BUTTON_EVENTS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_27_FORCE_DELEGATED_WORKSPACE_PAGER_EVENTS.md	dev/build/pr/BUILD_PR_LEVEL_20_27_FORCE_DELEGATED_WORKSPACE_PAGER_EVENTS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_28_POPULATE_TOOL_SELECT_AND_ENABLE.md	dev/build/pr/BUILD_PR_LEVEL_20_28_POPULATE_TOOL_SELECT_AND_ENABLE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_29_REMOVE_TOOL_SELECT_KEEP_PAGER_ONLY.md	dev/build/pr/BUILD_PR_LEVEL_20_29_REMOVE_TOOL_SELECT_KEEP_PAGER_ONLY.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_2_TRACK_C_DOCUMENTATION_COMPLETENESS_RESIDUE_CLOSEOUT.md	dev/build/pr/BUILD_PR_LEVEL_20_2_TRACK_C_DOCUMENTATION_COMPLETENESS_RESIDUE_CLOSEOUT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_2_WORKSPACE_MANAGER_GAMES_TILE_UAT_RECOVERY.md	dev/build/pr/BUILD_PR_LEVEL_20_2_WORKSPACE_MANAGER_GAMES_TILE_UAT_RECOVERY.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_31_FINALIZE_RECOVERY_ROADMAP_STATUS.md	dev/build/pr/BUILD_PR_LEVEL_20_31_FINALIZE_RECOVERY_ROADMAP_STATUS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_3_TRACK_B_STABILITY_MONITORING_EXECUTION.md	dev/build/pr/BUILD_PR_LEVEL_20_3_TRACK_B_STABILITY_MONITORING_EXECUTION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_4_TOOL_LAUNCH_SSOT_AND_EXTERNAL_MEMORY_RESET.md	dev/build/pr/BUILD_PR_LEVEL_20_4_TOOL_LAUNCH_SSOT_AND_EXTERNAL_MEMORY_RESET.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_5_RECOVERY_AUDIT_FROM_20_1_BASELINE.md	dev/build/pr/BUILD_PR_LEVEL_20_5_RECOVERY_AUDIT_FROM_20_1_BASELINE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_6_APPLY_RECOVERY_AND_MASTER_ROADMAP.md	dev/build/pr/BUILD_PR_LEVEL_20_6_APPLY_RECOVERY_AND_MASTER_ROADMAP.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_8_IMPLEMENT_TOOL_LAUNCH_SSOT_ROUTING.md	dev/build/pr/BUILD_PR_LEVEL_20_8_IMPLEMENT_TOOL_LAUNCH_SSOT_ROUTING.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_8_IMPLEMENT_TOOL_LAUNCH_SSOT_ROUTING_V2.md	dev/build/pr/BUILD_PR_LEVEL_20_8_IMPLEMENT_TOOL_LAUNCH_SSOT_ROUTING_V2.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_20_9_TOOL_LAUNCH_SSOT_DATA_LAYER.md	dev/build/pr/BUILD_PR_LEVEL_20_9_TOOL_LAUNCH_SSOT_DATA_LAYER.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_21_1_MASTER_ROADMAP_TOOLS_DOC.md	dev/build/pr/BUILD_PR_LEVEL_21_1_MASTER_ROADMAP_TOOLS_DOC.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_21_2_TOOL_TESTING_DOCUMENTATION_AND_REPORT_STANDARDIZATION.md	dev/build/pr/BUILD_PR_LEVEL_21_2_TOOL_TESTING_DOCUMENTATION_AND_REPORT_STANDARDIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_21_2_TOOL_UAT_STANDARDIZATION_FULL_SET_V2.md	dev/build/pr/BUILD_PR_LEVEL_21_2_TOOL_UAT_STANDARDIZATION_FULL_SET_V2.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_21_3_TOOL_AUTOMATION_AND_TOOL_QUALITY_BASELINE.md	dev/build/pr/BUILD_PR_LEVEL_21_3_TOOL_AUTOMATION_AND_TOOL_QUALITY_BASELINE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_21_4_TOOL_ALIGNMENT_AND_HEADER_REAL_ESTATE.md	dev/build/pr/BUILD_PR_LEVEL_21_4_TOOL_ALIGNMENT_AND_HEADER_REAL_ESTATE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_21_5_TOOL_LAYOUT_DOCKING_AND_CONTROL_NORMALIZATION.md	dev/build/pr/BUILD_PR_LEVEL_21_5_TOOL_LAYOUT_DOCKING_AND_CONTROL_NORMALIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_22_1_RUNTIME_MONITORING_AND_LOGGING_FOUNDATION.md	dev/build/pr/BUILD_PR_LEVEL_22_1_RUNTIME_MONITORING_AND_LOGGING_FOUNDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_22_1_RUNTIME_OBSERVABILITY_FOUNDATION.md	dev/build/pr/BUILD_PR_LEVEL_22_1_RUNTIME_OBSERVABILITY_FOUNDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_22_2_TOOL_FEATURE_COMPLETION_FROM_GAPS.md	dev/build/pr/BUILD_PR_LEVEL_22_2_TOOL_FEATURE_COMPLETION_FROM_GAPS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_22_3_TOOLS_SHARED_LAYER_CONSOLIDATION.md	dev/build/pr/BUILD_PR_LEVEL_22_3_TOOLS_SHARED_LAYER_CONSOLIDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_22_4_TOOL_POLISH_AND_KNOWN_BUGS_CLOSEOUT.md	dev/build/pr/BUILD_PR_LEVEL_22_4_TOOL_POLISH_AND_KNOWN_BUGS_CLOSEOUT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_23_10_FULLSCREEN_RULE_CLOSEOUT_AND_ROADMAP_STATUS.md	dev/build/pr/BUILD_PR_LEVEL_23_10_FULLSCREEN_RULE_CLOSEOUT_AND_ROADMAP_STATUS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_23_11_POST_CLOSEOUT_GUARD_AND_MONITORING.md	dev/build/pr/BUILD_PR_LEVEL_23_11_POST_CLOSEOUT_GUARD_AND_MONITORING.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_23_1_ENGINE_RUNTIME_VALIDATION_SWEEP.md	dev/build/pr/BUILD_PR_LEVEL_23_1_ENGINE_RUNTIME_VALIDATION_SWEEP.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_23_2_ENGINE_RUNTIME_INTEGRATION_FIXES.md	dev/build/pr/BUILD_PR_LEVEL_23_2_ENGINE_RUNTIME_INTEGRATION_FIXES.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_23_4_SAMPLE_SYSTEM_VALIDATION_AND_FIXES.md	dev/build/pr/BUILD_PR_LEVEL_23_4_SAMPLE_SYSTEM_VALIDATION_AND_FIXES.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_23_5_SAMPLE_INDEX_AND_ROUTING_NORMALIZATION.md	dev/build/pr/BUILD_PR_LEVEL_23_5_SAMPLE_INDEX_AND_ROUTING_NORMALIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_23_6_SYSTEM_FINAL_VALIDATION_AND_LOCK.md	dev/build/pr/BUILD_PR_LEVEL_23_6_SYSTEM_FINAL_VALIDATION_AND_LOCK.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_23_7_FULLSCREEN_RULE_ENFORCEMENT_AND_SAMPLE_0713_FIX.md	dev/build/pr/BUILD_PR_LEVEL_23_7_FULLSCREEN_RULE_ENFORCEMENT_AND_SAMPLE_0713_FIX.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_23_8_FULLSCREEN_REGRESSION_LOCK_AND_AUDIT.md	dev/build/pr/BUILD_PR_LEVEL_23_8_FULLSCREEN_REGRESSION_LOCK_AND_AUDIT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_23_9_FULLSCREEN_VALIDATION_AUTOMATION.md	dev/build/pr/BUILD_PR_LEVEL_23_9_FULLSCREEN_VALIDATION_AUTOMATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_24_1_MASTER_ROADMAP_ENGINE_CLOSEOUT_API_BOUNDARY_AND_DOCS_CLEANUP.md	dev/build/pr/BUILD_PR_LEVEL_24_1_MASTER_ROADMAP_ENGINE_CLOSEOUT_API_BOUNDARY_AND_DOCS_CLEANUP.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_24_2_ROADMAP_STATUS_FINALIZATION.md	dev/build/pr/BUILD_PR_LEVEL_24_2_ROADMAP_STATUS_FINALIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_24_3_ROADMAP_POST_FINAL_AUDIT_LOCK.md	dev/build/pr/BUILD_PR_LEVEL_24_3_ROADMAP_POST_FINAL_AUDIT_LOCK.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_24_4_ROADMAP_LOCK_VALIDATION_CONFIRMATION.md	dev/build/pr/BUILD_PR_LEVEL_24_4_ROADMAP_LOCK_VALIDATION_CONFIRMATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_24_5_PHASE_24_CLOSEOUT_EXECUTION_GUARD.md	dev/build/pr/BUILD_PR_LEVEL_24_5_PHASE_24_CLOSEOUT_EXECUTION_GUARD.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_24_6_TOOLBOXAID_SHARED_THEME_HEADER.md	dev/build/pr/BUILD_PR_LEVEL_24_6_TOOLBOXAID_SHARED_THEME_HEADER.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_6_1_SAMPLES_PHASE_ALIGNMENT.md	dev/build/pr/BUILD_PR_LEVEL_6_1_SAMPLES_PHASE_ALIGNMENT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_6_2_SAMPLE_CURRICULUM_VALIDATION.md	dev/build/pr/BUILD_PR_LEVEL_6_2_SAMPLE_CURRICULUM_VALIDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_6_3_SAMPLE_SHARED_BOUNDARIES.md	dev/build/pr/BUILD_PR_LEVEL_6_3_SAMPLE_SHARED_BOUNDARIES.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_6_4_RUNTIME_VALIDATION_PLUS_HARNESS_FIX.md	dev/build/pr/BUILD_PR_LEVEL_6_4_RUNTIME_VALIDATION_PLUS_HARNESS_FIX.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_6_4_SAMPLE_RUNTIME_VALIDATION.md	dev/build/pr/BUILD_PR_LEVEL_6_4_SAMPLE_RUNTIME_VALIDATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_6_5_SAMPLE_INDEX_NORMALIZATION.md	dev/build/pr/BUILD_PR_LEVEL_6_5_SAMPLE_INDEX_NORMALIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_8_17_ROADMAP_AND_SKIN_EDITOR_SCHEMA.md	dev/build/pr/BUILD_PR_LEVEL_8_17_ROADMAP_AND_SKIN_EDITOR_SCHEMA.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_8_18_LAUNCHER_PAIRING_CONTRACT_DOCS.md	dev/build/pr/BUILD_PR_LEVEL_8_18_LAUNCHER_PAIRING_CONTRACT_DOCS.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_8_19_SAMPLE_PAYLOAD_AUDIT_AND_ALIGNMENT.md	dev/build/pr/BUILD_PR_LEVEL_8_19_SAMPLE_PAYLOAD_AUDIT_AND_ALIGNMENT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_8_20_WORKSPACE_SCHEMA_AUDIT_AND_CLEANUP.md	dev/build/pr/BUILD_PR_LEVEL_8_20_WORKSPACE_SCHEMA_AUDIT_AND_CLEANUP.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_8_21_PALETTE_SHARED_DATA_AUDIT.md	dev/build/pr/BUILD_PR_LEVEL_8_21_PALETTE_SHARED_DATA_AUDIT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_8_22_FULL_TOOL_SCHEMA_CONFORMANCE_AUDIT.md	dev/build/pr/BUILD_PR_LEVEL_8_22_FULL_TOOL_SCHEMA_CONFORMANCE_AUDIT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_8_23_WORKSPACE_MANIFEST_GAMES_FIELD_ALIGNMENT.md	dev/build/pr/BUILD_PR_LEVEL_8_23_WORKSPACE_MANIFEST_GAMES_FIELD_ALIGNMENT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_8_24_SCHEMA_AND_JSON_FULL_EXPORT.md	dev/build/pr/BUILD_PR_LEVEL_8_24_SCHEMA_AND_JSON_FULL_EXPORT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_8_24_SCHEMA_AND_JSON_FULL_EXPORT_V2.md	dev/build/pr/BUILD_PR_LEVEL_8_24_SCHEMA_AND_JSON_FULL_EXPORT_V2.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_8_26_MANIFEST_SSOt_AND_UNUSED_JSON_AUDIT.md	dev/build/pr/BUILD_PR_LEVEL_8_26_MANIFEST_SSOt_AND_UNUSED_JSON_AUDIT.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_8_27_CODE_ASSET_EXTRACTION_TO_TOOL_JSON.md	dev/build/pr/BUILD_PR_LEVEL_8_27_CODE_ASSET_EXTRACTION_TO_TOOL_JSON.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_8_28_MANIFEST_SSOT_IMPLEMENTATION_ASTEROIDS_FIRST.md	dev/build/pr/BUILD_PR_LEVEL_8_28_MANIFEST_SSOT_IMPLEMENTATION_ASTEROIDS_FIRST.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_8_29B_ASTEROIDS_DIRECT_LAUNCH_FIX.md	dev/build/pr/BUILD_PR_LEVEL_8_29B_ASTEROIDS_DIRECT_LAUNCH_FIX.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_8_30_MANIFEST_SSOT_ROLLOUT_ALL_GAMES.md	dev/build/pr/BUILD_PR_LEVEL_8_30_MANIFEST_SSOT_ROLLOUT_ALL_GAMES.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_8_31_ASTEROIDS_JSON_CLEANUP_AND_MANIFEST_WIRING.md	dev/build/pr/BUILD_PR_LEVEL_8_31_ASTEROIDS_JSON_CLEANUP_AND_MANIFEST_WIRING.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_8_32_DIRECT_GAME_LAUNCH_HOOK_REMOVAL_AND_ASTEROIDS_PARITY.md	dev/build/pr/BUILD_PR_LEVEL_8_32_DIRECT_GAME_LAUNCH_HOOK_REMOVAL_AND_ASTEROIDS_PARITY.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_8_33_LEGACY_CATALOG_PARITY_AND_REMOVAL.md	dev/build/pr/BUILD_PR_LEVEL_8_33_LEGACY_CATALOG_PARITY_AND_REMOVAL.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_8_34_FINAL_CLEAN_REPO_BASELINE.md	dev/build/pr/BUILD_PR_LEVEL_8_34_FINAL_CLEAN_REPO_BASELINE.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_9_10_SINGLE_MANIFEST_RUNTIME_STABILIZATION.md	dev/build/pr/BUILD_PR_LEVEL_9_10_SINGLE_MANIFEST_RUNTIME_STABILIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_9_1A_ASTEROIDS_MANIFEST_MODEL_REVIEW.md	dev/build/pr/BUILD_PR_LEVEL_9_1A_ASTEROIDS_MANIFEST_MODEL_REVIEW.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_9_2_SINGLE_MANIFEST_CONSOLIDATION_ROLLOUT_ALL_GAMES.md	dev/build/pr/BUILD_PR_LEVEL_9_2_SINGLE_MANIFEST_CONSOLIDATION_ROLLOUT_ALL_GAMES.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_9_3_MULTI_GAME_LAUNCH_VALIDATION_AND_FIX.md	dev/build/pr/BUILD_PR_LEVEL_9_3_MULTI_GAME_LAUNCH_VALIDATION_AND_FIX.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_9_5_FINAL_REVIEW_AND_NEXT_PHASE_PREP.md	dev/build/pr/BUILD_PR_LEVEL_9_5_FINAL_REVIEW_AND_NEXT_PHASE_PREP.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_9_6_ASTEROIDS_HARD_CUTOVER_SINGLE_MANIFEST.md	dev/build/pr/BUILD_PR_LEVEL_9_6_ASTEROIDS_HARD_CUTOVER_SINGLE_MANIFEST.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_9_7_REMOVE_INTERNAL_REFERENCES_AND_INLINE_DATA.md	dev/build/pr/BUILD_PR_LEVEL_9_7_REMOVE_INTERNAL_REFERENCES_AND_INLINE_DATA.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_9_8_DIRECT_DATA_MANIFEST_ROLLOUT_ALL_GAMES.md	dev/build/pr/BUILD_PR_LEVEL_9_8_DIRECT_DATA_MANIFEST_ROLLOUT_ALL_GAMES.md
+R100	dev/docs_build/pr/BUILD_PR_LEVEL_9_9_LAUNCH_SMOKE_GAMES_ONLY_FAST_PATH.md	dev/build/pr/BUILD_PR_LEVEL_9_9_LAUNCH_SMOKE_GAMES_ONLY_FAST_PATH.md
+R100	dev/docs_build/pr/BUILD_PR_NETWORK_SAMPLES_RELOCATION_FROM_GAMES_TO_SAMPLES.md	dev/build/pr/BUILD_PR_NETWORK_SAMPLES_RELOCATION_FROM_GAMES_TO_SAMPLES.md
+R100	dev/docs_build/pr/BUILD_PR_NETWORK_SAMPLE_NAMING_FIX.md	dev/build/pr/BUILD_PR_NETWORK_SAMPLE_NAMING_FIX.md
+R100	dev/docs_build/pr/BUILD_PR_PREVIEW_PATH_CONTRACT_REALIGNMENT.md	dev/build/pr/BUILD_PR_PREVIEW_PATH_CONTRACT_REALIGNMENT.md
+R100	dev/docs_build/pr/BUILD_PR_PROJECT_TOOL_INTEGRATION.md	dev/build/pr/BUILD_PR_PROJECT_TOOL_INTEGRATION.md
+R100	dev/docs_build/pr/BUILD_PR_PROMOTION_GATE_55_CONTRACT_AND_PUBLIC_READERS.md	dev/build/pr/BUILD_PR_PROMOTION_GATE_55_CONTRACT_AND_PUBLIC_READERS.md
+R100	dev/docs_build/pr/BUILD_PR_PROMOTION_GATE_56_AUTHORITATIVE_PASSIVE_HANDOFF_BOUNDARY.md	dev/build/pr/BUILD_PR_PROMOTION_GATE_56_AUTHORITATIVE_PASSIVE_HANDOFF_BOUNDARY.md
+R100	dev/docs_build/pr/BUILD_PR_PROMOTION_GATE_57_OBSERVABILITY_ABORT.md	dev/build/pr/BUILD_PR_PROMOTION_GATE_57_OBSERVABILITY_ABORT.md
+R100	dev/docs_build/pr/BUILD_PR_PROMOTION_GATE_58_VALIDATION_CLOSEOUT.md	dev/build/pr/BUILD_PR_PROMOTION_GATE_58_VALIDATION_CLOSEOUT.md
+R100	dev/docs_build/pr/BUILD_PR_REMAINING_NON_3D_VALIDATE_OR_CLOSEOUT_COMBINED.md	dev/build/pr/BUILD_PR_REMAINING_NON_3D_VALIDATE_OR_CLOSEOUT_COMBINED.md
+R100	dev/docs_build/pr/BUILD_PR_REMAINING_ROADMAP_VALIDATE_OR_CLOSEOUT_COMBINED.md	dev/build/pr/BUILD_PR_REMAINING_ROADMAP_VALIDATE_OR_CLOSEOUT_COMBINED.md
+R100	dev/docs_build/pr/BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE.md	dev/build/pr/BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE.md
+R100	dev/docs_build/pr/BUILD_PR_REPO_STRUCTURE_59_MOVE_MAP_ENGINE_PATHS.md	dev/build/pr/BUILD_PR_REPO_STRUCTURE_59_MOVE_MAP_ENGINE_PATHS.md
+R100	dev/docs_build/pr/BUILD_PR_REPO_STRUCTURE_60_MOVE_MAP_SHARED_PATHS.md	dev/build/pr/BUILD_PR_REPO_STRUCTURE_60_MOVE_MAP_SHARED_PATHS.md
+R100	dev/docs_build/pr/BUILD_PR_REPO_STRUCTURE_61_MOVE_MAP_TOOLS_PATHS.md	dev/build/pr/BUILD_PR_REPO_STRUCTURE_61_MOVE_MAP_TOOLS_PATHS.md
+R100	dev/docs_build/pr/BUILD_PR_REPO_STRUCTURE_62_MOVE_MAP_SAMPLES_PATHS.md	dev/build/pr/BUILD_PR_REPO_STRUCTURE_62_MOVE_MAP_SAMPLES_PATHS.md
+R100	dev/docs_build/pr/BUILD_PR_REPO_STRUCTURE_63_MOVE_MAP_GAMES_PATHS.md	dev/build/pr/BUILD_PR_REPO_STRUCTURE_63_MOVE_MAP_GAMES_PATHS.md
+R100	dev/docs_build/pr/BUILD_PR_REPO_STRUCTURE_64_POST_PATH_VALIDATION.md	dev/build/pr/BUILD_PR_REPO_STRUCTURE_64_POST_PATH_VALIDATION.md
+R100	dev/docs_build/pr/BUILD_PR_REPO_STRUCTURE_65_MOVE_MAP_SHARED_TOOLS_BOUNDARY.md	dev/build/pr/BUILD_PR_REPO_STRUCTURE_65_MOVE_MAP_SHARED_TOOLS_BOUNDARY.md
+R100	dev/docs_build/pr/BUILD_PR_REPO_STRUCTURE_66_MOVE_MAP_SANITIZETEXT_TO_SHARED_STRINGUTILS.md	dev/build/pr/BUILD_PR_REPO_STRUCTURE_66_MOVE_MAP_SANITIZETEXT_TO_SHARED_STRINGUTILS.md
+R100	dev/docs_build/pr/BUILD_PR_REPO_STRUCTURE_67_MOVE_MAP_STRING_NORMALIZERS_TO_SHARED.md	dev/build/pr/BUILD_PR_REPO_STRUCTURE_67_MOVE_MAP_STRING_NORMALIZERS_TO_SHARED.md
+R100	dev/docs_build/pr/BUILD_PR_REPO_STRUCTURE_68_MOVE_MAP_ID_HELPERS_TO_SHARED.md	dev/build/pr/BUILD_PR_REPO_STRUCTURE_68_MOVE_MAP_ID_HELPERS_TO_SHARED.md
+R100	dev/docs_build/pr/BUILD_PR_REPO_STRUCTURE_69_MOVE_MAP_NUMERIC_EDGE_HELPERS_TO_SHARED_MATH.md	dev/build/pr/BUILD_PR_REPO_STRUCTURE_69_MOVE_MAP_NUMERIC_EDGE_HELPERS_TO_SHARED_MATH.md
+R100	dev/docs_build/pr/BUILD_PR_REPO_STRUCTURE_70_INSPECTOR_UTILS_CLEANUP.md	dev/build/pr/BUILD_PR_REPO_STRUCTURE_70_INSPECTOR_UTILS_CLEANUP.md
+R100	dev/docs_build/pr/BUILD_PR_REPO_STRUCTURE_71_BOUNDARY_VALIDATION_INSPECTOR_SHARED.md	dev/build/pr/BUILD_PR_REPO_STRUCTURE_71_BOUNDARY_VALIDATION_INSPECTOR_SHARED.md
+R100	dev/docs_build/pr/BUILD_PR_REPO_STRUCTURE_NORMALIZATION_01_ENGINE_MOVE.md	dev/build/pr/BUILD_PR_REPO_STRUCTURE_NORMALIZATION_01_ENGINE_MOVE.md
+R100	dev/docs_build/pr/BUILD_PR_REPO_STRUCTURE_NORMALIZATION_02_IMPORT_SWITCH.md	dev/build/pr/BUILD_PR_REPO_STRUCTURE_NORMALIZATION_02_IMPORT_SWITCH.md
+R100	dev/docs_build/pr/BUILD_PR_REPO_STRUCTURE_NORMALIZATION_03_REMOVE_OLD_ENGINE.md	dev/build/pr/BUILD_PR_REPO_STRUCTURE_NORMALIZATION_03_REMOVE_OLD_ENGINE.md
+R100	dev/docs_build/pr/BUILD_PR_RESTORE_ASTEROIDS_DEBUG_LINK.md	dev/build/pr/BUILD_PR_RESTORE_ASTEROIDS_DEBUG_LINK.md
+R100	dev/docs_build/pr/BUILD_PR_ROADMAP_ADD_FULL_NETWORK_CAPABILITY_BEFORE_3D.md	dev/build/pr/BUILD_PR_ROADMAP_ADD_FULL_NETWORK_CAPABILITY_BEFORE_3D.md
+R100	dev/docs_build/pr/BUILD_PR_ROADMAP_REPAIR_ADDITIVE_MOVE_ONLY.md	dev/build/pr/BUILD_PR_ROADMAP_REPAIR_ADDITIVE_MOVE_ONLY.md
+R100	dev/docs_build/pr/BUILD_PR_ROADMAP_RULES_PROMOTION_AND_NORMALIZATION.md	dev/build/pr/BUILD_PR_ROADMAP_RULES_PROMOTION_AND_NORMALIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_ROADMAP_RULE_PROMOTION_NO_BROAD_CLEANUP.md	dev/build/pr/BUILD_PR_ROADMAP_RULE_PROMOTION_NO_BROAD_CLEANUP.md
+R100	dev/docs_build/pr/BUILD_PR_ROADMAP_TOOL_RULES_PROMOTION_AND_CLEANUP.md	dev/build/pr/BUILD_PR_ROADMAP_TOOL_RULES_PROMOTION_AND_CLEANUP.md
+R100	dev/docs_build/pr/BUILD_PR_ROADMAP_VALIDATION_GUARDRAILS.md	dev/build/pr/BUILD_PR_ROADMAP_VALIDATION_GUARDRAILS.md
+R100	dev/docs_build/pr/BUILD_PR_RULE_EXTRACTION_AND_FINAL_NON_3D_CLOSEOUT.md	dev/build/pr/BUILD_PR_RULE_EXTRACTION_AND_FINAL_NON_3D_CLOSEOUT.md
+R100	dev/docs_build/pr/BUILD_PR_SAMPLES_72_PHASE_STRUCTURE_INDEX_NORMALIZATION_FIXED.md	dev/build/pr/BUILD_PR_SAMPLES_72_PHASE_STRUCTURE_INDEX_NORMALIZATION_FIXED.md
+R100	dev/docs_build/pr/BUILD_PR_SAMPLES_73_PHASE_GROUPING_INDEX_ONLY_FIXED.md	dev/build/pr/BUILD_PR_SAMPLES_73_PHASE_GROUPING_INDEX_ONLY_FIXED.md
+R100	dev/docs_build/pr/BUILD_PR_SAMPLES_74_INDEX_LINK_VALIDATION_CLEANUP.md	dev/build/pr/BUILD_PR_SAMPLES_74_INDEX_LINK_VALIDATION_CLEANUP.md
+R100	dev/docs_build/pr/BUILD_PR_SAMPLES_75_INDEX_SORT_AND_SECTION_HEADERS.md	dev/build/pr/BUILD_PR_SAMPLES_75_INDEX_SORT_AND_SECTION_HEADERS.md
+R100	dev/docs_build/pr/BUILD_PR_SAMPLES_76_INDEX_REMOVE_DEAD_SECTIONS.md	dev/build/pr/BUILD_PR_SAMPLES_76_INDEX_REMOVE_DEAD_SECTIONS.md
+R100	dev/docs_build/pr/BUILD_PR_SAMPLES_BROWSE_VISUALS_AND_NAVIGATION.md	dev/build/pr/BUILD_PR_SAMPLES_BROWSE_VISUALS_AND_NAVIGATION.md
+R100	dev/docs_build/pr/BUILD_PR_SAMPLES_DETAIL_PAGE_ENHANCEMENT.md	dev/build/pr/BUILD_PR_SAMPLES_DETAIL_PAGE_ENHANCEMENT.md
+R100	dev/docs_build/pr/BUILD_PR_SAMPLES_DIRECTORY_NORMALIZATION.md	dev/build/pr/BUILD_PR_SAMPLES_DIRECTORY_NORMALIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_SAMPLES_DISCOVERY_DATA_AND_FINDABILITY.md	dev/build/pr/BUILD_PR_SAMPLES_DISCOVERY_DATA_AND_FINDABILITY.md
+R100	dev/docs_build/pr/BUILD_PR_SAMPLES_FILTER_AND_SEARCH.md	dev/build/pr/BUILD_PR_SAMPLES_FILTER_AND_SEARCH.md
+R100	dev/docs_build/pr/BUILD_PR_SAMPLES_INDEX_AUTOGENERATION.md	dev/build/pr/BUILD_PR_SAMPLES_INDEX_AUTOGENERATION.md
+R100	dev/docs_build/pr/BUILD_PR_SAMPLES_INDEX_FIXES_AND_TARGETED_PREVIEW_RETRY.md	dev/build/pr/BUILD_PR_SAMPLES_INDEX_FIXES_AND_TARGETED_PREVIEW_RETRY.md
+R100	dev/docs_build/pr/BUILD_PR_SAMPLES_INDEX_PERFORMANCE_AND_PERSONALIZATION.md	dev/build/pr/BUILD_PR_SAMPLES_INDEX_PERFORMANCE_AND_PERSONALIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_SAMPLES_METADATA_LAYER.md	dev/build/pr/BUILD_PR_SAMPLES_METADATA_LAYER.md
+R100	dev/docs_build/pr/BUILD_PR_SAMPLES_METADATA_TAG_NORMALIZATION_AND_FILTER_BAR_UX.md	dev/build/pr/BUILD_PR_SAMPLES_METADATA_TAG_NORMALIZATION_AND_FILTER_BAR_UX.md
+R100	dev/docs_build/pr/BUILD_PR_SAMPLES_PRESENTATION_PREVIEW_AND_METADATA_NORMALIZATION.md	dev/build/pr/BUILD_PR_SAMPLES_PRESENTATION_PREVIEW_AND_METADATA_NORMALIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_SAMPLES_RUNTIME_PREVIEW_SVG_CAPTURE.md	dev/build/pr/BUILD_PR_SAMPLES_RUNTIME_PREVIEW_SVG_CAPTURE.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_01_SCAFFOLD.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_01_SCAFFOLD.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_02_EXACT_HELPER_MOVE.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_02_EXACT_HELPER_MOVE.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_03_IMPORT_NORMALIZATION.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_03_IMPORT_NORMALIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_03_IMPORT_NORMALIZATION_RETRY.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_03_IMPORT_NORMALIZATION_RETRY.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_04_AS_FINITE_NUMBER_ONLY.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_04_AS_FINITE_NUMBER_ONLY.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_05_GETSTATE_PROMOTION_STATE_ONLY.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_05_GETSTATE_PROMOTION_STATE_ONLY.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_06_PROMOTION_SNAPSHOT_IMPORT_NORMALIZATION.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_06_PROMOTION_SNAPSHOT_IMPORT_NORMALIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_07_AS_POSITIVE_INTEGER_ADVANCED_ONLY.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_07_AS_POSITIVE_INTEGER_ADVANCED_ONLY.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_08_IS_PLAIN_OBJECT_ADVANCED_ONLY.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_08_IS_PLAIN_OBJECT_ADVANCED_ONLY.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_09_CLEAN_UNUSED_HELPER_IMPORTS_ADVANCED_ONLY.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_09_CLEAN_UNUSED_HELPER_IMPORTS_ADVANCED_ONLY.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_10_SHARED_UTIL_CONSOLIDATION_CHECK.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_10_SHARED_UTIL_CONSOLIDATION_CHECK.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_11_CONSUMER_EDGE_VALIDATION.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_11_CONSUMER_EDGE_VALIDATION.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_12_NETWORK_SAMPLE_C_NUMBER_HELPERS.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_12_NETWORK_SAMPLE_C_NUMBER_HELPERS.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_13_NETWORK_SAMPLE_C_OBJECT_HELPERS.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_13_NETWORK_SAMPLE_C_OBJECT_HELPERS.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_14_NETWORK_SAMPLE_C_IMPORT_CONSOLIDATION.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_14_NETWORK_SAMPLE_C_IMPORT_CONSOLIDATION.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_15B_ALIAS_CONFIG_BOOTSTRAP_JSCONFIG_ONLY.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_15B_ALIAS_CONFIG_BOOTSTRAP_JSCONFIG_ONLY.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_15_ALIAS_IMPORTS_ADVANCED_ONLY.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_15_ALIAS_IMPORTS_ADVANCED_ONLY.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_16_ALIAS_IMPORTS_NETWORK_SAMPLE_C.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_16_ALIAS_IMPORTS_NETWORK_SAMPLE_C.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_17_ENFORCEMENT_GUARD.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_17_ENFORCEMENT_GUARD.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_18_RELATIVE_PATH_STANDARDIZATION.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_18_RELATIVE_PATH_STANDARDIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_19_REMOVE_ALIAS_BOOTSTRAP_JSCONFIG_ONLY.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_19_REMOVE_ALIAS_BOOTSTRAP_JSCONFIG_ONLY.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_20_GUARD_SCRIPT_WIRING_PACKAGE_JSON.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_20_GUARD_SCRIPT_WIRING_PACKAGE_JSON.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_21_OPTIONAL_NPM_PREHOOK_GUARD.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_21_OPTIONAL_NPM_PREHOOK_GUARD.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_22_ADD_GUARD_RUN_SCRIPT.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_22_ADD_GUARD_RUN_SCRIPT.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_23_GUARD_DOC_MINIMAL_USAGE.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_23_GUARD_DOC_MINIMAL_USAGE.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_24_GUARD_STRICT_MODE.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_24_GUARD_STRICT_MODE.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_25_GUARD_SELFTEST_RUNNER.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_25_GUARD_SELFTEST_RUNNER.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_26_SANITIZE_TEXT_TOOLS_DEBUG_BATCH.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_26_SANITIZE_TEXT_TOOLS_DEBUG_BATCH.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_27_AS_OBJECT_AS_ARRAY_DEBUG_BATCH.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_27_AS_OBJECT_AS_ARRAY_DEBUG_BATCH.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_28_CLAMP_CORE_BATCH.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_28_CLAMP_CORE_BATCH.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_29_HIGHSCORE_HELPERS_BATCH.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_29_HIGHSCORE_HELPERS_BATCH.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_30_DEBUG_CONFIG_HELPERS_BATCH.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_30_DEBUG_CONFIG_HELPERS_BATCH.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_31_CLONE_JSON_BATCH.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_31_CLONE_JSON_BATCH.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_31_CLONE_JSON_BATCH_RETRY.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_31_CLONE_JSON_BATCH_RETRY.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_32_IS_OBJECT_BATCH.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_32_IS_OBJECT_BATCH.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_33_NETWORK_DEBUG_HELPERS_BATCH.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_33_NETWORK_DEBUG_HELPERS_BATCH.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_34_AS_POSITIVE_NUMBER_NETWORK_BATCH.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_34_AS_POSITIVE_NUMBER_NETWORK_BATCH.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_35_NETWORK_DEBUG_SERIALIZATION_BATCH.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_35_NETWORK_DEBUG_SERIALIZATION_BATCH.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_36_ARRAY_UTILS_ENSURE_ARRAY_BATCH.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_36_ARRAY_UTILS_ENSURE_ARRAY_BATCH.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_37_STRING_UTILS_TRIM_NORMALIZE_BATCH.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_37_STRING_UTILS_TRIM_NORMALIZE_BATCH.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_38_CODE_TO_LETTER_HIGHSCORE_BATCH.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_38_CODE_TO_LETTER_HIGHSCORE_BATCH.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_38_ID_UTILS_BATCH.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_38_ID_UTILS_BATCH.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_39_SAFE_NORMALIZE_AITARGETDUMMY_BATCH.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_39_SAFE_NORMALIZE_AITARGETDUMMY_BATCH.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_40_CLONE_SNAPSHOT_NETWORK_SAMPLE_C_BATCH.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_40_CLONE_SNAPSHOT_NETWORK_SAMPLE_C_BATCH.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_41_AS_STRING_ARRAY_PRESET_BATCH.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_41_AS_STRING_ARRAY_PRESET_BATCH.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_42_CREATE_RESULT_COMMANDPACK_BATCH.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_42_CREATE_RESULT_COMMANDPACK_BATCH.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_43_GET_RUNTIME_AND_REGISTRY_BATCH.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_43_GET_RUNTIME_AND_REGISTRY_BATCH.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_44_TO_RESULT_DEBUG_COMMAND_BATCH.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_44_TO_RESULT_DEBUG_COMMAND_BATCH.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_45_READ_HOST_STATUS_SNAPSHOT_BATCH.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_45_READ_HOST_STATUS_SNAPSHOT_BATCH.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_46_STRINGIFY_VALUE_INSPECTOR_BATCH.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_46_STRINGIFY_VALUE_INSPECTOR_BATCH.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_47_PROJECT_SYSTEM_VALUE_HELPERS_BATCH.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_47_PROJECT_SYSTEM_VALUE_HELPERS_BATCH.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_48_RUNTIME_ASSET_VALIDATION_BATCH.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_48_RUNTIME_ASSET_VALIDATION_BATCH.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_49_VECTOR_TO_FINITE_NUMBER_ROUND_BATCH.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_49_VECTOR_TO_FINITE_NUMBER_ROUND_BATCH.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_50_VECTOR_NUMBER_NORMALIZATION_TO_SHARED_MATH.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_50_VECTOR_NUMBER_NORMALIZATION_TO_SHARED_MATH.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_51_STATE_SAMPLE_TOFINITENUMBER_MIGRATION.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_51_STATE_SAMPLE_TOFINITENUMBER_MIGRATION.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_52_ASNUMBER_TO_SHARED_MATH.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_52_ASNUMBER_TO_SHARED_MATH.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_53_ASTEROIDS_NUMBER_SANITIZERS_TO_SHARED_MATH.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_53_ASTEROIDS_NUMBER_SANITIZERS_TO_SHARED_MATH.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_54_ASOBJECT_ASARRAY_TO_SHARED_UTILS.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_54_ASOBJECT_ASARRAY_TO_SHARED_UTILS.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_EXTRACTION_GUARD_REMEDIATION.md	dev/build/pr/BUILD_PR_SHARED_EXTRACTION_GUARD_REMEDIATION.md
+R100	dev/docs_build/pr/BUILD_PR_SHARED_RULE_PROMOTION_AND_TASK_SPLIT.md	dev/build/pr/BUILD_PR_SHARED_RULE_PROMOTION_AND_TASK_SPLIT.md
+R100	dev/docs_build/pr/BUILD_PR_STARTER_PROJECT_TEMPLATE_MOVE_TOOLS.md	dev/build/pr/BUILD_PR_STARTER_PROJECT_TEMPLATE_MOVE_TOOLS.md
+R100	dev/docs_build/pr/BUILD_PR_STYLE_01_INDEX_RESET_AND_MASTER_ROADMAP_STYLE.md	dev/build/pr/BUILD_PR_STYLE_01_INDEX_RESET_AND_MASTER_ROADMAP_STYLE.md
+R100	dev/docs_build/pr/BUILD_PR_STYLE_02_INDEX_IMPLEMENTATION_AND_ROADMAP_EXPANSION.md	dev/build/pr/BUILD_PR_STYLE_02_INDEX_IMPLEMENTATION_AND_ROADMAP_EXPANSION.md
+R100	dev/docs_build/pr/BUILD_PR_STYLE_03_SAMPLES_INDEX_RESET.md	dev/build/pr/BUILD_PR_STYLE_03_SAMPLES_INDEX_RESET.md
+R100	dev/docs_build/pr/BUILD_PR_STYLE_04_GAMES_INDEX_RESET_AND_HEADER_LOCKS.md	dev/build/pr/BUILD_PR_STYLE_04_GAMES_INDEX_RESET_AND_HEADER_LOCKS.md
+R100	dev/docs_build/pr/BUILD_PR_STYLE_05_COLLAPSIBLE_SYSTEM.md	dev/build/pr/BUILD_PR_STYLE_05_COLLAPSIBLE_SYSTEM.md
+R100	dev/docs_build/pr/BUILD_PR_STYLE_06_TOOL_SHELL_FOUNDATION_AND_FIRST_TOOL_MIGRATION.md	dev/build/pr/BUILD_PR_STYLE_06_TOOL_SHELL_FOUNDATION_AND_FIRST_TOOL_MIGRATION.md
+R100	dev/docs_build/pr/BUILD_PR_STYLE_07_LAUNCH_CLARITY_AND_ROADMAP_APPEND_ONLY.md	dev/build/pr/BUILD_PR_STYLE_07_LAUNCH_CLARITY_AND_ROADMAP_APPEND_ONLY.md
+R100	dev/docs_build/pr/BUILD_PR_STYLE_08_ADAPTIVE_TOOL_DENSITY.md	dev/build/pr/BUILD_PR_STYLE_08_ADAPTIVE_TOOL_DENSITY.md
+R100	dev/docs_build/pr/BUILD_PR_STYLE_09_TOOL_HEIGHT_AND_VIEWPORT_FIT.md	dev/build/pr/BUILD_PR_STYLE_09_TOOL_HEIGHT_AND_VIEWPORT_FIT.md
+R100	dev/docs_build/pr/BUILD_PR_STYLE_10_12_INTERACTION_HIERARCHY_AND_COMPONENT_STANDARDIZATION.md	dev/build/pr/BUILD_PR_STYLE_10_12_INTERACTION_HIERARCHY_AND_COMPONENT_STANDARDIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_STYLE_13_15_THEMING_AND_UX_CONSISTENCY.md	dev/build/pr/BUILD_PR_STYLE_13_15_THEMING_AND_UX_CONSISTENCY.md
+R100	dev/docs_build/pr/BUILD_PR_STYLE_16_17_PERF_FINAL_QA_AND_ROADMAP_CLOSEOUT.md	dev/build/pr/BUILD_PR_STYLE_16_17_PERF_FINAL_QA_AND_ROADMAP_CLOSEOUT.md
+R100	dev/docs_build/pr/BUILD_PR_STYLE_FINAL_SYSTEM_COMPLETION_AND_UAT_READY.md	dev/build/pr/BUILD_PR_STYLE_FINAL_SYSTEM_COMPLETION_AND_UAT_READY.md
+R100	dev/docs_build/pr/BUILD_PR_STYLE_INDEX_HEADER_AND_BODY_CONSISTENCY_FIX.md	dev/build/pr/BUILD_PR_STYLE_INDEX_HEADER_AND_BODY_CONSISTENCY_FIX.md
+R100	dev/docs_build/pr/BUILD_PR_STYLE_INLINE_ATTR_CLEANUP_FINAL.md	dev/build/pr/BUILD_PR_STYLE_INLINE_ATTR_CLEANUP_FINAL.md
+R100	dev/docs_build/pr/BUILD_PR_STYLE_INLINE_CLEANUP_REUSE_HIGHER_LEVEL_CSS.md	dev/build/pr/BUILD_PR_STYLE_INLINE_CLEANUP_REUSE_HIGHER_LEVEL_CSS.md
+R100	dev/docs_build/pr/BUILD_PR_STYLE_SAMPLES_INDEX_DATA_DRIVEN_LIST_RESTORE.md	dev/build/pr/BUILD_PR_STYLE_SAMPLES_INDEX_DATA_DRIVEN_LIST_RESTORE.md
+R100	dev/docs_build/pr/BUILD_PR_STYLE_SAMPLES_INDEX_FILTER_AND_PHASE_LIST_RESTORE.md	dev/build/pr/BUILD_PR_STYLE_SAMPLES_INDEX_FILTER_AND_PHASE_LIST_RESTORE.md
+R100	dev/docs_build/pr/BUILD_PR_STYLE_SAMPLES_INDEX_UI_BEHAVIOR_RESTORE.md	dev/build/pr/BUILD_PR_STYLE_SAMPLES_INDEX_UI_BEHAVIOR_RESTORE.md
+R100	dev/docs_build/pr/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_1.md	dev/build/pr/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_1.md
+R100	dev/docs_build/pr/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_2.md	dev/build/pr/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_2.md
+R100	dev/docs_build/pr/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_3_ARCHIVED_NOTES_POLICY.md	dev/build/pr/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_3_ARCHIVED_NOTES_POLICY.md
+R100	dev/docs_build/pr/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_4B_SPRITEEDITOR_MOVE_TO_ARCHIVE.md	dev/build/pr/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_4B_SPRITEEDITOR_MOVE_TO_ARCHIVE.md
+R100	dev/docs_build/pr/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_5_CLASSES_OLD_KEEP_POLICY.md	dev/build/pr/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_5_CLASSES_OLD_KEEP_POLICY.md
+R100	dev/docs_build/pr/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_5_CLASSES_OLD_KEEP_POLICY_PS_FIRST.md	dev/build/pr/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_5_CLASSES_OLD_KEEP_POLICY_PS_FIRST.md
+R100	dev/docs_build/pr/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_6_CLASSES_OLD_KEEP_REFERENCE_NORMALIZATION.md	dev/build/pr/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_6_CLASSES_OLD_KEEP_REFERENCE_NORMALIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_7_FINAL_REVIEW_AND_DECISION.md	dev/build/pr/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_7_FINAL_REVIEW_AND_DECISION.md
+R100	dev/docs_build/pr/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_8_REMOVE_CLASSES_OLD_KEEP_REFERENCES.md	dev/build/pr/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_8_REMOVE_CLASSES_OLD_KEEP_REFERENCES.md
+R100	dev/docs_build/pr/BUILD_PR_TEMPLATES_POLICY_CLASSIFICATION.md	dev/build/pr/BUILD_PR_TEMPLATES_POLICY_CLASSIFICATION.md
+R100	dev/docs_build/pr/BUILD_PR_TEMPLATES_VECTOR_NATIVE_ACTIVE_RELOCATION.md	dev/build/pr/BUILD_PR_TEMPLATES_VECTOR_NATIVE_ACTIVE_RELOCATION.md
+R100	dev/docs_build/pr/BUILD_PR_TEST_RUNNER_DRIFT_FIX.md	dev/build/pr/BUILD_PR_TEST_RUNNER_DRIFT_FIX.md
+R100	dev/docs_build/pr/BUILD_PR_TILE_RENDER_PIPELINE_FIX_HARDEN.md	dev/build/pr/BUILD_PR_TILE_RENDER_PIPELINE_FIX_HARDEN.md
+R100	dev/docs_build/pr/BUILD_PR_TILE_UV_WINDING_NORMAL_FIX_VALIDATION.md	dev/build/pr/BUILD_PR_TILE_UV_WINDING_NORMAL_FIX_VALIDATION.md
+R100	dev/docs_build/pr/BUILD_PR_TOOLS_BOOT_CONTRACT_NORMALIZATION.md	dev/build/pr/BUILD_PR_TOOLS_BOOT_CONTRACT_NORMALIZATION.md
+R100	dev/docs_build/pr/BUILD_PR_TOOLS_SHARED_EXTRACTION_PHASE_1.md	dev/build/pr/BUILD_PR_TOOLS_SHARED_EXTRACTION_PHASE_1.md
+R100	dev/docs_build/pr/BUILD_PR_TOOLS_SHARED_EXTRACTION_PHASE_2.md	dev/build/pr/BUILD_PR_TOOLS_SHARED_EXTRACTION_PHASE_2.md
+R100	dev/docs_build/pr/BUILD_PR_TOOLS_THEME_REUSE_BASELINE.md	dev/build/pr/BUILD_PR_TOOLS_THEME_REUSE_BASELINE.md
+R100	dev/docs_build/pr/BUILD_PR_TOOL_HOST_FOUNDATION.md	dev/build/pr/BUILD_PR_TOOL_HOST_FOUNDATION.md
+R100	dev/docs_build/pr/BUILD_PR_TOOL_HOST_MULTI_SWITCH.md	dev/build/pr/BUILD_PR_TOOL_HOST_MULTI_SWITCH.md
+R100	dev/docs_build/pr/BUILD_PR_TOOL_HOST_SEAMLESS_IFRAME_PARITY.md	dev/build/pr/BUILD_PR_TOOL_HOST_SEAMLESS_IFRAME_PARITY.md
+R100	dev/docs_build/pr/BUILD_PR_TOOL_HOST_STATE_HANDOFF.md	dev/build/pr/BUILD_PR_TOOL_HOST_STATE_HANDOFF.md
+R100	dev/docs_build/pr/BUILD_PR_TRACK_G_NETWORK_MULTIPLAYER_DEBUG_CLOSEOUT.md	dev/build/pr/BUILD_PR_TRACK_G_NETWORK_MULTIPLAYER_DEBUG_CLOSEOUT.md
+R100	dev/docs_build/pr/FINAL_SNAPSHOT_NON_3D_COMPLETE_WITH_DEFERRED_INFRA.md	dev/build/pr/FINAL_SNAPSHOT_NON_3D_COMPLETE_WITH_DEFERRED_INFRA.md
+R100	dev/docs_build/pr/LEVEL_11_1_CONTRACT_TESTS_AND_ROLLBACK_GATES.md	dev/build/pr/LEVEL_11_1_CONTRACT_TESTS_AND_ROLLBACK_GATES.md
+R100	dev/docs_build/pr/LEVEL_11_1_HANDOFF_CANDIDATE_AND_OWNERSHIP.md	dev/build/pr/LEVEL_11_1_HANDOFF_CANDIDATE_AND_OWNERSHIP.md
+R100	dev/docs_build/pr/LEVEL_11_1_HANDOFF_RULES.md	dev/build/pr/LEVEL_11_1_HANDOFF_RULES.md
+R100	dev/docs_build/pr/LEVEL_11_1_IMPLEMENTATION_NOTES_FOR_CODEX.md	dev/build/pr/LEVEL_11_1_IMPLEMENTATION_NOTES_FOR_CODEX.md
+R100	dev/docs_build/pr/LEVEL_11_1_REAL_CONSUMER_VALIDATION_PATH.md	dev/build/pr/LEVEL_11_1_REAL_CONSUMER_VALIDATION_PATH.md
+R100	dev/docs_build/pr/LEVEL_11_1_TEST_AND_ROLLBACK.md	dev/build/pr/LEVEL_11_1_TEST_AND_ROLLBACK.md
+R100	dev/docs_build/pr/LEVEL_11_2_EXPANSION_CRITERIA.md	dev/build/pr/LEVEL_11_2_EXPANSION_CRITERIA.md
+R100	dev/docs_build/pr/LEVEL_11_2_NEXT_CANDIDATE_SELECTION.md	dev/build/pr/LEVEL_11_2_NEXT_CANDIDATE_SELECTION.md
+R100	dev/docs_build/pr/LEVEL_11_2_NON_EXPANSION_CRITERIA.md	dev/build/pr/LEVEL_11_2_NON_EXPANSION_CRITERIA.md
+R100	dev/docs_build/pr/LEVEL_11_2_REPORTS_REQUIREMENT.md	dev/build/pr/LEVEL_11_2_REPORTS_REQUIREMENT.md
+R100	dev/docs_build/pr/LEVEL_11_3_NON_IMPLEMENTATION_RULE.md	dev/build/pr/LEVEL_11_3_NON_IMPLEMENTATION_RULE.md
+R100	dev/docs_build/pr/LEVEL_11_3_READINESS_CRITERIA.md	dev/build/pr/LEVEL_11_3_READINESS_CRITERIA.md
+R100	dev/docs_build/pr/LEVEL_11_3_SLICE_DEFINITION.md	dev/build/pr/LEVEL_11_3_SLICE_DEFINITION.md
+R100	dev/docs_build/pr/LEVEL_11_4_REPORTS.md	dev/build/pr/LEVEL_11_4_REPORTS.md
+R100	dev/docs_build/pr/LEVEL_11_4_RULES.md	dev/build/pr/LEVEL_11_4_RULES.md
+R100	dev/docs_build/pr/LEVEL_11_4_TESTS.md	dev/build/pr/LEVEL_11_4_TESTS.md
+R100	dev/docs_build/pr/LEVEL_12_1_REAL_NETWORK_FOUNDATION_CONTRACTS.md	dev/build/pr/LEVEL_12_1_REAL_NETWORK_FOUNDATION_CONTRACTS.md
+R100	dev/docs_build/pr/LEVEL_12_2_AUTHORITATIVE_SERVER_RUNTIME_PREP.md	dev/build/pr/LEVEL_12_2_AUTHORITATIVE_SERVER_RUNTIME_PREP.md
+R100	dev/docs_build/pr/LEVEL_12_3_REPLICATION_CLIENT_APPLICATION_CONTRACTS.md	dev/build/pr/LEVEL_12_3_REPLICATION_CLIENT_APPLICATION_CONTRACTS.md
+R100	dev/docs_build/pr/LEVEL_12_3_REPLICATION_CLIENT_APPLICATION_PREP.md	dev/build/pr/LEVEL_12_3_REPLICATION_CLIENT_APPLICATION_PREP.md
+R100	dev/docs_build/pr/LEVEL_12_4_PLAYABLE_MULTIPLAYER_VALIDATION_CHECKLIST.md	dev/build/pr/LEVEL_12_4_PLAYABLE_MULTIPLAYER_VALIDATION_CHECKLIST.md
+R100	dev/docs_build/pr/LEVEL_12_4_PLAYABLE_MULTIPLAYER_VALIDATION_FAILURE_MODES.md	dev/build/pr/LEVEL_12_4_PLAYABLE_MULTIPLAYER_VALIDATION_FAILURE_MODES.md
+R100	dev/docs_build/pr/LEVEL_12_4_PLAYABLE_MULTIPLAYER_VALIDATION_PREP.md	dev/build/pr/LEVEL_12_4_PLAYABLE_MULTIPLAYER_VALIDATION_PREP.md
+R100	dev/docs_build/pr/LEVEL_12_5_SERVER_HOSTING_DOCKER_RUNTIME_PREP.md	dev/build/pr/LEVEL_12_5_SERVER_HOSTING_DOCKER_RUNTIME_PREP.md
+R100	dev/docs_build/pr/LEVEL_12_6_REMOTE_DEPLOYMENT_CANDIDATE_CHECKLIST.md	dev/build/pr/LEVEL_12_6_REMOTE_DEPLOYMENT_CANDIDATE_CHECKLIST.md
+R100	dev/docs_build/pr/LEVEL_12_6_REMOTE_DEPLOYMENT_CANDIDATE_PREP.md	dev/build/pr/LEVEL_12_6_REMOTE_DEPLOYMENT_CANDIDATE_PREP.md
+R100	dev/docs_build/pr/NETWORK_SAMPLE_1319_POWERSHELL_RUNBOOK.md	dev/build/pr/NETWORK_SAMPLE_1319_POWERSHELL_RUNBOOK.md
+R100	dev/docs_build/pr/PLAN_PR_11_189B_SVG_V2_SHARED_THEME_HEADER_CORRECTION.md	dev/build/pr/PLAN_PR_11_189B_SVG_V2_SHARED_THEME_HEADER_CORRECTION.md
+R100	dev/docs_build/pr/PLAN_PR_11_189_SVG_ASSET_STUDIO_V2.md	dev/build/pr/PLAN_PR_11_189_SVG_ASSET_STUDIO_V2.md
+R100	dev/docs_build/pr/PLAN_PR_11_193_V2_HTML_FIRST_BATCH.md	dev/build/pr/PLAN_PR_11_193_V2_HTML_FIRST_BATCH.md
+R100	dev/docs_build/pr/PLAN_PR_11_261_WORKSPACE_V2_MERGE_STATE_STATUS_RESET_AND_FINAL_UX_POLISH.md	dev/build/pr/PLAN_PR_11_261_WORKSPACE_V2_MERGE_STATE_STATUS_RESET_AND_FINAL_UX_POLISH.md
+R100	dev/docs_build/pr/PLAN_PR_11_262_WORKSPACE_V2_MERGE_STATE_SINGLE_SOURCE_OF_TRUTH_ENFORCEMENT.md	dev/build/pr/PLAN_PR_11_262_WORKSPACE_V2_MERGE_STATE_SINGLE_SOURCE_OF_TRUTH_ENFORCEMENT.md
+R100	dev/docs_build/pr/PLAN_PR_11_263_WORKSPACE_V2_SESSION_UX_STABILIZATION_BUNDLE.md	dev/build/pr/PLAN_PR_11_263_WORKSPACE_V2_SESSION_UX_STABILIZATION_BUNDLE.md
+R100	dev/docs_build/pr/PLAN_PR_11_264_WORKSPACE_V2_SESSION_STATE_MODEL_CONSOLIDATION.md	dev/build/pr/PLAN_PR_11_264_WORKSPACE_V2_SESSION_STATE_MODEL_CONSOLIDATION.md
+R100	dev/docs_build/pr/PLAN_PR_11_265_WORKSPACE_V2_DETERMINISTIC_STATE_TRANSITION_ENFORCEMENT.md	dev/build/pr/PLAN_PR_11_265_WORKSPACE_V2_DETERMINISTIC_STATE_TRANSITION_ENFORCEMENT.md
+R100	dev/docs_build/pr/PLAN_PR_11_266_WORKSPACE_V2_SESSION_TOOLS_CLOSEOUT_BUNDLE.md	dev/build/pr/PLAN_PR_11_266_WORKSPACE_V2_SESSION_TOOLS_CLOSEOUT_BUNDLE.md
+R100	dev/docs_build/pr/PLAN_PR_11_267_WORKSPACE_V2_DEFAULT_TOOL_PRODUCER_INIT_FIX.md	dev/build/pr/PLAN_PR_11_267_WORKSPACE_V2_DEFAULT_TOOL_PRODUCER_INIT_FIX.md
+R100	dev/docs_build/pr/PLAN_PR_11_268_WORKSPACE_V2_SESSION_LIBRARY_ACTION_CLEANUP.md	dev/build/pr/PLAN_PR_11_268_WORKSPACE_V2_SESSION_LIBRARY_ACTION_CLEANUP.md
+R100	dev/docs_build/pr/PLAN_PR_11_269_WORKSPACE_V2_SESSION_LIBRARY_SAVE_GUARD_AND_LOAD_EXPLANATION_UX.md	dev/build/pr/PLAN_PR_11_269_WORKSPACE_V2_SESSION_LIBRARY_SAVE_GUARD_AND_LOAD_EXPLANATION_UX.md
+R100	dev/docs_build/pr/PLAN_PR_11_270_WORKSPACE_V2_SESSION_LIBRARY_OVERWRITE_ACTION.md	dev/build/pr/PLAN_PR_11_270_WORKSPACE_V2_SESSION_LIBRARY_OVERWRITE_ACTION.md
+R100	dev/docs_build/pr/PLAN_PR_11_273_WORKSPACE_V2_WORDING_CLARITY.md	dev/build/pr/PLAN_PR_11_273_WORKSPACE_V2_WORDING_CLARITY.md
+R100	dev/docs_build/pr/PLAN_PR_11_274_WORKSPACE_V2_DIFF_VIEWER_SUMMARY_COUNTS.md	dev/build/pr/PLAN_PR_11_274_WORKSPACE_V2_DIFF_VIEWER_SUMMARY_COUNTS.md
+R100	dev/docs_build/pr/PLAN_PR_11_275_WORKSPACE_V2_CURRENT_SESSION_EXPORT_FIX.md	dev/build/pr/PLAN_PR_11_275_WORKSPACE_V2_CURRENT_SESSION_EXPORT_FIX.md
+R100	dev/docs_build/pr/PLAN_PR_11_276_WORKSPACE_V2_FULL_SESSION_EXPORT_CONTRACT_CORRECTION.md	dev/build/pr/PLAN_PR_11_276_WORKSPACE_V2_FULL_SESSION_EXPORT_CONTRACT_CORRECTION.md
+R100	dev/docs_build/pr/PLAN_PR_11_276_WORKSPACE_V2_NAV_MODE_SEPARATION_AND_EXPORT_CONTRACT_CORRECTION.md	dev/build/pr/PLAN_PR_11_276_WORKSPACE_V2_NAV_MODE_SEPARATION_AND_EXPORT_CONTRACT_CORRECTION.md
+R100	dev/docs_build/pr/PLAN_PR_11_277_WORKSPACE_V2_MANIFEST_ONLY_EXPORT_ENFORCEMENT.md	dev/build/pr/PLAN_PR_11_277_WORKSPACE_V2_MANIFEST_ONLY_EXPORT_ENFORCEMENT.md
+R100	dev/docs_build/pr/PLAN_PR_11_278_WORKSPACE_V2_WORKSPACE_SCHEMA_EXPORT_ENFORCEMENT_AND_SAME_TOOL_DIFF_GUARD.md	dev/build/pr/PLAN_PR_11_278_WORKSPACE_V2_WORKSPACE_SCHEMA_EXPORT_ENFORCEMENT_AND_SAME_TOOL_DIFF_GUARD.md
+R100	dev/docs_build/pr/PLAN_PR_11_279_WORKSPACE_SCHEMA_RESTORE_PLUS_MINIMAL_WORKSPACE_SESSION_BLOCK.md	dev/build/pr/PLAN_PR_11_279_WORKSPACE_SCHEMA_RESTORE_PLUS_MINIMAL_WORKSPACE_SESSION_BLOCK.md
+R100	dev/docs_build/pr/PLAN_PR_11_80_DEAD_UTILS_AUDIT.md	dev/build/pr/PLAN_PR_11_80_DEAD_UTILS_AUDIT.md
+R100	dev/docs_build/pr/PLAN_PR_11_87_MANIFEST_BACKGROUND_ALWAYS_VISIBLE.md	dev/build/pr/PLAN_PR_11_87_MANIFEST_BACKGROUND_ALWAYS_VISIBLE.md
+R100	dev/docs_build/pr/PLAN_PR_26124_020-workspace-tools-reengineering-design-docs.md	dev/build/pr/PLAN_PR_26124_020-workspace-tools-reengineering-design-docs.md
+R100	dev/docs_build/pr/PLAN_PR_26169_001-creator-platform-foundation.md	dev/build/pr/PLAN_PR_26169_001-creator-platform-foundation.md
+R100	dev/docs_build/pr/PLAN_PR_26169_002-auth-preview-signin-regression.md	dev/build/pr/PLAN_PR_26169_002-auth-preview-signin-regression.md
+R100	dev/docs_build/pr/PLAN_PR_26169_003-beta-invitations-admin.md	dev/build/pr/PLAN_PR_26169_003-beta-invitations-admin.md
+R100	dev/docs_build/pr/PLAN_PR_26169_004-membership-data-model.md	dev/build/pr/PLAN_PR_26169_004-membership-data-model.md
+R100	dev/docs_build/pr/PLAN_PR_26169_005-membership-assignment.md	dev/build/pr/PLAN_PR_26169_005-membership-assignment.md
+R100	dev/docs_build/pr/PLAN_PR_26169_006-memberships-page-v2.md	dev/build/pr/PLAN_PR_26169_006-memberships-page-v2.md
+R100	dev/docs_build/pr/PLAN_PR_26169_007-ai-credit-foundation.md	dev/build/pr/PLAN_PR_26169_007-ai-credit-foundation.md
+R100	dev/docs_build/pr/PLAN_PR_26169_008-ai-credit-display.md	dev/build/pr/PLAN_PR_26169_008-ai-credit-display.md
+R100	dev/docs_build/pr/PLAN_PR_26169_009-marketplace-membership-rules.md	dev/build/pr/PLAN_PR_26169_009-marketplace-membership-rules.md
+R100	dev/docs_build/pr/PLAN_PR_26169_010-marketplace-revenue-model.md	dev/build/pr/PLAN_PR_26169_010-marketplace-revenue-model.md
+R100	dev/docs_build/pr/PLAN_PR_26169_011-marketplace-categories.md	dev/build/pr/PLAN_PR_26169_011-marketplace-categories.md
+R100	dev/docs_build/pr/PLAN_PR_26169_012-teams-foundation.md	dev/build/pr/PLAN_PR_26169_012-teams-foundation.md
+R100	dev/docs_build/pr/PLAN_PR_26169_013-team-enforcement.md	dev/build/pr/PLAN_PR_26169_013-team-enforcement.md
+R100	dev/docs_build/pr/PLAN_PR_26169_014-legal-foundation.md	dev/build/pr/PLAN_PR_26169_014-legal-foundation.md
+R100	dev/docs_build/pr/PLAN_PR_26169_015-terms-of-service.md	dev/build/pr/PLAN_PR_26169_015-terms-of-service.md
+R100	dev/docs_build/pr/PLAN_PR_26169_016-privacy-cookies-community-copyright-dmca.md	dev/build/pr/PLAN_PR_26169_016-privacy-cookies-community-copyright-dmca.md
+R100	dev/docs_build/pr/PLAN_PR_26169_017-owner-memberships.md	dev/build/pr/PLAN_PR_26169_017-owner-memberships.md
+R100	dev/docs_build/pr/PLAN_PR_26169_018-owner-ai-credits.md	dev/build/pr/PLAN_PR_26169_018-owner-ai-credits.md
+R100	dev/docs_build/pr/PLAN_PR_26169_019-admin-health-operations.md	dev/build/pr/PLAN_PR_26169_019-admin-health-operations.md
+R100	dev/docs_build/pr/PLAN_PR_26171_026-idea-board-template-cleanup.md	dev/build/pr/PLAN_PR_26171_026-idea-board-template-cleanup.md
+R100	dev/docs_build/pr/PLAN_PR_26171_027-idea-board-table-work-surface.md	dev/build/pr/PLAN_PR_26171_027-idea-board-table-work-surface.md
+R100	dev/docs_build/pr/PLAN_PR_26171_028-idea-board-notes-table-governance.md	dev/build/pr/PLAN_PR_26171_028-idea-board-notes-table-governance.md
+R100	dev/docs_build/pr/PLAN_PR_26171_029-idea-board-validation-playwright.md	dev/build/pr/PLAN_PR_26171_029-idea-board-validation-playwright.md
+R091	dev/docs_build/pr/PLAN_PR_26171_030-idea-board-workflow-fix.md	dev/build/pr/PLAN_PR_26171_030-idea-board-workflow-fix.md
+R100	dev/docs_build/pr/PLAN_PR_26171_031-idea-board-inline-tree-grid-actions.md	dev/build/pr/PLAN_PR_26171_031-idea-board-inline-tree-grid-actions.md
+R100	dev/docs_build/pr/PLAN_PR_26171_032-idea-board-accordion-table-model.md	dev/build/pr/PLAN_PR_26171_032-idea-board-accordion-table-model.md
+R100	dev/docs_build/pr/PLAN_PR_26171_033-idea-board-inline-accordion-cell.md	dev/build/pr/PLAN_PR_26171_033-idea-board-inline-accordion-cell.md
+R100	dev/docs_build/pr/PLAN_PR_26175_ALFA_047-theme-v2-svg-icon-registry.md	dev/build/pr/PLAN_PR_26175_ALFA_047-theme-v2-svg-icon-registry.md
+R100	dev/docs_build/pr/PLAN_PR_26175_ALFA_048-theme-v2-chevron-conversion.md	dev/build/pr/PLAN_PR_26175_ALFA_048-theme-v2-chevron-conversion.md
+R100	dev/docs_build/pr/PLAN_PR_26175_ALFA_049-theme-v2-status-action-icons.md	dev/build/pr/PLAN_PR_26175_ALFA_049-theme-v2-status-action-icons.md
+R098	dev/docs_build/pr/PLAN_PR_26175_ALFA_050-theme-v2-layout-utility-icons.md	dev/build/pr/PLAN_PR_26175_ALFA_050-theme-v2-layout-utility-icons.md
+R100	dev/docs_build/pr/PLAN_PR_26175_ALFA_051-alfa-end-of-day-closeout.md	dev/build/pr/PLAN_PR_26175_ALFA_051-alfa-end-of-day-closeout.md
+R100	dev/docs_build/pr/PLAN_PR_26175_OWNER_050-project-instructions-add-valid-reference-files.md	dev/build/pr/PLAN_PR_26175_OWNER_050-project-instructions-add-valid-reference-files.md
+R100	dev/docs_build/pr/PLAN_PR_26175_OWNER_051-outstanding-pr-audit-report.md	dev/build/pr/PLAN_PR_26175_OWNER_051-outstanding-pr-audit-report.md
+R100	dev/docs_build/pr/PLAN_PR_26175_OWNER_052-project-work-inventory.md	dev/build/pr/PLAN_PR_26175_OWNER_052-project-work-inventory.md
+R100	dev/docs_build/pr/PLAN_PR_26175_OWNER_053-project-work-resolution-report.md	dev/build/pr/PLAN_PR_26175_OWNER_053-project-work-resolution-report.md
+R100	dev/docs_build/pr/PLAN_PR_3D_PHASE16_MASTER_EXECUTION.md	dev/build/pr/PLAN_PR_3D_PHASE16_MASTER_EXECUTION.md
+R100	dev/docs_build/pr/PLAN_PR_ASTEROIDS_GAME_CANVAS_FIX.md	dev/build/pr/PLAN_PR_ASTEROIDS_GAME_CANVAS_FIX.md
+R100	dev/docs_build/pr/PLAN_PR_BUILD_TEMPLATE_PROTECTED.md	dev/build/pr/PLAN_PR_BUILD_TEMPLATE_PROTECTED.md
+R100	dev/docs_build/pr/PLAN_PR_DOCS_ARCHIVE_CLEANUP.md	dev/build/pr/PLAN_PR_DOCS_ARCHIVE_CLEANUP.md
+R100	dev/docs_build/pr/PLAN_PR_GAMES_PACMANLITE_MIGRATION.md	dev/build/pr/PLAN_PR_GAMES_PACMANLITE_MIGRATION.md
+R100	dev/docs_build/pr/PLAN_PR_GAMES_PUCKMAN_MIGRATION.md	dev/build/pr/PLAN_PR_GAMES_PUCKMAN_MIGRATION.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_10_1A_PALETTE_STANDALONE_SINGLETON_CORRECTION.md	dev/build/pr/PLAN_PR_LEVEL_10_1A_PALETTE_STANDALONE_SINGLETON_CORRECTION.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_10_1B_TOOL_SECTION_METADATA_AND_PALETTE_TOOL_SINGLETON.md	dev/build/pr/PLAN_PR_LEVEL_10_1B_TOOL_SECTION_METADATA_AND_PALETTE_TOOL_SINGLETON.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_10_1_GAME_PALETTE_COMPLETENESS_AND_TOOL_INPUT_ALIGNMENT.md	dev/build/pr/PLAN_PR_LEVEL_10_1_GAME_PALETTE_COMPLETENESS_AND_TOOL_INPUT_ALIGNMENT.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_10_2A_WORKSPACE_MANAGER_ASSET_PRESENCE_VALIDATION.md	dev/build/pr/PLAN_PR_LEVEL_10_2A_WORKSPACE_MANAGER_ASSET_PRESENCE_VALIDATION.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_10_2B_WORKSPACE_MANAGER_PALETTE_BINDING_FIX.md	dev/build/pr/PLAN_PR_LEVEL_10_2B_WORKSPACE_MANAGER_PALETTE_BINDING_FIX.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_10_2C_MANIFEST_PAYLOAD_EXPECTATION_TESTS_AND_CLEANUP.md	dev/build/pr/PLAN_PR_LEVEL_10_2C_MANIFEST_PAYLOAD_EXPECTATION_TESTS_AND_CLEANUP.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_10_2D_GRAVITY_WELL_SHIP_VECTOR_MAP_FIX.md	dev/build/pr/PLAN_PR_LEVEL_10_2D_GRAVITY_WELL_SHIP_VECTOR_MAP_FIX.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_10_2F_VECTOR_ASSET_PALETTE_PAINT_BINDING_FIX.md	dev/build/pr/PLAN_PR_LEVEL_10_2F_VECTOR_ASSET_PALETTE_PAINT_BINDING_FIX.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_10_2_WORKSPACE_MANAGER_OPEN_TEST_AND_SHARED_BOUNDARY_AUDIT.md	dev/build/pr/PLAN_PR_LEVEL_10_2_WORKSPACE_MANAGER_OPEN_TEST_AND_SHARED_BOUNDARY_AUDIT.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_10_3_MIGRATE_TOOL_LOCAL_SAMPLES_TO_SAMPLES.md	dev/build/pr/PLAN_PR_LEVEL_10_3_MIGRATE_TOOL_LOCAL_SAMPLES_TO_SAMPLES.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_10_5_NO_HIDDEN_TOOL_COUPLING_VALIDATION.md	dev/build/pr/PLAN_PR_LEVEL_10_5_NO_HIDDEN_TOOL_COUPLING_VALIDATION.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT.md	dev/build/pr/PLAN_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_10_6_SAMPLE_SCHEMA_AND_STANDALONE_TOOL_DATA_FLOW_VALIDATION.md	dev/build/pr/PLAN_PR_LEVEL_10_6_SAMPLE_SCHEMA_AND_STANDALONE_TOOL_DATA_FLOW_VALIDATION.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_11_2_RECONCILIATION_LAYER_FOUNDATION.md	dev/build/pr/PLAN_PR_LEVEL_11_2_RECONCILIATION_LAYER_FOUNDATION.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_11_3_TIMELINE_REWIND_PREP.md	dev/build/pr/PLAN_PR_LEVEL_11_3_TIMELINE_REWIND_PREP.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_11_54_CONTROLLED_JSON_CLEANUP_8.md	dev/build/pr/PLAN_PR_LEVEL_11_54_CONTROLLED_JSON_CLEANUP_8.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_11_5_MULTI_ENTITY_SUPPORT.md	dev/build/pr/PLAN_PR_LEVEL_11_5_MULTI_ENTITY_SUPPORT.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_11_64_MISSING_REFERENCE_REPAIR_AND_AUDIT_COUNTS_ONLY.md	dev/build/pr/PLAN_PR_LEVEL_11_64_MISSING_REFERENCE_REPAIR_AND_AUDIT_COUNTS_ONLY.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_11_67_FINAL_SAMPLE_JSON_AUDIT_CLOSURE.md	dev/build/pr/PLAN_PR_LEVEL_11_67_FINAL_SAMPLE_JSON_AUDIT_CLOSURE.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_11_74_UTILS_CONSOLIDATION_INVENTORY.md	dev/build/pr/PLAN_PR_LEVEL_11_74_UTILS_CONSOLIDATION_INVENTORY.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_11_7_FINAL_PROMOTION_GATE.md	dev/build/pr/PLAN_PR_LEVEL_11_7_FINAL_PROMOTION_GATE.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_11_89_ASTEROIDS_ENGINE_RENDER_OWNERSHIP_STABILIZATION.md	dev/build/pr/PLAN_PR_LEVEL_11_89_ASTEROIDS_ENGINE_RENDER_OWNERSHIP_STABILIZATION.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_12_10_REAL_NETWORK_SAMPLE_AND_DASHBOARD.md	dev/build/pr/PLAN_PR_LEVEL_12_10_REAL_NETWORK_SAMPLE_AND_DASHBOARD.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_12_1_REAL_NETWORK_FOUNDATION.md	dev/build/pr/PLAN_PR_LEVEL_12_1_REAL_NETWORK_FOUNDATION.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_12_2_AUTHORITATIVE_SERVER_RUNTIME.md	dev/build/pr/PLAN_PR_LEVEL_12_2_AUTHORITATIVE_SERVER_RUNTIME.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_12_3_REPLICATION_CLIENT_APPLICATION.md	dev/build/pr/PLAN_PR_LEVEL_12_3_REPLICATION_CLIENT_APPLICATION.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_12_4_PLAYABLE_MULTIPLAYER_VALIDATION.md	dev/build/pr/PLAN_PR_LEVEL_12_4_PLAYABLE_MULTIPLAYER_VALIDATION.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_12_5_SERVER_HOSTING_DOCKER_RUNTIME.md	dev/build/pr/PLAN_PR_LEVEL_12_5_SERVER_HOSTING_DOCKER_RUNTIME.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_12_6_REMOTE_DEPLOYMENT_CANDIDATE.md	dev/build/pr/PLAN_PR_LEVEL_12_6_REMOTE_DEPLOYMENT_CANDIDATE.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_12_7_REAL_NETWORK_COMPLETION_GATE.md	dev/build/pr/PLAN_PR_LEVEL_12_7_REAL_NETWORK_COMPLETION_GATE.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_12_8_NETWORK_DIRECTORY_NORMALIZATION.md	dev/build/pr/PLAN_PR_LEVEL_12_8_NETWORK_DIRECTORY_NORMALIZATION.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_12_9_NETWORK_USAGE_SAMPLE_STANDARDIZATION.md	dev/build/pr/PLAN_PR_LEVEL_12_9_NETWORK_USAGE_SAMPLE_STANDARDIZATION.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_17_17_CAMERA_DEBUG_PANEL.md	dev/build/pr/PLAN_PR_LEVEL_17_17_CAMERA_DEBUG_PANEL.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_17_18_RENDER_PIPELINE_STAGES.md	dev/build/pr/PLAN_PR_LEVEL_17_18_RENDER_PIPELINE_STAGES.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_17_19_COLLISION_OVERLAYS.md	dev/build/pr/PLAN_PR_LEVEL_17_19_COLLISION_OVERLAYS.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_17_1_3D_ACTIVATION_VALIDATION_GATE.md	dev/build/pr/PLAN_PR_LEVEL_17_1_3D_ACTIVATION_VALIDATION_GATE.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_17_20_SCENE_GRAPH_INSPECTOR.md	dev/build/pr/PLAN_PR_LEVEL_17_20_SCENE_GRAPH_INSPECTOR.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_17_21_TRACK_H_3D_DEBUG_SUPPORT_CLOSEOUT.md	dev/build/pr/PLAN_PR_LEVEL_17_21_TRACK_H_3D_DEBUG_SUPPORT_CLOSEOUT.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_17_22_PHASE16_3D_DEBUG_AND_ROADMAP_REBASELINE.md	dev/build/pr/PLAN_PR_LEVEL_17_22_PHASE16_3D_DEBUG_AND_ROADMAP_REBASELINE.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_17_23_PHASE16_VALIDATION_SWEEP.md	dev/build/pr/PLAN_PR_LEVEL_17_23_PHASE16_VALIDATION_SWEEP.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_17_25_ADVANCED_3D_SAMPLES_BATCH_1.md	dev/build/pr/PLAN_PR_LEVEL_17_25_ADVANCED_3D_SAMPLES_BATCH_1.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_17_26_ADVANCED_3D_SAMPLES_BATCH_2.md	dev/build/pr/PLAN_PR_LEVEL_17_26_ADVANCED_3D_SAMPLES_BATCH_2.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_17_27_ADVANCED_3D_SAMPLES_BATCH_3.md	dev/build/pr/PLAN_PR_LEVEL_17_27_ADVANCED_3D_SAMPLES_BATCH_3.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_17_29_SAMPLE_1610_HYBRID_FIX.md	dev/build/pr/PLAN_PR_LEVEL_17_29_SAMPLE_1610_HYBRID_FIX.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_17_30_ADVANCED_3D_SAMPLES_BATCH_4.md	dev/build/pr/PLAN_PR_LEVEL_17_30_ADVANCED_3D_SAMPLES_BATCH_4.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_17_31_ADVANCED_3D_SAMPLES_BATCH_5.md	dev/build/pr/PLAN_PR_LEVEL_17_31_ADVANCED_3D_SAMPLES_BATCH_5.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_17_33_RENDERING_AND_ANIMATION_TRACK.md	dev/build/pr/PLAN_PR_LEVEL_17_33_RENDERING_AND_ANIMATION_TRACK.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_17_34_RENDERING_TECHNIQUE_EXPANSION.md	dev/build/pr/PLAN_PR_LEVEL_17_34_RENDERING_TECHNIQUE_EXPANSION.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_17_35_SAMPLE_RENUMBER_AND_INDEX_ALIGNMENT.md	dev/build/pr/PLAN_PR_LEVEL_17_35_SAMPLE_RENUMBER_AND_INDEX_ALIGNMENT.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_17_36_RENDERING_TRACK_FINAL_POLISH.md	dev/build/pr/PLAN_PR_LEVEL_17_36_RENDERING_TRACK_FINAL_POLISH.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_17_37_LEVEL17_RENDERING_COMPLETION_GATE.md	dev/build/pr/PLAN_PR_LEVEL_17_37_LEVEL17_RENDERING_COMPLETION_GATE.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_17_38_REAL_GAMEPLAY_SAMPLE.md	dev/build/pr/PLAN_PR_LEVEL_17_38_REAL_GAMEPLAY_SAMPLE.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_17_39_SAMPLE_1709_MOVEMENT_MODELS_LAB.md	dev/build/pr/PLAN_PR_LEVEL_17_39_SAMPLE_1709_MOVEMENT_MODELS_LAB.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_17_40_SAMPLE_1710_REAL_GAMEPLAY_POLISH.md	dev/build/pr/PLAN_PR_LEVEL_17_40_SAMPLE_1710_REAL_GAMEPLAY_POLISH.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_17_42_SAMPLE_1712_GAMEPLAY_METRICS_AND_TELEMETRY.md	dev/build/pr/PLAN_PR_LEVEL_17_42_SAMPLE_1712_GAMEPLAY_METRICS_AND_TELEMETRY.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_17_44_SAMPLE_SEQUENCE_REPAIR_1707_1712.md	dev/build/pr/PLAN_PR_LEVEL_17_44_SAMPLE_SEQUENCE_REPAIR_1707_1712.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_17_45_SAMPLE_1713_FINAL_REFERENCE_GAME.md	dev/build/pr/PLAN_PR_LEVEL_17_45_SAMPLE_1713_FINAL_REFERENCE_GAME.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_17_48_APPLY_TAB_DEBUG_TO_SAMPLES_1707_PLUS.md	dev/build/pr/PLAN_PR_LEVEL_17_48_APPLY_TAB_DEBUG_TO_SAMPLES_1707_PLUS.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_17_51_DEBUG_OVERLAY_POSITION_BOTTOM_RIGHT.md	dev/build/pr/PLAN_PR_LEVEL_17_51_DEBUG_OVERLAY_POSITION_BOTTOM_RIGHT.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_17_ENGINE_FINALIZATION_REORDER.md	dev/build/pr/PLAN_PR_LEVEL_17_ENGINE_FINALIZATION_REORDER.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_18_1_NEXT_PHASE_BOOTSTRAP.md	dev/build/pr/PLAN_PR_LEVEL_18_1_NEXT_PHASE_BOOTSTRAP.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_18_2_PHASE18_FOUNDATION.md	dev/build/pr/PLAN_PR_LEVEL_18_2_PHASE18_FOUNDATION.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_18_3_PHASE18_CORE_SERVICES.md	dev/build/pr/PLAN_PR_LEVEL_18_3_PHASE18_CORE_SERVICES.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_18_4_PHASE18_RUNTIME_LAYER.md	dev/build/pr/PLAN_PR_LEVEL_18_4_PHASE18_RUNTIME_LAYER.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_18_5_PHASE18_INTEGRATION_PASS.md	dev/build/pr/PLAN_PR_LEVEL_18_5_PHASE18_INTEGRATION_PASS.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_18_6_PHASE18_VALIDATION_SWEEP.md	dev/build/pr/PLAN_PR_LEVEL_18_6_PHASE18_VALIDATION_SWEEP.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_18_7_PHASE18_COMPLETION_GATE.md	dev/build/pr/PLAN_PR_LEVEL_18_7_PHASE18_COMPLETION_GATE.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_19_12_COMPLETE_REMAINING_18_19.md	dev/build/pr/PLAN_PR_LEVEL_19_12_COMPLETE_REMAINING_18_19.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_19_1_NEXT_PHASE_BOOTSTRAP.md	dev/build/pr/PLAN_PR_LEVEL_19_1_NEXT_PHASE_BOOTSTRAP.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_19_2_PHASE19_FOUNDATION.md	dev/build/pr/PLAN_PR_LEVEL_19_2_PHASE19_FOUNDATION.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_19_3_PHASE19_CORE_SERVICES.md	dev/build/pr/PLAN_PR_LEVEL_19_3_PHASE19_CORE_SERVICES.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_19_4_PHASE19_RUNTIME_LAYER.md	dev/build/pr/PLAN_PR_LEVEL_19_4_PHASE19_RUNTIME_LAYER.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_19_5_PHASE19_INTEGRATION_PASS.md	dev/build/pr/PLAN_PR_LEVEL_19_5_PHASE19_INTEGRATION_PASS.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_20_1_NEXT_PHASE_DEFINITION.md	dev/build/pr/PLAN_PR_LEVEL_20_1_NEXT_PHASE_DEFINITION.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_20_2_WORKSPACE_MANAGER_GAMES_TILE_UAT_RECOVERY.md	dev/build/pr/PLAN_PR_LEVEL_20_2_WORKSPACE_MANAGER_GAMES_TILE_UAT_RECOVERY.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_20_4_TOOL_LAUNCH_SSOT_AND_EXTERNAL_MEMORY_RESET.md	dev/build/pr/PLAN_PR_LEVEL_20_4_TOOL_LAUNCH_SSOT_AND_EXTERNAL_MEMORY_RESET.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_6_1_SAMPLES_PHASE_ALIGNMENT.md	dev/build/pr/PLAN_PR_LEVEL_6_1_SAMPLES_PHASE_ALIGNMENT.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_6_2_SAMPLE_CURRICULUM_VALIDATION.md	dev/build/pr/PLAN_PR_LEVEL_6_2_SAMPLE_CURRICULUM_VALIDATION.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_6_3_SAMPLE_SHARED_BOUNDARIES.md	dev/build/pr/PLAN_PR_LEVEL_6_3_SAMPLE_SHARED_BOUNDARIES.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_6_4_SAMPLE_RUNTIME_VALIDATION.md	dev/build/pr/PLAN_PR_LEVEL_6_4_SAMPLE_RUNTIME_VALIDATION.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_6_5_SAMPLE_INDEX_NORMALIZATION.md	dev/build/pr/PLAN_PR_LEVEL_6_5_SAMPLE_INDEX_NORMALIZATION.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_8_17_ROADMAP_AND_SKIN_EDITOR_SCHEMA.md	dev/build/pr/PLAN_PR_LEVEL_8_17_ROADMAP_AND_SKIN_EDITOR_SCHEMA.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_8_18_LAUNCHER_PAIRING_CONTRACT_DOCS.md	dev/build/pr/PLAN_PR_LEVEL_8_18_LAUNCHER_PAIRING_CONTRACT_DOCS.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_8_19_SAMPLE_PAYLOAD_AUDIT_AND_ALIGNMENT.md	dev/build/pr/PLAN_PR_LEVEL_8_19_SAMPLE_PAYLOAD_AUDIT_AND_ALIGNMENT.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_8_20_WORKSPACE_SCHEMA_AUDIT_AND_CLEANUP.md	dev/build/pr/PLAN_PR_LEVEL_8_20_WORKSPACE_SCHEMA_AUDIT_AND_CLEANUP.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_8_21_PALETTE_SHARED_DATA_AUDIT.md	dev/build/pr/PLAN_PR_LEVEL_8_21_PALETTE_SHARED_DATA_AUDIT.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_8_22_FULL_TOOL_SCHEMA_CONFORMANCE_AUDIT.md	dev/build/pr/PLAN_PR_LEVEL_8_22_FULL_TOOL_SCHEMA_CONFORMANCE_AUDIT.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_8_23_WORKSPACE_MANIFEST_GAMES_FIELD_ALIGNMENT.md	dev/build/pr/PLAN_PR_LEVEL_8_23_WORKSPACE_MANIFEST_GAMES_FIELD_ALIGNMENT.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_8_24_SCHEMA_AND_JSON_FULL_EXPORT.md	dev/build/pr/PLAN_PR_LEVEL_8_24_SCHEMA_AND_JSON_FULL_EXPORT.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_8_26_MANIFEST_SSOt_AND_UNUSED_JSON_AUDIT.md	dev/build/pr/PLAN_PR_LEVEL_8_26_MANIFEST_SSOt_AND_UNUSED_JSON_AUDIT.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_8_27_CODE_ASSET_EXTRACTION_TO_TOOL_JSON.md	dev/build/pr/PLAN_PR_LEVEL_8_27_CODE_ASSET_EXTRACTION_TO_TOOL_JSON.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_8_28_MANIFEST_SSOT_IMPLEMENTATION_ASTEROIDS_FIRST.md	dev/build/pr/PLAN_PR_LEVEL_8_28_MANIFEST_SSOT_IMPLEMENTATION_ASTEROIDS_FIRST.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_8_29B_ASTEROIDS_DIRECT_LAUNCH_FIX.md	dev/build/pr/PLAN_PR_LEVEL_8_29B_ASTEROIDS_DIRECT_LAUNCH_FIX.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_8_30_MANIFEST_SSOT_ROLLOUT_ALL_GAMES.md	dev/build/pr/PLAN_PR_LEVEL_8_30_MANIFEST_SSOT_ROLLOUT_ALL_GAMES.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_8_31_ASTEROIDS_JSON_CLEANUP_AND_MANIFEST_WIRING.md	dev/build/pr/PLAN_PR_LEVEL_8_31_ASTEROIDS_JSON_CLEANUP_AND_MANIFEST_WIRING.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_8_32_DIRECT_GAME_LAUNCH_HOOK_REMOVAL_AND_ASTEROIDS_PARITY.md	dev/build/pr/PLAN_PR_LEVEL_8_32_DIRECT_GAME_LAUNCH_HOOK_REMOVAL_AND_ASTEROIDS_PARITY.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_8_33_LEGACY_CATALOG_PARITY_AND_REMOVAL.md	dev/build/pr/PLAN_PR_LEVEL_8_33_LEGACY_CATALOG_PARITY_AND_REMOVAL.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_8_34_FINAL_CLEAN_REPO_BASELINE.md	dev/build/pr/PLAN_PR_LEVEL_8_34_FINAL_CLEAN_REPO_BASELINE.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_9_1A_ASTEROIDS_MANIFEST_MODEL_REVIEW.md	dev/build/pr/PLAN_PR_LEVEL_9_1A_ASTEROIDS_MANIFEST_MODEL_REVIEW.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_9_2_SINGLE_MANIFEST_CONSOLIDATION_ROLLOUT_ALL_GAMES.md	dev/build/pr/PLAN_PR_LEVEL_9_2_SINGLE_MANIFEST_CONSOLIDATION_ROLLOUT_ALL_GAMES.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_9_6_ASTEROIDS_HARD_CUTOVER_SINGLE_MANIFEST.md	dev/build/pr/PLAN_PR_LEVEL_9_6_ASTEROIDS_HARD_CUTOVER_SINGLE_MANIFEST.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_9_7_REMOVE_INTERNAL_REFERENCES_AND_INLINE_DATA.md	dev/build/pr/PLAN_PR_LEVEL_9_7_REMOVE_INTERNAL_REFERENCES_AND_INLINE_DATA.md
+R100	dev/docs_build/pr/PLAN_PR_LEVEL_9_9_LAUNCH_SMOKE_GAMES_ONLY_FAST_PATH.md	dev/build/pr/PLAN_PR_LEVEL_9_9_LAUNCH_SMOKE_GAMES_ONLY_FAST_PATH.md
+R100	dev/docs_build/pr/PLAN_PR_MASTER_ROADMAP_HIGH_LEVEL.md	dev/build/pr/PLAN_PR_MASTER_ROADMAP_HIGH_LEVEL.md
+R100	dev/docs_build/pr/PLAN_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE.md	dev/build/pr/PLAN_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE.md
+R100	dev/docs_build/pr/PLAN_PR_SAMPLES_BUNDLED_FINALIZATION.md	dev/build/pr/PLAN_PR_SAMPLES_BUNDLED_FINALIZATION.md
+R100	dev/docs_build/pr/PLAN_PR_SAMPLES_DETAIL_PAGE_ENHANCEMENT.md	dev/build/pr/PLAN_PR_SAMPLES_DETAIL_PAGE_ENHANCEMENT.md
+R100	dev/docs_build/pr/PLAN_PR_SAMPLES_DIRECTORY_NORMALIZATION.md	dev/build/pr/PLAN_PR_SAMPLES_DIRECTORY_NORMALIZATION.md
+R100	dev/docs_build/pr/PLAN_PR_SAMPLES_FILTER_AND_SEARCH.md	dev/build/pr/PLAN_PR_SAMPLES_FILTER_AND_SEARCH.md
+R100	dev/docs_build/pr/PLAN_PR_SAMPLES_METADATA_LAYER.md	dev/build/pr/PLAN_PR_SAMPLES_METADATA_LAYER.md
+R100	dev/docs_build/pr/PLAN_PR_SAMPLES_PREVIEW_ASSETS_AND_THUMBNAILS.md	dev/build/pr/PLAN_PR_SAMPLES_PREVIEW_ASSETS_AND_THUMBNAILS.md
+R100	dev/docs_build/pr/PLAN_PR_SHARED_EXTRACTION_02_EXECUTABLE_TARGET_MAP.md	dev/build/pr/PLAN_PR_SHARED_EXTRACTION_02_EXECUTABLE_TARGET_MAP.md
+R100	dev/docs_build/pr/PLAN_PR_SHARED_EXTRACTION_02_TARGET_MAP.md	dev/build/pr/PLAN_PR_SHARED_EXTRACTION_02_TARGET_MAP.md
+R100	dev/docs_build/pr/PLAN_PR_SHARED_EXTRACTION_03_IMPORT_NORMALIZATION.md	dev/build/pr/PLAN_PR_SHARED_EXTRACTION_03_IMPORT_NORMALIZATION.md
+R100	dev/docs_build/pr/PLAN_PR_SHARED_EXTRACTION_04_REMAINING_HELPERS.md	dev/build/pr/PLAN_PR_SHARED_EXTRACTION_04_REMAINING_HELPERS.md
+R100	dev/docs_build/pr/PLAN_PR_SHARED_EXTRACTION_GUARD_REMEDIATION.md	dev/build/pr/PLAN_PR_SHARED_EXTRACTION_GUARD_REMEDIATION.md
+R100	dev/docs_build/pr/PLAN_PR_SHARED_EXTRACTION_PREP.md	dev/build/pr/PLAN_PR_SHARED_EXTRACTION_PREP.md
+R100	dev/docs_build/pr/PLAN_PR_TEST_RUNNER_DRIFT_FIX.md	dev/build/pr/PLAN_PR_TEST_RUNNER_DRIFT_FIX.md
+R100	dev/docs_build/pr/PLAN_PR_TOOLS_SHARED_NORMALIZATION.md	dev/build/pr/PLAN_PR_TOOLS_SHARED_NORMALIZATION.md
+R100	dev/docs_build/pr/PR.md	dev/build/pr/PR.md
+R100	dev/docs_build/pr/PR_01_01_REPO_STRUCTURE_MOVE_MAP.md	dev/build/pr/PR_01_01_REPO_STRUCTURE_MOVE_MAP.md
+R100	dev/docs_build/pr/PR_01_02_REPO_STRUCTURE_APPLY.md	dev/build/pr/PR_01_02_REPO_STRUCTURE_APPLY.md
+R100	dev/docs_build/pr/PR_01_03_POST_MOVE_VALIDATION.md	dev/build/pr/PR_01_03_POST_MOVE_VALIDATION.md
+R100	dev/docs_build/pr/PR_03_01_SHARED_NUMBERS_NORMALIZATION.md	dev/build/pr/PR_03_01_SHARED_NUMBERS_NORMALIZATION.md
+R100	dev/docs_build/pr/PR_03_02_SHARED_STRINGS_EXTRACTION.md	dev/build/pr/PR_03_02_SHARED_STRINGS_EXTRACTION.md
+R100	dev/docs_build/pr/PR_03_03_SHARED_SELECTORS_CONTRACTS.md	dev/build/pr/PR_03_03_SHARED_SELECTORS_CONTRACTS.md
+R100	dev/docs_build/pr/PR_03_04_FINAL_CLEANUP_SWEEP.md	dev/build/pr/PR_03_04_FINAL_CLEANUP_SWEEP.md
+R100	dev/docs_build/pr/PR_06_06_SAMPLE_ENGINE_DEPENDENCY_CLEANUP.md	dev/build/pr/PR_06_06_SAMPLE_ENGINE_DEPENDENCY_CLEANUP.md
+R100	dev/docs_build/pr/PR_06_07_SAMPLE_LAUNCHER_FILTER_RESTORE.md	dev/build/pr/PR_06_07_SAMPLE_LAUNCHER_FILTER_RESTORE.md
+R100	dev/docs_build/pr/PR_07_01_NETWORK_PHASE_STRUCTURE_VALIDATION.md	dev/build/pr/PR_07_01_NETWORK_PHASE_STRUCTURE_VALIDATION.md
+R100	dev/docs_build/pr/PR_07_02_NETWORK_SIMULATION_BASELINE.md	dev/build/pr/PR_07_02_NETWORK_SIMULATION_BASELINE.md
+R100	dev/docs_build/pr/PR_07_03_NETWORK_LATENCY_MODELING.md	dev/build/pr/PR_07_03_NETWORK_LATENCY_MODELING.md
+R100	dev/docs_build/pr/PR_07_04_NETWORK_RECONCILIATION.md	dev/build/pr/PR_07_04_NETWORK_RECONCILIATION.md
+R100	dev/docs_build/pr/PR_07_05_NETWORK_PREDICTION.md	dev/build/pr/PR_07_05_NETWORK_PREDICTION.md
+R100	dev/docs_build/pr/PR_07_06_NETWORK_INTEGRATION_POLISH.md	dev/build/pr/PR_07_06_NETWORK_INTEGRATION_POLISH.md
+R100	dev/docs_build/pr/PR_08_01_GAMES_FLOW_STANDARDIZATION.md	dev/build/pr/PR_08_01_GAMES_FLOW_STANDARDIZATION.md
+R100	dev/docs_build/pr/PR_08_01_TOOL_SAMPLE_LINKING.md	dev/build/pr/PR_08_01_TOOL_SAMPLE_LINKING.md
+R100	dev/docs_build/pr/PR_08_02_GAMES_BOUNDARY_NORMALIZATION.md	dev/build/pr/PR_08_02_GAMES_BOUNDARY_NORMALIZATION.md
+R100	dev/docs_build/pr/PR_08_02_TOOL_SAMPLE_ROUNDTRIP.md	dev/build/pr/PR_08_02_TOOL_SAMPLE_ROUNDTRIP.md
+R100	dev/docs_build/pr/PR_08_03_GAMES_MIGRATION.md	dev/build/pr/PR_08_03_GAMES_MIGRATION.md
+R100	dev/docs_build/pr/PR_08_03_GAMES_MIGRATION_PASS.md	dev/build/pr/PR_08_03_GAMES_MIGRATION_PASS.md
+R100	dev/docs_build/pr/PR_08_03_TOOL_LIVE_PREVIEW_SYNC.md	dev/build/pr/PR_08_03_TOOL_LIVE_PREVIEW_SYNC.md
+R100	dev/docs_build/pr/PR_08_04_TOOL_STATE_BINDING.md	dev/build/pr/PR_08_04_TOOL_STATE_BINDING.md
+R100	dev/docs_build/pr/PR_26124_002_PALETTE_MANAGER_STRICT_PAYLOAD_GUARD/BUILD_PR.md	dev/build/pr/PR_26124_002_PALETTE_MANAGER_STRICT_PAYLOAD_GUARD/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_002_PALETTE_MANAGER_STRICT_PAYLOAD_GUARD/PLAN_PR.md	dev/build/pr/PR_26124_002_PALETTE_MANAGER_STRICT_PAYLOAD_GUARD/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_003_VALIDATION_SCOPE_SAMPLE_EXCLUSION/BUILD_PR.md	dev/build/pr/PR_26124_003_VALIDATION_SCOPE_SAMPLE_EXCLUSION/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_003_VALIDATION_SCOPE_SAMPLE_EXCLUSION/PLAN_PR.md	dev/build/pr/PR_26124_003_VALIDATION_SCOPE_SAMPLE_EXCLUSION/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_004_WORKSPACE_V2_LAUNCH_TOOLID_GUARD/BUILD_PR.md	dev/build/pr/PR_26124_004_WORKSPACE_V2_LAUNCH_TOOLID_GUARD/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_004_WORKSPACE_V2_LAUNCH_TOOLID_GUARD/PLAN_PR.md	dev/build/pr/PR_26124_004_WORKSPACE_V2_LAUNCH_TOOLID_GUARD/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_006_PLAYWRIGHT_CTRL_TAP_DEBUG/BUILD_PR.md	dev/build/pr/PR_26124_006_PLAYWRIGHT_CTRL_TAP_DEBUG/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_006_PLAYWRIGHT_CTRL_TAP_DEBUG/PLAN_PR.md	dev/build/pr/PR_26124_006_PLAYWRIGHT_CTRL_TAP_DEBUG/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_007_TOOL_PAYLOAD_GUARDS_GROUP/BUILD_PR.md	dev/build/pr/PR_26124_007_TOOL_PAYLOAD_GUARDS_GROUP/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_007_TOOL_PAYLOAD_GUARDS_GROUP/PLAN_PR.md	dev/build/pr/PR_26124_007_TOOL_PAYLOAD_GUARDS_GROUP/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_008_NEXT_FAIL_GROUP_FIX/BUILD_PR.md	dev/build/pr/PR_26124_008_NEXT_FAIL_GROUP_FIX/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_008_NEXT_FAIL_GROUP_FIX/PLAN_PR.md	dev/build/pr/PR_26124_008_NEXT_FAIL_GROUP_FIX/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_009_EMPTY_FAIL_BATCH_CAPTURE/BUILD_PR.md	dev/build/pr/PR_26124_009_EMPTY_FAIL_BATCH_CAPTURE/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_009_EMPTY_FAIL_BATCH_CAPTURE/PLAN_PR.md	dev/build/pr/PR_26124_009_EMPTY_FAIL_BATCH_CAPTURE/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_043-palette-manager-accordion-v2/APPLY_PR.md	dev/build/pr/PR_26124_043-palette-manager-accordion-v2/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_043-palette-manager-accordion-v2/BUILD_PR.md	dev/build/pr/PR_26124_043-palette-manager-accordion-v2/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_043-palette-manager-accordion-v2/PLAN_PR.md	dev/build/pr/PR_26124_043-palette-manager-accordion-v2/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_044-accordionv2-theme-extract/APPLY_PR.md	dev/build/pr/PR_26124_044-accordionv2-theme-extract/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_044-accordionv2-theme-extract/BUILD_PR.md	dev/build/pr/PR_26124_044-accordionv2-theme-extract/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_044-accordionv2-theme-extract/PLAN_PR.md	dev/build/pr/PR_26124_044-accordionv2-theme-extract/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/APPLY_PR.md	dev/build/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/BUILD_PR.md	dev/build/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/PLAN_PR.md	dev/build/pr/PR_26124_045-palette-manager-hidden-header-wide-layout/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_046-right-column-height-balance/APPLY_PR.md	dev/build/pr/PR_26124_046-right-column-height-balance/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_046-right-column-height-balance/BUILD_PR.md	dev/build/pr/PR_26124_046-right-column-height-balance/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_046-right-column-height-balance/PLAN_PR.md	dev/build/pr/PR_26124_046-right-column-height-balance/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_047-palette-manager-right-column-and-hex-fixes/APPLY_PR.md	dev/build/pr/PR_26124_047-palette-manager-right-column-and-hex-fixes/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_047-palette-manager-right-column-and-hex-fixes/BUILD_PR.md	dev/build/pr/PR_26124_047-palette-manager-right-column-and-hex-fixes/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_047-palette-manager-right-column-and-hex-fixes/PLAN_PR.md	dev/build/pr/PR_26124_047-palette-manager-right-column-and-hex-fixes/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_048-palette-manager-right-accordion-v2/APPLY_PR.md	dev/build/pr/PR_26124_048-palette-manager-right-accordion-v2/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_048-palette-manager-right-accordion-v2/BUILD_PR.md	dev/build/pr/PR_26124_048-palette-manager-right-accordion-v2/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_048-palette-manager-right-accordion-v2/PLAN_PR.md	dev/build/pr/PR_26124_048-palette-manager-right-accordion-v2/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_049-palette-manager-swatch-tags-and-selected-layout/APPLY_PR.md	dev/build/pr/PR_26124_049-palette-manager-swatch-tags-and-selected-layout/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_049-palette-manager-swatch-tags-and-selected-layout/BUILD_PR.md	dev/build/pr/PR_26124_049-palette-manager-swatch-tags-and-selected-layout/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_049-palette-manager-swatch-tags-and-selected-layout/PLAN_PR.md	dev/build/pr/PR_26124_049-palette-manager-swatch-tags-and-selected-layout/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_050-palette-manager-tag-entry-and-user-defined-visibility/APPLY_PR.md	dev/build/pr/PR_26124_050-palette-manager-tag-entry-and-user-defined-visibility/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_050-palette-manager-tag-entry-and-user-defined-visibility/BUILD_PR.md	dev/build/pr/PR_26124_050-palette-manager-tag-entry-and-user-defined-visibility/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_050-palette-manager-tag-entry-and-user-defined-visibility/PLAN_PR.md	dev/build/pr/PR_26124_050-palette-manager-tag-entry-and-user-defined-visibility/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_051-palette-manager-tags-accordion-and-label-cleanup/APPLY_PR.md	dev/build/pr/PR_26124_051-palette-manager-tags-accordion-and-label-cleanup/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_051-palette-manager-tags-accordion-and-label-cleanup/BUILD_PR.md	dev/build/pr/PR_26124_051-palette-manager-tags-accordion-and-label-cleanup/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_051-palette-manager-tags-accordion-and-label-cleanup/PLAN_PR.md	dev/build/pr/PR_26124_051-palette-manager-tags-accordion-and-label-cleanup/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards/APPLY_PR.md	dev/build/pr/PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards/BUILD_PR.md	dev/build/pr/PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards/PLAN_PR.md	dev/build/pr/PR_26124_052-palette-manager-tag-normalization-and-duplicate-guards/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_053-palette-manager-tag-delete-and-sort-ui/APPLY_PR.md	dev/build/pr/PR_26124_053-palette-manager-tag-delete-and-sort-ui/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_053-palette-manager-tag-delete-and-sort-ui/BUILD_PR.md	dev/build/pr/PR_26124_053-palette-manager-tag-delete-and-sort-ui/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_053-palette-manager-tag-delete-and-sort-ui/PLAN_PR.md	dev/build/pr/PR_26124_053-palette-manager-tag-delete-and-sort-ui/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_054-palette-manager-menu-json-actions-and-tag-delete-visibility/APPLY_PR.md	dev/build/pr/PR_26124_054-palette-manager-menu-json-actions-and-tag-delete-visibility/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_054-palette-manager-menu-json-actions-and-tag-delete-visibility/BUILD_PR.md	dev/build/pr/PR_26124_054-palette-manager-menu-json-actions-and-tag-delete-visibility/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_054-palette-manager-menu-json-actions-and-tag-delete-visibility/PLAN_PR.md	dev/build/pr/PR_26124_054-palette-manager-menu-json-actions-and-tag-delete-visibility/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_055-palette-manager-center-menu-actions/APPLY_PR.md	dev/build/pr/PR_26124_055-palette-manager-center-menu-actions/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_055-palette-manager-center-menu-actions/BUILD_PR.md	dev/build/pr/PR_26124_055-palette-manager-center-menu-actions/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_055-palette-manager-center-menu-actions/PLAN_PR.md	dev/build/pr/PR_26124_055-palette-manager-center-menu-actions/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_056-palette-manager-sort-toggle-direction/APPLY_PR.md	dev/build/pr/PR_26124_056-palette-manager-sort-toggle-direction/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_056-palette-manager-sort-toggle-direction/BUILD_PR.md	dev/build/pr/PR_26124_056-palette-manager-sort-toggle-direction/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_056-palette-manager-sort-toggle-direction/PLAN_PR.md	dev/build/pr/PR_26124_056-palette-manager-sort-toggle-direction/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_057-palette-manager-source-pin-all/APPLY_PR.md	dev/build/pr/PR_26124_057-palette-manager-source-pin-all/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_057-palette-manager-source-pin-all/BUILD_PR.md	dev/build/pr/PR_26124_057-palette-manager-source-pin-all/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_057-palette-manager-source-pin-all/PLAN_PR.md	dev/build/pr/PR_26124_057-palette-manager-source-pin-all/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_058-palette-manager-baseline-restore-and-hardening/APPLY_PR.md	dev/build/pr/PR_26124_058-palette-manager-baseline-restore-and-hardening/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_058-palette-manager-baseline-restore-and-hardening/BUILD_PR.md	dev/build/pr/PR_26124_058-palette-manager-baseline-restore-and-hardening/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_058-palette-manager-baseline-restore-and-hardening/PLAN_PR.md	dev/build/pr/PR_26124_058-palette-manager-baseline-restore-and-hardening/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/APPLY_PR.md	dev/build/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/BUILD_PR.md	dev/build/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/PLAN_PR.md	dev/build/pr/PR_26124_059-validation-viewer-clear-and-error-consolidation/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/APPLY_PR.md	dev/build/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/BUILD_PR.md	dev/build/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/PLAN_PR.md	dev/build/pr/PR_26124_060-palette-manager-undo-redo-and-multi-tag-select/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/APPLY_PR.md	dev/build/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/BUILD_PR.md	dev/build/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/PLAN_PR.md	dev/build/pr/PR_26124_061-palette-manager-tag-clear-undo-location-and-pin-scroll/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_063-palette-manager-tag-sort-untagged-last/APPLY_PR.md	dev/build/pr/PR_26124_063-palette-manager-tag-sort-untagged-last/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_063-palette-manager-tag-sort-untagged-last/BUILD_PR.md	dev/build/pr/PR_26124_063-palette-manager-tag-sort-untagged-last/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_063-palette-manager-tag-sort-untagged-last/PLAN_PR.md	dev/build/pr/PR_26124_063-palette-manager-tag-sort-untagged-last/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/APPLY_PR.md	dev/build/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/BUILD_PR.md	dev/build/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/PLAN_PR.md	dev/build/pr/PR_26124_064-palette-manager-source-pin-scroll-preserve/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/APPLY_PR.md	dev/build/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/BUILD_PR.md	dev/build/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/PLAN_PR.md	dev/build/pr/PR_26124_065-palette-manager-validation-clear-in-viewer/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_066-palette-manager-final-baseline-hardening/APPLY_PR.md	dev/build/pr/PR_26124_066-palette-manager-final-baseline-hardening/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_066-palette-manager-final-baseline-hardening/BUILD_PR.md	dev/build/pr/PR_26124_066-palette-manager-final-baseline-hardening/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_066-palette-manager-final-baseline-hardening/PLAN_PR.md	dev/build/pr/PR_26124_066-palette-manager-final-baseline-hardening/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_068-palette-manager-pin-style-append-only/APPLY_PR.md	dev/build/pr/PR_26124_068-palette-manager-pin-style-append-only/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_068-palette-manager-pin-style-append-only/BUILD_PR.md	dev/build/pr/PR_26124_068-palette-manager-pin-style-append-only/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_068-palette-manager-pin-style-append-only/PLAN_PR.md	dev/build/pr/PR_26124_068-palette-manager-pin-style-append-only/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_069-palette-manager-left-accordionv2-cleanup/APPLY_PR.md	dev/build/pr/PR_26124_069-palette-manager-left-accordionv2-cleanup/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_069-palette-manager-left-accordionv2-cleanup/BUILD_PR.md	dev/build/pr/PR_26124_069-palette-manager-left-accordionv2-cleanup/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_069-palette-manager-left-accordionv2-cleanup/PLAN_PR.md	dev/build/pr/PR_26124_069-palette-manager-left-accordionv2-cleanup/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_070-palette-manager-css-dead-override-cleanup/APPLY_PR.md	dev/build/pr/PR_26124_070-palette-manager-css-dead-override-cleanup/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_070-palette-manager-css-dead-override-cleanup/BUILD_PR.md	dev/build/pr/PR_26124_070-palette-manager-css-dead-override-cleanup/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_070-palette-manager-css-dead-override-cleanup/PLAN_PR.md	dev/build/pr/PR_26124_070-palette-manager-css-dead-override-cleanup/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_071-palette-manager-remove-tools-shared-shell/APPLY_PR.md	dev/build/pr/PR_26124_071-palette-manager-remove-tools-shared-shell/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_071-palette-manager-remove-tools-shared-shell/BUILD_PR.md	dev/build/pr/PR_26124_071-palette-manager-remove-tools-shared-shell/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_071-palette-manager-remove-tools-shared-shell/PLAN_PR.md	dev/build/pr/PR_26124_071-palette-manager-remove-tools-shared-shell/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_072-palette-manager-rollback-shared-removal/APPLY_PR.md	dev/build/pr/PR_26124_072-palette-manager-rollback-shared-removal/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_072-palette-manager-rollback-shared-removal/BUILD_PR.md	dev/build/pr/PR_26124_072-palette-manager-rollback-shared-removal/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_072-palette-manager-rollback-shared-removal/PLAN_PR.md	dev/build/pr/PR_26124_072-palette-manager-rollback-shared-removal/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_073-palette-manager-playwright-baseline/APPLY_PR.md	dev/build/pr/PR_26124_073-palette-manager-playwright-baseline/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_073-palette-manager-playwright-baseline/BUILD_PR.md	dev/build/pr/PR_26124_073-palette-manager-playwright-baseline/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_073-palette-manager-playwright-baseline/PLAN_PR.md	dev/build/pr/PR_26124_073-palette-manager-playwright-baseline/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_074-sample-palette-json-audit-and-fix/APPLY_PR.md	dev/build/pr/PR_26124_074-sample-palette-json-audit-and-fix/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_074-sample-palette-json-audit-and-fix/BUILD_PR.md	dev/build/pr/PR_26124_074-sample-palette-json-audit-and-fix/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_074-sample-palette-json-audit-and-fix/PLAN_PR.md	dev/build/pr/PR_26124_074-sample-palette-json-audit-and-fix/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_075-palette-browser-launch-registration-fix/APPLY_PR.md	dev/build/pr/PR_26124_075-palette-browser-launch-registration-fix/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_075-palette-browser-launch-registration-fix/BUILD_PR.md	dev/build/pr/PR_26124_075-palette-browser-launch-registration-fix/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_075-palette-browser-launch-registration-fix/PLAN_PR.md	dev/build/pr/PR_26124_075-palette-browser-launch-registration-fix/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_076-palette-manager-url-preset-load/APPLY_PR.md	dev/build/pr/PR_26124_076-palette-manager-url-preset-load/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_076-palette-manager-url-preset-load/BUILD_PR.md	dev/build/pr/PR_26124_076-palette-manager-url-preset-load/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_076-palette-manager-url-preset-load/PLAN_PR.md	dev/build/pr/PR_26124_076-palette-manager-url-preset-load/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26124_077-palette-manager-final-exit-pass/APPLY_PR.md	dev/build/pr/PR_26124_077-palette-manager-final-exit-pass/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26124_077-palette-manager-final-exit-pass/BUILD_PR.md	dev/build/pr/PR_26124_077-palette-manager-final-exit-pass/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26124_077-palette-manager-final-exit-pass/PLAN_PR.md	dev/build/pr/PR_26124_077-palette-manager-final-exit-pass/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26126_002-preview-tool-detailed-design.md	dev/build/pr/PR_26126_002-preview-tool-detailed-design.md
+R100	dev/docs_build/pr/PR_26126_003-preview-tool-layout-spec.md	dev/build/pr/PR_26126_003-preview-tool-layout-spec.md
+R100	dev/docs_build/pr/PR_26132_001-add-world-object-vector-studios.md	dev/build/pr/PR_26132_001-add-world-object-vector-studios.md
+R100	dev/docs_build/pr/PR_26132_002-object-vector-studio-v2-requirements.md	dev/build/pr/PR_26132_002-object-vector-studio-v2-requirements.md
+R100	dev/docs_build/pr/PR_26132_003-vector-studio-readme-alignment.md	dev/build/pr/PR_26132_003-vector-studio-readme-alignment.md
+R100	dev/docs_build/pr/PR_26132_004-object-vector-studio-v2-layout-shell.md	dev/build/pr/PR_26132_004-object-vector-studio-v2-layout-shell.md
+R100	dev/docs_build/pr/PR_26132_005-object-vector-studio-v2-object-system.md	dev/build/pr/PR_26132_005-object-vector-studio-v2-object-system.md
+R100	dev/docs_build/pr/PR_26132_006-object-vector-studio-v2-shape-runtime.md	dev/build/pr/PR_26132_006-object-vector-studio-v2-shape-runtime.md
+R100	dev/docs_build/pr/PR_26132_007-object-vector-studio-v2-transform-editing.md	dev/build/pr/PR_26132_007-object-vector-studio-v2-transform-editing.md
+R100	dev/docs_build/pr/PR_26132_008-object-vector-studio-v2-schema-contract.md	dev/build/pr/PR_26132_008-object-vector-studio-v2-schema-contract.md
+R100	dev/docs_build/pr/PR_26132_009-object-vector-studio-v2-schema-trim.md	dev/build/pr/PR_26132_009-object-vector-studio-v2-schema-trim.md
+R100	dev/docs_build/pr/PR_26132_010-object-vector-workspace-asteroids-assets.md	dev/build/pr/PR_26132_010-object-vector-workspace-asteroids-assets.md
+R100	dev/docs_build/pr/PR_26132_011-object-vector-view-and-audio-fixes.md	dev/build/pr/PR_26132_011-object-vector-view-and-audio-fixes.md
+R100	dev/docs_build/pr/PR_26132_012-game-fullscreen-canvas-fix.md	dev/build/pr/PR_26132_012-game-fullscreen-canvas-fix.md
+R100	dev/docs_build/pr/PR_26132_013-object-vector-studio-v2-asset-authoring.md	dev/build/pr/PR_26132_013-object-vector-studio-v2-asset-authoring.md
+R100	dev/docs_build/pr/PR_26132_014-object-vector-studio-v2-animation-states.md	dev/build/pr/PR_26132_014-object-vector-studio-v2-animation-states.md
+R100	dev/docs_build/pr/PR_26132_015-object-vector-runtime-integration.md	dev/build/pr/PR_26132_015-object-vector-runtime-integration.md
+R100	dev/docs_build/pr/PR_26132_016-object-vector-asset-library-and-inheritance.md	dev/build/pr/PR_26132_016-object-vector-asset-library-and-inheritance.md
+R100	dev/docs_build/pr/PR_26132_017-object-vector-studio-v2-ui-finish-pass.md	dev/build/pr/PR_26132_017-object-vector-studio-v2-ui-finish-pass.md
+R100	dev/docs_build/pr/PR_26132_018-object-vector-studio-v2-control-layout-cleanup.md	dev/build/pr/PR_26132_018-object-vector-studio-v2-control-layout-cleanup.md
+R100	dev/docs_build/pr/PR_26132_019-object-vector-studio-v2-simplify-controls.md	dev/build/pr/PR_26132_019-object-vector-studio-v2-simplify-controls.md
+R100	dev/docs_build/pr/PR_26132_020-object-vector-studio-v2-selection-paint-controls.md	dev/build/pr/PR_26132_020-object-vector-studio-v2-selection-paint-controls.md
+R100	dev/docs_build/pr/PR_26132_021-object-vector-studio-v2-scroll-grid-palette-fixes.md	dev/build/pr/PR_26132_021-object-vector-studio-v2-scroll-grid-palette-fixes.md
+R100	dev/docs_build/pr/PR_26132_022-object-vector-studio-v2-objects-scroll-density.md	dev/build/pr/PR_26132_022-object-vector-studio-v2-objects-scroll-density.md
+R100	dev/docs_build/pr/PR_26132_023-object-vector-studio-v2-object-panel-cleanup.md	dev/build/pr/PR_26132_023-object-vector-studio-v2-object-panel-cleanup.md
+R100	dev/docs_build/pr/PR_26146_002-midi-studio-v2-details.md	dev/build/pr/PR_26146_002-midi-studio-v2-details.md
+R100	dev/docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/APPLY_PR.md	dev/build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/BUILD_PR.md	dev/build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/PLAN_PR.md	dev/build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26171_044-idea-board-game-hub-project-flow/APPLY_PR.md	dev/build/pr/PR_26171_044-idea-board-game-hub-project-flow/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26171_044-idea-board-game-hub-project-flow/BUILD_PR.md	dev/build/pr/PR_26171_044-idea-board-game-hub-project-flow/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26171_044-idea-board-game-hub-project-flow/PLAN_PR.md	dev/build/pr/PR_26171_044-idea-board-game-hub-project-flow/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26171_069-message-tts-profile-contract-alignment/APPLY_PR.md	dev/build/pr/PR_26171_069-message-tts-profile-contract-alignment/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26171_069-message-tts-profile-contract-alignment/BUILD_PR.md	dev/build/pr/PR_26171_069-message-tts-profile-contract-alignment/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26171_069-message-tts-profile-contract-alignment/PLAN_PR.md	dev/build/pr/PR_26171_069-message-tts-profile-contract-alignment/PLAN_PR.md
+R100	dev/docs_build/pr/PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff/APPLY_PR.md	dev/build/pr/PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff/APPLY_PR.md
+R100	dev/docs_build/pr/PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff/BUILD_PR.md	dev/build/pr/PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff/BUILD_PR.md
+R100	dev/docs_build/pr/PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff/PLAN_PR.md	dev/build/pr/PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff/PLAN_PR.md
+R100	dev/docs_build/pr/PR_8.10_SAMPLE_MULTI_FILE_TOOL_PAYLOAD_ALIGNMENT.md	dev/build/pr/PR_8.10_SAMPLE_MULTI_FILE_TOOL_PAYLOAD_ALIGNMENT.md
+R100	dev/docs_build/pr/PR_8.11_SAMPLE_PALETTE_STRICT_RULE.md	dev/build/pr/PR_8.11_SAMPLE_PALETTE_STRICT_RULE.md
+R100	dev/docs_build/pr/PR_8.12_DECOUPLE_TOOL_PAYLOADS_FROM_PALETTE.md	dev/build/pr/PR_8.12_DECOUPLE_TOOL_PAYLOADS_FROM_PALETTE.md
+R100	dev/docs_build/pr/PR_8.13_PALETTE_FILE_NAMING_AND_REF_CLEANUP.md	dev/build/pr/PR_8.13_PALETTE_FILE_NAMING_AND_REF_CLEANUP.md
+R100	dev/docs_build/pr/PR_8.14_PALETTE_NAMING_NORMALIZATION.md	dev/build/pr/PR_8.14_PALETTE_NAMING_NORMALIZATION.md
+R100	dev/docs_build/pr/PR_8.15_NAMING_CONVENTION_STANDARDIZATION.md	dev/build/pr/PR_8.15_NAMING_CONVENTION_STANDARDIZATION.md
+R100	dev/docs_build/pr/PR_8.16_FIRST_CLASS_TOOL_INVENTORY_AND_REMAINING_WORK.md	dev/build/pr/PR_8.16_FIRST_CLASS_TOOL_INVENTORY_AND_REMAINING_WORK.md
+R100	dev/docs_build/pr/PR_8.1_SCHEMA_DRIVEN_VALIDATION_ONLY.md	dev/build/pr/PR_8.1_SCHEMA_DRIVEN_VALIDATION_ONLY.md
+R100	dev/docs_build/pr/PR_8.2_SCHEMA_ENFORCEMENT_SAMPLE_COMPLIANCE.md	dev/build/pr/PR_8.2_SCHEMA_ENFORCEMENT_SAMPLE_COMPLIANCE.md
+R100	dev/docs_build/pr/PR_8.3_SAMPLE_COLOR_PALETTE_GENERATION.md	dev/build/pr/PR_8.3_SAMPLE_COLOR_PALETTE_GENERATION.md
+R100	dev/docs_build/pr/PR_8.4_PALETTE_SCHEMA_SWATCHES_SYMBOL.md	dev/build/pr/PR_8.4_PALETTE_SCHEMA_SWATCHES_SYMBOL.md
+R100	dev/docs_build/pr/PR_8.5_WORKSPACE_MANIFEST_PALETTE_LINKING.md	dev/build/pr/PR_8.5_WORKSPACE_MANIFEST_PALETTE_LINKING.md
+R100	dev/docs_build/pr/PR_8.6_MANIFEST_ENTITY_GENERALIZATION.md	dev/build/pr/PR_8.6_MANIFEST_ENTITY_GENERALIZATION.md
+R100	dev/docs_build/pr/PR_8.7_WORKSPACE_SCHEMA_UPDATE.md	dev/build/pr/PR_8.7_WORKSPACE_SCHEMA_UPDATE.md
+R100	dev/docs_build/pr/PR_8.8_ENTITY_PROGRESS_DIMENSION.md	dev/build/pr/PR_8.8_ENTITY_PROGRESS_DIMENSION.md
+R061	dev/docs_build/dev/PR/README.md	dev/build/pr/README.md
+R100	dev/docs_build/pr/ROADMAP_UPDATE_TEMPLATES_EVALUATED_AND_DEFERRED_RELOCATION.md	dev/build/pr/ROADMAP_UPDATE_TEMPLATES_EVALUATED_AND_DEFERRED_RELOCATION.md
+R100	dev/docs_build/pr/_template.md	dev/build/pr/_template.md
+R100	dev/docs_build/pr/build/sample-manifest.json	dev/build/pr/build/sample-manifest.json
+R100	dev/docs_build/pr/capabilities/CAPABILITY_GAMES_FULL_FOLDER_MIGRATION_WAVE.md	dev/build/pr/capabilities/CAPABILITY_GAMES_FULL_FOLDER_MIGRATION_WAVE.md
+R100	dev/docs_build/pr/capabilities/CAPABILITY_LEVEL18_REPO_QUALITY_TRACKS.md	dev/build/pr/capabilities/CAPABILITY_LEVEL18_REPO_QUALITY_TRACKS.md
+R100	dev/docs_build/pr/capabilities/CAPABILITY_OVERLAY_DEBUG_AND_OBSERVABILITY.md	dev/build/pr/capabilities/CAPABILITY_OVERLAY_DEBUG_AND_OBSERVABILITY.md
+R100	dev/docs_build/pr/capabilities/CAPABILITY_PHASE19_TOOLCHAIN_VALIDATION.md	dev/build/pr/capabilities/CAPABILITY_PHASE19_TOOLCHAIN_VALIDATION.md
+R100	dev/docs_build/pr/capabilities/README.md	dev/build/pr/capabilities/README.md
+R100	dev/docs_build/pr/engine/BUILD_PR_SOUND_SYSTEM.md	dev/build/pr/engine/BUILD_PR_SOUND_SYSTEM.md
+R100	dev/docs_build/pr/first_class_tool_inventory_template.md	dev/build/pr/first_class_tool_inventory_template.md
+R100	dev/docs_build/pr/games/BUILD_PR_BOUNCING_BALL.md	dev/build/pr/games/BUILD_PR_BOUNCING_BALL.md
+R100	dev/docs_build/pr/games/BUILD_PR_BREAKOUT.md	dev/build/pr/games/BUILD_PR_BREAKOUT.md
+R100	dev/docs_build/pr/games/BUILD_PR_PADDLE_INTERCEPT.md	dev/build/pr/games/BUILD_PR_PADDLE_INTERCEPT.md
+R100	dev/docs_build/pr/games/BUILD_PR_PONG.md	dev/build/pr/games/BUILD_PR_PONG.md
+R100	dev/docs_build/pr/games/BUILD_PR_SOLAR_SYSTEM.md	dev/build/pr/games/BUILD_PR_SOLAR_SYSTEM.md
+R100	dev/docs_build/pr/games/BUILD_PR_SPACE_INVADERS.md	dev/build/pr/games/BUILD_PR_SPACE_INVADERS.md
+R100	dev/docs_build/pr/games/PONG.md	dev/build/pr/games/PONG.md
+R100	dev/docs_build/pr/manifest_palette_rules.md	dev/build/pr/manifest_palette_rules.md
+R100	dev/docs_build/pr/overlay/OVERLAY_DOCS_BUCKETS.md	dev/build/pr/overlay/OVERLAY_DOCS_BUCKETS.md
+R100	dev/docs_build/pr/overlay/OVERLAY_PR_CAPABILITY_BUNDLES_LEVEL_18_8.md	dev/build/pr/overlay/OVERLAY_PR_CAPABILITY_BUNDLES_LEVEL_18_8.md
+R100	dev/docs_build/pr/palette_cleanup_audit_rules.md	dev/build/pr/palette_cleanup_audit_rules.md
+A	dev/build/pr/reference/OWNER_007_BUILD_PR.md
+R063	dev/docs_build/dev/PR/reference/OWNER_007_PLAN_PR.md	dev/build/pr/reference/OWNER_007_PLAN_PR.md
+R076	dev/docs_build/dev/PR/reference/README.md	dev/build/pr/reference/README.md
+R100	dev/docs_build/dev/PR/reference/plan_pr_tool_workspace_manifest_boundaries.md	dev/build/pr/reference/plan_pr_tool_workspace_manifest_boundaries.md
+R095	dev/docs_build/dev/PR/reference/pr_koti_layout_contract.md	dev/build/pr/reference/pr_koti_layout_contract.md
+R100	dev/docs_build/dev/PR/reference/pr_tool_fix_asset_browser_1505.md	dev/build/pr/reference/pr_tool_fix_asset_browser_1505.md
+R100	dev/docs_build/dev/PR/reference/pr_tool_fix_fullscreen_exit_state.md	dev/build/pr/reference/pr_tool_fix_fullscreen_exit_state.md
+R100	dev/docs_build/dev/PR/reference/pr_tool_fix_parallax_header_metadata.md	dev/build/pr/reference/pr_tool_fix_parallax_header_metadata.md
+R100	dev/docs_build/dev/PR/reference/pr_tool_header_singleline.md	dev/build/pr/reference/pr_tool_header_singleline.md
+R100	dev/docs_build/dev/PR/reference/pr_tool_interactive_uat.md	dev/build/pr/reference/pr_tool_interactive_uat.md
+R100	dev/docs_build/dev/PR/reference/pr_tool_layout_workflow_baseline.md	dev/build/pr/reference/pr_tool_layout_workflow_baseline.md
+R100	dev/docs_build/dev/PR/reference/pr_tool_remove_future_import_hints.md	dev/build/pr/reference/pr_tool_remove_future_import_hints.md
+R100	dev/docs_build/dev/PR/reference/pr_tool_remove_static_header_intro.md	dev/build/pr/reference/pr_tool_remove_static_header_intro.md
+R100	dev/docs_build/dev/PR/reference/pr_tool_stabilization.md	dev/build/pr/reference/pr_tool_stabilization.md
+R100	dev/docs_build/dev/PR/reference/pr_tool_uat_closeout.md	dev/build/pr/reference/pr_tool_uat_closeout.md
+R100	dev/docs_build/dev/PR/reference/pr_tool_uat_fix_fullscreen_header_wiring.md	dev/build/pr/reference/pr_tool_uat_fix_fullscreen_header_wiring.md
+R100	dev/docs_build/dev/PR/reference/pr_tool_uat_fix_header_asset_browser.md	dev/build/pr/reference/pr_tool_uat_fix_header_asset_browser.md
+R100	dev/docs_build/dev/PR/reference/pr_tool_uat_fixes.md	dev/build/pr/reference/pr_tool_uat_fixes.md
+R100	dev/docs_build/pr/remaining_work_checklist.md	dev/build/pr/remaining_work_checklist.md
+R100	dev/docs_build/pr/sample_compliance_checklist.md	dev/build/pr/sample_compliance_checklist.md
+R100	dev/docs_build/pr/sample_file_naming_rules.md	dev/build/pr/sample_file_naming_rules.md
+R100	dev/docs_build/pr/sample_palette_generation_rules.md	dev/build/pr/sample_palette_generation_rules.md
+R100	dev/docs_build/pr/sample_palette_linkage_rules.md	dev/build/pr/sample_palette_linkage_rules.md
+R092	dev/docs_build/dev/PR/templates/BUILD_PR.md	dev/build/pr/templates/BUILD_PR.md
+R100	dev/docs_build/pr/templates/BUILD_PR_ULTRA_COMPACT.md	dev/build/pr/templates/BUILD_PR_ULTRA_COMPACT.md
+R100	dev/docs_build/dev/PR/templates/PLAN_PR.md	dev/build/pr/templates/PLAN_PR.md
+R100	dev/docs_build/pr/templates/PLAN_PR_COMPACT_TEMPLATE.md	dev/build/pr/templates/PLAN_PR_COMPACT_TEMPLATE.md
+R100	dev/docs_build/pr/templates/PLAN_PR_LEVEL_11_1_AUTHORITATIVE_STATE_HANDOFF_CANDIDATE_COMPACT.md	dev/build/pr/templates/PLAN_PR_LEVEL_11_1_AUTHORITATIVE_STATE_HANDOFF_CANDIDATE_COMPACT.md
+R100	dev/docs_build/dev/PR/templates/pr_capability_bundle_checklist.md	dev/build/pr/templates/pr_capability_bundle_checklist.md
+R100	dev/docs_build/pr/tool_payload_palette_boundary_rules.md	dev/build/pr/tool_payload_palette_boundary_rules.md
+R100	dev/docs_build/reference/architecture-standards/architecture/README.md	dev/build/reference/architecture-standards/architecture/README.md
+R100	dev/docs_build/reference/architecture-standards/architecture/debug-surfaces-external-integration.md	dev/build/reference/architecture-standards/architecture/debug-surfaces-external-integration.md
+R100	dev/docs_build/reference/architecture-standards/architecture/engine-api-boundary.md	dev/build/reference/architecture-standards/architecture/engine-api-boundary.md
+R100	dev/docs_build/reference/architecture-standards/architecture/engine-bootstrap.md	dev/build/reference/architecture-standards/architecture/engine-bootstrap.md
+R100	dev/docs_build/reference/architecture-standards/architecture/engine-entity.md	dev/build/reference/architecture-standards/architecture/engine-entity.md
+R100	dev/docs_build/reference/architecture-standards/architecture/engine-gamepad-input.md	dev/build/reference/architecture-standards/architecture/engine-gamepad-input.md
+R100	dev/docs_build/reference/architecture-standards/architecture/engine-input-mapping.md	dev/build/reference/architecture-standards/architecture/engine-input-mapping.md
+R100	dev/docs_build/reference/architecture-standards/architecture/engine-input.md	dev/build/reference/architecture-standards/architecture/engine-input.md
+R100	dev/docs_build/reference/architecture-standards/architecture/engine-mouse-input.md	dev/build/reference/architecture-standards/architecture/engine-mouse-input.md
+R100	dev/docs_build/reference/architecture-standards/architecture/engine-render.md	dev/build/reference/architecture-standards/architecture/engine-render.md
+R100	dev/docs_build/reference/architecture-standards/architecture/engine-scene-transitions.md	dev/build/reference/architecture-standards/architecture/engine-scene-transitions.md
+R100	dev/docs_build/reference/architecture-standards/architecture/repo-operating-model.md	dev/build/reference/architecture-standards/architecture/repo-operating-model.md
+R100	dev/docs_build/reference/architecture-standards/decisions/001-runtime-context-boundary.md	dev/build/reference/architecture-standards/decisions/001-runtime-context-boundary.md
+R100	dev/docs_build/reference/architecture-standards/specs/asset_ownership_strategy.md	dev/build/reference/architecture-standards/specs/asset_ownership_strategy.md
+R100	dev/docs_build/reference/architecture-standards/specs/asset_usage_contract.md	dev/build/reference/architecture-standards/specs/asset_usage_contract.md
+R100	dev/docs_build/reference/architecture-standards/specs/games_template_contract.md	dev/build/reference/architecture-standards/specs/games_template_contract.md
+R100	dev/docs_build/reference/architecture-standards/specs/project_manifest_contract.md	dev/build/reference/architecture-standards/specs/project_manifest_contract.md
+R100	dev/docs_build/reference/architecture-standards/specs/shared_asset_promotion_registry.json	dev/build/reference/architecture-standards/specs/shared_asset_promotion_registry.json
+R100	dev/docs_build/reference/architecture-standards/specs/tool_data_contract.md	dev/build/reference/architecture-standards/specs/tool_data_contract.md
+R100	dev/docs_build/reference/architecture-standards/specs/vector_asset_contract.md	dev/build/reference/architecture-standards/specs/vector_asset_contract.md
+R100	dev/docs_build/reference/architecture-standards/standards/README.md	dev/build/reference/architecture-standards/standards/README.md
+R100	dev/docs_build/reference/architecture-standards/standards/engine-standards.md	dev/build/reference/architecture-standards/standards/engine-standards.md
+R100	dev/docs_build/reference/features/README.md	dev/build/reference/features/README.md
+R100	dev/docs_build/reference/features/docs-system/README.md	dev/build/reference/features/docs-system/README.md
+R100	dev/docs_build/reference/features/docs-system/move-history-preserved.md	dev/build/reference/features/docs-system/move-history-preserved.md
+R100	dev/docs_build/reference/misc/samples/sample-template.md	dev/build/reference/misc/samples/sample-template.md
+R100	dev/docs_build/reference/root/README.md	dev/build/reference/root/README.md
+R100	dev/docs_build/reference/root/getting-started.md	dev/build/reference/root/getting-started.md
+R100	dev/docs_build/reference/root/performance.md	dev/build/reference/root/performance.md
+R100	dev/docs_build/reference/root/repo-directory-structure.md	dev/build/reference/root/repo-directory-structure.md
+R100	dev/docs_build/reference/root/review-checklist.md	dev/build/reference/root/review-checklist.md
+R100	dev/docs_build/release/README.md	dev/build/release/README.md
+R100	dev/docs_build/release/asteroids_showcase_controls_and_flags.md	dev/build/release/asteroids_showcase_controls_and_flags.md
+R100	dev/docs_build/release/asteroids_showcase_debug_tour.md	dev/build/release/asteroids_showcase_debug_tour.md
+R100	dev/docs_build/release/asteroids_showcase_maintainer_notes.md	dev/build/release/asteroids_showcase_maintainer_notes.md
+R100	dev/docs_build/release/asteroids_showcase_overview.md	dev/build/release/asteroids_showcase_overview.md
+R100	dev/docs_build/release/debug_showcase_getting_started.md	dev/build/release/debug_showcase_getting_started.md
+R100	dev/docs_build/release/debug_showcase_tour.md	dev/build/release/debug_showcase_tour.md
+R100	dev/docs_build/release/public_platform_showcase_overlays.txt	dev/build/release/public_platform_showcase_overlays.txt
+R100	dev/docs_build/release/public_platform_showcase_proof_checklist.md	dev/build/release/public_platform_showcase_proof_checklist.md
+R100	dev/docs_build/release/public_platform_showcase_summary.md	dev/build/release/public_platform_showcase_summary.md
+R100	dev/docs_build/release/public_platform_showcase_video_plan.md	dev/build/release/public_platform_showcase_video_plan.md
+R100	dev/docs_build/reports/APPLY_PR_ENGINE_IMPORT_BASELINE_AND_CONTRACT_VALIDATE_report.md	dev/build/reports/APPLY_PR_ENGINE_IMPORT_BASELINE_AND_CONTRACT_VALIDATE_report.md
+R100	dev/docs_build/reports/APPLY_PR_SAMPLES_DISCOVERY_DATA_AND_FINDABILITY_validation.txt	dev/build/reports/APPLY_PR_SAMPLES_DISCOVERY_DATA_AND_FINDABILITY_validation.txt
+R100	dev/docs_build/reports/BUILD_PR_ASSET_PIPELINE_CONVERTERS_report.md	dev/build/reports/BUILD_PR_ASSET_PIPELINE_CONVERTERS_report.md
+R100	dev/docs_build/reports/BUILD_PR_ASSET_PIPELINE_CONVERTERS_validation.txt	dev/build/reports/BUILD_PR_ASSET_PIPELINE_CONVERTERS_validation.txt
+R100	dev/docs_build/reports/BUILD_PR_ASSET_PIPELINE_FOUNDATION_report.md	dev/build/reports/BUILD_PR_ASSET_PIPELINE_FOUNDATION_report.md
+R100	dev/docs_build/reports/BUILD_PR_ASSET_PIPELINE_FOUNDATION_validation_checklist.txt	dev/build/reports/BUILD_PR_ASSET_PIPELINE_FOUNDATION_validation_checklist.txt
+R100	dev/docs_build/reports/BUILD_PR_ASSET_PIPELINE_VALIDATION_OUTPUT_report.md	dev/build/reports/BUILD_PR_ASSET_PIPELINE_VALIDATION_OUTPUT_report.md
+R100	dev/docs_build/reports/BUILD_PR_ASSET_PIPELINE_VALIDATION_OUTPUT_validation.txt	dev/build/reports/BUILD_PR_ASSET_PIPELINE_VALIDATION_OUTPUT_validation.txt
+R100	dev/docs_build/reports/BUILD_PR_DEBUG_INSPECTOR_TOOLS_report.md	dev/build/reports/BUILD_PR_DEBUG_INSPECTOR_TOOLS_report.md
+R100	dev/docs_build/reports/BUILD_PR_DEBUG_INSPECTOR_TOOLS_validation.txt	dev/build/reports/BUILD_PR_DEBUG_INSPECTOR_TOOLS_validation.txt
+R100	dev/docs_build/reports/BUILD_PR_ENGINE_IMPORT_BASELINE_AND_CONTRACT_report.md	dev/build/reports/BUILD_PR_ENGINE_IMPORT_BASELINE_AND_CONTRACT_report.md
+R100	dev/docs_build/reports/BUILD_PR_ENGINE_IMPORT_ENFORCE_MINIMAL_report.md	dev/build/reports/BUILD_PR_ENGINE_IMPORT_ENFORCE_MINIMAL_report.md
+R100	dev/docs_build/reports/BUILD_PR_FINAL_NON_3D_ACTIVE_LANES_AND_STATUS_CLOSEOUT_report.md	dev/build/reports/BUILD_PR_FINAL_NON_3D_ACTIVE_LANES_AND_STATUS_CLOSEOUT_report.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_03_EXACT_CLUSTER_NUMBER_STRING_ID_CLOSEOUT_report.md	dev/build/reports/BUILD_PR_LEVEL_03_EXACT_CLUSTER_NUMBER_STRING_ID_CLOSEOUT_report.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_06_SAMPLE_PHASE_TRACKS_AND_2D_SAMPLE_BUILDS_INSPECT_FIRST_report.md	dev/build/reports/BUILD_PR_LEVEL_06_SAMPLE_PHASE_TRACKS_AND_2D_SAMPLE_BUILDS_INSPECT_FIRST_report.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_15_16_LEGACY_REDUCTION_AND_DOCUMENTATION_SYSTEM_COMBINED_CLOSEOUT_report.md	dev/build/reports/BUILD_PR_LEVEL_15_16_LEGACY_REDUCTION_AND_DOCUMENTATION_SYSTEM_COMBINED_CLOSEOUT_report.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_16_1_PHASE16_NETWORK_GATE_COMPLETION_summary.md	dev/build/reports/BUILD_PR_LEVEL_16_1_PHASE16_NETWORK_GATE_COMPLETION_summary.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_16_PHASE_DESCRIPTIONS_REPO_WIDE_NORMALIZATION_report.md	dev/build/reports/BUILD_PR_LEVEL_16_PHASE_DESCRIPTIONS_REPO_WIDE_NORMALIZATION_report.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_17_23_PHASE16_VALIDATION_SWEEP_report.md	dev/build/reports/BUILD_PR_LEVEL_17_23_PHASE16_VALIDATION_SWEEP_report.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_18_10_REMOVE_SAMPLE_SPECIFIC_LOGIC_FROM_ENGINE_PATHS_report.md	dev/build/reports/BUILD_PR_LEVEL_18_10_REMOVE_SAMPLE_SPECIFIC_LOGIC_FROM_ENGINE_PATHS_report.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_18_11_TRACK_A_FINAL_CONFIRMATION_report.md	dev/build/reports/BUILD_PR_LEVEL_18_11_TRACK_A_FINAL_CONFIRMATION_report.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_18_13_TRACK_E_CSS_UI_NORMALIZATION_COMPLETION_VALIDATION.md	dev/build/reports/BUILD_PR_LEVEL_18_13_TRACK_E_CSS_UI_NORMALIZATION_COMPLETION_VALIDATION.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_18_13_TRACK_E_CSS_UI_NORMALIZATION_FOUNDATION_roadmap_status_reasoning.md	dev/build/reports/BUILD_PR_LEVEL_18_13_TRACK_E_CSS_UI_NORMALIZATION_FOUNDATION_roadmap_status_reasoning.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_18_13_TRACK_E_CSS_UI_NORMALIZATION_FOUNDATION_scope.md	dev/build/reports/BUILD_PR_LEVEL_18_13_TRACK_E_CSS_UI_NORMALIZATION_FOUNDATION_scope.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_18_13_TRACK_E_CSS_UI_NORMALIZATION_FOUNDATION_touched_files.md	dev/build/reports/BUILD_PR_LEVEL_18_13_TRACK_E_CSS_UI_NORMALIZATION_FOUNDATION_touched_files.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_18_13_TRACK_E_CSS_UI_NORMALIZATION_FOUNDATION_validation.md	dev/build/reports/BUILD_PR_LEVEL_18_13_TRACK_E_CSS_UI_NORMALIZATION_FOUNDATION_validation.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_18_15_TRACK_F_DOCS_SYSTEM_CLASSIFICATION_FOUNDATION_VALIDATION.md	dev/build/reports/BUILD_PR_LEVEL_18_15_TRACK_F_DOCS_SYSTEM_CLASSIFICATION_FOUNDATION_VALIDATION.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_18_1_ENGINE_USAGE_ENFORCEMENT_COMPLETION_report.md	dev/build/reports/BUILD_PR_LEVEL_18_1_ENGINE_USAGE_ENFORCEMENT_COMPLETION_report.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_18_2_BOUNDARY_HARDENING_ENFORCEMENT_report.md	dev/build/reports/BUILD_PR_LEVEL_18_2_BOUNDARY_HARDENING_ENFORCEMENT_report.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_18_2_REMOVE_SAMPLE_LOGIC_FROM_ENGINE_summary.md	dev/build/reports/BUILD_PR_LEVEL_18_2_REMOVE_SAMPLE_LOGIC_FROM_ENGINE_summary.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_18_3_GAME_TO_SAMPLE_RECLASSIFICATION_RECOMMENDATIONS_matrix.md	dev/build/reports/BUILD_PR_LEVEL_18_3_GAME_TO_SAMPLE_RECLASSIFICATION_RECOMMENDATIONS_matrix.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_18_4_GAME_TO_SAMPLE_RECLASSIFICATION_EXECUTION_summary.md	dev/build/reports/BUILD_PR_LEVEL_18_4_GAME_TO_SAMPLE_RECLASSIFICATION_EXECUTION_summary.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_18_4_GAME_TO_SAMPLE_RECLASSIFICATION_EXECUTION_validation.md	dev/build/reports/BUILD_PR_LEVEL_18_4_GAME_TO_SAMPLE_RECLASSIFICATION_EXECUTION_validation.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_18_5_CONTRACT_STABILIZATION_PROGRESS_report.md	dev/build/reports/BUILD_PR_LEVEL_18_5_CONTRACT_STABILIZATION_PROGRESS_report.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_18_6_PHASE18_VALIDATION_SWEEP_report.md	dev/build/reports/BUILD_PR_LEVEL_18_6_PHASE18_VALIDATION_SWEEP_report.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_18_6_SELECTOR_PROVIDER_STABILITY_ENFORCEMENT_report.md	dev/build/reports/BUILD_PR_LEVEL_18_6_SELECTOR_PROVIDER_STABILITY_ENFORCEMENT_report.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_18_7_UNSTABLE_SURFACE_REMOVAL_OR_ISOLATION_report.md	dev/build/reports/BUILD_PR_LEVEL_18_7_UNSTABLE_SURFACE_REMOVAL_OR_ISOLATION_report.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_18_9_TRACK_C_FINALIZATION_report.md	dev/build/reports/BUILD_PR_LEVEL_18_9_TRACK_C_FINALIZATION_report.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_10_VALIDATE_PACMAN_RENAME_AND_TESTS_summary.md	dev/build/reports/BUILD_PR_LEVEL_19_10_VALIDATE_PACMAN_RENAME_AND_TESTS_summary.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_11_FULL_VALIDATION_AND_PROMOTION_summary.md	dev/build/reports/BUILD_PR_LEVEL_19_11_FULL_VALIDATION_AND_PROMOTION_summary.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_12_REVALIDATE_AND_PROMOTE.md	dev/build/reports/BUILD_PR_LEVEL_19_12_REVALIDATE_AND_PROMOTE.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_12_REVALIDATE_AND_PROMOTE_summary.md	dev/build/reports/BUILD_PR_LEVEL_19_12_REVALIDATE_AND_PROMOTE_summary.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_13_RUNTIME_LIFECYCLE_VALIDATION_coverage.md	dev/build/reports/BUILD_PR_LEVEL_19_13_RUNTIME_LIFECYCLE_VALIDATION_coverage.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_13_RUNTIME_LIFECYCLE_VALIDATION_results.md	dev/build/reports/BUILD_PR_LEVEL_19_13_RUNTIME_LIFECYCLE_VALIDATION_results.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_13_RUNTIME_LIFECYCLE_VALIDATION_summary.md	dev/build/reports/BUILD_PR_LEVEL_19_13_RUNTIME_LIFECYCLE_VALIDATION_summary.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_14_TEST_COMMAND_DEDUP_summary.md	dev/build/reports/BUILD_PR_LEVEL_19_14_TEST_COMMAND_DEDUP_summary.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_15_DEBUG_OBSERVABILITY_VALIDATION_coverage.md	dev/build/reports/BUILD_PR_LEVEL_19_15_DEBUG_OBSERVABILITY_VALIDATION_coverage.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_15_DEBUG_OBSERVABILITY_VALIDATION_results.md	dev/build/reports/BUILD_PR_LEVEL_19_15_DEBUG_OBSERVABILITY_VALIDATION_results.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_15_DEBUG_OBSERVABILITY_VALIDATION_summary.md	dev/build/reports/BUILD_PR_LEVEL_19_15_DEBUG_OBSERVABILITY_VALIDATION_summary.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_16_TOOLCHAIN_ENGINE_INTEGRATION_VALIDATION_coverage.md	dev/build/reports/BUILD_PR_LEVEL_19_16_TOOLCHAIN_ENGINE_INTEGRATION_VALIDATION_coverage.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_16_TOOLCHAIN_ENGINE_INTEGRATION_VALIDATION_results.md	dev/build/reports/BUILD_PR_LEVEL_19_16_TOOLCHAIN_ENGINE_INTEGRATION_VALIDATION_results.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_16_TOOLCHAIN_ENGINE_INTEGRATION_VALIDATION_summary.md	dev/build/reports/BUILD_PR_LEVEL_19_16_TOOLCHAIN_ENGINE_INTEGRATION_VALIDATION_summary.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_17_TOOLCHAIN_PIPELINE_VALIDATION_coverage.md	dev/build/reports/BUILD_PR_LEVEL_19_17_TOOLCHAIN_PIPELINE_VALIDATION_coverage.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_17_TOOLCHAIN_PIPELINE_VALIDATION_results.md	dev/build/reports/BUILD_PR_LEVEL_19_17_TOOLCHAIN_PIPELINE_VALIDATION_results.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_17_TOOLCHAIN_PIPELINE_VALIDATION_summary.md	dev/build/reports/BUILD_PR_LEVEL_19_17_TOOLCHAIN_PIPELINE_VALIDATION_summary.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_19_TOOLCHAIN_EDITOR_RUNTIME_CONSISTENCY_VALIDATION_coverage.md	dev/build/reports/BUILD_PR_LEVEL_19_19_TOOLCHAIN_EDITOR_RUNTIME_CONSISTENCY_VALIDATION_coverage.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_19_TOOLCHAIN_EDITOR_RUNTIME_CONSISTENCY_VALIDATION_results.md	dev/build/reports/BUILD_PR_LEVEL_19_19_TOOLCHAIN_EDITOR_RUNTIME_CONSISTENCY_VALIDATION_results.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_19_TOOLCHAIN_EDITOR_RUNTIME_CONSISTENCY_VALIDATION_summary.md	dev/build/reports/BUILD_PR_LEVEL_19_19_TOOLCHAIN_EDITOR_RUNTIME_CONSISTENCY_VALIDATION_summary.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_1_SYSTEM_INTEGRATION_VALIDATION_report.md	dev/build/reports/BUILD_PR_LEVEL_19_1_SYSTEM_INTEGRATION_VALIDATION_report.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_20_TOOLCHAIN_ROADMAP_GUARD_ENFORCEMENT_coverage.md	dev/build/reports/BUILD_PR_LEVEL_19_20_TOOLCHAIN_ROADMAP_GUARD_ENFORCEMENT_coverage.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_20_TOOLCHAIN_ROADMAP_GUARD_ENFORCEMENT_results.md	dev/build/reports/BUILD_PR_LEVEL_19_20_TOOLCHAIN_ROADMAP_GUARD_ENFORCEMENT_results.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_20_TOOLCHAIN_ROADMAP_GUARD_ENFORCEMENT_summary.md	dev/build/reports/BUILD_PR_LEVEL_19_20_TOOLCHAIN_ROADMAP_GUARD_ENFORCEMENT_summary.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_21_PROJECT_INSTRUCTIONS_ROADMAP_GUARD_EMBED_validation.md	dev/build/reports/BUILD_PR_LEVEL_19_21_PROJECT_INSTRUCTIONS_ROADMAP_GUARD_EMBED_validation.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_22_TOOLCHAIN_VALIDATION_SUMMARY_GATE_summary.md	dev/build/reports/BUILD_PR_LEVEL_19_22_TOOLCHAIN_VALIDATION_SUMMARY_GATE_summary.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_23_ENGINE_TOOL_BOUNDARY_LEAK_VALIDATION_report.md	dev/build/reports/BUILD_PR_LEVEL_19_23_ENGINE_TOOL_BOUNDARY_LEAK_VALIDATION_report.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_24_ENGINE_TOOL_LEAK_REMEDIATION_GATE_report.md	dev/build/reports/BUILD_PR_LEVEL_19_24_ENGINE_TOOL_LEAK_REMEDIATION_GATE_report.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_25_ENGINE_TOOL_BOUNDARY_FINAL_CONFIRMATION_report.md	dev/build/reports/BUILD_PR_LEVEL_19_25_ENGINE_TOOL_BOUNDARY_FINAL_CONFIRMATION_report.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_2_RUNTIME_LIFECYCLE_VALIDATION_report.md	dev/build/reports/BUILD_PR_LEVEL_19_2_RUNTIME_LIFECYCLE_VALIDATION_report.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_3_PERFORMANCE_SCALING_VALIDATION_metrics.json	dev/build/reports/BUILD_PR_LEVEL_19_3_PERFORMANCE_SCALING_VALIDATION_metrics.json
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_3_PERFORMANCE_SCALING_VALIDATION_report.md	dev/build/reports/BUILD_PR_LEVEL_19_3_PERFORMANCE_SCALING_VALIDATION_report.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_4_PERFORMANCE_SCALING_ROADMAP_PROMOTION_summary.md	dev/build/reports/BUILD_PR_LEVEL_19_4_PERFORMANCE_SCALING_ROADMAP_PROMOTION_summary.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_4_PERFORMANCE_SCALING_ROADMAP_PROMOTION_validation_blockers.md	dev/build/reports/BUILD_PR_LEVEL_19_4_PERFORMANCE_SCALING_ROADMAP_PROMOTION_validation_blockers.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_5_VALIDATION_BLOCKERS_ALIGNMENT_blockers.md	dev/build/reports/BUILD_PR_LEVEL_19_5_VALIDATION_BLOCKERS_ALIGNMENT_blockers.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_6_SAMPLE_VALIDATION_PROGRESS_summary.md	dev/build/reports/BUILD_PR_LEVEL_19_6_SAMPLE_VALIDATION_PROGRESS_summary.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_7_FIX_SAMPLE_PHASE_EXPECTATION_summary.md	dev/build/reports/BUILD_PR_LEVEL_19_7_FIX_SAMPLE_PHASE_EXPECTATION_summary.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_8_FIX_SHARED_EXTRACTION_GUARD_BASELINE_summary.md	dev/build/reports/BUILD_PR_LEVEL_19_8_FIX_SHARED_EXTRACTION_GUARD_BASELINE_summary.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_19_9_RENAME_PUCKMAN_TO_PACMAN_summary.md	dev/build/reports/BUILD_PR_LEVEL_19_9_RENAME_PUCKMAN_TO_PACMAN_summary.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_20_1_RELEASE_READINESS_DEFINITION_checklist.md	dev/build/reports/BUILD_PR_LEVEL_20_1_RELEASE_READINESS_DEFINITION_checklist.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_20_1_TRACK_A_RELEASE_READINESS_EXECUTION_validation.md	dev/build/reports/BUILD_PR_LEVEL_20_1_TRACK_A_RELEASE_READINESS_EXECUTION_validation.md
+R100	dev/docs_build/reports/BUILD_PR_LEVEL_20_3_TRACK_B_STABILITY_MONITORING_EXECUTION_validation.md	dev/build/reports/BUILD_PR_LEVEL_20_3_TRACK_B_STABILITY_MONITORING_EXECUTION_validation.md
+R100	dev/docs_build/reports/BUILD_PR_PROJECT_TOOL_INTEGRATION_report.md	dev/build/reports/BUILD_PR_PROJECT_TOOL_INTEGRATION_report.md
+R100	dev/docs_build/reports/BUILD_PR_REMAINING_NON_3D_VALIDATE_OR_CLOSEOUT_COMBINED_report.md	dev/build/reports/BUILD_PR_REMAINING_NON_3D_VALIDATE_OR_CLOSEOUT_COMBINED_report.md
+R100	dev/docs_build/reports/BUILD_PR_REMAINING_ROADMAP_VALIDATE_OR_CLOSEOUT_COMBINED_report.md	dev/build/reports/BUILD_PR_REMAINING_ROADMAP_VALIDATE_OR_CLOSEOUT_COMBINED_report.md
+R100	dev/docs_build/reports/BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE_report.md	dev/build/reports/BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE_report.md
+R100	dev/docs_build/reports/BUILD_PR_RULE_EXTRACTION_AND_FINAL_NON_3D_CLOSEOUT_report.md	dev/build/reports/BUILD_PR_RULE_EXTRACTION_AND_FINAL_NON_3D_CLOSEOUT_report.md
+R100	dev/docs_build/reports/BUILD_PR_SAMPLES_BROWSE_VISUALS_AND_NAVIGATION_validation.txt	dev/build/reports/BUILD_PR_SAMPLES_BROWSE_VISUALS_AND_NAVIGATION_validation.txt
+R100	dev/docs_build/reports/BUILD_PR_SAMPLES_DISCOVERY_DATA_AND_FINDABILITY_validation.txt	dev/build/reports/BUILD_PR_SAMPLES_DISCOVERY_DATA_AND_FINDABILITY_validation.txt
+R100	dev/docs_build/reports/BUILD_PR_SAMPLES_INDEX_AUTOGENERATION_validation.txt	dev/build/reports/BUILD_PR_SAMPLES_INDEX_AUTOGENERATION_validation.txt
+R100	dev/docs_build/reports/BUILD_PR_SAMPLES_INDEX_PERFORMANCE_AND_PERSONALIZATION_validation.txt	dev/build/reports/BUILD_PR_SAMPLES_INDEX_PERFORMANCE_AND_PERSONALIZATION_validation.txt
+R100	dev/docs_build/reports/BUILD_PR_SAMPLES_METADATA_LAYER_validation.txt	dev/build/reports/BUILD_PR_SAMPLES_METADATA_LAYER_validation.txt
+R100	dev/docs_build/reports/BUILD_PR_SAMPLES_PRESENTATION_PREVIEW_AND_METADATA_NORMALIZATION_validation.txt	dev/build/reports/BUILD_PR_SAMPLES_PRESENTATION_PREVIEW_AND_METADATA_NORMALIZATION_validation.txt
+R100	dev/docs_build/reports/BUILD_PR_SAMPLES_RUNTIME_PREVIEW_SVG_CAPTURE_validation.json	dev/build/reports/BUILD_PR_SAMPLES_RUNTIME_PREVIEW_SVG_CAPTURE_validation.json
+R100	dev/docs_build/reports/BUILD_PR_SAMPLES_RUNTIME_PREVIEW_SVG_CAPTURE_validation.txt	dev/build/reports/BUILD_PR_SAMPLES_RUNTIME_PREVIEW_SVG_CAPTURE_validation.txt
+R100	dev/docs_build/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_1_report.md	dev/build/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_1_report.md
+R100	dev/docs_build/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_3_ARCHIVED_NOTES_POLICY_report.md	dev/build/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_3_ARCHIVED_NOTES_POLICY_report.md
+R100	dev/docs_build/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_5_CLASSES_OLD_KEEP_POLICY_PS_FIRST_report.md	dev/build/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_5_CLASSES_OLD_KEEP_POLICY_PS_FIRST_report.md
+R100	dev/docs_build/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_6_CLASSES_OLD_KEEP_REFERENCE_NORMALIZATION_report.md	dev/build/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_6_CLASSES_OLD_KEEP_REFERENCE_NORMALIZATION_report.md
+R100	dev/docs_build/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_8_REMOVE_CLASSES_OLD_KEEP_REFERENCES_report.md	dev/build/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_8_REMOVE_CLASSES_OLD_KEEP_REFERENCES_report.md
+R100	dev/docs_build/reports/BUILD_PR_TEMPLATES_POLICY_CLASSIFICATION_report.md	dev/build/reports/BUILD_PR_TEMPLATES_POLICY_CLASSIFICATION_report.md
+R100	dev/docs_build/reports/BUILD_PR_TOOLS_SHARED_EXTRACTION_PHASE_1_changes.md	dev/build/reports/BUILD_PR_TOOLS_SHARED_EXTRACTION_PHASE_1_changes.md
+R100	dev/docs_build/reports/BUILD_PR_TOOLS_SHARED_EXTRACTION_PHASE_1_validation.md	dev/build/reports/BUILD_PR_TOOLS_SHARED_EXTRACTION_PHASE_1_validation.md
+R100	dev/docs_build/reports/BUILD_PR_TOOLS_SHARED_EXTRACTION_PHASE_1_validation_checklist.txt	dev/build/reports/BUILD_PR_TOOLS_SHARED_EXTRACTION_PHASE_1_validation_checklist.txt
+R100	dev/docs_build/reports/BUILD_PR_TOOLS_SHARED_EXTRACTION_PHASE_2_changes.md	dev/build/reports/BUILD_PR_TOOLS_SHARED_EXTRACTION_PHASE_2_changes.md
+R100	dev/docs_build/reports/BUILD_PR_TOOLS_SHARED_EXTRACTION_PHASE_2_validation.md	dev/build/reports/BUILD_PR_TOOLS_SHARED_EXTRACTION_PHASE_2_validation.md
+R100	dev/docs_build/reports/BUILD_PR_TOOLS_THEME_REUSE_BASELINE_changes.md	dev/build/reports/BUILD_PR_TOOLS_THEME_REUSE_BASELINE_changes.md
+R100	dev/docs_build/reports/BUILD_PR_TOOLS_THEME_REUSE_BASELINE_validation.md	dev/build/reports/BUILD_PR_TOOLS_THEME_REUSE_BASELINE_validation.md
+R100	dev/docs_build/reports/BUILD_PR_TOOL_HOST_FOUNDATION_report.md	dev/build/reports/BUILD_PR_TOOL_HOST_FOUNDATION_report.md
+R100	dev/docs_build/reports/BUILD_PR_TOOL_HOST_FOUNDATION_validation_checklist.txt	dev/build/reports/BUILD_PR_TOOL_HOST_FOUNDATION_validation_checklist.txt
+R100	dev/docs_build/reports/BUILD_PR_TOOL_HOST_MULTI_SWITCH_report.md	dev/build/reports/BUILD_PR_TOOL_HOST_MULTI_SWITCH_report.md
+R100	dev/docs_build/reports/BUILD_PR_TOOL_HOST_STATE_HANDOFF_report.md	dev/build/reports/BUILD_PR_TOOL_HOST_STATE_HANDOFF_report.md
+R100	dev/docs_build/reports/BUILD_PR_TRACK_G_NETWORK_MULTIPLAYER_DEBUG_CLOSEOUT_report.md	dev/build/reports/BUILD_PR_TRACK_G_NETWORK_MULTIPLAYER_DEBUG_CLOSEOUT_report.md
+R100	dev/docs_build/reports/ENGINE_BASELINE_STABILITY_VALIDATION_2026-04-15.md	dev/build/reports/ENGINE_BASELINE_STABILITY_VALIDATION_2026-04-15.md
+R100	dev/docs_build/reports/PLAN_PR_LEVEL_19_12_COMPLETE_REMAINING_18_19_inventory.md	dev/build/reports/PLAN_PR_LEVEL_19_12_COMPLETE_REMAINING_18_19_inventory.md
+R100	dev/docs_build/reports/PLAN_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE_report.md	dev/build/reports/PLAN_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE_report.md
+R100	dev/docs_build/reports/README.md	dev/build/reports/README.md
+R100	dev/docs_build/reports/archived_notes_policy_decision.md	dev/build/reports/archived_notes_policy_decision.md
+R100	dev/docs_build/reports/archived_notes_policy_inventory.md	dev/build/reports/archived_notes_policy_inventory.md
+R100	dev/docs_build/reports/archived_notes_validation_guard.md	dev/build/reports/archived_notes_validation_guard.md
+R100	dev/docs_build/reports/asset_ownership_strategy_validation.txt	dev/build/reports/asset_ownership_strategy_validation.txt
+R100	dev/docs_build/reports/asset_pipeline_converters_targets.txt	dev/build/reports/asset_pipeline_converters_targets.txt
+R100	dev/docs_build/reports/asset_pipeline_foundation_read_set.txt	dev/build/reports/asset_pipeline_foundation_read_set.txt
+R100	dev/docs_build/reports/asset_pipeline_foundation_targets.txt	dev/build/reports/asset_pipeline_foundation_targets.txt
+R100	dev/docs_build/reports/asset_pipeline_validation_output_targets.txt	dev/build/reports/asset_pipeline_validation_output_targets.txt
+R100	dev/docs_build/reports/boot_contract_targets.txt	dev/build/reports/boot_contract_targets.txt
+R100	dev/docs_build/reports/boundary_model.txt	dev/build/reports/boundary_model.txt
+R100	dev/docs_build/reports/boundary_rules.md	dev/build/reports/boundary_rules.md
+R100	dev/docs_build/reports/change_summary.txt	dev/build/reports/change_summary.txt
+R100	dev/docs_build/reports/classes_old_keep_cleanup_recommendation.md	dev/build/reports/classes_old_keep_cleanup_recommendation.md
+R100	dev/docs_build/reports/classes_old_keep_final_decision_report.md	dev/build/reports/classes_old_keep_final_decision_report.md
+R100	dev/docs_build/reports/classes_old_keep_final_decision_validation.md	dev/build/reports/classes_old_keep_final_decision_validation.md
+R100	dev/docs_build/reports/classes_old_keep_normalization_report.md	dev/build/reports/classes_old_keep_normalization_report.md
+R100	dev/docs_build/reports/classes_old_keep_policy_decision.md	dev/build/reports/classes_old_keep_policy_decision.md
+R100	dev/docs_build/reports/classes_old_keep_policy_inventory.md	dev/build/reports/classes_old_keep_policy_inventory.md
+R100	dev/docs_build/reports/classes_old_keep_removal_change_log.md	dev/build/reports/classes_old_keep_removal_change_log.md
+R100	dev/docs_build/reports/classes_old_keep_validation_guard.md	dev/build/reports/classes_old_keep_validation_guard.md
+R100	dev/docs_build/reports/cleanup_execution_guard.md	dev/build/reports/cleanup_execution_guard.md
+R100	dev/docs_build/reports/cleanup_live_reference_inventory.txt	dev/build/reports/cleanup_live_reference_inventory.txt
+R100	dev/docs_build/reports/cleanup_target_enforcement_map.md	dev/build/reports/cleanup_target_enforcement_map.md
+R100	dev/docs_build/reports/cleanup_target_normalization_report.md	dev/build/reports/cleanup_target_normalization_report.md
+R100	dev/docs_build/reports/contract_map.txt	dev/build/reports/contract_map.txt
+R100	dev/docs_build/reports/debug_inspector_tools_targets.txt	dev/build/reports/debug_inspector_tools_targets.txt
+R100	dev/docs_build/reports/dependency_cleanup_map.txt	dev/build/reports/dependency_cleanup_map.txt
+R100	dev/docs_build/reports/docs_bucket_rules.md	dev/build/reports/docs_bucket_rules.md
+R100	dev/docs_build/reports/docs_classification_matrix.md	dev/build/reports/docs_classification_matrix.md
+R100	dev/docs_build/reports/docs_inventory_tree.txt	dev/build/reports/docs_inventory_tree.txt
+R100	dev/docs_build/reports/docs_move_map_proposed.md	dev/build/reports/docs_move_map_proposed.md
+R100	dev/docs_build/reports/duplication_candidates.txt	dev/build/reports/duplication_candidates.txt
+R100	dev/docs_build/reports/engine_import_baseline_report.md	dev/build/reports/engine_import_baseline_report.md
+R100	dev/docs_build/reports/engine_import_contract_decision.md	dev/build/reports/engine_import_contract_decision.md
+R100	dev/docs_build/reports/engine_import_usage.txt	dev/build/reports/engine_import_usage.txt
+R100	dev/docs_build/reports/execution_notes_windows_safe.txt	dev/build/reports/execution_notes_windows_safe.txt
+R100	dev/docs_build/reports/extraction_map.txt	dev/build/reports/extraction_map.txt
+R100	dev/docs_build/reports/file_inventory_snapshot.txt	dev/build/reports/file_inventory_snapshot.txt
+R100	dev/docs_build/reports/file_tree.txt	dev/build/reports/file_tree.txt
+R100	dev/docs_build/reports/file_tree_delta.txt	dev/build/reports/file_tree_delta.txt
+R100	dev/docs_build/reports/file_tree_snapshot.txt	dev/build/reports/file_tree_snapshot.txt
+R100	dev/docs_build/reports/flow_contract.txt	dev/build/reports/flow_contract.txt
+R100	dev/docs_build/reports/games_template_contract_validation.txt	dev/build/reports/games_template_contract_validation.txt
+R100	dev/docs_build/reports/helper_consolidation_map.txt	dev/build/reports/helper_consolidation_map.txt
+R100	dev/docs_build/reports/import_export_resolution_summary.txt	dev/build/reports/import_export_resolution_summary.txt
+R100	dev/docs_build/reports/launch_smoke_report.md	dev/build/reports/launch_smoke_report.md
+R100	dev/docs_build/reports/launcher_filter_fix_map.txt	dev/build/reports/launcher_filter_fix_map.txt
+R100	dev/docs_build/reports/launcher_filter_regression_scan.txt	dev/build/reports/launcher_filter_regression_scan.txt
+R100	dev/docs_build/reports/legacy_import_guard_report.md	dev/build/reports/legacy_import_guard_report.md
+R100	dev/docs_build/reports/live_sync_model.txt	dev/build/reports/live_sync_model.txt
+R100	dev/docs_build/reports/naming_normalization_summary.txt	dev/build/reports/naming_normalization_summary.txt
+R100	dev/docs_build/reports/number_usage_scan.txt	dev/build/reports/number_usage_scan.txt
+R100	dev/docs_build/reports/orphan_scan.txt	dev/build/reports/orphan_scan.txt
+R100	dev/docs_build/reports/overlay/BUILD_PR_LEVEL_18_7_REPO_HYGIENE_OVERLAY_SLICE_report.txt	dev/build/reports/overlay/BUILD_PR_LEVEL_18_7_REPO_HYGIENE_OVERLAY_SLICE_report.txt
+R100	dev/docs_build/reports/overlay/README.md	dev/build/reports/overlay/README.md
+R100	dev/docs_build/reports/overlay/STRUCTURE_LEVEL_18_6.txt	dev/build/reports/overlay/STRUCTURE_LEVEL_18_6.txt
+R100	dev/docs_build/reports/overlay/level-17/BUILD_PR_LEVEL_17_59_DEBUG_OVERLAY_PROMOTE_BASELINE_report.md	dev/build/reports/overlay/level-17/BUILD_PR_LEVEL_17_59_DEBUG_OVERLAY_PROMOTE_BASELINE_report.md
+R100	dev/docs_build/reports/overlay/level-17/BUILD_PR_LEVEL_17_61_OVERLAY_SYSTEM_VALIDATION_SWEEP.md	dev/build/reports/overlay/level-17/BUILD_PR_LEVEL_17_61_OVERLAY_SYSTEM_VALIDATION_SWEEP.md
+R100	dev/docs_build/reports/overlay/level-17/LEVEL17_OVERLAY_VALIDATION_SWEEP_2026-04-16.txt	dev/build/reports/overlay/level-17/LEVEL17_OVERLAY_VALIDATION_SWEEP_2026-04-16.txt
+R100	dev/docs_build/reports/overlay/level-19/BUILD_PR_LEVEL_19_1_OVERLAY_SYSTEM_EXPANSION_FRAMEWORK_report.md	dev/build/reports/overlay/level-19/BUILD_PR_LEVEL_19_1_OVERLAY_SYSTEM_EXPANSION_FRAMEWORK_report.md
+R100	dev/docs_build/reports/overlay/level-19/BUILD_PR_LEVEL_19_2_OVERLAY_GAMEPLAY_RUNTIME_INTEGRATION_report.md	dev/build/reports/overlay/level-19/BUILD_PR_LEVEL_19_2_OVERLAY_GAMEPLAY_RUNTIME_INTEGRATION_report.md
+R100	dev/docs_build/reports/overlay/level-19/BUILD_PR_LEVEL_19_3_OVERLAY_INTERACTION_CONTROLS_report.md	dev/build/reports/overlay/level-19/BUILD_PR_LEVEL_19_3_OVERLAY_INTERACTION_CONTROLS_report.md
+R100	dev/docs_build/reports/overlay/level-19/BUILD_PR_LEVEL_19_4_OVERLAY_FOCUS_AND_INPUT_PRIORITY_report.md	dev/build/reports/overlay/level-19/BUILD_PR_LEVEL_19_4_OVERLAY_FOCUS_AND_INPUT_PRIORITY_report.md
+R100	dev/docs_build/reports/overlay/level-19/BUILD_PR_LEVEL_19_5_OVERLAY_INPUT_EDGE_CASES_report.md	dev/build/reports/overlay/level-19/BUILD_PR_LEVEL_19_5_OVERLAY_INPUT_EDGE_CASES_report.md
+R100	dev/docs_build/reports/overlay/level-19/BUILD_PR_LEVEL_19_6_OVERLAY_MULTI_LAYER_COMPOSITION_report.md	dev/build/reports/overlay/level-19/BUILD_PR_LEVEL_19_6_OVERLAY_MULTI_LAYER_COMPOSITION_report.md
+R100	dev/docs_build/reports/phase13_structure_validation.txt	dev/build/reports/phase13_structure_validation.txt
+R100	dev/docs_build/reports/phase_08_status_correction.txt	dev/build/reports/phase_08_status_correction.txt
+R100	dev/docs_build/reports/project_tool_integration_targets.txt	dev/build/reports/project_tool_integration_targets.txt
+R100	dev/docs_build/reports/puckman_boundary_model.txt	dev/build/reports/puckman_boundary_model.txt
+R100	dev/docs_build/reports/repo_cleanup_targets.txt	dev/build/reports/repo_cleanup_targets.txt
+R100	dev/docs_build/reports/roadmap_patch_level_18_track_a.md	dev/build/reports/roadmap_patch_level_18_track_a.md
+R100	dev/docs_build/reports/roadmap_patch_level_19_full.md	dev/build/reports/roadmap_patch_level_19_full.md
+R100	dev/docs_build/reports/roadmap_patch_level_19_track_a.md	dev/build/reports/roadmap_patch_level_19_track_a.md
+R100	dev/docs_build/reports/roadmap_patch_level_19_track_f.md	dev/build/reports/roadmap_patch_level_19_track_f.md
+R100	dev/docs_build/reports/roadmap_status_delta.txt	dev/build/reports/roadmap_status_delta.txt
+R100	dev/docs_build/reports/roadmap_status_patch_Level_19_Track_C.md	dev/build/reports/roadmap_status_patch_Level_19_Track_C.md
+R100	dev/docs_build/reports/roadmap_status_update.txt	dev/build/reports/roadmap_status_update.txt
+R100	dev/docs_build/reports/roadmap_status_update_instructions.txt	dev/build/reports/roadmap_status_update_instructions.txt
+R100	dev/docs_build/reports/root_cause_notes.txt	dev/build/reports/root_cause_notes.txt
+R100	dev/docs_build/reports/roundtrip_validation.txt	dev/build/reports/roundtrip_validation.txt
+R100	dev/docs_build/reports/sample_dependency_scan.txt	dev/build/reports/sample_dependency_scan.txt
+R100	dev/docs_build/reports/samples_directory_normalization_mapping_expectations.txt	dev/build/reports/samples_directory_normalization_mapping_expectations.txt
+R100	dev/docs_build/reports/selector_usage_scan.txt	dev/build/reports/selector_usage_scan.txt
+R100	dev/docs_build/reports/state_binding_model.txt	dev/build/reports/state_binding_model.txt
+R100	dev/docs_build/reports/string_usage_scan.txt	dev/build/reports/string_usage_scan.txt
+R100	dev/docs_build/reports/templates_blockers_from_ps.txt	dev/build/reports/templates_blockers_from_ps.txt
+R100	dev/docs_build/reports/templates_live_usage_inventory.md	dev/build/reports/templates_live_usage_inventory.md
+R100	dev/docs_build/reports/templates_policy_decision.md	dev/build/reports/templates_policy_decision.md
+R100	dev/docs_build/reports/templates_root_removal_validation.md	dev/build/reports/templates_root_removal_validation.md
+R100	dev/docs_build/reports/templates_validation_guard.md	dev/build/reports/templates_validation_guard.md
+R100	dev/docs_build/reports/tool_host_foundation_read_set.txt	dev/build/reports/tool_host_foundation_read_set.txt
+R100	dev/docs_build/reports/tool_host_foundation_targets.txt	dev/build/reports/tool_host_foundation_targets.txt
+R100	dev/docs_build/reports/tool_host_multi_switch_targets.txt	dev/build/reports/tool_host_multi_switch_targets.txt
+R100	dev/docs_build/reports/tool_host_state_handoff_targets.txt	dev/build/reports/tool_host_state_handoff_targets.txt
+R100	dev/docs_build/reports/tools_shared_inventory.txt	dev/build/reports/tools_shared_inventory.txt
+R100	dev/docs_build/reports/tools_shared_phase1_read_set.txt	dev/build/reports/tools_shared_phase1_read_set.txt
+R100	dev/docs_build/reports/tools_shared_phase1_targets.txt	dev/build/reports/tools_shared_phase1_targets.txt
+R100	dev/docs_build/reports/tools_shared_phase2_targets.txt	dev/build/reports/tools_shared_phase2_targets.txt
+R100	dev/docs_build/reports/validation_checklist.txt	dev/build/reports/validation_checklist.txt
+R100	dev/docs_build/reports/validation_report.txt	dev/build/reports/validation_report.txt
+R100	dev/docs_build/reports/validation_results.txt	dev/build/reports/validation_results.txt
+R100	dev/docs_build/reports/violation_inventory.txt	dev/build/reports/violation_inventory.txt
+R100	dev/docs_build/schemas/docs/dev/codex_commands.md	dev/build/schemas/docs/dev/codex_commands.md
+R100	dev/docs_build/schemas/docs/dev/commit_comment.txt	dev/build/schemas/docs/dev/commit_comment.txt
+R100	dev/docs_build/schemas/docs/pr/PR_11_17_SCHEMA_SET_NORMALIZATION_AND_WORKSPACE_REF_ENFORCEMENT/BUILD.md	dev/build/schemas/docs/pr/PR_11_17_SCHEMA_SET_NORMALIZATION_AND_WORKSPACE_REF_ENFORCEMENT/BUILD.md
+R100	dev/docs_build/schemas/docs/pr/PR_11_17_SCHEMA_SET_NORMALIZATION_AND_WORKSPACE_REF_ENFORCEMENT/PLAN.md	dev/build/schemas/docs/pr/PR_11_17_SCHEMA_SET_NORMALIZATION_AND_WORKSPACE_REF_ENFORCEMENT/PLAN.md
+R100	dev/docs_build/security/js-injection-policy.md	dev/build/security/js-injection-policy.md
+R100	dev/docs_build/tools-images-generated/achievements.txt	dev/build/tools-images-generated/achievements.txt
+R100	dev/docs_build/tools-images-generated/ai-assistant.txt	dev/build/tools-images-generated/ai-assistant.txt
+R100	dev/docs_build/tools-images-generated/animations.txt	dev/build/tools-images-generated/animations.txt
+R100	dev/docs_build/tools-images-generated/assets.txt	dev/build/tools-images-generated/assets.txt
+R100	dev/docs_build/tools-images-generated/audio-effects.txt	dev/build/tools-images-generated/audio-effects.txt
+R100	dev/docs_build/tools-images-generated/audio.txt	dev/build/tools-images-generated/audio.txt
+R100	dev/docs_build/tools-images-generated/build-game.txt	dev/build/tools-images-generated/build-game.txt
+R100	dev/docs_build/tools-images-generated/characters.txt	dev/build/tools-images-generated/characters.txt
+R100	dev/docs_build/tools-images-generated/cloud.txt	dev/build/tools-images-generated/cloud.txt
+R100	dev/docs_build/tools-images-generated/code.txt	dev/build/tools-images-generated/code.txt
+R100	dev/docs_build/tools-images-generated/colors.txt	dev/build/tools-images-generated/colors.txt
+R100	dev/docs_build/tools-images-generated/community.txt	dev/build/tools-images-generated/community.txt
+R100	dev/docs_build/tools-images-generated/controls.txt	dev/build/tools-images-generated/controls.txt
+R100	dev/docs_build/tools-images-generated/debug.txt	dev/build/tools-images-generated/debug.txt
+R100	dev/docs_build/tools-images-generated/environments.txt	dev/build/tools-images-generated/environments.txt
+R100	dev/docs_build/tools-images-generated/events.txt	dev/build/tools-images-generated/events.txt
+R100	dev/docs_build/tools-images-generated/fonts.txt	dev/build/tools-images-generated/fonts.txt
+R100	dev/docs_build/tools-images-generated/game-configuration.txt	dev/build/tools-images-generated/game-configuration.txt
+R100	dev/docs_build/tools-images-generated/game-design.txt	dev/build/tools-images-generated/game-design.txt
+R100	dev/docs_build/tools-images-generated/game-migration.txt	dev/build/tools-images-generated/game-migration.txt
+R100	dev/docs_build/tools-images-generated/game-testing.txt	dev/build/tools-images-generated/game-testing.txt
+R100	dev/docs_build/tools-images-generated/hitboxes.txt	dev/build/tools-images-generated/hitboxes.txt
+R100	dev/docs_build/tools-images-generated/languages.txt	dev/build/tools-images-generated/languages.txt
+R100	dev/docs_build/tools-images-generated/learn.txt	dev/build/tools-images-generated/learn.txt
+R100	dev/docs_build/tools-images-generated/marketplace.txt	dev/build/tools-images-generated/marketplace.txt
+R100	dev/docs_build/tools-images-generated/midi.txt	dev/build/tools-images-generated/midi.txt
+R100	dev/docs_build/tools-images-generated/music.txt	dev/build/tools-images-generated/music.txt
+R100	dev/docs_build/tools-images-generated/objects.txt	dev/build/tools-images-generated/objects.txt
+R100	dev/docs_build/tools-images-generated/particles.txt	dev/build/tools-images-generated/particles.txt
+R100	dev/docs_build/tools-images-generated/performance.txt	dev/build/tools-images-generated/performance.txt
+R100	dev/docs_build/tools-images-generated/platform-settings.txt	dev/build/tools-images-generated/platform-settings.txt
+R100	dev/docs_build/tools-images-generated/project-workspace.txt	dev/build/tools-images-generated/project-workspace.txt
+R100	dev/docs_build/tools-images-generated/publish.txt	dev/build/tools-images-generated/publish.txt
+R100	dev/docs_build/tools-images-generated/ratings.txt	dev/build/tools-images-generated/ratings.txt
+R100	dev/docs_build/tools-images-generated/saved-data.txt	dev/build/tools-images-generated/saved-data.txt
+R100	dev/docs_build/tools-images-generated/speech-to-text.txt	dev/build/tools-images-generated/speech-to-text.txt
+R100	dev/docs_build/tools-images-generated/sprites.txt	dev/build/tools-images-generated/sprites.txt
+R100	dev/docs_build/tools-images-generated/tags.txt	dev/build/tools-images-generated/tags.txt
+R100	dev/docs_build/tools-images-generated/text-to-speech.txt	dev/build/tools-images-generated/text-to-speech.txt
+R100	dev/docs_build/tools-images-generated/users.txt	dev/build/tools-images-generated/users.txt
+R100	dev/docs_build/tools-images-generated/videos.txt	dev/build/tools-images-generated/videos.txt
+R100	dev/docs_build/tools-images-generated/voices.txt	dev/build/tools-images-generated/voices.txt
+R100	dev/docs_build/tools-images-generated/worlds.txt	dev/build/tools-images-generated/worlds.txt
+R100	dev/docs_build/tools/3d-asset-viewer/uat.md	dev/build/tools/3d-asset-viewer/uat.md
+R100	dev/docs_build/tools/3d-camera-path-editor/uat.md	dev/build/tools/3d-camera-path-editor/uat.md
+R100	dev/docs_build/tools/3d-json-payload-normalizer/uat.md	dev/build/tools/3d-json-payload-normalizer/uat.md
+R100	dev/docs_build/tools/README.md	dev/build/tools/README.md
+R100	dev/docs_build/tools/asset-browser/uat.md	dev/build/tools/asset-browser/uat.md
+R100	dev/docs_build/tools/asset-manager-v2/uat.md	dev/build/tools/asset-manager-v2/uat.md
+R100	dev/docs_build/tools/asset-pipeline-tool/uat.md	dev/build/tools/asset-pipeline-tool/uat.md
+R100	dev/docs_build/tools/input-mapping-v2/uat.md	dev/build/tools/input-mapping-v2/uat.md
+R100	dev/docs_build/tools/object-vector-studio-v2/uat.md	dev/build/tools/object-vector-studio-v2/uat.md
+R100	dev/docs_build/tools/palette-browser/uat.md	dev/build/tools/palette-browser/uat.md
+R100	dev/docs_build/tools/palette-manager-v2/uat.md	dev/build/tools/palette-manager-v2/uat.md
+R100	dev/docs_build/tools/parallax-scene-studio/uat.md	dev/build/tools/parallax-scene-studio/uat.md
+R100	dev/docs_build/tools/performance-profiler/uat.md	dev/build/tools/performance-profiler/uat.md
+R100	dev/docs_build/tools/physics-sandbox/uat.md	dev/build/tools/physics-sandbox/uat.md
+R100	dev/docs_build/tools/replay-visualizer/uat.md	dev/build/tools/replay-visualizer/uat.md
+R100	dev/docs_build/tools/sprite-editor/uat.md	dev/build/tools/sprite-editor/uat.md
+R100	dev/docs_build/tools/state-inspector/uat.md	dev/build/tools/state-inspector/uat.md
+R100	dev/docs_build/tools/tile-model-converter/uat.md	dev/build/tools/tile-model-converter/uat.md
+R100	dev/docs_build/tools/tilemap-studio/uat.md	dev/build/tools/tilemap-studio/uat.md
+R100	dev/docs_build/tools/tool-host/uat.md	dev/build/tools/tool-host/uat.md
+R100	dev/docs_build/tools/world-vector-studio-v2/uat.md	dev/build/tools/world-vector-studio-v2/uat.md
+M	dev/config/playwright.config.cjs
+D	dev/docs_build/dev/PR/reference/OWNER_007_BUILD_PR.md
+D	dev/docs_build/dev/ProjectInstructions/README.txt
+D	dev/docs_build/dev/start_of_day/CODEX_SESSION_PROMPT.md
+D	dev/docs_build/dev/start_of_day/CURRENT_STATE.md
+D	dev/docs_build/dev/start_of_day/NEXT_STEPS.md
+D	dev/docs_build/dev/start_of_day/README.md
+D	dev/docs_build/dev/start_of_day/SESSION_CONTEXT.md
+D	dev/docs_build/dev/start_of_day/chatGPT/PROJECT_INSTRUCTIONS.lnk
+D	dev/docs_build/dev/start_of_day/chatGPT/PR_10_6_20260427_05.txt
+D	dev/docs_build/dev/start_of_day/chatGPT/PR_10_6_20260427_05.zip
+D	dev/docs_build/dev/start_of_day/chatGPT/SESSION_VALIDATION_GATE.md
+D	dev/docs_build/dev/start_of_day/chatGPT/SOD_CORE.md
+D	dev/docs_build/dev/start_of_day/chatGPT/USAGE_REMINDER.md
+D	dev/docs_build/dev/start_of_day/chatGPT/old_do_not_use/README.md
+D	dev/docs_build/dev/start_of_day/chatGPT/old_do_not_use/RULES.md
+D	dev/docs_build/dev/start_of_day/chatGPT/old_do_not_use/SOD_CLEANUP_INSTRUCTIONS.md
+D	dev/docs_build/dev/start_of_day/chatGPT/old_do_not_use/WORKFLOW.md
+D	dev/docs_build/dev/start_of_day/codex/CODEX_CLEANUP_INSTRUCTIONS.md
+D	dev/docs_build/dev/start_of_day/codex/CODEX_CORE.md
+D	dev/docs_build/dev/start_of_day/codex/EXECUTION_GATE.md
+D	dev/docs_build/dev/start_of_day/codex/PROJECT_INSTRUCTIONS.lnk
+D	dev/docs_build/dev/start_of_day/codex/PR_NAMING_CONVENTION.md
+D	dev/docs_build/dev/start_of_day/codex/USAGE_REMINDER.md
+D	dev/docs_build/dev/start_of_day/codex/codex_commands.md
+D	dev/docs_build/dev/toolbox/runSharedExtractionGuard.sh
+M	dev/project-instructions/README.md
+M	dev/reports/PR_26163_056-account-aside-template-toggle-alignment.md
+M	dev/reports/PR_26179_OWNER_004-move-governance-workspace.md
+M	dev/reports/PR_26179_OWNER_004-move-governance-workspace_requirement-checklist.md
+M	dev/reports/PR_26179_OWNER_004-move-governance-workspace_validation-lane.md
+M	dev/reports/PR_26179_OWNER_005-move-tests-to-dev_requirement-checklist.md
+M	dev/reports/PR_26179_OWNER_006-move-bootstrap-scripts.md
+M	dev/reports/PR_26179_OWNER_007-move-reports-artifacts.md
+M	dev/reports/PR_26179_OWNER_007-move-reports-artifacts_branch-validation.md
+A	dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization.md
+A	dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_branch-validation.md
+A	dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_manual-validation-notes.md
+A	dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_requirement-checklist.md
+A	dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_validation-report.md
+M	dev/reports/asset_ownership_strategy_validation.txt
+M	dev/reports/cloud_template_styles_cleanup_report.md
+M	dev/reports/codex_changed_files.txt
+M	dev/reports/codex_review.diff
+M	dev/reports/docs_archive_test_output_cleanup_report.md
+R100	dupes_called.txt	dev/reports/dupes_called.txt
+M	dev/reports/final_active_toolbox_template_gate_report.md
+R100	dev/docs_build/schemas/docs/dev/reports/REPORT_PR_11_17.md	dev/reports/history/schemas/REPORT_PR_11_17.md
+M	dev/reports/legacy_surface_elimination_report.md
+M	dev/reports/old_tool_test_retirement_report.txt
+M	dev/reports/planned-tool-shells.md
+M	dev/reports/remaining_mismatches_report.md
+M	dev/reports/root_asset_reference_cleanup_report.md
+M	dev/reports/stack-toolbox-wireframes.md
+M	dev/reports/svg_favicon_normalization_report.md
+M	dev/reports/template_consistency_after_theme_rename_report.md
+M	dev/reports/theme_v1_assets_games_favicon_cleanup_report.md
+M	dev/reports/theme_v2_asset_ownership_normalization_report.md
+M	dev/reports/theme_v2_public_asset_path_fix_report.md
+M	dev/reports/theme_v2_root_rename_report.md
+M	dev/reports/theme_v2_template_cleanup_report.md
+M	dev/reports/theme_v2_template_correction.md
+M	dev/reports/theme_v2_template_dependency_map.md
+M	dev/reports/theme_v2_template_foundation.md
+M	dev/reports/theme_v2_tool_shell_gaps.md
+M	dev/reports/tool-group-color-ssot-consolidation-report.md
+M	dev/reports/tool-layout-wide-all-tool-pages.md
+M	dev/reports/tool-layout-width-validation-report.md
+M	dev/reports/tool_template_baseline_copy.md
+M	dev/reports/tool_template_cleanup.md
+M	dev/reports/tool_template_display_mode_layout.md
+M	dev/reports/tool_template_path_adjustments.md
+M	dev/reports/toolbox_footer_template_bundle_report.md
+M	dev/reports/toolbox_template_mismatch_closeout_report.md
+M	dev/scripts/apply-database-ddl.mjs
+M	dev/scripts/apply-database-dml.mjs
+M	dev/scripts/audit-duplicate-file-content.mjs
+M	dev/scripts/run-targeted-test-lanes.mjs
+R100	run_all.cmd	dev/scripts/run_all.cmd
+R062	run_all.ps1	dev/scripts/run_all.ps1
+R100	run_preprocessor.cmd	dev/scripts/run_preprocessor.cmd
+R072	run_preprocessor.ps1	dev/scripts/run_preprocessor.ps1
+M	dev/scripts/validate-asset-ownership-strategy.mjs
+M	dev/scripts/validate-browser-env-agnostic.mjs
+M	dev/scripts/validate-canonical-repository-structure.mjs
+M	dev/scripts/validate-database-drift.mjs
+M	dev/scripts/validate-json-contracts.mjs
+M	dev/scripts/validate-local-postgres-runtime.mjs
+M	dev/scripts/validate-tool-registry.mjs
+R100	_page_template_v2.html	dev/templates/page-template-v2.html
+R100	toolbox/_tool_template-v2/index.html	dev/templates/tool-template-v2/index.html
 M	dev/tests/dev-runtime/AdminNotesBoundary.test.mjs
+M	dev/tests/dev-runtime/DbSeedIntegrity.test.mjs
+M	dev/tests/helpers/playwrightV8CoverageReporter.mjs
+M	dev/tests/playwright/tools/AdminDbViewer.spec.mjs
 M	dev/tests/playwright/tools/AdminNotesLocalViewer.spec.mjs
 M	dev/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
+M	dev/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
+M	dev/tests/playwright/tools/AssetToolMockRepository.spec.mjs
+M	dev/tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs
+M	dev/tests/playwright/tools/GameCrewFoundation.spec.mjs
+M	dev/tests/playwright/tools/GameDesignApiBehavior.spec.mjs
 M	dev/tests/playwright/tools/LoginSessionMode.spec.mjs
+M	dev/tests/playwright/tools/RootToolsFutureState.spec.mjs
+M	dev/tests/playwright/tools/TagsTool.spec.mjs
+M	dev/tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs
+M	dev/tests/playwright_installation.txt
+M	dev/tests/runtime/LaunchSmokeAllEntries.test.mjs
+M	dev/tests/shared/ContractIndexValidation.test.mjs
+M	dev/tests/tools/DevConsoleIntegration.test.mjs
+M	dev/tests/tools/VectorNativeTemplate.test.mjs
+R098	dev/docs_build/dev/toolbox/advanced/debugMacroExecutor.js	dev/tools/toolbox-dev/advanced/debugMacroExecutor.js
+R094	dev/docs_build/dev/toolbox/advanced/debugMacroRegistry.js	dev/tools/toolbox-dev/advanced/debugMacroRegistry.js
+R091	dev/docs_build/dev/toolbox/advanced/debugPanelGroupRegistry.js	dev/tools/toolbox-dev/advanced/debugPanelGroupRegistry.js
+R100	dev/docs_build/dev/toolbox/advanced/registerStandardDebugMacros.js	dev/tools/toolbox-dev/advanced/registerStandardDebugMacros.js
+R100	dev/docs_build/dev/toolbox/advanced/registerStandardPanelGroups.js	dev/tools/toolbox-dev/advanced/registerStandardPanelGroups.js
+R097	dev/docs_build/dev/toolbox/canvasDebugHudRenderer.js	dev/tools/toolbox-dev/canvasDebugHudRenderer.js
+R100	dev/docs_build/dev/toolbox/checkBoundaryHardeningGuard.mjs	dev/tools/toolbox-dev/checkBoundaryHardeningGuard.mjs
+R081	dev/docs_build/dev/toolbox/checkDocsStructureGuard.mjs	dev/tools/toolbox-dev/checkDocsStructureGuard.mjs
+R096	dev/docs_build/dev/toolbox/checkIntentionalAliasLedgerGuard.mjs	dev/tools/toolbox-dev/checkIntentionalAliasLedgerGuard.mjs
+R100	dev/docs_build/dev/toolbox/checkInternalBarrelGuard.baseline.json	dev/tools/toolbox-dev/checkInternalBarrelGuard.baseline.json
+R098	dev/docs_build/dev/toolbox/checkInternalBarrelGuard.mjs	dev/tools/toolbox-dev/checkInternalBarrelGuard.mjs
+R078	dev/docs_build/dev/toolbox/checkPhase24CloseoutExecutionGuard.baseline.json	dev/tools/toolbox-dev/checkPhase24CloseoutExecutionGuard.baseline.json
+R100	dev/docs_build/dev/toolbox/checkPhase24CloseoutExecutionGuard.mjs	dev/tools/toolbox-dev/checkPhase24CloseoutExecutionGuard.mjs
+R100	dev/docs_build/dev/toolbox/checkSharedExtractionGuard.baseline.json	dev/tools/toolbox-dev/checkSharedExtractionGuard.baseline.json
+R098	dev/docs_build/dev/toolbox/checkSharedExtractionGuard.mjs	dev/tools/toolbox-dev/checkSharedExtractionGuard.mjs
+R096	dev/docs_build/dev/toolbox/checkSharedExtractionGuard.selftest.mjs	dev/tools/toolbox-dev/checkSharedExtractionGuard.selftest.mjs
+R100	dev/docs_build/dev/toolbox/checkStyleSystemGuard.mjs	dev/tools/toolbox-dev/checkStyleSystemGuard.mjs
+R100	dev/docs_build/dev/toolbox/commandPacks/commandPackResultUtils.js	dev/tools/toolbox-dev/commandPacks/commandPackResultUtils.js
+R100	dev/docs_build/dev/toolbox/commandPacks/debugCommandPack.js	dev/tools/toolbox-dev/commandPacks/debugCommandPack.js
+R100	dev/docs_build/dev/toolbox/commandPacks/entityCommandPack.js	dev/tools/toolbox-dev/commandPacks/entityCommandPack.js
+R097	dev/docs_build/dev/toolbox/commandPacks/groupCommandPack.js	dev/tools/toolbox-dev/commandPacks/groupCommandPack.js
+R100	dev/docs_build/dev/toolbox/commandPacks/hotReloadCommandPack.js	dev/tools/toolbox-dev/commandPacks/hotReloadCommandPack.js
+R100	dev/docs_build/dev/toolbox/commandPacks/inputCommandPack.js	dev/tools/toolbox-dev/commandPacks/inputCommandPack.js
+R098	dev/docs_build/dev/toolbox/commandPacks/inspectorCommandPack.js	dev/tools/toolbox-dev/commandPacks/inspectorCommandPack.js
+R097	dev/docs_build/dev/toolbox/commandPacks/macroCommandPack.js	dev/tools/toolbox-dev/commandPacks/macroCommandPack.js
+R098	dev/docs_build/dev/toolbox/commandPacks/overlayCommandPack.js	dev/tools/toolbox-dev/commandPacks/overlayCommandPack.js
+R090	dev/docs_build/dev/toolbox/commandPacks/packUtils.js	dev/tools/toolbox-dev/commandPacks/packUtils.js
+R082	dev/docs_build/dev/toolbox/commandPacks/presetCommandPack.js	dev/tools/toolbox-dev/commandPacks/presetCommandPack.js
+R100	dev/docs_build/dev/toolbox/commandPacks/renderCommandPack.js	dev/tools/toolbox-dev/commandPacks/renderCommandPack.js
+R100	dev/docs_build/dev/toolbox/commandPacks/sceneCommandPack.js	dev/tools/toolbox-dev/commandPacks/sceneCommandPack.js
+R100	dev/docs_build/dev/toolbox/commandPacks/toggleCommandPack.js	dev/tools/toolbox-dev/commandPacks/toggleCommandPack.js
+R100	dev/docs_build/dev/toolbox/commandPacks/validationCommandPack.js	dev/tools/toolbox-dev/commandPacks/validationCommandPack.js
+R098	dev/docs_build/dev/toolbox/devConsoleCommandRegistry.js	dev/tools/toolbox-dev/devConsoleCommandRegistry.js
+R099	dev/docs_build/dev/toolbox/devConsoleIntegration.js	dev/tools/toolbox-dev/devConsoleIntegration.js
+R097	dev/docs_build/dev/toolbox/inspectors/inspectorStore.js	dev/tools/toolbox-dev/inspectors/inspectorStore.js
+R100	dev/docs_build/dev/toolbox/intentionalAliasLedger.json	dev/tools/toolbox-dev/intentionalAliasLedger.json
+R098	dev/docs_build/dev/toolbox/interactiveDevConsoleRenderer.js	dev/tools/toolbox-dev/interactiveDevConsoleRenderer.js
+R098	dev/docs_build/dev/toolbox/plugins/debugPluginSystem.js	dev/tools/toolbox-dev/plugins/debugPluginSystem.js
+R095	dev/docs_build/dev/toolbox/presets/debugPresetApplier.js	dev/tools/toolbox-dev/presets/debugPresetApplier.js
+R091	dev/docs_build/dev/toolbox/presets/debugPresetRegistry.js	dev/tools/toolbox-dev/presets/debugPresetRegistry.js
+R097	dev/docs_build/dev/toolbox/presets/registerPresetCommands.js	dev/tools/toolbox-dev/presets/registerPresetCommands.js
+R100	dev/docs_build/dev/toolbox/presets/registerStandardDebugPresets.js	dev/tools/toolbox-dev/presets/registerStandardDebugPresets.js
+A	dev/tools/toolbox-dev/runSharedExtractionGuard.sh
+M	docs/README.md
+M	package.json
 M	src/dev-runtime/admin/admin-notes-directory.mjs
 M	src/dev-runtime/admin/admin-notes-viewer.js
 M	src/dev-runtime/admin/notes.html
+M	src/dev-runtime/seed/server-seed-loader.mjs
+M	src/dev-runtime/server/local-api-router.mjs
+M	src/shared/toolbox/vectorNativeTemplate.js
+M	src/shared/toolbox/vectorTemplateSampleGame.js
+```
 
 ## Validation
-- PASS - git diff --check
-- PASS - npm run validate:canonical-structure
-- PASS - node ./dev/scripts/run-platform-validation-suite.mjs (8/8 scenarios)
-- PASS - node ./dev/scripts/run-node-test-files.mjs dev/tests/dev-runtime/AdminNotesBoundary.test.mjs
+- PASS - npm run validate:canonical-structure.
+- PASS - git diff --check.
+- PASS - node ./dev/scripts/run-platform-validation-suite.mjs (8/8 scenarios).
+- PASS - rg active code/config/tests/package scripts for start_of_day (no matches).
+- PASS - rg active code/config/tests/package scripts for dev/build/dev/toolbox (no matches).
+- PASS - node ./dev/scripts/run-node-test-files.mjs dev/tests/tools/DevConsoleIntegration.test.mjs.
 
 ## Blockers
 None.

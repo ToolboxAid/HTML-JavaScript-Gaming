@@ -25,7 +25,6 @@ const excludedSegments = new Set([
   ".git",
   "archive",
   "node_modules",
-  "start_of_day",
   "tests",
   "tmp",
 ]);
@@ -388,7 +387,8 @@ const report = [
   `- Scanned active browser/page/server/runtime roots: ${environmentScanRoots.map((root) => `\`${root}\``).join(", ")}`,
   `- Scanned active runtime example files: ${environmentScanFiles.map((filePath) => `\`${filePath}\``).join(", ")}`,
   `- Files scanned: ${files.length}`,
-  "- Excluded test/archive/report/temp roots: `.git`, `archive`, `node_modules`, `start_of_day`, `dev/tests`, `tmp`.",
+  "- Excluded test/archive/report/temp roots: `.git`, `archive`, `node_modules`, `dev/tests`, `tmp`.",
+  "- Active team/start governance is sourced from `dev/build/ProjectInstructions/`.",
   "- Tests and validation scripts are excluded only from deployment-label branching failures; their non-branching mentions may still appear for review.",
   "",
   "## Deployment-Label Branching Findings",
