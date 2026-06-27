@@ -101,7 +101,7 @@ test("Admin Notes local viewer loads index and opens root folder note files", as
     await expect(page.locator("footer.footer")).toBeVisible();
     await expect(page).toHaveURL(/\/admin\/admin-notes\.html$/);
     await expect(page.locator("[data-admin-notes-title]")).toHaveText("index.txt");
-    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded dev/archive/docs_build/dev/admin-notes/index.txt.");
+    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded dev/archive/legacy-docs-build/admin-notes/index.txt.");
     await expect(page.locator("[data-admin-notes-content]")).toContainText("Admin Notes Ownership");
     await expect(page.locator("[data-admin-notes-current-folder]")).toHaveText("admin-notes");
     await expect(page.locator("[data-admin-notes-parent-folder]")).toBeDisabled();
@@ -131,14 +131,14 @@ test("Admin Notes local viewer loads index and opens root folder note files", as
     await page.getByRole("link", { name: "sample.txt" }).click();
     await expect(page.locator("[data-admin-notes-title]")).toHaveText("sample.txt");
     await expect(page.locator("[data-admin-notes-content]")).toContainText("Capture admin-only project ideas here.");
-    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded dev/archive/docs_build/dev/admin-notes/sample.txt.");
+    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded dev/archive/legacy-docs-build/admin-notes/sample.txt.");
     await expect(page.locator("[data-admin-notes-current-folder]")).toHaveText("admin-notes");
     await expect(page.locator("[data-admin-notes-parent-folder]")).toBeDisabled();
 
     await page.getByRole("link", { name: "other/" }).click();
     await expect(page.locator("[data-admin-notes-title]")).toHaveText("index.txt");
     await expect(page.locator("[data-admin-notes-content]")).toContainText("sample linked admin subnote");
-    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded dev/archive/docs_build/dev/admin-notes/other/index.txt.");
+    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded dev/archive/legacy-docs-build/admin-notes/other/index.txt.");
     await expect(page.locator("[data-admin-notes-current-folder]")).toHaveText("other");
     await expect(page.locator("[data-admin-notes-parent-folder]")).toBeEnabled();
     await page.locator("[data-admin-notes-parent-folder]").click();
@@ -160,7 +160,7 @@ test("Owner Notes route reads the shared admin-notes source", async ({ page }) =
     await expect(page.getByRole("heading", { name: "Notes", level: 1 })).toBeVisible();
     await expect(page.locator("main[data-owner-notes][data-admin-notes-viewer]")).toBeVisible();
     await expect(page.locator("[aria-label='Owner business pages'] a[aria-current='page']")).toHaveText("Notes");
-    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded dev/archive/docs_build/dev/admin-notes/index.txt.");
+    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded dev/archive/legacy-docs-build/admin-notes/index.txt.");
     await expect(page.locator("[data-admin-notes-content]")).toContainText("Admin Notes Ownership");
     await expect(page.locator("[data-admin-notes-folder-links] [data-admin-notes-directory-link='folder']")).toContainText([
       "notes/",
@@ -168,7 +168,7 @@ test("Owner Notes route reads the shared admin-notes source", async ({ page }) =
     ]);
 
     await page.getByRole("link", { name: "sample.txt" }).click();
-    await expect(page).toHaveURL(/\/owner\/notes\.html\?file=docs_build%2Fdev%2Fadmin-notes%2Fsample\.txt$/);
+    await expect(page).toHaveURL(/\/owner\/notes\.html\?file=legacy-docs-build%2Fadmin-notes%2Fsample\.txt$/);
     await expect(page.locator("[data-admin-notes-title]")).toHaveText("sample.txt");
     await expect(page.locator("[data-admin-notes-content]")).toContainText("Capture admin-only project ideas here.");
     await expect(page.locator("nav[aria-label='Admin tool pages'] a", { hasText: "Notes" })).toHaveCount(0);
@@ -185,7 +185,7 @@ test("Admin Notes viewer shows a visible missing-directory diagnostic", async ({
         await route.fulfill({
           body: JSON.stringify({
             entries: [],
-            error: "Admin Notes folder not found: dev/archive/docs_build/dev/admin-notes.",
+            error: "Admin Notes folder not found: dev/archive/legacy-docs-build/admin-notes.",
             ok: false,
           }),
           contentType: "application/json; charset=utf-8",
@@ -203,7 +203,7 @@ test("Admin Notes viewer shows a visible missing-directory diagnostic", async ({
     expect(failures.consoleErrors).toHaveLength(1);
     expect(failures.consoleErrors[0]).toContain("404");
     expect(failures.failedRequests).toEqual([
-      `404 ${failures.server.baseUrl}/api/dev/admin-notes/directory?folder=docs_build%2Fdev%2Fadmin-notes`,
+      `404 ${failures.server.baseUrl}/api/dev/admin-notes/directory?folder=legacy-docs-build%2Fadmin-notes`,
     ]);
   } finally {
     await closeWithCoverage(page, failures);
@@ -217,7 +217,7 @@ test("Admin Notes viewer shows an empty state for an empty source folder", async
         await route.fulfill({
           body: JSON.stringify({
             entries: [],
-            folderPath: "dev/archive/docs_build/dev/admin-notes",
+            folderPath: "dev/archive/legacy-docs-build/admin-notes",
             ok: true,
           }),
           contentType: "application/json; charset=utf-8",
@@ -245,7 +245,7 @@ test("Admin Notes direct dev-runtime source route still renders the viewer", asy
     await expect(page.getByRole("heading", { name: "Admin Notes", level: 1 })).toBeVisible();
     await expect(page.locator("header.site-header")).toBeVisible();
     await expect(page.locator("footer.footer")).toBeVisible();
-    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded dev/archive/docs_build/dev/admin-notes/index.txt.");
+    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded dev/archive/legacy-docs-build/admin-notes/index.txt.");
     await expectNoPageFailures(failures);
   } finally {
     await closeWithCoverage(page, failures);

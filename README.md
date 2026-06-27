@@ -33,7 +33,7 @@ This repository follows a docs-first game/runtime model, combining a stable engi
 3. Browse archived reference samples from [dev/archive/v1-v2/samples/index.html](dev/archive/v1-v2/samples/index.html)
 4. Explore tools under [toolbox/](toolbox/)
 5. Review engine and architecture boundaries in [docs/architecture/](docs/architecture/)
-6. Follow the workflow in [dev/build/dev/](dev/build/dev/) and [dev/build/dev/PR/](dev/build/dev/PR/)
+6. Follow the workflow in [dev/build/dev/](dev/build/dev/) and [dev/build/pr/](dev/build/pr/)
 
 ---
 
@@ -115,7 +115,7 @@ PLAN_PR → BUILD_PR → APPLY_PR
 
 - [docs/README.md](docs/README.md) → top-level documentation index
 - [docs/architecture/](docs/architecture/) → durable architecture and boundary contracts
-- [dev/build/dev/PR/](dev/build/dev/PR/) → preserved PR history and architecture evolution
+- [dev/build/pr/](dev/build/pr/) → preserved PR history and architecture evolution
 - [dev/build/dev/](dev/build/dev/) → active workflow controls and implementation planning
 - [dev/reports/](dev/reports/) → active report artifacts
 - [dev/archive/](dev/archive/) → archived dev-ops notes and generated reports

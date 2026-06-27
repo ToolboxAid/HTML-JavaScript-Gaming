@@ -1,543 +1,1158 @@
-diff --git a/.gitignore b/.gitignore
-index 628ab0145..0f5f1e31a 100644
---- a/.gitignore
-+++ b/.gitignore
-@@ -19,8 +19,8 @@ tests/results/
- tests/results/**
- dev/workspace/artifacts/tmp/
- dev/workspace/artifacts/tmp/**
--dev/workspace/artifacts/tmp/test-results/
--dev/workspace/artifacts/tmp/test-results/**
-+dev/workspace/artifacts/test-results/
-+dev/workspace/artifacts/test-results/**
- dev/workspace/artifacts/zips/
- dev/workspace/artifacts/zips/**
- tmp/
-diff --git a/dev/config/playwright.config.cjs b/dev/config/playwright.config.cjs
-index a8f87ea2a..6bb3e2b83 100644
---- a/dev/config/playwright.config.cjs
-+++ b/dev/config/playwright.config.cjs
-@@ -5,23 +5,23 @@ const repoPath = (...segments) => path.join(repoRoot, ...segments);
-
- module.exports = {
-   timeout: 120000,
--  outputDir: repoPath("dev", "workspace", "artifacts", "tmp", "test-results"),
-+  outputDir: repoPath("dev", "workspace", "artifacts", "test-results"),
-   projects: [
-     {
-       name: "ui",
-       testDir: repoPath("dev", "tests", "ui"),
--      outputDir: repoPath("dev", "workspace", "artifacts", "tmp", "test-results", "artifacts")
-+      outputDir: repoPath("dev", "workspace", "artifacts", "test-results", "artifacts")
-     },
-     {
-       name: "playwright",
-       testDir: repoPath("dev", "tests", "playwright"),
--      outputDir: repoPath("dev", "workspace", "artifacts", "tmp", "test-results", "artifacts")
-+      outputDir: repoPath("dev", "workspace", "artifacts", "test-results", "artifacts")
-     }
-   ],
-   reporter: [
-     ["list"],
--    ["html", { outputFolder: repoPath("dev", "workspace", "artifacts", "tmp", "test-results", "report"), open: "always" }],
--    ["json", { outputFile: repoPath("dev", "workspace", "artifacts", "tmp", "test-results", "playwright-results.json") }]
-+    ["html", { outputFolder: repoPath("dev", "workspace", "artifacts", "test-results", "report"), open: "always" }],
-+    ["json", { outputFile: repoPath("dev", "workspace", "artifacts", "test-results", "playwright-results.json") }]
-   ],
-   use: {
-     headless: false,
-diff --git a/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization.md b/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization.md
-index 8dc514a30..a2b95ea5b 100644
---- a/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization.md
-+++ b/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization.md
-@@ -1,32 +1,33 @@
- # PR_26179_OWNER_009-root-cleanup-and-workspace-finalization
-
--Status: PASS
-+Updated: 2026-06-27T22:20:02.508Z
- Team: OWNER
- Branch: PR_26179_OWNER_009-root-cleanup-and-workspace-finalization
--Current HEAD before this update: 6c92de7eff93b4f5f1b951b8b0886a357cab626c
--Report refreshed: 2026-06-27T22:05:28.695Z
--ZIP: dev/workspace/artifacts/zips/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_delta.zip
-+Scope: Finish PR_009 artifact collection and template cleanup.
-
--## Purpose
-+## Summary
-+- Moved generated Playwright test output ownership from dev/config/tmp/test-results/ to dev/workspace/artifacts/test-results/.
-+- Kept dev/config/ limited to configuration files.
-+- Converted the reusable Tool Template V2 file into dev/templates/tool-template-v2/index.html and removed the empty legacy toolbox/_tool_template-v2/ directory.
-+- Updated active tests, coverage reporting, Playwright output config, and vector template path strings to the new template/artifact locations.
-
--Finish the already-started root cleanup/workspace finalization PR.
-+## Changed Files
-+M	.gitignore
-+M	dev/config/playwright.config.cjs
-+M	dev/scripts/validate-canonical-repository-structure.mjs
-+M	dev/scripts/validate-tool-registry.mjs
-+R100	dev/templates/tool-template-v2.html	dev/templates/tool-template-v2/index.html
-+M	dev/tests/helpers/playwrightV8CoverageReporter.mjs
-+M	dev/tests/playwright/tools/RootToolsFutureState.spec.mjs
-+M	dev/tests/playwright_installation.txt
-+M	dev/tests/tools/VectorNativeTemplate.test.mjs
-+M	src/shared/toolbox/vectorNativeTemplate.js
-+M	src/shared/toolbox/vectorTemplateSampleGame.js
-
--## Scope Completed
-+## Validation
-+- PASS - npm run validate:canonical-structure
-+- PASS - git diff --check
-+- PASS - node ./dev/scripts/run-platform-validation-suite.mjs (8/8 scenarios)
-
--- Confirmed tracked dev/docs_build content is now under dev/build.
--- Confirmed active Project Instructions live at dev/build/ProjectInstructions.
--- Removed root projects and root tmp leftovers earlier in this PR; neither exists now.
--- Removed accidental generated ziproot folder from dev/workspace/artifacts/tmp.
--- Moved docker-compose.override.yml to deploy/docker-compose.override.yml.
--- Moved ignored local scripts/untracked scratch folder to dev/scripts/untracked.
--- Confirmed stale root codex report copies do not remain; active reports live under dev/reports.
--- Confirmed tracked dupes_called.txt is already under dev/reports.
--- Confirmed developer wrapper scripts are under dev/scripts.
--- Confirmed reusable templates are under dev/templates.
--- Updated references for moved build, template, Docker override, and script scratch locations.
--
--## Notes
--
--- No production page directories were moved.
--- Runtime/business logic was not moved into dev.
--- dev/scripts/untracked remains ignored developer-local scratch.
-+## Blockers
-+None.
-diff --git a/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_branch-validation.md b/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_branch-validation.md
-index abe0cb9f2..3ced2c390 100644
---- a/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_branch-validation.md
-+++ b/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_branch-validation.md
-@@ -1,8 +1,9 @@
--# PR_26179_OWNER_009-root-cleanup-and-workspace-finalization Branch Validation
-+# Branch Validation - PR_26179_OWNER_009-root-cleanup-and-workspace-finalization
-
--| Check | Result | Evidence |
--| --- | --- | --- |
--| Expected branch | PASS | PR_26179_OWNER_009-root-cleanup-and-workspace-finalization |
--| Worktree before edits | PASS | Clean before continuation edits. |
--| Scope attribution | PASS | Changes are root cleanup/workspace finalization only. |
--| No main commit | PASS | Work remained on the PR branch. |
-+Updated: 2026-06-27T22:20:02.508Z
-+
-+- Current branch: PR_26179_OWNER_009-root-cleanup-and-workspace-finalization
-+- Expected branch: PR_26179_OWNER_009-root-cleanup-and-workspace-finalization
-+- Branch validation: PASS
-+- Worktree state before report refresh: DIRTY with intended PR changes
-+- Scope validation: PASS - changes are limited to root cleanup/workspace artifact/template ownership and required reports.
-diff --git a/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_manual-validation-notes.md b/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_manual-validation-notes.md
-index a69337264..af305c10c 100644
---- a/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_manual-validation-notes.md
-+++ b/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_manual-validation-notes.md
-@@ -1,9 +1,11 @@
--# PR_26179_OWNER_009-root-cleanup-and-workspace-finalization Manual Validation Notes
-+# Manual Validation Notes - PR_26179_OWNER_009-root-cleanup-and-workspace-finalization
-
--- Confirmed docker-compose.override.yml no longer exists at root and deploy/docker-compose.override.yml exists.
--- Confirmed scripts/ and scripts/untracked/ no longer exist at root.
--- Confirmed dev/scripts/untracked/ exists as ignored local scratch.
--- Confirmed generated ziproot folder is absent at root and under dev/workspace/artifacts/tmp.
--- Confirmed dev/build exists and dev/docs_build does not.
--- Confirmed projects/ does not exist.
--- Confirmed root codex_changed_files.txt and codex_review.diff do not exist.
-+Updated: 2026-06-27T22:20:02.508Z
-+
-+- Confirmed dev/workspace/artifacts/test-results/ exists and dev/config/tmp/ is removed.
-+- Confirmed dev/config/ contains only configuration files.
-+- Confirmed toolbox/_tool_template-v2/ is removed and no production toolbox pages were moved.
-+- Confirmed dev/templates/tool-template-v2/index.html exists.
-+- Confirmed root projects/ and root tmp/ are absent.
-+- Confirmed deploy/docker-compose.override.yml exists.
-+- Blockers: none.
-diff --git a/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_requirement-checklist.md b/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_requirement-checklist.md
-index d7866a1ad..1836a1c10 100644
---- a/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_requirement-checklist.md
-+++ b/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_requirement-checklist.md
-@@ -1,20 +1,16 @@
--# PR_26179_OWNER_009-root-cleanup-and-workspace-finalization Requirement Checklist
-+# Requirement Checklist - PR_26179_OWNER_009-root-cleanup-and-workspace-finalization
-
--| Status | Requirement | Evidence |
-+Updated: 2026-06-27T22:20:02.508Z
-+
-+| Requirement | Status | Notes |
- | --- | --- | --- |
--| PASS | Continue on current branch | Work continued on PR_26179_OWNER_009-root-cleanup-and-workspace-finalization. |
--| PASS | Do not switch to main | No branch switch was performed. |
--| PASS | Rename dev/docs_build/ to dev/build/ | Already complete; dev/build exists and dev/docs_build does not. |
--| PASS | Update all references | Active references use dev/build; old scripts/untracked report mentions were updated to dev/scripts/untracked. |
--| PASS | Remove root projects/ | projects/ does not exist. |
--| PASS | Remove generated ziproot | PR ziproot staging folder does not exist at root or under dev/workspace/artifacts/tmp. |
--| PASS | Move docker-compose.override.yml | File moved to deploy/docker-compose.override.yml. |
--| PASS | Move scripts/untracked/ | Ignored scratch folder moved to dev/scripts/untracked/ and ignored in .gitignore. |
--| PASS | Move stale root codex artifacts | Root codex_changed_files.txt and codex_review.diff do not exist; active deliverables are under dev/reports. |
--| PASS | Move dupes_called.txt | Tracked artifact is under dev/reports/dupes_called.txt from earlier OWNER_009 cleanup. |
--| PASS | Move developer scripts | run_all and run_preprocessor cmd/ps1 files are under dev/scripts. |
--| PASS | Move reusable templates | page-template-v2.html and tool-template-v2.html are under dev/templates. |
--| PASS | Keep root product/config set | Required root product directories and standard config remain. |
--| PASS | Validate canonical structure | npm run validate:canonical-structure PASS. |
--| PASS | Validate diff whitespace | git diff --check PASS. |
--| PASS | Validate platform suite | node ./dev/scripts/run-platform-validation-suite.mjs PASS. |
-+| Move dev/config/tmp/test-results/ to dev/workspace/artifacts/test-results/ | PASS | Existing Playwright test output was moved to dev/workspace/artifacts/test-results/. |
-+| Remove dev/config/tmp/ if empty | PASS | dev/config/tmp/ was empty after the move and was removed. |
-+| Generated test/report output lives under dev/workspace/artifacts/ | PASS | Playwright config now writes test results, artifacts, HTML report, and JSON report to dev/workspace/artifacts/test-results/. |
-+| Keep dev/config/ for config files only | PASS | dev/config/ contains only config files after cleanup. |
-+| Move toolbox/_tool_template-v2/ to dev/templates/tool-template-v2/ | PASS | The legacy toolbox template folder was empty and removed; the tracked template moved to dev/templates/tool-template-v2/index.html. |
-+| Remove toolbox/_tool_template-v2/ after move | PASS | toolbox/_tool_template-v2/ no longer exists. |
-+| Do not move production toolbox pages | PASS | No production toolbox tool pages were moved. |
-+| No root projects/ | PASS | projects/ is absent at repository root. |
-+| No root tmp/ | PASS | tmp/ is absent at repository root. |
-+| deploy/docker-compose.override.yml exists | PASS | deploy/docker-compose.override.yml exists. |
-diff --git a/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_validation-report.md b/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_validation-report.md
-index 9910e04d6..fe86bdaaa 100644
---- a/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_validation-report.md
-+++ b/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_validation-report.md
-@@ -1,11 +1,11 @@
--# PR_26179_OWNER_009-root-cleanup-and-workspace-finalization Validation Report
-+# Validation Report - PR_26179_OWNER_009-root-cleanup-and-workspace-finalization
-
--Status: PASS
-+Updated: 2026-06-27T22:20:02.508Z
-
--| Command | Result | Notes |
-+| Lane | Result | Notes |
- | --- | --- | --- |
--| npm run validate:canonical-structure | PASS | Canonical repository structure guardrail passed. |
--| git diff --check | PASS | No whitespace errors reported. |
--| node ./dev/scripts/run-platform-validation-suite.mjs | PASS | Platform validation suite passed 8/8 scenarios; CI gate green. |
-+| npm run validate:canonical-structure | PASS | Blocking violations: 0; approved legacy exceptions: 498. |
-+| git diff --check | PASS | Only line-ending conversion warnings from Git on Windows; no whitespace errors. |
-+| node ./dev/scripts/run-platform-validation-suite.mjs | PASS | 8/8 deterministic platform scenarios passed. |
-
--No Playwright browser lane was run; this update is root/dev workspace cleanup with no production page movement.
-+Playwright full smoke was not run; no production page implementation was changed.
-diff --git a/dev/reports/codex_changed_files.txt b/dev/reports/codex_changed_files.txt
-index cbef0dc55..2e5f75aa9 100644
---- a/dev/reports/codex_changed_files.txt
-+++ b/dev/reports/codex_changed_files.txt
-@@ -1,11 +1,17 @@
--M	.gitignore
--R100	docker-compose.override.yml	deploy/docker-compose.override.yml
--M	dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization.md
--M	dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_branch-validation.md
--M	dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_manual-validation-notes.md
--M	dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_requirement-checklist.md
--M	dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_validation-report.md
--M	dev/reports/codex_changed_files.txt
--M	dev/reports/codex_review.diff
--M	dev/reports/docs_archive_test_output_cleanup_report.md
--M	dev/reports/legacy_surface_elimination_report.md
-+.gitignore
-+dev/config/playwright.config.cjs
-+dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization.md
-+dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_branch-validation.md
-+dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_manual-validation-notes.md
-+dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_requirement-checklist.md
-+dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_validation-report.md
-+dev/reports/codex_review.diff
-+dev/scripts/validate-canonical-repository-structure.mjs
-+dev/scripts/validate-tool-registry.mjs
-+dev/templates/tool-template-v2/index.html
-+dev/tests/helpers/playwrightV8CoverageReporter.mjs
-+dev/tests/playwright/tools/RootToolsFutureState.spec.mjs
-+dev/tests/playwright_installation.txt
-+dev/tests/tools/VectorNativeTemplate.test.mjs
-+src/shared/toolbox/vectorNativeTemplate.js
-+src/shared/toolbox/vectorTemplateSampleGame.js
-diff --git a/dev/scripts/validate-canonical-repository-structure.mjs b/dev/scripts/validate-canonical-repository-structure.mjs
-index a101e9ba0..3e7265a44 100644
---- a/dev/scripts/validate-canonical-repository-structure.mjs
-+++ b/dev/scripts/validate-canonical-repository-structure.mjs
-@@ -223,7 +223,7 @@ function auditTestPath(filePath) {
-       "Tests",
-       filePath,
-       "Generated test result artifacts must not be tracked under active dev/tests/results/.",
--      "ignored dev/workspace/artifacts/tmp/test-results/ or dev/reports/",
-+      "ignored dev/workspace/artifacts/test-results/ or dev/reports/",
-     );
-   }
-   if (APPROVED_LEGACY_TEST_SEGMENTS.has(segment)) {
-diff --git a/dev/scripts/validate-tool-registry.mjs b/dev/scripts/validate-tool-registry.mjs
-index 67cd5092d..9d2b3e2bd 100644
---- a/dev/scripts/validate-tool-registry.mjs
-+++ b/dev/scripts/validate-tool-registry.mjs
-@@ -10,7 +10,6 @@ const toolboxRoot = path.join(repoRoot, "toolbox");
- const reportPath = path.join(repoRoot, "dev", "reports", "tool_registry_validation.txt");
-
- const IGNORED_DIRECTORIES = new Set([
--  "_tool_template-v2",
-   "learn",
-   "users",
-   "environments",
-diff --git a/dev/templates/tool-template-v2.html b/dev/templates/tool-template-v2/index.html
-similarity index 100%
-rename from dev/templates/tool-template-v2.html
-rename to dev/templates/tool-template-v2/index.html
-diff --git a/dev/tests/helpers/playwrightV8CoverageReporter.mjs b/dev/tests/helpers/playwrightV8CoverageReporter.mjs
-index c51336e33..774e18996 100644
---- a/dev/tests/helpers/playwrightV8CoverageReporter.mjs
-+++ b/dev/tests/helpers/playwrightV8CoverageReporter.mjs
-@@ -328,7 +328,7 @@ export class PlaywrightV8CoverageReporter {
-   formatToolEntryPoints(coverageByPath) {
-     const toolEntryPoints = [
-       { name: "Toolbox Index", prefix: "toolbox/" },
--      { name: "Tool Template V2", prefix: "toolbox/_tool_template-v2/" },
-+      { name: "Tool Template V2", prefix: "dev/templates/tool-template-v2/" },
-       { name: "Theme V2 Shared JS", prefix: "assets/theme-v2/js/" }
-     ];
-     return toolEntryPoints.map(({ name, prefix }) => {
-diff --git a/dev/tests/playwright/tools/RootToolsFutureState.spec.mjs b/dev/tests/playwright/tools/RootToolsFutureState.spec.mjs
-index 6cb8f0221..8fa08d4cc 100644
---- a/dev/tests/playwright/tools/RootToolsFutureState.spec.mjs
-+++ b/dev/tests/playwright/tools/RootToolsFutureState.spec.mjs
-@@ -642,7 +642,7 @@ test("learn wireframe pages load with shared Theme V2 structure", async ({ page
- });
-
- test("tool template future-state page loads from root Theme V2 paths", async ({ page }) => {
--  const { failedRequests, pageErrors, restorePublicEnv, server } = await openRepoPage(page, "/dev/templates/tool-template-v2.html");
-+  const { failedRequests, pageErrors, restorePublicEnv, server } = await openRepoPage(page, "/dev/templates/tool-template-v2/index.html");
-
-   try {
-     await expect(page.locator("base")).toHaveAttribute("href", "/");
-diff --git a/dev/tests/playwright_installation.txt b/dev/tests/playwright_installation.txt
-index 6ba828238..0ae227580 100644
---- a/dev/tests/playwright_installation.txt
-+++ b/dev/tests/playwright_installation.txt
-@@ -115,7 +115,7 @@ HTML-JavaScript-Gaming/
-
- ✔ Keep node_modules at root
- ✔ Do NOT move node_modules to tmp
--✔ dev/workspace/artifacts/tmp/test-results is safe for outputs
-+✔ dev/workspace/artifacts/test-results is safe for outputs
- ```
+diff --git a/README.md b/README.md
+index 04654434a..8dad1b828 100644
+--- a/README.md
++++ b/README.md
+@@ -33,7 +33,7 @@ This repository follows a docs-first game/runtime model, combining a stable engi
+ 3. Browse archived reference samples from [dev/archive/v1-v2/samples/index.html](dev/archive/v1-v2/samples/index.html)
+ 4. Explore tools under [toolbox/](toolbox/)
+ 5. Review engine and architecture boundaries in [docs/architecture/](docs/architecture/)
+-6. Follow the workflow in [dev/build/dev/](dev/build/dev/) and [dev/build/dev/PR/](dev/build/dev/PR/)
++6. Follow the workflow in [dev/build/dev/](dev/build/dev/) and [dev/build/pr/](dev/build/pr/)
 
  ---
-diff --git a/dev/tests/tools/VectorNativeTemplate.test.mjs b/dev/tests/tools/VectorNativeTemplate.test.mjs
-index 776985fd1..a9fea5e08 100644
---- a/dev/tests/tools/VectorNativeTemplate.test.mjs
-+++ b/dev/tests/tools/VectorNativeTemplate.test.mjs
-@@ -3,7 +3,7 @@ import { buildVectorNativeTemplate, createVectorNativeTemplateDefinition, summar
 
- export async function run() {
-   const definition = createVectorNativeTemplateDefinition();
--  assert.equal(definition.templatePath, "toolbox/_tool_template-v2/vector-native-arcade/");
-+  assert.equal(definition.templatePath, "dev/templates/tool-template-v2/vector-native-arcade/");
-   assert.equal(definition.registry.sprites.length, 0);
-   assert.equal(definition.registry.vectors.length, 5);
+@@ -115,7 +115,7 @@ PLAN_PR → BUILD_PR → APPLY_PR
 
-@@ -26,7 +26,7 @@ export async function run() {
-     first.template.packageResult.manifest.package.assets.some((asset) => asset.id.startsWith("sprite.")),
-     false
+ - [docs/README.md](docs/README.md) → top-level documentation index
+ - [docs/architecture/](docs/architecture/) → durable architecture and boundary contracts
+-- [dev/build/dev/PR/](dev/build/dev/PR/) → preserved PR history and architecture evolution
++- [dev/build/pr/](dev/build/pr/) → preserved PR history and architecture evolution
+ - [dev/build/dev/](dev/build/dev/) → active workflow controls and implementation planning
+ - [dev/reports/](dev/reports/) → active report artifacts
+ - [dev/archive/](dev/archive/) → archived dev-ops notes and generated reports
+diff --git a/dev/archive/docs_build/dev/ProjectInstructions/history/.gitkeep b/dev/archive/legacy-docs-build/ProjectInstructions/history/.gitkeep
+similarity index 100%
+rename from dev/archive/docs_build/dev/ProjectInstructions/history/.gitkeep
+rename to dev/archive/legacy-docs-build/ProjectInstructions/history/.gitkeep
+diff --git a/dev/archive/docs_build/dev/ProjectInstructions/history/20260621_144555.md b/dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_144555.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/ProjectInstructions/history/20260621_144555.md
+rename to dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_144555.md
+diff --git a/dev/archive/docs_build/dev/ProjectInstructions/history/20260621_153126.md b/dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_153126.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/ProjectInstructions/history/20260621_153126.md
+rename to dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_153126.md
+diff --git a/dev/archive/docs_build/dev/ProjectInstructions/history/20260621_153759.md b/dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_153759.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/ProjectInstructions/history/20260621_153759.md
+rename to dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_153759.md
+diff --git a/dev/archive/docs_build/dev/ProjectInstructions/history/20260621_154153.md b/dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_154153.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/ProjectInstructions/history/20260621_154153.md
+rename to dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_154153.md
+diff --git a/dev/archive/docs_build/dev/ProjectInstructions/history/20260621_154830.md b/dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_154830.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/ProjectInstructions/history/20260621_154830.md
+rename to dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_154830.md
+diff --git a/dev/archive/docs_build/dev/ProjectInstructions/history/20260621_155907.md b/dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_155907.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/ProjectInstructions/history/20260621_155907.md
+rename to dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_155907.md
+diff --git a/dev/archive/docs_build/dev/ProjectInstructions/history/20260621_161414.md b/dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_161414.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/ProjectInstructions/history/20260621_161414.md
+rename to dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_161414.md
+diff --git a/dev/archive/docs_build/dev/ProjectInstructions/history/20260621_161520.md b/dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_161520.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/ProjectInstructions/history/20260621_161520.md
+rename to dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_161520.md
+diff --git a/dev/archive/docs_build/dev/ProjectInstructions/history/20260621_161703.md b/dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_161703.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/ProjectInstructions/history/20260621_161703.md
+rename to dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_161703.md
+diff --git a/dev/archive/docs_build/dev/ProjectInstructions/history/20260621_163009.md b/dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_163009.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/ProjectInstructions/history/20260621_163009.md
+rename to dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_163009.md
+diff --git a/dev/archive/docs_build/dev/ProjectInstructions/history/20260621_231154.md b/dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_231154.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/ProjectInstructions/history/20260621_231154.md
+rename to dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_231154.md
+diff --git a/dev/archive/docs_build/dev/ProjectInstructions/history/20260621_231757.md b/dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_231757.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/ProjectInstructions/history/20260621_231757.md
+rename to dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_231757.md
+diff --git a/dev/archive/docs_build/dev/ProjectInstructions/history/20260621_233733.md b/dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_233733.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/ProjectInstructions/history/20260621_233733.md
+rename to dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_233733.md
+diff --git a/dev/archive/docs_build/dev/ProjectInstructions/history/20260621_235757.md b/dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_235757.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/ProjectInstructions/history/20260621_235757.md
+rename to dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_235757.md
+diff --git a/dev/archive/docs_build/dev/ProjectInstructions/history/20260621_235932.md b/dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_235932.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/ProjectInstructions/history/20260621_235932.md
+rename to dev/archive/legacy-docs-build/ProjectInstructions/history/20260621_235932.md
+diff --git a/dev/archive/docs_build/dev/ProjectInstructions/history/20260622_000449.md b/dev/archive/legacy-docs-build/ProjectInstructions/history/20260622_000449.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/ProjectInstructions/history/20260622_000449.md
+rename to dev/archive/legacy-docs-build/ProjectInstructions/history/20260622_000449.md
+diff --git a/dev/archive/docs_build/dev/ProjectInstructions/history/20260622_002424.md b/dev/archive/legacy-docs-build/ProjectInstructions/history/20260622_002424.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/ProjectInstructions/history/20260622_002424.md
+rename to dev/archive/legacy-docs-build/ProjectInstructions/history/20260622_002424.md
+diff --git a/dev/archive/docs_build/dev/ProjectInstructions/history/README.md b/dev/archive/legacy-docs-build/ProjectInstructions/history/README.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/ProjectInstructions/history/README.md
+rename to dev/archive/legacy-docs-build/ProjectInstructions/history/README.md
+diff --git a/dev/archive/docs_build/dev/admin-notes/BusinessPlan.txt b/dev/archive/legacy-docs-build/admin-notes/BusinessPlan.txt
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/BusinessPlan.txt
+rename to dev/archive/legacy-docs-build/admin-notes/BusinessPlan.txt
+diff --git a/dev/archive/docs_build/dev/admin-notes/GFS-AI-Credits-Reseller-Strategy.pdf b/dev/archive/legacy-docs-build/admin-notes/GFS-AI-Credits-Reseller-Strategy.pdf
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/GFS-AI-Credits-Reseller-Strategy.pdf
+rename to dev/archive/legacy-docs-build/admin-notes/GFS-AI-Credits-Reseller-Strategy.pdf
+diff --git a/dev/archive/docs_build/dev/admin-notes/GFS-Connected-Play-Second-Screen-Turn-Based-Design-26170-001.pdf b/dev/archive/legacy-docs-build/admin-notes/GFS-Connected-Play-Second-Screen-Turn-Based-Design-26170-001.pdf
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/GFS-Connected-Play-Second-Screen-Turn-Based-Design-26170-001.pdf
+rename to dev/archive/legacy-docs-build/admin-notes/GFS-Connected-Play-Second-Screen-Turn-Based-Design-26170-001.pdf
+diff --git a/dev/archive/docs_build/dev/admin-notes/GFS_Design_Messages_Tool_And_Platform_Reference_Rules.pdf b/dev/archive/legacy-docs-build/admin-notes/GFS_Design_Messages_Tool_And_Platform_Reference_Rules.pdf
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/GFS_Design_Messages_Tool_And_Platform_Reference_Rules.pdf
+rename to dev/archive/legacy-docs-build/admin-notes/GFS_Design_Messages_Tool_And_Platform_Reference_Rules.pdf
+diff --git a/dev/archive/docs_build/dev/admin-notes/GFS_Game_Identity_Strategy.pdf.pdf b/dev/archive/legacy-docs-build/admin-notes/GFS_Game_Identity_Strategy.pdf.pdf
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/GFS_Game_Identity_Strategy.pdf.pdf
+rename to dev/archive/legacy-docs-build/admin-notes/GFS_Game_Identity_Strategy.pdf.pdf
+diff --git a/dev/archive/docs_build/dev/admin-notes/GFS_Game_Journey_Master_Plan.txt b/dev/archive/legacy-docs-build/admin-notes/GFS_Game_Journey_Master_Plan.txt
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/GFS_Game_Journey_Master_Plan.txt
+rename to dev/archive/legacy-docs-build/admin-notes/GFS_Game_Journey_Master_Plan.txt
+diff --git a/dev/archive/docs_build/dev/admin-notes/Installs required.txt b/dev/archive/legacy-docs-build/admin-notes/Installs required.txt
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/Installs required.txt
+rename to dev/archive/legacy-docs-build/admin-notes/Installs required.txt
+diff --git a/dev/archive/docs_build/dev/admin-notes/PS_commands.txt b/dev/archive/legacy-docs-build/admin-notes/PS_commands.txt
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/PS_commands.txt
+rename to dev/archive/legacy-docs-build/admin-notes/PS_commands.txt
+diff --git a/dev/archive/docs_build/dev/admin-notes/Table layout.txt b/dev/archive/legacy-docs-build/admin-notes/Table layout.txt
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/Table layout.txt
+rename to dev/archive/legacy-docs-build/admin-notes/Table layout.txt
+diff --git a/dev/archive/docs_build/dev/admin-notes/admin/index.txt b/dev/archive/legacy-docs-build/admin-notes/admin/index.txt
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/admin/index.txt
+rename to dev/archive/legacy-docs-build/admin-notes/admin/index.txt
+diff --git a/dev/archive/docs_build/dev/admin-notes/colors/colos.txt b/dev/archive/legacy-docs-build/admin-notes/colors/colos.txt
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/colors/colos.txt
+rename to dev/archive/legacy-docs-build/admin-notes/colors/colos.txt
+diff --git a/dev/archive/docs_build/dev/admin-notes/colors/index.txt b/dev/archive/legacy-docs-build/admin-notes/colors/index.txt
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/colors/index.txt
+rename to dev/archive/legacy-docs-build/admin-notes/colors/index.txt
+diff --git a/dev/archive/docs_build/dev/admin-notes/deployment-uat-prod/index.txt b/dev/archive/legacy-docs-build/admin-notes/deployment-uat-prod/index.txt
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/deployment-uat-prod/index.txt
+rename to dev/archive/legacy-docs-build/admin-notes/deployment-uat-prod/index.txt
+diff --git a/dev/archive/docs_build/dev/admin-notes/email/index.txt b/dev/archive/legacy-docs-build/admin-notes/email/index.txt
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/email/index.txt
+rename to dev/archive/legacy-docs-build/admin-notes/email/index.txt
+diff --git a/dev/archive/docs_build/dev/admin-notes/engine/GameLoop.txt b/dev/archive/legacy-docs-build/admin-notes/engine/GameLoop.txt
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/engine/GameLoop.txt
+rename to dev/archive/legacy-docs-build/admin-notes/engine/GameLoop.txt
+diff --git a/dev/archive/docs_build/dev/admin-notes/engine/ProjectDifficulty.txt b/dev/archive/legacy-docs-build/admin-notes/engine/ProjectDifficulty.txt
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/engine/ProjectDifficulty.txt
+rename to dev/archive/legacy-docs-build/admin-notes/engine/ProjectDifficulty.txt
+diff --git a/dev/archive/docs_build/dev/admin-notes/engine/ProjectLifeCycle.txt b/dev/archive/legacy-docs-build/admin-notes/engine/ProjectLifeCycle.txt
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/engine/ProjectLifeCycle.txt
+rename to dev/archive/legacy-docs-build/admin-notes/engine/ProjectLifeCycle.txt
+diff --git a/dev/archive/docs_build/dev/admin-notes/engine/index.txt b/dev/archive/legacy-docs-build/admin-notes/engine/index.txt
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/engine/index.txt
+rename to dev/archive/legacy-docs-build/admin-notes/engine/index.txt
+diff --git a/dev/archive/docs_build/dev/admin-notes/fonts/index.txt b/dev/archive/legacy-docs-build/admin-notes/fonts/index.txt
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/fonts/index.txt
+rename to dev/archive/legacy-docs-build/admin-notes/fonts/index.txt
+diff --git a/dev/archive/docs_build/dev/admin-notes/index.txt b/dev/archive/legacy-docs-build/admin-notes/index.txt
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/index.txt
+rename to dev/archive/legacy-docs-build/admin-notes/index.txt
+diff --git a/dev/archive/docs_build/dev/admin-notes/notes/index.txt b/dev/archive/legacy-docs-build/admin-notes/notes/index.txt
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/notes/index.txt
+rename to dev/archive/legacy-docs-build/admin-notes/notes/index.txt
+diff --git a/dev/archive/docs_build/dev/admin-notes/other/index.txt b/dev/archive/legacy-docs-build/admin-notes/other/index.txt
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/other/index.txt
+rename to dev/archive/legacy-docs-build/admin-notes/other/index.txt
+diff --git a/dev/archive/docs_build/dev/admin-notes/roadmap2MVP.txt b/dev/archive/legacy-docs-build/admin-notes/roadmap2MVP.txt
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/roadmap2MVP.txt
+rename to dev/archive/legacy-docs-build/admin-notes/roadmap2MVP.txt
+diff --git a/dev/archive/docs_build/dev/admin-notes/sample.txt b/dev/archive/legacy-docs-build/admin-notes/sample.txt
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/sample.txt
+rename to dev/archive/legacy-docs-build/admin-notes/sample.txt
+diff --git a/dev/archive/docs_build/dev/admin-notes/tools/ObjectConfigurationRules.txt b/dev/archive/legacy-docs-build/admin-notes/tools/ObjectConfigurationRules.txt
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/tools/ObjectConfigurationRules.txt
+rename to dev/archive/legacy-docs-build/admin-notes/tools/ObjectConfigurationRules.txt
+diff --git a/dev/archive/docs_build/dev/admin-notes/tools/TestDebug.txt b/dev/archive/legacy-docs-build/admin-notes/tools/TestDebug.txt
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/tools/TestDebug.txt
+rename to dev/archive/legacy-docs-build/admin-notes/tools/TestDebug.txt
+diff --git a/dev/archive/docs_build/dev/admin-notes/tools/Tools.txt b/dev/archive/legacy-docs-build/admin-notes/tools/Tools.txt
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/tools/Tools.txt
+rename to dev/archive/legacy-docs-build/admin-notes/tools/Tools.txt
+diff --git a/dev/archive/docs_build/dev/admin-notes/tools/achievements.txt b/dev/archive/legacy-docs-build/admin-notes/tools/achievements.txt
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/tools/achievements.txt
+rename to dev/archive/legacy-docs-build/admin-notes/tools/achievements.txt
+diff --git a/dev/archive/docs_build/dev/admin-notes/tools/edit_input.txt b/dev/archive/legacy-docs-build/admin-notes/tools/edit_input.txt
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/tools/edit_input.txt
+rename to dev/archive/legacy-docs-build/admin-notes/tools/edit_input.txt
+diff --git a/dev/archive/docs_build/dev/admin-notes/tools/game config.txt b/dev/archive/legacy-docs-build/admin-notes/tools/game config.txt
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/tools/game config.txt
+rename to dev/archive/legacy-docs-build/admin-notes/tools/game config.txt
+diff --git a/dev/archive/docs_build/dev/admin-notes/tools/game design.txt b/dev/archive/legacy-docs-build/admin-notes/tools/game design.txt
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/tools/game design.txt
+rename to dev/archive/legacy-docs-build/admin-notes/tools/game design.txt
+diff --git a/dev/archive/docs_build/dev/admin-notes/tools/game publisher.txt b/dev/archive/legacy-docs-build/admin-notes/tools/game publisher.txt
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/tools/game publisher.txt
+rename to dev/archive/legacy-docs-build/admin-notes/tools/game publisher.txt
+diff --git a/dev/archive/docs_build/dev/admin-notes/tools/index.txt b/dev/archive/legacy-docs-build/admin-notes/tools/index.txt
+similarity index 100%
+rename from dev/archive/docs_build/dev/admin-notes/tools/index.txt
+rename to dev/archive/legacy-docs-build/admin-notes/tools/index.txt
+diff --git a/dev/archive/docs_build/dev/dod/tool_ui_readiness_dod.md b/dev/archive/legacy-docs-build/dod/tool_ui_readiness_dod.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/dod/tool_ui_readiness_dod.md
+rename to dev/archive/legacy-docs-build/dod/tool_ui_readiness_dod.md
+diff --git a/dev/archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md b/dev/archive/legacy-docs-build/roadmaps/MASTER_ROADMAP_ENGINE.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md
+rename to dev/archive/legacy-docs-build/roadmaps/MASTER_ROADMAP_ENGINE.md
+diff --git a/dev/archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_APPEND.md b/dev/archive/legacy-docs-build/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_APPEND.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_APPEND.md
+rename to dev/archive/legacy-docs-build/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_APPEND.md
+diff --git a/dev/archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE.md b/dev/archive/legacy-docs-build/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE.md
+rename to dev/archive/legacy-docs-build/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE.md
+diff --git a/dev/archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE_8_19.md b/dev/archive/legacy-docs-build/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE_8_19.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE_8_19.md
+rename to dev/archive/legacy-docs-build/roadmaps/MASTER_ROADMAP_ENGINE_LEVEL_8_UPDATE_8_19.md
+diff --git a/dev/archive/docs_build/dev/roadmaps/MASTER_ROADMAP_FEATURES.md b/dev/archive/legacy-docs-build/roadmaps/MASTER_ROADMAP_FEATURES.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/roadmaps/MASTER_ROADMAP_FEATURES.md
+rename to dev/archive/legacy-docs-build/roadmaps/MASTER_ROADMAP_FEATURES.md
+diff --git a/dev/archive/docs_build/dev/roadmaps/MASTER_ROADMAP_RECOVERY.md b/dev/archive/legacy-docs-build/roadmaps/MASTER_ROADMAP_RECOVERY.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/roadmaps/MASTER_ROADMAP_RECOVERY.md
+rename to dev/archive/legacy-docs-build/roadmaps/MASTER_ROADMAP_RECOVERY.md
+diff --git a/dev/archive/docs_build/dev/roadmaps/MASTER_ROADMAP_SAMPLES2TOOLS.md b/dev/archive/legacy-docs-build/roadmaps/MASTER_ROADMAP_SAMPLES2TOOLS.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/roadmaps/MASTER_ROADMAP_SAMPLES2TOOLS.md
+rename to dev/archive/legacy-docs-build/roadmaps/MASTER_ROADMAP_SAMPLES2TOOLS.md
+diff --git a/dev/archive/docs_build/dev/roadmaps/MASTER_ROADMAP_STYLE.md b/dev/archive/legacy-docs-build/roadmaps/MASTER_ROADMAP_STYLE.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/roadmaps/MASTER_ROADMAP_STYLE.md
+rename to dev/archive/legacy-docs-build/roadmaps/MASTER_ROADMAP_STYLE.md
+diff --git a/dev/archive/docs_build/dev/roadmaps/MASTER_ROADMAP_TOOLS.md b/dev/archive/legacy-docs-build/roadmaps/MASTER_ROADMAP_TOOLS.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/roadmaps/MASTER_ROADMAP_TOOLS.md
+rename to dev/archive/legacy-docs-build/roadmaps/MASTER_ROADMAP_TOOLS.md
+diff --git a/dev/archive/docs_build/dev/roadmaps/MIDI_STUDIO_V2_ROADMAP.md b/dev/archive/legacy-docs-build/roadmaps/MIDI_STUDIO_V2_ROADMAP.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/roadmaps/MIDI_STUDIO_V2_ROADMAP.md
+rename to dev/archive/legacy-docs-build/roadmaps/MIDI_STUDIO_V2_ROADMAP.md
+diff --git a/dev/archive/docs_build/dev/roadmaps/POST_MIGRATION_PLATFORM_ROADMAP.md b/dev/archive/legacy-docs-build/roadmaps/POST_MIGRATION_PLATFORM_ROADMAP.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/roadmaps/POST_MIGRATION_PLATFORM_ROADMAP.md
+rename to dev/archive/legacy-docs-build/roadmaps/POST_MIGRATION_PLATFORM_ROADMAP.md
+diff --git a/dev/archive/docs_build/dev/roadmaps/README.md b/dev/archive/legacy-docs-build/roadmaps/README.md
+similarity index 100%
+rename from dev/archive/docs_build/dev/roadmaps/README.md
+rename to dev/archive/legacy-docs-build/roadmaps/README.md
+diff --git a/dev/archive/docs_build/dev/roadmaps/phases.txt b/dev/archive/legacy-docs-build/roadmaps/phases.txt
+similarity index 100%
+rename from dev/archive/docs_build/dev/roadmaps/phases.txt
+rename to dev/archive/legacy-docs-build/roadmaps/phases.txt
+diff --git a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+index c50949715..8b6bc87f7 100644
+--- a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
++++ b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+@@ -40,7 +40,7 @@ Existing Project Instructions outside `dev/build/ProjectInstructions/` remain pr
+ - `standards/` contains active contract, model, and platform standards.
+ - `deprecation/` contains deprecation workflow documentation.
+ - Retained reference material belongs under the repository root `dev/archive/` tree, not under `dev/build/dev/`.
+-- History snapshots belong under `dev/archive/docs_build/dev/ProjectInstructions/history/`.
++- History snapshots belong under `dev/archive/legacy-docs-build/ProjectInstructions/history/`.
+
+ ## Recognized Project Reference Files
+
+@@ -51,7 +51,7 @@ Existing Project Instructions outside `dev/build/ProjectInstructions/` remain pr
+ `dev/build/ProjectInstructions/addendums/documentation_ownership.md` defines the active documentation ownership model:
+
+ - `dev/build/ProjectInstructions/` owns governance, team instructions, standards, and addendums.
+-- `dev/build/dev/PR/` owns PR workflow documents, templates, and examples.
++- `dev/build/pr/` owns PR workflow documents, templates, and examples.
+ - `dev/reports/` owns generated reports and audits.
+ - `dev/workspace/artifacts/` owns generated non-report artifacts, repo-structured ZIPs, and local temporary workspace output.
+ - root `dev/archive/` owns historical reference material only.
+diff --git a/dev/build/ProjectInstructions/README.txt b/dev/build/ProjectInstructions/README.txt
+index 5085089da..a40c2cad4 100644
+--- a/dev/build/ProjectInstructions/README.txt
++++ b/dev/build/ProjectInstructions/README.txt
+@@ -25,7 +25,7 @@ OWNER override approved: <reason>
+ The override must explain why normal team, branch, assignment, or backlog routing is being changed.
+
+ History snapshot rule:
+-When a governance or instruction state needs a history snapshot, add a new file under `dev/archive/docs_build/dev/ProjectInstructions/history/` using:
++When a governance or instruction state needs a history snapshot, add a new file under `dev/archive/legacy-docs-build/ProjectInstructions/history/` using:
+ CCYYMMDD_HHMMSS.md
+
+ Do not rewrite history snapshots after creation unless the owner explicitly approves.
+@@ -69,5 +69,5 @@ Standards index:
+ - Active contract, model, and platform standards: dev/build/ProjectInstructions/standards/
+
+ PR documentation:
+-- Reusable PR templates: dev/build/dev/PR/templates/
+-- Historical/reference PR documents: dev/build/dev/PR/reference/
++- Reusable PR templates: dev/build/pr/templates/
++- Historical/reference PR documents: dev/build/pr/reference/
+diff --git a/dev/build/ProjectInstructions/addendums/codex_project_instructions_startup.md b/dev/build/ProjectInstructions/addendums/codex_project_instructions_startup.md
+index 04c2291c6..8b46c2bfe 100644
+--- a/dev/build/ProjectInstructions/addendums/codex_project_instructions_startup.md
++++ b/dev/build/ProjectInstructions/addendums/codex_project_instructions_startup.md
+@@ -35,7 +35,7 @@ Deprecated Project Instructions material outside `dev/build/ProjectInstructions/
+
+ ## Project Reference File Review
+
+-When present in `ProjectInstructions.zip`, the active project instruction directory, or `dev/archive/docs_build/dev/admin-notes/`, Codex must include these recognized project instruction/reference files in the Project Instructions read set:
++When present in `ProjectInstructions.zip`, the active project instruction directory, or `dev/archive/legacy-docs-build/admin-notes/`, Codex must include these recognized project instruction/reference files in the Project Instructions read set:
+
+ - `Installs required.txt`
+ - `Table layout.txt`
+diff --git a/dev/build/ProjectInstructions/addendums/documentation_ownership.md b/dev/build/ProjectInstructions/addendums/documentation_ownership.md
+index a7635876c..b253fecfa 100644
+--- a/dev/build/ProjectInstructions/addendums/documentation_ownership.md
++++ b/dev/build/ProjectInstructions/addendums/documentation_ownership.md
+@@ -15,7 +15,7 @@ Define the ownership model for documentation under `dev/build/dev/` after Projec
+ - standards
+ - addendums
+
+-`dev/build/dev/PR/` owns:
++`dev/build/pr/` owns:
+ - PR workflow documentation
+ - reusable PR templates
+ - historical or reference PR documents
+@@ -35,7 +35,7 @@ The repository root `dev/archive/` owns:
+ ## Rules
+
+ - No active governance may exist outside `dev/build/ProjectInstructions/`.
+-- No reusable PR template may exist outside `dev/build/dev/PR/templates/`.
++- No reusable PR template may exist outside `dev/build/pr/templates/`.
+ - No generated report may exist outside `dev/reports/`.
+ - No generated non-report artifact may exist outside `dev/workspace/artifacts/`.
+ - No active document may exist outside its owning area.
+@@ -45,8 +45,8 @@ The repository root `dev/archive/` owns:
+ ## Folder Rules
+
+ - `dev/build/ProjectInstructions/standards/` contains active contract, model, and platform standards.
+-- `dev/build/dev/PR/templates/` contains reusable PR templates.
+-- `dev/build/dev/PR/reference/` contains historical or reference PR documents.
++- `dev/build/pr/templates/` contains reusable PR templates.
++- `dev/build/pr/reference/` contains historical or reference PR documents.
+ - `dev/reports/` contains flat generated report outputs. Use team, runner, lane, or PR naming in filenames instead of nested report folders.
+ - `dev/workspace/artifacts/zips/` contains repo-structured ZIP outputs.
+ - `dev/workspace/artifacts/tmp/` contains temporary generated files.
+@@ -56,7 +56,7 @@ The repository root `dev/archive/` owns:
+ Documentation ownership cleanup PRs must verify:
+
+ - no active Project Instructions outside `dev/build/ProjectInstructions/`
+-- no reusable PR templates outside `dev/build/dev/PR/templates/`
++- no reusable PR templates outside `dev/build/pr/templates/`
+ - no generated reports outside `dev/reports/`
+ - no generated non-report artifacts outside `dev/workspace/artifacts/`
+ - no runtime/product/API/database files changed unless explicitly scoped
+diff --git a/dev/build/ProjectInstructions/addendums/preservation.md b/dev/build/ProjectInstructions/addendums/preservation.md
+index e82e1d240..d35b56574 100644
+--- a/dev/build/ProjectInstructions/addendums/preservation.md
++++ b/dev/build/ProjectInstructions/addendums/preservation.md
+@@ -37,6 +37,6 @@ When material is no longer active, archive it instead of deleting it. Archive en
+
+ History snapshots go to:
+
+-`dev/archive/docs_build/dev/ProjectInstructions/history/CCYYMMDD_HHMMSS.md`
++`dev/archive/legacy-docs-build/ProjectInstructions/history/CCYYMMDD_HHMMSS.md`
+
+ Use 24-hour local time for `HHMMSS` unless the owner specifies another time basis.
+diff --git a/dev/build/ProjectInstructions/addendums/project_reference_files.md b/dev/build/ProjectInstructions/addendums/project_reference_files.md
+index 502c88a19..0491ddda0 100644
+--- a/dev/build/ProjectInstructions/addendums/project_reference_files.md
++++ b/dev/build/ProjectInstructions/addendums/project_reference_files.md
+@@ -16,8 +16,8 @@ The following files are valid project instruction/reference documents when prese
+
+ Canonical repository reference locations:
+
+-- `dev/archive/docs_build/dev/admin-notes/Installs required.txt`
+-- `dev/archive/docs_build/dev/admin-notes/Table layout.txt`
++- `dev/archive/legacy-docs-build/admin-notes/Installs required.txt`
++- `dev/archive/legacy-docs-build/admin-notes/Table layout.txt`
+
+ ## Review Rule
+
+@@ -25,7 +25,7 @@ Future Project Instructions reviews must include these files automatically when
+
+ - an extracted `ProjectInstructions.zip` bundle
+ - the active project instruction directory
+-- `dev/archive/docs_build/dev/admin-notes/`
++- `dev/archive/legacy-docs-build/admin-notes/`
+
+ Archived reference files are not active governance. If they conflict with active Project Instructions, `dev/build/ProjectInstructions/` wins unless OWNER explicitly approves a newer governance change.
+
+diff --git a/dev/build/ProjectInstructions/addendums/release_gate.md b/dev/build/ProjectInstructions/addendums/release_gate.md
+index b3909c6ed..f90ea7d82 100644
+--- a/dev/build/ProjectInstructions/addendums/release_gate.md
++++ b/dev/build/ProjectInstructions/addendums/release_gate.md
+@@ -49,8 +49,8 @@ The release gate should confirm these files when relevant to the PR:
+ - `dev/build/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md`
+ - `dev/build/ProjectInstructions/addendums/no_mock_repository_runtime_source.md`
+ - `dev/build/ProjectInstructions/team_assignments/team_ownership.md`
+-- `dev/archive/docs_build/dev/admin-notes/Installs required.txt` when present
+-- `dev/archive/docs_build/dev/admin-notes/Table layout.txt` when present
++- `dev/archive/legacy-docs-build/admin-notes/Installs required.txt` when present
++- `dev/archive/legacy-docs-build/admin-notes/Table layout.txt` when present
+
+ ## Validation Result
+
+diff --git a/dev/build/ProjectInstructions/addendums/repository_directory_standard.md b/dev/build/ProjectInstructions/addendums/repository_directory_standard.md
+index 9053f6fb6..a15a2e6d7 100644
+--- a/dev/build/ProjectInstructions/addendums/repository_directory_standard.md
++++ b/dev/build/ProjectInstructions/addendums/repository_directory_standard.md
+@@ -50,7 +50,7 @@ Transition rule:
+
+ Path references to old root `docs_build/`, `tests/`, `archive/`, or `tmp/` locations are allowed only when they are:
+
+-- historical/reference content under `dev/archive/` or `dev/build/dev/PR/reference/`
++- historical/reference content under `dev/archive/` or `dev/build/pr/reference/`
+ - explicit legacy exception notes in active governance
+ - ignore rules that keep obsolete local scratch from entering commits
+ - migration reports documenting the old path and its replacement
+diff --git a/dev/build/ProjectInstructions/standards/README.md b/dev/build/ProjectInstructions/standards/README.md
+index f75441637..854d19c7d 100644
+--- a/dev/build/ProjectInstructions/standards/README.md
++++ b/dev/build/ProjectInstructions/standards/README.md
+@@ -7,4 +7,4 @@ Rules:
+ - Standards here are active governance.
+ - Generated validation evidence belongs under `dev/reports/`.
+ - Historical reference material belongs under the root `dev/archive/` tree.
+-- Reusable PR templates belong under `dev/build/dev/PR/templates/`.
++- Reusable PR templates belong under `dev/build/pr/templates/`.
+diff --git a/dev/build/dev/toolbox/checkDocsStructureGuard.mjs b/dev/build/dev/toolbox/checkDocsStructureGuard.mjs
+index 61082edcf..809059d26 100644
+--- a/dev/build/dev/toolbox/checkDocsStructureGuard.mjs
++++ b/dev/build/dev/toolbox/checkDocsStructureGuard.mjs
+@@ -2,7 +2,7 @@ import fs from 'fs';
+ import path from 'path';
+
+ const INVALID_PATH = 'docs/roadmaps';
+-const VALID_PATH = 'dev/archive/docs_build/dev/roadmaps';
++const VALID_PATH = 'dev/archive/legacy-docs-build/roadmaps';
+
+ function fail(msg) {
+   console.error('❌ DOCS STRUCTURE ERROR:\n' + msg);
+@@ -27,9 +27,9 @@ if (fs.existsSync(INVALID_PATH)) {
+
+ // Rule 2: valid roadmap path must exist
+ if (!fs.existsSync(VALID_PATH)) {
+-  fail('missing required dev/archive/docs_build/dev/roadmaps/');
++  fail('missing required dev/archive/legacy-docs-build/roadmaps/');
+ } else {
+-  ok('dev/archive/docs_build/dev/roadmaps exists');
++  ok('dev/archive/legacy-docs-build/roadmaps exists');
+ }
+
+ // Rule 3: prevent roadmap drift
+diff --git a/dev/build/dev/toolbox/checkPhase24CloseoutExecutionGuard.baseline.json b/dev/build/dev/toolbox/checkPhase24CloseoutExecutionGuard.baseline.json
+index 88ad83d9a..da776db03 100644
+--- a/dev/build/dev/toolbox/checkPhase24CloseoutExecutionGuard.baseline.json
++++ b/dev/build/dev/toolbox/checkPhase24CloseoutExecutionGuard.baseline.json
+@@ -1,5 +1,5 @@
+ {
+-  "roadmapPath": "dev/archive/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md",
++  "roadmapPath": "dev/archive/legacy-docs-build/roadmaps/MASTER_ROADMAP_ENGINE.md",
+   "statusInsensitiveSha256": "64d08c4a4a195451287c5e4a63b5ef390171be5ca4bbf5391eab905c36bcb832",
+   "fullscreenAllowedRoot": "dev/archive/v1-v2/samples/phase-07/0713",
+   "fullscreenPatterns": ["requestFullscreen", "webkitRequestFullscreen", "engine.fullscreen", "fullscreenPreferred", "settings-fullscreen"]
+diff --git a/dev/build/operations/dev/3D_SAMPLE_ADAPTER_HARNESS.md b/dev/build/operations/3D_SAMPLE_ADAPTER_HARNESS.md
+similarity index 100%
+rename from dev/build/operations/dev/3D_SAMPLE_ADAPTER_HARNESS.md
+rename to dev/build/operations/3D_SAMPLE_ADAPTER_HARNESS.md
+diff --git a/dev/build/operations/dev/APPLY_VALIDATION_SPEC.md b/dev/build/operations/APPLY_VALIDATION_SPEC.md
+similarity index 100%
+rename from dev/build/operations/dev/APPLY_VALIDATION_SPEC.md
+rename to dev/build/operations/APPLY_VALIDATION_SPEC.md
+diff --git a/dev/build/operations/dev/AUTHORITATIVE_INJECTION_SPEC.md b/dev/build/operations/AUTHORITATIVE_INJECTION_SPEC.md
+similarity index 100%
+rename from dev/build/operations/dev/AUTHORITATIVE_INJECTION_SPEC.md
+rename to dev/build/operations/AUTHORITATIVE_INJECTION_SPEC.md
+diff --git a/dev/build/operations/dev/CODEX_PLAN_AND_API_KEY_SCRIPTING.md b/dev/build/operations/CODEX_PLAN_AND_API_KEY_SCRIPTING.md
+similarity index 100%
+rename from dev/build/operations/dev/CODEX_PLAN_AND_API_KEY_SCRIPTING.md
+rename to dev/build/operations/CODEX_PLAN_AND_API_KEY_SCRIPTING.md
+diff --git a/dev/build/operations/dev/CODEX_TEMPLATE_GAME_CREATION_SCRIPTING.md b/dev/build/operations/CODEX_TEMPLATE_GAME_CREATION_SCRIPTING.md
+similarity index 100%
+rename from dev/build/operations/dev/CODEX_TEMPLATE_GAME_CREATION_SCRIPTING.md
+rename to dev/build/operations/CODEX_TEMPLATE_GAME_CREATION_SCRIPTING.md
+diff --git a/dev/build/operations/dev/CODEX_WEBSITE_REPO_DEPLOYMENT_SCRIPTING.md b/dev/build/operations/CODEX_WEBSITE_REPO_DEPLOYMENT_SCRIPTING.md
+similarity index 100%
+rename from dev/build/operations/dev/CODEX_WEBSITE_REPO_DEPLOYMENT_SCRIPTING.md
+rename to dev/build/operations/CODEX_WEBSITE_REPO_DEPLOYMENT_SCRIPTING.md
+diff --git a/dev/build/operations/dev/DAILY_STARTUP_ONE_SHOT.md b/dev/build/operations/DAILY_STARTUP_ONE_SHOT.md
+similarity index 100%
+rename from dev/build/operations/dev/DAILY_STARTUP_ONE_SHOT.md
+rename to dev/build/operations/DAILY_STARTUP_ONE_SHOT.md
+diff --git a/dev/build/operations/dev/DAILY_STARTUP_V4.md b/dev/build/operations/DAILY_STARTUP_V4.md
+similarity index 100%
+rename from dev/build/operations/dev/DAILY_STARTUP_V4.md
+rename to dev/build/operations/DAILY_STARTUP_V4.md
+diff --git a/dev/build/operations/dev/DEBUG_MULTI_ENTITY_SPEC.md b/dev/build/operations/DEBUG_MULTI_ENTITY_SPEC.md
+similarity index 100%
+rename from dev/build/operations/dev/DEBUG_MULTI_ENTITY_SPEC.md
+rename to dev/build/operations/DEBUG_MULTI_ENTITY_SPEC.md
+diff --git a/dev/build/operations/dev/DEBUG_REPLAY_VISUALS.md b/dev/build/operations/DEBUG_REPLAY_VISUALS.md
+similarity index 100%
+rename from dev/build/operations/dev/DEBUG_REPLAY_VISUALS.md
+rename to dev/build/operations/DEBUG_REPLAY_VISUALS.md
+diff --git a/dev/build/operations/dev/DEBUG_SURFACE_CONTRACT.md b/dev/build/operations/DEBUG_SURFACE_CONTRACT.md
+similarity index 100%
+rename from dev/build/operations/dev/DEBUG_SURFACE_CONTRACT.md
+rename to dev/build/operations/DEBUG_SURFACE_CONTRACT.md
+diff --git a/dev/build/operations/dev/DEBUG_TIMELINE_VISUALIZATION.md b/dev/build/operations/DEBUG_TIMELINE_VISUALIZATION.md
+similarity index 100%
+rename from dev/build/operations/dev/DEBUG_TIMELINE_VISUALIZATION.md
+rename to dev/build/operations/DEBUG_TIMELINE_VISUALIZATION.md
+diff --git a/dev/build/operations/dev/DETERMINISTIC_REPLAY_RULES.md b/dev/build/operations/DETERMINISTIC_REPLAY_RULES.md
+similarity index 100%
+rename from dev/build/operations/dev/DETERMINISTIC_REPLAY_RULES.md
+rename to dev/build/operations/DETERMINISTIC_REPLAY_RULES.md
+diff --git a/dev/build/operations/dev/ENGINE_MATURITY_API_INVENTORY.md b/dev/build/operations/ENGINE_MATURITY_API_INVENTORY.md
+similarity index 100%
+rename from dev/build/operations/dev/ENGINE_MATURITY_API_INVENTORY.md
+rename to dev/build/operations/ENGINE_MATURITY_API_INVENTORY.md
+diff --git a/dev/build/operations/dev/ENGINE_MATURITY_DOCUMENTATION_MAP.md b/dev/build/operations/ENGINE_MATURITY_DOCUMENTATION_MAP.md
+similarity index 100%
+rename from dev/build/operations/dev/ENGINE_MATURITY_DOCUMENTATION_MAP.md
+rename to dev/build/operations/ENGINE_MATURITY_DOCUMENTATION_MAP.md
+diff --git a/dev/build/operations/dev/ENGINE_MATURITY_PERFORMANCE_RULES.md b/dev/build/operations/ENGINE_MATURITY_PERFORMANCE_RULES.md
+similarity index 100%
+rename from dev/build/operations/dev/ENGINE_MATURITY_PERFORMANCE_RULES.md
+rename to dev/build/operations/ENGINE_MATURITY_PERFORMANCE_RULES.md
+diff --git a/dev/build/operations/dev/ENGINE_MATURITY_VERSIONING_STRATEGY.md b/dev/build/operations/ENGINE_MATURITY_VERSIONING_STRATEGY.md
+similarity index 100%
+rename from dev/build/operations/dev/ENGINE_MATURITY_VERSIONING_STRATEGY.md
+rename to dev/build/operations/ENGINE_MATURITY_VERSIONING_STRATEGY.md
+diff --git a/dev/build/operations/dev/ENTITY_RECONCILIATION_SPEC.md b/dev/build/operations/ENTITY_RECONCILIATION_SPEC.md
+similarity index 100%
+rename from dev/build/operations/dev/ENTITY_RECONCILIATION_SPEC.md
+rename to dev/build/operations/ENTITY_RECONCILIATION_SPEC.md
+diff --git a/dev/build/operations/dev/FINAL_OPTIMIZATION_INSTRUCTIONS.md b/dev/build/operations/FINAL_OPTIMIZATION_INSTRUCTIONS.md
+similarity index 100%
+rename from dev/build/operations/dev/FINAL_OPTIMIZATION_INSTRUCTIONS.md
+rename to dev/build/operations/FINAL_OPTIMIZATION_INSTRUCTIONS.md
+diff --git a/dev/build/operations/dev/FRAME_HISTORY_SPEC.md b/dev/build/operations/FRAME_HISTORY_SPEC.md
+similarity index 100%
+rename from dev/build/operations/dev/FRAME_HISTORY_SPEC.md
+rename to dev/build/operations/FRAME_HISTORY_SPEC.md
+diff --git a/dev/build/operations/dev/FULL_AUTOMATION_NOTES.md b/dev/build/operations/FULL_AUTOMATION_NOTES.md
+similarity index 100%
+rename from dev/build/operations/dev/FULL_AUTOMATION_NOTES.md
+rename to dev/build/operations/FULL_AUTOMATION_NOTES.md
+diff --git a/dev/build/operations/dev/GITHUB_CONNECTOR_USAGE.md b/dev/build/operations/GITHUB_CONNECTOR_USAGE.md
+similarity index 100%
+rename from dev/build/operations/dev/GITHUB_CONNECTOR_USAGE.md
+rename to dev/build/operations/GITHUB_CONNECTOR_USAGE.md
+diff --git a/dev/build/operations/dev/INTEGRATION_NOTES.md b/dev/build/operations/INTEGRATION_NOTES.md
+similarity index 100%
+rename from dev/build/operations/dev/INTEGRATION_NOTES.md
+rename to dev/build/operations/INTEGRATION_NOTES.md
+diff --git a/dev/build/operations/dev/LEVEL_20_TRACK_A_BUILD_PIPELINE.md b/dev/build/operations/LEVEL_20_TRACK_A_BUILD_PIPELINE.md
+similarity index 100%
+rename from dev/build/operations/dev/LEVEL_20_TRACK_A_BUILD_PIPELINE.md
+rename to dev/build/operations/LEVEL_20_TRACK_A_BUILD_PIPELINE.md
+diff --git a/dev/build/operations/dev/LEVEL_20_TRACK_A_RELEASE_CRITERIA.md b/dev/build/operations/LEVEL_20_TRACK_A_RELEASE_CRITERIA.md
+similarity index 100%
+rename from dev/build/operations/dev/LEVEL_20_TRACK_A_RELEASE_CRITERIA.md
+rename to dev/build/operations/LEVEL_20_TRACK_A_RELEASE_CRITERIA.md
+diff --git a/dev/build/operations/dev/MULTI_ENTITY_TIMELINE_SPEC.md b/dev/build/operations/MULTI_ENTITY_TIMELINE_SPEC.md
+similarity index 100%
+rename from dev/build/operations/dev/MULTI_ENTITY_TIMELINE_SPEC.md
+rename to dev/build/operations/MULTI_ENTITY_TIMELINE_SPEC.md
+diff --git a/dev/build/operations/dev/NETWORK_SAMPLE_ADAPTER_HARNESS.md b/dev/build/operations/NETWORK_SAMPLE_ADAPTER_HARNESS.md
+similarity index 100%
+rename from dev/build/operations/dev/NETWORK_SAMPLE_ADAPTER_HARNESS.md
+rename to dev/build/operations/NETWORK_SAMPLE_ADAPTER_HARNESS.md
+diff --git a/dev/build/operations/dev/ONE_SHOT_MODE.md b/dev/build/operations/ONE_SHOT_MODE.md
+similarity index 100%
+rename from dev/build/operations/dev/ONE_SHOT_MODE.md
+rename to dev/build/operations/ONE_SHOT_MODE.md
+diff --git a/dev/build/operations/dev/PLANNING_SYSTEM_RULES.md b/dev/build/operations/PLANNING_SYSTEM_RULES.md
+similarity index 100%
+rename from dev/build/operations/dev/PLANNING_SYSTEM_RULES.md
+rename to dev/build/operations/PLANNING_SYSTEM_RULES.md
+diff --git a/dev/build/operations/dev/POWERSHELL_SCRIPT_STRUCTURE.md b/dev/build/operations/POWERSHELL_SCRIPT_STRUCTURE.md
+similarity index 100%
+rename from dev/build/operations/dev/POWERSHELL_SCRIPT_STRUCTURE.md
+rename to dev/build/operations/POWERSHELL_SCRIPT_STRUCTURE.md
+diff --git a/dev/build/operations/dev/PROJECT_V2_NOTES.md b/dev/build/operations/PROJECT_V2_NOTES.md
+similarity index 100%
+rename from dev/build/operations/dev/PROJECT_V2_NOTES.md
+rename to dev/build/operations/PROJECT_V2_NOTES.md
+diff --git a/dev/build/operations/dev/README.md b/dev/build/operations/README.md
+similarity index 100%
+rename from dev/build/operations/dev/README.md
+rename to dev/build/operations/README.md
+diff --git a/dev/build/operations/dev/RECONCILIATION_LAYER_SPEC.md b/dev/build/operations/RECONCILIATION_LAYER_SPEC.md
+similarity index 100%
+rename from dev/build/operations/dev/RECONCILIATION_LAYER_SPEC.md
+rename to dev/build/operations/RECONCILIATION_LAYER_SPEC.md
+diff --git a/dev/build/operations/dev/REWIND_EXECUTION_SPEC.md b/dev/build/operations/REWIND_EXECUTION_SPEC.md
+similarity index 100%
+rename from dev/build/operations/dev/REWIND_EXECUTION_SPEC.md
+rename to dev/build/operations/REWIND_EXECUTION_SPEC.md
+diff --git a/dev/build/operations/dev/REWIND_STRATEGY_SPEC.md b/dev/build/operations/REWIND_STRATEGY_SPEC.md
+similarity index 100%
+rename from dev/build/operations/dev/REWIND_STRATEGY_SPEC.md
+rename to dev/build/operations/REWIND_STRATEGY_SPEC.md
+diff --git a/dev/build/operations/dev/ROADMAP_GUARDRAILS.md b/dev/build/operations/ROADMAP_GUARDRAILS.md
+similarity index 100%
+rename from dev/build/operations/dev/ROADMAP_GUARDRAILS.md
+rename to dev/build/operations/ROADMAP_GUARDRAILS.md
+diff --git a/dev/build/operations/dev/ROADMAP_RULES.md b/dev/build/operations/ROADMAP_RULES.md
+similarity index 100%
+rename from dev/build/operations/dev/ROADMAP_RULES.md
+rename to dev/build/operations/ROADMAP_RULES.md
+diff --git a/dev/build/operations/dev/ROLLBACK_GUARDRAILS.md b/dev/build/operations/ROLLBACK_GUARDRAILS.md
+similarity index 100%
+rename from dev/build/operations/dev/ROLLBACK_GUARDRAILS.md
+rename to dev/build/operations/ROLLBACK_GUARDRAILS.md
+diff --git a/dev/build/operations/dev/RULES_OF_ENGAGEMENT.md b/dev/build/operations/RULES_OF_ENGAGEMENT.md
+similarity index 100%
+rename from dev/build/operations/dev/RULES_OF_ENGAGEMENT.md
+rename to dev/build/operations/RULES_OF_ENGAGEMENT.md
+diff --git a/dev/build/operations/dev/SELECTIVE_REWIND_SPEC.md b/dev/build/operations/SELECTIVE_REWIND_SPEC.md
+similarity index 100%
+rename from dev/build/operations/dev/SELECTIVE_REWIND_SPEC.md
+rename to dev/build/operations/SELECTIVE_REWIND_SPEC.md
+diff --git a/dev/build/operations/dev/SHARED_EXTRACTION_GUARD_USAGE.md b/dev/build/operations/SHARED_EXTRACTION_GUARD_USAGE.md
+similarity index 100%
+rename from dev/build/operations/dev/SHARED_EXTRACTION_GUARD_USAGE.md
+rename to dev/build/operations/SHARED_EXTRACTION_GUARD_USAGE.md
+diff --git a/dev/build/operations/dev/STATE_TIMELINE_SPEC.md b/dev/build/operations/STATE_TIMELINE_SPEC.md
+similarity index 100%
+rename from dev/build/operations/dev/STATE_TIMELINE_SPEC.md
+rename to dev/build/operations/STATE_TIMELINE_SPEC.md
+diff --git a/dev/build/operations/dev/TIMELINE_UPDATE_SPEC.md b/dev/build/operations/TIMELINE_UPDATE_SPEC.md
+similarity index 100%
+rename from dev/build/operations/dev/TIMELINE_UPDATE_SPEC.md
+rename to dev/build/operations/TIMELINE_UPDATE_SPEC.md
+diff --git a/dev/build/operations/dev/TOKEN_OPTIMIZATION_NOTES.md b/dev/build/operations/TOKEN_OPTIMIZATION_NOTES.md
+similarity index 100%
+rename from dev/build/operations/dev/TOKEN_OPTIMIZATION_NOTES.md
+rename to dev/build/operations/TOKEN_OPTIMIZATION_NOTES.md
+diff --git a/dev/build/operations/dev/V4_AUTOMATION.md b/dev/build/operations/V4_AUTOMATION.md
+similarity index 100%
+rename from dev/build/operations/dev/V4_AUTOMATION.md
+rename to dev/build/operations/V4_AUTOMATION.md
+diff --git a/dev/build/operations/dev/change_summary.txt b/dev/build/operations/change_summary.txt
+similarity index 100%
+rename from dev/build/operations/dev/change_summary.txt
+rename to dev/build/operations/change_summary.txt
+diff --git a/dev/build/operations/dev/codex_commands.md b/dev/build/operations/codex_commands.md
+similarity index 100%
+rename from dev/build/operations/dev/codex_commands.md
+rename to dev/build/operations/codex_commands.md
+diff --git a/dev/build/operations/dev/codex_execution_template.md b/dev/build/operations/codex_execution_template.md
+similarity index 100%
+rename from dev/build/operations/dev/codex_execution_template.md
+rename to dev/build/operations/codex_execution_template.md
+diff --git a/dev/build/operations/dev/commit_comment.txt b/dev/build/operations/commit_comment.txt
+similarity index 100%
+rename from dev/build/operations/dev/commit_comment.txt
+rename to dev/build/operations/commit_comment.txt
+diff --git a/dev/build/operations/dev/file_tree.txt b/dev/build/operations/file_tree.txt
+similarity index 100%
+rename from dev/build/operations/dev/file_tree.txt
+rename to dev/build/operations/file_tree.txt
+diff --git a/dev/build/operations/dev/paths.md b/dev/build/operations/paths.md
+similarity index 100%
+rename from dev/build/operations/dev/paths.md
+rename to dev/build/operations/paths.md
+diff --git a/dev/build/operations/dev/pr_naming_convention.md b/dev/build/operations/pr_naming_convention.md
+similarity index 100%
+rename from dev/build/operations/dev/pr_naming_convention.md
+rename to dev/build/operations/pr_naming_convention.md
+diff --git a/dev/build/operations/dev/run_commands.ps1 b/dev/build/operations/run_commands.ps1
+similarity index 100%
+rename from dev/build/operations/dev/run_commands.ps1
+rename to dev/build/operations/run_commands.ps1
+diff --git a/dev/build/operations/dev/run_commands.txt b/dev/build/operations/run_commands.txt
+similarity index 100%
+rename from dev/build/operations/dev/run_commands.txt
+rename to dev/build/operations/run_commands.txt
+diff --git a/dev/build/operations/dev/templates/BUILD_FROM_PLAN_TEMPLATE.md b/dev/build/operations/templates/BUILD_FROM_PLAN_TEMPLATE.md
+similarity index 100%
+rename from dev/build/operations/dev/templates/BUILD_FROM_PLAN_TEMPLATE.md
+rename to dev/build/operations/templates/BUILD_FROM_PLAN_TEMPLATE.md
+diff --git a/dev/build/operations/dev/templates/BUILD_TEMPLATE_PROTECTED.md b/dev/build/operations/templates/BUILD_TEMPLATE_PROTECTED.md
+similarity index 100%
+rename from dev/build/operations/dev/templates/BUILD_TEMPLATE_PROTECTED.md
+rename to dev/build/operations/templates/BUILD_TEMPLATE_PROTECTED.md
+diff --git a/dev/build/operations/dev/templates/CHATGPT_ONE_SHOT_PROMPT.md b/dev/build/operations/templates/CHATGPT_ONE_SHOT_PROMPT.md
+similarity index 100%
+rename from dev/build/operations/dev/templates/CHATGPT_ONE_SHOT_PROMPT.md
+rename to dev/build/operations/templates/CHATGPT_ONE_SHOT_PROMPT.md
+diff --git a/dev/build/operations/dev/templates/CHATGPT_START_PROMPT_V4.md b/dev/build/operations/templates/CHATGPT_START_PROMPT_V4.md
+similarity index 100%
+rename from dev/build/operations/dev/templates/CHATGPT_START_PROMPT_V4.md
+rename to dev/build/operations/templates/CHATGPT_START_PROMPT_V4.md
+diff --git a/dev/build/operations/dev/templates/CODEX_AUTO_COMMAND.md b/dev/build/operations/templates/CODEX_AUTO_COMMAND.md
+similarity index 100%
+rename from dev/build/operations/dev/templates/CODEX_AUTO_COMMAND.md
+rename to dev/build/operations/templates/CODEX_AUTO_COMMAND.md
+diff --git a/dev/build/operations/dev/templates/CODEX_COMMAND_TEMPLATE.md b/dev/build/operations/templates/CODEX_COMMAND_TEMPLATE.md
+similarity index 100%
+rename from dev/build/operations/dev/templates/CODEX_COMMAND_TEMPLATE.md
+rename to dev/build/operations/templates/CODEX_COMMAND_TEMPLATE.md
+diff --git a/dev/build/operations/dev/templates/CODEX_ONE_LINE_COMMAND.md b/dev/build/operations/templates/CODEX_ONE_LINE_COMMAND.md
+similarity index 100%
+rename from dev/build/operations/dev/templates/CODEX_ONE_LINE_COMMAND.md
+rename to dev/build/operations/templates/CODEX_ONE_LINE_COMMAND.md
+diff --git a/dev/build/operations/dev/templates/CODEX_ONE_LINE_EXAMPLE.md b/dev/build/operations/templates/CODEX_ONE_LINE_EXAMPLE.md
+similarity index 100%
+rename from dev/build/operations/dev/templates/CODEX_ONE_LINE_EXAMPLE.md
+rename to dev/build/operations/templates/CODEX_ONE_LINE_EXAMPLE.md
+diff --git a/dev/build/operations/dev/templates/CODEX_ONE_SHOT_COMMAND.md b/dev/build/operations/templates/CODEX_ONE_SHOT_COMMAND.md
+similarity index 100%
+rename from dev/build/operations/dev/templates/CODEX_ONE_SHOT_COMMAND.md
+rename to dev/build/operations/templates/CODEX_ONE_SHOT_COMMAND.md
+diff --git a/dev/build/operations/dev/templates/SESSION_TEMPLATE.md b/dev/build/operations/templates/SESSION_TEMPLATE.md
+similarity index 100%
+rename from dev/build/operations/dev/templates/SESSION_TEMPLATE.md
+rename to dev/build/operations/templates/SESSION_TEMPLATE.md
+diff --git a/dev/build/operations/dev/validation_checklist.txt b/dev/build/operations/validation_checklist.txt
+similarity index 100%
+rename from dev/build/operations/dev/validation_checklist.txt
+rename to dev/build/operations/validation_checklist.txt
+diff --git a/dev/build/dev/PR/README.md b/dev/build/pr/README.md
+similarity index 88%
+rename from dev/build/dev/PR/README.md
+rename to dev/build/pr/README.md
+index 36dfd27f7..860534a1a 100644
+--- a/dev/build/dev/PR/README.md
++++ b/dev/build/pr/README.md
+@@ -7,7 +7,7 @@ This folder owns reusable PR workflow material and historical PR reference docum
+ - `templates/` contains reusable PR planning and build templates.
+ - `reference/` contains historical or reference PR documents.
+
+-Reusable PR templates must not live outside `dev/build/dev/PR/templates/`.
++Reusable PR templates must not live outside `dev/build/pr/templates/`.
+ Generated PR reports must live under `dev/reports/`.
+ Permanent governance must live under `dev/build/ProjectInstructions/`.
+
+diff --git a/dev/build/dev/PR/reference/OWNER_007_BUILD_PR.md b/dev/build/pr/reference/OWNER_007_BUILD_PR.md
+similarity index 100%
+rename from dev/build/dev/PR/reference/OWNER_007_BUILD_PR.md
+rename to dev/build/pr/reference/OWNER_007_BUILD_PR.md
+diff --git a/dev/build/dev/PR/reference/OWNER_007_PLAN_PR.md b/dev/build/pr/reference/OWNER_007_PLAN_PR.md
+similarity index 100%
+rename from dev/build/dev/PR/reference/OWNER_007_PLAN_PR.md
+rename to dev/build/pr/reference/OWNER_007_PLAN_PR.md
+diff --git a/dev/build/dev/PR/reference/README.md b/dev/build/pr/reference/README.md
+similarity index 78%
+rename from dev/build/dev/PR/reference/README.md
+rename to dev/build/pr/reference/README.md
+index fd1607fb7..1889da28d 100644
+--- a/dev/build/dev/PR/reference/README.md
++++ b/dev/build/pr/reference/README.md
+@@ -4,4 +4,4 @@ This folder contains historical or reference PR planning documents.
+
+ Files here are reference only. They are not active Project Instructions, not reusable templates, and not generated reports.
+
+-Use reusable templates from `dev/build/dev/PR/templates/`.
++Use reusable templates from `dev/build/pr/templates/`.
+diff --git a/dev/build/dev/PR/reference/plan_pr_tool_workspace_manifest_boundaries.md b/dev/build/pr/reference/plan_pr_tool_workspace_manifest_boundaries.md
+similarity index 100%
+rename from dev/build/dev/PR/reference/plan_pr_tool_workspace_manifest_boundaries.md
+rename to dev/build/pr/reference/plan_pr_tool_workspace_manifest_boundaries.md
+diff --git a/dev/build/dev/PR/reference/pr_koti_layout_contract.md b/dev/build/pr/reference/pr_koti_layout_contract.md
+similarity index 100%
+rename from dev/build/dev/PR/reference/pr_koti_layout_contract.md
+rename to dev/build/pr/reference/pr_koti_layout_contract.md
+diff --git a/dev/build/dev/PR/reference/pr_tool_fix_asset_browser_1505.md b/dev/build/pr/reference/pr_tool_fix_asset_browser_1505.md
+similarity index 100%
+rename from dev/build/dev/PR/reference/pr_tool_fix_asset_browser_1505.md
+rename to dev/build/pr/reference/pr_tool_fix_asset_browser_1505.md
+diff --git a/dev/build/dev/PR/reference/pr_tool_fix_fullscreen_exit_state.md b/dev/build/pr/reference/pr_tool_fix_fullscreen_exit_state.md
+similarity index 100%
+rename from dev/build/dev/PR/reference/pr_tool_fix_fullscreen_exit_state.md
+rename to dev/build/pr/reference/pr_tool_fix_fullscreen_exit_state.md
+diff --git a/dev/build/dev/PR/reference/pr_tool_fix_parallax_header_metadata.md b/dev/build/pr/reference/pr_tool_fix_parallax_header_metadata.md
+similarity index 100%
+rename from dev/build/dev/PR/reference/pr_tool_fix_parallax_header_metadata.md
+rename to dev/build/pr/reference/pr_tool_fix_parallax_header_metadata.md
+diff --git a/dev/build/dev/PR/reference/pr_tool_header_singleline.md b/dev/build/pr/reference/pr_tool_header_singleline.md
+similarity index 100%
+rename from dev/build/dev/PR/reference/pr_tool_header_singleline.md
+rename to dev/build/pr/reference/pr_tool_header_singleline.md
+diff --git a/dev/build/dev/PR/reference/pr_tool_interactive_uat.md b/dev/build/pr/reference/pr_tool_interactive_uat.md
+similarity index 100%
+rename from dev/build/dev/PR/reference/pr_tool_interactive_uat.md
+rename to dev/build/pr/reference/pr_tool_interactive_uat.md
+diff --git a/dev/build/dev/PR/reference/pr_tool_layout_workflow_baseline.md b/dev/build/pr/reference/pr_tool_layout_workflow_baseline.md
+similarity index 100%
+rename from dev/build/dev/PR/reference/pr_tool_layout_workflow_baseline.md
+rename to dev/build/pr/reference/pr_tool_layout_workflow_baseline.md
+diff --git a/dev/build/dev/PR/reference/pr_tool_remove_future_import_hints.md b/dev/build/pr/reference/pr_tool_remove_future_import_hints.md
+similarity index 100%
+rename from dev/build/dev/PR/reference/pr_tool_remove_future_import_hints.md
+rename to dev/build/pr/reference/pr_tool_remove_future_import_hints.md
+diff --git a/dev/build/dev/PR/reference/pr_tool_remove_static_header_intro.md b/dev/build/pr/reference/pr_tool_remove_static_header_intro.md
+similarity index 100%
+rename from dev/build/dev/PR/reference/pr_tool_remove_static_header_intro.md
+rename to dev/build/pr/reference/pr_tool_remove_static_header_intro.md
+diff --git a/dev/build/dev/PR/reference/pr_tool_stabilization.md b/dev/build/pr/reference/pr_tool_stabilization.md
+similarity index 100%
+rename from dev/build/dev/PR/reference/pr_tool_stabilization.md
+rename to dev/build/pr/reference/pr_tool_stabilization.md
+diff --git a/dev/build/dev/PR/reference/pr_tool_uat_closeout.md b/dev/build/pr/reference/pr_tool_uat_closeout.md
+similarity index 100%
+rename from dev/build/dev/PR/reference/pr_tool_uat_closeout.md
+rename to dev/build/pr/reference/pr_tool_uat_closeout.md
+diff --git a/dev/build/dev/PR/reference/pr_tool_uat_fix_fullscreen_header_wiring.md b/dev/build/pr/reference/pr_tool_uat_fix_fullscreen_header_wiring.md
+similarity index 100%
+rename from dev/build/dev/PR/reference/pr_tool_uat_fix_fullscreen_header_wiring.md
+rename to dev/build/pr/reference/pr_tool_uat_fix_fullscreen_header_wiring.md
+diff --git a/dev/build/dev/PR/reference/pr_tool_uat_fix_header_asset_browser.md b/dev/build/pr/reference/pr_tool_uat_fix_header_asset_browser.md
+similarity index 100%
+rename from dev/build/dev/PR/reference/pr_tool_uat_fix_header_asset_browser.md
+rename to dev/build/pr/reference/pr_tool_uat_fix_header_asset_browser.md
+diff --git a/dev/build/dev/PR/reference/pr_tool_uat_fixes.md b/dev/build/pr/reference/pr_tool_uat_fixes.md
+similarity index 100%
+rename from dev/build/dev/PR/reference/pr_tool_uat_fixes.md
+rename to dev/build/pr/reference/pr_tool_uat_fixes.md
+diff --git a/dev/build/dev/PR/templates/BUILD_PR.md b/dev/build/pr/templates/BUILD_PR.md
+similarity index 100%
+rename from dev/build/dev/PR/templates/BUILD_PR.md
+rename to dev/build/pr/templates/BUILD_PR.md
+diff --git a/dev/build/dev/PR/templates/PLAN_PR.md b/dev/build/pr/templates/PLAN_PR.md
+similarity index 100%
+rename from dev/build/dev/PR/templates/PLAN_PR.md
+rename to dev/build/pr/templates/PLAN_PR.md
+diff --git a/dev/build/dev/PR/templates/pr_capability_bundle_checklist.md b/dev/build/pr/templates/pr_capability_bundle_checklist.md
+similarity index 100%
+rename from dev/build/dev/PR/templates/pr_capability_bundle_checklist.md
+rename to dev/build/pr/templates/pr_capability_bundle_checklist.md
+diff --git a/dev/build/schemas/docs/dev/reports/REPORT_PR_11_17.md b/dev/reports/history/schemas/REPORT_PR_11_17.md
+similarity index 100%
+rename from dev/build/schemas/docs/dev/reports/REPORT_PR_11_17.md
+rename to dev/reports/history/schemas/REPORT_PR_11_17.md
+diff --git a/dev/tests/dev-runtime/AdminNotesBoundary.test.mjs b/dev/tests/dev-runtime/AdminNotesBoundary.test.mjs
+index 0c431121d..c474d7223 100644
+--- a/dev/tests/dev-runtime/AdminNotesBoundary.test.mjs
++++ b/dev/tests/dev-runtime/AdminNotesBoundary.test.mjs
+@@ -24,14 +24,14 @@ const productionRoots = [
+ ];
+
+ const expectedDevNotes = [
+-  "dev/archive/docs_build/dev/admin-notes/BusinessPlan.txt",
+-  "dev/archive/docs_build/dev/admin-notes/index.txt",
+-  "dev/archive/docs_build/dev/admin-notes/notes/index.txt",
+-  "dev/archive/docs_build/dev/admin-notes/other/index.txt",
+-  "dev/archive/docs_build/dev/admin-notes/PS_commands.txt",
+-  "dev/archive/docs_build/dev/admin-notes/roadmap2MVP.txt",
+-  "dev/archive/docs_build/dev/admin-notes/sample.txt",
+-  "dev/archive/docs_build/dev/admin-notes/tools/index.txt",
++  "dev/archive/legacy-docs-build/admin-notes/BusinessPlan.txt",
++  "dev/archive/legacy-docs-build/admin-notes/index.txt",
++  "dev/archive/legacy-docs-build/admin-notes/notes/index.txt",
++  "dev/archive/legacy-docs-build/admin-notes/other/index.txt",
++  "dev/archive/legacy-docs-build/admin-notes/PS_commands.txt",
++  "dev/archive/legacy-docs-build/admin-notes/roadmap2MVP.txt",
++  "dev/archive/legacy-docs-build/admin-notes/sample.txt",
++  "dev/archive/legacy-docs-build/admin-notes/tools/index.txt",
+   "src/dev-runtime/admin/notes.html",
+ ];
+
+@@ -40,7 +40,7 @@ const retiredProductionFiles = [
+   "src/dev-runtime/admin/admin-notes.html",
+   "admin/notes/index.txt",
+   "admin/notes/other/index.txt",
+-  "dev/archive/docs_build/dev/admin-notes/notes/Other/index.txt",
++  "dev/archive/legacy-docs-build/admin-notes/notes/Other/index.txt",
+ ];
+
+ const devOnlyAdminLabels = [
+@@ -220,16 +220,16 @@ test("production-facing paths only expose Admin Notes through Owner Notes", () =
+   assert.deepEqual(violations, [], "production-facing paths must not expose Admin Notes");
+ });
+
+-test("Admin Notes directory API is read-only, sorted, and restricted to dev/archive/docs_build/dev/admin-notes", async () => {
+-  assert.equal(fs.existsSync(repoPath("dev/archive/docs_build/dev/admin-notes")), true, "Admin Notes source directory exists");
++test("Admin Notes directory API is read-only, sorted, and restricted to dev/archive/legacy-docs-build/admin-notes", async () => {
++  assert.equal(fs.existsSync(repoPath("dev/archive/legacy-docs-build/admin-notes")), true, "Admin Notes source directory exists");
+
+-  const rootListing = await adminNotesDirectoryPayload("dev/archive/docs_build/dev/admin-notes");
++  const rootListing = await adminNotesDirectoryPayload("dev/archive/legacy-docs-build/admin-notes");
+   assert.equal(rootListing.statusCode, 200);
+   assert.equal(rootListing.payload.ok, true);
+-  assert.equal(rootListing.payload.folderPath, "dev/archive/docs_build/dev/admin-notes");
++  assert.equal(rootListing.payload.folderPath, "dev/archive/legacy-docs-build/admin-notes");
+   assert.ok(rootListing.payload.entries.length > 0, "Admin Notes directory has entries");
+   assert.ok(
+-    rootListing.payload.entries.every((entry) => entry.path.startsWith("dev/archive/docs_build/dev/admin-notes/")),
++    rootListing.payload.entries.every((entry) => entry.path.startsWith("dev/archive/legacy-docs-build/admin-notes/")),
+     "Admin Notes entries stay under the source folder",
    );
--  assert.match(first.template.reportText, /Template path: toolbox\/templates\/vector-native-arcade\//);
-+  assert.match(first.template.reportText, /Template path: dev\/templates\/tool-template-v2\/vector-native-arcade\//);
-   assert.match(first.template.reportText, /VECTOR_NATIVE_TEMPLATE_CONTRACT/);
-   assert.deepEqual(first, second);
-   assert.equal(summarizeVectorNativeTemplate(first), "Vector native template ready with 10 packaged assets.");
-diff --git a/src/shared/toolbox/vectorNativeTemplate.js b/src/shared/toolbox/vectorNativeTemplate.js
-index 375ae98a4..0c8abf69d 100644
---- a/src/shared/toolbox/vectorNativeTemplate.js
-+++ b/src/shared/toolbox/vectorNativeTemplate.js
-@@ -33,7 +33,7 @@ function createRegistry() {
-       {
-         id: "palette.vector-native.primary",
-         name: "Vector Native Primary Palette",
--        path: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/palettes/vector-native-primary.palette.json",
-+        path: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/palettes/vector-native-primary.palette.json",
-         colors: ["#05070DFF", "#E8F0FFFF", "#6FD3FFFF", "#FFB347FF"],
-         sourceTool: "pixel-asset-studio"
-       }
-@@ -43,7 +43,7 @@ function createRegistry() {
-       normalizeSvgToVectorAsset({
-         id: "vector.template.player",
-         name: "Template Player",
--        path: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/vectors/template-player.vector.json",
-+        path: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/vectors/template-player.vector.json",
-         paletteId: "palette.vector-native.primary",
-         sourceTool: "object-vector-studio-v2",
-         svgText: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 40 40"><path d="M 0 -16 L 12 12 L 0 6 L -12 12 Z" /><path d="M -4 10 L 0 4 L 4 10" /></svg>'
-@@ -51,7 +51,7 @@ function createRegistry() {
-       normalizeSvgToVectorAsset({
-         id: "vector.template.obstacle.large",
-         name: "Template Obstacle Large",
--        path: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/vectors/template-obstacle-large.vector.json",
-+        path: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/vectors/template-obstacle-large.vector.json",
-         paletteId: "palette.vector-native.primary",
-         sourceTool: "object-vector-studio-v2",
-         svgText: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-34 -34 68 68"><path d="M -20 -14 L 0 -24 L 22 -18 L 28 6 L 14 24 L -10 22 L -26 4 Z" /></svg>'
-@@ -59,7 +59,7 @@ function createRegistry() {
-       normalizeSvgToVectorAsset({
-         id: "vector.template.obstacle.small",
-         name: "Template Obstacle Small",
--        path: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/vectors/template-obstacle-small.vector.json",
-+        path: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/vectors/template-obstacle-small.vector.json",
-         paletteId: "palette.vector-native.primary",
-         sourceTool: "object-vector-studio-v2",
-         svgText: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-18 -18 36 36"><path d="M -8 -8 L 2 -12 L 10 -2 L 6 10 L -6 12 L -12 0 Z" /></svg>'
-@@ -67,7 +67,7 @@ function createRegistry() {
-       normalizeSvgToVectorAsset({
-         id: "vector.template.ui.title",
-         name: "Template Title",
--        path: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/vectors/template-title.vector.json",
-+        path: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/vectors/template-title.vector.json",
-         paletteId: "palette.vector-native.primary",
-         sourceTool: "object-vector-studio-v2",
-         svgText: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 48"><path d="M 8 40 L 24 8 L 40 40 Z" /><path d="M 56 40 L 56 8 L 84 8 L 84 18 L 68 18 L 68 22 L 82 22 L 82 32 L 68 32 L 68 40 Z" /><path d="M 96 40 L 96 8 L 108 8 L 124 24 L 124 8 L 136 8 L 136 40 L 124 40 L 108 24 L 108 40 Z" /></svg>'
-@@ -75,7 +75,7 @@ function createRegistry() {
-       normalizeSvgToVectorAsset({
-         id: "vector.template.ui.hud",
-         name: "Template HUD",
--        path: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/vectors/template-hud.vector.json",
-+        path: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/vectors/template-hud.vector.json",
-         paletteId: "palette.vector-native.primary",
-         sourceTool: "object-vector-studio-v2",
-         svgText: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 32"><path d="M 4 4 L 156 4 L 156 28 L 4 28 Z" /><path d="M 18 10 L 28 10 L 28 22 L 18 22 Z" /><path d="M 40 10 L 70 10" /><path d="M 90 10 L 120 10" /></svg>'
-@@ -85,7 +85,7 @@ function createRegistry() {
-       {
-         id: "tileset.template.ui",
-         name: "Template UI Tileset",
--        path: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/tilemaps/template-ui.tileset.json",
-+        path: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/tilemaps/template-ui.tileset.json",
-         paletteId: "palette.vector-native.primary",
-         tileWidth: 8,
-         tileHeight: 8,
-@@ -96,7 +96,7 @@ function createRegistry() {
-       {
-         id: "tilemap.template.arena",
-         name: "Template Arena",
--        path: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/tilemaps/template-arena.tilemap.json",
-+        path: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/tilemaps/template-arena.tilemap.json",
-         tilesetId: "tileset.template.ui",
-         sourceTool: "tilemap-studio"
-       }
-@@ -105,7 +105,7 @@ function createRegistry() {
-       {
-         id: "image.template.backdrop",
-         name: "Template Backdrop",
--        path: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/parallax/template-backdrop.svg",
-+        path: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/parallax/template-backdrop.svg",
-         sourceTool: "parallax-scene-studio"
-       }
-     ],
-@@ -113,7 +113,7 @@ function createRegistry() {
-       {
-         id: "parallax.template.backdrop",
-         name: "Template Backdrop Layer",
--        path: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/parallax/template-backdrop.parallax.json",
-+        path: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/parallax/template-backdrop.parallax.json",
-         imageId: "image.template.backdrop",
-         sourceTool: "parallax-scene-studio"
-       }
-@@ -191,47 +191,47 @@ function createRuntimeAssetSources(registry) {
-   return {
-     "palette.vector-native.primary": {
-       kind: "palette",
--      file: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/palettes/vector-native-primary.palette.json",
-+      file: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/palettes/vector-native-primary.palette.json",
-       colors: ["#05070DFF", "#E8F0FFFF", "#6FD3FFFF", "#FFB347FF"]
-     },
-     "vector.template.player": {
-       ...cloneJson(findRegistryEntry(registry?.vectors, "vector.template.player")),
-       kind: "vector",
--      file: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/vectors/template-player.vector.json",
-+      file: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/vectors/template-player.vector.json",
-       role: "player"
-     },
-     "vector.template.obstacle.large": {
-       ...cloneJson(findRegistryEntry(registry?.vectors, "vector.template.obstacle.large")),
-       kind: "vector",
--      file: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/vectors/template-obstacle-large.vector.json",
-+      file: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/vectors/template-obstacle-large.vector.json",
-       role: "obstacle-large"
-     },
-     "vector.template.obstacle.small": {
-       ...cloneJson(findRegistryEntry(registry?.vectors, "vector.template.obstacle.small")),
-       kind: "vector",
--      file: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/vectors/template-obstacle-small.vector.json",
-+      file: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/vectors/template-obstacle-small.vector.json",
-       role: "obstacle-small"
-     },
-     "vector.template.ui.title": {
-       ...cloneJson(findRegistryEntry(registry?.vectors, "vector.template.ui.title")),
-       kind: "vector",
--      file: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/vectors/template-title.vector.json",
-+      file: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/vectors/template-title.vector.json",
-       role: "title"
-     },
-     "vector.template.ui.hud": {
-       ...cloneJson(findRegistryEntry(registry?.vectors, "vector.template.ui.hud")),
-       kind: "vector",
--      file: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/vectors/template-hud.vector.json",
-+      file: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/vectors/template-hud.vector.json",
-       role: "hud"
-     },
-     "tileset.template.ui": {
-       kind: "tileset",
--      file: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/tilemaps/template-ui.tileset.json",
-+      file: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/tilemaps/template-ui.tileset.json",
-       role: "ui-tileset"
-     },
-     "tilemap.template.arena": {
-       kind: "tilemap",
--      file: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/tilemaps/template-arena.tilemap.json",
-+      file: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/tilemaps/template-arena.tilemap.json",
-       runtimeEntry: {
-         modulePath: "archive/v1-v2/games/Asteroids/main.js",
-         exportName: "bootAsteroids",
-@@ -250,7 +250,7 @@ function createRuntimeAssetSources(registry) {
-     },
-     "parallax.template.backdrop": {
-       kind: "parallaxLayer",
--      file: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/parallax/template-backdrop.parallax.json",
-+      file: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/parallax/template-backdrop.parallax.json",
-       role: "backdrop"
+   assert.deepEqual(
+@@ -238,22 +238,22 @@ test("Admin Notes directory API is read-only, sorted, and restricted to dev/arch
+     "Admin Notes entries are sorted alphabetically",
+   );
+   assert.ok(
+-    rootListing.payload.entries.some((entry) => entry.path === "dev/archive/docs_build/dev/admin-notes/sample.txt"),
++    rootListing.payload.entries.some((entry) => entry.path === "dev/archive/legacy-docs-build/admin-notes/sample.txt"),
+     "Admin Notes list includes an existing text file from the source folder",
+   );
+   assert.ok(
+-    rootListing.payload.entries.some((entry) => entry.path === "dev/archive/docs_build/dev/admin-notes/notes/index.txt"),
++    rootListing.payload.entries.some((entry) => entry.path === "dev/archive/legacy-docs-build/admin-notes/notes/index.txt"),
+     "Admin Notes list includes a folder index from the source folder",
+   );
+
+-  const traversal = await adminNotesDirectoryPayload("dev/archive/docs_build/dev/admin-notes/../../reports");
++  const traversal = await adminNotesDirectoryPayload("dev/archive/legacy-docs-build/admin-notes/../../reports");
+   assert.equal(traversal.statusCode, 403);
+   assert.equal(traversal.payload.ok, false);
+-  assert.match(traversal.payload.error, /restricted to dev\/archive\/docs_build\/dev\/admin-notes/);
++  assert.match(traversal.payload.error, /restricted to dev\/archive\/legacy-docs-build\/admin-notes/);
+
+   const missingRoot = makeTempRepoRoot();
+   try {
+-    const missing = await adminNotesDirectoryPayload("dev/archive/docs_build/dev/admin-notes", missingRoot);
++    const missing = await adminNotesDirectoryPayload("dev/archive/legacy-docs-build/admin-notes", missingRoot);
+     assert.equal(missing.statusCode, 404);
+     assert.equal(missing.payload.ok, false);
+     assert.match(missing.payload.error, /folder not found/i);
+@@ -263,8 +263,8 @@ test("Admin Notes directory API is read-only, sorted, and restricted to dev/arch
+
+   const emptyRoot = makeTempRepoRoot();
+   try {
+-    fs.mkdirSync(path.join(emptyRoot, "dev/archive/docs_build/dev/admin-notes"), { recursive: true });
+-    const empty = await adminNotesDirectoryPayload("dev/archive/docs_build/dev/admin-notes", emptyRoot);
++    fs.mkdirSync(path.join(emptyRoot, "dev/archive/legacy-docs-build/admin-notes"), { recursive: true });
++    const empty = await adminNotesDirectoryPayload("dev/archive/legacy-docs-build/admin-notes", emptyRoot);
+     assert.equal(empty.statusCode, 200);
+     assert.equal(empty.payload.ok, true);
+     assert.deepEqual(empty.payload.entries, []);
+diff --git a/dev/tests/playwright/tools/AdminNotesLocalViewer.spec.mjs b/dev/tests/playwright/tools/AdminNotesLocalViewer.spec.mjs
+index 2eb0321e4..2da1172f9 100644
+--- a/dev/tests/playwright/tools/AdminNotesLocalViewer.spec.mjs
++++ b/dev/tests/playwright/tools/AdminNotesLocalViewer.spec.mjs
+@@ -101,7 +101,7 @@ test("Admin Notes local viewer loads index and opens root folder note files", as
+     await expect(page.locator("footer.footer")).toBeVisible();
+     await expect(page).toHaveURL(/\/admin\/admin-notes\.html$/);
+     await expect(page.locator("[data-admin-notes-title]")).toHaveText("index.txt");
+-    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded dev/archive/docs_build/dev/admin-notes/index.txt.");
++    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded dev/archive/legacy-docs-build/admin-notes/index.txt.");
+     await expect(page.locator("[data-admin-notes-content]")).toContainText("Admin Notes Ownership");
+     await expect(page.locator("[data-admin-notes-current-folder]")).toHaveText("admin-notes");
+     await expect(page.locator("[data-admin-notes-parent-folder]")).toBeDisabled();
+@@ -131,14 +131,14 @@ test("Admin Notes local viewer loads index and opens root folder note files", as
+     await page.getByRole("link", { name: "sample.txt" }).click();
+     await expect(page.locator("[data-admin-notes-title]")).toHaveText("sample.txt");
+     await expect(page.locator("[data-admin-notes-content]")).toContainText("Capture admin-only project ideas here.");
+-    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded dev/archive/docs_build/dev/admin-notes/sample.txt.");
++    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded dev/archive/legacy-docs-build/admin-notes/sample.txt.");
+     await expect(page.locator("[data-admin-notes-current-folder]")).toHaveText("admin-notes");
+     await expect(page.locator("[data-admin-notes-parent-folder]")).toBeDisabled();
+
+     await page.getByRole("link", { name: "other/" }).click();
+     await expect(page.locator("[data-admin-notes-title]")).toHaveText("index.txt");
+     await expect(page.locator("[data-admin-notes-content]")).toContainText("sample linked admin subnote");
+-    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded dev/archive/docs_build/dev/admin-notes/other/index.txt.");
++    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded dev/archive/legacy-docs-build/admin-notes/other/index.txt.");
+     await expect(page.locator("[data-admin-notes-current-folder]")).toHaveText("other");
+     await expect(page.locator("[data-admin-notes-parent-folder]")).toBeEnabled();
+     await page.locator("[data-admin-notes-parent-folder]").click();
+@@ -160,7 +160,7 @@ test("Owner Notes route reads the shared admin-notes source", async ({ page }) =
+     await expect(page.getByRole("heading", { name: "Notes", level: 1 })).toBeVisible();
+     await expect(page.locator("main[data-owner-notes][data-admin-notes-viewer]")).toBeVisible();
+     await expect(page.locator("[aria-label='Owner business pages'] a[aria-current='page']")).toHaveText("Notes");
+-    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded dev/archive/docs_build/dev/admin-notes/index.txt.");
++    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded dev/archive/legacy-docs-build/admin-notes/index.txt.");
+     await expect(page.locator("[data-admin-notes-content]")).toContainText("Admin Notes Ownership");
+     await expect(page.locator("[data-admin-notes-folder-links] [data-admin-notes-directory-link='folder']")).toContainText([
+       "notes/",
+@@ -168,7 +168,7 @@ test("Owner Notes route reads the shared admin-notes source", async ({ page }) =
+     ]);
+
+     await page.getByRole("link", { name: "sample.txt" }).click();
+-    await expect(page).toHaveURL(/\/owner\/notes\.html\?file=docs_build%2Fdev%2Fadmin-notes%2Fsample\.txt$/);
++    await expect(page).toHaveURL(/\/owner\/notes\.html\?file=legacy-docs-build%2Fadmin-notes%2Fsample\.txt$/);
+     await expect(page.locator("[data-admin-notes-title]")).toHaveText("sample.txt");
+     await expect(page.locator("[data-admin-notes-content]")).toContainText("Capture admin-only project ideas here.");
+     await expect(page.locator("nav[aria-label='Admin tool pages'] a", { hasText: "Notes" })).toHaveCount(0);
+@@ -185,7 +185,7 @@ test("Admin Notes viewer shows a visible missing-directory diagnostic", async ({
+         await route.fulfill({
+           body: JSON.stringify({
+             entries: [],
+-            error: "Admin Notes folder not found: dev/archive/docs_build/dev/admin-notes.",
++            error: "Admin Notes folder not found: dev/archive/legacy-docs-build/admin-notes.",
+             ok: false,
+           }),
+           contentType: "application/json; charset=utf-8",
+@@ -203,7 +203,7 @@ test("Admin Notes viewer shows a visible missing-directory diagnostic", async ({
+     expect(failures.consoleErrors).toHaveLength(1);
+     expect(failures.consoleErrors[0]).toContain("404");
+     expect(failures.failedRequests).toEqual([
+-      `404 ${failures.server.baseUrl}/api/dev/admin-notes/directory?folder=docs_build%2Fdev%2Fadmin-notes`,
++      `404 ${failures.server.baseUrl}/api/dev/admin-notes/directory?folder=legacy-docs-build%2Fadmin-notes`,
+     ]);
+   } finally {
+     await closeWithCoverage(page, failures);
+@@ -217,7 +217,7 @@ test("Admin Notes viewer shows an empty state for an empty source folder", async
+         await route.fulfill({
+           body: JSON.stringify({
+             entries: [],
+-            folderPath: "dev/archive/docs_build/dev/admin-notes",
++            folderPath: "dev/archive/legacy-docs-build/admin-notes",
+             ok: true,
+           }),
+           contentType: "application/json; charset=utf-8",
+@@ -245,7 +245,7 @@ test("Admin Notes direct dev-runtime source route still renders the viewer", asy
+     await expect(page.getByRole("heading", { name: "Admin Notes", level: 1 })).toBeVisible();
+     await expect(page.locator("header.site-header")).toBeVisible();
+     await expect(page.locator("footer.footer")).toBeVisible();
+-    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded dev/archive/docs_build/dev/admin-notes/index.txt.");
++    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded dev/archive/legacy-docs-build/admin-notes/index.txt.");
+     await expectNoPageFailures(failures);
+   } finally {
+     await closeWithCoverage(page, failures);
+diff --git a/dev/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs b/dev/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
+index 81c64f1fe..baa0cc606 100644
+--- a/dev/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
++++ b/dev/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
+@@ -227,7 +227,7 @@ test("Owner Notes resolves under owner path and is owner-only", async ({ page })
+   try {
+     await expect(page).toHaveTitle(/Notes - Game Foundry Studio/);
+     await expect(page.locator("main[data-owner-notes][data-admin-notes-viewer]")).toBeVisible();
+-    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded dev/archive/docs_build/dev/admin-notes/index.txt.");
++    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded dev/archive/legacy-docs-build/admin-notes/index.txt.");
+     await expect(page.locator("[data-admin-notes-content]")).toContainText("Admin Notes Ownership");
+     await expect(page.locator("[aria-label='Owner business pages'] a[aria-current='page']")).toHaveText("Notes");
+     await expect(page.locator("[aria-label='Owner business pages'] a[href='/admin/notes.html']")).toHaveCount(0);
+diff --git a/dev/tests/playwright/tools/LoginSessionMode.spec.mjs b/dev/tests/playwright/tools/LoginSessionMode.spec.mjs
+index efaf54699..0408c1443 100644
+--- a/dev/tests/playwright/tools/LoginSessionMode.spec.mjs
++++ b/dev/tests/playwright/tools/LoginSessionMode.spec.mjs
+@@ -941,7 +941,7 @@ test("Local users unlock their allowed Account and Admin pages", async ({ page }
+     await page.locator("nav.nav-links a[data-admin-notes-local-menu]").click();
+     await expect(page).toHaveURL(/\/admin\/admin-notes\.html$/);
+     await expect(page.getByRole("heading", { name: "Admin Notes", level: 1 })).toBeVisible();
+-    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded dev/archive/docs_build/dev/admin-notes/index.txt.");
++    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded dev/archive/legacy-docs-build/admin-notes/index.txt.");
+     await expectNoPageFailures(failures);
+   } finally {
+     await closeWithCoverage(page, failures);
+@@ -1055,7 +1055,7 @@ test("API-backed 5501 login page shows the local Admin Notes menu route for Admi
+     await page.locator("nav.nav-links a[data-admin-notes-local-menu]").click();
+     await expect(page).toHaveURL("http://127.0.0.1:5501/admin/admin-notes.html");
+     await expect(page.getByRole("heading", { name: "Admin Notes", level: 1 })).toBeVisible();
+-    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded dev/archive/docs_build/dev/admin-notes/index.txt.");
++    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded dev/archive/legacy-docs-build/admin-notes/index.txt.");
+     await expectNoPageFailures(failures);
+   } finally {
+     await closeFixedLocalApiPage(page, failures);
+diff --git a/src/dev-runtime/admin/admin-notes-directory.mjs b/src/dev-runtime/admin/admin-notes-directory.mjs
+index 71ab2711b..500b75e1c 100644
+--- a/src/dev-runtime/admin/admin-notes-directory.mjs
++++ b/src/dev-runtime/admin/admin-notes-directory.mjs
+@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
+ import path from "node:path";
+ import { pathToFileURL } from "node:url";
+
+-const ADMIN_NOTES_DIRECTORY = "dev/archive/docs_build/dev/admin-notes";
++const ADMIN_NOTES_DIRECTORY = "dev/archive/legacy-docs-build/admin-notes";
+ const DIRECTORY_LIST_QUERY = "adminNotesDirectory";
+ const DIRECTORY_API_PATH = "/api/dev/admin-notes/directory";
+ const NOTE_INDEX_FILE = "index.txt";
+@@ -54,7 +54,7 @@ async function adminNotesDirectoryResult(repoRoot, folderPath) {
+     return {
+       payload: {
+         entries: [],
+-        error: "Admin Notes directory listing is restricted to dev/archive/docs_build/dev/admin-notes/.",
++        error: "Admin Notes directory listing is restricted to dev/archive/legacy-docs-build/admin-notes/.",
+         ok: false,
+       },
+       statusCode: 403,
+diff --git a/src/dev-runtime/admin/admin-notes-viewer.js b/src/dev-runtime/admin/admin-notes-viewer.js
+index 2c8fa2970..1bf772954 100644
+--- a/src/dev-runtime/admin/admin-notes-viewer.js
++++ b/src/dev-runtime/admin/admin-notes-viewer.js
+@@ -1,7 +1,7 @@
+ import { resolveServerApiFetchUrl } from "../../api/public-config-client.js";
+
+ // Dev-runtime only: do not import this viewer from production bundles.
+-const NOTES_DIRECTORY = "dev/archive/docs_build/dev/admin-notes";
++const NOTES_DIRECTORY = "dev/archive/legacy-docs-build/admin-notes";
+ const DEFAULT_NOTE = "index";
+ const VIEWER_PATH = "/admin/admin-notes.html";
+ const LINK_CLASS = "btn btn--compact primary";
+@@ -335,7 +335,7 @@ class AdminNotesViewer {
+     if (!safeFolderPath) {
+       return {
+         entries: [],
+-        error: "Current Folder listing is restricted to dev/archive/docs_build/dev/admin-notes/."
++        error: "Current Folder listing is restricted to dev/archive/legacy-docs-build/admin-notes/."
+       };
      }
-   };
-@@ -259,16 +259,16 @@ function createRuntimeAssetSources(registry) {
- export function createVectorNativeTemplateDefinition() {
-   const registry = createRegistry();
-   return {
--    templatePath: "toolbox/_tool_template-v2/vector-native-arcade/",
-+    templatePath: "dev/templates/tool-template-v2/vector-native-arcade/",
-     registry,
-     vectorDocument: createVectorDocument(),
-     tileMapDocument: createTileMapDocument(),
-     parallaxDocument: createParallaxDocument(),
-     runtimeAssetSources: createRuntimeAssetSources(registry),
--    configPath: "toolbox/_tool_template-v2/vector-native-arcade/config/template.project.json",
--    runtimeBootstrapPath: "toolbox/_tool_template-v2/vector-native-arcade/runtime/bootstrap.runtime.json",
--    docsPath: "toolbox/_tool_template-v2/vector-native-arcade/docs/STARTER_GUIDE.md",
--    rollbackNotesPath: "toolbox/_tool_template-v2/vector-native-arcade/docs/ROLLBACK_NOTES.md"
-+    configPath: "dev/templates/tool-template-v2/vector-native-arcade/config/template.project.json",
-+    runtimeBootstrapPath: "dev/templates/tool-template-v2/vector-native-arcade/runtime/bootstrap.runtime.json",
-+    docsPath: "dev/templates/tool-template-v2/vector-native-arcade/docs/STARTER_GUIDE.md",
-+    rollbackNotesPath: "dev/templates/tool-template-v2/vector-native-arcade/docs/ROLLBACK_NOTES.md"
-   };
- }
-
-@@ -342,7 +342,7 @@ export async function buildVectorNativeTemplate(options = {}) {
-     parallaxDocument
-   });
-   const ciValidationResult = await runCiValidationPipeline({
--    branch: "toolbox/_tool_template-v2/vector-native-arcade",
-+    branch: "dev/templates/tool-template-v2/vector-native-arcade",
-     trigger: "template-build",
-     performanceResult
-   });
-diff --git a/src/shared/toolbox/vectorTemplateSampleGame.js b/src/shared/toolbox/vectorTemplateSampleGame.js
-index f83d8f0ad..319672a55 100644
---- a/src/shared/toolbox/vectorTemplateSampleGame.js
-+++ b/src/shared/toolbox/vectorTemplateSampleGame.js
-@@ -21,7 +21,7 @@ function createReport(level, code, message) {
- }
-
- function remapPath(pathValue) {
--  return normalizeString(pathValue).replace("toolbox/_tool_template-v2/vector-native-arcade/", "archive/v1-v2/games/vector-arcade-sample/");
-+  return normalizeString(pathValue).replace("dev/templates/tool-template-v2/vector-native-arcade/", "archive/v1-v2/games/vector-arcade-sample/");
- }
-
- function remapRegistry(registry) {
+     try {
+diff --git a/src/dev-runtime/admin/notes.html b/src/dev-runtime/admin/notes.html
+index 0a675456a..4f10e5725 100644
+--- a/src/dev-runtime/admin/notes.html
++++ b/src/dev-runtime/admin/notes.html
+@@ -5,7 +5,7 @@
+     <base href="/">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+     <title>Admin Notes Local Viewer - Game Foundry Studio LLC</title>
+-    <meta name="description" content="Local development viewer for Admin Notes under dev/archive/docs_build/dev/admin-notes.">
++    <meta name="description" content="Local development viewer for Admin Notes under dev/archive/legacy-docs-build/admin-notes.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+ </head>
+@@ -16,7 +16,7 @@
+             <div class="container">
+                 <div class="kicker">Local Dev Admin</div>
+                 <h1>Admin Notes</h1>
+-                <p class="lede">Dev-only notes loaded from dev/archive/docs_build/dev/admin-notes/.</p>
++                <p class="lede">Dev-only notes loaded from dev/archive/legacy-docs-build/admin-notes/.</p>
+             </div>
+         </section>
+         <section class="section">
+@@ -28,7 +28,7 @@
+                                 <div class="kicker">Loaded Note</div>
+                                 <h2 data-admin-notes-title>index.txt</h2>
+                             </div>
+-                            <p class="status" data-admin-notes-status>Loading dev/archive/docs_build/dev/admin-notes/index.txt.</p>
++                            <p class="status" data-admin-notes-status>Loading dev/archive/legacy-docs-build/admin-notes/index.txt.</p>
+                         </div>
+                         <div data-admin-notes-content></div>
+                     </div>

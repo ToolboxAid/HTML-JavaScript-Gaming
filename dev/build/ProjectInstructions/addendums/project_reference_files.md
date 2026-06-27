@@ -16,8 +16,8 @@ The following files are valid project instruction/reference documents when prese
 
 Canonical repository reference locations:
 
-- `dev/archive/docs_build/dev/admin-notes/Installs required.txt`
-- `dev/archive/docs_build/dev/admin-notes/Table layout.txt`
+- `dev/archive/legacy-docs-build/admin-notes/Installs required.txt`
+- `dev/archive/legacy-docs-build/admin-notes/Table layout.txt`
 
 ## Review Rule
 
@@ -25,7 +25,7 @@ Future Project Instructions reviews must include these files automatically when 
 
 - an extracted `ProjectInstructions.zip` bundle
 - the active project instruction directory
-- `dev/archive/docs_build/dev/admin-notes/`
+- `dev/archive/legacy-docs-build/admin-notes/`
 
 Archived reference files are not active governance. If they conflict with active Project Instructions, `dev/build/ProjectInstructions/` wins unless OWNER explicitly approves a newer governance change.
 

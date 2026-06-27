@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 const INVALID_PATH = 'docs/roadmaps';
-const VALID_PATH = 'dev/archive/docs_build/dev/roadmaps';
+const VALID_PATH = 'dev/archive/legacy-docs-build/roadmaps';
 
 function fail(msg) {
   console.error('❌ DOCS STRUCTURE ERROR:\n' + msg);
@@ -27,9 +27,9 @@ if (fs.existsSync(INVALID_PATH)) {
 
 // Rule 2: valid roadmap path must exist
 if (!fs.existsSync(VALID_PATH)) {
-  fail('missing required dev/archive/docs_build/dev/roadmaps/');
+  fail('missing required dev/archive/legacy-docs-build/roadmaps/');
 } else {
-  ok('dev/archive/docs_build/dev/roadmaps exists');
+  ok('dev/archive/legacy-docs-build/roadmaps exists');
 }
 
 // Rule 3: prevent roadmap drift

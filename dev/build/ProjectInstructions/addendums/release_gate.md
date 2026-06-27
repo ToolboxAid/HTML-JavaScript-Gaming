@@ -49,8 +49,8 @@ The release gate should confirm these files when relevant to the PR:
 - `dev/build/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md`
 - `dev/build/ProjectInstructions/addendums/no_mock_repository_runtime_source.md`
 - `dev/build/ProjectInstructions/team_assignments/team_ownership.md`
-- `dev/archive/docs_build/dev/admin-notes/Installs required.txt` when present
-- `dev/archive/docs_build/dev/admin-notes/Table layout.txt` when present
+- `dev/archive/legacy-docs-build/admin-notes/Installs required.txt` when present
+- `dev/archive/legacy-docs-build/admin-notes/Table layout.txt` when present
 
 ## Validation Result
 

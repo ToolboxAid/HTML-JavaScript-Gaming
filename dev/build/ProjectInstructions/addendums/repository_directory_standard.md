@@ -50,7 +50,7 @@ Transition rule:
 
 Path references to old root `docs_build/`, `tests/`, `archive/`, or `tmp/` locations are allowed only when they are:
 
-- historical/reference content under `dev/archive/` or `dev/build/dev/PR/reference/`
+- historical/reference content under `dev/archive/` or `dev/build/pr/reference/`
 - explicit legacy exception notes in active governance
 - ignore rules that keep obsolete local scratch from entering commits
 - migration reports documenting the old path and its replacement

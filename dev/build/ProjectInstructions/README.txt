@@ -25,7 +25,7 @@ OWNER override approved: <reason>
 The override must explain why normal team, branch, assignment, or backlog routing is being changed.
 
 History snapshot rule:
-When a governance or instruction state needs a history snapshot, add a new file under `dev/archive/docs_build/dev/ProjectInstructions/history/` using:
+When a governance or instruction state needs a history snapshot, add a new file under `dev/archive/legacy-docs-build/ProjectInstructions/history/` using:
 CCYYMMDD_HHMMSS.md
 
 Do not rewrite history snapshots after creation unless the owner explicitly approves.
@@ -69,5 +69,5 @@ Standards index:
 - Active contract, model, and platform standards: dev/build/ProjectInstructions/standards/
 
 PR documentation:
-- Reusable PR templates: dev/build/dev/PR/templates/
-- Historical/reference PR documents: dev/build/dev/PR/reference/
+- Reusable PR templates: dev/build/pr/templates/
+- Historical/reference PR documents: dev/build/pr/reference/

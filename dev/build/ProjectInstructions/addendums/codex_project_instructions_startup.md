@@ -35,7 +35,7 @@ Deprecated Project Instructions material outside `dev/build/ProjectInstructions/
 
 ## Project Reference File Review
 
-When present in `ProjectInstructions.zip`, the active project instruction directory, or `dev/archive/docs_build/dev/admin-notes/`, Codex must include these recognized project instruction/reference files in the Project Instructions read set:
+When present in `ProjectInstructions.zip`, the active project instruction directory, or `dev/archive/legacy-docs-build/admin-notes/`, Codex must include these recognized project instruction/reference files in the Project Instructions read set:
 
 - `Installs required.txt`
 - `Table layout.txt`

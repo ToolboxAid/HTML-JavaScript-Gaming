@@ -7,7 +7,7 @@ This folder owns reusable PR workflow material and historical PR reference docum
 - `templates/` contains reusable PR planning and build templates.
 - `reference/` contains historical or reference PR documents.
 
-Reusable PR templates must not live outside `dev/build/dev/PR/templates/`.
+Reusable PR templates must not live outside `dev/build/pr/templates/`.
 Generated PR reports must live under `dev/reports/`.
 Permanent governance must live under `dev/build/ProjectInstructions/`.
 

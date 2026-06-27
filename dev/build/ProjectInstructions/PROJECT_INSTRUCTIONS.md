@@ -40,7 +40,7 @@ Existing Project Instructions outside `dev/build/ProjectInstructions/` remain pr
 - `standards/` contains active contract, model, and platform standards.
 - `deprecation/` contains deprecation workflow documentation.
 - Retained reference material belongs under the repository root `dev/archive/` tree, not under `dev/build/dev/`.
-- History snapshots belong under `dev/archive/docs_build/dev/ProjectInstructions/history/`.
+- History snapshots belong under `dev/archive/legacy-docs-build/ProjectInstructions/history/`.
 
 ## Recognized Project Reference Files
 
@@ -51,7 +51,7 @@ Existing Project Instructions outside `dev/build/ProjectInstructions/` remain pr
 `dev/build/ProjectInstructions/addendums/documentation_ownership.md` defines the active documentation ownership model:
 
 - `dev/build/ProjectInstructions/` owns governance, team instructions, standards, and addendums.
-- `dev/build/dev/PR/` owns PR workflow documents, templates, and examples.
+- `dev/build/pr/` owns PR workflow documents, templates, and examples.
 - `dev/reports/` owns generated reports and audits.
 - `dev/workspace/artifacts/` owns generated non-report artifacts, repo-structured ZIPs, and local temporary workspace output.
 - root `dev/archive/` owns historical reference material only.

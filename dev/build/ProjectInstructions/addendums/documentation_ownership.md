@@ -15,7 +15,7 @@ Define the ownership model for documentation under `dev/build/dev/` after Projec
 - standards
 - addendums
 
-`dev/build/dev/PR/` owns:
+`dev/build/pr/` owns:
 - PR workflow documentation
 - reusable PR templates
 - historical or reference PR documents
@@ -35,7 +35,7 @@ The repository root `dev/archive/` owns:
 ## Rules
 
 - No active governance may exist outside `dev/build/ProjectInstructions/`.
-- No reusable PR template may exist outside `dev/build/dev/PR/templates/`.
+- No reusable PR template may exist outside `dev/build/pr/templates/`.
 - No generated report may exist outside `dev/reports/`.
 - No generated non-report artifact may exist outside `dev/workspace/artifacts/`.
 - No active document may exist outside its owning area.
@@ -45,8 +45,8 @@ The repository root `dev/archive/` owns:
 ## Folder Rules
 
 - `dev/build/ProjectInstructions/standards/` contains active contract, model, and platform standards.
-- `dev/build/dev/PR/templates/` contains reusable PR templates.
-- `dev/build/dev/PR/reference/` contains historical or reference PR documents.
+- `dev/build/pr/templates/` contains reusable PR templates.
+- `dev/build/pr/reference/` contains historical or reference PR documents.
 - `dev/reports/` contains flat generated report outputs. Use team, runner, lane, or PR naming in filenames instead of nested report folders.
 - `dev/workspace/artifacts/zips/` contains repo-structured ZIP outputs.
 - `dev/workspace/artifacts/tmp/` contains temporary generated files.
@@ -56,7 +56,7 @@ The repository root `dev/archive/` owns:
 Documentation ownership cleanup PRs must verify:
 
 - no active Project Instructions outside `dev/build/ProjectInstructions/`
-- no reusable PR templates outside `dev/build/dev/PR/templates/`
+- no reusable PR templates outside `dev/build/pr/templates/`
 - no generated reports outside `dev/reports/`
 - no generated non-report artifacts outside `dev/workspace/artifacts/`
 - no runtime/product/API/database files changed unless explicitly scoped
