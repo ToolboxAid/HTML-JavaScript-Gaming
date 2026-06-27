@@ -40,11 +40,11 @@ Transition rule:
 - `dev/tests/` owns non-deployable test suites.
 - `dev/scripts/` owns development-only scripts and runners.
 - `dev/config/` owns development-only runner and tooling configuration.
-- `dev/workspace/artifacts/` owns generated non-report artifacts and ignored local temporary workspace output.
+- `dev/workspace/` owns generated non-report artifacts and ignored local temporary workspace output.
 - `dev/archive/` owns historical development reference material that is not active governance.
-- `dev/project-instructions/` is deprecated reference only when retained; it must point to `dev/build/ProjectInstructions/`.
+- `dev/build/ProjectInstructions/` is the only active Project Instructions source.
 - Root `docs_build/`, root `tests/`, root `archive/`, root `tmp/`, and root `project-instructions/` are not active workspace locations after the restructure.
-- Root `tmp/` may remain ignored as legacy local scratch only; required Codex ZIPs belong under `dev/workspace/artifacts/zips/`, and generated temporary artifacts belong under `dev/workspace/artifacts/tmp/`.
+- Root `tmp/` may remain ignored as legacy local scratch only; required Codex ZIPs belong under `dev/workspace/zips/`, and generated temporary artifacts belong under `dev/workspace/tmp/`.
 
 ## Legacy Reference Exceptions
 
@@ -55,7 +55,7 @@ Path references to old root `docs_build/`, `tests/`, `archive/`, or `tmp/` locat
 - ignore rules that keep obsolete local scratch from entering commits
 - migration reports documenting the old path and its replacement
 
-Active commands, templates, and Project Instructions must use the final `dev/`, `dev/reports/`, and `dev/workspace/artifacts/` paths.
+Active commands, templates, and Project Instructions must use the final `dev/`, `dev/reports/`, and `dev/workspace/` paths.
 
 ## Creator Data Boundary
 

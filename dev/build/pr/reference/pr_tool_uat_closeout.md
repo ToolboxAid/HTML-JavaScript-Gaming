@@ -23,7 +23,7 @@ Validate and close UAT for the four target tools:
 
 Use the latest UAT/fix artifacts already in the workspace:
 
-- `dev/workspace/artifacts/tmp/uat_failed_cases_rerun.json`
+- `dev/workspace/tmp/uat_failed_cases_rerun.json`
 - `tmp/interactive_uat_report_4tools.json`
 - `dev/reports/PR_tool_uat_failure_fix_report.md`
 - Any current tool smoke/UAT reports already produced

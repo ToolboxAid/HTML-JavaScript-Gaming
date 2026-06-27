@@ -87,7 +87,7 @@ function Get-DeployEnvironmentStatus {
     )
 
     $repoRoot = Get-DeployRepoRoot
-    $tmpRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot "dev\workspace\artifacts\tmp"))
+    $tmpRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot "dev\workspace\tmp"))
     New-Item -ItemType Directory -Path $tmpRoot -Force | Out-Null
     $dockerCommand = Get-Command docker -ErrorAction SilentlyContinue
 
@@ -397,7 +397,7 @@ function Resolve-WebsiteStagingRoot {
     )
 
     if ([string]::IsNullOrWhiteSpace($StagingRoot)) {
-        return [System.IO.Path]::GetFullPath((Join-Path (Get-DeployRepoRoot) "dev\workspace\artifacts\tmp\website-deploy"))
+        return [System.IO.Path]::GetFullPath((Join-Path (Get-DeployRepoRoot) "dev\workspace\tmp\website-deploy"))
     }
 
     return [System.IO.Path]::GetFullPath($StagingRoot)
@@ -621,9 +621,9 @@ function Test-StagingRootSafety {
     )
 
     $repoRoot = Get-DeployRepoRoot
-    $tmpRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot "dev\workspace\artifacts\tmp"))
+    $tmpRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot "dev\workspace\tmp"))
     if (-not (Test-PathWithinRoot -Path $StagingRoot -RootPath $tmpRoot)) {
-        throw "Safety check failed. Staging root must remain under <repo>/dev/workspace/artifacts/tmp: $StagingRoot"
+        throw "Safety check failed. Staging root must remain under <repo>/dev/workspace/tmp: $StagingRoot"
     }
 }
 

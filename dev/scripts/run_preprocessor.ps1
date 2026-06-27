@@ -26,7 +26,7 @@ if ($LASTEXITCODE -ne 0) {
     throw "Preprocessor failed"
 }
 
-$zipRoot = Join-Path $projectRoot "dev\workspace\artifacts\zips"
+$zipRoot = Join-Path $projectRoot "dev\workspace\zips"
 New-Item -ItemType Directory -Force -Path $zipRoot | Out-Null
 
 $zip = Join-Path $zipRoot ($PrName + ".zip")

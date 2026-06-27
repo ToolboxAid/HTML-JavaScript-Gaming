@@ -86,7 +86,7 @@ Closed gates:
 - No untracked files.
 - Branch disposition is recorded as `retained`.
 - Required reports exist.
-- Required repo-structured ZIP under `dev/workspace/artifacts/zips/` exists.
+- Required repo-structured ZIP under `dev/workspace/zips/` exists.
 - Backlog is updated.
 - Tool state is updated when applicable.
 
@@ -106,7 +106,7 @@ Closed gates:
 - If validation fails, stop and report.
 - If conflict occurs, stop and report.
 - If OWNER decision is required, stop and report.
-- Every Codex execution must produce a repo-structured ZIP under `dev/workspace/artifacts/zips/`.
+- Every Codex execution must produce a repo-structured ZIP under `dev/workspace/zips/`.
 - The ZIP rule applies to implementation, audit, report-only, validation-only, governance, cleanup, hard-stop, blocked, validation-failure, partial-completion, new-information, and no-change runs.
 - The ZIP must include all changed or preserved repo files from the run and must not replace required reports under `dev/reports/`.
 - If no repo files changed, Codex must still create a ZIP containing the report that proves the no-change, hard-stop, blocked, validation-failure, or partial-completion result.

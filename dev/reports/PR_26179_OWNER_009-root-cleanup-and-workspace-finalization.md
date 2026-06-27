@@ -1,26 +1,31 @@
 # PR_26179_OWNER_009-root-cleanup-and-workspace-finalization
 
-Updated: 2026-06-27T23:16:02.248Z
+Updated: 2026-06-27T23:36:03.134Z
 Team: OWNER
 Branch: PR_26179_OWNER_009-root-cleanup-and-workspace-finalization
 Scope: root cleanup/workspace finalization; dev taxonomy cleanup only.
 
 ## Summary
-- Removed obsolete start_of_day material under dev/build/dev/ after replacing active validation-script expectations with dev/build/ProjectInstructions/.
-- Moved the dev-only toolbox support code from dev/build/dev/toolbox/ to dev/tools/toolbox-dev/.
-- Updated active package scripts, dev-tool self references, and DevConsoleIntegration test imports to the new dev/tools/toolbox-dev/ path.
-- Removed the empty dev/build/dev/ wrapper after its contents were deleted or moved.
-- Confirmed dev/tools-images-generated/ is absent and dev/config/ contains config files only.
+- Confirmed active Project Instructions live under dev/build/ProjectInstructions/ and PROJECT_INSTRUCTIONS.md exists.
+- Removed the legacy dev/project-instructions/ pointer folder.
+- Flattened dev/workspace/artifacts/ into dev/workspace/ canonical buckets.
+- Merged old tmp/test-results and test-results output into dev/workspace/test-results/.
+- Updated active docs, scripts, configs, tests, templates, reports, and ignore rules from old artifact/instruction paths to new canonical paths.
+- Confirmed dev/workspace/artifacts/ and dev/project-instructions/ are absent.
 
 ## Moved Folders
-- dev/build/dev/toolbox/ -> dev/tools/toolbox-dev/
-
-## Deleted Folders
-- dev/build/dev/start_of_day/
-- dev/build/dev/ (empty wrapper removed)
+- dev/workspace/artifacts/tmp/ -> dev/workspace/tmp/
+- dev/workspace/artifacts/zips/ -> dev/workspace/zips/
+- dev/workspace/artifacts/test-results/ -> dev/workspace/test-results/
+- dev/workspace/artifacts/tmp/test-results/ -> dev/workspace/test-results/
+- dev/workspace/artifacts/README.md -> dev/workspace/README.md
 
 ## Deleted Files
-- Obsolete start_of_day files under dev/build/dev/start_of_day/.
+- dev/project-instructions/README.md
+
+## Test Result Merge Conflicts
+- dev/workspace/artifacts/test-results/playwright-results.json -> dev/workspace/test-results/playwright-results.json: kept existing file (source 2486 bytes, target 180904 bytes).
+- dev/workspace/artifacts/test-results/report/index.html -> dev/workspace/test-results/report/index.html: kept existing file (source 523200 bytes, target 584464 bytes).
 
 ## Changed Files
 ```
@@ -101,7 +106,7 @@ M	dev/archive/v1-v2/docs_build/dev/reports/toolbox-builder-route-history/templat
 M	dev/archive/v1-v2/docs_build/dev/reports/toolbox-builder-route-history/theme_v2_asset_ssot_inventory.md
 M	dev/archive/v1-v2/docs_build/dev/reports/toolbox-builder-route-history/theme_v2_asset_wiring_closeout_report.md
 M	dev/archive/v1-v2/docs_build/dev/reports/toolbox-builder-route-history/theme_v2_reference_rewire.md
-R050	dev/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md	dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+A	dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 A	dev/build/ProjectInstructions/README.txt
 R071	dev/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md	dev/build/ProjectInstructions/TEAM_START_COMMANDS.md
 R100	dev/docs_build/dev/ProjectInstructions/addendums/assistant_execution_modes.md	dev/build/ProjectInstructions/addendums/assistant_execution_modes.md
@@ -110,14 +115,14 @@ R088	dev/docs_build/dev/ProjectInstructions/addendums/branch_context_governance.
 R090	dev/docs_build/dev/ProjectInstructions/addendums/branch_lock_governance.md	dev/build/ProjectInstructions/addendums/branch_lock_governance.md
 R094	dev/docs_build/dev/ProjectInstructions/addendums/build_path_sync.md	dev/build/ProjectInstructions/addendums/build_path_sync.md
 R090	dev/docs_build/dev/ProjectInstructions/addendums/canonical_repository_structure.md	dev/build/ProjectInstructions/addendums/canonical_repository_structure.md
-R098	dev/docs_build/dev/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md	dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
+R095	dev/docs_build/dev/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md	dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
 R079	dev/docs_build/dev/ProjectInstructions/addendums/codex_project_instructions_startup.md	dev/build/ProjectInstructions/addendums/codex_project_instructions_startup.md
 R100	dev/docs_build/dev/ProjectInstructions/addendums/deprecation.md	dev/build/ProjectInstructions/addendums/deprecation.md
-R054	dev/docs_build/dev/ProjectInstructions/addendums/documentation_ownership.md	dev/build/ProjectInstructions/addendums/documentation_ownership.md
+A	dev/build/ProjectInstructions/addendums/documentation_ownership.md
 R093	dev/docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md	dev/build/ProjectInstructions/addendums/environment_configuration_standards.md
 R092	dev/docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md	dev/build/ProjectInstructions/addendums/environment_governance_model.md
 R100	dev/docs_build/dev/ProjectInstructions/addendums/governance_phase1_complete.md	dev/build/ProjectInstructions/addendums/governance_phase1_complete.md
-R100	dev/docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md	dev/build/ProjectInstructions/addendums/koti_layout_contract.md
+R097	dev/docs_build/dev/ProjectInstructions/addendums/koti_layout_contract.md	dev/build/ProjectInstructions/addendums/koti_layout_contract.md
 R100	dev/docs_build/dev/ProjectInstructions/addendums/legacy_migration_policy.md	dev/build/ProjectInstructions/addendums/legacy_migration_policy.md
 R093	dev/docs_build/dev/ProjectInstructions/addendums/multi_team.md	dev/build/ProjectInstructions/addendums/multi_team.md
 R100	dev/docs_build/dev/ProjectInstructions/addendums/naming_registry.md	dev/build/ProjectInstructions/addendums/naming_registry.md
@@ -125,11 +130,11 @@ R100	dev/docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime
 R100	dev/docs_build/dev/ProjectInstructions/addendums/postgres_only.md	dev/build/ProjectInstructions/addendums/postgres_only.md
 R097	dev/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md	dev/build/ProjectInstructions/addendums/pr_workflow.md
 R093	dev/docs_build/dev/ProjectInstructions/addendums/preservation.md	dev/build/ProjectInstructions/addendums/preservation.md
-R088	dev/docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md	dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
+R087	dev/docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md	dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
 R060	dev/docs_build/dev/ProjectInstructions/addendums/project_reference_files.md	dev/build/ProjectInstructions/addendums/project_reference_files.md
 R100	dev/docs_build/dev/ProjectInstructions/addendums/referenced_asset_protection.md	dev/build/ProjectInstructions/addendums/referenced_asset_protection.md
 R050	dev/docs_build/dev/ProjectInstructions/addendums/release_gate.md	dev/build/ProjectInstructions/addendums/release_gate.md
-R091	dev/docs_build/dev/ProjectInstructions/addendums/repository_directory_standard.md	dev/build/ProjectInstructions/addendums/repository_directory_standard.md
+R085	dev/docs_build/dev/ProjectInstructions/addendums/repository_directory_standard.md	dev/build/ProjectInstructions/addendums/repository_directory_standard.md
 R100	dev/docs_build/dev/ProjectInstructions/addendums/samples2tools_adapter_guidance.md	dev/build/ProjectInstructions/addendums/samples2tools_adapter_guidance.md
 R100	dev/docs_build/dev/ProjectInstructions/addendums/status_model.md	dev/build/ProjectInstructions/addendums/status_model.md
 R100	dev/docs_build/dev/ProjectInstructions/addendums/table_first_ui.md	dev/build/ProjectInstructions/addendums/table_first_ui.md
@@ -140,7 +145,7 @@ R100	dev/docs_build/dev/ProjectInstructions/addendums/test_structure_standardiza
 R100	dev/docs_build/dev/ProjectInstructions/addendums/tile_overlay_status.md	dev/build/ProjectInstructions/addendums/tile_overlay_status.md
 R100	dev/docs_build/dev/ProjectInstructions/addendums/tool_imagery.md	dev/build/ProjectInstructions/addendums/tool_imagery.md
 R087	dev/docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md	dev/build/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md
-R100	dev/docs_build/dev/ProjectInstructions/addendums/workspace_v2_playwright_gate.md	dev/build/ProjectInstructions/addendums/workspace_v2_playwright_gate.md
+R075	dev/docs_build/dev/ProjectInstructions/addendums/workspace_v2_playwright_gate.md	dev/build/ProjectInstructions/addendums/workspace_v2_playwright_gate.md
 R098	dev/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md	dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
 R100	dev/docs_build/dev/ProjectInstructions/chatGPT_command.txt	dev/build/ProjectInstructions/chatGPT_command.txt
 R100	dev/docs_build/dev/ProjectInstructions/deprecation/README.md	dev/build/ProjectInstructions/deprecation/README.md
@@ -1679,21 +1684,21 @@ R100	dev/docs_build/pr/overlay/OVERLAY_DOCS_BUCKETS.md	dev/build/pr/overlay/OVER
 R100	dev/docs_build/pr/overlay/OVERLAY_PR_CAPABILITY_BUNDLES_LEVEL_18_8.md	dev/build/pr/overlay/OVERLAY_PR_CAPABILITY_BUNDLES_LEVEL_18_8.md
 R100	dev/docs_build/pr/palette_cleanup_audit_rules.md	dev/build/pr/palette_cleanup_audit_rules.md
 A	dev/build/pr/reference/OWNER_007_BUILD_PR.md
-R063	dev/docs_build/dev/PR/reference/OWNER_007_PLAN_PR.md	dev/build/pr/reference/OWNER_007_PLAN_PR.md
+R058	dev/docs_build/dev/PR/reference/OWNER_007_PLAN_PR.md	dev/build/pr/reference/OWNER_007_PLAN_PR.md
 R076	dev/docs_build/dev/PR/reference/README.md	dev/build/pr/reference/README.md
 R100	dev/docs_build/dev/PR/reference/plan_pr_tool_workspace_manifest_boundaries.md	dev/build/pr/reference/plan_pr_tool_workspace_manifest_boundaries.md
-R095	dev/docs_build/dev/PR/reference/pr_koti_layout_contract.md	dev/build/pr/reference/pr_koti_layout_contract.md
+R091	dev/docs_build/dev/PR/reference/pr_koti_layout_contract.md	dev/build/pr/reference/pr_koti_layout_contract.md
 R100	dev/docs_build/dev/PR/reference/pr_tool_fix_asset_browser_1505.md	dev/build/pr/reference/pr_tool_fix_asset_browser_1505.md
-R100	dev/docs_build/dev/PR/reference/pr_tool_fix_fullscreen_exit_state.md	dev/build/pr/reference/pr_tool_fix_fullscreen_exit_state.md
-R100	dev/docs_build/dev/PR/reference/pr_tool_fix_parallax_header_metadata.md	dev/build/pr/reference/pr_tool_fix_parallax_header_metadata.md
+R097	dev/docs_build/dev/PR/reference/pr_tool_fix_fullscreen_exit_state.md	dev/build/pr/reference/pr_tool_fix_fullscreen_exit_state.md
+R098	dev/docs_build/dev/PR/reference/pr_tool_fix_parallax_header_metadata.md	dev/build/pr/reference/pr_tool_fix_parallax_header_metadata.md
 R100	dev/docs_build/dev/PR/reference/pr_tool_header_singleline.md	dev/build/pr/reference/pr_tool_header_singleline.md
 R100	dev/docs_build/dev/PR/reference/pr_tool_interactive_uat.md	dev/build/pr/reference/pr_tool_interactive_uat.md
 R100	dev/docs_build/dev/PR/reference/pr_tool_layout_workflow_baseline.md	dev/build/pr/reference/pr_tool_layout_workflow_baseline.md
 R100	dev/docs_build/dev/PR/reference/pr_tool_remove_future_import_hints.md	dev/build/pr/reference/pr_tool_remove_future_import_hints.md
-R100	dev/docs_build/dev/PR/reference/pr_tool_remove_static_header_intro.md	dev/build/pr/reference/pr_tool_remove_static_header_intro.md
+R098	dev/docs_build/dev/PR/reference/pr_tool_remove_static_header_intro.md	dev/build/pr/reference/pr_tool_remove_static_header_intro.md
 R100	dev/docs_build/dev/PR/reference/pr_tool_stabilization.md	dev/build/pr/reference/pr_tool_stabilization.md
-R100	dev/docs_build/dev/PR/reference/pr_tool_uat_closeout.md	dev/build/pr/reference/pr_tool_uat_closeout.md
-R100	dev/docs_build/dev/PR/reference/pr_tool_uat_fix_fullscreen_header_wiring.md	dev/build/pr/reference/pr_tool_uat_fix_fullscreen_header_wiring.md
+R097	dev/docs_build/dev/PR/reference/pr_tool_uat_closeout.md	dev/build/pr/reference/pr_tool_uat_closeout.md
+R097	dev/docs_build/dev/PR/reference/pr_tool_uat_fix_fullscreen_header_wiring.md	dev/build/pr/reference/pr_tool_uat_fix_fullscreen_header_wiring.md
 R100	dev/docs_build/dev/PR/reference/pr_tool_uat_fix_header_asset_browser.md	dev/build/pr/reference/pr_tool_uat_fix_header_asset_browser.md
 R100	dev/docs_build/dev/PR/reference/pr_tool_uat_fixes.md	dev/build/pr/reference/pr_tool_uat_fixes.md
 R100	dev/docs_build/pr/remaining_work_checklist.md	dev/build/pr/remaining_work_checklist.md
@@ -1701,7 +1706,7 @@ R100	dev/docs_build/pr/sample_compliance_checklist.md	dev/build/pr/sample_compli
 R100	dev/docs_build/pr/sample_file_naming_rules.md	dev/build/pr/sample_file_naming_rules.md
 R100	dev/docs_build/pr/sample_palette_generation_rules.md	dev/build/pr/sample_palette_generation_rules.md
 R100	dev/docs_build/pr/sample_palette_linkage_rules.md	dev/build/pr/sample_palette_linkage_rules.md
-R092	dev/docs_build/dev/PR/templates/BUILD_PR.md	dev/build/pr/templates/BUILD_PR.md
+R085	dev/docs_build/dev/PR/templates/BUILD_PR.md	dev/build/pr/templates/BUILD_PR.md
 R100	dev/docs_build/pr/templates/BUILD_PR_ULTRA_COMPACT.md	dev/build/pr/templates/BUILD_PR_ULTRA_COMPACT.md
 R100	dev/docs_build/dev/PR/templates/PLAN_PR.md	dev/build/pr/templates/PLAN_PR.md
 R100	dev/docs_build/pr/templates/PLAN_PR_COMPACT_TEMPLATE.md	dev/build/pr/templates/PLAN_PR_COMPACT_TEMPLATE.md
@@ -2038,7 +2043,9 @@ R100	dev/docs_build/tools/tool-host/uat.md	dev/build/tools/tool-host/uat.md
 R100	dev/docs_build/tools/world-vector-studio-v2/uat.md	dev/build/tools/world-vector-studio-v2/uat.md
 M	dev/config/playwright.config.cjs
 D	dev/docs_build/dev/PR/reference/OWNER_007_BUILD_PR.md
+D	dev/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 D	dev/docs_build/dev/ProjectInstructions/README.txt
+D	dev/docs_build/dev/ProjectInstructions/addendums/documentation_ownership.md
 D	dev/docs_build/dev/start_of_day/CODEX_SESSION_PROMPT.md
 D	dev/docs_build/dev/start_of_day/CURRENT_STATE.md
 D	dev/docs_build/dev/start_of_day/NEXT_STEPS.md
@@ -2062,7 +2069,7 @@ D	dev/docs_build/dev/start_of_day/codex/PR_NAMING_CONVENTION.md
 D	dev/docs_build/dev/start_of_day/codex/USAGE_REMINDER.md
 D	dev/docs_build/dev/start_of_day/codex/codex_commands.md
 D	dev/docs_build/dev/toolbox/runSharedExtractionGuard.sh
-M	dev/project-instructions/README.md
+D	dev/project-instructions/README.md
 M	dev/reports/PR_26163_056-account-aside-template-toggle-alignment.md
 M	dev/reports/PR_26179_OWNER_004-move-governance-workspace.md
 M	dev/reports/PR_26179_OWNER_004-move-governance-workspace_requirement-checklist.md
@@ -2071,6 +2078,10 @@ M	dev/reports/PR_26179_OWNER_005-move-tests-to-dev_requirement-checklist.md
 M	dev/reports/PR_26179_OWNER_006-move-bootstrap-scripts.md
 M	dev/reports/PR_26179_OWNER_007-move-reports-artifacts.md
 M	dev/reports/PR_26179_OWNER_007-move-reports-artifacts_branch-validation.md
+M	dev/reports/PR_26179_OWNER_007-move-reports-artifacts_manual-validation-notes.md
+M	dev/reports/PR_26179_OWNER_007-move-reports-artifacts_requirement-checklist.md
+M	dev/reports/PR_26179_OWNER_008-update-path-governance-final.md
+M	dev/reports/PR_26179_OWNER_008-update-path-governance-final_manual-validation-notes.md
 A	dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization.md
 A	dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_branch-validation.md
 A	dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_manual-validation-notes.md
@@ -2110,14 +2121,16 @@ M	dev/reports/tool_template_display_mode_layout.md
 M	dev/reports/tool_template_path_adjustments.md
 M	dev/reports/toolbox_footer_template_bundle_report.md
 M	dev/reports/toolbox_template_mismatch_closeout_report.md
+M	dev/scripts/PS/deploy/WebsiteRepoDeploymentCommon.ps1
+M	dev/scripts/PS/find_json.ps1
 M	dev/scripts/apply-database-ddl.mjs
 M	dev/scripts/apply-database-dml.mjs
 M	dev/scripts/audit-duplicate-file-content.mjs
 M	dev/scripts/run-targeted-test-lanes.mjs
 R100	run_all.cmd	dev/scripts/run_all.cmd
-R062	run_all.ps1	dev/scripts/run_all.ps1
+R063	run_all.ps1	dev/scripts/run_all.ps1
 R100	run_preprocessor.cmd	dev/scripts/run_preprocessor.cmd
-R072	run_preprocessor.ps1	dev/scripts/run_preprocessor.ps1
+R073	run_preprocessor.ps1	dev/scripts/run_preprocessor.ps1
 M	dev/scripts/validate-asset-ownership-strategy.mjs
 M	dev/scripts/validate-browser-env-agnostic.mjs
 M	dev/scripts/validate-canonical-repository-structure.mjs
@@ -2130,6 +2143,7 @@ R100	toolbox/_tool_template-v2/index.html	dev/templates/tool-template-v2/index.h
 M	dev/tests/dev-runtime/AdminNotesBoundary.test.mjs
 M	dev/tests/dev-runtime/DbSeedIntegrity.test.mjs
 M	dev/tests/helpers/playwrightV8CoverageReporter.mjs
+M	dev/tests/index.html
 M	dev/tests/playwright/tools/AdminDbViewer.spec.mjs
 M	dev/tests/playwright/tools/AdminNotesLocalViewer.spec.mjs
 M	dev/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
@@ -2143,6 +2157,7 @@ M	dev/tests/playwright/tools/RootToolsFutureState.spec.mjs
 M	dev/tests/playwright/tools/TagsTool.spec.mjs
 M	dev/tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs
 M	dev/tests/playwright_installation.txt
+M	dev/tests/runtime/GamesIndexWorkspaceManagerOpen.test.mjs
 M	dev/tests/runtime/LaunchSmokeAllEntries.test.mjs
 M	dev/tests/shared/ContractIndexValidation.test.mjs
 M	dev/tests/tools/DevConsoleIntegration.test.mjs
@@ -2190,6 +2205,7 @@ R091	dev/docs_build/dev/toolbox/presets/debugPresetRegistry.js	dev/tools/toolbox
 R097	dev/docs_build/dev/toolbox/presets/registerPresetCommands.js	dev/tools/toolbox-dev/presets/registerPresetCommands.js
 R100	dev/docs_build/dev/toolbox/presets/registerStandardDebugPresets.js	dev/tools/toolbox-dev/presets/registerStandardDebugPresets.js
 A	dev/tools/toolbox-dev/runSharedExtractionGuard.sh
+D	dev/workspace/artifacts/README.md
 M	docs/README.md
 M	package.json
 M	src/dev-runtime/admin/admin-notes-directory.mjs
@@ -2205,9 +2221,8 @@ M	src/shared/toolbox/vectorTemplateSampleGame.js
 - PASS - npm run validate:canonical-structure.
 - PASS - git diff --check.
 - PASS - node ./dev/scripts/run-platform-validation-suite.mjs (8/8 scenarios).
-- PASS - rg active code/config/tests/package scripts for start_of_day (no matches).
-- PASS - rg active code/config/tests/package scripts for dev/build/dev/toolbox (no matches).
-- PASS - node ./dev/scripts/run-node-test-files.mjs dev/tests/tools/DevConsoleIntegration.test.mjs.
+- PASS - grep active code/config/tests/package scripts for dev/project-instructions (no matches).
+- PASS - grep active code/config/tests/package scripts for dev/workspace/artifacts (no matches).
 
 ## Blockers
 None.

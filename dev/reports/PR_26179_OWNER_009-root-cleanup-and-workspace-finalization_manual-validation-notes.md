@@ -1,13 +1,11 @@
 # Manual Validation Notes - PR_26179_OWNER_009-root-cleanup-and-workspace-finalization
 
-Updated: 2026-06-27T23:16:02.248Z
+Updated: 2026-06-27T23:36:03.134Z
 
-- Confirmed dev/build/dev/start_of_day/ is absent.
-- Confirmed dev/build/dev/ is absent after moving/deleting its contents.
-- Confirmed dev/tools/toolbox-dev/ exists.
-- Confirmed production root toolbox/ was not modified by this cleanup pass.
-- Confirmed src/shared/toolbox/ was not modified by this cleanup pass.
-- Confirmed dev/tools-images-generated/ is absent.
-- Confirmed dev/config/ contains only configuration files.
-- Confirmed no root artifacts/ output was left by platform validation.
+- Confirmed dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md exists.
+- Confirmed dev/project-instructions/ is absent.
+- Confirmed dev/workspace/artifacts/ is absent.
+- Confirmed dev/workspace/tmp/, dev/workspace/zips/, dev/workspace/logs/, dev/workspace/generated/, and dev/workspace/test-results/ exist locally as canonical workspace buckets.
+- Confirmed root artifacts/ output is absent after platform validation.
+- Test-result conflict handling: larger existing files were retained in dev/workspace/test-results/.
 - Blockers: none.

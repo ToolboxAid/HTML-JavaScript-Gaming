@@ -129,7 +129,7 @@ Browser validation:
 Create:
 
 ```txt
-dev/workspace/artifacts/tmp/pr_tool_fix_fullscreen_exit_state_validation.json
+dev/workspace/tmp/pr_tool_fix_fullscreen_exit_state_validation.json
 ```
 
 Include:

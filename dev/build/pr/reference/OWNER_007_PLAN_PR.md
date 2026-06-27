@@ -20,7 +20,7 @@ Make `dev/build/ProjectInstructions/` the only active Project Instructions sourc
 - Move verified old/superseded DoD and roadmap docs to the existing root `dev/archive/` tree.
 - Use the existing root `dev/archive/` tree instead of creating `dev/build/dev/archive/` or new `dev/build/ProjectInstructions/dev/archive/` paths.
 - Preserve historical ProjectInstructions-style sources only as deprecated reference material.
-- Keep `dev/project-instructions/` out of the PR except for a tiny deprecated pointer.
+- Keep `dev/build/ProjectInstructions/` out of the PR except for a tiny deprecated pointer.
 - Move active legacy addendums into `dev/build/ProjectInstructions/addendums/`.
 - Update active team start and governance docs to reference only `dev/build/ProjectInstructions/`.
 - Add EOD main lock, next-day reset, team PR branch creation gate, and canonical START / WORK / END branch lifecycle rules.
@@ -37,7 +37,7 @@ Make `dev/build/ProjectInstructions/` the only active Project Instructions sourc
 
 1. Run targeted grep/search proving no active duplicate ProjectInstructions source remains.
 2. Confirm duplicate active root instruction files and stale one-off root files are absent.
-3. Confirm `dev/project-instructions/**` has no PR changes except the tiny deprecated pointer.
+3. Confirm `dev/build/ProjectInstructions/**` has no PR changes except the tiny deprecated pointer.
 4. Confirm dev/build/dev root no longer contains active loose instruction, audit, contract, or PR files.
 5. Confirm moved active governance/contract docs are under `dev/build/ProjectInstructions/addendums/`.
 6. Confirm moved audit outputs are under `dev/reports/audits/`.

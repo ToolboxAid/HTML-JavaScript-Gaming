@@ -25,7 +25,7 @@ This `dev/build/dev/pr/BUILD_PR.md`, `dev/build/dev/pr/PLAN_PR.md`, and the user
 - Move verified old/superseded DoD and roadmap docs to the existing root `dev/archive/` tree.
 - Use the existing root `dev/archive/` tree instead of creating `dev/build/dev/archive/` or new `dev/build/ProjectInstructions/dev/archive/` paths.
 - Keep preserved historical ProjectInstructions material reference-only.
-- Keep `dev/project-instructions/` out of this PR except for a tiny deprecated pointer.
+- Keep `dev/build/ProjectInstructions/` out of this PR except for a tiny deprecated pointer.
 - Update active team start/governance docs to reference only `dev/build/ProjectInstructions/`.
 - Add EOD main lock, next-day reset governance, and canonical START / WORK / END branch lifecycle rules.
 - Add required reports under `dev/reports/`.
@@ -46,7 +46,7 @@ This `dev/build/dev/pr/BUILD_PR.md`, `dev/build/dev/pr/PLAN_PR.md`, and the user
 - `dev/reports/audits/*.md`
 - `dev/archive/docs_build/dev/dod/*.md`
 - `dev/archive/docs_build/dev/roadmaps/*.md`
-- `dev/project-instructions/README.md` (tiny deprecated pointer only)
+- `dev/build/ProjectInstructions/README.md` (tiny deprecated pointer only)
 - `dev/build/dev/PROJECT_INSTRUCTIONS.md` (delete)
 - `dev/build/dev/PROJECT_MULTI_PC.txt` (delete)
 - `dev/build/dev/BUILD_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT.md` (delete)

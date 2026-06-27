@@ -1,5 +1,5 @@
 $project = "C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming"
-$artifactTmp = Join-Path $project "dev\workspace\artifacts\tmp"
+$artifactTmp = Join-Path $project "dev\workspace\tmp"
 $outputPath = Join-Path $artifactTmp "asteroids-json-list.txt"
 
 New-Item -ItemType Directory -Path $artifactTmp -Force | Out-Null

@@ -13,7 +13,7 @@
   <h2>Install and Run</h2>
   <pre id="cmd1">npm run test:launch-smoke</pre>
   <button onclick="copyId('cmd1')">Copy</button>
-  <p>The script auto-installs <code>ws</code> into <code>&lt;project&gt;/dev/workspace/artifacts/tmp/node_modules</code> if missing.</p>
+  <p>The script auto-installs <code>ws</code> into <code>&lt;project&gt;/dev/workspace/tmp/node_modules</code> if missing.</p>
 </div>
 
 <div class="box">
@@ -28,28 +28,28 @@ npm run test:launch-smoke -- --games --tools</pre>
 
 <div class="box">
   <h2>What the Script Creates</h2>
-  <pre>&lt;project&gt;/dev/workspace/artifacts/tmp/node_modules/
-&lt;project&gt;/dev/workspace/artifacts/tmp/package.json
-&lt;project&gt;/dev/workspace/artifacts/tmp/launch-smoke-browser/
-&lt;project&gt;/dev/workspace/artifacts/tmp/launch-smoke-runtime/
-&lt;project&gt;/dev/workspace/artifacts/tmp/launch-smoke-owned.json</pre>
+  <pre>&lt;project&gt;/dev/workspace/tmp/node_modules/
+&lt;project&gt;/dev/workspace/tmp/package.json
+&lt;project&gt;/dev/workspace/tmp/launch-smoke-browser/
+&lt;project&gt;/dev/workspace/tmp/launch-smoke-runtime/
+&lt;project&gt;/dev/workspace/tmp/launch-smoke-owned.json</pre>
 </div>
 
 <div class="box warning">
   <h2>Cleanup Behavior</h2>
   <p><b>Deletes only script-owned artifacts:</b></p>
-  <pre>&lt;project&gt;/dev/workspace/artifacts/tmp/launch-smoke-browser/
-&lt;project&gt;/dev/workspace/artifacts/tmp/launch-smoke-runtime/
-&lt;project&gt;/dev/workspace/artifacts/tmp/launch-smoke-owned.json</pre>
+  <pre>&lt;project&gt;/dev/workspace/tmp/launch-smoke-browser/
+&lt;project&gt;/dev/workspace/tmp/launch-smoke-runtime/
+&lt;project&gt;/dev/workspace/tmp/launch-smoke-owned.json</pre>
   <p><b>Does not delete:</b></p>
-  <pre>&lt;project&gt;/dev/workspace/artifacts/tmp/node_modules/</pre>
+  <pre>&lt;project&gt;/dev/workspace/tmp/node_modules/</pre>
 </div>
 
 <div class="box">
   <h2>Terminal Output At End</h2>
   <pre>[launch-smoke ...] summary: PASS=220 FAIL=4 TOTAL=224
 [launch-smoke ...] report: &lt;project&gt;/dev/reports/launch_smoke_report.md
-[launch-smoke ...] isolated node_modules: &lt;project&gt;/dev/workspace/artifacts/tmp/node_modules
+[launch-smoke ...] isolated node_modules: &lt;project&gt;/dev/workspace/tmp/node_modules
 [launch-smoke ...] failed entries: none</pre>
 </div>
 

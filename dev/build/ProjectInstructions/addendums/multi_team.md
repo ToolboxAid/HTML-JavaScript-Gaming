@@ -129,7 +129,7 @@ Required gate:
    - blocked PRs with blockers
    - next review queue
    - final branch/worktree/local-origin sync
-   - repo-structured ZIP path under `dev/workspace/artifacts/zips/`
+   - repo-structured ZIP path under `dev/workspace/zips/`
    - final repository state block
 
 OWNER_049 lesson:
@@ -158,7 +158,7 @@ Required steps:
    - local/origin sync = 0 0
 5. Record final main commit.
 6. Report final repository state.
-7. Produce a repo-structured ZIP under `dev/workspace/artifacts/zips/` that includes the EOD report and all changed or preserved repo files from the closeout.
+7. Produce a repo-structured ZIP under `dev/workspace/zips/` that includes the EOD report and all changed or preserved repo files from the closeout.
 8. Record source branch disposition as `retained`.
 9. Mark the PR Closed only when every Closed gate passes.
 
@@ -180,7 +180,7 @@ Rules:
 - Do not leave Codex on a feature, team, workstream, recovery, governance, or owner branch after successful merge.
 - Plan, Build, validation, reports, ZIP packaging, and closeout stay tied to the same PR identity and source branch.
 - Source branches are retained by default after merge and closeout.
-- A PR is not Closed until the PR merged, changes are pushed, the repository is on `main`, `main` includes the merge or final commit, the worktree is clean, local/origin sync is `0/0`, no untracked files exist, branch disposition is recorded as `retained`, required reports exist, the required repo-structured ZIP exists under `dev/workspace/artifacts/zips/`, backlog is updated, and tool state is updated when applicable.
+- A PR is not Closed until the PR merged, changes are pushed, the repository is on `main`, `main` includes the merge or final commit, the worktree is clean, local/origin sync is `0/0`, no untracked files exist, branch disposition is recorded as `retained`, required reports exist, the required repo-structured ZIP exists under `dev/workspace/zips/`, backlog is updated, and tool state is updated when applicable.
 - A completed EOD closeout must produce the required ZIP even when the closeout changed no repo files; in that case, the ZIP must contain the EOD report proving the no-change result.
 - The EOD ZIP does not replace the EOD report or other required reports under `dev/reports/`.
 - If merge succeeds but repository is not returned to main:

@@ -31,7 +31,7 @@ Minimum ZIP contents:
 ZIP artifacts must be written under:
 
 ```text
-dev/workspace/artifacts/zips/
+dev/workspace/zips/
 ```
 
 Reports must remain flat under `dev/reports/`. Use descriptive filenames that include the PR, team, runner, or lane context instead of nested team or runner report folders.
@@ -44,7 +44,7 @@ Optional:
 - validation.txt
 - generated artifacts
 
-Generated non-report artifacts must live under `dev/workspace/artifacts/`.
+Generated non-report artifacts must live under `dev/workspace/`.
 
 ## Completion Reporting
 

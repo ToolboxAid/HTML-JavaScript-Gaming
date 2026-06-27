@@ -9,7 +9,6 @@ Owner: OWNER
 
 Only this folder may contain active Project Instructions. Deprecated reference locations must not be used as active instruction sources:
 - root-level copies in `dev/build/dev/`
-- `dev/project-instructions/`
 - archived Project Instructions snapshots
 - generated PR reports
 
@@ -201,4 +200,4 @@ STOP if:
 
 ## Start Of Day Boundary
 
-`dev/build/dev/start_of_day/` may point to `dev/build/ProjectInstructions/`, but it must not become a second active Project Instructions source.
+Legacy `start_of_day/` folders are retired and must not become a second active Project Instructions source. Active start governance lives under `dev/build/ProjectInstructions/`.

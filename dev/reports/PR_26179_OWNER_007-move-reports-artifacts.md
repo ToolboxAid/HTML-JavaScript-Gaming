@@ -3,7 +3,7 @@
 Generated: 2026-06-27T19:33:15.325Z
 Branch: PR_26179_OWNER_007-move-reports-artifacts
 Base stack head before PR_007: 119fa8816
-ZIP: dev/workspace/artifacts/tmp/PR_26179_OWNER_007-move-reports-artifacts_delta.zip
+ZIP: dev/workspace/tmp/PR_26179_OWNER_007-move-reports-artifacts_delta.zip
 
 ## Purpose
 
@@ -12,8 +12,8 @@ Move generated report and artifact ownership to the new dev workspace locations 
 ## Changes
 
 - Moved tracked generated reports from `dev/reports/` to flat `dev/reports/`.
-- Added `dev/workspace/artifacts/` ownership documentation for non-report generated artifacts.
-- Updated Codex/PR/reporting governance to require flat `dev/reports/` and ZIPs under `dev/workspace/artifacts/tmp/`.
+- Added `dev/workspace/` ownership documentation for non-report generated artifacts.
+- Updated Codex/PR/reporting governance to require flat `dev/reports/` and ZIPs under `dev/workspace/tmp/`.
 - Updated dev script defaults, Playwright output, report writers, and report-related tests to the new paths.
 
 ## Report Inventory
@@ -30,7 +30,7 @@ Move generated report and artifact ownership to the new dev workspace locations 
 | PASS | No product/runtime/API/database files changed | git diff against production/runtime scopes returned no files |
 | PASS | Tracked reports moved out of dev/reports | 0 tracked files remain in old report tree |
 | PASS | Tracked reports are flat under dev/reports | 3578 tracked report files, 0 nested report paths |
-| PASS | Generated ZIP/report/artifact expectations updated | active instructions and helper defaults use dev/reports and dev/workspace/artifacts |
+| PASS | Generated ZIP/report/artifact expectations updated | active instructions and helper defaults use dev/reports and dev/workspace |
 | PASS | git diff --check | passed |
 | PASS | node --check on changed JS/MJS files | passed |
 | PASS | npm run test:audit:locations | passed |

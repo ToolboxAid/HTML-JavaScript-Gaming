@@ -115,7 +115,7 @@ HTML-JavaScript-Gaming/
 
 ✔ Keep node_modules at root
 ✔ Do NOT move node_modules to tmp
-✔ dev/workspace/artifacts/test-results is safe for outputs
+✔ dev/workspace/test-results is safe for outputs
 ```
 
 ---

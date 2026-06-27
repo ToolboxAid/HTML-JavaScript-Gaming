@@ -135,7 +135,7 @@ Perform browser validation:
 - Save evidence JSON under:
 
 ```txt
-dev/workspace/artifacts/tmp/pr_tool_uat_fix_fullscreen_header_wiring_validation.json
+dev/workspace/tmp/pr_tool_uat_fix_fullscreen_header_wiring_validation.json
 ```
 
 ---

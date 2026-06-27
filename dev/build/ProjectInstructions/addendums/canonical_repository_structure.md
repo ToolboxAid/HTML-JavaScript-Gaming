@@ -27,7 +27,7 @@ Development workspace:
 - dev/scripts/
 - dev/config/
 - dev/archive/
-- dev/workspace/artifacts/
+- dev/workspace/
 
 Tools:
 - toolbox/{tool-name}/index.html
@@ -64,4 +64,4 @@ These legacy transition buckets may remain until explicit migration PRs move the
 - New deployable `src/` work follows `src/web/`, `src/api-runtime/`, or `src/runtime/`.
 - New non-deployable work belongs under `dev/`.
 - Required reports belong under flat `dev/reports/`.
-- Required ZIPs belong under `dev/workspace/artifacts/zips/`; generated temporary artifacts belong under `dev/workspace/artifacts/tmp/`.
+- Required ZIPs belong under `dev/workspace/zips/`; generated temporary artifacts belong under `dev/workspace/tmp/`.

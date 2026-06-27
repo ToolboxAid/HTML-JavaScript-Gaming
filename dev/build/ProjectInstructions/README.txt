@@ -4,7 +4,7 @@ Folder purpose:
 This folder is the only active Project Instructions source for Game Foundry Studio. It organizes active governance, backlog, team assignment, standards, deprecation, and history material under `dev/build/ProjectInstructions/`.
 
 Preservation rules:
-Preserve historical Project Instructions material as deprecated reference only. Do not treat root-level copies in `dev/build/dev/`, `dev/project-instructions/`, `dev/archive/`, or archived snapshots as active instruction sources. When a conflict appears, `dev/build/ProjectInstructions/` wins unless OWNER explicitly approves a newer governance change.
+Preserve historical Project Instructions material as deprecated reference only. Do not treat root-level copies in `dev/build/dev/`, `dev/archive/`, or archived snapshots as active instruction sources. When a conflict appears, `dev/build/ProjectInstructions/` wins unless OWNER explicitly approves a newer governance change.
 
 Backlog workflow:
 Backlog work is tracked under backlog/. BACKLOG_MASTER.md is the planned source for backlog item status, notes, and references. Backlog item text is treated as immutable once created; status and notes may change under the governance addendums.

@@ -98,7 +98,7 @@ A team or OWNER PR is release-ready when:
 - active assignment or OWNER ownership is clear
 - PR summary states the validation result
 - lifecycle state is at least Validation
-- required reports and repo-structured ZIP under `dev/workspace/artifacts/zips/` exist before Closed
+- required reports and repo-structured ZIP under `dev/workspace/zips/` exist before Closed
 - canonical END publishes branch, HEAD SHA, and date/time when the PR merges
 
 Closed readiness requires:
@@ -110,7 +110,7 @@ Closed readiness requires:
 - merge or final commit recorded
 - branch disposition recorded as `retained`
 - required reports exist
-- required repo-structured ZIP under `dev/workspace/artifacts/zips/` exists
+- required repo-structured ZIP under `dev/workspace/zips/` exists
 - backlog updated
 - tool state updated when applicable
 

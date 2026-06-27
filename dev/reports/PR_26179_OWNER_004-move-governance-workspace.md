@@ -15,7 +15,7 @@ Move the non-deployable governance workspace under `dev/` while keeping producti
 
 - Moved tracked `docs_build/` content to `dev/build/`.
 - Moved tracked `archive/` content to `dev/archive/`.
-- Moved root `project-instructions/` to `dev/project-instructions/` as deprecated reference only.
+- Moved root `project-instructions/` to `dev/build/ProjectInstructions/` as deprecated reference only.
 - Updated active Project Instructions, PR workflow references, package scripts, validation scripts, and tests to use moved `dev/build/...` and `dev/archive/...` paths.
 - Updated dev-runtime Admin Notes paths to the existing moved archive source at `dev/archive/docs_build/dev/admin-notes/`.
 - Updated dev-only toolbox imports and guard baselines so moved validation scripts resolve from `dev/build/dev/toolbox/`.
@@ -37,7 +37,7 @@ Move the non-deployable governance workspace under `dev/` while keeping producti
 - Branch validation: PASS, current branch is `PR_26179_OWNER_004-move-governance-workspace`.
 - Root tracked workspace check: PASS, 0 tracked files remain under root `docs_build/`, `archive/`, or `project-instructions/`.
 - Root directory presence check: PASS, root `docs_build/`, `archive/`, and `project-instructions/` are absent.
-- Moved destination check: PASS, `dev/build/`, `dev/archive/`, and `dev/project-instructions/` exist.
+- Moved destination check: PASS, `dev/build/`, `dev/archive/`, and `dev/build/ProjectInstructions/` exist.
 - Old-root active reference search: PASS for moved `docs_build/dev`, `docs_build/database`, `docs_build/codex`, and Admin Notes paths in touched active files.
 - `node -e "JSON.parse(...)"` for `package.json`: PASS.
 - `node --check` on changed JS/MJS files: PASS.

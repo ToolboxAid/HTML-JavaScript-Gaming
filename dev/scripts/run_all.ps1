@@ -17,7 +17,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "STEP 2: Ready for Codex"
-Write-Host "Payload:" (Join-Path $projectRoot "dev\workspace\artifacts\zips\$PrName.zip")
+Write-Host "Payload:" (Join-Path $projectRoot "dev\workspace\zips\$PrName.zip")
 
 Write-Host ""
 Write-Host "👉 Next: Feed this ZIP to Codex using your standard command"

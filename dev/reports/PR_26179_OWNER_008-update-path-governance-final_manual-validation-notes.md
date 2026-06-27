@@ -7,4 +7,4 @@
 - Ran `node ./dev/scripts/run-platform-validation-suite.mjs`; local platform validation passed 8/8 scenarios and emitted CI gate green.
 - Ran `npm run validate:canonical-structure`; passed.
 - Ran `git diff --check`; passed.
-- Repo-structured ZIP path: `dev/workspace/artifacts/tmp/PR_26179_OWNER_008-update-path-governance-final_delta.zip`
+- Repo-structured ZIP path: `dev/workspace/tmp/PR_26179_OWNER_008-update-path-governance-final_delta.zip`

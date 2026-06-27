@@ -53,7 +53,7 @@ Existing Project Instructions outside `dev/build/ProjectInstructions/` remain pr
 - `dev/build/ProjectInstructions/` owns governance, team instructions, standards, and addendums.
 - `dev/build/pr/` owns PR workflow documents, templates, and examples.
 - `dev/reports/` owns generated reports and audits.
-- `dev/workspace/artifacts/` owns generated non-report artifacts, repo-structured ZIPs, and local temporary workspace output.
+- `dev/workspace/` owns generated non-report artifacts, repo-structured ZIPs, and local temporary workspace output.
 - root `dev/archive/` owns historical reference material only.
 
 ## Team Backlog, SOD, And EOD Governance

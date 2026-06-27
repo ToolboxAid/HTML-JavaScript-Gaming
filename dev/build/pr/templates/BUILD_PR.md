@@ -41,4 +41,4 @@ Create or update:
 - requirement checklist PASS/FAIL
 - validation lane report
 - manual validation notes
-- repo-structured ZIP under `dev/workspace/artifacts/tmp/`
+- repo-structured ZIP under `dev/workspace/zips/`

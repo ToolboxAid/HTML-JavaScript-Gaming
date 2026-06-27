@@ -153,7 +153,7 @@ Run targeted browser validation:
 Create:
 
 ```txt
-dev/workspace/artifacts/tmp/pr_tool_remove_static_header_intro_validation.json
+dev/workspace/tmp/pr_tool_remove_static_header_intro_validation.json
 ```
 
 It should include:
