@@ -1,20 +1,16 @@
-# PR_26179_OWNER_009-root-cleanup-and-workspace-finalization Requirement Checklist
+# Requirement Checklist - PR_26179_OWNER_009-root-cleanup-and-workspace-finalization
 
-| Status | Requirement | Evidence |
+Updated: 2026-06-27T22:21:05.953Z
+
+| Requirement | Status | Notes |
 | --- | --- | --- |
-| PASS | Continue on current branch | Work continued on PR_26179_OWNER_009-root-cleanup-and-workspace-finalization. |
-| PASS | Do not switch to main | No branch switch was performed. |
-| PASS | Rename dev/docs_build/ to dev/build/ | Already complete; dev/build exists and dev/docs_build does not. |
-| PASS | Update all references | Active references use dev/build; old scripts/untracked report mentions were updated to dev/scripts/untracked. |
-| PASS | Remove root projects/ | projects/ does not exist. |
-| PASS | Remove generated ziproot | PR ziproot staging folder does not exist at root or under dev/workspace/artifacts/tmp. |
-| PASS | Move docker-compose.override.yml | File moved to deploy/docker-compose.override.yml. |
-| PASS | Move scripts/untracked/ | Ignored scratch folder moved to dev/scripts/untracked/ and ignored in .gitignore. |
-| PASS | Move stale root codex artifacts | Root codex_changed_files.txt and codex_review.diff do not exist; active deliverables are under dev/reports. |
-| PASS | Move dupes_called.txt | Tracked artifact is under dev/reports/dupes_called.txt from earlier OWNER_009 cleanup. |
-| PASS | Move developer scripts | run_all and run_preprocessor cmd/ps1 files are under dev/scripts. |
-| PASS | Move reusable templates | page-template-v2.html and tool-template-v2.html are under dev/templates. |
-| PASS | Keep root product/config set | Required root product directories and standard config remain. |
-| PASS | Validate canonical structure | npm run validate:canonical-structure PASS. |
-| PASS | Validate diff whitespace | git diff --check PASS. |
-| PASS | Validate platform suite | node ./dev/scripts/run-platform-validation-suite.mjs PASS. |
+| Move dev/config/tmp/test-results/ to dev/workspace/artifacts/test-results/ | PASS | Existing Playwright test output was moved to dev/workspace/artifacts/test-results/. |
+| Remove dev/config/tmp/ if empty | PASS | dev/config/tmp/ was empty after the move and was removed. |
+| Generated test/report output lives under dev/workspace/artifacts/ | PASS | Playwright config now writes test results, artifacts, HTML report, and JSON report to dev/workspace/artifacts/test-results/. |
+| Keep dev/config/ for config files only | PASS | dev/config/ contains only configuration files. |
+| Move toolbox/_tool_template-v2/ to dev/templates/tool-template-v2/ | PASS | The legacy toolbox template folder was empty and removed; the tracked reusable template is now dev/templates/tool-template-v2/index.html. |
+| Remove toolbox/_tool_template-v2/ after move | PASS | toolbox/_tool_template-v2/ no longer exists. |
+| Do not move production toolbox pages | PASS | No production toolbox tool pages were moved. |
+| No root projects/ | PASS | projects/ is absent at repository root. |
+| No root tmp/ | PASS | tmp/ is absent at repository root. |
+| deploy/docker-compose.override.yml exists | PASS | deploy/docker-compose.override.yml exists. |

@@ -1,32 +1,39 @@
 # PR_26179_OWNER_009-root-cleanup-and-workspace-finalization
 
-Status: PASS
+Updated: 2026-06-27T22:21:05.953Z
 Team: OWNER
 Branch: PR_26179_OWNER_009-root-cleanup-and-workspace-finalization
-Current HEAD before this update: 6c92de7eff93b4f5f1b951b8b0886a357cab626c
-Report refreshed: 2026-06-27T22:05:28.695Z
-ZIP: dev/workspace/artifacts/zips/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_delta.zip
+Scope: Finish PR_009 artifact collection and template cleanup.
 
-## Purpose
+## Summary
+- Moved generated Playwright test output ownership from dev/config/tmp/test-results/ to dev/workspace/artifacts/test-results/.
+- Kept dev/config/ limited to configuration files.
+- Converted the reusable Tool Template V2 file into dev/templates/tool-template-v2/index.html and removed the empty legacy toolbox/_tool_template-v2/ directory.
+- Updated active tests, coverage reporting, Playwright output config, and vector template path strings to the new template/artifact locations.
 
-Finish the already-started root cleanup/workspace finalization PR.
+## Changed Files
+M	.gitignore
+M	dev/config/playwright.config.cjs
+M	dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization.md
+M	dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_branch-validation.md
+M	dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_manual-validation-notes.md
+M	dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_requirement-checklist.md
+M	dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_validation-report.md
+M	dev/scripts/validate-canonical-repository-structure.mjs
+M	dev/scripts/validate-tool-registry.mjs
+R100	dev/templates/tool-template-v2.html	dev/templates/tool-template-v2/index.html
+M	dev/tests/helpers/playwrightV8CoverageReporter.mjs
+M	dev/tests/playwright/tools/RootToolsFutureState.spec.mjs
+M	dev/tests/playwright_installation.txt
+M	dev/tests/tools/VectorNativeTemplate.test.mjs
+M	src/shared/toolbox/vectorNativeTemplate.js
+M	src/shared/toolbox/vectorTemplateSampleGame.js
 
-## Scope Completed
+## Validation
+- PASS - npm run validate:canonical-structure
+- PASS - git diff --check
+- PASS - node ./dev/scripts/run-platform-validation-suite.mjs (8/8 scenarios)
+- PASS - node ./dev/scripts/run-node-test-files.mjs dev/tests/tools/VectorNativeTemplate.test.mjs
 
-- Confirmed tracked dev/docs_build content is now under dev/build.
-- Confirmed active Project Instructions live at dev/build/ProjectInstructions.
-- Removed root projects and root tmp leftovers earlier in this PR; neither exists now.
-- Removed accidental generated ziproot folder from dev/workspace/artifacts/tmp.
-- Moved docker-compose.override.yml to deploy/docker-compose.override.yml.
-- Moved ignored local scripts/untracked scratch folder to dev/scripts/untracked.
-- Confirmed stale root codex report copies do not remain; active reports live under dev/reports.
-- Confirmed tracked dupes_called.txt is already under dev/reports.
-- Confirmed developer wrapper scripts are under dev/scripts.
-- Confirmed reusable templates are under dev/templates.
-- Updated references for moved build, template, Docker override, and script scratch locations.
-
-## Notes
-
-- No production page directories were moved.
-- Runtime/business logic was not moved into dev.
-- dev/scripts/untracked remains ignored developer-local scratch.
+## Blockers
+None.

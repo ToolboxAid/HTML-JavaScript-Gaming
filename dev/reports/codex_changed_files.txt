@@ -1,11 +1,18 @@
-M	.gitignore
-R100	docker-compose.override.yml	deploy/docker-compose.override.yml
-M	dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization.md
-M	dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_branch-validation.md
-M	dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_manual-validation-notes.md
-M	dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_requirement-checklist.md
-M	dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_validation-report.md
-M	dev/reports/codex_changed_files.txt
-M	dev/reports/codex_review.diff
-M	dev/reports/docs_archive_test_output_cleanup_report.md
-M	dev/reports/legacy_surface_elimination_report.md
+.gitignore
+dev/config/playwright.config.cjs
+dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization.md
+dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_branch-validation.md
+dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_manual-validation-notes.md
+dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_requirement-checklist.md
+dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_validation-report.md
+dev/reports/codex_changed_files.txt
+dev/reports/codex_review.diff
+dev/scripts/validate-canonical-repository-structure.mjs
+dev/scripts/validate-tool-registry.mjs
+dev/templates/tool-template-v2/index.html
+dev/tests/helpers/playwrightV8CoverageReporter.mjs
+dev/tests/playwright/tools/RootToolsFutureState.spec.mjs
+dev/tests/playwright_installation.txt
+dev/tests/tools/VectorNativeTemplate.test.mjs
+src/shared/toolbox/vectorNativeTemplate.js
+src/shared/toolbox/vectorTemplateSampleGame.js

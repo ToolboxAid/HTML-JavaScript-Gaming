@@ -1,9 +1,11 @@
-# PR_26179_OWNER_009-root-cleanup-and-workspace-finalization Manual Validation Notes
+# Manual Validation Notes - PR_26179_OWNER_009-root-cleanup-and-workspace-finalization
 
-- Confirmed docker-compose.override.yml no longer exists at root and deploy/docker-compose.override.yml exists.
-- Confirmed scripts/ and scripts/untracked/ no longer exist at root.
-- Confirmed dev/scripts/untracked/ exists as ignored local scratch.
-- Confirmed generated ziproot folder is absent at root and under dev/workspace/artifacts/tmp.
-- Confirmed dev/build exists and dev/docs_build does not.
-- Confirmed projects/ does not exist.
-- Confirmed root codex_changed_files.txt and codex_review.diff do not exist.
+Updated: 2026-06-27T22:21:05.953Z
+
+- Confirmed dev/workspace/artifacts/test-results/ exists and dev/config/tmp/ is removed.
+- Confirmed dev/config/ contains only configuration files.
+- Confirmed toolbox/_tool_template-v2/ is removed and no production toolbox pages were moved.
+- Confirmed dev/templates/tool-template-v2/index.html exists.
+- Confirmed root projects/ and root tmp/ are absent.
+- Confirmed deploy/docker-compose.override.yml exists.
+- Blockers: none.

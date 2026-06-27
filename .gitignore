@@ -19,8 +19,8 @@ tests/results/
 tests/results/**
 dev/workspace/artifacts/tmp/
 dev/workspace/artifacts/tmp/**
-dev/workspace/artifacts/tmp/test-results/
-dev/workspace/artifacts/tmp/test-results/**
+dev/workspace/artifacts/test-results/
+dev/workspace/artifacts/test-results/**
 dev/workspace/artifacts/zips/
 dev/workspace/artifacts/zips/**
 tmp/

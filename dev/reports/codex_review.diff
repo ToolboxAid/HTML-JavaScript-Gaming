@@ -1,187 +1,543 @@
 diff --git a/.gitignore b/.gitignore
-index acb1ae768..628ab0145 100644
+index 628ab0145..0f5f1e31a 100644
 --- a/.gitignore
 +++ b/.gitignore
-@@ -24,7 +24,8 @@ dev/workspace/artifacts/tmp/test-results/**
+@@ -19,8 +19,8 @@ tests/results/
+ tests/results/**
+ dev/workspace/artifacts/tmp/
+ dev/workspace/artifacts/tmp/**
+-dev/workspace/artifacts/tmp/test-results/
+-dev/workspace/artifacts/tmp/test-results/**
++dev/workspace/artifacts/test-results/
++dev/workspace/artifacts/test-results/**
  dev/workspace/artifacts/zips/
  dev/workspace/artifacts/zips/**
  tmp/
--scripts/untracked/
-+dev/scripts/untracked/
-+dev/scripts/untracked/**
- projects/
+diff --git a/dev/config/playwright.config.cjs b/dev/config/playwright.config.cjs
+index a8f87ea2a..6bb3e2b83 100644
+--- a/dev/config/playwright.config.cjs
++++ b/dev/config/playwright.config.cjs
+@@ -5,23 +5,23 @@ const repoPath = (...segments) => path.join(repoRoot, ...segments);
 
- # Codex files
-diff --git a/docker-compose.override.yml b/deploy/docker-compose.override.yml
-similarity index 100%
-rename from docker-compose.override.yml
-rename to deploy/docker-compose.override.yml
+ module.exports = {
+   timeout: 120000,
+-  outputDir: repoPath("dev", "workspace", "artifacts", "tmp", "test-results"),
++  outputDir: repoPath("dev", "workspace", "artifacts", "test-results"),
+   projects: [
+     {
+       name: "ui",
+       testDir: repoPath("dev", "tests", "ui"),
+-      outputDir: repoPath("dev", "workspace", "artifacts", "tmp", "test-results", "artifacts")
++      outputDir: repoPath("dev", "workspace", "artifacts", "test-results", "artifacts")
+     },
+     {
+       name: "playwright",
+       testDir: repoPath("dev", "tests", "playwright"),
+-      outputDir: repoPath("dev", "workspace", "artifacts", "tmp", "test-results", "artifacts")
++      outputDir: repoPath("dev", "workspace", "artifacts", "test-results", "artifacts")
+     }
+   ],
+   reporter: [
+     ["list"],
+-    ["html", { outputFolder: repoPath("dev", "workspace", "artifacts", "tmp", "test-results", "report"), open: "always" }],
+-    ["json", { outputFile: repoPath("dev", "workspace", "artifacts", "tmp", "test-results", "playwright-results.json") }]
++    ["html", { outputFolder: repoPath("dev", "workspace", "artifacts", "test-results", "report"), open: "always" }],
++    ["json", { outputFile: repoPath("dev", "workspace", "artifacts", "test-results", "playwright-results.json") }]
+   ],
+   use: {
+     headless: false,
 diff --git a/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization.md b/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization.md
-index 2a2f62619..8dc514a30 100644
+index 8dc514a30..a2b95ea5b 100644
 --- a/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization.md
 +++ b/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization.md
-@@ -3,32 +3,30 @@
- Status: PASS
+@@ -1,32 +1,33 @@
+ # PR_26179_OWNER_009-root-cleanup-and-workspace-finalization
+
+-Status: PASS
++Updated: 2026-06-27T22:20:02.508Z
  Team: OWNER
  Branch: PR_26179_OWNER_009-root-cleanup-and-workspace-finalization
--Base HEAD at branch start: dc5d083757ac57d880aac6ea7981531892bbee70
--Report generated: 2026-06-27T21:46:55.174Z
-+Current HEAD before this update: 6c92de7eff93b4f5f1b951b8b0886a357cab626c
-+Report refreshed: 2026-06-27T22:05:28.695Z
- ZIP: dev/workspace/artifacts/zips/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_delta.zip
+-Current HEAD before this update: 6c92de7eff93b4f5f1b951b8b0886a357cab626c
+-Report refreshed: 2026-06-27T22:05:28.695Z
+-ZIP: dev/workspace/artifacts/zips/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_delta.zip
++Scope: Finish PR_009 artifact collection and template cleanup.
 
- ## Purpose
+-## Purpose
++## Summary
++- Moved generated Playwright test output ownership from dev/config/tmp/test-results/ to dev/workspace/artifacts/test-results/.
++- Kept dev/config/ limited to configuration files.
++- Converted the reusable Tool Template V2 file into dev/templates/tool-template-v2/index.html and removed the empty legacy toolbox/_tool_template-v2/ directory.
++- Updated active tests, coverage reporting, Playwright output config, and vector template path strings to the new template/artifact locations.
 
--Finalize the development workspace root cleanup after the restructure stack by moving the active build workspace to dev/build, removing stale root development artifacts, relocating reusable development scripts/templates, and confirming generated outputs now live under dev/reports and dev/workspace/artifacts.
-+Finish the already-started root cleanup/workspace finalization PR.
+-Finish the already-started root cleanup/workspace finalization PR.
++## Changed Files
++M	.gitignore
++M	dev/config/playwright.config.cjs
++M	dev/scripts/validate-canonical-repository-structure.mjs
++M	dev/scripts/validate-tool-registry.mjs
++R100	dev/templates/tool-template-v2.html	dev/templates/tool-template-v2/index.html
++M	dev/tests/helpers/playwrightV8CoverageReporter.mjs
++M	dev/tests/playwright/tools/RootToolsFutureState.spec.mjs
++M	dev/tests/playwright_installation.txt
++M	dev/tests/tools/VectorNativeTemplate.test.mjs
++M	src/shared/toolbox/vectorNativeTemplate.js
++M	src/shared/toolbox/vectorTemplateSampleGame.js
 
- ## Scope Completed
+-## Scope Completed
++## Validation
++- PASS - npm run validate:canonical-structure
++- PASS - git diff --check
++- PASS - node ./dev/scripts/run-platform-validation-suite.mjs (8/8 scenarios)
 
--- Renamed tracked dev/docs_build content into dev/build.
--- Moved active Project Instructions from dev/docs_build/dev/ProjectInstructions to dev/build/ProjectInstructions.
--- Updated package scripts, validation scripts, runtime seed path references, tests, and governance references for the new dev/build path.
--- Removed ignored/untracked root projects and tmp folders; root projects contained no tracked files.
--- Moved tracked root developer scripts into dev/scripts.
--- Moved reusable HTML templates into dev/templates.
--- Moved tracked dupes_called.txt into dev/reports.
--- Regenerated required Owner reports under dev/reports.
-+- Confirmed tracked dev/docs_build content is now under dev/build.
-+- Confirmed active Project Instructions live at dev/build/ProjectInstructions.
-+- Removed root projects and root tmp leftovers earlier in this PR; neither exists now.
-+- Removed accidental generated ziproot folder from dev/workspace/artifacts/tmp.
-+- Moved docker-compose.override.yml to deploy/docker-compose.override.yml.
-+- Moved ignored local scripts/untracked scratch folder to dev/scripts/untracked.
-+- Confirmed stale root codex report copies do not remain; active reports live under dev/reports.
-+- Confirmed tracked dupes_called.txt is already under dev/reports.
-+- Confirmed developer wrapper scripts are under dev/scripts.
-+- Confirmed reusable templates are under dev/templates.
-+- Updated references for moved build, template, Docker override, and script scratch locations.
-
- ## Notes
-
--- Production pages were not moved.
-+- No production page directories were moved.
- - Runtime/business logic was not moved into dev.
--- Creator project data is documented as API/Postgres metadata plus R2 assets, not root projects.
--- Archive/admin-notes docs_build references remain legacy archive references.
+-- Confirmed tracked dev/docs_build content is now under dev/build.
+-- Confirmed active Project Instructions live at dev/build/ProjectInstructions.
+-- Removed root projects and root tmp leftovers earlier in this PR; neither exists now.
+-- Removed accidental generated ziproot folder from dev/workspace/artifacts/tmp.
+-- Moved docker-compose.override.yml to deploy/docker-compose.override.yml.
+-- Moved ignored local scripts/untracked scratch folder to dev/scripts/untracked.
+-- Confirmed stale root codex report copies do not remain; active reports live under dev/reports.
+-- Confirmed tracked dupes_called.txt is already under dev/reports.
+-- Confirmed developer wrapper scripts are under dev/scripts.
+-- Confirmed reusable templates are under dev/templates.
+-- Updated references for moved build, template, Docker override, and script scratch locations.
 -
--## Changed File Count
+-## Notes
 -
--2083
-+- dev/scripts/untracked remains ignored developer-local scratch.
+-- No production page directories were moved.
+-- Runtime/business logic was not moved into dev.
+-- dev/scripts/untracked remains ignored developer-local scratch.
++## Blockers
++None.
 diff --git a/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_branch-validation.md b/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_branch-validation.md
-index e1db441dd..abe0cb9f2 100644
+index abe0cb9f2..3ced2c390 100644
 --- a/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_branch-validation.md
 +++ b/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_branch-validation.md
-@@ -2,8 +2,7 @@
+@@ -1,8 +1,9 @@
+-# PR_26179_OWNER_009-root-cleanup-and-workspace-finalization Branch Validation
++# Branch Validation - PR_26179_OWNER_009-root-cleanup-and-workspace-finalization
 
- | Check | Result | Evidence |
- | --- | --- | --- |
--| Branch gate before PR branch | PASS | Started from clean synchronized main before branch creation. |
--| Active branch | PASS | PR_26179_OWNER_009-root-cleanup-and-workspace-finalization |
--| Worktree before edits | PASS | Clean at branch creation. |
--| Scope attribution | PASS | Changes are limited to root cleanup, dev workspace rename/reference updates, reports, and moved dev templates/scripts. |
--| Runtime/product movement guard | PASS | No production route folders were moved and runtime/business logic was not moved into dev. |
-+| Expected branch | PASS | PR_26179_OWNER_009-root-cleanup-and-workspace-finalization |
-+| Worktree before edits | PASS | Clean before continuation edits. |
-+| Scope attribution | PASS | Changes are root cleanup/workspace finalization only. |
-+| No main commit | PASS | Work remained on the PR branch. |
+-| Check | Result | Evidence |
+-| --- | --- | --- |
+-| Expected branch | PASS | PR_26179_OWNER_009-root-cleanup-and-workspace-finalization |
+-| Worktree before edits | PASS | Clean before continuation edits. |
+-| Scope attribution | PASS | Changes are root cleanup/workspace finalization only. |
+-| No main commit | PASS | Work remained on the PR branch. |
++Updated: 2026-06-27T22:20:02.508Z
++
++- Current branch: PR_26179_OWNER_009-root-cleanup-and-workspace-finalization
++- Expected branch: PR_26179_OWNER_009-root-cleanup-and-workspace-finalization
++- Branch validation: PASS
++- Worktree state before report refresh: DIRTY with intended PR changes
++- Scope validation: PASS - changes are limited to root cleanup/workspace artifact/template ownership and required reports.
 diff --git a/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_manual-validation-notes.md b/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_manual-validation-notes.md
-index 9b151cd08..a69337264 100644
+index a69337264..af305c10c 100644
 --- a/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_manual-validation-notes.md
 +++ b/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_manual-validation-notes.md
-@@ -1,9 +1,9 @@
- # PR_26179_OWNER_009-root-cleanup-and-workspace-finalization Manual Validation Notes
+@@ -1,9 +1,11 @@
+-# PR_26179_OWNER_009-root-cleanup-and-workspace-finalization Manual Validation Notes
++# Manual Validation Notes - PR_26179_OWNER_009-root-cleanup-and-workspace-finalization
 
--- Confirmed dev/docs_build no longer exists after the move.
--- Confirmed dev/build and dev/build/ProjectInstructions exist.
--- Confirmed root projects, root tmp, root codex_changed_files.txt, and root codex_review.diff no longer exist as workspace leftovers.
--- Confirmed dev/reports contains codex_changed_files.txt, codex_review.diff, and dupes_called.txt.
--- Confirmed dev/templates contains page-template-v2.html and tool-template-v2.html.
--- Confirmed archive/admin-notes docs_build references are legacy archive references, not active build workspace references.
--- Local API startup smoke was stopped after successful startup output.
-+- Confirmed docker-compose.override.yml no longer exists at root and deploy/docker-compose.override.yml exists.
-+- Confirmed scripts/ and scripts/untracked/ no longer exist at root.
-+- Confirmed dev/scripts/untracked/ exists as ignored local scratch.
-+- Confirmed generated ziproot folder is absent at root and under dev/workspace/artifacts/tmp.
-+- Confirmed dev/build exists and dev/docs_build does not.
-+- Confirmed projects/ does not exist.
-+- Confirmed root codex_changed_files.txt and codex_review.diff do not exist.
+-- Confirmed docker-compose.override.yml no longer exists at root and deploy/docker-compose.override.yml exists.
+-- Confirmed scripts/ and scripts/untracked/ no longer exist at root.
+-- Confirmed dev/scripts/untracked/ exists as ignored local scratch.
+-- Confirmed generated ziproot folder is absent at root and under dev/workspace/artifacts/tmp.
+-- Confirmed dev/build exists and dev/docs_build does not.
+-- Confirmed projects/ does not exist.
+-- Confirmed root codex_changed_files.txt and codex_review.diff do not exist.
++Updated: 2026-06-27T22:20:02.508Z
++
++- Confirmed dev/workspace/artifacts/test-results/ exists and dev/config/tmp/ is removed.
++- Confirmed dev/config/ contains only configuration files.
++- Confirmed toolbox/_tool_template-v2/ is removed and no production toolbox pages were moved.
++- Confirmed dev/templates/tool-template-v2/index.html exists.
++- Confirmed root projects/ and root tmp/ are absent.
++- Confirmed deploy/docker-compose.override.yml exists.
++- Blockers: none.
 diff --git a/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_requirement-checklist.md b/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_requirement-checklist.md
-index 110b365b0..d7866a1ad 100644
+index d7866a1ad..1836a1c10 100644
 --- a/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_requirement-checklist.md
 +++ b/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_requirement-checklist.md
-@@ -2,16 +2,19 @@
+@@ -1,20 +1,16 @@
+-# PR_26179_OWNER_009-root-cleanup-and-workspace-finalization Requirement Checklist
++# Requirement Checklist - PR_26179_OWNER_009-root-cleanup-and-workspace-finalization
 
- | Status | Requirement | Evidence |
+-| Status | Requirement | Evidence |
++Updated: 2026-06-27T22:20:02.508Z
++
++| Requirement | Status | Notes |
  | --- | --- | --- |
--| PASS | Rename dev/docs_build/ -> dev/build/ | Tracked build workspace moved to dev/build; active Project Instructions flattened to dev/build/ProjectInstructions. |
--| PASS | Update all references | Active package scripts, validation scripts, seed/runtime paths, tests, and governance references now use dev/build or dev/reports as applicable. |
--| PASS | Remove root projects/ | Root projects/ was ignored/untracked and removed after confirming it had zero tracked files. Creator data remains Postgres/R2-owned. |
--| PASS | Move root codex artifacts | Stale ignored root codex report copies were removed; active copies are under dev/reports. |
--| PASS | Move dupes_called.txt | Tracked root dupes_called.txt moved to dev/reports/dupes_called.txt. |
--| PASS | Move developer scripts | run_all and run_preprocessor cmd/ps1 wrappers moved to dev/scripts and self-references updated. |
--| PASS | Move templates | Root page template and toolbox template page moved to dev/templates. |
--| PASS | Do not move production pages | No production page directories were moved; toolbox/index.html and production tool pages remain in place. |
--| PASS | Verify tmp under dev/workspace/artifacts | dev/workspace/artifacts/tmp remains the ignored temporary workspace area; ZIPs now use dev/workspace/artifacts/zips. |
--| PASS | Verify reports under dev/reports | Required reports are under dev/reports and generated report paths were updated. |
--| PASS | Verify build workspace under dev/build | dev/build exists and dev/docs_build no longer exists. |
--| PASS | Keep required root entries | Root product directories/config remain; dev-only artifacts were removed or moved. |
--| PASS | No Creator-writeable repo folder introduced | No new Creator data folder was added; root projects was removed. |
-+| PASS | Continue on current branch | Work continued on PR_26179_OWNER_009-root-cleanup-and-workspace-finalization. |
-+| PASS | Do not switch to main | No branch switch was performed. |
-+| PASS | Rename dev/docs_build/ to dev/build/ | Already complete; dev/build exists and dev/docs_build does not. |
-+| PASS | Update all references | Active references use dev/build; old scripts/untracked report mentions were updated to dev/scripts/untracked. |
-+| PASS | Remove root projects/ | projects/ does not exist. |
-+| PASS | Remove generated ziproot | PR ziproot staging folder does not exist at root or under dev/workspace/artifacts/tmp. |
-+| PASS | Move docker-compose.override.yml | File moved to deploy/docker-compose.override.yml. |
-+| PASS | Move scripts/untracked/ | Ignored scratch folder moved to dev/scripts/untracked/ and ignored in .gitignore. |
-+| PASS | Move stale root codex artifacts | Root codex_changed_files.txt and codex_review.diff do not exist; active deliverables are under dev/reports. |
-+| PASS | Move dupes_called.txt | Tracked artifact is under dev/reports/dupes_called.txt from earlier OWNER_009 cleanup. |
-+| PASS | Move developer scripts | run_all and run_preprocessor cmd/ps1 files are under dev/scripts. |
-+| PASS | Move reusable templates | page-template-v2.html and tool-template-v2.html are under dev/templates. |
-+| PASS | Keep root product/config set | Required root product directories and standard config remain. |
-+| PASS | Validate canonical structure | npm run validate:canonical-structure PASS. |
-+| PASS | Validate diff whitespace | git diff --check PASS. |
-+| PASS | Validate platform suite | node ./dev/scripts/run-platform-validation-suite.mjs PASS. |
+-| PASS | Continue on current branch | Work continued on PR_26179_OWNER_009-root-cleanup-and-workspace-finalization. |
+-| PASS | Do not switch to main | No branch switch was performed. |
+-| PASS | Rename dev/docs_build/ to dev/build/ | Already complete; dev/build exists and dev/docs_build does not. |
+-| PASS | Update all references | Active references use dev/build; old scripts/untracked report mentions were updated to dev/scripts/untracked. |
+-| PASS | Remove root projects/ | projects/ does not exist. |
+-| PASS | Remove generated ziproot | PR ziproot staging folder does not exist at root or under dev/workspace/artifacts/tmp. |
+-| PASS | Move docker-compose.override.yml | File moved to deploy/docker-compose.override.yml. |
+-| PASS | Move scripts/untracked/ | Ignored scratch folder moved to dev/scripts/untracked/ and ignored in .gitignore. |
+-| PASS | Move stale root codex artifacts | Root codex_changed_files.txt and codex_review.diff do not exist; active deliverables are under dev/reports. |
+-| PASS | Move dupes_called.txt | Tracked artifact is under dev/reports/dupes_called.txt from earlier OWNER_009 cleanup. |
+-| PASS | Move developer scripts | run_all and run_preprocessor cmd/ps1 files are under dev/scripts. |
+-| PASS | Move reusable templates | page-template-v2.html and tool-template-v2.html are under dev/templates. |
+-| PASS | Keep root product/config set | Required root product directories and standard config remain. |
+-| PASS | Validate canonical structure | npm run validate:canonical-structure PASS. |
+-| PASS | Validate diff whitespace | git diff --check PASS. |
+-| PASS | Validate platform suite | node ./dev/scripts/run-platform-validation-suite.mjs PASS. |
++| Move dev/config/tmp/test-results/ to dev/workspace/artifacts/test-results/ | PASS | Existing Playwright test output was moved to dev/workspace/artifacts/test-results/. |
++| Remove dev/config/tmp/ if empty | PASS | dev/config/tmp/ was empty after the move and was removed. |
++| Generated test/report output lives under dev/workspace/artifacts/ | PASS | Playwright config now writes test results, artifacts, HTML report, and JSON report to dev/workspace/artifacts/test-results/. |
++| Keep dev/config/ for config files only | PASS | dev/config/ contains only config files after cleanup. |
++| Move toolbox/_tool_template-v2/ to dev/templates/tool-template-v2/ | PASS | The legacy toolbox template folder was empty and removed; the tracked template moved to dev/templates/tool-template-v2/index.html. |
++| Remove toolbox/_tool_template-v2/ after move | PASS | toolbox/_tool_template-v2/ no longer exists. |
++| Do not move production toolbox pages | PASS | No production toolbox tool pages were moved. |
++| No root projects/ | PASS | projects/ is absent at repository root. |
++| No root tmp/ | PASS | tmp/ is absent at repository root. |
++| deploy/docker-compose.override.yml exists | PASS | deploy/docker-compose.override.yml exists. |
 diff --git a/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_validation-report.md b/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_validation-report.md
-index 19c055357..9910e04d6 100644
+index 9910e04d6..fe86bdaaa 100644
 --- a/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_validation-report.md
 +++ b/dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_validation-report.md
-@@ -4,9 +4,8 @@ Status: PASS
+@@ -1,11 +1,11 @@
+-# PR_26179_OWNER_009-root-cleanup-and-workspace-finalization Validation Report
++# Validation Report - PR_26179_OWNER_009-root-cleanup-and-workspace-finalization
 
- | Command | Result | Notes |
+-Status: PASS
++Updated: 2026-06-27T22:20:02.508Z
+
+-| Command | Result | Notes |
++| Lane | Result | Notes |
  | --- | --- | --- |
--| npm run validate:canonical-structure | PASS | Canonical repository structure guardrail passed with 0 blocking violations. |
-+| npm run validate:canonical-structure | PASS | Canonical repository structure guardrail passed. |
- | git diff --check | PASS | No whitespace errors reported. |
- | node ./dev/scripts/run-platform-validation-suite.mjs | PASS | Platform validation suite passed 8/8 scenarios; CI gate green. |
--| node --use-system-ca ./dev/scripts/start-local-api-server.mjs | PASS | Local API stayed running after six seconds and reported configured Postgres/R2 runtime settings; process was stopped after smoke. |
+-| npm run validate:canonical-structure | PASS | Canonical repository structure guardrail passed. |
+-| git diff --check | PASS | No whitespace errors reported. |
+-| node ./dev/scripts/run-platform-validation-suite.mjs | PASS | Platform validation suite passed 8/8 scenarios; CI gate green. |
++| npm run validate:canonical-structure | PASS | Blocking violations: 0; approved legacy exceptions: 498. |
++| git diff --check | PASS | Only line-ending conversion warnings from Git on Windows; no whitespace errors. |
++| node ./dev/scripts/run-platform-validation-suite.mjs | PASS | 8/8 deterministic platform scenarios passed. |
 
--Playwright full browser lanes were not run; this PR is a path/workspace cleanup and no production pages were moved.
-+No Playwright browser lane was run; this update is root/dev workspace cleanup with no production page movement.
-diff --git a/dev/reports/docs_archive_test_output_cleanup_report.md b/dev/reports/docs_archive_test_output_cleanup_report.md
-index 6175f1df9..62f1fbb0d 100644
---- a/dev/reports/docs_archive_test_output_cleanup_report.md
-+++ b/dev/reports/docs_archive_test_output_cleanup_report.md
-@@ -35,7 +35,7 @@ Post-move checks:
- - Kept `tests/results/` ignored as a defensive legacy output guard.
- - Confirmed `node_modules/` remains ignored by git and was not moved.
- - Did not move root `package.json`.
--- Did not modify `scripts/untracked/`.
-+- Did not modify `dev/scripts/untracked/`.
+-No Playwright browser lane was run; this update is root/dev workspace cleanup with no production page movement.
++Playwright full smoke was not run; no production page implementation was changed.
+diff --git a/dev/reports/codex_changed_files.txt b/dev/reports/codex_changed_files.txt
+index cbef0dc55..2e5f75aa9 100644
+--- a/dev/reports/codex_changed_files.txt
++++ b/dev/reports/codex_changed_files.txt
+@@ -1,11 +1,17 @@
+-M	.gitignore
+-R100	docker-compose.override.yml	deploy/docker-compose.override.yml
+-M	dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization.md
+-M	dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_branch-validation.md
+-M	dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_manual-validation-notes.md
+-M	dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_requirement-checklist.md
+-M	dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_validation-report.md
+-M	dev/reports/codex_changed_files.txt
+-M	dev/reports/codex_review.diff
+-M	dev/reports/docs_archive_test_output_cleanup_report.md
+-M	dev/reports/legacy_surface_elimination_report.md
++.gitignore
++dev/config/playwright.config.cjs
++dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization.md
++dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_branch-validation.md
++dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_manual-validation-notes.md
++dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_requirement-checklist.md
++dev/reports/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_validation-report.md
++dev/reports/codex_review.diff
++dev/scripts/validate-canonical-repository-structure.mjs
++dev/scripts/validate-tool-registry.mjs
++dev/templates/tool-template-v2/index.html
++dev/tests/helpers/playwrightV8CoverageReporter.mjs
++dev/tests/playwright/tools/RootToolsFutureState.spec.mjs
++dev/tests/playwright_installation.txt
++dev/tests/tools/VectorNativeTemplate.test.mjs
++src/shared/toolbox/vectorNativeTemplate.js
++src/shared/toolbox/vectorTemplateSampleGame.js
+diff --git a/dev/scripts/validate-canonical-repository-structure.mjs b/dev/scripts/validate-canonical-repository-structure.mjs
+index a101e9ba0..3e7265a44 100644
+--- a/dev/scripts/validate-canonical-repository-structure.mjs
++++ b/dev/scripts/validate-canonical-repository-structure.mjs
+@@ -223,7 +223,7 @@ function auditTestPath(filePath) {
+       "Tests",
+       filePath,
+       "Generated test result artifacts must not be tracked under active dev/tests/results/.",
+-      "ignored dev/workspace/artifacts/tmp/test-results/ or dev/reports/",
++      "ignored dev/workspace/artifacts/test-results/ or dev/reports/",
+     );
+   }
+   if (APPROVED_LEGACY_TEST_SEGMENTS.has(segment)) {
+diff --git a/dev/scripts/validate-tool-registry.mjs b/dev/scripts/validate-tool-registry.mjs
+index 67cd5092d..9d2b3e2bd 100644
+--- a/dev/scripts/validate-tool-registry.mjs
++++ b/dev/scripts/validate-tool-registry.mjs
+@@ -10,7 +10,6 @@ const toolboxRoot = path.join(repoRoot, "toolbox");
+ const reportPath = path.join(repoRoot, "dev", "reports", "tool_registry_validation.txt");
 
- Existing generated output moved:
+ const IGNORED_DIRECTORIES = new Set([
+-  "_tool_template-v2",
+   "learn",
+   "users",
+   "environments",
+diff --git a/dev/templates/tool-template-v2.html b/dev/templates/tool-template-v2/index.html
+similarity index 100%
+rename from dev/templates/tool-template-v2.html
+rename to dev/templates/tool-template-v2/index.html
+diff --git a/dev/tests/helpers/playwrightV8CoverageReporter.mjs b/dev/tests/helpers/playwrightV8CoverageReporter.mjs
+index c51336e33..774e18996 100644
+--- a/dev/tests/helpers/playwrightV8CoverageReporter.mjs
++++ b/dev/tests/helpers/playwrightV8CoverageReporter.mjs
+@@ -328,7 +328,7 @@ export class PlaywrightV8CoverageReporter {
+   formatToolEntryPoints(coverageByPath) {
+     const toolEntryPoints = [
+       { name: "Toolbox Index", prefix: "toolbox/" },
+-      { name: "Tool Template V2", prefix: "toolbox/_tool_template-v2/" },
++      { name: "Tool Template V2", prefix: "dev/templates/tool-template-v2/" },
+       { name: "Theme V2 Shared JS", prefix: "assets/theme-v2/js/" }
+     ];
+     return toolEntryPoints.map(({ name, prefix }) => {
+diff --git a/dev/tests/playwright/tools/RootToolsFutureState.spec.mjs b/dev/tests/playwright/tools/RootToolsFutureState.spec.mjs
+index 6cb8f0221..8fa08d4cc 100644
+--- a/dev/tests/playwright/tools/RootToolsFutureState.spec.mjs
++++ b/dev/tests/playwright/tools/RootToolsFutureState.spec.mjs
+@@ -642,7 +642,7 @@ test("learn wireframe pages load with shared Theme V2 structure", async ({ page
+ });
 
-diff --git a/dev/reports/legacy_surface_elimination_report.md b/dev/reports/legacy_surface_elimination_report.md
-index e956c5827..c5bf4506f 100644
---- a/dev/reports/legacy_surface_elimination_report.md
-+++ b/dev/reports/legacy_surface_elimination_report.md
-@@ -40,7 +40,7 @@ Reported, not removed:
+ test("tool template future-state page loads from root Theme V2 paths", async ({ page }) => {
+-  const { failedRequests, pageErrors, restorePublicEnv, server } = await openRepoPage(page, "/dev/templates/tool-template-v2.html");
++  const { failedRequests, pageErrors, restorePublicEnv, server } = await openRepoPage(page, "/dev/templates/tool-template-v2/index.html");
 
- ## Scripts Audit
+   try {
+     await expect(page.locator("base")).toHaveAttribute("href", "/");
+diff --git a/dev/tests/playwright_installation.txt b/dev/tests/playwright_installation.txt
+index 6ba828238..0ae227580 100644
+--- a/dev/tests/playwright_installation.txt
++++ b/dev/tests/playwright_installation.txt
+@@ -115,7 +115,7 @@ HTML-JavaScript-Gaming/
 
--No scripts were deleted. The tracked scripts under `scripts/` are either wired through `package.json`, validation workflows, deployment helpers, or ambiguous historical utilities. Untracked personal files under `scripts/untracked/` were not modified.
-+No scripts were deleted. The tracked scripts under `dev/scripts/` are either wired through `package.json`, validation workflows, deployment helpers, or ambiguous historical utilities. Untracked personal files under `dev/scripts/untracked/` were not modified.
+ ✔ Keep node_modules at root
+ ✔ Do NOT move node_modules to tmp
+-✔ dev/workspace/artifacts/tmp/test-results is safe for outputs
++✔ dev/workspace/artifacts/test-results is safe for outputs
+ ```
 
- ## Active Vs Legacy Inventory
+ ---
+diff --git a/dev/tests/tools/VectorNativeTemplate.test.mjs b/dev/tests/tools/VectorNativeTemplate.test.mjs
+index 776985fd1..a9fea5e08 100644
+--- a/dev/tests/tools/VectorNativeTemplate.test.mjs
++++ b/dev/tests/tools/VectorNativeTemplate.test.mjs
+@@ -3,7 +3,7 @@ import { buildVectorNativeTemplate, createVectorNativeTemplateDefinition, summar
+
+ export async function run() {
+   const definition = createVectorNativeTemplateDefinition();
+-  assert.equal(definition.templatePath, "toolbox/_tool_template-v2/vector-native-arcade/");
++  assert.equal(definition.templatePath, "dev/templates/tool-template-v2/vector-native-arcade/");
+   assert.equal(definition.registry.sprites.length, 0);
+   assert.equal(definition.registry.vectors.length, 5);
+
+@@ -26,7 +26,7 @@ export async function run() {
+     first.template.packageResult.manifest.package.assets.some((asset) => asset.id.startsWith("sprite.")),
+     false
+   );
+-  assert.match(first.template.reportText, /Template path: toolbox\/templates\/vector-native-arcade\//);
++  assert.match(first.template.reportText, /Template path: dev\/templates\/tool-template-v2\/vector-native-arcade\//);
+   assert.match(first.template.reportText, /VECTOR_NATIVE_TEMPLATE_CONTRACT/);
+   assert.deepEqual(first, second);
+   assert.equal(summarizeVectorNativeTemplate(first), "Vector native template ready with 10 packaged assets.");
+diff --git a/src/shared/toolbox/vectorNativeTemplate.js b/src/shared/toolbox/vectorNativeTemplate.js
+index 375ae98a4..0c8abf69d 100644
+--- a/src/shared/toolbox/vectorNativeTemplate.js
++++ b/src/shared/toolbox/vectorNativeTemplate.js
+@@ -33,7 +33,7 @@ function createRegistry() {
+       {
+         id: "palette.vector-native.primary",
+         name: "Vector Native Primary Palette",
+-        path: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/palettes/vector-native-primary.palette.json",
++        path: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/palettes/vector-native-primary.palette.json",
+         colors: ["#05070DFF", "#E8F0FFFF", "#6FD3FFFF", "#FFB347FF"],
+         sourceTool: "pixel-asset-studio"
+       }
+@@ -43,7 +43,7 @@ function createRegistry() {
+       normalizeSvgToVectorAsset({
+         id: "vector.template.player",
+         name: "Template Player",
+-        path: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/vectors/template-player.vector.json",
++        path: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/vectors/template-player.vector.json",
+         paletteId: "palette.vector-native.primary",
+         sourceTool: "object-vector-studio-v2",
+         svgText: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 40 40"><path d="M 0 -16 L 12 12 L 0 6 L -12 12 Z" /><path d="M -4 10 L 0 4 L 4 10" /></svg>'
+@@ -51,7 +51,7 @@ function createRegistry() {
+       normalizeSvgToVectorAsset({
+         id: "vector.template.obstacle.large",
+         name: "Template Obstacle Large",
+-        path: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/vectors/template-obstacle-large.vector.json",
++        path: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/vectors/template-obstacle-large.vector.json",
+         paletteId: "palette.vector-native.primary",
+         sourceTool: "object-vector-studio-v2",
+         svgText: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-34 -34 68 68"><path d="M -20 -14 L 0 -24 L 22 -18 L 28 6 L 14 24 L -10 22 L -26 4 Z" /></svg>'
+@@ -59,7 +59,7 @@ function createRegistry() {
+       normalizeSvgToVectorAsset({
+         id: "vector.template.obstacle.small",
+         name: "Template Obstacle Small",
+-        path: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/vectors/template-obstacle-small.vector.json",
++        path: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/vectors/template-obstacle-small.vector.json",
+         paletteId: "palette.vector-native.primary",
+         sourceTool: "object-vector-studio-v2",
+         svgText: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-18 -18 36 36"><path d="M -8 -8 L 2 -12 L 10 -2 L 6 10 L -6 12 L -12 0 Z" /></svg>'
+@@ -67,7 +67,7 @@ function createRegistry() {
+       normalizeSvgToVectorAsset({
+         id: "vector.template.ui.title",
+         name: "Template Title",
+-        path: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/vectors/template-title.vector.json",
++        path: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/vectors/template-title.vector.json",
+         paletteId: "palette.vector-native.primary",
+         sourceTool: "object-vector-studio-v2",
+         svgText: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 48"><path d="M 8 40 L 24 8 L 40 40 Z" /><path d="M 56 40 L 56 8 L 84 8 L 84 18 L 68 18 L 68 22 L 82 22 L 82 32 L 68 32 L 68 40 Z" /><path d="M 96 40 L 96 8 L 108 8 L 124 24 L 124 8 L 136 8 L 136 40 L 124 40 L 108 24 L 108 40 Z" /></svg>'
+@@ -75,7 +75,7 @@ function createRegistry() {
+       normalizeSvgToVectorAsset({
+         id: "vector.template.ui.hud",
+         name: "Template HUD",
+-        path: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/vectors/template-hud.vector.json",
++        path: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/vectors/template-hud.vector.json",
+         paletteId: "palette.vector-native.primary",
+         sourceTool: "object-vector-studio-v2",
+         svgText: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 32"><path d="M 4 4 L 156 4 L 156 28 L 4 28 Z" /><path d="M 18 10 L 28 10 L 28 22 L 18 22 Z" /><path d="M 40 10 L 70 10" /><path d="M 90 10 L 120 10" /></svg>'
+@@ -85,7 +85,7 @@ function createRegistry() {
+       {
+         id: "tileset.template.ui",
+         name: "Template UI Tileset",
+-        path: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/tilemaps/template-ui.tileset.json",
++        path: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/tilemaps/template-ui.tileset.json",
+         paletteId: "palette.vector-native.primary",
+         tileWidth: 8,
+         tileHeight: 8,
+@@ -96,7 +96,7 @@ function createRegistry() {
+       {
+         id: "tilemap.template.arena",
+         name: "Template Arena",
+-        path: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/tilemaps/template-arena.tilemap.json",
++        path: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/tilemaps/template-arena.tilemap.json",
+         tilesetId: "tileset.template.ui",
+         sourceTool: "tilemap-studio"
+       }
+@@ -105,7 +105,7 @@ function createRegistry() {
+       {
+         id: "image.template.backdrop",
+         name: "Template Backdrop",
+-        path: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/parallax/template-backdrop.svg",
++        path: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/parallax/template-backdrop.svg",
+         sourceTool: "parallax-scene-studio"
+       }
+     ],
+@@ -113,7 +113,7 @@ function createRegistry() {
+       {
+         id: "parallax.template.backdrop",
+         name: "Template Backdrop Layer",
+-        path: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/parallax/template-backdrop.parallax.json",
++        path: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/parallax/template-backdrop.parallax.json",
+         imageId: "image.template.backdrop",
+         sourceTool: "parallax-scene-studio"
+       }
+@@ -191,47 +191,47 @@ function createRuntimeAssetSources(registry) {
+   return {
+     "palette.vector-native.primary": {
+       kind: "palette",
+-      file: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/palettes/vector-native-primary.palette.json",
++      file: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/palettes/vector-native-primary.palette.json",
+       colors: ["#05070DFF", "#E8F0FFFF", "#6FD3FFFF", "#FFB347FF"]
+     },
+     "vector.template.player": {
+       ...cloneJson(findRegistryEntry(registry?.vectors, "vector.template.player")),
+       kind: "vector",
+-      file: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/vectors/template-player.vector.json",
++      file: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/vectors/template-player.vector.json",
+       role: "player"
+     },
+     "vector.template.obstacle.large": {
+       ...cloneJson(findRegistryEntry(registry?.vectors, "vector.template.obstacle.large")),
+       kind: "vector",
+-      file: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/vectors/template-obstacle-large.vector.json",
++      file: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/vectors/template-obstacle-large.vector.json",
+       role: "obstacle-large"
+     },
+     "vector.template.obstacle.small": {
+       ...cloneJson(findRegistryEntry(registry?.vectors, "vector.template.obstacle.small")),
+       kind: "vector",
+-      file: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/vectors/template-obstacle-small.vector.json",
++      file: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/vectors/template-obstacle-small.vector.json",
+       role: "obstacle-small"
+     },
+     "vector.template.ui.title": {
+       ...cloneJson(findRegistryEntry(registry?.vectors, "vector.template.ui.title")),
+       kind: "vector",
+-      file: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/vectors/template-title.vector.json",
++      file: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/vectors/template-title.vector.json",
+       role: "title"
+     },
+     "vector.template.ui.hud": {
+       ...cloneJson(findRegistryEntry(registry?.vectors, "vector.template.ui.hud")),
+       kind: "vector",
+-      file: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/vectors/template-hud.vector.json",
++      file: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/vectors/template-hud.vector.json",
+       role: "hud"
+     },
+     "tileset.template.ui": {
+       kind: "tileset",
+-      file: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/tilemaps/template-ui.tileset.json",
++      file: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/tilemaps/template-ui.tileset.json",
+       role: "ui-tileset"
+     },
+     "tilemap.template.arena": {
+       kind: "tilemap",
+-      file: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/tilemaps/template-arena.tilemap.json",
++      file: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/tilemaps/template-arena.tilemap.json",
+       runtimeEntry: {
+         modulePath: "archive/v1-v2/games/Asteroids/main.js",
+         exportName: "bootAsteroids",
+@@ -250,7 +250,7 @@ function createRuntimeAssetSources(registry) {
+     },
+     "parallax.template.backdrop": {
+       kind: "parallaxLayer",
+-      file: "toolbox/_tool_template-v2/vector-native-arcade/assets/data/parallax/template-backdrop.parallax.json",
++      file: "dev/templates/tool-template-v2/vector-native-arcade/assets/data/parallax/template-backdrop.parallax.json",
+       role: "backdrop"
+     }
+   };
+@@ -259,16 +259,16 @@ function createRuntimeAssetSources(registry) {
+ export function createVectorNativeTemplateDefinition() {
+   const registry = createRegistry();
+   return {
+-    templatePath: "toolbox/_tool_template-v2/vector-native-arcade/",
++    templatePath: "dev/templates/tool-template-v2/vector-native-arcade/",
+     registry,
+     vectorDocument: createVectorDocument(),
+     tileMapDocument: createTileMapDocument(),
+     parallaxDocument: createParallaxDocument(),
+     runtimeAssetSources: createRuntimeAssetSources(registry),
+-    configPath: "toolbox/_tool_template-v2/vector-native-arcade/config/template.project.json",
+-    runtimeBootstrapPath: "toolbox/_tool_template-v2/vector-native-arcade/runtime/bootstrap.runtime.json",
+-    docsPath: "toolbox/_tool_template-v2/vector-native-arcade/docs/STARTER_GUIDE.md",
+-    rollbackNotesPath: "toolbox/_tool_template-v2/vector-native-arcade/docs/ROLLBACK_NOTES.md"
++    configPath: "dev/templates/tool-template-v2/vector-native-arcade/config/template.project.json",
++    runtimeBootstrapPath: "dev/templates/tool-template-v2/vector-native-arcade/runtime/bootstrap.runtime.json",
++    docsPath: "dev/templates/tool-template-v2/vector-native-arcade/docs/STARTER_GUIDE.md",
++    rollbackNotesPath: "dev/templates/tool-template-v2/vector-native-arcade/docs/ROLLBACK_NOTES.md"
+   };
+ }
+
+@@ -342,7 +342,7 @@ export async function buildVectorNativeTemplate(options = {}) {
+     parallaxDocument
+   });
+   const ciValidationResult = await runCiValidationPipeline({
+-    branch: "toolbox/_tool_template-v2/vector-native-arcade",
++    branch: "dev/templates/tool-template-v2/vector-native-arcade",
+     trigger: "template-build",
+     performanceResult
+   });
+diff --git a/src/shared/toolbox/vectorTemplateSampleGame.js b/src/shared/toolbox/vectorTemplateSampleGame.js
+index f83d8f0ad..319672a55 100644
+--- a/src/shared/toolbox/vectorTemplateSampleGame.js
++++ b/src/shared/toolbox/vectorTemplateSampleGame.js
+@@ -21,7 +21,7 @@ function createReport(level, code, message) {
+ }
+
+ function remapPath(pathValue) {
+-  return normalizeString(pathValue).replace("toolbox/_tool_template-v2/vector-native-arcade/", "archive/v1-v2/games/vector-arcade-sample/");
++  return normalizeString(pathValue).replace("dev/templates/tool-template-v2/vector-native-arcade/", "archive/v1-v2/games/vector-arcade-sample/");
+ }
+
+ function remapRegistry(registry) {

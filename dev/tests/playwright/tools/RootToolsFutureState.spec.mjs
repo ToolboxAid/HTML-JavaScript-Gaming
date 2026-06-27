@@ -642,7 +642,7 @@ test("learn wireframe pages load with shared Theme V2 structure", async ({ page 
 });
 
 test("tool template future-state page loads from root Theme V2 paths", async ({ page }) => {
-  const { failedRequests, pageErrors, restorePublicEnv, server } = await openRepoPage(page, "/dev/templates/tool-template-v2.html");
+  const { failedRequests, pageErrors, restorePublicEnv, server } = await openRepoPage(page, "/dev/templates/tool-template-v2/index.html");
 
   try {
     await expect(page.locator("base")).toHaveAttribute("href", "/");
