@@ -34,7 +34,7 @@ Regression tests:
 - Tool tests validate tool functionality.
 - Regression tests validate platform behavior.
 - New tests follow the canonical structure.
-- Every user-accessible page must have at least one page-level Playwright test.
+- Every user-accessible page must have at least one matching page-level Playwright test before it can be considered complete.
 - Runtime page path determines the page-level Playwright test path.
 - Primary page-level Playwright test file should be `index.spec.mjs`.
 - Do not organize new page-level Playwright tests only by feature nickname or technology bucket when a page path exists.
@@ -56,6 +56,8 @@ Minimum page-level test:
 - page renders
 - navigation works
 - no visible placeholder-only state for completed/testable pages
+- primary workflow is covered where the PR claims Product Owner testable completion
+- save/load and validation are covered where applicable
 - no runtime console errors when feasible
 
 Additional scenario files may use:

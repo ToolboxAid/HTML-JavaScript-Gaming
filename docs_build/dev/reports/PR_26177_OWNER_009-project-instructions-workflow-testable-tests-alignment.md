@@ -24,6 +24,9 @@ No runtime code, UI code, API code, database code, start_of_day files, history s
   - The rule applies to all teams: OWNER, Team Alfa, Team Bravo, Team Charlie, Team Delta, and any future team.
   - `main` is only the SOD baseline and EOD return target unless OWNER approves a merge checkpoint.
 - Added Product Owner testable completion definition.
+- Replaced validation/completion-gate `Creator-testable` wording with Product Owner testable wording while preserving product-facing Creator language where appropriate.
+- Added the no-shell completion rule for page/tool/MVP requests.
+- Strengthened page-level Playwright completion gates for primary workflows, save/load, and validation coverage where applicable.
 - Confirmed `Browser -> API -> Database`, one API/service contract across environments, and `Local API` as the shared API running locally.
 - Added page-path Playwright organization rules and examples.
 - Fixed active team registry mismatch in `TEAM_ASSIGNMENTS.md`.
@@ -42,7 +45,8 @@ No runtime code, UI code, API code, database code, start_of_day files, history s
 - PASS: no active instruction permits direct PR commits to `main`.
 - PASS: EOD/main-return wording is clarified as closeout or OWNER-approved merge checkpoint, not between stacked/sequential PRs.
 - PASS: Product Owner testable definition exists.
-- PASS: page-level Playwright organization exists.
+- PASS: shell/template/navigation-only completion is explicitly disallowed unless requested by Product Owner.
+- PASS: page-level Playwright completion gate exists.
 - PASS: API/environment wording is consistent.
 - PASS: active registry and assignment table agree for current Delta active assignment.
 

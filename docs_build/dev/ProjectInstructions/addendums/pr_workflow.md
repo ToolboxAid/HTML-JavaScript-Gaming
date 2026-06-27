@@ -143,14 +143,14 @@ Tool MVP work must follow:
 
 `docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md`
 
-For tool MVPs, use one large Codex command, multiple focused stacked PRs, and one testable Creator outcome per PR.
+For tool MVPs, use one large Codex command, multiple focused stacked PRs, and one Product Owner testable outcome per PR.
 
 Do not create one giant PR.
 
 Do not stop after every small PR unless blocked by branch state, failed validation, missing source files, Project Instructions conflict, or an unresolved dependency from a prior PR.
 
 Each tool MVP PR plan or template must include:
-- Creator-testable outcome
+- Product Owner testable outcome
 - What Playwright tests
 - What Mr. Q should manually test
 - Whether the PR is part of a stacked MVP sequence
@@ -161,15 +161,29 @@ Visible acceptance must be Creator-facing first. Architecture can be handled und
 
 ## Product Owner Testable Definition
 
-A request to complete a page, tool, or testable MVP means Product Owner testable.
+A request to complete a page, tool, MVP, or testable experience means Product Owner testable by default. Codex must deliver a working Product Owner testable feature, not a shell or foundation page, unless the Product Owner explicitly requests a shell/foundation PR.
+
+A Product Owner testable outcome means the Product Owner can:
+
+- open the page/tool
+- perform the primary workflow
+- save/load data where applicable
+- observe expected results
+- validate success and failure states
+- follow manual validation steps from the PR report
 
 Not acceptable as a completed/testable page or tool:
 
 - shell-only page
+- route-only page
+- navigation-only PR
+- template-only page
+- placeholder controls
+- static table with no workflow
 - `Not implemented yet`
+- `coming soon`
 - placeholder-only workspace, inspector, or output sections
 - planned-only tile
-- template-only page
 - route that loads but cannot be used
 
 Required for Product Owner testable completion:
@@ -181,6 +195,10 @@ Required for Product Owner testable completion:
 - save/load behavior where applicable
 - manual validation steps for Product Owner
 - targeted Playwright coverage where impacted.
+
+## No-Shell Completion Rule
+
+A PR requested to complete a page, tool, MVP, or testable experience must not stop after route creation, shell creation, placeholder UI, static mock layout, or navigation activation unless the Product Owner explicitly requested a shell/foundation PR.
 
 ## OWNER Shortcut: PRs
 

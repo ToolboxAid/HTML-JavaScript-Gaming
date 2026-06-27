@@ -9,7 +9,8 @@ Date: 2026-06-26
 git diff --check
 git diff --name-only
 rg -n "Always return to main before starting the next PR|Sprite Studio V2" docs_build/dev/ProjectInstructions
-rg -n "Product Owner testable|page-level Playwright|Browser -> API -> Database|Local API" docs_build/dev/ProjectInstructions
+rg -n "Creator-testable|testable Creator outcome|manual Creator validation" docs_build/dev/ProjectInstructions
+rg -n "Product Owner testable|no-shell|route-only page|static table with no workflow|page-level Playwright|primary workflow is covered|Browser -> API -> Database|Local API" docs_build/dev/ProjectInstructions
 ```
 
 ## Results
@@ -20,8 +21,11 @@ rg -n "Product Owner testable|page-level Playwright|Browser -> API -> Database|L
 - PASS: no `Sprite Studio V2` active backlog owner remains.
 - PASS: no OWNER-only branch workflow wording remains.
 - PASS: active branch workflow says commits and sequential PR branches/commits stay on the active team branch/workstream.
+- PASS: no `Creator-testable`, `testable Creator outcome`, or `manual Creator validation` completion-gate wording remains.
+- PASS: Product Owner testable outcome definition includes primary workflow, save/load where applicable, expected results, success/failure states, and PR-report manual steps.
+- PASS: no-shell completion rule exists.
 - PASS: Product Owner testable text exists.
-- PASS: page-level Playwright organization text exists.
+- PASS: page-level Playwright completion gate includes primary workflow and save/load/validation coverage where applicable.
 - PASS: API/environment contract text exists.
 
 ## Playwright

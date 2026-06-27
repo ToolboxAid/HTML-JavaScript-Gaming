@@ -1,10 +1,9 @@
-﻿docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-docs_build/dev/ProjectInstructions/addendums/branch_lock_governance.md
+﻿docs_build/dev/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
+docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md
 docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
-docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
+docs_build/dev/ProjectInstructions/addendums/test_structure_standardization.md
 docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md
 docs_build/dev/reports/PR_26177_OWNER_009-project-instructions-workflow-testable-tests-alignment.md
-docs_build/dev/reports/PR_26177_OWNER_009-project-instructions-workflow-testable-tests-alignment_branch-validation.md
 docs_build/dev/reports/PR_26177_OWNER_009-project-instructions-workflow-testable-tests-alignment_manual-validation-notes.md
 docs_build/dev/reports/PR_26177_OWNER_009-project-instructions-workflow-testable-tests-alignment_requirements-checklist.md
 docs_build/dev/reports/PR_26177_OWNER_009-project-instructions-workflow-testable-tests-alignment_validation-lane.md
