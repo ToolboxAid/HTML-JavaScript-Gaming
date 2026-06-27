@@ -46,5 +46,5 @@ Restore Snapshot records must not contain:
 Targeted validation lives in:
 
 - `src/shared/contracts/restoreSnapshotContract.js`
-- `tests/shared/RestoreSnapshotContract.test.mjs`
-- `tests/fixtures/restore-snapshots/restore-snapshot-scenarios.json`
+- `dev/tests/shared/RestoreSnapshotContract.test.mjs`
+- `dev/tests/fixtures/restore-snapshots/restore-snapshot-scenarios.json`

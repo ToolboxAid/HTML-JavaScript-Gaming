@@ -13,15 +13,15 @@ const defaultReportPath = "dev/docs_build/dev/reports/playwright_structure_audit
 const defaultDiscoveryReportPath = "dev/docs_build/dev/reports/playwright_discovery_ownership_report.md";
 const defaultDiscoveryScopeReportPath = "dev/docs_build/dev/reports/playwright_discovery_scope_report.md";
 const defaultFilesystemScanReportPath = "dev/docs_build/dev/reports/filesystem_scan_reduction_report.md";
-const playwrightRoot = "tests/playwright";
-const sharedHelpersDir = "tests/helpers";
+const playwrightRoot = "dev/tests/playwright";
+const sharedHelpersDir = "dev/tests/helpers";
 const textCache = new Map();
 
 const laneDirs = Object.freeze({
-  engine: "tests/playwright/engine",
-  games: "tests/playwright/games",
-  integration: "tests/playwright/integration",
-  tools: "tests/playwright/tools"
+  engine: "dev/tests/playwright/engine",
+  games: "dev/tests/playwright/games",
+  integration: "dev/tests/playwright/integration",
+  tools: "dev/tests/playwright/tools"
 });
 const toolOwnershipNames = Object.freeze([
   "RootToolsFutureState"
@@ -39,38 +39,38 @@ const documentedIntegrationGameFixtures = new Map();
 
 const expectedPlacementCorrections = [
   {
-    from: "tests/playwright/tools/AsteroidsBackgroundAssetResolution.spec.mjs",
+    from: "dev/tests/playwright/tools/AsteroidsBackgroundAssetResolution.spec.mjs",
     reason: "Asteroids runtime/background behavior is game-owned.",
-    to: "tests/playwright/games/AsteroidsBackgroundAssetResolution.spec.mjs"
+    to: "dev/tests/playwright/games/AsteroidsBackgroundAssetResolution.spec.mjs"
   },
   {
-    from: "tests/playwright/tools/AsteroidsBeatTiming.spec.mjs",
+    from: "dev/tests/playwright/tools/AsteroidsBeatTiming.spec.mjs",
     reason: "Asteroids beat cadence behavior is game-owned.",
-    to: "tests/playwright/games/AsteroidsBeatTiming.spec.mjs"
+    to: "dev/tests/playwright/games/AsteroidsBeatTiming.spec.mjs"
   },
   {
-    from: "tests/playwright/tools/AsteroidsGameSceneCleanup.spec.mjs",
+    from: "dev/tests/playwright/tools/AsteroidsGameSceneCleanup.spec.mjs",
     reason: "Asteroids scene diagnostics behavior is game-owned.",
-    to: "tests/playwright/games/AsteroidsGameSceneCleanup.spec.mjs"
+    to: "dev/tests/playwright/games/AsteroidsGameSceneCleanup.spec.mjs"
   },
   {
-    from: "tests/playwright/tools/AsteroidsShipStateVisuals.spec.mjs",
+    from: "dev/tests/playwright/tools/AsteroidsShipStateVisuals.spec.mjs",
     reason: "Asteroids ship visual runtime behavior is game-owned.",
-    to: "tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs"
+    to: "dev/tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs"
   }
 ];
 
 const intentionallySharedHelpers = [
   {
-    path: "tests/helpers/playwrightRepoServer.mjs",
+    path: "dev/tests/helpers/playwrightRepoServer.mjs",
     reason: "Shared HTTP repo fixture used by tool, game, and integration Playwright suites."
   },
   {
-    path: "tests/helpers/playwrightStorageIsolation.mjs",
+    path: "dev/tests/helpers/playwrightStorageIsolation.mjs",
     reason: "Shared localStorage/sessionStorage cleanup helper used before targeted Playwright tests."
   },
   {
-    path: "tests/helpers/workspaceV2CoverageReporter.mjs",
+    path: "dev/tests/helpers/workspaceV2CoverageReporter.mjs",
     reason: "Shared V8 coverage collection for Workspace V2 and impacted browser runtime suites."
   }
 ];
@@ -382,7 +382,7 @@ function laneFromPlaywrightPath(filePath) {
 }
 
 function expectedLocationForOwnership(ownership) {
-  return laneDirs[ownership] || "tests/playwright/<known-lane>";
+  return laneDirs[ownership] || "dev/tests/playwright/<known-lane>";
 }
 
 function detectedSpecOwnership(filePath, gameNames) {
@@ -610,7 +610,7 @@ async function audit(options = {}) {
       file: helperFile,
       reason: status === "PASS"
         ? "Required shared helper was resolved from targeted spec imports."
-        : "Helper scope must stay under tests/helpers and use .mjs modules.",
+        : "Helper scope must stay under dev/tests/helpers and use .mjs modules.",
       role: "required shared helper",
       status
     });
@@ -1005,8 +1005,8 @@ function makeReport(result) {
     "## Fast-Fail Rules Checked",
     "",
     "- Playwright specs must live under tools, games, integration, or engine lane directories.",
-    "- Game-specific specs are prohibited under tests/playwright/tools.",
-    "- Cross-surface tests belong under tests/playwright/integration.",
+    "- Game-specific specs are prohibited under dev/tests/playwright/tools.",
+    "- Cross-surface tests belong under dev/tests/playwright/integration.",
     "- Shared helper filenames must not use game-specific names.",
     "- Relative imports must resolve before browser lanes execute.",
     "- Lane execution should stop before expensive Playwright runs when this audit reports blocking findings."
@@ -1157,8 +1157,8 @@ function makeFilesystemScanReductionReport(result) {
   ];
 
   if (result.scanRows.length === 0) {
-    lines.push("| tests/playwright | BROAD | Standalone structural audit intentionally enumerated all Playwright ownership buckets. |");
-    lines.push("| tests/helpers | BROAD | Standalone structural audit intentionally checked all shared helper ownership. |");
+    lines.push("| dev/tests/playwright | BROAD | Standalone structural audit intentionally enumerated all Playwright ownership buckets. |");
+    lines.push("| dev/tests/helpers | BROAD | Standalone structural audit intentionally checked all shared helper ownership. |");
   } else {
     result.scanRows.forEach((row) => {
       lines.push(`| ${row.path} | ${row.status} | ${reportCell(row.reason)} |`);

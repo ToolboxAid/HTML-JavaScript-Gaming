@@ -28,6 +28,6 @@ Tool State export is a portable format. The database remains the working system,
 
 ## Validation
 
-- Contract test: `tests/shared/ToolStateContract.test.mjs`
-- Fixture file: `tests/fixtures/tool-states/tool-state-scenarios.json`
+- Contract test: `dev/tests/shared/ToolStateContract.test.mjs`
+- Fixture file: `dev/tests/fixtures/tool-states/tool-state-scenarios.json`
 - Validation report: `dev/docs_build/dev/reports/tool_state_contract_tests_validation.md`

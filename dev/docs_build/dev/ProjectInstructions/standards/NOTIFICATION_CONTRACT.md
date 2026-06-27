@@ -16,5 +16,5 @@ Notification records describe delivery metadata for platform, project, marketpla
 ## Validation
 
 - Contract: `src/shared/contracts/notificationContract.js`
-- Test: `tests/shared/NotificationContract.test.mjs`
-- Fixture: `tests/fixtures/notifications/notification-scenarios.json`
+- Test: `dev/tests/shared/NotificationContract.test.mjs`
+- Fixture: `dev/tests/fixtures/notifications/notification-scenarios.json`

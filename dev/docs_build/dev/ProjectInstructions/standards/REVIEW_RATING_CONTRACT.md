@@ -16,6 +16,6 @@ Review Rating records describe user-owned marketplace ratings and optional revie
 ## Validation
 
 - Contract: `src/shared/contracts/reviewRatingContract.js`
-- Test: `tests/shared/ReviewRatingContract.test.mjs`
-- Fixture: `tests/fixtures/review-ratings/review-rating-scenarios.json`
+- Test: `dev/tests/shared/ReviewRatingContract.test.mjs`
+- Fixture: `dev/tests/fixtures/review-ratings/review-rating-scenarios.json`
 

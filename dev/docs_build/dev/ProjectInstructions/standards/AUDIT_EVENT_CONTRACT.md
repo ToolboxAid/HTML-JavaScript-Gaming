@@ -15,5 +15,5 @@ Audit Event records describe immutable platform audit metadata for important own
 ## Validation
 
 - Contract: `src/shared/contracts/auditEventContract.js`
-- Test: `tests/shared/AuditEventContract.test.mjs`
-- Fixture: `tests/fixtures/audit-events/audit-event-scenarios.json`
+- Test: `dev/tests/shared/AuditEventContract.test.mjs`
+- Fixture: `dev/tests/fixtures/audit-events/audit-event-scenarios.json`

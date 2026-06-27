@@ -112,7 +112,7 @@ function isExcluded(absolutePath) {
 
 function isValidationOrTestException(filePath) {
   const normalizedPath = repoPath(filePath);
-  return normalizedPath.startsWith("tests/") ||
+  return normalizedPath.startsWith("dev/tests/") ||
     normalizedPath.startsWith("src/dev-runtime/testing/") ||
     /^scripts\/validate-[^/]+\.mjs$/.test(normalizedPath) ||
     /^scripts\/cleanup-supabase-dev-auth-test-users\.mjs$/.test(normalizedPath) ||
@@ -388,7 +388,7 @@ const report = [
   `- Scanned active browser/page/server/runtime roots: ${environmentScanRoots.map((root) => `\`${root}\``).join(", ")}`,
   `- Scanned active runtime example files: ${environmentScanFiles.map((filePath) => `\`${filePath}\``).join(", ")}`,
   `- Files scanned: ${files.length}`,
-  "- Excluded test/archive/report/temp roots: `.git`, `archive`, `node_modules`, `start_of_day`, `tests`, `tmp`.",
+  "- Excluded test/archive/report/temp roots: `.git`, `archive`, `node_modules`, `start_of_day`, `dev/tests`, `tmp`.",
   "- Tests and validation scripts are excluded only from deployment-label branching failures; their non-branching mentions may still appear for review.",
   "",
   "## Deployment-Label Branching Findings",

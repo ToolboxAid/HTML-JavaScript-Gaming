@@ -83,7 +83,7 @@ Examples:
 ```text
 toolbox/text-to-speech/index.html - updated
 assets/toolbox/text-to-speech/js/index.js - added
-tests/toolbox/text-to-speech/functional.spec.mjs - updated
+dev/tests/toolbox/text-to-speech/functional.spec.mjs - updated
 ```
 
 Do not report:

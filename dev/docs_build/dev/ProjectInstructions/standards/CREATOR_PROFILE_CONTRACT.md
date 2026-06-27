@@ -15,6 +15,6 @@ Creator Profile records describe the public or private creator identity attached
 ## Validation
 
 - Contract: `src/shared/contracts/creatorProfileContract.js`
-- Test: `tests/shared/CreatorProfileContract.test.mjs`
-- Fixture: `tests/fixtures/creator-profiles/creator-profile-scenarios.json`
+- Test: `dev/tests/shared/CreatorProfileContract.test.mjs`
+- Fixture: `dev/tests/fixtures/creator-profiles/creator-profile-scenarios.json`
 

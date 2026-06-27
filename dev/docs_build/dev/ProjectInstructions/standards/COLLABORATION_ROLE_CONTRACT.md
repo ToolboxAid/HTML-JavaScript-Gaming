@@ -16,6 +16,6 @@ Collaboration Role records describe granted project-scoped access for users, Cre
 ## Validation
 
 - Contract: `src/shared/contracts/collaborationRoleContract.js`
-- Test: `tests/shared/CollaborationRoleContract.test.mjs`
-- Fixture: `tests/fixtures/collaboration-roles/collaboration-role-scenarios.json`
+- Test: `dev/tests/shared/CollaborationRoleContract.test.mjs`
+- Fixture: `dev/tests/fixtures/collaboration-roles/collaboration-role-scenarios.json`
 

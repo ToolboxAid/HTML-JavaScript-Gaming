@@ -22,4 +22,4 @@ registerHooks({
   },
 });
 
-await import('../tests/run-tests.mjs');
+await import('../dev/tests/run-tests.mjs');

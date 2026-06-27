@@ -1,0 +1,70 @@
+import assert from "node:assert/strict";
+import { createRuntimeManifestAssetLookup, getRuntimeBindingDomain } from "../../../src/shared/toolbox/pipeline/runtimeAssetLookup.js";
+
+export async function run() {
+  assert.equal(getRuntimeBindingDomain("vector.ship"), "vectors");
+  assert.equal(getRuntimeBindingDomain("tilemap.main"), "tilemaps");
+  assert.equal(getRuntimeBindingDomain("parallax.bg"), "parallax");
+  assert.equal(getRuntimeBindingDomain("palette.hud"), "");
+
+  const strictLookup = createRuntimeManifestAssetLookup({
+    gameId: "Asteroids",
+    runtimeAssetSources: {
+      "vector.ship": { file: "archive/v1-v2/games/asteroids/assets/vectors/ship.vector.json", kind: "vector" },
+      "tilemap.main": { file: "archive/v1-v2/games/asteroids/assets/tilemaps/main.tilemap.json", kind: "tilemap" },
+      "parallax.bg": { file: "archive/v1-v2/games/asteroids/assets/parallax/background.parallax.json", kind: "parallaxLayer" },
+      "vector.bad": { file: "archive/v1-v2/games/asteroids/assets/vectors/bad.vector.json" },
+      "vector.tool-only": { file: "archive/v1-v2/games/asteroids/assets/vectors/data/tool-only.vector.json", kind: "vector" },
+      "palette.hud": { kind: "palette", colors: ["#ffffffff"] }
+    },
+    missingBindingBehavior: "null"
+  });
+
+  assert.equal(strictLookup.binding.status, "ready");
+  assert.equal(strictLookup.binding.issues.length, 0);
+  assert.equal(strictLookup.binding.domains.vectors.length, 2);
+  assert.equal(strictLookup.binding.domains.tilemaps.length, 1);
+  assert.equal(strictLookup.binding.domains.parallax.length, 1);
+  assert.equal(
+    strictLookup.binding.rejected.some((entry) => entry.assetId === "vector.tool-only" && entry.reason === "non-runtime-path"),
+    true
+  );
+
+  assert.equal(strictLookup.resolvePackagedAsset({ id: "vector.ship", type: "vector" }).file, "archive/v1-v2/games/asteroids/assets/vectors/ship.vector.json");
+  assert.equal(strictLookup.resolvePackagedAsset({ id: "vector.ship", type: "vector" }).file, "archive/v1-v2/games/asteroids/assets/vectors/ship.vector.json");
+  assert.equal(strictLookup.resolvePackagedAsset({ id: "vector.bad", type: "vector" }), null);
+  assert.equal(strictLookup.resolvePackagedAsset({ id: "vector.tool-only", type: "vector" }), null);
+  assert.equal(strictLookup.resolvePackagedAsset({ id: "palette.hud", type: "palette" }).kind, "palette");
+  const strictCodes = strictLookup.getErrors().map((entry) => entry.code);
+  assert.equal(strictCodes.includes("RUNTIME_BINDING_REJECTED"), true);
+  assert.equal(strictCodes.includes("RUNTIME_VECTOR_METADATA_REQUIRED"), true);
+  assert.equal(strictCodes.includes("RUNTIME_LOOKUP_MISSING_BINDING"), true);
+  const strictDebug = strictLookup.getDebugState();
+  assert.equal(strictDebug.lookup.status, "ready");
+  assert.equal(strictDebug.lookup.recordCount, 5);
+  assert.equal(strictDebug.lookup.domainCounts.vectors, 2);
+  assert.equal(Object.keys(strictDebug.manifest.domains).length, 4);
+  assert.equal(strictDebug.lookup.cache.misses, 4);
+  assert.equal(strictDebug.lookup.cache.hits, 1);
+  assert.equal(strictDebug.lookup.cache.size, 4);
+
+  const fallbackLookup = createRuntimeManifestAssetLookup({
+    gameId: "TemplateGame",
+    runtimeAssetSources: {
+      "vector.template.player": {
+        file: "toolbox/templates-v2/vector-native-arcade/assets/data/vectors/template-player.vector.json",
+        path: "toolbox/templates-v2/vector-native-arcade/assets/data/vectors/template-player.vector.json",
+        kind: "vector"
+      }
+    },
+    missingBindingBehavior: "static"
+  });
+
+  const fallbackResolved = fallbackLookup.resolvePackagedAsset({ id: "vector.template.player", type: "vector" });
+  assert.equal(fallbackResolved.file, "toolbox/templates-v2/vector-native-arcade/assets/data/vectors/template-player.vector.json");
+  assert.equal(fallbackLookup.binding.domains.vectors.length, 0);
+  assert.equal(fallbackLookup.getErrors().some((entry) => entry.code === "RUNTIME_BINDING_REJECTED"), true);
+  const fallbackDebug = fallbackLookup.getDebugState();
+  assert.equal(fallbackDebug.lookup.rejectedCount > 0, true);
+  assert.equal(fallbackDebug.lookup.cache.misses, 1);
+}
