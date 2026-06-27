@@ -18,6 +18,8 @@ rg -n "Product Owner testable|page-level Playwright|Browser -> API -> Database|L
 - PASS: changed files are active Project Instructions plus required reports only.
 - PASS: no runtime/UI/API/database/start_of_day files changed.
 - PASS: no `Sprite Studio V2` active backlog owner remains.
+- PASS: no OWNER-only branch workflow wording remains.
+- PASS: active branch workflow says commits and sequential PR branches/commits stay on the active team branch/workstream.
 - PASS: Product Owner testable text exists.
 - PASS: page-level Playwright organization text exists.
 - PASS: API/environment contract text exists.

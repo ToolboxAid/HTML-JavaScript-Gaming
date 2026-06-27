@@ -18,8 +18,10 @@ No runtime code, UI code, API code, database code, start_of_day files, history s
 
 - Clarified SOD/day-work/EOD workflow:
   - SOD starts from latest synchronized `main`.
-  - Active work happens on one active team, OWNER, or scoped workstream branch.
-  - Sequential PRs stay on the active workstream branch during the day.
+  - Active work happens on one active team branch/workstream.
+  - Work must be committed only to the active team branch.
+  - PR branches/commits stay on the active team branch/workstream during the day.
+  - The rule applies to all teams: OWNER, Team Alfa, Team Bravo, Team Charlie, Team Delta, and any future team.
   - `main` is only the SOD baseline and EOD return target unless OWNER approves a merge checkpoint.
 - Added Product Owner testable completion definition.
 - Confirmed `Browser -> API -> Database`, one API/service contract across environments, and `Local API` as the shared API running locally.
@@ -52,4 +54,4 @@ No runtime code, UI code, API code, database code, start_of_day files, history s
 
 Reviewers should verify that daily team work now has one clear model:
 
-SOD from synchronized `main`, work on active workstream branch, no return to `main` between stacked/sequential PRs, and EOD return to synchronized `main`.
+SOD from synchronized `main`, work on the active team branch/workstream, no return to `main` between stacked/sequential PRs, and EOD return to synchronized `main`.

@@ -6,7 +6,8 @@ Date: 2026-06-26
 ## Reviewer Checklist
 
 - Confirm `main` is described as SOD baseline and EOD return target, not the place for day-work commits.
-- Confirm stacked/sequential PRs stay on the active workstream branch during the day.
+- Confirm stacked/sequential PR branches/commits stay on the active team branch/workstream during the day.
+- Confirm this branch workflow applies to all teams: OWNER, Team Alfa, Team Bravo, Team Charlie, Team Delta, and any future team.
 - Confirm Product Owner testable excludes shell-only, placeholder-only, planned-only, or route-only completion.
 - Confirm page-level Playwright tests follow runtime page paths.
 - Confirm `Local API` means the shared API running locally.

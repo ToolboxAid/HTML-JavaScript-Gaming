@@ -93,7 +93,7 @@ OWNER override wording:
 `OWNER override approved: <reason>`
 
 OWNER follows the same safety rules:
-- One active OWNER branch at a time.
+- One active Team OWNER branch at a time.
 - One active OWNER assignment at a time.
 - OWNER may override team locks, but may not silently delete, rewrite, or remove protected instructions.
 - OWNER override must be explicitly documented.

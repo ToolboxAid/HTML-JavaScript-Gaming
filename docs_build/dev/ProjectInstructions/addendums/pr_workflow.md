@@ -28,18 +28,19 @@ Define the standard pull request workflow for Game Foundry Studio.
 
 ## Daily Branch Workflow
 
-OWNER-approved daily workflow:
+Team-neutral daily workflow:
 
 - SOD starts from the latest synchronized `main`.
-- SOD creates or updates one active team, OWNER, or scoped workstream branch.
-- All implementation commits go to the active branch, not `main`.
-- Sequential PRs stay on the active branch/workstream during the day when OWNER assigned a stacked or sequential workstream.
+- SOD creates or updates one active team branch/workstream.
+- Work must be committed only to the active team branch.
+- PR branches/commits stay on the active team branch/workstream during the day when OWNER assigned a stacked or sequential workstream.
 - Do not return to `main` between stacked/sequential PRs in the same active workstream.
 - `main` is only the SOD baseline and the EOD return target, unless OWNER explicitly approves an intermediate merge checkpoint.
 - EOD merges or closes OWNER-approved work, pushes, returns to `main`, and verifies:
   - current branch is `main`
   - worktree clean
   - local/origin sync is `0 0`
+- This rule applies to all teams: OWNER, Team Alfa, Team Bravo, Team Charlie, Team Delta, and any future team.
 
 This section supersedes older active wording that implies returning to `main` between every PR inside an OWNER-approved stacked/sequential workstream.
 

@@ -102,6 +102,8 @@ Each PR in the stack still follows the canonical START / WORK / END lifecycle an
 
 When OWNER gives one large Codex command for a tool MVP stack, Codex may continue from one completed PR to the next without stopping for a conversational checkpoint, unless a blocker listed in this standard occurs.
 
-During an OWNER-approved day workstream, sequential PRs stay on the active workstream branch and do not return to `main` between PRs.
+During an OWNER-approved day workstream, PR branches/commits stay on the active team branch/workstream and do not return to `main` between PRs.
+
+This rule applies to all teams: OWNER, Team Alfa, Team Bravo, Team Charlie, Team Delta, and any future team.
 
 The final PR in the stack must perform normal EOD closeout or OWNER-approved merge-checkpoint closeout and stop all work after returning to synchronized main.

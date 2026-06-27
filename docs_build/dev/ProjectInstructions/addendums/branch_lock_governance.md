@@ -9,7 +9,8 @@ Keep active work attached to the correct assigned team, branch, and OWNER decisi
 
 ## Active Work Lock
 
-- Work must occur on the assigned team or OWNER branch.
+- Work must occur on the active team branch.
+- This rule applies to all teams: OWNER, Team Alfa, Team Bravo, Team Charlie, Team Delta, and any future team.
 - An assigned work item keeps its owner of record until complete or OWNER reassignment.
 - Work must not move to another team, branch, or PR without OWNER approval.
 - A team with no active assignment, active branch, or active PR is inactive.
@@ -26,7 +27,7 @@ Keep active work attached to the correct assigned team, branch, and OWNER decisi
 - Do not create a PR branch unless current branch is `main`, worktree is clean, `main...origin/main` is `0 0`, and `HEAD` SHA matches the published EOD SHA.
 - Follow the canonical START / WORK / END lifecycle in `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`.
 - Keep work on the active branch until the PR is merged, the branch is retired, EOD closeout begins, or OWNER says to return to `main`.
-- For OWNER-approved stacked/sequential workstreams, sequential PR work stays on the active branch/workstream during the day and does not return to `main` between PRs.
+- For OWNER-approved stacked/sequential workstreams, PR branches/commits stay on the active team branch/workstream during the day and do not return to `main` between PRs.
 - Do not commit directly to `main`.
 - HARD STOP before committing if current branch is `main`.
 - HARD STOP if the branch changes unexpectedly during implementation.
