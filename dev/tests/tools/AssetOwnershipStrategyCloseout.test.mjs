@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { validateAssetOwnershipStrategy } from "../../../scripts/validate-asset-ownership-strategy.mjs";
+import { validateAssetOwnershipStrategy } from "../../scripts/validate-asset-ownership-strategy.mjs";
 
 export async function run() {
   const result = await validateAssetOwnershipStrategy({ emitLogs: false });

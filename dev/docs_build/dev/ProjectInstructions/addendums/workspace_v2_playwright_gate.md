@@ -13,7 +13,7 @@ Use this gate for repeatable local validation of Workspace Manager V2 UI behavio
 - Test artifacts are written under `tmp/test-results/`.
 - Trace artifacts are written under `tmp/test-results/**` (for example in artifacts folders).
 - HTML report is written under `tmp/test-results/report`.
-- Reporter auto-open behavior is controlled by `playwright.config.cjs`.
+- Reporter auto-open behavior is controlled by `dev/config/playwright.config.cjs`.
 
 ## Pass/Fail Behavior
 - Success:
