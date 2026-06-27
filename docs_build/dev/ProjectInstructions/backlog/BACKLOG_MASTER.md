@@ -2,19 +2,22 @@
 
 ## Backlog Item Tracking Standard
 
+Canonical backlog tracking owner: `docs_build/dev/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md`.
+
 Every active team owns an active backlog when it has assigned work.
 
-Each backlog item must track:
+Backlog entries in this file follow the canonical field list, including:
 
 - Name
 - Description
 - Current completion percentage
 - Remaining work
 - Blocking dependencies
+- Owning team
 
-Completion percentages are updated at SOD, after each accepted PR, and at EOD.
+Completion percentages are updated at SOD, after every accepted PR, and at EOD.
 
-The backlog is the authoritative source for determining the next PRs.
+The backlog is the authoritative source for determining the next logical PRs.
 
 ## Game Journey MVP
 
@@ -44,7 +47,7 @@ The backlog is the authoritative source for determining the next PRs.
 - [ ] Bravo - Asset Studio V2
 - [ ] Charlie - Sprites canvas editor MVP
   - Sprites is a creator tool, not only an asset metadata library.
-  - MVP requires canvas/grid editor behavior, width/height controls, Palette/Colors-only reusable colors, color selection from Palette/Colors, pixel painting, save/load sprite grid data through the API/database, and Product Owner manual validation.
+  - MVP requires canvas/grid editor behavior, width/height controls, Palette/Colors references only, pixel painting, save/load sprite grid data through the API/database, and a Product Owner testable workflow.
   - Category is removed from Sprites MVP planning.
 - [ ] Bravo - Animation Studio V2
 - [ ] Bravo - Palette Manager
@@ -65,7 +68,8 @@ The backlog is the authoritative source for determining the next PRs.
 
 0% Complete — Create the things players interact with
 
-- [ ] Alfa - Objects
+- [ ] Charlie - Objects
+  - Objects includes object library, object editor, Sprite assignment, object properties, collision configuration, runtime object metadata, and Object API/database contracts.
 - [ ] Alfa - Characters
 - [ ] Alfa - Object Behaviors
 
@@ -226,6 +230,7 @@ Current OWNER clarification:
 
 ### Team Charlie
 
+- Active ownership: Runtime, System Health, Environment Management, Sprites, Objects.
 - [ ] Charlie - Guardrail hardening
 - [ ] Charlie - Browser validation hardening
 - [ ] Charlie - Remaining test relocation audit
@@ -257,6 +262,10 @@ Current OWNER clarification:
     - observability integrations
 - [ ] Charlie - Infrastructure dashboard
 - [ ] Charlie - Environment validation
+- [ ] Charlie - Sprites canvas editor MVP
+  - Scope: canvas/grid editor, width/height controls, Palette/Colors references only, pixel painting, save/load sprite grid data, and Product Owner testable workflow.
+- [ ] Charlie - Objects
+  - Scope: object library, object editor, Sprite assignment, object properties, collision configuration, runtime object metadata, and Object API/database contracts.
 
 ### Team Delta
 

@@ -7,6 +7,10 @@ Owner: OWNER
 
 Require Codex and teams to confirm branch context before changing files.
 
+Canonical branch lifecycle reference: `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`.
+
+This file owns branch context confirmation and stop conditions; it must not create a competing START / WORK / END lifecycle rule.
+
 ## Session Start Context
 
 At the start of work, report or validate:

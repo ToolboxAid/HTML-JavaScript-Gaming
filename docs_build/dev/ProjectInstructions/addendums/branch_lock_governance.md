@@ -7,6 +7,10 @@ Owner: OWNER
 
 Keep active work attached to the correct assigned team, branch, and OWNER decision.
 
+Canonical branch lifecycle reference: `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`.
+
+This file owns branch lock enforcement and OWNER override handling; it must not create a competing START / WORK / END lifecycle rule.
+
 ## Active Work Lock
 
 - Work must occur on the active team branch.
@@ -39,21 +43,13 @@ Keep active work attached to the correct assigned team, branch, and OWNER decisi
 
 ## Branch Lifecycle (Canonical)
 
-Every PR follows exactly three phases:
+The canonical branch lifecycle lives in:
 
 ```text
-START
-WORK
-END
+docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
 ```
 
-The canonical lifecycle lives in `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`.
-
-Branch lock governance enforces:
-- START on synchronized `main`.
-- WORK only on the PR branch.
-- END by merging, returning to synchronized `main`, publishing branch, HEAD SHA, and date/time, then stopping all work.
-- Mandatory hard stops before commits on `main`, dirty branch creation, non-`0 0` main sync, baseline SHA mismatch, unvalidated merge, or new unrelated workstream before synchronized main return.
+Branch lock governance enforces ownership and branch-lock compliance with that canonical lifecycle.
 
 ## OWNER Override
 

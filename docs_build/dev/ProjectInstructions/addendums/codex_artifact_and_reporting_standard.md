@@ -55,7 +55,7 @@ Codex responses must include:
 Every tool MVP PR report must include:
 - Product Owner testable outcome
 - What Playwright tests
-- What Mr. Q should manually test
+- What the Product Owner should manually test
 - Whether the PR is part of a stacked MVP sequence
 - Previous PR dependency
 - Next PR dependency
@@ -63,7 +63,7 @@ Every tool MVP PR report must include:
 The report must answer:
 
 ```text
-What can Mr. Q test after applying this ZIP?
+What can the Product Owner test after applying this ZIP?
 ```
 
 If a tool MVP PR has no Playwright lane, the report must state why and list the manual Product Owner validation instead.

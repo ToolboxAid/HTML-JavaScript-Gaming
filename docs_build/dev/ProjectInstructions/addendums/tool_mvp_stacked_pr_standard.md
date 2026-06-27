@@ -24,7 +24,7 @@ One large Codex command -> multiple focused stacked PRs -> each PR has a Product
 - Each PR must answer:
 
 ```text
-What can Mr. Q test after applying this ZIP?
+What can the Product Owner test after applying this ZIP?
 ```
 
 - Codex must continue through the stacked PR sequence unless blocked by:
@@ -40,45 +40,14 @@ For tool MVP PR planning, visible acceptance must be Creator-facing first.
 
 Architecture can be handled under the covers, but PR purpose must be user-testable.
 
-A request to complete a page, tool, MVP, or testable experience means Product Owner testable by default. Codex must deliver a working Product Owner testable feature, not a shell or foundation page, unless the Product Owner explicitly requests a shell/foundation PR.
+Canonical reference: `docs_build/dev/ProjectInstructions/addendums/pr_workflow.md` owns the Product Owner testable definition and no-shell completion rule.
 
-A Product Owner testable outcome means the Product Owner can:
-
-- open the page/tool
-- perform the primary workflow
-- save/load data where applicable
-- observe expected results
-- validate success and failure states
-- follow manual validation steps from the PR report
-
-Not acceptable as complete/testable:
-
-- shell-only page
-- route-only page
-- navigation-only PR
-- template-only page
-- placeholder controls
-- static table with no workflow
-- `Not implemented yet`
-- `coming soon`
-- placeholder-only workspace, inspector, or output sections
-- planned-only tile
-- route that loads but cannot be used
-
-Required for Product Owner testable completion:
-
-- visible working controls
-- API-backed data where required
-- validation and error states
-- empty states
-- save/load behavior where applicable
-- manual validation steps for Product Owner
-- targeted Playwright coverage where impacted.
+Canonical Playwright reference: `docs_build/dev/ProjectInstructions/addendums/test_structure_standardization.md` owns page-level Playwright organization and minimum completion coverage.
 
 Each tool MVP PR must state:
 - Product Owner testable outcome
 - What Playwright tests
-- What Mr. Q should manually test
+- What the Product Owner should manually test
 - Whether the PR is part of a stacked MVP sequence
 - Previous PR dependency
 - Next PR dependency

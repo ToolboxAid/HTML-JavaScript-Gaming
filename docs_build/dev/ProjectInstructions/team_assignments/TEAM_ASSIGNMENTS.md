@@ -1,5 +1,11 @@
 # TEAM_ASSIGNMENTS
 
+Canonical workflow reference: `docs_build/dev/ProjectInstructions/addendums/pr_workflow.md`.
+
+Canonical branch lifecycle reference: `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`.
+
+This file records active assignments and registry state. Workflow summaries here are subordinate to the canonical workflow and branch lifecycle documents.
+
 # Active Team Registry
 
 | Team | Assignment | Branch | PR | Status |
@@ -197,7 +203,7 @@ Conflict note:
 ## Day Work / EOD Merge Rule
 
 During active work:
-- Work happens on assigned team branches, OWNER branches, or scoped PR branches.
+- Work happens on active non-main team branches or scoped PR branches.
 - Commits are allowed only on assigned non-main branches.
 - Pushes are allowed and expected.
 - Draft PRs are allowed and expected.
@@ -263,23 +269,10 @@ Teams must use only `docs_build/dev/ProjectInstructions/` as the active Project 
 
 ## Branch Lifecycle (Canonical)
 
-Every PR follows exactly three phases:
+Teams must follow the canonical branch lifecycle in:
 
 ```text
-START
-WORK
-END
+docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
 ```
 
-Teams must follow `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`.
-
-Assignment governance enforces:
-- START begins on synchronized `main`.
-- WORK remains on the PR branch. Never checkout `main`.
-- END merges, returns to synchronized `main`, publishes branch, HEAD SHA, and date/time, then stops all work.
-- No commits on `main`.
-- No implementation on `main`.
-- No validation on `main` except start validation.
-- STOP if current branch is `main` before commit.
-- STOP if attempting to push `main`.
-- STOP if new PR work starts before returning to synchronized `main`.
+Assignment governance records active team and branch state; it must not create a competing lifecycle rule.

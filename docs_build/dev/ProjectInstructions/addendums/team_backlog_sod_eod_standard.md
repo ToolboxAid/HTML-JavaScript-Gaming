@@ -42,14 +42,15 @@ Each backlog item must track:
 - current completion percentage
 - remaining work
 - blocking dependencies
+- owning team
 
 Completion percentages are updated:
 
 - at SOD
-- after each accepted PR
+- after every accepted PR
 - at EOD
 
-The backlog is the authoritative source for determining the next PRs.
+The backlog is the authoritative source for determining the next logical PRs.
 
 If the backlog and a generated report conflict, the backlog wins unless OWNER explicitly approves a newer governance decision.
 

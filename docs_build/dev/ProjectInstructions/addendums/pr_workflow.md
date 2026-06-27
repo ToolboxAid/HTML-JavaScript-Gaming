@@ -46,31 +46,11 @@ This section supersedes older active wording that implies returning to `main` be
 
 ## Branch Lifecycle (Canonical)
 
-Every PR follows exactly three phases:
-
-```text
-START
-WORK
-END
-```
-
 The canonical START, WORK, END, Daily Synchronization, and Mandatory Hard Stops rules live in:
 
 `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`
 
-PR workflow must follow that lifecycle exactly.
-
-Summary:
-- START happens on synchronized `main` only and creates the PR branch only after all required gates pass.
-- WORK happens only on the PR branch.
-- END validates, commits, pushes, opens/updates the PR, merges, returns to synchronized `main`, publishes branch, HEAD SHA, and date/time, then stops all work.
-- No commits on `main`.
-- No implementation on `main`.
-- No validation on `main` except start validation.
-- Never checkout `main` during WORK.
-- STOP before commit if current branch is `main`.
-- STOP if current branch changes unexpectedly.
-- STOP if attempting to push `main`.
+PR workflow must follow that lifecycle exactly and must not create a competing lifecycle rule.
 
 ## PR Lifecycle States
 
@@ -153,7 +133,7 @@ Do not stop after every small PR unless blocked by branch state, failed validati
 Each tool MVP PR plan or template must include:
 - Product Owner testable outcome
 - What Playwright tests
-- What Mr. Q should manually test
+- What the Product Owner should manually test
 - Whether the PR is part of a stacked MVP sequence
 - Previous PR dependency
 - Next PR dependency
@@ -161,6 +141,8 @@ Each tool MVP PR plan or template must include:
 Visible acceptance must be Creator-facing first. Architecture can be handled under the covers, but the PR purpose must be user-testable.
 
 ## Product Owner Testable Definition
+
+Canonical owner: this section is the active canonical Product Owner testable completion rule.
 
 A request to complete a page, tool, MVP, or testable experience means Product Owner testable by default. Codex must deliver a working Product Owner testable feature, not a shell or foundation page, unless the Product Owner explicitly requests a shell/foundation PR.
 

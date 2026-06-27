@@ -58,6 +58,20 @@ Existing Project Instructions outside `docs_build/dev/ProjectInstructions/` rema
 
 `docs_build/dev/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md` defines required Start of Day team briefings, End of Day team summaries, active team backlog fields, completion percentage update points, backlog-driven next PR selection, and official military team-name spelling.
 
+## Canonical Governance Owners
+
+When active guidance overlaps, use these canonical owner documents:
+
+- Workflow and Product Owner testable completion: `docs_build/dev/ProjectInstructions/addendums/pr_workflow.md`
+- START / WORK / END lifecycle, branch gates, mandatory hard stops, and EOD main lock: `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`
+- Page-level Playwright organization and completion coverage: `docs_build/dev/ProjectInstructions/addendums/test_structure_standardization.md`
+- API/environment model and `Browser -> API -> Database` rule: `docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md`
+- Environment variable, URL, R2 prefix, and feature flag configuration: `docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md`
+- Team backlog fields, completion percentages, and next logical PR ownership: `docs_build/dev/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md`
+- Team ownership and assignment routing: `docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md`
+
+Other active addendums may summarize these rules, but they must point back to the canonical owner document and must not create a competing active rule.
+
 ## Environment Governance
 
 `docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md` defines the official environment model, environment invariance rule, shared API/service contract rule, required Supabase/Postgres/R2 services, required R2 prefixes, and SQLite retired status.
@@ -97,7 +111,7 @@ OWNER override wording:
 `OWNER override approved: <reason>`
 
 OWNER follows the same safety rules:
-- One active Team OWNER branch at a time.
+- Team OWNER follows the same one-active-branch discipline as every team.
 - One active OWNER assignment at a time.
 - OWNER may override team locks, but may not silently delete, rewrite, or remove protected instructions.
 - OWNER override must be explicitly documented.
