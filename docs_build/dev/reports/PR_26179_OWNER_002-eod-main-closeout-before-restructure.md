@@ -1,0 +1,124 @@
+# PR_26179_OWNER_002-eod-main-closeout-before-restructure
+
+Date: 2026-06-27 13:42:22
+Team: OWNER
+Purpose: Owner EOD/main closeout before dev workspace restructure chain
+Status: PASS
+
+## Starting State
+
+- Starting branch: `PR_26179_001-runtime-reliability-architecture`
+- Starting HEAD: `46e80b6ab88be05e80daf4fd0256b152e27b2452`
+- Starting worktree status: clean; branch synced with origin/PR_26179_001-runtime-reliability-architecture at task start
+- Current report branch: `PR_26179_OWNER_002-eod-main-closeout-before-restructure`
+- Current report branch HEAD before report commit: `e9edd3f2b0519256eefcb2f125abd7ab6f76f556`
+- Main was fast-forwarded to origin/main before this closeout report branch was created.
+- Main HEAD after sync: `e9edd3f2b0519256eefcb2f125abd7ab6f76f556`
+- Main local/origin sync before report branch: `0 0`
+
+## Scope Guard
+
+- PASS: No dev workspace restructure was started.
+- PASS: No restructure PRs were created.
+- PASS: No runtime, UI, API, tests, or governance content was modified by this closeout report.
+- PASS: Only generated EOD closeout reports are changed in this PR.
+
+## Branches Reviewed
+
+- `PR_26177_001-shared-hash-foundation|origin/PR_26177_001-shared-hash-foundation|0 101|Add shared hash foundation`
+- `PR_26177_002-shared-noise-foundation|origin/PR_26177_002-shared-noise-foundation|0 100|Add shared noise foundation`
+- `PR_26177_003-shared-geometry-foundation|origin/PR_26177_003-shared-geometry-foundation|0 99|Add shared geometry foundation`
+- `PR_26177_004-shared-color-foundation|origin/PR_26177_004-shared-color-foundation|0 98|Add shared color foundation`
+- `PR_26177_005-shared-text-foundation|origin/PR_26177_005-shared-text-foundation|0 97|Add shared text foundation`
+- `PR_26177_006-shared-time-foundation|origin/PR_26177_006-shared-time-foundation|0 95|Close out shared time foundation`
+- `PR_26177_DELTA_052-random-seed-utility|origin/PR_26177_DELTA_052-random-seed-utility|0 111|DELTA: add random seed utility`
+- `PR_26177_DELTA_053-random-shared-helpers|origin/PR_26177_DELTA_053-random-shared-helpers|0 109|DELTA: add random shared helpers`
+- `PR_26177_DELTA_054-random-utility|origin/PR_26177_DELTA_054-random-utility|0 108|DELTA: add random utility`
+- `PR_26177_DELTA_055-random-seed-enhancements|origin/PR_26177_DELTA_055-random-seed-enhancements|0 107|DELTA: enhance random seed utility`
+- `PR_26177_DELTA_056-shared-validation-assertions|origin/PR_26177_DELTA_056-shared-validation-assertions|0 106|DELTA: extract shared validation assertions`
+- `PR_26177_OWNER_007-project-instructions-single-source-eod-lock|origin/PR_26177_OWNER_007-project-instructions-single-source-eod-lock|0 64|Merge origin/main for OWNER_007 EOD`
+- `PR_26177_OWNER_008-dev-documentation-ownership-cleanup|origin/PR_26177_OWNER_008-dev-documentation-ownership-cleanup|0 51|Finalize OWNER_008 documentation ownership cleanup`
+- `PR_26177_OWNER_050-environment-governance-model|origin/PR_26177_OWNER_050-environment-governance-model|0 116|Refresh environment governance conflict reports`
+- `PR_26177_OWNER_051-environment-configuration-standards|origin/PR_26177_OWNER_051-environment-configuration-standards|0 113|Clarify external environment file ownership`
+- `PR_26179_001-runtime-reliability-architecture|origin/PR_26179_001-runtime-reliability-architecture|1 3|Add runtime reliability architecture governance`
+- `PR_26179_OWNER_002-eod-main-closeout-before-restructure||0 0|Merge pull request #236 from ToolboxAid/PR_26178_ALFA_001-fix-tags-local-api-crash`
+- `codex/fix-text-to-speech-toolbox-path|origin/codex/fix-text-to-speech-toolbox-path|0 507|Fix Text To Speech toolbox path`
+- `codex/pr-26171-037-text2speech-functional-tool-rebuild|origin/codex/pr-26171-037-text2speech-functional-tool-rebuild|1 506|Rebuild Text To Speech browser preview`
+- `codex/pr-26171-039-text2speech-archived-feature-parity|origin/codex/pr-26171-039-text2speech-archived-feature-parity|1 505|Restore Text To Speech archived feature parity`
+- `codex/pr-26171-041-text2speech-engine-audio-foundation|origin/codex/pr-26171-041-text2speech-engine-audio-foundation|2 505|Build Text To Speech engine audio foundation`
+- `codex/pr-26171-043-local-api-signin-availability-fix||1 496|Fix Local API sign-in availability`
+- `main|origin/main|0 0|Merge pull request #236 from ToolboxAid/PR_26178_ALFA_001-fix-tags-local-api-crash`
+- `owner-007-before-eod-merge-20260626154202||0 71|Archive legacy docs under root archive`
+- `pr/26171-003-game-journey-friendly-descriptions|origin/pr/26171-003-game-journey-friendly-descriptions|0 534|PR_26171_003 Game Journey friendly descriptions`
+- `pr/26171-005-game-journey-tool-integration-foundation||0 532|PR_26171_005 Game Journey tool integration foundation`
+- `pr/26171-007-game-journey-progress-dashboard||0 531|PR_26171_007 Game Journey progress dashboard`
+- `pr/26171-009-game-hub-navigation-alignment||0 530|PR_26171_009 Game Hub navigation alignment`
+- `pr/26171-011-game-journey-recommended-targets||0 529|PR_26171_011 Game Journey recommended targets`
+- `pr/26171-013-game-journey-completion-insights||0 526|PR_26171_013 Game Journey completion insights`
+- `pr/26171-015-game-journey-target-persistence|origin/pr/26171-015-game-journey-target-persistence|0 520|PR_26171_015 Game Journey target persistence`
+- `pr/26171-017-game-journey-actionable-insights||0 519|PR_26171_017 Game Journey actionable insights`
+- `pr/26171-019-game-journey-dashboard-polish||0 518|PR_26171_019 Game Journey dashboard polish`
+- `pr/26171-059-rollback-restore-plan|origin/pr/26171-059-rollback-restore-plan|1 490|PR_26171_059 rollback restore plan`
+- `pr/26171-061-text2speech-engine-audio-feature-parity|origin/pr/26171-061-text2speech-engine-audio-feature-parity|2 486|Merge origin/main into PR_26171_061`
+- `pr/26171-063-codex-instruction-enforcement-hardening|origin/pr/26171-063-codex-instruction-enforcement-hardening|2 488|Merge remote-tracking branch 'origin/main' into pr/26171-063-codex-instruction-enforcement-hardening`
+- `pr/26171-065-message-studio-parent-child-table-foundation|origin/pr/26171-065-message-studio-parent-child-table-foundation|1 484|PR_26171_065 message studio parent child table foundation`
+- `pr/26171-067-tts-profile-emotion-table-foundation|origin/pr/26171-067-tts-profile-emotion-table-foundation|1 483|PR_26171_067 tts profile emotion table foundation`
+- `pr/26171-ALPHA-075-team-based-pr-naming|origin/pr/26171-ALPHA-075-team-based-pr-naming|0 475|PR_26171_ALPHA_075 team based PR naming`
+- `pr/26171-BETA-069-message-tts-profile-contract-alignment|origin/pr/26171-BETA-069-message-tts-profile-contract-alignment|0 473|PR_26171_BETA_069 message tts profile contract alignment`
+- `pr/26171-BETA-071-tts-profile-emotion-table|origin/pr/26171-BETA-071-tts-profile-emotion-table|0 471|PR_26171_BETA_071 tts profile emotion table`
+- `pr/26171-BETA-073-message-tts-table-ui-correction|origin/pr/26171-BETA-073-message-tts-table-ui-correction|0 469|PR_26171_BETA_073 message tts table ui correction`
+- `pr/26171-BETA-075-tts-message-table-cleanup|origin/pr/26171-BETA-075-tts-message-table-cleanup|0 467|PR_26171_BETA_075 tts message table cleanup`
+- `pr/26171-BETA-077-tts-profile-parent-child-table|origin/pr/26171-BETA-077-tts-profile-parent-child-table|1 466|PR_26171_BETA_077 tts profile parent child table`
+- `pr/26171-BETA-079-message-studio-parent-child-table-completion|origin/pr/26171-BETA-079-message-studio-parent-child-table-completion|1 465|PR_26171_BETA_079 message studio parent child table`
+- `pr/26171-BETA-081-message-playback-through-tts-engine|origin/pr/26171-BETA-081-message-playback-through-tts-engine|1 464|PR_26171_BETA_081 message playback through tts engine`
+- `pr/26171-BETA-083-message-tts-polish-and-dead-code|origin/pr/26171-BETA-083-message-tts-polish-and-dead-code|1 461|PR_26171_BETA_083 message tts polish and dead code`
+
+## Open PRs Reviewed
+
+| PR | Title | Branch | Draft | Mergeable | Merge State | Review | Skipped Reason |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| #235 | PR_26179_001-runtime-reliability-architecture | `PR_26179_001-runtime-reliability-architecture` -> `main` | True | CONFLICTING | DIRTY | none | draft; mergeable=CONFLICTING; mergeState=DIRTY; no approved review decision |
+| #230 | PR_26177_CHARLIE_019-team-charlie-eod-closeout | `PR_26177_CHARLIE_019-team-charlie-eod-closeout` -> `main` | True | MERGEABLE | CLEAN | none | draft; no approved review decision |
+| #228 | PR_26177_CHARLIE_018-sprites-testable-mvp-completion | `PR_26177_CHARLIE_018-sprites-testable-mvp-completion` -> `main` | True | CONFLICTING | DIRTY | none | draft; mergeable=CONFLICTING; mergeState=DIRTY; no approved review decision |
+| #227 | PR_26177_CHARLIE_017-sprites-toolbox-entry-active | `PR_26177_CHARLIE_017-sprites-toolbox-entry-active` -> `main` | True | CONFLICTING | DIRTY | none | draft; mergeable=CONFLICTING; mergeState=DIRTY; no approved review decision |
+| #226 | PR_26177_CHARLIE_016-sprites-playwright-final-polish | `PR_26177_CHARLIE_016-sprites-playwright-final-polish` -> `PR_26177_CHARLIE_015-sprites-reference-protection` | True | MERGEABLE | CLEAN | none | draft; no approved review decision; base=PR_26177_CHARLIE_015-sprites-reference-protection |
+| #225 | PR_26177_CHARLIE_015-sprites-reference-protection | `PR_26177_CHARLIE_015-sprites-reference-protection` -> `PR_26177_CHARLIE_014-sprites-tags-categories-search` | True | MERGEABLE | CLEAN | none | draft; no approved review decision; base=PR_26177_CHARLIE_014-sprites-tags-categories-search |
+| #224 | PR_26177_CHARLIE_014-sprites-tags-categories-search | `PR_26177_CHARLIE_014-sprites-tags-categories-search` -> `PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette` | True | MERGEABLE | CLEAN | none | draft; no approved review decision; base=PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette |
+| #223 | PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette | `PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette` -> `PR_26177_CHARLIE_012-sprites-library-crud` | True | MERGEABLE | CLEAN | none | draft; no approved review decision; base=PR_26177_CHARLIE_012-sprites-library-crud |
+| #222 | PR_26177_CHARLIE_012-sprites-library-crud | `PR_26177_CHARLIE_012-sprites-library-crud` -> `PR_26177_CHARLIE_011-sprites-tool-shell` | True | MERGEABLE | CLEAN | none | draft; no approved review decision; base=PR_26177_CHARLIE_011-sprites-tool-shell |
+| #221 | PR_26177_CHARLIE_011-sprites-tool-shell | `PR_26177_CHARLIE_011-sprites-tool-shell` -> `main` | True | CONFLICTING | DIRTY | none | draft; mergeable=CONFLICTING; mergeState=DIRTY; no approved review decision |
+| #220 | PR_26177_CHARLIE_010-sprites-api-db-foundation | `PR_26177_CHARLIE_010-sprites-api-db-foundation` -> `main` | True | CONFLICTING | DIRTY | none | draft; mergeable=CONFLICTING; mergeState=DIRTY; no approved review decision |
+| #219 | PR_26177_CHARLIE_009-sprites-legacy-audit-plan | `PR_26177_CHARLIE_009-sprites-legacy-audit-plan` -> `main` | True | CONFLICTING | DIRTY | none | draft; mergeable=CONFLICTING; mergeState=DIRTY; no approved review decision |
+| #198 | PR_26176_006 Alfa Tool Display validation closeout | `PR_26176_006-alfa-tool-display-validation-closeout` -> `PR_26176_005-tool-display-mode-single-line-layout` | True | MERGEABLE | CLEAN | none | draft; no approved review decision; base=PR_26176_005-tool-display-mode-single-line-layout |
+| #196 | PR_26176_005 Tool Display Mode single-line layout | `PR_26176_005-tool-display-mode-single-line-layout` -> `main` | True | CONFLICTING | DIRTY | none | draft; mergeable=CONFLICTING; mergeState=DIRTY; no approved review decision |
+| #176 | PR_26175_OWNER_055: retain legal governance leftovers | `codex/pr-26175-owner-055-legal-governance-leftover-retention` -> `main` | False | CONFLICTING | DIRTY | none | mergeable=CONFLICTING; mergeState=DIRTY; no approved review decision |
+
+## PRs Merged
+
+None.
+
+## PRs Skipped
+
+All open PRs were skipped because they were draft, conflicted/dirty, stacked on non-main bases, lacked an approved review decision, or otherwise lacked a clear Project Instructions ready/approved merge state.
+
+Notable skip:
+- PR #235 `PR_26179_001-runtime-reliability-architecture` is draft and now conflicts with latest `main`; it was not merged.
+
+## Validation Run
+
+- `git status --short --branch --untracked-files=all`
+- `git branch -vv`
+- `gh pr list --state open --json ...`
+- `git fetch origin --prune`
+- `git pull --ff-only origin main`
+- `git rev-list --left-right --count main...origin/main`
+- `git diff --check`
+- Documentation-only changed-path scan
+
+## Final Main Closeout Plan
+
+After this report branch is committed and pushed, checkout `main`, fetch, pull `origin/main` with `--ff-only`, verify clean worktree, and verify `main...origin/main` is `0 0`.
+
+## Next Recommended Action
+
+Resolve or close the existing draft/conflicting PR #235 before starting the dev workspace restructure chain. Do not start restructure work until main is clean/synced and the OWNER explicitly starts that chain.

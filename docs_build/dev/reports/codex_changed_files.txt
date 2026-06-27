@@ -1,12 +1,7 @@
-A	docs_build/dev/reports/PR_26178_ALFA_001-fix-tags-local-api-crash_branch-validation.md
-A	docs_build/dev/reports/PR_26178_ALFA_001-fix-tags-local-api-crash_manual-validation-notes.md
-A	docs_build/dev/reports/PR_26178_ALFA_001-fix-tags-local-api-crash_report.md
-A	docs_build/dev/reports/PR_26178_ALFA_001-fix-tags-local-api-crash_requirement-checklist.md
-A	docs_build/dev/reports/PR_26178_ALFA_001-fix-tags-local-api-crash_validation-lane.md
-A	docs_build/dev/reports/PR_26178_ALFA_001-fix-tags-local-api-crash_validation-report.md
+A	docs_build/dev/reports/PR_26179_OWNER_002-eod-main-closeout-before-restructure.md
+A	docs_build/dev/reports/PR_26179_OWNER_002-eod-main-closeout-before-restructure_branch-validation.md
+A	docs_build/dev/reports/PR_26179_OWNER_002-eod-main-closeout-before-restructure_manual-validation-notes.md
+A	docs_build/dev/reports/PR_26179_OWNER_002-eod-main-closeout-before-restructure_requirement-checklist.md
+A	docs_build/dev/reports/PR_26179_OWNER_002-eod-main-closeout-before-restructure_validation-lane.md
 M	docs_build/dev/reports/codex_changed_files.txt
 M	docs_build/dev/reports/codex_review.diff
-M	src/dev-runtime/server/local-api-router.mjs
-M	src/dev-runtime/toolbox-api/alfa-tool-services.mjs
-A	tests/dev-runtime/TagsApiErrorResponse.test.mjs
-A	tests/dev-runtime/TagsApiService.test.mjs
