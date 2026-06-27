@@ -265,6 +265,19 @@ function databaseAdapter(options, action) {
   throw new Error(`${action} requires the configured API database adapter.`);
 }
 
+function tagsApiSetupError(action, error) {
+  if (error?.name === "TagsApiSetupError") {
+    return error;
+  }
+  const message = `${action} failed because the Tags API database setup is unavailable. Verify the API database connection and apply the account, Game Hub, and Tags database setup before using Tags.`;
+  const wrapped = new Error(message);
+  wrapped.name = "TagsApiSetupError";
+  wrapped.statusCode = typeof error?.statusCode === "number" ? error.statusCode : 503;
+  wrapped.operatorDiagnostic = `${message} Cause: ${error instanceof Error ? error.message : String(error || "Unknown database error.")}`;
+  wrapped.cause = error;
+  return wrapped;
+}
+
 function activeGameFromWorkspace(repository, overrideId = "") {
   if (overrideId && typeof repository?.openGame === "function") {
     repository.openGame(overrideId);
@@ -359,44 +372,49 @@ export function createTagsApiService(options = {}) {
   const seededProjectKeys = new Set();
 
   async function readTables(seed = true) {
-    const adapter = databaseAdapter(options, "Reading project tags");
-    const project = activeProject();
-    await ensureGameRecord(adapter, project, activeUserKey(options));
-    let tags = await adapter.requestTable("project_tags");
-    if (seed) {
-      const existingSlugs = new Set(tags.map((tag) => normalizeText(tag.slug)));
-      const missingRows = STARTER_TAGS
-        .map(starterTagRow)
-        .filter((row) => !existingSlugs.has(row.slug));
-      if (missingRows.length) {
-        await adapter.upsertProductTable("project_tags", missingRows);
-        tags = await adapter.requestTable("project_tags");
-      }
-    }
-    let assignments = await adapter.requestTable("project_tag_assignments");
-    if (seed && !seededProjectKeys.has(project.key)) {
-      const projectAssignments = assignments.filter((assignment) => assignment.projectKey === project.key);
-      if (!projectAssignments.length) {
-        const starterTagKeys = tags
-          .filter((tag) => ["fantasy", "platformer"].includes(normalizeText(tag.slug)))
-          .map((tag) => tag.key);
-        if (starterTagKeys.length) {
-          await adapter.upsertProductTable("project_tag_assignments", starterTagKeys.map((tagKey) => ({
-            key: adapter.createRecordKey(),
-            projectKey: project.key,
-            tagKey,
-            ...auditFields(SYSTEM_USER_KEY),
-          })));
-          assignments = await adapter.requestTable("project_tag_assignments");
+    const action = "Reading project tags";
+    try {
+      const adapter = databaseAdapter(options, action);
+      const project = activeProject();
+      await ensureGameRecord(adapter, project, activeUserKey(options));
+      let tags = await adapter.requestTable("project_tags");
+      if (seed) {
+        const existingSlugs = new Set(tags.map((tag) => normalizeText(tag.slug)));
+        const missingRows = STARTER_TAGS
+          .map(starterTagRow)
+          .filter((row) => !existingSlugs.has(row.slug));
+        if (missingRows.length) {
+          await adapter.upsertProductTable("project_tags", missingRows);
+          tags = await adapter.requestTable("project_tags");
         }
       }
-      seededProjectKeys.add(project.key);
+      let assignments = await adapter.requestTable("project_tag_assignments");
+      if (seed && !seededProjectKeys.has(project.key)) {
+        const projectAssignments = assignments.filter((assignment) => assignment.projectKey === project.key);
+        if (!projectAssignments.length) {
+          const starterTagKeys = tags
+            .filter((tag) => ["fantasy", "platformer"].includes(normalizeText(tag.slug)))
+            .map((tag) => tag.key);
+          if (starterTagKeys.length) {
+            await adapter.upsertProductTable("project_tag_assignments", starterTagKeys.map((tagKey) => ({
+              key: adapter.createRecordKey(),
+              projectKey: project.key,
+              tagKey,
+              ...auditFields(SYSTEM_USER_KEY),
+            })));
+            assignments = await adapter.requestTable("project_tag_assignments");
+          }
+        }
+        seededProjectKeys.add(project.key);
+      }
+      lastTables = {
+        project_tag_assignments: assignments,
+        project_tags: tags,
+      };
+      return lastTables;
+    } catch (error) {
+      throw tagsApiSetupError(action, error);
     }
-    lastTables = {
-      project_tag_assignments: assignments,
-      project_tags: tags,
-    };
-    return lastTables;
   }
 
   function activeProject() {

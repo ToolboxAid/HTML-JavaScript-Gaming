@@ -2784,6 +2784,33 @@ function repositoryMethodError(message, statusCode = 502) {
   return error;
 }
 
+const TAGS_API_SETUP_RESPONSE_MESSAGE = "Tags API database setup is unavailable. Verify the API database connection and apply the account, Game Hub, and Tags database setup before using Tags.";
+
+function isTagsRepositoryRequest(parts) {
+  return parts[1] === "toolbox" && parts[2] === "tags" && parts[3] === "repositories";
+}
+
+function isDatabaseSetupError(error) {
+  const message = String(error?.operatorDiagnostic || error?.message || error || "");
+  return /database|schema|relation|configured product data connection|GAMEFOUNDRY_DATABASE_URL|ECONNREFUSED|ENOTFOUND|permission denied|request failed/i.test(message);
+}
+
+function safeTagsApiResponseError(error) {
+  const message = error?.name === "TagsApiSetupError"
+    ? String(error.message || TAGS_API_SETUP_RESPONSE_MESSAGE)
+    : TAGS_API_SETUP_RESPONSE_MESSAGE;
+  const responseError = new Error(message);
+  responseError.statusCode = typeof error?.statusCode === "number" ? error.statusCode : 503;
+  return responseError;
+}
+
+function errorForApiResponse(error, parts) {
+  if (isTagsRepositoryRequest(parts) && (error?.name === "TagsApiSetupError" || isDatabaseSetupError(error))) {
+    return safeTagsApiResponseError(error);
+  }
+  return error;
+}
+
 function repositoryMethodRequiresPersistence(methodName) {
   return !/^(get|list|open|read|validate)/.test(String(methodName || ""));
 }
@@ -3654,6 +3681,17 @@ function tagsTables(repository) {
   });
 }
 
+function cachedTagsForAssetRepository(repository) {
+  const tables = typeof repository?.getTables === "function" ? repository.getTables() : {};
+  return (tables.project_tags || [])
+    .filter((record) => record.active !== false)
+    .map((record) => ({
+      ...record,
+      id: record.slug || record.key,
+      name: record.label,
+    }));
+}
+
 function assetTables(repository) {
   return normalizeOwnedTables("asset", repository.getTables());
 }
@@ -4033,7 +4071,9 @@ class ApiRuntimeDataSource {
       gameWorkspaceRepository: this.gameWorkspaceRepository,
       paletteRepository: this.paletteRepository,
       projectAssetStorage: createConfiguredProjectAssetStorage(),
-      tagsRepository: this.tagsRepository,
+      tagsRepository: {
+        listTags: () => cachedTagsForAssetRepository(this.tagsRepository),
+      },
       ...this.sharedOptions,
       sessionUserKey: () => this.sessionUserKey,
     });
@@ -7388,9 +7428,10 @@ export function createLocalApiRouter({
       return false;
     }
 
+    let parts = [];
     try {
       applyApiCorsHeaders(response);
-      const parts = requestUrl.pathname.split("/").filter(Boolean);
+      parts = requestUrl.pathname.split("/").filter(Boolean);
       if (request.method === "OPTIONS") {
         sendNoContent(response);
         return true;
@@ -7797,7 +7838,8 @@ export function createLocalApiRouter({
       return true;
     } catch (error) {
       logSafeAuthOperatorDiagnostic(request, requestUrl, error);
-      fail(response, error?.statusCode || 500, error);
+      const responseError = errorForApiResponse(error, parts);
+      fail(response, responseError?.statusCode || error?.statusCode || 500, responseError);
       return true;
     }
   }
