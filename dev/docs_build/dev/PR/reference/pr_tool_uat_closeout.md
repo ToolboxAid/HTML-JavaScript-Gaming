@@ -23,9 +23,9 @@ Validate and close UAT for the four target tools:
 
 Use the latest UAT/fix artifacts already in the workspace:
 
-- `tmp/uat_failed_cases_rerun.json`
+- `dev/workspace/artifacts/tmp/uat_failed_cases_rerun.json`
 - `tmp/interactive_uat_report_4tools.json`
-- `dev/docs_build/dev/reports/PR_tool_uat_failure_fix_report.md`
+- `dev/reports/PR_tool_uat_failure_fix_report.md`
 - Any current tool smoke/UAT reports already produced
 
 Do not create new King of the Iceberg artifacts.
@@ -37,7 +37,7 @@ Do not create new King of the Iceberg artifacts.
 Create:
 
 ```txt
-dev/docs_build/dev/reports/PR_tool_uat_closeout_report.md
+dev/reports/PR_tool_uat_closeout_report.md
 ```
 
 The report must include:
@@ -110,7 +110,7 @@ If no JavaScript files change, `node --check` is not required.
 
 ## Acceptance Criteria
 
-- `dev/docs_build/dev/reports/PR_tool_uat_closeout_report.md` exists.
+- `dev/reports/PR_tool_uat_closeout_report.md` exists.
 - All four tools are marked PASS or remaining issues are explicitly documented.
 - No King of the Iceberg work is advanced.
 - No runtime game code is changed.

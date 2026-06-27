@@ -57,7 +57,7 @@ export function createMigrationGovernanceCloseoutSummary(scenarios) {
 }
 
 function readReport(reportName) {
-  const reportPath = fileURLToPath(new URL(`../../docs_build/dev/reports/${reportName}`, import.meta.url));
+  const reportPath = fileURLToPath(new URL(`../../reports/${reportName}`, import.meta.url));
   return readFileSync(reportPath, "utf8");
 }
 

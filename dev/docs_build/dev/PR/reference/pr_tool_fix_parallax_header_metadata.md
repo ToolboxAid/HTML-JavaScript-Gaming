@@ -189,7 +189,7 @@ Browser validation:
 Create:
 
 ```txt
-tmp/pr_tool_fix_parallax_header_metadata_validation.json
+dev/workspace/artifacts/tmp/pr_tool_fix_parallax_header_metadata_validation.json
 ```
 
 Include:
@@ -210,7 +210,7 @@ Include:
 Create:
 
 ```txt
-dev/docs_build/dev/reports/PR_tool_fix_parallax_header_metadata_report.md
+dev/reports/PR_tool_fix_parallax_header_metadata_report.md
 ```
 
 Include:

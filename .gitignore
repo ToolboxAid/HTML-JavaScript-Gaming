@@ -17,8 +17,10 @@ NEXT_COMMAND.txt
 node_modules/
 tests/results/
 tests/results/**
-tmp/test-results/
-tmp/test-results/**
+dev/workspace/artifacts/tmp/
+dev/workspace/artifacts/tmp/**
+dev/workspace/artifacts/tmp/test-results/
+dev/workspace/artifacts/tmp/test-results/**
 tmp/
 scripts/untracked/
 projects/
@@ -47,4 +49,4 @@ docs/dev/reports/playwright_v8_coverage_report.txt
 
 # Game Foundry Studio project files
 assets/*.gfsp
-docs_build/dev/ProjectInstructions.zip
+dev/docs_build/dev/ProjectInstructions.zip

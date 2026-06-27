@@ -16,7 +16,7 @@ This `dev/docs_build/dev/pr/BUILD_PR.md`, `dev/docs_build/dev/pr/PLAN_PR.md`, an
 - Remove stale one-off PR/restart files from `dev/docs_build/dev/` root.
 - Move PR-specific docs from `dev/docs_build/dev/` root into `dev/docs_build/dev/pr/`.
 - Move active governance/contract docs from `dev/docs_build/dev/` root into `dev/docs_build/dev/ProjectInstructions/addendums/`.
-- Move audit outputs from `dev/docs_build/dev/` root into `dev/docs_build/dev/reports/audits/`.
+- Move audit outputs from `dev/docs_build/dev/` root into `dev/reports/audits/`.
 - Delete stale one-off bundle metadata from `dev/docs_build/dev/` root.
 - Add Tool MVP Stacked PR Standard under `dev/docs_build/dev/ProjectInstructions/`.
 - Update PR planning/template and report requirements for tool MVP PRs.
@@ -28,7 +28,7 @@ This `dev/docs_build/dev/pr/BUILD_PR.md`, `dev/docs_build/dev/pr/PLAN_PR.md`, an
 - Keep `dev/project-instructions/` out of this PR except for a tiny deprecated pointer.
 - Update active team start/governance docs to reference only `dev/docs_build/dev/ProjectInstructions/`.
 - Add EOD main lock, next-day reset governance, and canonical START / WORK / END branch lifecycle rules.
-- Add required reports under `dev/docs_build/dev/reports/`.
+- Add required reports under `dev/reports/`.
 
 ## Exact Targets
 
@@ -43,7 +43,7 @@ This `dev/docs_build/dev/pr/BUILD_PR.md`, `dev/docs_build/dev/pr/PLAN_PR.md`, an
 - `dev/docs_build/dev/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md`
 - `dev/docs_build/dev/ProjectInstructions/addendums/no_mock_repository_runtime_source.md`
 - `dev/docs_build/dev/ProjectInstructions/addendums/preservation.md`
-- `dev/docs_build/dev/reports/audits/*.md`
+- `dev/reports/audits/*.md`
 - `dev/archive/docs_build/dev/dod/*.md`
 - `dev/archive/docs_build/dev/roadmaps/*.md`
 - `dev/project-instructions/README.md` (tiny deprecated pointer only)
@@ -80,10 +80,10 @@ This `dev/docs_build/dev/pr/BUILD_PR.md`, `dev/docs_build/dev/pr/PLAN_PR.md`, an
 - `dev/docs_build/dev/roadmaps/MIDI_STUDIO_V2_ROADMAP.md` (move to root archive)
 - `dev/docs_build/dev/roadmaps/phases.txt` (move to root archive)
 - `dev/docs_build/dev/roadmaps/README.md` (move to root archive)
-- `dev/docs_build/dev/reports/legacy-docs-archive-report.md`
-- `dev/docs_build/dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock*.md`
-- `dev/docs_build/dev/reports/codex_review.diff`
-- `dev/docs_build/dev/reports/codex_changed_files.txt`
+- `dev/reports/legacy-docs-archive-report.md`
+- `dev/reports/PR_26177_OWNER_007-project-instructions-single-source-eod-lock*.md`
+- `dev/reports/codex_review.diff`
+- `dev/reports/codex_changed_files.txt`
 
 ## Out Of Scope
 
@@ -111,14 +111,14 @@ Test-Path dev/docs_build/dev/validation_checklist.txt
 rg -n 'only active Project Instructions source|dev/docs_build/dev/ProjectInstructions/' dev/docs_build/dev/ProjectInstructions
 rg -n 'Tool MVP Stacked PR Standard|Creator-testable outcome|What can Mr\\. Q test after applying this ZIP|What Playwright tests|What Mr\\. Q should manually test|Previous PR dependency|Next PR dependency' dev/docs_build/dev/ProjectInstructions
 rg -n 'No Mock Repository Runtime Source|Browser → API → Database|Mock repositories are 100% technical debt|Game Configuration mock repository ready|Seeded demo data is fine only when it is stored in the database and read back through the API' dev/docs_build/dev/ProjectInstructions
-rg -n 'dev/archive/docs_build/dev/ProjectInstructions/history|dev/archive/docs_build/dev/dod|dev/archive/docs_build/dev/roadmaps' dev/docs_build/dev/ProjectInstructions dev/docs_build/dev/reports/legacy-docs-archive-report.md
+rg -n 'dev/archive/docs_build/dev/ProjectInstructions/history|dev/archive/docs_build/dev/dod|dev/archive/docs_build/dev/roadmaps' dev/docs_build/dev/ProjectInstructions dev/reports/legacy-docs-archive-report.md
 Test-Path dev/docs_build/dev/archive
 Test-Path dev/docs_build/dev/dod
 Test-Path dev/docs_build/dev/dod/tool_ui_readiness_dod.md
 Test-Path dev/docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md
 rg -n 'dev/docs_build/dev/PROJECT_INSTRUCTIONS.md.*source of truth|Codex must always read `dev/docs_build/dev/PROJECT_INSTRUCTIONS.md`|Read `dev/docs_build/dev/PROJECT_INSTRUCTIONS.md`' dev/docs_build/dev/ProjectInstructions project-instructions
 git diff --name-status $(git merge-base HEAD origin/main) -- project-instructions
-git diff --name-status $(git merge-base HEAD origin/main) -- dev/docs_build/dev/pr dev/docs_build/dev/ProjectInstructions/addendums dev/docs_build/dev/reports/audits
+git diff --name-status $(git merge-base HEAD origin/main) -- dev/docs_build/dev/pr dev/docs_build/dev/ProjectInstructions/addendums dev/reports/audits
 rg -n "Branch Lifecycle \\(Canonical\\)|Every PR follows exactly three phases|^START$|^WORK$|^END$|Mandatory Hard Stops|tomorrow's official baseline|No commits on main|Never checkout main|Only after ALL four pass" dev/docs_build/dev/ProjectInstructions
 git diff --name-only -- src assets toolbox games api serverside package.json package-lock.json dev/docs_build/dev/start_of_day
 git diff --check

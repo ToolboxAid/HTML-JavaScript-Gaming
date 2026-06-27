@@ -153,7 +153,7 @@ Run targeted browser validation:
 Create:
 
 ```txt
-tmp/pr_tool_remove_static_header_intro_validation.json
+dev/workspace/artifacts/tmp/pr_tool_remove_static_header_intro_validation.json
 ```
 
 It should include:
@@ -173,7 +173,7 @@ It should include:
 Create:
 
 ```txt
-dev/docs_build/dev/reports/PR_tool_remove_static_header_intro_report.md
+dev/reports/PR_tool_remove_static_header_intro_report.md
 ```
 
 Include:

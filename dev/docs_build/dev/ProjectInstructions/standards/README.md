@@ -5,6 +5,6 @@ This folder contains active contract, model, and platform standards that belong 
 Rules:
 
 - Standards here are active governance.
-- Generated validation evidence belongs under `dev/docs_build/dev/reports/`.
+- Generated validation evidence belongs under `dev/reports/`.
 - Historical reference material belongs under the root `dev/archive/` tree.
 - Reusable PR templates belong under `dev/docs_build/dev/PR/templates/`.

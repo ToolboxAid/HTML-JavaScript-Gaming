@@ -133,7 +133,7 @@ Remaining hits must be either:
 Create:
 
 ```txt
-dev/docs_build/dev/reports/PR_tool_remove_future_import_hints_report.md
+dev/reports/PR_tool_remove_future_import_hints_report.md
 ```
 
 Include:

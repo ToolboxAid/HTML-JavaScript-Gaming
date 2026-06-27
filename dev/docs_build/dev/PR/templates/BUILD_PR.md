@@ -34,11 +34,11 @@ git diff --check
 
 Create or update:
 
-- `dev/docs_build/dev/reports/codex_review.diff`
-- `dev/docs_build/dev/reports/codex_changed_files.txt`
-- PR-specific report under `dev/docs_build/dev/reports/`
+- `dev/reports/codex_review.diff`
+- `dev/reports/codex_changed_files.txt`
+- PR-specific report under `dev/reports/`
 - branch validation PASS/FAIL
 - requirement checklist PASS/FAIL
 - validation lane report
 - manual validation notes
-- repo-structured ZIP under `tmp/`
+- repo-structured ZIP under `dev/workspace/artifacts/tmp/`

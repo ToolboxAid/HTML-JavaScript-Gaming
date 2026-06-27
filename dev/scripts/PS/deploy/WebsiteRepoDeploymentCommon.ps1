@@ -87,7 +87,8 @@ function Get-DeployEnvironmentStatus {
     )
 
     $repoRoot = Get-DeployRepoRoot
-    $tmpRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot "tmp"))
+    $tmpRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot "dev\workspace\artifacts\tmp"))
+    New-Item -ItemType Directory -Path $tmpRoot -Force | Out-Null
     $dockerCommand = Get-Command docker -ErrorAction SilentlyContinue
 
     return [ordered]@{
@@ -112,11 +113,11 @@ function Assert-DeployEnvironmentReadiness {
     }
 
     if (-not $status.tmpRootExists) {
-        throw "Environment validation failed. Required tmp root not found: $($status.tmpRoot)"
+        throw "Environment validation failed. Required artifact tmp root not found: $($status.tmpRoot)"
     }
 
     if (-not (Test-PathWithinRoot -Path $status.stagingRoot -RootPath $status.tmpRoot)) {
-        throw "Environment validation failed. Staging root must remain under tmp root: $($status.stagingRoot)"
+        throw "Environment validation failed. Staging root must remain under artifact tmp root: $($status.stagingRoot)"
     }
 
     return $status
@@ -396,7 +397,7 @@ function Resolve-WebsiteStagingRoot {
     )
 
     if ([string]::IsNullOrWhiteSpace($StagingRoot)) {
-        return [System.IO.Path]::GetFullPath((Join-Path (Get-DeployRepoRoot) "tmp\website-deploy"))
+        return [System.IO.Path]::GetFullPath((Join-Path (Get-DeployRepoRoot) "dev\workspace\artifacts\tmp\website-deploy"))
     }
 
     return [System.IO.Path]::GetFullPath($StagingRoot)
@@ -620,9 +621,9 @@ function Test-StagingRootSafety {
     )
 
     $repoRoot = Get-DeployRepoRoot
-    $tmpRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot "tmp"))
+    $tmpRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot "dev\workspace\artifacts\tmp"))
     if (-not (Test-PathWithinRoot -Path $StagingRoot -RootPath $tmpRoot)) {
-        throw "Safety check failed. Staging root must remain under <repo>/tmp: $StagingRoot"
+        throw "Safety check failed. Staging root must remain under <repo>/dev/workspace/artifacts/tmp: $StagingRoot"
     }
 }
 

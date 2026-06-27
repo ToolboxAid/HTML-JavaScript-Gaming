@@ -186,7 +186,7 @@ Do not run long samples suite unless a changed file requires it.
 Create:
 
 ```txt
-dev/docs_build/dev/reports/PR_tool_uat_fix_header_asset_browser_report.md
+dev/reports/PR_tool_uat_fix_header_asset_browser_report.md
 ```
 
 Include:

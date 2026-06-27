@@ -29,11 +29,11 @@ This repository follows a docs-first game/runtime model, combining a stable engi
 ## ▶️ Start Here
 
 1. Review the repo model in [docs/README.md](docs/README.md)
-2. Explore the roadmap in [docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md](docs_build/dev/roadmaps/MASTER_ROADMAP_ENGINE.md)
-3. Browse archived reference samples from [archive/v1-v2/samples/index.html](archive/v1-v2/samples/index.html)
+2. Explore active development governance in [dev/docs_build/dev/ProjectInstructions/](dev/docs_build/dev/ProjectInstructions/)
+3. Browse archived reference samples from [dev/archive/v1-v2/samples/index.html](dev/archive/v1-v2/samples/index.html)
 4. Explore tools under [toolbox/](toolbox/)
 5. Review engine and architecture boundaries in [docs/architecture/](docs/architecture/)
-6. Follow the workflow in [docs_build/dev/](docs_build/dev/) and [docs_build/pr/](docs_build/pr/)
+6. Follow the workflow in [dev/docs_build/dev/](dev/docs_build/dev/) and [dev/docs_build/dev/PR/](dev/docs_build/dev/PR/)
 
 ---
 
@@ -105,7 +105,7 @@ PLAN_PR → BUILD_PR → APPLY_PR
 - One PR per purpose
 - Small, surgical changes
 - Docs-first implementation planning
-- Delta ZIP outputs stored under `<project folder>/tmp/`
+- Delta ZIP outputs stored under `<project folder>/dev/workspace/artifacts/tmp/`
 
 ---
 
@@ -113,10 +113,10 @@ PLAN_PR → BUILD_PR → APPLY_PR
 
 - [docs/README.md](docs/README.md) → top-level documentation index
 - [docs/architecture/](docs/architecture/) → durable architecture and boundary contracts
-- [docs_build/pr/](docs_build/pr/) → preserved PR history and architecture evolution
-- [docs_build/dev/](docs_build/dev/) → active workflow controls and implementation planning
-- [docs_build/dev/reports/](docs_build/dev/reports/) → active report artifacts
-- [docs_build/archive/](docs_build/archive/) → archived dev-ops notes and generated reports
+- [dev/docs_build/dev/PR/](dev/docs_build/dev/PR/) → preserved PR history and architecture evolution
+- [dev/docs_build/dev/](dev/docs_build/dev/) → active workflow controls and implementation planning
+- [dev/reports/](dev/reports/) → active report artifacts
+- [dev/archive/](dev/archive/) → archived dev-ops notes and generated reports
 
 ---
 
