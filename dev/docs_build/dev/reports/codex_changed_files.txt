@@ -1,4 +1,5 @@
-﻿R100	codex_playwright_system_chrome.config.cjs	dev/config/codex_playwright_system_chrome.config.cjs
+M	.github/workflows/platform-validation.yml
+ï»¿R100	codex_playwright_system_chrome.config.cjs	dev/config/codex_playwright_system_chrome.config.cjs
 A	dev/config/playwright.config.cjs
 M	dev/docs_build/dev/ProjectInstructions/addendums/workspace_v2_playwright_gate.md
 A	dev/docs_build/dev/reports/PR_26179_OWNER_006-move-bootstrap-scripts.md

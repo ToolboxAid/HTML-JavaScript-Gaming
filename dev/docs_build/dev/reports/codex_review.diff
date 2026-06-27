@@ -1,3 +1,87 @@
+diff --git a/.github/workflows/platform-validation.yml b/.github/workflows/platform-validation.yml
+index e618de60b..c08529826 100644
+--- a/.github/workflows/platform-validation.yml
++++ b/.github/workflows/platform-validation.yml
+@@ -20,4 +20,4 @@ jobs:
+           node-version: "20"
+
+       - name: Run Platform Validation Suite
+-        run: node ./scripts/run-platform-validation-suite.mjs
++        run: node ./dev/scripts/run-platform-validation-suite.mjs
+diff --git a/dev/docs_build/dev/reports/PR_26179_OWNER_006-move-bootstrap-scripts.md b/dev/docs_build/dev/reports/PR_26179_OWNER_006-move-bootstrap-scripts.md
+index 0a07f079c..a8174a6fd 100644
+--- a/dev/docs_build/dev/reports/PR_26179_OWNER_006-move-bootstrap-scripts.md
++++ b/dev/docs_build/dev/reports/PR_26179_OWNER_006-move-bootstrap-scripts.md
+@@ -14,6 +14,7 @@ Move local/test bootstrap scripts and dev-only runner scripts/config into the de
+ - Moved tracked root `scripts/` files to `dev/scripts/`.
+ - Moved root Playwright configs to `dev/config/`.
+ - Updated `package.json` scripts to call `dev/scripts/`.
++- Updated GitHub Actions platform validation to call `node ./dev/scripts/run-platform-validation-suite.mjs`.
+ - Updated moved script repo-root calculations, script self-references, PowerShell helper paths, and tests that import script modules.
+ - Kept application runtime/business logic out of `dev/`.
+
+@@ -45,6 +46,8 @@ Documentation/dev-runner/config only. No product UI, API, database, `src/`, `doc
+ | PASS | Playwright structure audit through moved runner | npm run test:audit:locations |
+ | PASS | Playwright moved config discovery | npx playwright test --config=dev/config/playwright.config.cjs --list |
+ | PASS | Canonical structure validation | npm run validate:canonical-structure |
++| PASS | GitHub Actions platform-validation path | Workflow now calls node ./dev/scripts/run-platform-validation-suite.mjs; targeted grep confirms no .github workflow still calls node ./scripts/run-platform-validation-suite.mjs. |
++| PASS | Platform validation suite | node ./dev/scripts/run-platform-validation-suite.mjs completed 8/8 scenarios. |
+ | PASS | Whitespace validation | git diff --check -- . |
+
+ ## Manual Validation Notes
+@@ -52,6 +55,7 @@ Documentation/dev-runner/config only. No product UI, API, database, `src/`, `doc
+ - No UI changes were made.
+ - Full browser Playwright execution was not run; PR_006 changed runner/config placement, so validation used structure audit and `--list` discovery with the moved config.
+ - `npm run dev:local-api` was not left running; the moved startup module was imported successfully and the package script points to the moved file.
++- PR #241 CI blocker was a workflow script path issue only; no runtime behavior or file moves were changed for this fix.
+
+ ## Changed Files
+
+diff --git a/dev/docs_build/dev/reports/PR_26179_OWNER_006-move-bootstrap-scripts_branch-validation.md b/dev/docs_build/dev/reports/PR_26179_OWNER_006-move-bootstrap-scripts_branch-validation.md
+index e30418103..d00f59e1a 100644
+--- a/dev/docs_build/dev/reports/PR_26179_OWNER_006-move-bootstrap-scripts_branch-validation.md
++++ b/dev/docs_build/dev/reports/PR_26179_OWNER_006-move-bootstrap-scripts_branch-validation.md
+@@ -6,5 +6,5 @@ Generated: 2026-06-27T19:11:00.890Z
+ | --- | --- | --- |
+ | Current branch is PR branch | PASS | PR_26179_OWNER_006-move-bootstrap-scripts |
+ | Branch is stacked on previous PR branch | PASS | Base branch: PR_26179_OWNER_005-move-tests-to-dev |
+-| Worktree contains only intended project changes before commit | PASS | Script/config move, package path updates, validation docs/tests, reports. |
++| Worktree contains only intended project changes before commit | PASS | Script/config move, package path updates, validation docs/tests, reports, and GitHub Actions moved-script path correction. |
+ | Product/runtime path hard stop avoided | PASS | No product/runtime directory was moved into dev/. |
+diff --git a/dev/docs_build/dev/reports/PR_26179_OWNER_006-move-bootstrap-scripts_manual-validation-notes.md b/dev/docs_build/dev/reports/PR_26179_OWNER_006-move-bootstrap-scripts_manual-validation-notes.md
+index acd139c6a..f82cff1cb 100644
+--- a/dev/docs_build/dev/reports/PR_26179_OWNER_006-move-bootstrap-scripts_manual-validation-notes.md
++++ b/dev/docs_build/dev/reports/PR_26179_OWNER_006-move-bootstrap-scripts_manual-validation-notes.md
+@@ -4,3 +4,5 @@
+ - No browser storage, API contract, database schema, or product behavior changed.
+ - Playwright browser execution was not run because this PR moves dev runner/config paths only; moved config discovery and structure audit passed.
+ - Local API startup was validated by importing the moved startup module and by checking `package.json` command routing.
++- GitHub Actions platform-validation path was corrected from `node ./scripts/run-platform-validation-suite.mjs` to `node ./dev/scripts/run-platform-validation-suite.mjs`.
++- Local platform validation completed 8/8 scenarios after the workflow path fix.
+diff --git a/dev/docs_build/dev/reports/PR_26179_OWNER_006-move-bootstrap-scripts_requirement-checklist.md b/dev/docs_build/dev/reports/PR_26179_OWNER_006-move-bootstrap-scripts_requirement-checklist.md
+index b69e7145f..8939747f1 100644
+--- a/dev/docs_build/dev/reports/PR_26179_OWNER_006-move-bootstrap-scripts_requirement-checklist.md
++++ b/dev/docs_build/dev/reports/PR_26179_OWNER_006-move-bootstrap-scripts_requirement-checklist.md
+@@ -5,6 +5,7 @@
+ | PASS | Move local/test bootstrap scripts and dev-only runner scripts/config into dev/bootstrap/, dev/scripts/, or dev/config/. | Moved tracked root scripts/ to dev/scripts/ and Playwright configs to dev/config/. |
+ | PASS | Keep application runtime/business logic out of dev/. | No src/, product UI, API contract, database, assets, docs/, games/, toolbox/, account/, admin/, or legal runtime files were moved into dev/. |
+ | PASS | Ensure npm run dev:local-api still works. | package.json now points dev:local-api at dev/scripts/start-local-api-server.mjs; syntax/import validation passed without launching a long-running server. |
++| PASS | GitHub Actions references moved script paths. | .github/workflows/platform-validation.yml now runs node ./dev/scripts/run-platform-validation-suite.mjs. |
+ | PASS | No Creator-writeable repo folder introduced. | This PR moves dev tooling only and adds no Creator data write path. |
+ | PASS | No runtime/business logic scope expansion. | Changes are limited to dev scripts/config, package script paths, validation tests/docs, and generated reports. |
+ | PASS | No broad unrelated cleanup. | No product/runtime implementation files were changed. |
+diff --git a/dev/docs_build/dev/reports/PR_26179_OWNER_006-move-bootstrap-scripts_validation-lane.md b/dev/docs_build/dev/reports/PR_26179_OWNER_006-move-bootstrap-scripts_validation-lane.md
+index 2592e1ef6..dd8d9f18b 100644
+--- a/dev/docs_build/dev/reports/PR_26179_OWNER_006-move-bootstrap-scripts_validation-lane.md
++++ b/dev/docs_build/dev/reports/PR_26179_OWNER_006-move-bootstrap-scripts_validation-lane.md
+@@ -11,4 +11,6 @@
+ | PASS | Playwright structure audit through moved runner | npm run test:audit:locations |
+ | PASS | Playwright moved config discovery | npx playwright test --config=dev/config/playwright.config.cjs --list |
+ | PASS | Canonical structure validation | npm run validate:canonical-structure |
++| PASS | GitHub Actions platform-validation path | Workflow now calls node ./dev/scripts/run-platform-validation-suite.mjs; targeted grep confirms no .github workflow still calls node ./scripts/run-platform-validation-suite.mjs. |
++| PASS | Platform validation suite | node ./dev/scripts/run-platform-validation-suite.mjs completed 8/8 scenarios. |
+ | PASS | Whitespace validation | git diff --check -- . |
+
 ﻿diff --git a/codex_playwright_system_chrome.config.cjs b/dev/config/codex_playwright_system_chrome.config.cjs
 similarity index 100%
 rename from codex_playwright_system_chrome.config.cjs
