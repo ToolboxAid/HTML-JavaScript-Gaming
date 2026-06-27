@@ -142,7 +142,7 @@ Do not invent a new runtime schema in this PR unless the existing tool requires 
 Create a short report under:
 
 ```txt
-dev/docs_build/dev/reports/PR_tool_layout_workflow_baseline_report.md
+dev/reports/PR_tool_layout_workflow_baseline_report.md
 ```
 
 The report must include:

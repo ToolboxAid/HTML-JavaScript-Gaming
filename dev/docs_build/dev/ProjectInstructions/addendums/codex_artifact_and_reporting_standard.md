@@ -26,7 +26,15 @@ No exceptions.
 Minimum ZIP contents:
 
 - changed or preserved repo files from the run, stored at repo-relative paths
-- required reports under `dev/docs_build/dev/reports/`
+- required reports under `dev/reports/`
+
+ZIP artifacts must be written under:
+
+```text
+dev/workspace/artifacts/tmp/
+```
+
+Reports must remain flat under `dev/reports/`. Use descriptive filenames that include the PR, team, runner, or lane context instead of nested team or runner report folders.
 
 Optional:
 
@@ -35,6 +43,8 @@ Optional:
 - findings.md
 - validation.txt
 - generated artifacts
+
+Generated non-report artifacts must live under `dev/workspace/artifacts/`.
 
 ## Completion Reporting
 

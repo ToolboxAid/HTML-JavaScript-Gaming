@@ -12,9 +12,9 @@ This PR is documentation/contract only. Do not implement gameplay.
 
 Use the validated artifacts from the prior workflow pass:
 
-- `tmp/uat_exports/king_of_the_iceberg_layout_snapshot.json`
-- `tmp/uat_tool_layout_workflow_results.json`
-- `dev/docs_build/dev/reports/PR_tool_layout_workflow_baseline_report.md`
+- `dev/workspace/artifacts/tmp/uat_exports/king_of_the_iceberg_layout_snapshot.json`
+- `dev/workspace/artifacts/tmp/uat_tool_layout_workflow_results.json`
+- `dev/reports/PR_tool_layout_workflow_baseline_report.md`
 
 ---
 

@@ -1,5 +1,5 @@
 param(
-  [string]$OutputPath = "dev/docs_build/dev/reports/dead_utils_audit.csv",
+  [string]$OutputPath = "dev/reports/dead_utils_audit.csv",
   [switch]$Details,
   [switch]$Ci
 )

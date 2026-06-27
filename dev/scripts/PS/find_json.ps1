@@ -1,9 +1,13 @@
 $project = "C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming"
+$artifactTmp = Join-Path $project "dev\workspace\artifacts\tmp"
+$outputPath = Join-Path $artifactTmp "asteroids-json-list.txt"
+
+New-Item -ItemType Directory -Path $artifactTmp -Force | Out-Null
 
 Get-ChildItem "$project\games\Asteroids" -Recurse -Filter *.json |
 Sort-Object FullName |
 ForEach-Object {
     $_.FullName.Replace("$project\", "")
-} | Set-Content "$project\tmp\asteroids-json-list.txt"
+} | Set-Content $outputPath
 
-Get-Content "$project\tmp\asteroids-json-list.txt"
+Get-Content $outputPath

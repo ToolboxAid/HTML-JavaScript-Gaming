@@ -83,7 +83,7 @@ function entry(name, contractFile, testFile, fixtureFile, specFile, reportFile) 
     testPath: `tests/shared/${testFile}`,
     fixturePath: `tests/fixtures/${fixtureFile}`,
     specPath: `dev/docs_build/dev/specs/${specFile}`,
-    reportPath: `dev/docs_build/dev/reports/${reportFile}`,
+    reportPath: `dev/reports/${reportFile}`,
   });
 }
 

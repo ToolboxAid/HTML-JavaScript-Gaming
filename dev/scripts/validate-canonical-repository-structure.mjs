@@ -223,7 +223,7 @@ function auditTestPath(filePath) {
       "Tests",
       filePath,
       "Generated test result artifacts must not be tracked under active dev/tests/results/.",
-      "ignored tmp/test-results/ or dev/docs_build/dev/reports/",
+      "ignored dev/workspace/artifacts/tmp/test-results/ or dev/reports/",
     );
   }
   if (APPROVED_LEGACY_TEST_SEGMENTS.has(segment)) {

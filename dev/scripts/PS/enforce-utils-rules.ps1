@@ -27,7 +27,7 @@ $ErrorActionPreference = "Stop"
 $RepoRoot = Resolve-Path (Join-Path $PSScriptRoot "..\..\..")
 $SharedUtilsRoot = Join-Path $RepoRoot "src\shared\utils"
 $EngineUtilsRoot = Join-Path $RepoRoot "src\engine\utils"
-$ReportDir = Join-Path $RepoRoot "dev\docs_build\dev\reports"
+$ReportDir = Join-Path $RepoRoot "dev\reports"
 $CsvPath = Join-Path $ReportDir "utils_rules_audit.csv"
 
 New-Item -ItemType Directory -Path $ReportDir -Force | Out-Null
@@ -72,7 +72,9 @@ foreach ($file in $EngineUtils) {
 $SourceFiles = @(Get-ChildItem -Path $RepoRoot -Recurse -File -Include *.js,*.mjs,*.html,*.json,*.md -ErrorAction SilentlyContinue | Where-Object {
     $_.FullName -notmatch '\\.git\\' -and
     $_.FullName -notmatch '\\node_modules\\' -and
+    $_.FullName -notmatch '\\dev\\workspace\\artifacts\\' -and
     $_.FullName -notmatch '\\tmp\\' -and
+    $_.FullName -notmatch '\\dev\\reports\\' -and
     $_.FullName -notmatch '\\docs\\dev\\reports\\'
 })
 
@@ -113,7 +115,7 @@ Write-Output "Utils rules audit complete."
 Write-Output "Shared utility files scanned: $($SharedUtils.Count)"
 Write-Output "Engine utility files found: $($EngineUtils.Count)"
 Write-Output "Findings: $($Findings.Count)"
-Write-Output "Report: dev/docs_build/dev/reports/utils_rules_audit.csv"
+Write-Output "Report: dev/reports/utils_rules_audit.csv"
 
 if ($Details -and $Findings.Count -gt 0) {
     Write-Output ""

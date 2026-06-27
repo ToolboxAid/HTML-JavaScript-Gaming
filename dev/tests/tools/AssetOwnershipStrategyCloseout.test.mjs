@@ -9,7 +9,7 @@ export async function run() {
     `Asset ownership strategy validation failed.\n${result.issues.join("\n")}`
   );
   assert.equal(
-    result.reportPath.endsWith("dev/docs_build/dev/reports/asset_ownership_strategy_validation.txt"),
+    result.reportPath.endsWith("dev/reports/asset_ownership_strategy_validation.txt"),
     true
   );
 }

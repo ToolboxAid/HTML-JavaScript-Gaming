@@ -11,7 +11,7 @@ Make `dev/docs_build/dev/ProjectInstructions/` the only active Project Instructi
 - Delete stale one-off PR/restart files from `dev/docs_build/dev/` root.
 - Move PR-specific docs from `dev/docs_build/dev/` root into `dev/docs_build/dev/pr/`.
 - Move active governance/contract docs from `dev/docs_build/dev/` root into `dev/docs_build/dev/ProjectInstructions/addendums/`.
-- Move audit outputs from `dev/docs_build/dev/` root into `dev/docs_build/dev/reports/audits/`.
+- Move audit outputs from `dev/docs_build/dev/` root into `dev/reports/audits/`.
 - Delete stale one-off bundle metadata from `dev/docs_build/dev/` root.
 - Add Tool MVP Stacked PR Standard under `dev/docs_build/dev/ProjectInstructions/`.
 - Update PR planning/template and report requirements for tool MVP PRs.
@@ -24,7 +24,7 @@ Make `dev/docs_build/dev/ProjectInstructions/` the only active Project Instructi
 - Move active legacy addendums into `dev/docs_build/dev/ProjectInstructions/addendums/`.
 - Update active team start and governance docs to reference only `dev/docs_build/dev/ProjectInstructions/`.
 - Add EOD main lock, next-day reset, team PR branch creation gate, and canonical START / WORK / END branch lifecycle rules.
-- Add required Codex reports under `dev/docs_build/dev/reports/`.
+- Add required Codex reports under `dev/reports/`.
 
 ## Out Of Scope
 
@@ -40,7 +40,7 @@ Make `dev/docs_build/dev/ProjectInstructions/` the only active Project Instructi
 3. Confirm `dev/project-instructions/**` has no PR changes except the tiny deprecated pointer.
 4. Confirm dev/docs_build/dev root no longer contains active loose instruction, audit, contract, or PR files.
 5. Confirm moved active governance/contract docs are under `dev/docs_build/dev/ProjectInstructions/addendums/`.
-6. Confirm moved audit outputs are under `dev/docs_build/dev/reports/audits/`.
+6. Confirm moved audit outputs are under `dev/reports/audits/`.
 7. Confirm Tool MVP Stacked PR Standard appears in active ProjectInstructions.
 8. Confirm tool MVP PR template/report requirements include Creator-testable outcome, Playwright tests, Mr. Q manual test, stack membership, and previous/next dependency.
 9. Confirm No Mock Repository Runtime Source governance appears in active ProjectInstructions.

@@ -13,7 +13,9 @@ This folder is the destination shell for non-deployable development workspace ma
 
 ## Governance Workspace
 
-- `dev/docs_build/` owns active development governance, PR workflow material, and generated reports.
+- `dev/docs_build/` owns active development governance and PR workflow material.
+- `dev/reports/` owns generated reports.
+- `dev/workspace/artifacts/` owns generated non-report artifacts and local temporary workspace output.
 - `dev/archive/` owns historical development reference material.
 - `dev/project-instructions/` is deprecated reference only; active Project Instructions live under `dev/docs_build/dev/ProjectInstructions/`.
 

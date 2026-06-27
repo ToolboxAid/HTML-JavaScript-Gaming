@@ -6,9 +6,9 @@ Define the minimal, explicit data contract for a King of the Iceberg (KOTI) base
 
 ## 2. Source Artifacts Used
 
-- `tmp/uat_exports/king_of_the_iceberg_layout_snapshot.json`
-- `tmp/uat_tool_layout_workflow_results.json`
-- `dev/docs_build/dev/reports/PR_tool_layout_workflow_baseline_report.md`
+- `dev/workspace/artifacts/tmp/uat_exports/king_of_the_iceberg_layout_snapshot.json`
+- `dev/workspace/artifacts/tmp/uat_tool_layout_workflow_results.json`
+- `dev/reports/PR_tool_layout_workflow_baseline_report.md`
 
 Observed baseline facts from these artifacts:
 
