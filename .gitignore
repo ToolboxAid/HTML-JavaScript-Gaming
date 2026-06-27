@@ -24,7 +24,8 @@ dev/workspace/artifacts/tmp/test-results/**
 dev/workspace/artifacts/zips/
 dev/workspace/artifacts/zips/**
 tmp/
-scripts/untracked/
+dev/scripts/untracked/
+dev/scripts/untracked/**
 projects/
 
 # Codex files

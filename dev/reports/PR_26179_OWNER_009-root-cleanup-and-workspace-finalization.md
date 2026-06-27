@@ -3,32 +3,30 @@
 Status: PASS
 Team: OWNER
 Branch: PR_26179_OWNER_009-root-cleanup-and-workspace-finalization
-Base HEAD at branch start: dc5d083757ac57d880aac6ea7981531892bbee70
-Report generated: 2026-06-27T21:46:55.174Z
+Current HEAD before this update: 6c92de7eff93b4f5f1b951b8b0886a357cab626c
+Report refreshed: 2026-06-27T22:05:28.695Z
 ZIP: dev/workspace/artifacts/zips/PR_26179_OWNER_009-root-cleanup-and-workspace-finalization_delta.zip
 
 ## Purpose
 
-Finalize the development workspace root cleanup after the restructure stack by moving the active build workspace to dev/build, removing stale root development artifacts, relocating reusable development scripts/templates, and confirming generated outputs now live under dev/reports and dev/workspace/artifacts.
+Finish the already-started root cleanup/workspace finalization PR.
 
 ## Scope Completed
 
-- Renamed tracked dev/docs_build content into dev/build.
-- Moved active Project Instructions from dev/docs_build/dev/ProjectInstructions to dev/build/ProjectInstructions.
-- Updated package scripts, validation scripts, runtime seed path references, tests, and governance references for the new dev/build path.
-- Removed ignored/untracked root projects and tmp folders; root projects contained no tracked files.
-- Moved tracked root developer scripts into dev/scripts.
-- Moved reusable HTML templates into dev/templates.
-- Moved tracked dupes_called.txt into dev/reports.
-- Regenerated required Owner reports under dev/reports.
+- Confirmed tracked dev/docs_build content is now under dev/build.
+- Confirmed active Project Instructions live at dev/build/ProjectInstructions.
+- Removed root projects and root tmp leftovers earlier in this PR; neither exists now.
+- Removed accidental generated ziproot folder from dev/workspace/artifacts/tmp.
+- Moved docker-compose.override.yml to deploy/docker-compose.override.yml.
+- Moved ignored local scripts/untracked scratch folder to dev/scripts/untracked.
+- Confirmed stale root codex report copies do not remain; active reports live under dev/reports.
+- Confirmed tracked dupes_called.txt is already under dev/reports.
+- Confirmed developer wrapper scripts are under dev/scripts.
+- Confirmed reusable templates are under dev/templates.
+- Updated references for moved build, template, Docker override, and script scratch locations.
 
 ## Notes
 
-- Production pages were not moved.
+- No production page directories were moved.
 - Runtime/business logic was not moved into dev.
-- Creator project data is documented as API/Postgres metadata plus R2 assets, not root projects.
-- Archive/admin-notes docs_build references remain legacy archive references.
-
-## Changed File Count
-
-2083
+- dev/scripts/untracked remains ignored developer-local scratch.

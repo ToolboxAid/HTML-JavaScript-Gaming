@@ -40,7 +40,7 @@ Reported, not removed:
 
 ## Scripts Audit
 
-No scripts were deleted. The tracked scripts under `scripts/` are either wired through `package.json`, validation workflows, deployment helpers, or ambiguous historical utilities. Untracked personal files under `scripts/untracked/` were not modified.
+No scripts were deleted. The tracked scripts under `dev/scripts/` are either wired through `package.json`, validation workflows, deployment helpers, or ambiguous historical utilities. Untracked personal files under `dev/scripts/untracked/` were not modified.
 
 ## Active Vs Legacy Inventory
 
