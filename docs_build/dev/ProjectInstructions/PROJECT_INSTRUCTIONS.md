@@ -18,6 +18,7 @@ The Project Instructions operating system provides additive governance for:
 - team assignments
 - multi-team branch and scope rules
 - documentation ownership
+- repository directory ownership
 - Build Path status synchronization
 - tile overlay status behavior
 - deprecation workflow
@@ -64,6 +65,7 @@ When active guidance overlaps, use these canonical owner documents:
 
 - Workflow and Product Owner testable completion: `docs_build/dev/ProjectInstructions/addendums/pr_workflow.md`
 - START / WORK / END lifecycle, branch gates, mandatory hard stops, and EOD main lock: `docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`
+- Repository directory ownership and restructure boundaries: `docs_build/dev/ProjectInstructions/addendums/repository_directory_standard.md`
 - Page-level Playwright organization and completion coverage: `docs_build/dev/ProjectInstructions/addendums/test_structure_standardization.md`
 - API/environment model and `Browser -> API -> Database` rule: `docs_build/dev/ProjectInstructions/addendums/environment_governance_model.md`
 - Environment variable, URL, R2 prefix, and feature flag configuration: `docs_build/dev/ProjectInstructions/addendums/environment_configuration_standards.md`
