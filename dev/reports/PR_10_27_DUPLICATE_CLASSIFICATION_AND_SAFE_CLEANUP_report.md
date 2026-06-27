@@ -41,7 +41,7 @@ PASS
 | 971437553d34 | `docs/design/gdd/Capcom/Final Fight/gdd.txt` | Potential intentional/doc-specific duplication or unclear ownership |
 | df859606f030 | `toolbox/palette-browser/tool.schema.json` | Potential intentional/doc-specific duplication or unclear ownership |
 | f01a374e9c81 | `games/Pacman/assets/.gitkeep` | Potential intentional/doc-specific duplication or unclear ownership |
-| e3b0c44298fc | `docs/design/gdd/Nameco/Galaga/gdd.txt` | Potential intentional/doc-specific duplication or unclear ownership |
+| e3b0c44298fc | `docs/design/gdd/Namco/Galaga/gdd.txt` | Potential intentional/doc-specific duplication or unclear ownership |
 
 ## Group-by-Group Classification
 | Hash (short) | Count | Classification | Action | Cleanup Risk | Representative File |
@@ -86,7 +86,7 @@ PASS
 | f01a374e9c81 | 24 | ambiguous-no-action | kept-no-action | high | `games/Pacman/assets/.gitkeep` |
 | 1a6ff34ec366 | 2 | sample-variant-intentional | kept-no-action | high | `samples/phase-15/1505/assets/images/hero.png` |
 | 29dc1886e7c3 | 2 | generated-validation | kept-no-action | low | `docs_build/dev/reports/tool_select_population_validation.md` |
-| e3b0c44298fc | 4 | ambiguous-no-action | kept-no-action | high | `docs/design/gdd/Nameco/Galaga/gdd.txt` |
+| e3b0c44298fc | 4 | ambiguous-no-action | kept-no-action | high | `docs/design/gdd/Namco/Galaga/gdd.txt` |
 
 ## Validation
 - Confirmed runtime/tool/test code does not reference demoted evidence paths.

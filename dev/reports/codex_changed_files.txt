@@ -269,12 +269,12 @@ R100	dev/docs_build/design/gdd/Capcom/Final Fight/gdd.txt	dev/build/design/gdd/C
 R100	dev/docs_build/design/gdd/Capcom/Ghosts 'n Goblins/gdd.txt	dev/build/design/gdd/Capcom/Ghosts 'n Goblins/gdd.txt
 R100	dev/docs_build/design/gdd/Capcom/Marvel_vs_Capcom/gdd.txt	dev/build/design/gdd/Capcom/Marvel_vs_Capcom/gdd.txt
 R100	dev/docs_build/design/gdd/Capcom/capcom.txt	dev/build/design/gdd/Capcom/capcom.txt
-R100	dev/docs_build/design/gdd/Konani/Contra/gdd.tt	dev/build/design/gdd/Konani/Contra/gdd.tt
-R100	dev/docs_build/design/gdd/Konani/Frogger/gdd.txt	dev/build/design/gdd/Konani/Frogger/gdd.txt
-R100	dev/docs_build/design/gdd/Konani/Gradius/gdd.txt	dev/build/design/gdd/Konani/Gradius/gdd.txt
-R100	dev/docs_build/design/gdd/Konani/Konani.txt	dev/build/design/gdd/Konani/Konani.txt
-R100	dev/docs_build/design/gdd/Konani/The Simpsons Game/gdd.txt	dev/build/design/gdd/Konani/The Simpsons Game/gdd.txt
-R100	dev/docs_build/design/gdd/Konani/Track_&_Field/gdd.txt	dev/build/design/gdd/Konani/Track_&_Field/gdd.txt
+R100	dev/docs_build/design/gdd/Konani/Contra/gdd.tt	dev/build/design/gdd/Konami/Contra/gdd.txt
+R100	dev/docs_build/design/gdd/Konani/Frogger/gdd.txt	dev/build/design/gdd/Konami/Frogger/gdd.txt
+R100	dev/docs_build/design/gdd/Konani/Gradius/gdd.txt	dev/build/design/gdd/Konami/Gradius/gdd.txt
+R100	dev/docs_build/design/gdd/Konani/Konani.txt	dev/build/design/gdd/Konami/Konami.txt
+R100	dev/docs_build/design/gdd/Konani/The Simpsons Game/gdd.txt	dev/build/design/gdd/Konami/The Simpsons Game/gdd.txt
+R100	dev/docs_build/design/gdd/Konani/Track_&_Field/gdd.txt	dev/build/design/gdd/Konami/Track_&_Field/gdd.txt
 R100	dev/docs_build/design/gdd/Midway/Cruis'n USA/gdd.txt	dev/build/design/gdd/Midway/Cruis'n USA/gdd.txt
 R100	dev/docs_build/design/gdd/Midway/Defender/gdd.txt	dev/build/design/gdd/Midway/Defender/gdd.txt
 R100	dev/docs_build/design/gdd/Midway/Joust/gdd.txt	dev/build/design/gdd/Midway/Joust/gdd.txt
@@ -282,14 +282,14 @@ R100	dev/docs_build/design/gdd/Midway/Midway.txt	dev/build/design/gdd/Midway/Mid
 R100	dev/docs_build/design/gdd/Midway/NBA Jam/gdd.txt	dev/build/design/gdd/Midway/NBA Jam/gdd.txt
 R100	dev/docs_build/design/gdd/Midway/Robotron/gdd.txt	dev/build/design/gdd/Midway/Robotron/gdd.txt
 R100	dev/docs_build/design/gdd/Midway/Spy Hunter/gdd.txt	dev/build/design/gdd/Midway/Spy Hunter/gdd.txt
-R100	dev/docs_build/design/gdd/Nameco/Dig Dug/gdd.txt	dev/build/design/gdd/Nameco/Dig Dug/gdd.txt
-R100	dev/docs_build/design/gdd/Nameco/Galaga/gdd.txt	dev/build/design/gdd/Nameco/Galaga/gdd.txt
-R100	dev/docs_build/design/gdd/Nameco/Ms. Pac-Man/gdd.txt	dev/build/design/gdd/Nameco/Ms. Pac-Man/gdd.txt
-R100	dev/docs_build/design/gdd/Nameco/Nameco.txt	dev/build/design/gdd/Nameco/Nameco.txt
-R100	dev/docs_build/design/gdd/Nameco/Pac-Man/gdd.txt	dev/build/design/gdd/Nameco/Pac-Man/gdd.txt
-R100	dev/docs_build/design/gdd/Nameco/Pole Position/gdd.txt	dev/build/design/gdd/Nameco/Pole Position/gdd.txt
-R100	dev/docs_build/design/gdd/Nameco/Ridge Racer/gdd.txt	dev/build/design/gdd/Nameco/Ridge Racer/gdd.txt
-R100	dev/docs_build/design/gdd/Nameco/Time Crisis/gdd.txt	dev/build/design/gdd/Nameco/Time Crisis/gdd.txt
+R100	dev/docs_build/design/gdd/Nameco/Dig Dug/gdd.txt	dev/build/design/gdd/Namco/Dig Dug/gdd.txt
+R100	dev/docs_build/design/gdd/Nameco/Galaga/gdd.txt	dev/build/design/gdd/Namco/Galaga/gdd.txt
+R100	dev/docs_build/design/gdd/Nameco/Ms. Pac-Man/gdd.txt	dev/build/design/gdd/Namco/Ms. Pac-Man/gdd.txt
+R100	dev/docs_build/design/gdd/Nameco/Nameco.txt	dev/build/design/gdd/Namco/Namco.txt
+R100	dev/docs_build/design/gdd/Nameco/Pac-Man/gdd.txt	dev/build/design/gdd/Namco/Pac-Man/gdd.txt
+R100	dev/docs_build/design/gdd/Nameco/Pole Position/gdd.txt	dev/build/design/gdd/Namco/Pole Position/gdd.txt
+R100	dev/docs_build/design/gdd/Nameco/Ridge Racer/gdd.txt	dev/build/design/gdd/Namco/Ridge Racer/gdd.txt
+R100	dev/docs_build/design/gdd/Nameco/Time Crisis/gdd.txt	dev/build/design/gdd/Namco/Time Crisis/gdd.txt
 R100	dev/docs_build/design/gdd/Nintendo/Donkey Kong/gdd.txt	dev/build/design/gdd/Nintendo/Donkey Kong/gdd.txt
 R100	dev/docs_build/design/gdd/Nintendo/Killer Instinct/gdd.txt	dev/build/design/gdd/Nintendo/Killer Instinct/gdd.txt
 R100	dev/docs_build/design/gdd/Nintendo/Mario Bros/gdd.txt	dev/build/design/gdd/Nintendo/Mario Bros/gdd.txt
@@ -298,7 +298,7 @@ R100	dev/docs_build/design/gdd/Nintendo/Popeye/gdd.txt	dev/build/design/gdd/Nint
 R100	dev/docs_build/design/gdd/Nintendo/Punch-Out!/gdd.txt	dev/build/design/gdd/Nintendo/Punch-Out!/gdd.txt
 R100	dev/docs_build/design/gdd/Sega/After Burner/gdd.txt	dev/build/design/gdd/Sega/After Burner/gdd.txt
 R100	dev/docs_build/design/gdd/Sega/Altered Beast/gdd.txt	dev/build/design/gdd/Sega/Altered Beast/gdd.txt
-R100	dev/docs_build/design/gdd/Sega/Daytona USA/gdg.txt	dev/build/design/gdd/Sega/Daytona USA/gdg.txt
+R100	dev/docs_build/design/gdd/Sega/Daytona USA/gdg.txt	dev/build/design/gdd/Sega/Daytona USA/gdd.txt
 R100	dev/docs_build/design/gdd/Sega/Golden Axe/gdd.txt	dev/build/design/gdd/Sega/Golden Axe/gdd.txt
 R100	dev/docs_build/design/gdd/Sega/Hang-On/gdd.txt	dev/build/design/gdd/Sega/Hang-On/gdd.txt
 R100	dev/docs_build/design/gdd/Sega/Out Run/gdd.txt	dev/build/design/gdd/Sega/Out Run/gdd.txt
@@ -1670,6 +1670,10 @@ R097	dev/docs_build/dev/PR/reference/pr_tool_uat_closeout.md	dev/build/pr/refere
 R097	dev/docs_build/dev/PR/reference/pr_tool_uat_fix_fullscreen_header_wiring.md	dev/build/pr/reference/pr_tool_uat_fix_fullscreen_header_wiring.md
 R100	dev/docs_build/dev/PR/reference/pr_tool_uat_fix_header_asset_browser.md	dev/build/pr/reference/pr_tool_uat_fix_header_asset_browser.md
 R100	dev/docs_build/dev/PR/reference/pr_tool_uat_fixes.md	dev/build/pr/reference/pr_tool_uat_fixes.md
+R100	dev/docs_build/schemas/docs/pr/PR_11_17_SCHEMA_SET_NORMALIZATION_AND_WORKSPACE_REF_ENFORCEMENT/BUILD.md	dev/build/pr/reference/schemas/PR_11_17_SCHEMA_SET_NORMALIZATION_AND_WORKSPACE_REF_ENFORCEMENT/BUILD.md
+R100	dev/docs_build/schemas/docs/pr/PR_11_17_SCHEMA_SET_NORMALIZATION_AND_WORKSPACE_REF_ENFORCEMENT/PLAN.md	dev/build/pr/reference/schemas/PR_11_17_SCHEMA_SET_NORMALIZATION_AND_WORKSPACE_REF_ENFORCEMENT/PLAN.md
+R100	dev/docs_build/schemas/docs/dev/codex_commands.md	dev/build/pr/reference/schemas/PR_11_17_SCHEMA_SET_NORMALIZATION_AND_WORKSPACE_REF_ENFORCEMENT/codex_commands.md
+R100	dev/docs_build/schemas/docs/dev/commit_comment.txt	dev/build/pr/reference/schemas/PR_11_17_SCHEMA_SET_NORMALIZATION_AND_WORKSPACE_REF_ENFORCEMENT/commit_comment.txt
 R100	dev/docs_build/pr/remaining_work_checklist.md	dev/build/pr/remaining_work_checklist.md
 R100	dev/docs_build/pr/sample_compliance_checklist.md	dev/build/pr/sample_compliance_checklist.md
 R100	dev/docs_build/pr/sample_file_naming_rules.md	dev/build/pr/sample_file_naming_rules.md
@@ -1867,9 +1871,9 @@ R100	dev/docs_build/reports/contract_map.txt	dev/build/reports/contract_map.txt
 R100	dev/docs_build/reports/debug_inspector_tools_targets.txt	dev/build/reports/debug_inspector_tools_targets.txt
 R100	dev/docs_build/reports/dependency_cleanup_map.txt	dev/build/reports/dependency_cleanup_map.txt
 R100	dev/docs_build/reports/docs_bucket_rules.md	dev/build/reports/docs_bucket_rules.md
-R100	dev/docs_build/reports/docs_classification_matrix.md	dev/build/reports/docs_classification_matrix.md
-R100	dev/docs_build/reports/docs_inventory_tree.txt	dev/build/reports/docs_inventory_tree.txt
-R100	dev/docs_build/reports/docs_move_map_proposed.md	dev/build/reports/docs_move_map_proposed.md
+R099	dev/docs_build/reports/docs_classification_matrix.md	dev/build/reports/docs_classification_matrix.md
+R099	dev/docs_build/reports/docs_inventory_tree.txt	dev/build/reports/docs_inventory_tree.txt
+R099	dev/docs_build/reports/docs_move_map_proposed.md	dev/build/reports/docs_move_map_proposed.md
 R100	dev/docs_build/reports/duplication_candidates.txt	dev/build/reports/duplication_candidates.txt
 R100	dev/docs_build/reports/engine_import_baseline_report.md	dev/build/reports/engine_import_baseline_report.md
 R100	dev/docs_build/reports/engine_import_contract_decision.md	dev/build/reports/engine_import_contract_decision.md
@@ -1941,54 +1945,7 @@ R100	dev/docs_build/reports/validation_checklist.txt	dev/build/reports/validatio
 R100	dev/docs_build/reports/validation_report.txt	dev/build/reports/validation_report.txt
 R100	dev/docs_build/reports/validation_results.txt	dev/build/reports/validation_results.txt
 R100	dev/docs_build/reports/violation_inventory.txt	dev/build/reports/violation_inventory.txt
-R100	dev/docs_build/schemas/docs/dev/codex_commands.md	dev/build/schemas/docs/dev/codex_commands.md
-R100	dev/docs_build/schemas/docs/dev/commit_comment.txt	dev/build/schemas/docs/dev/commit_comment.txt
-R100	dev/docs_build/schemas/docs/pr/PR_11_17_SCHEMA_SET_NORMALIZATION_AND_WORKSPACE_REF_ENFORCEMENT/BUILD.md	dev/build/schemas/docs/pr/PR_11_17_SCHEMA_SET_NORMALIZATION_AND_WORKSPACE_REF_ENFORCEMENT/BUILD.md
-R100	dev/docs_build/schemas/docs/pr/PR_11_17_SCHEMA_SET_NORMALIZATION_AND_WORKSPACE_REF_ENFORCEMENT/PLAN.md	dev/build/schemas/docs/pr/PR_11_17_SCHEMA_SET_NORMALIZATION_AND_WORKSPACE_REF_ENFORCEMENT/PLAN.md
 R100	dev/docs_build/security/js-injection-policy.md	dev/build/security/js-injection-policy.md
-R100	dev/docs_build/tools-images-generated/achievements.txt	dev/build/tools-images-generated/achievements.txt
-R100	dev/docs_build/tools-images-generated/ai-assistant.txt	dev/build/tools-images-generated/ai-assistant.txt
-R100	dev/docs_build/tools-images-generated/animations.txt	dev/build/tools-images-generated/animations.txt
-R100	dev/docs_build/tools-images-generated/assets.txt	dev/build/tools-images-generated/assets.txt
-R100	dev/docs_build/tools-images-generated/audio-effects.txt	dev/build/tools-images-generated/audio-effects.txt
-R100	dev/docs_build/tools-images-generated/audio.txt	dev/build/tools-images-generated/audio.txt
-R100	dev/docs_build/tools-images-generated/build-game.txt	dev/build/tools-images-generated/build-game.txt
-R100	dev/docs_build/tools-images-generated/characters.txt	dev/build/tools-images-generated/characters.txt
-R100	dev/docs_build/tools-images-generated/cloud.txt	dev/build/tools-images-generated/cloud.txt
-R100	dev/docs_build/tools-images-generated/code.txt	dev/build/tools-images-generated/code.txt
-R100	dev/docs_build/tools-images-generated/colors.txt	dev/build/tools-images-generated/colors.txt
-R100	dev/docs_build/tools-images-generated/community.txt	dev/build/tools-images-generated/community.txt
-R100	dev/docs_build/tools-images-generated/controls.txt	dev/build/tools-images-generated/controls.txt
-R100	dev/docs_build/tools-images-generated/debug.txt	dev/build/tools-images-generated/debug.txt
-R100	dev/docs_build/tools-images-generated/environments.txt	dev/build/tools-images-generated/environments.txt
-R100	dev/docs_build/tools-images-generated/events.txt	dev/build/tools-images-generated/events.txt
-R100	dev/docs_build/tools-images-generated/fonts.txt	dev/build/tools-images-generated/fonts.txt
-R100	dev/docs_build/tools-images-generated/game-configuration.txt	dev/build/tools-images-generated/game-configuration.txt
-R100	dev/docs_build/tools-images-generated/game-design.txt	dev/build/tools-images-generated/game-design.txt
-R100	dev/docs_build/tools-images-generated/game-migration.txt	dev/build/tools-images-generated/game-migration.txt
-R100	dev/docs_build/tools-images-generated/game-testing.txt	dev/build/tools-images-generated/game-testing.txt
-R100	dev/docs_build/tools-images-generated/hitboxes.txt	dev/build/tools-images-generated/hitboxes.txt
-R100	dev/docs_build/tools-images-generated/languages.txt	dev/build/tools-images-generated/languages.txt
-R100	dev/docs_build/tools-images-generated/learn.txt	dev/build/tools-images-generated/learn.txt
-R100	dev/docs_build/tools-images-generated/marketplace.txt	dev/build/tools-images-generated/marketplace.txt
-R100	dev/docs_build/tools-images-generated/midi.txt	dev/build/tools-images-generated/midi.txt
-R100	dev/docs_build/tools-images-generated/music.txt	dev/build/tools-images-generated/music.txt
-R100	dev/docs_build/tools-images-generated/objects.txt	dev/build/tools-images-generated/objects.txt
-R100	dev/docs_build/tools-images-generated/particles.txt	dev/build/tools-images-generated/particles.txt
-R100	dev/docs_build/tools-images-generated/performance.txt	dev/build/tools-images-generated/performance.txt
-R100	dev/docs_build/tools-images-generated/platform-settings.txt	dev/build/tools-images-generated/platform-settings.txt
-R100	dev/docs_build/tools-images-generated/project-workspace.txt	dev/build/tools-images-generated/project-workspace.txt
-R100	dev/docs_build/tools-images-generated/publish.txt	dev/build/tools-images-generated/publish.txt
-R100	dev/docs_build/tools-images-generated/ratings.txt	dev/build/tools-images-generated/ratings.txt
-R100	dev/docs_build/tools-images-generated/saved-data.txt	dev/build/tools-images-generated/saved-data.txt
-R100	dev/docs_build/tools-images-generated/speech-to-text.txt	dev/build/tools-images-generated/speech-to-text.txt
-R100	dev/docs_build/tools-images-generated/sprites.txt	dev/build/tools-images-generated/sprites.txt
-R100	dev/docs_build/tools-images-generated/tags.txt	dev/build/tools-images-generated/tags.txt
-R100	dev/docs_build/tools-images-generated/text-to-speech.txt	dev/build/tools-images-generated/text-to-speech.txt
-R100	dev/docs_build/tools-images-generated/users.txt	dev/build/tools-images-generated/users.txt
-R100	dev/docs_build/tools-images-generated/videos.txt	dev/build/tools-images-generated/videos.txt
-R100	dev/docs_build/tools-images-generated/voices.txt	dev/build/tools-images-generated/voices.txt
-R100	dev/docs_build/tools-images-generated/worlds.txt	dev/build/tools-images-generated/worlds.txt
 R100	dev/docs_build/tools/3d-asset-viewer/uat.md	dev/build/tools/3d-asset-viewer/uat.md
 R100	dev/docs_build/tools/3d-camera-path-editor/uat.md	dev/build/tools/3d-camera-path-editor/uat.md
 R100	dev/docs_build/tools/3d-json-payload-normalizer/uat.md	dev/build/tools/3d-json-payload-normalizer/uat.md
@@ -2039,6 +1996,7 @@ D	dev/docs_build/dev/start_of_day/codex/USAGE_REMINDER.md
 D	dev/docs_build/dev/start_of_day/codex/codex_commands.md
 D	dev/docs_build/dev/toolbox/runSharedExtractionGuard.sh
 D	dev/project-instructions/README.md
+M	dev/reports/PR_10_27_DUPLICATE_CLASSIFICATION_AND_SAFE_CLEANUP_report.md
 M	dev/reports/PR_26163_056-account-aside-template-toggle-alignment.md
 M	dev/reports/PR_26179_OWNER_004-move-governance-workspace.md
 M	dev/reports/PR_26179_OWNER_004-move-governance-workspace_requirement-checklist.md
@@ -2068,6 +2026,7 @@ M	dev/reports/legacy_surface_elimination_report.md
 M	dev/reports/old_tool_test_retirement_report.txt
 M	dev/reports/planned-tool-shells.md
 M	dev/reports/remaining_mismatches_report.md
+M	dev/reports/repo_duplicate_file_content_audit.json
 M	dev/reports/root_asset_reference_cleanup_report.md
 M	dev/reports/stack-toolbox-wireframes.md
 M	dev/reports/svg_favicon_normalization_report.md
@@ -2174,7 +2133,51 @@ R091	dev/docs_build/dev/toolbox/presets/debugPresetRegistry.js	dev/tools/toolbox
 R097	dev/docs_build/dev/toolbox/presets/registerPresetCommands.js	dev/tools/toolbox-dev/presets/registerPresetCommands.js
 R100	dev/docs_build/dev/toolbox/presets/registerStandardDebugPresets.js	dev/tools/toolbox-dev/presets/registerStandardDebugPresets.js
 A	dev/tools/toolbox-dev/runSharedExtractionGuard.sh
+A	dev/workspace/README.md
 D	dev/workspace/artifacts/README.md
+R100	dev/docs_build/tools-images-generated/achievements.txt	dev/workspace/generated/tool-images/achievements.txt
+R100	dev/docs_build/tools-images-generated/ai-assistant.txt	dev/workspace/generated/tool-images/ai-assistant.txt
+R100	dev/docs_build/tools-images-generated/animations.txt	dev/workspace/generated/tool-images/animations.txt
+R100	dev/docs_build/tools-images-generated/assets.txt	dev/workspace/generated/tool-images/assets.txt
+R100	dev/docs_build/tools-images-generated/audio-effects.txt	dev/workspace/generated/tool-images/audio-effects.txt
+R100	dev/docs_build/tools-images-generated/audio.txt	dev/workspace/generated/tool-images/audio.txt
+R100	dev/docs_build/tools-images-generated/build-game.txt	dev/workspace/generated/tool-images/build-game.txt
+R100	dev/docs_build/tools-images-generated/characters.txt	dev/workspace/generated/tool-images/characters.txt
+R100	dev/docs_build/tools-images-generated/cloud.txt	dev/workspace/generated/tool-images/cloud.txt
+R100	dev/docs_build/tools-images-generated/code.txt	dev/workspace/generated/tool-images/code.txt
+R100	dev/docs_build/tools-images-generated/colors.txt	dev/workspace/generated/tool-images/colors.txt
+R100	dev/docs_build/tools-images-generated/community.txt	dev/workspace/generated/tool-images/community.txt
+R100	dev/docs_build/tools-images-generated/controls.txt	dev/workspace/generated/tool-images/controls.txt
+R100	dev/docs_build/tools-images-generated/debug.txt	dev/workspace/generated/tool-images/debug.txt
+R100	dev/docs_build/tools-images-generated/environments.txt	dev/workspace/generated/tool-images/environments.txt
+R100	dev/docs_build/tools-images-generated/events.txt	dev/workspace/generated/tool-images/events.txt
+R100	dev/docs_build/tools-images-generated/fonts.txt	dev/workspace/generated/tool-images/fonts.txt
+R100	dev/docs_build/tools-images-generated/game-configuration.txt	dev/workspace/generated/tool-images/game-configuration.txt
+R100	dev/docs_build/tools-images-generated/game-design.txt	dev/workspace/generated/tool-images/game-design.txt
+R100	dev/docs_build/tools-images-generated/game-migration.txt	dev/workspace/generated/tool-images/game-migration.txt
+R100	dev/docs_build/tools-images-generated/game-testing.txt	dev/workspace/generated/tool-images/game-testing.txt
+R100	dev/docs_build/tools-images-generated/hitboxes.txt	dev/workspace/generated/tool-images/hitboxes.txt
+R100	dev/docs_build/tools-images-generated/languages.txt	dev/workspace/generated/tool-images/languages.txt
+R100	dev/docs_build/tools-images-generated/learn.txt	dev/workspace/generated/tool-images/learn.txt
+R100	dev/docs_build/tools-images-generated/marketplace.txt	dev/workspace/generated/tool-images/marketplace.txt
+R100	dev/docs_build/tools-images-generated/midi.txt	dev/workspace/generated/tool-images/midi.txt
+R100	dev/docs_build/tools-images-generated/music.txt	dev/workspace/generated/tool-images/music.txt
+R100	dev/docs_build/tools-images-generated/objects.txt	dev/workspace/generated/tool-images/objects.txt
+R100	dev/docs_build/tools-images-generated/particles.txt	dev/workspace/generated/tool-images/particles.txt
+R100	dev/docs_build/tools-images-generated/performance.txt	dev/workspace/generated/tool-images/performance.txt
+R100	dev/docs_build/tools-images-generated/platform-settings.txt	dev/workspace/generated/tool-images/platform-settings.txt
+R100	dev/docs_build/tools-images-generated/project-workspace.txt	dev/workspace/generated/tool-images/project-workspace.txt
+R100	dev/docs_build/tools-images-generated/publish.txt	dev/workspace/generated/tool-images/publish.txt
+R100	dev/docs_build/tools-images-generated/ratings.txt	dev/workspace/generated/tool-images/ratings.txt
+R100	dev/docs_build/tools-images-generated/saved-data.txt	dev/workspace/generated/tool-images/saved-data.txt
+R100	dev/docs_build/tools-images-generated/speech-to-text.txt	dev/workspace/generated/tool-images/speech-to-text.txt
+R100	dev/docs_build/tools-images-generated/sprites.txt	dev/workspace/generated/tool-images/sprites.txt
+R100	dev/docs_build/tools-images-generated/tags.txt	dev/workspace/generated/tool-images/tags.txt
+R100	dev/docs_build/tools-images-generated/text-to-speech.txt	dev/workspace/generated/tool-images/text-to-speech.txt
+R100	dev/docs_build/tools-images-generated/users.txt	dev/workspace/generated/tool-images/users.txt
+R100	dev/docs_build/tools-images-generated/videos.txt	dev/workspace/generated/tool-images/videos.txt
+R100	dev/docs_build/tools-images-generated/voices.txt	dev/workspace/generated/tool-images/voices.txt
+R100	dev/docs_build/tools-images-generated/worlds.txt	dev/workspace/generated/tool-images/worlds.txt
 M	docs/README.md
 M	package.json
 M	src/dev-runtime/admin/admin-notes-directory.mjs

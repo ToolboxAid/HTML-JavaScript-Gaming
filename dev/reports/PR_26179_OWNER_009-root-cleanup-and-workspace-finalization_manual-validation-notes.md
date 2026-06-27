@@ -1,11 +1,12 @@
 # Manual Validation Notes - PR_26179_OWNER_009-root-cleanup-and-workspace-finalization
 
-Updated: 2026-06-27T23:36:03.134Z
+Updated: 2026-06-27T23:50:57.309Z
 
-- Confirmed dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md exists.
-- Confirmed dev/project-instructions/ is absent.
-- Confirmed dev/workspace/artifacts/ is absent.
-- Confirmed dev/workspace/tmp/, dev/workspace/zips/, dev/workspace/logs/, dev/workspace/generated/, and dev/workspace/test-results/ exist locally as canonical workspace buckets.
+- Confirmed dev/build/tools-images-generated/ is absent.
+- Confirmed dev/workspace/generated/tool-images/ exists with 43 prompt files.
+- Confirmed dev/build/schemas/ is absent after stale schema docs were rebucketed.
+- Confirmed dev/build/pr/reference/schemas/PR_11_17_SCHEMA_SET_NORMALIZATION_AND_WORKSPACE_REF_ENFORCEMENT/ contains BUILD.md, PLAN.md, codex_commands.md, and commit_comment.txt.
+- Confirmed dev/build/design/gdd/Konami/ and dev/build/design/gdd/Namco/ exist.
+- Confirmed dev/build/design/gdd/Konani/ and dev/build/design/gdd/Nameco/ are absent.
 - Confirmed root artifacts/ output is absent after platform validation.
-- Test-result conflict handling: larger existing files were retained in dev/workspace/test-results/.
 - Blockers: none.

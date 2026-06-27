@@ -878,9 +878,9 @@ docs/
       Marvel_vs_Capcom/
         gdd.txt
       capcom.txt
-    Konani/
+    Konami/
       Contra/
-        gdd.tt
+        gdd.txt
       Frogger/
         gdd.txt
       Gradius/
@@ -889,7 +889,7 @@ docs/
         gdd.txt
       Track_&_Field/
         gdd.txt
-      Konani.txt
+      Konami.txt
     Midway/
       Cruis'n USA/
         gdd.txt
@@ -904,7 +904,7 @@ docs/
       Spy Hunter/
         gdd.txt
       Midway.txt
-    Nameco/
+    Namco/
       Dig Dug/
         gdd.txt
       Galaga/
@@ -919,7 +919,7 @@ docs/
         gdd.txt
       Time Crisis/
         gdd.txt
-      Nameco.txt
+      Namco.txt
     Nintendo/
       Donkey Kong/
         gdd.txt
@@ -938,7 +938,7 @@ docs/
       Altered Beast/
         gdd.txt
       Daytona USA/
-        gdg.txt
+        gdd.txt
       Golden Axe/
         gdd.txt
       Hang-On/

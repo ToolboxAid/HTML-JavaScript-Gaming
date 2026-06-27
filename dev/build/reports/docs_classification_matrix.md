@@ -858,12 +858,12 @@
 | `docs/design/gdd/Capcom/Ghosts 'n Goblins/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
 | `docs/design/gdd/Capcom/Marvel_vs_Capcom/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
 | `docs/design/gdd/Capcom/capcom.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
-| `docs/design/gdd/Konani/Contra/gdd.tt` | GAME_DESIGN | Game design documentation and design-era notes. |
-| `docs/design/gdd/Konani/Frogger/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
-| `docs/design/gdd/Konani/Gradius/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
-| `docs/design/gdd/Konani/Konani.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
-| `docs/design/gdd/Konani/The Simpsons Game/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
-| `docs/design/gdd/Konani/Track_&_Field/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
+| `docs/design/gdd/Konami/Contra/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
+| `docs/design/gdd/Konami/Frogger/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
+| `docs/design/gdd/Konami/Gradius/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
+| `docs/design/gdd/Konami/Konami.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
+| `docs/design/gdd/Konami/The Simpsons Game/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
+| `docs/design/gdd/Konami/Track_&_Field/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
 | `docs/design/gdd/Midway/Cruis'n USA/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
 | `docs/design/gdd/Midway/Defender/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
 | `docs/design/gdd/Midway/Joust/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
@@ -871,14 +871,14 @@
 | `docs/design/gdd/Midway/NBA Jam/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
 | `docs/design/gdd/Midway/Robotron/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
 | `docs/design/gdd/Midway/Spy Hunter/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
-| `docs/design/gdd/Nameco/Dig Dug/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
-| `docs/design/gdd/Nameco/Galaga/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
-| `docs/design/gdd/Nameco/Ms. Pac-Man/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
-| `docs/design/gdd/Nameco/Nameco.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
-| `docs/design/gdd/Nameco/Pac-Man/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
-| `docs/design/gdd/Nameco/Pole Position/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
-| `docs/design/gdd/Nameco/Ridge Racer/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
-| `docs/design/gdd/Nameco/Time Crisis/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
+| `docs/design/gdd/Namco/Dig Dug/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
+| `docs/design/gdd/Namco/Galaga/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
+| `docs/design/gdd/Namco/Ms. Pac-Man/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
+| `docs/design/gdd/Namco/Namco.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
+| `docs/design/gdd/Namco/Pac-Man/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
+| `docs/design/gdd/Namco/Pole Position/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
+| `docs/design/gdd/Namco/Ridge Racer/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
+| `docs/design/gdd/Namco/Time Crisis/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
 | `docs/design/gdd/Nintendo/Donkey Kong/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
 | `docs/design/gdd/Nintendo/Killer Instinct/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
 | `docs/design/gdd/Nintendo/Mario Bros/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
@@ -887,7 +887,7 @@
 | `docs/design/gdd/Nintendo/Punch-Out!/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
 | `docs/design/gdd/Sega/After Burner/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
 | `docs/design/gdd/Sega/Altered Beast/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
-| `docs/design/gdd/Sega/Daytona USA/gdg.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
+| `docs/design/gdd/Sega/Daytona USA/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
 | `docs/design/gdd/Sega/Golden Axe/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
 | `docs/design/gdd/Sega/Hang-On/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
 | `docs/design/gdd/Sega/Out Run/gdd.txt` | GAME_DESIGN | Game design documentation and design-era notes. |
