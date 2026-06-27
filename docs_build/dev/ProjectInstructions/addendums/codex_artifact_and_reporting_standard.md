@@ -6,20 +6,31 @@ Standardize Codex deliverables, completion reporting, and artifact generation.
 
 ## ZIP Artifact Requirement
 
-Every Codex task must produce a ZIP artifact.
+Every Codex execution must produce a repo-structured ZIP artifact and the required reports.
 
-Applies to:
-- Success
-- Failure
-- Stop Gate
-- Partial Completion
-- Review Deliverables
-- Governance Deliverables
+This applies regardless of result:
+
+- success
+- completion
+- partial completion
+- hard stop
+- blocked
+- validation failure
+- new information discovered
+- no files changed
+- review deliverables
+- governance deliverables
+
+No exceptions.
 
 Minimum ZIP contents:
-- summary.md
+
+- changed or preserved repo files from the run, stored at repo-relative paths
+- required reports under `docs_build/dev/reports/`
 
 Optional:
+
+- summary.md
 - changed-files.txt
 - findings.md
 - validation.txt
@@ -28,11 +39,16 @@ Optional:
 ## Completion Reporting
 
 Codex responses must include:
+
 - ZIP filename
 - ZIP location
+- repo-structured ZIP path
+- reports
+- changed file list
 - PR number(s)
 - Merge commit(s)
 - Validation results
+- branch, worktree, and local/origin sync status when relevant
 
 ## Tool MVP PR Report Requirements
 
@@ -82,3 +98,5 @@ unless explicitly requested.
 ## No ZIP Means Incomplete
 
 A task is not considered complete until the ZIP artifact is generated and reported.
+
+If execution stops before implementation, validation, or commit, the stop result must still include the repo-structured ZIP and reports that document the hard stop, blocker, validation failure, or no-change result.

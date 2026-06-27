@@ -53,6 +53,8 @@ The backlog is the authoritative source for determining the next PRs.
 
 If the backlog and a generated report conflict, the backlog wins unless OWNER explicitly approves a newer governance decision.
 
+When the Product Owner provides a completed PR ZIP, ChatGPT must review that ZIP, update the active team backlog and completion percentages, and recommend the next logical PRs needed to keep moving toward a Product Owner testable outcome.
+
 ## Start Of Day Team Briefing
 
 When a team is assigned, ChatGPT/Codex must provide this briefing before implementation begins:

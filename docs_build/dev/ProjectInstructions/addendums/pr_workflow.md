@@ -126,10 +126,11 @@ Closed gates:
 - If validation fails, stop and report.
 - If conflict occurs, stop and report.
 - If OWNER decision is required, stop and report.
-- Every completed Codex PR run must produce a repo-structured ZIP under `tmp/`.
-- The ZIP rule applies to implementation, audit, report-only, validation-only, governance, and cleanup PRs.
+- Every Codex execution must produce a repo-structured ZIP under `tmp/`.
+- The ZIP rule applies to implementation, audit, report-only, validation-only, governance, cleanup, hard-stop, blocked, validation-failure, partial-completion, new-information, and no-change runs.
 - The ZIP must include all changed or preserved repo files from the run and must not replace required reports under `docs_build/dev/reports/`.
-- If no repo files changed, Codex must still create a ZIP containing the PR report that proves the no-change result, unless the run hard-stopped before producing outputs.
+- If no repo files changed, Codex must still create a ZIP containing the report that proves the no-change, hard-stop, blocked, validation-failure, or partial-completion result.
+- No exceptions.
 
 ## Batch Governance Mode
 
@@ -239,6 +240,35 @@ Stop only for:
 - Merge conflict
 - Validation failure
 - OWNER decision
+
+## Completed PR ZIP Review And Next Logical PRs
+
+Whenever the Product Owner provides a completed PR ZIP to ChatGPT, ChatGPT shall:
+
+- review the completed work
+- identify completed scope
+- identify remaining scope
+- update the team backlog and completion percentages
+- determine the next logical PRs
+- recommend the execution order
+- generate each recommended PR with:
+  - PR summary
+  - Codex command
+  - commit comment
+  - Playwright scope
+  - manual validation steps
+
+Use plural wording: `next logical PRs`.
+
+Unless blocked by dependencies or directed otherwise by the Product Owner, ChatGPT should generate enough sequential PRs to complete the current backlog item to a Product Owner testable state rather than stopping after a single PR.
+
+The Product Owner should not have to ask:
+
+- `What is next?`
+- `Create the next PR.`
+- `Continue.`
+
+The backlog drives the next recommended PRs automatically.
 
 ## EOD Main Lock
 
