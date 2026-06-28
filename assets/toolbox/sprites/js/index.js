@@ -16,6 +16,10 @@ const editorState = {
   gridSize: DEFAULT_GRID_SIZE,
   paintedPixels: new Map(),
 };
+const editorHistory = {
+  redoStack: [],
+  undoStack: [],
+};
 
 function gridLabel(size) {
   return `Sprite Creator ${size} by ${size} pixel canvas`;
@@ -27,6 +31,49 @@ function buttonForSize(size) {
 
 function pixelKey(row, column) {
   return `${row}:${column}`;
+}
+
+function stateSnapshot() {
+  return {
+    gridSize: editorState.gridSize,
+    paintedPixels: Array.from(editorState.paintedPixels.entries()),
+  };
+}
+
+function sameSnapshot(left, right) {
+  return JSON.stringify(left) === JSON.stringify(right);
+}
+
+function pushUndoSnapshot() {
+  const snapshot = stateSnapshot();
+  const lastSnapshot = editorHistory.undoStack[editorHistory.undoStack.length - 1];
+  if (!lastSnapshot || !sameSnapshot(snapshot, lastSnapshot)) {
+    editorHistory.undoStack.push(snapshot);
+  }
+  editorHistory.redoStack = [];
+  updateHistoryControls();
+}
+
+function historyStatusText() {
+  if (editorHistory.undoStack.length === 0 && editorHistory.redoStack.length === 0) {
+    return "Undo history is empty.";
+  }
+  return `Undo steps: ${editorHistory.undoStack.length}. Redo steps: ${editorHistory.redoStack.length}.`;
+}
+
+function updateHistoryControls() {
+  const undoButton = document.querySelector("[data-sprites-undo]");
+  const redoButton = document.querySelector("[data-sprites-redo]");
+  const status = document.querySelector("[data-sprites-history-status]");
+  if (undoButton) {
+    undoButton.disabled = editorHistory.undoStack.length === 0;
+  }
+  if (redoButton) {
+    redoButton.disabled = editorHistory.redoStack.length === 0;
+  }
+  if (status) {
+    status.textContent = historyStatusText();
+  }
 }
 
 function draftStatusText() {
@@ -52,6 +99,30 @@ function setCellColor(cell, colorKey) {
   clearCellColor(cell);
   cell.classList.add("is-painted", `sprite-canvas-cell--${normalizedColorKey}`);
   cell.dataset.spriteColorKey = normalizedColorKey;
+}
+
+function applyPaintedPixelsToGrid() {
+  const grid = document.querySelector("[data-sprites-pixel-grid]");
+  if (!grid) {
+    return;
+  }
+  grid.querySelectorAll("[data-sprite-pixel-row]").forEach((cell) => {
+    const key = pixelKey(cell.dataset.spritePixelRow, cell.dataset.spritePixelColumn);
+    const colorKey = editorState.paintedPixels.get(key);
+    if (colorKey) {
+      setCellColor(cell, colorKey);
+    } else {
+      clearCellColor(cell);
+    }
+  });
+}
+
+function applySnapshot(snapshot) {
+  setGridSize(snapshot.gridSize, { recordHistory: false });
+  editorState.paintedPixels = new Map(snapshot.paintedPixels);
+  applyPaintedPixelsToGrid();
+  updateDraftStatus();
+  updateHistoryControls();
 }
 
 function updateDraftStatus() {
@@ -99,9 +170,17 @@ function setActiveTool(toolName) {
 function paintCell(cell) {
   const key = pixelKey(cell.dataset.spritePixelRow, cell.dataset.spritePixelColumn);
   if (editorState.activeTool === "eraser") {
+    if (!editorState.paintedPixels.has(key)) {
+      return;
+    }
+    pushUndoSnapshot();
     editorState.paintedPixels.delete(key);
     clearCellColor(cell);
   } else {
+    if (editorState.paintedPixels.get(key) === editorState.activeColor) {
+      return;
+    }
+    pushUndoSnapshot();
     editorState.paintedPixels.set(key, editorState.activeColor);
     setCellColor(cell, editorState.activeColor);
   }
@@ -113,6 +192,7 @@ function fillGrid() {
   if (!grid) {
     return;
   }
+  pushUndoSnapshot();
   editorState.paintedPixels.clear();
   grid.querySelectorAll("[data-sprite-pixel-row]").forEach((cell) => {
     const key = pixelKey(cell.dataset.spritePixelRow, cell.dataset.spritePixelColumn);
@@ -122,8 +202,11 @@ function fillGrid() {
   updateDraftStatus();
 }
 
-function clearCanvas() {
+function clearCanvas(options = {}) {
   const grid = document.querySelector("[data-sprites-pixel-grid]");
+  if (options.recordHistory !== false && editorState.paintedPixels.size > 0) {
+    pushUndoSnapshot();
+  }
   editorState.paintedPixels.clear();
   if (grid) {
     grid.querySelectorAll("[data-sprite-pixel-row]").forEach(clearCellColor);
@@ -132,8 +215,9 @@ function clearCanvas() {
 }
 
 function resetGridToDefault() {
-  setGridSize(DEFAULT_GRID_SIZE);
-  clearCanvas();
+  pushUndoSnapshot();
+  setGridSize(DEFAULT_GRID_SIZE, { recordHistory: false });
+  clearCanvas({ recordHistory: false });
 }
 
 function editorColorValue(colorKey) {
@@ -194,11 +278,15 @@ function exportPreviewPng() {
   }, "image/png");
 }
 
-function setGridSize(size) {
+function setGridSize(size, options = {}) {
   const grid = document.querySelector("[data-sprites-pixel-grid]");
   const status = document.querySelector("[data-sprites-grid-status]");
   if (!grid || !SUPPORTED_GRID_SIZES.includes(size)) {
     return;
+  }
+
+  if (options.recordHistory && (editorState.gridSize !== size || editorState.paintedPixels.size > 0)) {
+    pushUndoSnapshot();
   }
 
   grid.replaceChildren();
@@ -239,7 +327,7 @@ function wireGridControls() {
     if (!button) {
       return;
     }
-    button.addEventListener("click", () => setGridSize(size));
+    button.addEventListener("click", () => setGridSize(size, { recordHistory: true }));
   });
 }
 
@@ -278,6 +366,34 @@ function wireCanvasActions() {
   }
 }
 
+function wireHistoryActions() {
+  const undoButton = document.querySelector("[data-sprites-undo]");
+  if (undoButton) {
+    undoButton.addEventListener("click", () => {
+      const snapshot = editorHistory.undoStack.pop();
+      if (!snapshot) {
+        updateHistoryControls();
+        return;
+      }
+      editorHistory.redoStack.push(stateSnapshot());
+      applySnapshot(snapshot);
+    });
+  }
+
+  const redoButton = document.querySelector("[data-sprites-redo]");
+  if (redoButton) {
+    redoButton.addEventListener("click", () => {
+      const snapshot = editorHistory.redoStack.pop();
+      if (!snapshot) {
+        updateHistoryControls();
+        return;
+      }
+      editorHistory.undoStack.push(stateSnapshot());
+      applySnapshot(snapshot);
+    });
+  }
+}
+
 function wireExportButton() {
   const button = document.querySelector("[data-sprites-export-png]");
   if (button) {
@@ -289,8 +405,10 @@ wireGridControls();
 wireDrawingTools();
 wirePaletteButtons();
 wireCanvasActions();
+wireHistoryActions();
 wireExportButton();
 setGridSize(DEFAULT_GRID_SIZE);
 setActiveTool(editorState.activeTool);
 setActiveColor(editorState.activeColor);
+updateHistoryControls();
 renderPreview();

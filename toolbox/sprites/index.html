@@ -107,12 +107,15 @@
                                     <button class="btn btn--compact" type="button" data-sprites-grid-size="32" aria-pressed="false">32x32</button>
                                     <button class="btn btn--compact" type="button" data-sprites-clear-canvas>Clear Canvas</button>
                                     <button class="btn btn--compact" type="button" data-sprites-reset-grid>Reset to 16x16</button>
+                                    <button class="btn btn--compact" type="button" data-sprites-undo disabled>Undo</button>
+                                    <button class="btn btn--compact" type="button" data-sprites-redo disabled>Redo</button>
                                 </div>
                                 <div class="sprite-canvas-shell" data-sprites-grid-shell>
                                     <div class="sprite-canvas-grid" role="grid" aria-label="Sprite Creator 16 by 16 pixel canvas" data-sprites-pixel-grid></div>
                                 </div>
                                 <p class="status" role="status" data-sprites-grid-status>Canvas display mode: 16x16. No pixel data is saved.</p>
                                 <p class="status" role="status" data-sprites-draft-status>Unsaved editor state: empty draft.</p>
+                                <p class="status" role="status" data-sprites-history-status>Undo history is empty.</p>
                             </div>
                         </article>
                         <article class="card" data-sprites-footer-status>
