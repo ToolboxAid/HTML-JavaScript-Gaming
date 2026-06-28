@@ -418,38 +418,7 @@ function activeGameFromWorkspace(repository, overrideId = "") {
   };
 }
 
-async function ensureUsers(adapter) {
-  const now = timestamp();
-  await adapter.upsertTable("users", [
-    {
-      key: SYSTEM_USER_KEY,
-      displayName: "Forge Bot",
-      email: null,
-      authProvider: "seed",
-      authProviderUserId: "forge-bot",
-      isActive: true,
-      createdAt: now,
-      updatedAt: now,
-      createdBy: null,
-      updatedBy: null,
-    },
-    {
-      key: DEFAULT_USER_KEY,
-      displayName: "Creator",
-      email: "creator@example.test",
-      authProvider: "seed",
-      authProviderUserId: "creator",
-      isActive: true,
-      createdAt: now,
-      updatedAt: now,
-      createdBy: SYSTEM_USER_KEY,
-      updatedBy: SYSTEM_USER_KEY,
-    },
-  ]);
-}
-
 async function ensureGameRecord(adapter, game, userKey = DEFAULT_USER_KEY) {
-  await ensureUsers(adapter);
   await adapter.upsertProductTable("game_workspace_games", [{
     key: game.key,
     name: game.name,

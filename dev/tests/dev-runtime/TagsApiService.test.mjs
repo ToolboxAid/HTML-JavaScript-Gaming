@@ -115,6 +115,7 @@ test("Tags list reads and seeds through the API database adapter", async () => {
   assert.equal(adapter.calls.some(([action, table]) => action === "requestTable" && table === "project_tags"), true);
   assert.equal(adapter.calls.some(([action, table]) => action === "upsertProductTable" && table === "project_tags"), true);
   assert.equal(adapter.calls.some(([action, table]) => action === "upsertProductTable" && table === "project_tag_assignments"), true);
+  assert.equal(adapter.calls.some(([action, table]) => action === "upsertTable" && table === "users"), false);
 });
 
 test("Tags list reports an actionable setup error when readTables cannot read the schema", async () => {
