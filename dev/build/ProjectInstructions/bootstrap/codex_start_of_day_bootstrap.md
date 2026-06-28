@@ -29,6 +29,8 @@ The bootstrap loads:
 - Canonical Repository Structure
 - Team instructions
 - Team backlog
+- `dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md` assignment source
+- `admin/tool-votes.html` Tool Votes/Admin Owner priority signal source
 - Current team status
 - Current branch
 - Worktree status
@@ -146,6 +148,31 @@ Worktree:
 Backlog Loaded:
 Additional Documents Loaded:
 Next Recommended PR:
+```
+
+Start-of-Day bootstrap must also include the Team Assignment section defined by:
+
+```text
+dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
+```
+
+Required assignment output:
+
+```text
+Team Assignment
+===============
+
+Source ............ dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
+Priority Source ... admin/tool-votes.html
+Team .............. <team>
+Status ............ PASS
+
+Assignments
+-----------
+
+| Team | Product Area | Status | Complete | Active PR | Next Milestone | Source |
+|------|--------------|--------|----------|-----------|----------------|--------|
+| Alfa | Objects Manager | Active | 45% | PR_26179_ALFA_011 | Properties | BACKLOG_MASTER.md |
 ```
 
 ## Loading Rules

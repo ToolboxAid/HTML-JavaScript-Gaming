@@ -4,16 +4,29 @@
 
 Canonical backlog tracking owner: `dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md`.
 
+This file is the authoritative source for assigned product work.
+
+This document is updated as work status changes, including Owner assignment, reprioritization, completion, deferral, accepted PRs, SOD review, and EOD review.
+
+`BACKLOG_MASTER.md` is now the canonical team/product-area assignment and status source. Future backlog changes must update this structure directly.
+
+Each product area must include status and percent complete.
+
 Every active team owns an active backlog when it has assigned work.
 
 Backlog entries in this file follow the canonical field list, including:
 
 - Name
 - Description
+- Product area
+- Status
 - Current completion percentage
+- Active PR, when one exists
+- Next milestone
 - Remaining work
 - Blocking dependencies
 - Owning team
+- Source or reference
 
 Completion percentages are updated at SOD, after every accepted PR, and at EOD.
 
@@ -181,6 +194,29 @@ The backlog is the authoritative source for determining the next logical PRs.
   - OWNER merge approval and EOD merge governance verified.
   - Team ownership governance verified through the authoritative ownership map.
 
+- [x] Alfa - Team-aware local dev bootstrap runtime complete
+
+  Notes:
+  - Completion reference: PR #250 / `PR_26171_ALFA_009-team-aware-bootstrap`.
+  - `npm run dev:bootstrap` is the primary team-aware local bootstrap command.
+  - `npm run dev:local-api` remains as the legacy API alias.
+  - `npm run dev:api` supports API-only startup.
+  - `npm run dev:web` supports web-only startup.
+  - `dev/bootstrap/start-dev.mjs` owns bootstrap orchestration.
+  - `dev/bootstrap/team-port-config.mjs` owns team port resolution.
+  - Team-aware `--team` runtime support is implemented.
+  - Bootstrap orchestration, browser launch reporting, and port resolution are implemented.
+  - Verified command: `npm run dev:bootstrap -- --team bravo`.
+  - Observed verified output includes:
+    - `GameFoundry team-aware dev bootstrap`
+    - `Mode: bootstrap`
+    - `Team: bravo`
+    - `Web URL: http://127.0.0.1:5520`
+    - `API URL: http://127.0.0.1:5521/api`
+    - `Browser launch: http://127.0.0.1:5520/index.html`
+    - `Supported teams: owner, alfa, bravo, charlie, delta, echo, foxtrot, golf, hotel`
+  - Do not assign team-aware dev bootstrap, `dev:bootstrap`, team-port config, browser launch, bootstrap orchestration, or port resolution as remaining backlog work unless OWNER opens a new enhancement request.
+
 - [x] OWNER - Repository hygiene governance complete
 
   Notes:
@@ -195,11 +231,10 @@ The backlog is the authoritative source for determining the next logical PRs.
 Status: CANCELLED / NOT DOING
 
 Items removed from backlog:
-- Multi-port workspace framework
 - Alfa/Beta/User isolation framework
-- Runtime port management initiative
 
 Replacement governance:
+- Multi-port workspace framework and runtime port management are no longer cancelled/not doing; they are implemented by the team-aware local dev bootstrap runtime item above.
 - System Health remains one page per deployed environment.
 - Each deployment actively checks only itself.
 - Environment Summary, Database Health, Storage Health, Runtime Health, and Health Check History are Charlie System Health ownership.

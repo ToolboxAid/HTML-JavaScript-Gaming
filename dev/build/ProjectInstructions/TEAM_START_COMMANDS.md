@@ -23,6 +23,13 @@ Non-Owner team PRs use Stacked PR workstreams by default. A non-Owner team PR ma
 
 Use `dev/build/ProjectInstructions/` as the only active Project Instructions source.
 Read `dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md` before implementation.
+Read `dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md` during startup.
+
+`BACKLOG_MASTER.md` is the authoritative source for assigned product work. `admin/tool-votes.html` is the Tool Votes/Admin Owner priority signal source for tool demand and Owner/Admin review; it informs backlog priority but does not replace the backlog.
+
+Team startup must display the Team Assignment table defined in `dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md`.
+
+Codex must not invent work from conversation memory when `BACKLOG_MASTER.md` has a matching product area.
 
 Branch Lifecycle (Canonical):
 - Follow `dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md` for START / WORK / END lifecycle, branch gates, mandatory hard stops, and EOD main lock.
@@ -45,10 +52,12 @@ Ready-to-copy command:
 OWNER override approved: Start Alfa from the ProjectInstructions release gate.
 
 Read dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md first.
+Read dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md.
 Read dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md.
 Read dev/build/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
 
 Pull one [ ] item for Alfa from BACKLOG_MASTER.md.
+Report the Team Assignment table before implementation.
 Stop if Alfa already has an active branch.
 Stop if Alfa already has an active assignment.
 Stop if no [ ] Alfa backlog item is available.
@@ -67,10 +76,12 @@ Ready-to-copy command:
 OWNER override approved: Start Bravo from the ProjectInstructions release gate.
 
 Read dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md first.
+Read dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md.
 Read dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md.
 Read dev/build/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
 
 Pull one [ ] item for Bravo from BACKLOG_MASTER.md.
+Report the Team Assignment table before implementation.
 Stop if Bravo already has an active branch.
 Stop if Bravo already has an active assignment.
 Stop if no [ ] Bravo backlog item is available.
@@ -89,10 +100,12 @@ Ready-to-copy command:
 OWNER override approved: Start Charlie from the ProjectInstructions release gate.
 
 Read dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md first.
+Read dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md.
 Read dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md.
 Read dev/build/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
 
 Pull one [ ] item for Charlie from BACKLOG_MASTER.md.
+Report the Team Assignment table before implementation.
 Stop if Charlie already has an active branch.
 Stop if Charlie already has an active assignment.
 Stop if no [ ] Charlie backlog item is available.
@@ -111,11 +124,13 @@ Ready-to-copy command:
 OWNER override approved: Start Delta from the ProjectInstructions release gate.
 
 Read dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md first.
+Read dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md.
 Read dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md.
 Read dev/build/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
 Read dev/build/ProjectInstructions/team_assignments/team_ownership.md.
 
 Pull one [ ] item for Delta from BACKLOG_MASTER.md.
+Report the Team Assignment table before implementation.
 Stop if Delta already has an active branch.
 Stop if Delta already has an active assignment.
 Stop if no [ ] Delta backlog item is available.
@@ -135,10 +150,12 @@ Ready-to-copy command:
 OWNER override approved: Start Golf from the ProjectInstructions release gate.
 
 Read dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md first.
+Read dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md.
 Read dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md.
 Read dev/build/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
 Read dev/build/ProjectInstructions/team_assignments/team_ownership.md.
 
+Report the Team Assignment table before implementation.
 Stop if Golf already has an active branch.
 Stop if Golf already has an active assignment.
 Stop if OWNER has not explicitly assigned Golf work.
