@@ -420,7 +420,7 @@ const representativeRoutingCases = Object.freeze([
   },
   {
     caseName: "tool change",
-    changedFiles: ["toolbox/audio-sfx-playground-v2/index.js"],
+    changedFiles: ["www/toolbox/audio-sfx-playground-v2/index.js"],
     expectedLanes: ["tool-runtime"],
     reason: "Tool-owned runtime/UI changes route to the affected tool-runtime lane only."
   },
@@ -813,10 +813,10 @@ function routeLanesForChangedFiles(changedFiles) {
     if (normalized.startsWith("dev/tests/playwright/integration/")) {
       routed.add("integration");
     } else if (normalized.startsWith("dev/tests/playwright/games/")
-      || normalized.startsWith("games/")
+      || normalized.startsWith("www/games/")
       || normalized.startsWith("dev/archive/v1-v2/games/")) {
       continue;
-    } else if (normalized.startsWith("dev/tests/playwright/tools/") || normalized.startsWith("toolbox/")) {
+    } else if (normalized.startsWith("dev/tests/playwright/tools/") || normalized.startsWith("www/toolbox/")) {
       routed.add("tool-runtime");
     } else if (normalized.startsWith("src/")
       || normalized.startsWith("dev/tests/core/")
@@ -4533,7 +4533,7 @@ function makeZeroBrowserPreflightReport({
     "| Check | Status | Details |",
     "| --- | --- | --- |",
     `| lane ownership | ${structureAudit.status} | ${reportLine(structureAudit.reason)} |`,
-    `| directory placement | ${structureAudit.status} | toolbox/games/integration/engine ownership checked. |`,
+    `| directory placement | ${structureAudit.status} | www/toolbox, www/games, integration, and engine ownership checked. |`,
     `| invalid file naming | ${structureAudit.status} | Game-specific filenames are blocked from generic reusable lanes. |`,
     `| duplicate registrations | ${laneRegistration.findings.some((entry) => entry.includes("Duplicate")) ? "FAIL" : "PASS"} | ${laneRegistration.findings.filter((entry) => entry.includes("Duplicate")).join("; ") || "No duplicate lane registrations."} |`,
     `| invalid imports | ${structureAudit.status} | Relative imports checked by Playwright structure audit. |`,
