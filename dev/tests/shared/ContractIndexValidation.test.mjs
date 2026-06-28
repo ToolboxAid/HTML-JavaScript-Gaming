@@ -40,6 +40,7 @@ export const CONTRACT_INDEX = Object.freeze([
 ]);
 
 const legacySharedContractFiles = Object.freeze([
+  "projectDataStoreContract.js",
   "replayContracts.js",
   "sharedStateContracts.js",
 ]);
@@ -54,8 +55,10 @@ export function run() {
   assertUnique(CONTRACT_INDEX.map((contract) => contract.reportPath), "report files");
 
   const indexedContractFiles = CONTRACT_INDEX.map((contract) => path.basename(contract.contractPath)).sort();
+  const unindexedSharedContractFiles = new Set(legacySharedContractFiles);
   const actualRootContractFiles = fs.readdirSync(resolvePath("src/shared/contracts"))
     .filter((fileName) => fileName.endsWith("Contract.js"))
+    .filter((fileName) => !unindexedSharedContractFiles.has(fileName))
     .sort();
 
   assert.deepEqual(
@@ -80,9 +83,9 @@ function entry(name, contractFile, testFile, fixtureFile, specFile, reportFile) 
   return Object.freeze({
     name,
     contractPath: `src/shared/contracts/${contractFile}`,
-    testPath: `tests/shared/${testFile}`,
-    fixturePath: `tests/fixtures/${fixtureFile}`,
-    specPath: `dev/build/dev/specs/${specFile}`,
+    testPath: `dev/tests/shared/${testFile}`,
+    fixturePath: `dev/tests/fixtures/${fixtureFile}`,
+    specPath: `dev/build/ProjectInstructions/standards/${specFile}`,
     reportPath: `dev/reports/${reportFile}`,
   });
 }

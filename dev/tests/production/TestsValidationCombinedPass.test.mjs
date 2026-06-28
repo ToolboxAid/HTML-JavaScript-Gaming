@@ -24,7 +24,7 @@ function assertRepoDirectory(relativePath) {
 
 export function run() {
   REQUIRED_TEST_DIRECTORIES.forEach((dir) => {
-    assertRepoDirectory(`tests/${dir}`);
+    assertRepoDirectory(`dev/tests/${dir}`);
   });
 
   UNIT_COVERAGE_ANCHORS.forEach((filePath) => {

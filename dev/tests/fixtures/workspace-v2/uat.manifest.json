@@ -20,7 +20,7 @@
       "id": "workspace-manager-v2-uat-sample",
       "name": "Workspace Manager V2 UAT Sample Palette",
       "source": "Workspace Manager V2 temporary UAT sample",
-      "sourceId": "tests/fixtures/workspace-v2/uat.manifest.json",
+      "sourceId": "dev/tests/fixtures/workspace-v2/uat.manifest.json",
       "locked": true,
       "swatches": [
         {

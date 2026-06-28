@@ -1,6 +1,6 @@
 # Project Instructions Version
 
-Current Project Instructions Version: 2026.06.28.012
+Current Project Instructions Version: 2026.06.28.013
 
 Last Updated: 2026-06-28
 
@@ -20,6 +20,7 @@ Last Updated: 2026-06-28
 - Moved developer-only local runtime/bootstrap entrypoints under `dev/local-runtime/` and preserved the public npm command surface.
 - Finalized moved test and validation path assumptions for the `www/`, `api/`, and `dev/local-runtime/` layout.
 - Updated CI, package scripts, and developer utilities for the `www/`, `api/`, and `dev/` layout.
+- Removed active references to obsolete legacy layout paths after the `www/`, `api/`, and `dev/` migration steps.
 - Codex must read this version file and the latest repository copy of `PROJECT_INSTRUCTIONS.md` before performing work.
 - Codex must discard previously remembered Project Instructions and treat the repository copy as authoritative.
 - Codex must validate canonical report and ZIP paths, branching model, and legacy path avoidance before work proceeds.

@@ -12,31 +12,31 @@ import { fileURLToPath } from "node:url";
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 
 const FIXTURE_FILES = Object.freeze([
-  "tests/fixtures/audit-events/audit-event-scenarios.json",
-  "tests/fixtures/backup-snapshots/backup-snapshot-scenarios.json",
-  "tests/fixtures/collaboration-roles/collaboration-role-scenarios.json",
-  "tests/fixtures/creator-profiles/creator-profile-scenarios.json",
-  "tests/fixtures/download-grants/download-grant-scenarios.json",
-  "tests/fixtures/entitlements/entitlement-scenarios.json",
-  "tests/fixtures/identity-permissions/permission-scenarios.json",
-  "tests/fixtures/install-receipts/install-receipt-scenarios.json",
-  "tests/fixtures/library-items/library-item-scenarios.json",
-  "tests/fixtures/manifests/manifest-scenarios.json",
-  "tests/fixtures/marketplace-listings/marketplace-listing-scenarios.json",
-  "tests/fixtures/marketplace-transaction-boundaries/marketplace-transaction-boundary-scenarios.json",
-  "tests/fixtures/migration-plans/migration-plan-scenarios.json",
-  "tests/fixtures/moderation-queues/moderation-queue-scenarios.json",
-  "tests/fixtures/notifications/notification-scenarios.json",
-  "tests/fixtures/organizations/organization-scenarios.json",
-  "tests/fixtures/project-workspaces/project-workspace-runtime-scenarios.json",
-  "tests/fixtures/projects/project-scenarios.json",
-  "tests/fixtures/publish/publish-scenarios.json",
-  "tests/fixtures/releases/release-scenarios.json",
-  "tests/fixtures/restore-snapshots/restore-snapshot-scenarios.json",
-  "tests/fixtures/review-ratings/review-rating-scenarios.json",
-  "tests/fixtures/tool-states/tool-state-scenarios.json",
-  "tests/fixtures/update-channels/update-channel-scenarios.json",
-  "tests/fixtures/version-compatibility/version-compatibility-scenarios.json",
+  "dev/tests/fixtures/audit-events/audit-event-scenarios.json",
+  "dev/tests/fixtures/backup-snapshots/backup-snapshot-scenarios.json",
+  "dev/tests/fixtures/collaboration-roles/collaboration-role-scenarios.json",
+  "dev/tests/fixtures/creator-profiles/creator-profile-scenarios.json",
+  "dev/tests/fixtures/download-grants/download-grant-scenarios.json",
+  "dev/tests/fixtures/entitlements/entitlement-scenarios.json",
+  "dev/tests/fixtures/identity-permissions/permission-scenarios.json",
+  "dev/tests/fixtures/install-receipts/install-receipt-scenarios.json",
+  "dev/tests/fixtures/library-items/library-item-scenarios.json",
+  "dev/tests/fixtures/manifests/manifest-scenarios.json",
+  "dev/tests/fixtures/marketplace-listings/marketplace-listing-scenarios.json",
+  "dev/tests/fixtures/marketplace-transaction-boundaries/marketplace-transaction-boundary-scenarios.json",
+  "dev/tests/fixtures/migration-plans/migration-plan-scenarios.json",
+  "dev/tests/fixtures/moderation-queues/moderation-queue-scenarios.json",
+  "dev/tests/fixtures/notifications/notification-scenarios.json",
+  "dev/tests/fixtures/organizations/organization-scenarios.json",
+  "dev/tests/fixtures/project-workspaces/project-workspace-runtime-scenarios.json",
+  "dev/tests/fixtures/projects/project-scenarios.json",
+  "dev/tests/fixtures/publish/publish-scenarios.json",
+  "dev/tests/fixtures/releases/release-scenarios.json",
+  "dev/tests/fixtures/restore-snapshots/restore-snapshot-scenarios.json",
+  "dev/tests/fixtures/review-ratings/review-rating-scenarios.json",
+  "dev/tests/fixtures/tool-states/tool-state-scenarios.json",
+  "dev/tests/fixtures/update-channels/update-channel-scenarios.json",
+  "dev/tests/fixtures/version-compatibility/version-compatibility-scenarios.json",
 ]);
 
 const FORBIDDEN_DEPENDENCY_FIELDS = Object.freeze([
@@ -79,7 +79,7 @@ function readFixture(fixturePath) {
 }
 
 function assertScopedFixturePath(fixturePath) {
-  assert.equal(fixturePath.startsWith("tests/fixtures/"), true, `${fixturePath} is under tests/fixtures`);
+  assert.equal(fixturePath.startsWith("dev/tests/fixtures/"), true, `${fixturePath} is under dev/tests/fixtures`);
   assert.equal(fixturePath.includes("/samples/"), false, `${fixturePath} does not use sample fixtures`);
   assert.equal(fixturePath.includes("/workspace-v2/"), false, `${fixturePath} does not rely on Workspace V2 bootstrap fixtures`);
   assert.equal(fixturePath.includes("/v2-tools/"), false, `${fixturePath} does not rely on tool runtime fixtures`);

@@ -34,6 +34,8 @@ No browser, API, server, test, script, or runtime files move in the scaffold or 
 
 `PR_26180_OWNER_012-update-ci-and-scripts` updates CI, package scripts, and developer utilities for the `www/`, `api/`, and `dev/` layout while preserving the public developer command surface.
 
+`PR_26180_OWNER_013-remove-legacy-layout` removes active stale references to obsolete legacy paths after the tracked `www/`, `api/`, and `dev/` migration steps.
+
 ## Proposed Future Layout
 
 ```text

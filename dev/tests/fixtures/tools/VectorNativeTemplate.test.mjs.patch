@@ -1,4 +1,4 @@
-*** MANUAL PATCH FOR tests/tools/VectorNativeTemplate.test.mjs ***
+*** MANUAL PATCH FOR dev/tests/tools/VectorNativeTemplate.test.mjs ***
 
 Find:
     /Template path: templates\/vector-native-arcade\//

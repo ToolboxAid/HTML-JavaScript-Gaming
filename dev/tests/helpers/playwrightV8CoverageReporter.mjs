@@ -276,11 +276,10 @@ export class PlaywrightV8CoverageReporter {
       return false;
     }
     return filePath.startsWith("src/")
-      || filePath.startsWith("admin/")
-      || filePath.startsWith("assets/theme-v2/js/")
-      || filePath.startsWith("games/Asteroids/")
-      || filePath.startsWith("toolbox/")
-      || filePath.startsWith("common/");
+      || filePath.startsWith("www/admin/")
+      || filePath.startsWith("www/assets/theme-v2/js/")
+      || filePath.startsWith("www/games/Asteroids/")
+      || filePath.startsWith("www/toolbox/");
   }
 
   pathFromStatusLine(line) {
@@ -327,9 +326,9 @@ export class PlaywrightV8CoverageReporter {
 
   formatToolEntryPoints(coverageByPath) {
     const toolEntryPoints = [
-      { name: "Toolbox Index", prefix: "toolbox/" },
+      { name: "Toolbox Index", prefix: "www/toolbox/" },
       { name: "Tool Template V2", prefix: "dev/templates/tool-template-v2/" },
-      { name: "Theme V2 Shared JS", prefix: "assets/theme-v2/js/" }
+      { name: "Theme V2 Shared JS", prefix: "www/assets/theme-v2/js/" }
     ];
     return toolEntryPoints.map(({ name, prefix }) => {
       const records = [...coverageByPath.values()].filter((record) => record.repoPath.startsWith(prefix));

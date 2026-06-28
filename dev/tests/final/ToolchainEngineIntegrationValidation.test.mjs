@@ -24,19 +24,19 @@ function runNodeTestFile(relativeTestPath) {
 const TRACK_E_TOOLCHAIN_VALIDATION_STAGES = Object.freeze([
   Object.freeze({
     id: "tool-entry-launch-contract",
-    run: async () => runNodeTestFile("tests/tools/ToolEntryLaunchContract.test.mjs")
+    run: async () => runNodeTestFile("dev/tests/tools/ToolEntryLaunchContract.test.mjs")
   }),
   Object.freeze({
     id: "project-tool-data-contracts",
-    run: async () => runNodeTestFile("tests/tools/ProjectToolDataContracts.test.mjs")
+    run: async () => runNodeTestFile("dev/tests/tools/ProjectToolDataContracts.test.mjs")
   }),
   Object.freeze({
     id: "runtime-asset-loader",
-    run: async () => runNodeTestFile("tests/tools/RuntimeAssetLoader.test.mjs")
+    run: async () => runNodeTestFile("dev/tests/tools/RuntimeAssetLoader.test.mjs")
   }),
   Object.freeze({
     id: "render-pipeline-contract-all-4-tools",
-    run: async () => runNodeTestFile("tests/tools/RenderPipelineContractAll4Tools.test.mjs")
+    run: async () => runNodeTestFile("dev/tests/tools/RenderPipelineContractAll4Tools.test.mjs")
   }),
   Object.freeze({
     id: "runtime-scene-loader-hot-reload",

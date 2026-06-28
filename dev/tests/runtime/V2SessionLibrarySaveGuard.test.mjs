@@ -36,7 +36,7 @@ export function run() {
 
   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
-  if (!testSyntax.ok) failures.push("tests/runtime/V2SessionLibrarySaveGuard.test.mjs failed syntax check.");
+  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2SessionLibrarySaveGuard.test.mjs failed syntax check.");
 
   const requiredTokens = [
     "hasActiveWorkspaceSessionForSave()",
