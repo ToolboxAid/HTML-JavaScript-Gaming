@@ -35,6 +35,13 @@ Updated active Project Instructions and the backlog header only.
 - Updated Start of Day command/bootstrap docs to require the Team Assignment section.
 - Added top-level `PROJECT_INSTRUCTIONS.md` pointers for the team backlog/startup assignment standard and Tool Votes priority source.
 
+## Rebase Notes
+
+- Rebased onto current `origin/main` after Owner 035 merged.
+- Merge conflicts were limited to generated report artifacts: `dev/reports/codex_changed_files.txt` and `dev/reports/codex_review.diff`.
+- Owner 035 runtime/API/auth files from `main` were preserved unchanged.
+- Owner 003 remains governance/documentation-only.
+
 ## Owner Recommendation
 
 Use `dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md` as the required assigned-work source during startup and use `admin/tool-votes.html` as the priority signal source for tool demand. When either source is missing or does not represent the requested work, Codex must stop and ask OWNER whether to update the backlog before proceeding.
