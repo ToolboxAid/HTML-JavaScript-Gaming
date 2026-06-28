@@ -1,98 +1,26 @@
-# Alfa Objects Stack EOD Changed Files
+# git status --short
+M dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs
+ M dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
+ M src/dev-runtime/server/local-api-router.mjs
+ M src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs
+?? dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_branch_validation.md
+?? dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_manual_validation_notes.md
+?? dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_report.md
+?? dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_requirement_checklist.md
+?? dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_lane_report.md
+?? dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_report.md
 
-Base before Objects stack: 13ed907456492612adce750a434b52058301bbf5
-Objects stack merge head: 54b4c4a894e8e6ddf75d8dabdda0cc0f87f92a51
-Current branch during report: main
-main...origin/main during report: 0	0
+# git ls-files --others --exclude-standard
+dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_branch_validation.md
+dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_manual_validation_notes.md
+dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_report.md
+dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_requirement_checklist.md
+dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_lane_report.md
+dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_report.md
 
-# Merged PRs
-- PR_26179_ALFA_011-objects-manager-mvp: a2da07a84adea589a22b05ed8985bdcf7d5806db Merge PR_26179_ALFA_011 Objects Manager MVP
-- PR_26179_ALFA_012-objects-properties-mvp: 76ef2bcfff8a8fb0a3949901dc32a090593a4480 Merge PR_26179_ALFA_012 Object Properties MVP
-- PR_26179_ALFA_013-objects-asset-links: 22464cc322f6d8c2721124dd1ca30d13f0adc8cf Merge PR_26179_ALFA_013 Objects Asset Links
-- PR_26179_ALFA_014-objects-journey-readiness: 54b4c4a894e8e6ddf75d8dabdda0cc0f87f92a51 Merge PR_26179_ALFA_014 Objects Journey Readiness
-
-# git status --short before report refresh
-M dev/reports/codex_review.diff
-
-# git diff --name-status 13ed907456492612adce750a434b52058301bbf5..54b4c4a894e8e6ddf75d8dabdda0cc0f87f92a51
-M	assets/toolbox/game-journey/js/index.js
-M	assets/toolbox/objects/js/index.js
-A	dev/reports/PR_26179_ALFA_011-objects-manager-mvp_branch-validation.md
-A	dev/reports/PR_26179_ALFA_011-objects-manager-mvp_manual-validation-notes.md
-A	dev/reports/PR_26179_ALFA_011-objects-manager-mvp_report.md
-A	dev/reports/PR_26179_ALFA_011-objects-manager-mvp_requirement-checklist.md
-A	dev/reports/PR_26179_ALFA_011-objects-manager-mvp_validation-lane.md
-A	dev/reports/PR_26179_ALFA_011-objects-manager-mvp_validation-report.md
-A	dev/reports/PR_26179_ALFA_012-objects-properties-mvp_branch_validation.md
-A	dev/reports/PR_26179_ALFA_012-objects-properties-mvp_manual_validation_notes.md
-A	dev/reports/PR_26179_ALFA_012-objects-properties-mvp_report.md
-A	dev/reports/PR_26179_ALFA_012-objects-properties-mvp_requirement_checklist.md
-A	dev/reports/PR_26179_ALFA_012-objects-properties-mvp_validation_lane.md
-A	dev/reports/PR_26179_ALFA_012-objects-properties-mvp_validation_report.md
-A	dev/reports/PR_26179_ALFA_013-objects-asset-links_branch_validation.md
-A	dev/reports/PR_26179_ALFA_013-objects-asset-links_manual_validation_notes.md
-A	dev/reports/PR_26179_ALFA_013-objects-asset-links_report.md
-A	dev/reports/PR_26179_ALFA_013-objects-asset-links_requirement_checklist.md
-A	dev/reports/PR_26179_ALFA_013-objects-asset-links_validation_lane.md
-A	dev/reports/PR_26179_ALFA_013-objects-asset-links_validation_report.md
-A	dev/reports/PR_26179_ALFA_014-objects-journey-readiness_branch_validation.md
-A	dev/reports/PR_26179_ALFA_014-objects-journey-readiness_eod_report.md
-A	dev/reports/PR_26179_ALFA_014-objects-journey-readiness_manual_validation_notes.md
-A	dev/reports/PR_26179_ALFA_014-objects-journey-readiness_report.md
-A	dev/reports/PR_26179_ALFA_014-objects-journey-readiness_requirement_checklist.md
-A	dev/reports/PR_26179_ALFA_014-objects-journey-readiness_validation_lane.md
-A	dev/reports/PR_26179_ALFA_014-objects-journey-readiness_validation_report.md
-A	dev/reports/PR_26179_ALFA_objects-stack_product-owner-review-notes.md
-M	dev/reports/codex_changed_files.txt
-M	dev/reports/codex_review.diff
-M	dev/reports/coverage_changed_js_guardrail.txt
-M	dev/reports/playwright_v8_coverage_report.txt
-A	dev/tests/dev-runtime/ObjectsApiService.test.mjs
-M	dev/tests/playwright/tools/GameJourneyTool.spec.mjs
-M	dev/tests/playwright/tools/ObjectsTool.spec.mjs
-M	src/dev-runtime/server/local-api-router.mjs
-M	src/dev-runtime/toolbox-api/alfa-tool-services.mjs
-M	toolbox/game-journey/index.html
-M	toolbox/objects/index.html
-
-# git diff --stat 13ed907456492612adce750a434b52058301bbf5..54b4c4a894e8e6ddf75d8dabdda0cc0f87f92a51
-assets/toolbox/game-journey/js/index.js            | 285 +++++-
- assets/toolbox/objects/js/index.js                 | 598 ++++++++++++-
- ...FA_011-objects-manager-mvp_branch-validation.md |  10 +
- ...-objects-manager-mvp_manual-validation-notes.md |  19 +
- ...PR_26179_ALFA_011-objects-manager-mvp_report.md |  39 +
- ...11-objects-manager-mvp_requirement-checklist.md |  16 +
- ...ALFA_011-objects-manager-mvp_validation-lane.md |  17 +
- ...FA_011-objects-manager-mvp_validation-report.md |  19 +
- ...012-objects-properties-mvp_branch_validation.md |  26 +
- ...jects-properties-mvp_manual_validation_notes.md |  22 +
- ...26179_ALFA_012-objects-properties-mvp_report.md |  40 +
- ...objects-properties-mvp_requirement_checklist.md |  23 +
- ...A_012-objects-properties-mvp_validation_lane.md |  23 +
- ...012-objects-properties-mvp_validation_report.md |  18 +
- ...FA_013-objects-asset-links_branch_validation.md |  27 +
- ...-objects-asset-links_manual_validation_notes.md |  24 +
- ...PR_26179_ALFA_013-objects-asset-links_report.md |  41 +
- ...13-objects-asset-links_requirement_checklist.md |  15 +
- ...ALFA_013-objects-asset-links_validation_lane.md |  23 +
- ...FA_013-objects-asset-links_validation_report.md |  16 +
- ...-objects-journey-readiness_branch_validation.md |  24 +
- ...LFA_014-objects-journey-readiness_eod_report.md |  27 +
- ...ts-journey-readiness_manual_validation_notes.md |  14 +
- ...79_ALFA_014-objects-journey-readiness_report.md |  34 +
- ...ects-journey-readiness_requirement_checklist.md |  17 +
- ...14-objects-journey-readiness_validation_lane.md |  20 +
- ...-objects-journey-readiness_validation_report.md |  19 +
- ...LFA_objects-stack_product-owner-review-notes.md |  87 ++
- dev/reports/codex_changed_files.txt                |  55 +-
- dev/reports/codex_review.diff                      | 988 ++++++++++++++++++++-
- dev/reports/coverage_changed_js_guardrail.txt      |   4 +-
- dev/reports/playwright_v8_coverage_report.txt      |  31 +-
- dev/tests/dev-runtime/ObjectsApiService.test.mjs   | 224 +++++
- .../playwright/tools/GameJourneyTool.spec.mjs      |  94 ++
- dev/tests/playwright/tools/ObjectsTool.spec.mjs    | 211 ++++-
- src/dev-runtime/server/local-api-router.mjs        |  14 +-
- src/dev-runtime/toolbox-api/alfa-tool-services.mjs | 417 +++++++++
- toolbox/game-journey/index.html                    |  21 +
- toolbox/objects/index.html                         |  53 ++
- 39 files changed, 3601 insertions(+), 54 deletions(-)
+# git diff --stat
+.../SupabaseDevCreatorIdentitySeedSync.test.mjs    | 188 ++++++++++++++-------
+ .../SupabaseProviderContractStub.test.mjs          | 138 ++++++++++++++-
+ src/dev-runtime/server/local-api-router.mjs        |  24 ++-
+ .../supabase-dev-creator-identity-seed-sync.mjs    | 155 +++++++++++------
+ 4 files changed, 391 insertions(+), 114 deletions(-)

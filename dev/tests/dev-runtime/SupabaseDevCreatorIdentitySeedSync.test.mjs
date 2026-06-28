@@ -11,10 +11,18 @@ import {
 } from "../../../src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs";
 
 const syncEnv = Object.freeze({
+  GAMEFOUNDRY_DATABASE_SSL: "disable",
+  GAMEFOUNDRY_DATABASE_URL: "postgres://sync_user:sync_password@dev-sync.example.test/gamefoundry",
   GAMEFOUNDRY_ENV: "dev",
   GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
   GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
   GAMEFOUNDRY_SUPABASE_URL: "https://supabase-sync.example.test",
+});
+const DEV_DB_USER_KEYS = Object.freeze({
+  davidq: "01J00000000000000000000014",
+  user1: "01J00000000000000000000011",
+  user2: "01J00000000000000000000012",
+  user3: "01J00000000000000000000013",
 });
 
 function decodeEqFilter(searchParams, key) {
@@ -43,10 +51,10 @@ function createFakeSupabaseSyncState() {
       { key: "role-user", roleSlug: "user", name: "User", isActive: true, isSystemRole: false, ...audit },
     ],
     user_roles: [
-      { key: "old-user-role", userKey: SEED_DB_KEYS.users.user1, roleKey: "role-user", ...audit },
-      { key: "missing-role-reference", userKey: SEED_DB_KEYS.users.admin, roleKey: "01KV6FVP0ASR2RRR9WXCBKTV6C", ...audit },
+      { key: "old-user-role", userKey: DEV_DB_USER_KEYS.user1, roleKey: "role-user", ...audit },
+      { key: "missing-role-reference", userKey: DEV_DB_USER_KEYS.davidq, roleKey: "01KV6FVP0ASR2RRR9WXCBKTV6C", ...audit },
       { key: "extra-user-role", userKey: "user-extra-codex", roleKey: "role-creator", ...audit },
-      { key: "davidq-admin-role", userKey: SEED_DB_KEYS.users.admin, roleKey: "role-admin", ...audit },
+      { key: "davidq-admin-role", userKey: DEV_DB_USER_KEYS.davidq, roleKey: "role-admin", ...audit },
     ],
     users: [
       {
@@ -55,7 +63,34 @@ function createFakeSupabaseSyncState() {
         displayName: "User 1",
         email: "user1@example.invalid",
         isActive: true,
-        key: SEED_DB_KEYS.users.user1,
+        key: DEV_DB_USER_KEYS.user1,
+        ...audit,
+      },
+      {
+        authProvider: "dev-static-seed",
+        authProviderUserId: "user-2",
+        displayName: "User 2",
+        email: "user2@example.invalid",
+        isActive: true,
+        key: DEV_DB_USER_KEYS.user2,
+        ...audit,
+      },
+      {
+        authProvider: "dev-static-seed",
+        authProviderUserId: "user-3",
+        displayName: "User 3",
+        email: "user3@example.invalid",
+        isActive: true,
+        key: DEV_DB_USER_KEYS.user3,
+        ...audit,
+      },
+      {
+        authProvider: "dev-static-seed",
+        authProviderUserId: "davidq",
+        displayName: "DavidQ",
+        email: "qbytes.dq@gmail.com",
+        isActive: true,
+        key: DEV_DB_USER_KEYS.davidq,
         ...audit,
       },
       {
@@ -71,6 +106,65 @@ function createFakeSupabaseSyncState() {
   };
   const calls = [];
   let generatedKey = 1;
+
+  function mutateTableRequest(tableName, { body = {}, method = "GET", query = "select=*" } = {}) {
+    calls.push({
+      body,
+      method,
+      path: `/rest/v1/${tableName}?${query}`,
+    });
+
+    state[tableName] = state[tableName] || [];
+    if (method === "POST") {
+      const rows = Array.isArray(body) ? body : [body];
+      rows.forEach((row) => {
+        const rowWithKey = {
+          ...row,
+          key: row.key || `generated-${generatedKey++}`,
+        };
+        const index = state[tableName].findIndex((existing) => existing.key === rowWithKey.key);
+        if (index === -1) {
+          state[tableName].push(rowWithKey);
+        } else {
+          state[tableName][index] = {
+            ...state[tableName][index],
+            ...rowWithKey,
+          };
+        }
+      });
+      return rows;
+    }
+    if (method === "DELETE") {
+      const searchParams = new URLSearchParams(query);
+      const filterField = searchParams.has("key")
+        ? "key"
+        : searchParams.has("roleKey")
+          ? "roleKey"
+          : tableName === "users"
+            ? "key"
+            : "userKey";
+      const filterValue = decodeEqFilter(searchParams, filterField);
+      const deleted = state[tableName].filter((row) => row[filterField] === filterValue);
+      state[tableName] = state[tableName].filter((row) => row[filterField] !== filterValue);
+      return deleted;
+    }
+    if (method === "PATCH") {
+      const searchParams = new URLSearchParams(query);
+      const filterField = searchParams.has("createdBy") ? "createdBy" : "updatedBy";
+      const filterValue = decodeEqFilter(searchParams, filterField);
+      const changed = [];
+      state[tableName] = state[tableName].map((row) => {
+        if (row[filterField] !== filterValue) {
+          return row;
+        }
+        const nextRow = { ...row, ...body };
+        changed.push(nextRow);
+        return nextRow;
+      });
+      return changed;
+    }
+    return state[tableName].map((row) => ({ ...row }));
+  }
 
   async function fetchImpl(url, options = {}) {
     const requestUrl = new URL(url);
@@ -130,57 +224,6 @@ function createFakeSupabaseSyncState() {
       };
     }
 
-    if (requestUrl.pathname.startsWith("/rest/v1/")) {
-      const tableName = decodeURIComponent(requestUrl.pathname.split("/").pop() || "");
-      state[tableName] = state[tableName] || [];
-      if (method === "POST") {
-        const rows = Array.isArray(body) ? body : [body];
-        rows.forEach((row) => {
-          const rowWithKey = {
-            ...row,
-            key: row.key || `generated-${generatedKey++}`,
-          };
-          const index = state[tableName].findIndex((existing) => existing.key === rowWithKey.key);
-          if (index === -1) {
-            state[tableName].push(rowWithKey);
-          } else {
-            state[tableName][index] = {
-              ...state[tableName][index],
-              ...rowWithKey,
-            };
-          }
-        });
-        return {
-          json: async () => rows,
-          ok: true,
-          status: 200,
-        };
-      }
-      if (method === "DELETE") {
-        const filterField = requestUrl.searchParams.has("key") ? "key" : tableName === "users" ? "key" : "userKey";
-        const filterValue = decodeEqFilter(requestUrl.searchParams, filterField);
-        const deleted = state[tableName].filter((row) => row[filterField] === filterValue);
-        state[tableName] = state[tableName].filter((row) => row[filterField] !== filterValue);
-        return {
-          json: async () => deleted,
-          ok: true,
-          status: 200,
-        };
-      }
-      if (method === "PATCH") {
-        return {
-          json: async () => [],
-          ok: true,
-          status: 200,
-        };
-      }
-      return {
-        json: async () => state[tableName].map((row) => ({ ...row })),
-        ok: true,
-        status: 200,
-      };
-    }
-
     return {
       json: async () => ({ message: "Unhandled fake route" }),
       ok: false,
@@ -188,7 +231,14 @@ function createFakeSupabaseSyncState() {
     };
   }
 
-  return { calls, fetchImpl, state };
+  return {
+    calls,
+    fetchImpl,
+    postgresClient: {
+      requestTable: async (tableName, options = {}) => mutateTableRequest(tableName, options),
+    },
+    state,
+  };
 }
 
 test("Supabase DEV creator identity sync upserts canonical users and deletes extra managed accounts", async () => {
@@ -201,8 +251,8 @@ test("Supabase DEV creator identity sync upserts canonical users and deletes ext
     }),
     databaseProvider: new SupabasePostgresProviderAdapter({
       env: syncEnv,
-      fetchImpl: fake.fetchImpl,
       keyFactory: () => `provider-generated-key-${providerGeneratedKey++}`,
+      postgresClient: fake.postgresClient,
     }),
     env: syncEnv,
   });
@@ -239,6 +289,11 @@ test("Supabase DEV creator identity sync upserts canonical users and deletes ext
   assert.deepEqual(fake.state.authUsers.map((user) => user.email).sort(), canonicalEmails);
   assert.deepEqual(fake.state.users.map((user) => user.email).sort(), canonicalEmails);
   assert.equal(fake.state.users.find((user) => user.email === "qbytes.dq@gmail.com").displayName, "DavidQ");
+  assert.equal(fake.state.users.find((user) => user.email === "qbytes.dq@gmail.com").key, DEV_DB_USER_KEYS.davidq);
+  assert.equal(fake.state.users.find((user) => user.email === "user1@example.invalid").key, DEV_DB_USER_KEYS.user1);
+  assert.equal(fake.state.users.find((user) => user.email === "user2@example.invalid").key, DEV_DB_USER_KEYS.user2);
+  assert.equal(fake.state.users.find((user) => user.email === "user3@example.invalid").key, DEV_DB_USER_KEYS.user3);
+  assert.equal(fake.state.users.some((user) => Object.values(SEED_DB_KEYS.users).includes(user.key)), false);
   assert.equal(fake.state.users.every((user) => user.authProvider === "supabase-auth"), true);
   assert.equal(fake.state.roles.some((role) => role.roleSlug === "user"), false);
   assert.equal(fake.state.roles.find((role) => role.roleSlug === "owner").isActive, true);
@@ -246,4 +301,23 @@ test("Supabase DEV creator identity sync upserts canonical users and deletes ext
   const davidq = fake.state.users.find((user) => user.email === "qbytes.dq@gmail.com");
   assert.equal(fake.state.user_roles.some((row) => row.userKey === davidq.key && row.roleKey === ownerRole.key), true);
   assert.equal(fake.calls.some((call) => call.path === "/auth/v1/admin/users?page=1&per_page=100" && call.method === "GET"), true);
+});
+
+test("Supabase DEV creator identity sync requires existing database users rows by email", async () => {
+  const fake = createFakeSupabaseSyncState();
+  fake.state.users = fake.state.users.filter((user) => user.email !== "qbytes.dq@gmail.com");
+  await assert.rejects(
+    () => syncSupabaseDevCreatorIdentities({
+      authProvider: new SupabaseAuthProviderAdapter({
+        env: syncEnv,
+        fetchImpl: fake.fetchImpl,
+      }),
+      databaseProvider: new SupabasePostgresProviderAdapter({
+        env: syncEnv,
+        postgresClient: fake.postgresClient,
+      }),
+      env: syncEnv,
+    }),
+    /requires existing database users rows for: qbytes\.dq@gmail\.com/,
+  );
 });
