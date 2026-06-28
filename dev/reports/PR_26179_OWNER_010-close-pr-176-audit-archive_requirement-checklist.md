@@ -15,4 +15,4 @@
 | Do not reopen PR #176 | PASS | PR #176 state was not changed. |
 | Do not merge or close PRs | PASS | No PR state changes were made. |
 | Produce required reports | PASS | Required `dev/reports` files are included. |
-| Produce ZIP under `tmp/` | PASS | ZIP generated under `tmp/` as requested. |
+| Produce ZIP under `dev/workspace/zips/` | PASS | ZIP generated under the canonical `dev/workspace/zips/` location. |
