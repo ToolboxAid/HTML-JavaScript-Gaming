@@ -171,6 +171,10 @@
                                         <button class="btn btn--compact" type="button" data-sprites-duplicate-frame>Duplicate Frame</button>
                                         <button class="btn btn--compact" type="button" data-sprites-delete-frame disabled>Delete Frame</button>
                                     </div>
+                                    <div class="action-group action-group--tight" aria-label="Sprite animation preview controls" data-sprites-animation-controls>
+                                        <button class="btn btn--compact primary" type="button" data-sprites-play-animation>Play Preview</button>
+                                        <button class="btn btn--compact" type="button" data-sprites-stop-animation disabled>Stop Preview</button>
+                                    </div>
                                     <div class="sprite-frame-strip" role="group" aria-label="Sprite Creator frame strip" data-sprites-frame-strip>
                                         <button class="sprite-frame-card is-active" type="button" data-sprites-frame-card="0" aria-pressed="true">
                                             <span class="sprite-frame-card-title">Frame 1</span>
@@ -179,6 +183,7 @@
                                         </button>
                                     </div>
                                     <p class="status" role="status" data-sprites-frame-status>Frame strip: 1 unsaved frame. Current editor draft is selected.</p>
+                                    <p class="status" role="status" data-sprites-animation-status>Animation preview is stopped. Add at least two unsaved frames to preview motion.</p>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>

@@ -1,218 +1,147 @@
 diff --git a/assets/toolbox/sprites/js/index.js b/assets/toolbox/sprites/js/index.js
-index 97cd57379..15626ff2b 100644
+index 15626ff2b..333a7d6ad 100644
 --- a/assets/toolbox/sprites/js/index.js
 +++ b/assets/toolbox/sprites/js/index.js
-@@ -1,4 +1,5 @@
- const DEFAULT_GRID_SIZE = 16;
-+const DEFAULT_FRAME_DURATION_MS = 120;
- const SUPPORTED_GRID_SIZES = Object.freeze([16, 32]);
- const SUPPORTED_ZOOM_LEVELS = Object.freeze([1, 2, 4]);
- const SHAPE_TOOLS = Object.freeze(["line", "rectangle", "circle"]);
-@@ -12,11 +13,22 @@ const EDITOR_COLOR_CSS_VARIABLES = Object.freeze({
-   orange: "--molten-orange",
- });
-
-+function createEditorFrame(frameNumber, paintedPixels = new Map()) {
-+  return {
-+    durationMs: DEFAULT_FRAME_DURATION_MS,
-+    frameNumber,
-+    paintedPixels: new Map(paintedPixels),
-+  };
-+}
-+
-+const initialFrame = createEditorFrame(1);
- const editorState = {
-   activeTool: "pencil",
-   activeColor: "ink",
-+  activeFrameIndex: 0,
-+  frames: [initialFrame],
-   gridSize: DEFAULT_GRID_SIZE,
--  paintedPixels: new Map(),
-+  paintedPixels: initialFrame.paintedPixels,
-   shapeAnchor: null,
-   zoomLevel: 1,
+@@ -36,6 +36,10 @@ const editorHistory = {
+   redoStack: [],
+   undoStack: [],
  };
-@@ -48,8 +60,23 @@ function isInsideGrid(row, column) {
-   return row >= 1 && row <= editorState.gridSize && column >= 1 && column <= editorState.gridSize;
++const animationPreview = {
++  frameIndex: 0,
++  timerId: null,
++};
+
+ function gridLabel(size) {
+   return `Sprite Creator ${size} by ${size} pixel canvas`;
+@@ -467,12 +471,12 @@ function renderPixelsToCanvas(canvas, paintedPixels, gridSize) {
+   }
  }
 
-+function currentFrame() {
-+  return editorState.frames[editorState.activeFrameIndex] || editorState.frames[0];
-+}
-+
-+function syncActiveFramePixels() {
-+  editorState.paintedPixels = currentFrame().paintedPixels;
-+}
-+
-+function renumberFrames() {
-+  editorState.frames.forEach((frame, index) => {
-+    frame.frameNumber = index + 1;
-+  });
-+}
-+
- function stateSnapshot() {
-   return {
-+    activeFrameIndex: editorState.activeFrameIndex,
-     gridSize: editorState.gridSize,
-     paintedPixels: Array.from(editorState.paintedPixels.entries()),
-   };
-@@ -144,7 +171,10 @@ function applyPaintedPixelsToGrid() {
-
- function applySnapshot(snapshot) {
-   setGridSize(snapshot.gridSize, { recordHistory: false });
--  editorState.paintedPixels = new Map(snapshot.paintedPixels);
-+  const targetIndex = Math.min(snapshot.activeFrameIndex ?? editorState.activeFrameIndex, editorState.frames.length - 1);
-+  editorState.activeFrameIndex = Math.max(0, targetIndex);
-+  currentFrame().paintedPixels = new Map(snapshot.paintedPixels);
-+  syncActiveFramePixels();
-   editorState.shapeAnchor = null;
-   applyPaintedPixelsToGrid();
-   updateDraftStatus();
-@@ -446,14 +476,86 @@ function renderPreview() {
+-function renderPreview() {
++function renderPreview(frame = currentFrame()) {
+   const canvas = document.querySelector("[data-sprites-preview-canvas]");
+   if (!canvas) {
+     return;
+   }
+-  renderPixelsToCanvas(canvas, editorState.paintedPixels, editorState.gridSize);
++  renderPixelsToCanvas(canvas, frame.paintedPixels, editorState.gridSize);
  }
 
  function renderFrameStrip() {
--  const thumbnail = document.querySelector("[data-sprites-frame-thumbnail='0']");
-+  const strip = document.querySelector("[data-sprites-frame-strip]");
-   const status = document.querySelector("[data-sprites-frame-status]");
--  if (thumbnail) {
--    renderPixelsToCanvas(thumbnail, editorState.paintedPixels, editorState.gridSize);
-+  if (strip) {
-+    strip.replaceChildren();
-+    editorState.frames.forEach((frame, index) => {
-+      const button = document.createElement("button");
-+      button.className = `sprite-frame-card${index === editorState.activeFrameIndex ? " is-active" : ""}`;
-+      button.type = "button";
-+      button.dataset.spritesFrameCard = String(index);
-+      button.setAttribute("aria-pressed", String(index === editorState.activeFrameIndex));
-+      const title = document.createElement("span");
-+      title.className = "sprite-frame-card-title";
-+      title.textContent = `Frame ${frame.frameNumber}`;
-+      const thumbnail = document.createElement("canvas");
-+      thumbnail.className = "sprite-frame-thumbnail";
-+      thumbnail.width = 48;
-+      thumbnail.height = 48;
-+      thumbnail.setAttribute("aria-label", `Frame ${frame.frameNumber} thumbnail`);
-+      thumbnail.dataset.spritesFrameThumbnail = String(index);
-+      const meta = document.createElement("span");
-+      meta.className = "sprite-frame-card-meta";
-+      meta.textContent = `${frame.paintedPixels.size} pixel${frame.paintedPixels.size === 1 ? "" : "s"}`;
-+      button.append(title, thumbnail, meta);
-+      button.addEventListener("click", () => selectFrame(index));
-+      strip.append(button);
-+      renderPixelsToCanvas(thumbnail, frame.paintedPixels, editorState.gridSize);
-+    });
-   }
-   if (status) {
--    status.textContent = `Frame strip: 1 unsaved frame. Current editor draft has ${editorState.paintedPixels.size} painted pixel${editorState.paintedPixels.size === 1 ? "" : "s"}.`;
-+    status.textContent = `Frame strip: ${editorState.frames.length} unsaved frame${editorState.frames.length === 1 ? "" : "s"}. Frame ${currentFrame().frameNumber} is selected with ${editorState.paintedPixels.size} painted pixel${editorState.paintedPixels.size === 1 ? "" : "s"}.`;
-+  }
-+  const deleteButton = document.querySelector("[data-sprites-delete-frame]");
-+  if (deleteButton) {
-+    deleteButton.disabled = editorState.frames.length <= 1;
-+  }
-+}
-+
-+function selectFrame(index) {
-+  if (index < 0 || index >= editorState.frames.length) {
-+    return;
-+  }
-+  editorState.activeFrameIndex = index;
-+  syncActiveFramePixels();
-+  editorState.shapeAnchor = null;
-+  applyPaintedPixelsToGrid();
-+  updateDraftStatus();
-+  updateHistoryControls();
-+}
-+
-+function addFrame() {
-+  editorState.frames.push(createEditorFrame(editorState.frames.length + 1));
-+  editorState.activeFrameIndex = editorState.frames.length - 1;
-+  syncActiveFramePixels();
-+  editorState.shapeAnchor = null;
-+  updateDraftStatus();
-+  updateHistoryControls();
-+}
-+
-+function duplicateFrame() {
-+  const duplicate = createEditorFrame(editorState.frames.length + 1, editorState.paintedPixels);
-+  editorState.frames.push(duplicate);
-+  editorState.activeFrameIndex = editorState.frames.length - 1;
-+  syncActiveFramePixels();
-+  editorState.shapeAnchor = null;
-+  updateDraftStatus();
-+  updateHistoryControls();
-+}
-+
-+function deleteFrame() {
-+  if (editorState.frames.length <= 1) {
-+    return;
-   }
-+  editorState.frames.splice(editorState.activeFrameIndex, 1);
-+  renumberFrames();
-+  editorState.activeFrameIndex = Math.max(0, Math.min(editorState.activeFrameIndex, editorState.frames.length - 1));
-+  syncActiveFramePixels();
-+  editorState.shapeAnchor = null;
-+  applyPaintedPixelsToGrid();
-+  updateDraftStatus();
-+  updateHistoryControls();
+@@ -558,6 +562,63 @@ function deleteFrame() {
+   updateHistoryControls();
  }
 
++function updateAnimationControls(isPlaying) {
++  const playButton = document.querySelector("[data-sprites-play-animation]");
++  const stopButton = document.querySelector("[data-sprites-stop-animation]");
++  if (playButton) {
++    playButton.disabled = isPlaying;
++  }
++  if (stopButton) {
++    stopButton.disabled = !isPlaying;
++  }
++}
++
++function animationStatusText(prefix, frameIndex = editorState.activeFrameIndex) {
++  return `${prefix} Frame ${frameIndex + 1} of ${editorState.frames.length}. Unsaved preview only.`;
++}
++
++function showAnimationFrame(frameIndex) {
++  const normalizedIndex = frameIndex % editorState.frames.length;
++  animationPreview.frameIndex = normalizedIndex;
++  renderPreview(editorState.frames[normalizedIndex]);
++  const status = document.querySelector("[data-sprites-animation-status]");
++  if (status) {
++    status.textContent = animationStatusText("Playing", normalizedIndex);
++  }
++}
++
++function stopAnimationPreview(message = "Animation preview stopped.") {
++  if (animationPreview.timerId) {
++    clearInterval(animationPreview.timerId);
++    animationPreview.timerId = null;
++  }
++  renderPreview(currentFrame());
++  updateAnimationControls(false);
++  const status = document.querySelector("[data-sprites-animation-status]");
++  if (status) {
++    status.textContent = `${message} Selected Frame ${currentFrame().frameNumber} is shown.`;
++  }
++}
++
++function playAnimationPreview() {
++  const status = document.querySelector("[data-sprites-animation-status]");
++  if (editorState.frames.length < 2) {
++    if (status) {
++      status.textContent = "Animation preview needs at least two unsaved frames.";
++    }
++    return;
++  }
++  if (animationPreview.timerId) {
++    clearInterval(animationPreview.timerId);
++  }
++  animationPreview.frameIndex = 0;
++  updateAnimationControls(true);
++  showAnimationFrame(animationPreview.frameIndex);
++  animationPreview.timerId = setInterval(() => {
++    showAnimationFrame((animationPreview.frameIndex + 1) % editorState.frames.length);
++  }, DEFAULT_FRAME_DURATION_MS);
++}
++
  function exportPreviewPng() {
-@@ -497,7 +599,10 @@ function setGridSize(size, options = {}) {
-
-   grid.replaceChildren();
-   editorState.gridSize = size;
--  editorState.paintedPixels.clear();
-+  editorState.frames.forEach((frame) => {
-+    frame.paintedPixels.clear();
-+  });
-+  syncActiveFramePixels();
-   editorState.shapeAnchor = null;
-   grid.dataset.spritesGridSize = String(size);
-   grid.setAttribute("aria-label", gridLabel(size));
-@@ -579,6 +684,23 @@ function wireCanvasActions() {
+   const canvas = document.querySelector("[data-sprites-preview-canvas]");
+   const status = document.querySelector("[data-sprites-export-status]");
+@@ -701,6 +762,18 @@ function wireFrameActions() {
    }
  }
 
-+function wireFrameActions() {
-+  const addButton = document.querySelector("[data-sprites-add-frame]");
-+  if (addButton) {
-+    addButton.addEventListener("click", addFrame);
++function wireAnimationActions() {
++  const playButton = document.querySelector("[data-sprites-play-animation]");
++  if (playButton) {
++    playButton.addEventListener("click", playAnimationPreview);
 +  }
 +
-+  const duplicateButton = document.querySelector("[data-sprites-duplicate-frame]");
-+  if (duplicateButton) {
-+    duplicateButton.addEventListener("click", duplicateFrame);
-+  }
-+
-+  const deleteButton = document.querySelector("[data-sprites-delete-frame]");
-+  if (deleteButton) {
-+    deleteButton.addEventListener("click", deleteFrame);
++  const stopButton = document.querySelector("[data-sprites-stop-animation]");
++  if (stopButton) {
++    stopButton.addEventListener("click", () => stopAnimationPreview());
 +  }
 +}
 +
  function wireHistoryActions() {
    const undoButton = document.querySelector("[data-sprites-undo]");
    if (undoButton) {
-@@ -618,6 +740,7 @@ wireGridControls();
- wireDrawingTools();
+@@ -741,6 +814,7 @@ wireDrawingTools();
  wirePaletteButtons();
  wireCanvasActions();
-+wireFrameActions();
+ wireFrameActions();
++wireAnimationActions();
  wireHistoryActions();
  wireZoomControls();
  wireExportButton();
+@@ -751,3 +825,4 @@ setZoomLevel(editorState.zoomLevel);
+ updateHistoryControls();
+ renderPreview();
+ renderFrameStrip();
++updateAnimationControls(false);
 diff --git a/dev/tests/playwright/tools/SpritesToolShell.spec.mjs b/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-index 394c1971b..73cbd2f00 100644
+index 73cbd2f00..d30722123 100644
 --- a/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
 +++ b/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-@@ -487,3 +487,51 @@ test("Sprite Creator keeps center canvas and right preview in sync", async ({ pa
+@@ -271,6 +271,7 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status
+     await expect(page.getByRole("heading", { level: 2, name: "Sprite Details" })).toBeVisible();
+     await expect(page.locator("[data-sprites-frame-strip]")).toBeVisible();
+     await expect(page.locator("[data-sprites-frame-status]")).toContainText("1 unsaved frame");
++    await expect(page.locator("[data-sprites-animation-status]")).toContainText("Animation preview is stopped");
+     await expect(page.locator("[data-sprites-toolbar]")).toBeVisible();
+     await expect(page.getByRole("button", { name: "Pencil tool" })).toBeEnabled();
+     await expect(page.getByRole("button", { name: "Eraser tool" })).toBeEnabled();
+@@ -535,3 +536,33 @@ test("Sprite Creator edits unsaved frame strip frames", async ({ page }) => {
      await server.close();
    }
  });
 +
-+test("Sprite Creator edits unsaved frame strip frames", async ({ page }) => {
++test("Sprite Creator previews unsaved animation frames", async ({ page }) => {
 +  const server = await startSpriteShellTestServer();
 +  const failures = collectPageFailures(page);
 +
@@ -221,36 +150,18 @@ index 394c1971b..73cbd2f00 100644
 +
 +    await page.getByRole("button", { name: "Gold editor color" }).click();
 +    await spriteCell(page, 1, 1).click();
-+    await expectCenterAndPreviewPainted(page, 1, 1, "sprite-canvas-cell--gold");
-+
 +    await page.getByRole("button", { name: "Add Frame" }).click();
-+    await expect(page.locator("[data-sprites-frame-card]")).toHaveCount(2);
-+    await expect(page.locator("[data-sprites-frame-status]")).toContainText("Frame 2 is selected");
-+    await expectCenterAndPreviewEmpty(page, 1, 1);
-+
 +    await page.getByRole("button", { name: "Blue editor color" }).click();
-+    await page.getByRole("button", { name: "Pencil tool" }).click();
-+    await spriteCell(page, 2, 2).click();
-+    await expectCenterAndPreviewPainted(page, 2, 2, "sprite-canvas-cell--blue");
++    await spriteCell(page, 1, 1).click();
 +
-+    await page.locator("[data-sprites-frame-card='0']").click();
-+    await expect(page.locator("[data-sprites-frame-status]")).toContainText("Frame 1 is selected");
-+    await expectCenterAndPreviewPainted(page, 1, 1, "sprite-canvas-cell--gold");
-+    await expectCenterAndPreviewEmpty(page, 2, 2);
++    await page.getByRole("button", { name: "Play Preview" }).click();
++    await expect(page.getByRole("button", { name: "Stop Preview" })).toBeEnabled();
++    await expect(page.locator("[data-sprites-animation-status]")).toContainText("Playing Frame 1");
++    await expect(page.locator("[data-sprites-animation-status]")).toContainText("Playing Frame 2", { timeout: 1500 });
 +
-+    await page.locator("[data-sprites-frame-card='1']").click();
-+    await expect(page.locator("[data-sprites-frame-status]")).toContainText("Frame 2 is selected");
-+    await expectCenterAndPreviewPainted(page, 2, 2, "sprite-canvas-cell--blue");
-+
-+    await page.getByRole("button", { name: "Duplicate Frame" }).click();
-+    await expect(page.locator("[data-sprites-frame-card]")).toHaveCount(3);
-+    await expect(page.locator("[data-sprites-frame-status]")).toContainText("Frame 3 is selected");
-+    await expectCenterAndPreviewPainted(page, 2, 2, "sprite-canvas-cell--blue");
-+
-+    await page.getByRole("button", { name: "Delete Frame" }).click();
-+    await expect(page.locator("[data-sprites-frame-card]")).toHaveCount(2);
-+    await expect(page.locator("[data-sprites-frame-status]")).toContainText("Frame 2 is selected");
-+    await expectCenterAndPreviewPainted(page, 2, 2, "sprite-canvas-cell--blue");
++    await page.getByRole("button", { name: "Stop Preview" }).click();
++    await expect(page.locator("[data-sprites-animation-status]")).toContainText("Selected Frame 2 is shown");
++    await expectCenterAndPreviewPainted(page, 1, 1, "sprite-canvas-cell--blue");
 +
 +    expect(failures.failedRequests).toEqual([]);
 +    expect(failures.pageErrors).toEqual([]);
@@ -259,48 +170,46 @@ index 394c1971b..73cbd2f00 100644
 +    await server.close();
 +  }
 +});
-diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_035-sprites-frame-editing.md b/docs_build/dev/reports/PR_26179_CHARLIE_035-sprites-frame-editing.md
+diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_036-sprites-animation-preview.md b/docs_build/dev/reports/PR_26179_CHARLIE_036-sprites-animation-preview.md
 new file mode 100644
-index 000000000..54189a866
+index 000000000..772128525
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26179_CHARLIE_035-sprites-frame-editing.md
-@@ -0,0 +1,67 @@
-+# PR_26179_CHARLIE_035-sprites-frame-editing
++++ b/docs_build/dev/reports/PR_26179_CHARLIE_036-sprites-animation-preview.md
+@@ -0,0 +1,63 @@
++# PR_26179_CHARLIE_036-sprites-animation-preview
 +
 +Team: CHARLIE
 +
 +Mode: Batch governance stacked feature workflow
 +
-+Base branch: PR_26179_CHARLIE_034-sprites-frame-strip
++Base branch: PR_26179_CHARLIE_035-sprites-frame-editing
 +
-+Branch: PR_26179_CHARLIE_035-sprites-frame-editing
++Branch: PR_26179_CHARLIE_036-sprites-animation-preview
 +
 +## Summary
 +
-+Added unsaved page-session frame editing for Sprite Creator. Creators can add, duplicate, select, and delete frames in the frame strip. Each frame keeps its own draft pixel map in page-session state only. No persistence, database, API, schema, or product-data source-of-truth behavior was introduced.
++Added unsaved animation preview playback for Sprite Creator. Play Preview cycles the right preview canvas through unsaved page-session frames, and Stop Preview returns the preview to the selected frame. No persistence, database, API, schema, save-to-library, or publishing behavior was introduced.
 +
 +## Branch Validation
 +
 +PASS
 +
-+- Built from `PR_26179_CHARLIE_034-sprites-frame-strip`.
-+- Scope stayed limited to unsaved frame editing.
++- Built from `PR_26179_CHARLIE_035-sprites-frame-editing`.
++- Scope stayed limited to unsaved animation preview.
 +- No DB/API/schema changes.
-+- No saved product data or authoritative browser-owned product data added.
++- No saved product data or browser-owned authoritative product data added.
 +- No start_of_day files changed.
 +- ZIP package created at the requested path.
 +
 +## Requirement Checklist
 +
-+PASS - Add Frame control added.
++PASS - Animation preview controls added.
 +
-+PASS - Duplicate Frame control added.
++PASS - Preview requires unsaved frame strip frames only.
 +
-+PASS - Delete Frame control added and disabled when only one frame exists.
++PASS - Play cycles through unsaved frames in the right preview canvas.
 +
-+PASS - Frame selection swaps the center canvas and preview to the selected frame.
-+
-+PASS - Each frame keeps separate unsaved page-session pixels.
++PASS - Stop returns the preview to the selected frame.
 +
 +PASS - No persistence added.
 +
@@ -321,45 +230,47 @@ index 000000000..54189a866
 +## Manual Validation Notes
 +
 +1. Open `toolbox/sprites/index.html`.
-+2. Draw on Frame 1.
-+3. Click Add Frame and confirm Frame 2 is empty.
-+4. Draw different pixels on Frame 2.
-+5. Select Frame 1 and confirm its pixels return.
-+6. Select Frame 2 and confirm its pixels return.
-+7. Duplicate Frame 2 and confirm the duplicate keeps the current pixels.
-+8. Delete the duplicate and confirm the strip returns to two unsaved frames.
++2. Draw Frame 1.
++3. Add Frame 2 and draw a different draft.
++4. Click Play Preview and confirm the right preview cycles frames.
++5. Click Stop Preview and confirm the selected frame is shown.
++6. Confirm no save, publish, API, database, or library behavior is introduced.
 +
 +## ZIP
 +
-+`dev/workspace/zip/PR_26179_CHARLIE_035-sprites-frame-editing_delta.zip`
++`dev/workspace/zip/PR_26179_CHARLIE_036-sprites-animation-preview_delta.zip`
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index ac83eeaa1..1f7fb9b97 100644
+index 1f7fb9b97..3799d936c 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,7 +1,6 @@
--assets/theme-v2/css/gamefoundrystudio.css
+@@ -1,6 +1,6 @@
  assets/toolbox/sprites/js/index.js
  dev/tests/playwright/tools/SpritesToolShell.spec.mjs
--docs_build/dev/reports/PR_26179_CHARLIE_034-sprites-frame-strip.md
-+docs_build/dev/reports/PR_26179_CHARLIE_035-sprites-frame-editing.md
+-docs_build/dev/reports/PR_26179_CHARLIE_035-sprites-frame-editing.md
++docs_build/dev/reports/PR_26179_CHARLIE_036-sprites-animation-preview.md
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
  toolbox/sprites/index.html
 diff --git a/toolbox/sprites/index.html b/toolbox/sprites/index.html
-index 1d1db70e5..c5ea5697b 100644
+index c5ea5697b..58879b294 100644
 --- a/toolbox/sprites/index.html
 +++ b/toolbox/sprites/index.html
-@@ -165,7 +165,12 @@
-                             <details class="vertical-accordion" open>
-                                 <summary>Animation</summary>
-                                 <div class="accordion-body content-stack">
--                                    <p>The frame strip mirrors the current unsaved editor draft. Frame editing remains deferred to the next scoped Sprite Creator PR.</p>
-+                                    <p>The frame strip manages unsaved page-session frames only. Frames are not saved to the sprite library.</p>
-+                                    <div class="action-group action-group--tight" aria-label="Sprite frame editing controls" data-sprites-frame-actions>
-+                                        <button class="btn btn--compact primary" type="button" data-sprites-add-frame>Add Frame</button>
-+                                        <button class="btn btn--compact" type="button" data-sprites-duplicate-frame>Duplicate Frame</button>
-+                                        <button class="btn btn--compact" type="button" data-sprites-delete-frame disabled>Delete Frame</button>
+@@ -171,6 +171,10 @@
+                                         <button class="btn btn--compact" type="button" data-sprites-duplicate-frame>Duplicate Frame</button>
+                                         <button class="btn btn--compact" type="button" data-sprites-delete-frame disabled>Delete Frame</button>
+                                     </div>
++                                    <div class="action-group action-group--tight" aria-label="Sprite animation preview controls" data-sprites-animation-controls>
++                                        <button class="btn btn--compact primary" type="button" data-sprites-play-animation>Play Preview</button>
++                                        <button class="btn btn--compact" type="button" data-sprites-stop-animation disabled>Stop Preview</button>
 +                                    </div>
                                      <div class="sprite-frame-strip" role="group" aria-label="Sprite Creator frame strip" data-sprites-frame-strip>
                                          <button class="sprite-frame-card is-active" type="button" data-sprites-frame-card="0" aria-pressed="true">
                                              <span class="sprite-frame-card-title">Frame 1</span>
+@@ -179,6 +183,7 @@
+                                         </button>
+                                     </div>
+                                     <p class="status" role="status" data-sprites-frame-status>Frame strip: 1 unsaved frame. Current editor draft is selected.</p>
++                                    <p class="status" role="status" data-sprites-animation-status>Animation preview is stopped. Add at least two unsaved frames to preview motion.</p>
+                                 </div>
+                             </details>
+                             <details class="vertical-accordion" open>
