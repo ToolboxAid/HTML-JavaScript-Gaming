@@ -1,15 +1,30 @@
-assets/toolbox/objects/js/index.js
-dev/reports/codex_changed_files.txt
-dev/reports/codex_review.diff
-dev/reports/coverage_changed_js_guardrail.txt
-dev/reports/playwright_v8_coverage_report.txt
-dev/reports/PR_26179_ALFA_013-objects-asset-links_branch_validation.md
-dev/reports/PR_26179_ALFA_013-objects-asset-links_manual_validation_notes.md
-dev/reports/PR_26179_ALFA_013-objects-asset-links_report.md
-dev/reports/PR_26179_ALFA_013-objects-asset-links_requirement_checklist.md
-dev/reports/PR_26179_ALFA_013-objects-asset-links_validation_lane.md
-dev/reports/PR_26179_ALFA_013-objects-asset-links_validation_report.md
-dev/tests/dev-runtime/ObjectsApiService.test.mjs
-dev/tests/playwright/tools/ObjectsTool.spec.mjs
-src/dev-runtime/toolbox-api/alfa-tool-services.mjs
-toolbox/objects/index.html
+# git status --short
+M assets/toolbox/game-journey/js/index.js
+ M dev/reports/codex_changed_files.txt
+ M dev/reports/codex_review.diff
+ M dev/reports/playwright_v8_coverage_report.txt
+ M dev/tests/playwright/tools/GameJourneyTool.spec.mjs
+ M toolbox/game-journey/index.html
+?? dev/reports/PR_26179_ALFA_014-objects-journey-readiness_branch_validation.md
+?? dev/reports/PR_26179_ALFA_014-objects-journey-readiness_manual_validation_notes.md
+?? dev/reports/PR_26179_ALFA_014-objects-journey-readiness_report.md
+?? dev/reports/PR_26179_ALFA_014-objects-journey-readiness_requirement_checklist.md
+?? dev/reports/PR_26179_ALFA_014-objects-journey-readiness_validation_lane.md
+?? dev/reports/PR_26179_ALFA_014-objects-journey-readiness_validation_report.md
+
+# git ls-files --others --exclude-standard
+dev/reports/PR_26179_ALFA_014-objects-journey-readiness_branch_validation.md
+dev/reports/PR_26179_ALFA_014-objects-journey-readiness_manual_validation_notes.md
+dev/reports/PR_26179_ALFA_014-objects-journey-readiness_report.md
+dev/reports/PR_26179_ALFA_014-objects-journey-readiness_requirement_checklist.md
+dev/reports/PR_26179_ALFA_014-objects-journey-readiness_validation_lane.md
+dev/reports/PR_26179_ALFA_014-objects-journey-readiness_validation_report.md
+
+# git diff --stat
+assets/toolbox/game-journey/js/index.js            |  285 ++++-
+ dev/reports/codex_changed_files.txt                |   30 +-
+ dev/reports/codex_review.diff                      | 1249 +++++++++-----------
+ dev/reports/playwright_v8_coverage_report.txt      |   31 +-
+ .../playwright/tools/GameJourneyTool.spec.mjs      |   94 ++
+ toolbox/game-journey/index.html                    |   21 +
+ 6 files changed, 949 insertions(+), 761 deletions(-)
