@@ -3,7 +3,7 @@
 Team: CHARLIE
 Workflow: stacked feature workflow
 Base branch: PR_26179_CHARLIE_026-sprites-palette-panel
-Canonical ZIP path: dev/workspace/zip/PR_26179_CHARLIE_027-sprites-preview-export_delta.zip
+Canonical ZIP path: dev/workspace/zips/PR_26179_CHARLIE_027-sprites-preview-export_delta.zip
 
 ## Summary
 
@@ -59,4 +59,4 @@ Results:
 
 ## ZIP Path
 
-`dev/workspace/zip/PR_26179_CHARLIE_027-sprites-preview-export_delta.zip`
+`dev/workspace/zips/PR_26179_CHARLIE_027-sprites-preview-export_delta.zip`

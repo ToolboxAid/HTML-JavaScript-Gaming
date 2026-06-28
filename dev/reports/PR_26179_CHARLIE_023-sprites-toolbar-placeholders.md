@@ -3,7 +3,7 @@
 Team: CHARLIE
 Workflow: stacked feature workflow
 Base branch: PR_26179_CHARLIE_022-sprites-tool-shell
-Canonical ZIP path: dev/workspace/zip/PR_26179_CHARLIE_023-sprites-toolbar-placeholders_delta.zip
+Canonical ZIP path: dev/workspace/zips/PR_26179_CHARLIE_023-sprites-toolbar-placeholders_delta.zip
 
 ## Summary
 
@@ -65,4 +65,4 @@ Results:
 
 ## ZIP Path
 
-`dev/workspace/zip/PR_26179_CHARLIE_023-sprites-toolbar-placeholders_delta.zip`
+`dev/workspace/zips/PR_26179_CHARLIE_023-sprites-toolbar-placeholders_delta.zip`

@@ -1,19 +1,23 @@
-M	dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
-M	dev/build/ProjectInstructions/addendums/pr_workflow.md
-M	dev/build/ProjectInstructions/repository/canonical_repository_structure.md
-A	dev/reports/PR277-post-merge-closeout_branch-validation.md
-A	dev/reports/PR277-post-merge-closeout_manual-validation-notes.md
-A	dev/reports/PR277-post-merge-closeout_report.md
-A	dev/reports/PR277-post-merge-closeout_requirement-checklist.md
-A	dev/reports/PR277-post-merge-closeout_validation-report.md
-A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_branch-validation.md
-A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_eod-report.md
-A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_manual-validation-notes.md
-A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_report.md
-A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_requirement-checklist.md
-A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_validation-report.md
-M	dev/reports/codex_changed_files.txt
-M	dev/reports/codex_review.diff
-M	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_branch-validation.md
-M	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_eod-report.md
-M	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_validation-report.md
+dev/reports/PR_26179_CHARLIE_022-sprites-tool-shell.md
+dev/reports/PR_26179_CHARLIE_023-sprites-toolbar-placeholders.md
+dev/reports/PR_26179_CHARLIE_024-sprites-canvas-grid.md
+dev/reports/PR_26179_CHARLIE_025-sprites-basic-drawing.md
+dev/reports/PR_26179_CHARLIE_026-sprites-palette-panel.md
+dev/reports/PR_26179_CHARLIE_027-sprites-preview-export.md
+dev/reports/PR_26179_CHARLIE_028-sprites-editor-polish.md
+dev/reports/PR_26179_CHARLIE_029-sprites-clear-reset-controls.md
+dev/reports/PR_26179_CHARLIE_030-sprites-undo-redo.md
+dev/reports/PR_26179_CHARLIE_031-sprites-picker-zoom.md
+dev/reports/PR_26179_CHARLIE_032-sprites-shape-tools.md
+dev/reports/PR_26179_CHARLIE_033-sprites-canvas-preview-sync.md
+dev/reports/PR_26179_CHARLIE_034-sprites-frame-strip.md
+dev/reports/PR_26179_CHARLIE_035-sprites-frame-editing.md
+dev/reports/PR_26179_CHARLIE_036-sprites-animation-preview.md
+dev/reports/PR_26179_CHARLIE_037-sprites-animation-export.md
+dev/reports/PR_26179_CHARLIE_038-sprites-grid-dimension-fix.md
+dev/reports/PR_26179_CHARLIE_039-sprites-color-and-zoom-fix.md
+dev/reports/PR_26179_CHARLIE_040-dev-artifact-location-cleanup.md
+dev/reports/codex_changed_files.txt
+dev/reports/codex_review.diff
+docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/codex_review.diff

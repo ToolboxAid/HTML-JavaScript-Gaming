@@ -1,466 +1,724 @@
-diff --git a/dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md b/dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
-index 52e772df0..4da3ee661 100644
---- a/dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
-+++ b/dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
-@@ -97,6 +97,16 @@ Optional:
+﻿diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_022-sprites-tool-shell.md b/dev/reports/PR_26179_CHARLIE_022-sprites-tool-shell.md
+similarity index 96%
+rename from docs_build/dev/reports/PR_26179_CHARLIE_022-sprites-tool-shell.md
+rename to dev/reports/PR_26179_CHARLIE_022-sprites-tool-shell.md
+index 7833d2346..eb72dc560 100644
+--- a/docs_build/dev/reports/PR_26179_CHARLIE_022-sprites-tool-shell.md
++++ b/dev/reports/PR_26179_CHARLIE_022-sprites-tool-shell.md
+@@ -16,9 +16,9 @@ The current repository did not contain `docs_build/tool-planning/sprites/`, and
+ - toolbox/sprites/index.html
+ - src/shared/toolbox/tool-metadata-inventory.js
+ - dev/tests/playwright/tools/SpritesToolShell.spec.mjs
+-- docs_build/dev/reports/PR_26179_CHARLIE_022-sprites-tool-shell.md
+-- docs_build/dev/reports/codex_changed_files.txt
+-- docs_build/dev/reports/codex_review.diff
++- dev/reports/PR_26179_CHARLIE_022-sprites-tool-shell.md
++- dev/reports/codex_changed_files.txt
++- dev/reports/codex_review.diff
 
- Generated non-report artifacts must live under `dev/workspace/`.
+ ## Branch Validation
 
-+## Codex Reports
-+
-+- `dev/reports/` contains the authoritative Codex reports for the repository.
-+- Reports committed to `main` are the official record.
-+- Reports generated during a PR are expected to be committed as part of that PR.
-+- Once merged into `main`, those report versions become the canonical repository history.
-+- Do not delete report files solely to obtain a clean worktree.
-+- Do not add `dev/reports/` to `.gitignore`.
-+- Continue storing ZIPs under `dev/workspace/zips/`.
-+
- ## Completion Reporting
+diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_023-sprites-toolbar-placeholders.md b/dev/reports/PR_26179_CHARLIE_023-sprites-toolbar-placeholders.md
+similarity index 93%
+rename from docs_build/dev/reports/PR_26179_CHARLIE_023-sprites-toolbar-placeholders.md
+rename to dev/reports/PR_26179_CHARLIE_023-sprites-toolbar-placeholders.md
+index b5925c595..104eb3756 100644
+--- a/docs_build/dev/reports/PR_26179_CHARLIE_023-sprites-toolbar-placeholders.md
++++ b/dev/reports/PR_26179_CHARLIE_023-sprites-toolbar-placeholders.md
+@@ -3,7 +3,7 @@
+ Team: CHARLIE
+ Workflow: stacked feature workflow
+ Base branch: PR_26179_CHARLIE_022-sprites-tool-shell
+-Canonical ZIP path: dev/workspace/zip/PR_26179_CHARLIE_023-sprites-toolbar-placeholders_delta.zip
++Canonical ZIP path: dev/workspace/zips/PR_26179_CHARLIE_023-sprites-toolbar-placeholders_delta.zip
 
- Codex responses must include:
-diff --git a/dev/build/ProjectInstructions/addendums/pr_workflow.md b/dev/build/ProjectInstructions/addendums/pr_workflow.md
-index f0eb69351..7e0b0dc1d 100644
---- a/dev/build/ProjectInstructions/addendums/pr_workflow.md
-+++ b/dev/build/ProjectInstructions/addendums/pr_workflow.md
-@@ -105,7 +105,7 @@ Closed gates:
- - PR merged and changes pushed.
- - Current branch is `main`.
- - `main` includes the merge commit or recorded final commit.
--- Worktree clean.
-+- Worktree clean, including intended `dev/reports/` updates committed and merged.
- - Local/origin sync is `0/0`.
- - No untracked files.
- - Branch disposition is recorded as `retained`.
-@@ -132,6 +132,7 @@ Closed gates:
- - If OWNER decision is required, stop and report.
- - Every PR lifecycle state must satisfy the Codex Completion Contract when Codex executes work for that state.
- - ZIP artifacts belong under `dev/workspace/zips/` and must not replace required reports under `dev/reports/`.
-+- Reports generated during a PR are expected to be committed as part of that PR. Do not delete report files solely to obtain a clean worktree, and do not add `dev/reports/` to `.gitignore`.
- - Stacked PR chains produce one final outcome ZIP per attempted PR and stop before later PRs after failure or hard stop.
+ ## Summary
 
- ## Batch Governance Mode
-diff --git a/dev/build/ProjectInstructions/repository/canonical_repository_structure.md b/dev/build/ProjectInstructions/repository/canonical_repository_structure.md
-index 7cf74694e..adf926ea2 100644
---- a/dev/build/ProjectInstructions/repository/canonical_repository_structure.md
-+++ b/dev/build/ProjectInstructions/repository/canonical_repository_structure.md
-@@ -62,7 +62,7 @@ Dev workspace ownership:
- - dev/archive/ owns historical reference material only.
- - dev/build/ owns active Project Instructions, architecture, database DDL/DML/seed docs, standards, backlog, PR planning, and governance.
- - dev/config/ owns development-only runner and tooling configuration.
--- dev/reports/ owns active and historical generated reports.
-+- dev/reports/ owns authoritative Codex reports for the repository. Reports committed to `main` are the official record.
- - dev/scripts/ owns development-only scripts and runners.
- - dev/templates/ owns reusable development templates.
- - dev/tests/ owns non-deployable test suites.
-diff --git a/dev/reports/PR277-post-merge-closeout_branch-validation.md b/dev/reports/PR277-post-merge-closeout_branch-validation.md
+@@ -65,4 +65,4 @@ Results:
+
+ ## ZIP Path
+
+-`dev/workspace/zip/PR_26179_CHARLIE_023-sprites-toolbar-placeholders_delta.zip`
++`dev/workspace/zips/PR_26179_CHARLIE_023-sprites-toolbar-placeholders_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_024-sprites-canvas-grid.md b/dev/reports/PR_26179_CHARLIE_024-sprites-canvas-grid.md
+similarity index 93%
+rename from docs_build/dev/reports/PR_26179_CHARLIE_024-sprites-canvas-grid.md
+rename to dev/reports/PR_26179_CHARLIE_024-sprites-canvas-grid.md
+index 4d7d89ce7..1ed7fbee0 100644
+--- a/docs_build/dev/reports/PR_26179_CHARLIE_024-sprites-canvas-grid.md
++++ b/dev/reports/PR_26179_CHARLIE_024-sprites-canvas-grid.md
+@@ -3,7 +3,7 @@
+ Team: CHARLIE
+ Workflow: stacked feature workflow
+ Base branch: PR_26179_CHARLIE_023-sprites-toolbar-placeholders
+-Canonical ZIP path: dev/workspace/zip/PR_26179_CHARLIE_024-sprites-canvas-grid_delta.zip
++Canonical ZIP path: dev/workspace/zips/PR_26179_CHARLIE_024-sprites-canvas-grid_delta.zip
+
+ ## Summary
+
+@@ -59,4 +59,4 @@ Results:
+
+ ## ZIP Path
+
+-`dev/workspace/zip/PR_26179_CHARLIE_024-sprites-canvas-grid_delta.zip`
++`dev/workspace/zips/PR_26179_CHARLIE_024-sprites-canvas-grid_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_025-sprites-basic-drawing.md b/dev/reports/PR_26179_CHARLIE_025-sprites-basic-drawing.md
+similarity index 93%
+rename from docs_build/dev/reports/PR_26179_CHARLIE_025-sprites-basic-drawing.md
+rename to dev/reports/PR_26179_CHARLIE_025-sprites-basic-drawing.md
+index 7f4879aa8..f8ab15d03 100644
+--- a/docs_build/dev/reports/PR_26179_CHARLIE_025-sprites-basic-drawing.md
++++ b/dev/reports/PR_26179_CHARLIE_025-sprites-basic-drawing.md
+@@ -3,7 +3,7 @@
+ Team: CHARLIE
+ Workflow: stacked feature workflow
+ Base branch: PR_26179_CHARLIE_024-sprites-canvas-grid
+-Canonical ZIP path: dev/workspace/zip/PR_26179_CHARLIE_025-sprites-basic-drawing_delta.zip
++Canonical ZIP path: dev/workspace/zips/PR_26179_CHARLIE_025-sprites-basic-drawing_delta.zip
+
+ ## Summary
+
+@@ -61,4 +61,4 @@ Results:
+
+ ## ZIP Path
+
+-`dev/workspace/zip/PR_26179_CHARLIE_025-sprites-basic-drawing_delta.zip`
++`dev/workspace/zips/PR_26179_CHARLIE_025-sprites-basic-drawing_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_026-sprites-palette-panel.md b/dev/reports/PR_26179_CHARLIE_026-sprites-palette-panel.md
+similarity index 93%
+rename from docs_build/dev/reports/PR_26179_CHARLIE_026-sprites-palette-panel.md
+rename to dev/reports/PR_26179_CHARLIE_026-sprites-palette-panel.md
+index 8a4036c83..151753b3b 100644
+--- a/docs_build/dev/reports/PR_26179_CHARLIE_026-sprites-palette-panel.md
++++ b/dev/reports/PR_26179_CHARLIE_026-sprites-palette-panel.md
+@@ -3,7 +3,7 @@
+ Team: CHARLIE
+ Workflow: stacked feature workflow
+ Base branch: PR_26179_CHARLIE_025-sprites-basic-drawing
+-Canonical ZIP path: dev/workspace/zip/PR_26179_CHARLIE_026-sprites-palette-panel_delta.zip
++Canonical ZIP path: dev/workspace/zips/PR_26179_CHARLIE_026-sprites-palette-panel_delta.zip
+
+ ## Summary
+
+@@ -58,4 +58,4 @@ Results:
+
+ ## ZIP Path
+
+-`dev/workspace/zip/PR_26179_CHARLIE_026-sprites-palette-panel_delta.zip`
++`dev/workspace/zips/PR_26179_CHARLIE_026-sprites-palette-panel_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_027-sprites-preview-export.md b/dev/reports/PR_26179_CHARLIE_027-sprites-preview-export.md
+similarity index 93%
+rename from docs_build/dev/reports/PR_26179_CHARLIE_027-sprites-preview-export.md
+rename to dev/reports/PR_26179_CHARLIE_027-sprites-preview-export.md
+index f1a8fa62f..cb6b6ffcf 100644
+--- a/docs_build/dev/reports/PR_26179_CHARLIE_027-sprites-preview-export.md
++++ b/dev/reports/PR_26179_CHARLIE_027-sprites-preview-export.md
+@@ -3,7 +3,7 @@
+ Team: CHARLIE
+ Workflow: stacked feature workflow
+ Base branch: PR_26179_CHARLIE_026-sprites-palette-panel
+-Canonical ZIP path: dev/workspace/zip/PR_26179_CHARLIE_027-sprites-preview-export_delta.zip
++Canonical ZIP path: dev/workspace/zips/PR_26179_CHARLIE_027-sprites-preview-export_delta.zip
+
+ ## Summary
+
+@@ -59,4 +59,4 @@ Results:
+
+ ## ZIP Path
+
+-`dev/workspace/zip/PR_26179_CHARLIE_027-sprites-preview-export_delta.zip`
++`dev/workspace/zips/PR_26179_CHARLIE_027-sprites-preview-export_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_028-sprites-editor-polish.md b/dev/reports/PR_26179_CHARLIE_028-sprites-editor-polish.md
+similarity index 93%
+rename from docs_build/dev/reports/PR_26179_CHARLIE_028-sprites-editor-polish.md
+rename to dev/reports/PR_26179_CHARLIE_028-sprites-editor-polish.md
+index 43a4c0b56..d5f2395cc 100644
+--- a/docs_build/dev/reports/PR_26179_CHARLIE_028-sprites-editor-polish.md
++++ b/dev/reports/PR_26179_CHARLIE_028-sprites-editor-polish.md
+@@ -3,7 +3,7 @@
+ Team: CHARLIE
+ Workflow: stacked feature workflow
+ Base branch: PR_26179_CHARLIE_027-sprites-preview-export
+-Canonical ZIP path for this batch: dev/workspace/zip/PR_26179_CHARLIE_028-sprites-editor-polish_delta.zip
++Canonical ZIP path for this batch: dev/workspace/zips/PR_26179_CHARLIE_028-sprites-editor-polish_delta.zip
+
+ ## Summary
+
+@@ -69,4 +69,4 @@ PR_26179_CHARLIE_029-sprites-clear-reset-controls
+
+ ## ZIP Path
+
+-`dev/workspace/zip/PR_26179_CHARLIE_028-sprites-editor-polish_delta.zip`
++`dev/workspace/zips/PR_26179_CHARLIE_028-sprites-editor-polish_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_029-sprites-clear-reset-controls.md b/dev/reports/PR_26179_CHARLIE_029-sprites-clear-reset-controls.md
+similarity index 92%
+rename from docs_build/dev/reports/PR_26179_CHARLIE_029-sprites-clear-reset-controls.md
+rename to dev/reports/PR_26179_CHARLIE_029-sprites-clear-reset-controls.md
+index 3f62e1528..14e923da9 100644
+--- a/docs_build/dev/reports/PR_26179_CHARLIE_029-sprites-clear-reset-controls.md
++++ b/dev/reports/PR_26179_CHARLIE_029-sprites-clear-reset-controls.md
+@@ -3,7 +3,7 @@
+ Team: CHARLIE
+ Workflow: stacked feature workflow
+ Base branch: PR_26179_CHARLIE_028-sprites-editor-polish
+-Canonical ZIP path for this batch: dev/workspace/zip/PR_26179_CHARLIE_029-sprites-clear-reset-controls_delta.zip
++Canonical ZIP path for this batch: dev/workspace/zips/PR_26179_CHARLIE_029-sprites-clear-reset-controls_delta.zip
+
+ ## Summary
+
+@@ -68,4 +68,4 @@ PR_26179_CHARLIE_030-sprites-undo-redo
+
+ ## ZIP Path
+
+-`dev/workspace/zip/PR_26179_CHARLIE_029-sprites-clear-reset-controls_delta.zip`
++`dev/workspace/zips/PR_26179_CHARLIE_029-sprites-clear-reset-controls_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_030-sprites-undo-redo.md b/dev/reports/PR_26179_CHARLIE_030-sprites-undo-redo.md
+similarity index 97%
+rename from docs_build/dev/reports/PR_26179_CHARLIE_030-sprites-undo-redo.md
+rename to dev/reports/PR_26179_CHARLIE_030-sprites-undo-redo.md
+index 62593187a..0866af13f 100644
+--- a/docs_build/dev/reports/PR_26179_CHARLIE_030-sprites-undo-redo.md
++++ b/dev/reports/PR_26179_CHARLIE_030-sprites-undo-redo.md
+@@ -70,4 +70,4 @@ PASS - `npx playwright test dev/tests/playwright/tools/SpritesToolShell.spec.mjs
+
+ ## ZIP
+
+-`dev/workspace/zip/PR_26179_CHARLIE_030-sprites-undo-redo_delta.zip`
++`dev/workspace/zips/PR_26179_CHARLIE_030-sprites-undo-redo_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_031-sprites-picker-zoom.md b/dev/reports/PR_26179_CHARLIE_031-sprites-picker-zoom.md
+similarity index 97%
+rename from docs_build/dev/reports/PR_26179_CHARLIE_031-sprites-picker-zoom.md
+rename to dev/reports/PR_26179_CHARLIE_031-sprites-picker-zoom.md
+index 4e61c7b6d..e02135a02 100644
+--- a/docs_build/dev/reports/PR_26179_CHARLIE_031-sprites-picker-zoom.md
++++ b/dev/reports/PR_26179_CHARLIE_031-sprites-picker-zoom.md
+@@ -66,4 +66,4 @@ PASS - `npx playwright test dev/tests/playwright/tools/SpritesToolShell.spec.mjs
+
+ ## ZIP
+
+-`dev/workspace/zip/PR_26179_CHARLIE_031-sprites-picker-zoom_delta.zip`
++`dev/workspace/zips/PR_26179_CHARLIE_031-sprites-picker-zoom_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_032-sprites-shape-tools.md b/dev/reports/PR_26179_CHARLIE_032-sprites-shape-tools.md
+similarity index 97%
+rename from docs_build/dev/reports/PR_26179_CHARLIE_032-sprites-shape-tools.md
+rename to dev/reports/PR_26179_CHARLIE_032-sprites-shape-tools.md
+index 200ac1ce8..58eb45a9f 100644
+--- a/docs_build/dev/reports/PR_26179_CHARLIE_032-sprites-shape-tools.md
++++ b/dev/reports/PR_26179_CHARLIE_032-sprites-shape-tools.md
+@@ -68,4 +68,4 @@ PASS - `npx playwright test dev/tests/playwright/tools/SpritesToolShell.spec.mjs
+
+ ## ZIP
+
+-`dev/workspace/zip/PR_26179_CHARLIE_032-sprites-shape-tools_delta.zip`
++`dev/workspace/zips/PR_26179_CHARLIE_032-sprites-shape-tools_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_033-sprites-canvas-preview-sync.md b/dev/reports/PR_26179_CHARLIE_033-sprites-canvas-preview-sync.md
+similarity index 97%
+rename from docs_build/dev/reports/PR_26179_CHARLIE_033-sprites-canvas-preview-sync.md
+rename to dev/reports/PR_26179_CHARLIE_033-sprites-canvas-preview-sync.md
+index 4426f9ea2..be0376bac 100644
+--- a/docs_build/dev/reports/PR_26179_CHARLIE_033-sprites-canvas-preview-sync.md
++++ b/dev/reports/PR_26179_CHARLIE_033-sprites-canvas-preview-sync.md
+@@ -72,4 +72,4 @@ PASS - `npx playwright test dev/tests/playwright/tools/SpritesToolShell.spec.mjs
+
+ ## ZIP
+
+-`dev/workspace/zip/PR_26179_CHARLIE_033-sprites-canvas-preview-sync_delta.zip`
++`dev/workspace/zips/PR_26179_CHARLIE_033-sprites-canvas-preview-sync_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_034-sprites-frame-strip.md b/dev/reports/PR_26179_CHARLIE_034-sprites-frame-strip.md
+similarity index 96%
+rename from docs_build/dev/reports/PR_26179_CHARLIE_034-sprites-frame-strip.md
+rename to dev/reports/PR_26179_CHARLIE_034-sprites-frame-strip.md
+index ccd669c7b..9e5a84a58 100644
+--- a/docs_build/dev/reports/PR_26179_CHARLIE_034-sprites-frame-strip.md
++++ b/dev/reports/PR_26179_CHARLIE_034-sprites-frame-strip.md
+@@ -59,4 +59,4 @@ PASS - `npx playwright test dev/tests/playwright/tools/SpritesToolShell.spec.mjs
+
+ ## ZIP
+
+-`dev/workspace/zip/PR_26179_CHARLIE_034-sprites-frame-strip_delta.zip`
++`dev/workspace/zips/PR_26179_CHARLIE_034-sprites-frame-strip_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_035-sprites-frame-editing.md b/dev/reports/PR_26179_CHARLIE_035-sprites-frame-editing.md
+similarity index 96%
+rename from docs_build/dev/reports/PR_26179_CHARLIE_035-sprites-frame-editing.md
+rename to dev/reports/PR_26179_CHARLIE_035-sprites-frame-editing.md
+index 54189a866..d9cf32ddf 100644
+--- a/docs_build/dev/reports/PR_26179_CHARLIE_035-sprites-frame-editing.md
++++ b/dev/reports/PR_26179_CHARLIE_035-sprites-frame-editing.md
+@@ -64,4 +64,4 @@ PASS - `npx playwright test dev/tests/playwright/tools/SpritesToolShell.spec.mjs
+
+ ## ZIP
+
+-`dev/workspace/zip/PR_26179_CHARLIE_035-sprites-frame-editing_delta.zip`
++`dev/workspace/zips/PR_26179_CHARLIE_035-sprites-frame-editing_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_036-sprites-animation-preview.md b/dev/reports/PR_26179_CHARLIE_036-sprites-animation-preview.md
+similarity index 96%
+rename from docs_build/dev/reports/PR_26179_CHARLIE_036-sprites-animation-preview.md
+rename to dev/reports/PR_26179_CHARLIE_036-sprites-animation-preview.md
+index 772128525..b0caa16b6 100644
+--- a/docs_build/dev/reports/PR_26179_CHARLIE_036-sprites-animation-preview.md
++++ b/dev/reports/PR_26179_CHARLIE_036-sprites-animation-preview.md
+@@ -60,4 +60,4 @@ PASS - `npx playwright test dev/tests/playwright/tools/SpritesToolShell.spec.mjs
+
+ ## ZIP
+
+-`dev/workspace/zip/PR_26179_CHARLIE_036-sprites-animation-preview_delta.zip`
++`dev/workspace/zips/PR_26179_CHARLIE_036-sprites-animation-preview_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_037-sprites-animation-export.md b/dev/reports/PR_26179_CHARLIE_037-sprites-animation-export.md
+similarity index 96%
+rename from docs_build/dev/reports/PR_26179_CHARLIE_037-sprites-animation-export.md
+rename to dev/reports/PR_26179_CHARLIE_037-sprites-animation-export.md
+index 1f32a2978..c4c9c8869 100644
+--- a/docs_build/dev/reports/PR_26179_CHARLIE_037-sprites-animation-export.md
++++ b/dev/reports/PR_26179_CHARLIE_037-sprites-animation-export.md
+@@ -61,4 +61,4 @@ PASS - `npx playwright test dev/tests/playwright/tools/SpritesToolShell.spec.mjs
+
+ ## ZIP
+
+-`dev/workspace/zip/PR_26179_CHARLIE_037-sprites-animation-export_delta.zip`
++`dev/workspace/zips/PR_26179_CHARLIE_037-sprites-animation-export_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_038-sprites-grid-dimension-fix.md b/dev/reports/PR_26179_CHARLIE_038-sprites-grid-dimension-fix.md
+similarity index 96%
+rename from docs_build/dev/reports/PR_26179_CHARLIE_038-sprites-grid-dimension-fix.md
+rename to dev/reports/PR_26179_CHARLIE_038-sprites-grid-dimension-fix.md
+index 4d8010eb4..1a238d1b9 100644
+--- a/docs_build/dev/reports/PR_26179_CHARLIE_038-sprites-grid-dimension-fix.md
++++ b/dev/reports/PR_26179_CHARLIE_038-sprites-grid-dimension-fix.md
+@@ -63,4 +63,4 @@ PASS - `npx playwright test dev/tests/playwright/tools/SpritesToolShell.spec.mjs
+
+ ## ZIP
+
+-`dev/workspace/zip/PR_26179_CHARLIE_038-sprites-grid-dimension-fix_delta.zip`
++`dev/workspace/zips/PR_26179_CHARLIE_038-sprites-grid-dimension-fix_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_039-sprites-color-and-zoom-fix.md b/dev/reports/PR_26179_CHARLIE_039-sprites-color-and-zoom-fix.md
+similarity index 97%
+rename from docs_build/dev/reports/PR_26179_CHARLIE_039-sprites-color-and-zoom-fix.md
+rename to dev/reports/PR_26179_CHARLIE_039-sprites-color-and-zoom-fix.md
+index aa665b793..b3d6e5549 100644
+--- a/docs_build/dev/reports/PR_26179_CHARLIE_039-sprites-color-and-zoom-fix.md
++++ b/dev/reports/PR_26179_CHARLIE_039-sprites-color-and-zoom-fix.md
+@@ -75,4 +75,4 @@ PASS - `npx playwright test dev/tests/playwright/tools/SpritesToolShell.spec.mjs
+
+ ## ZIP
+
+-`dev/workspace/zip/PR_26179_CHARLIE_039-sprites-color-and-zoom-fix_delta.zip`
++`dev/workspace/zips/PR_26179_CHARLIE_039-sprites-color-and-zoom-fix_delta.zip`
+diff --git a/dev/reports/PR_26179_CHARLIE_040-dev-artifact-location-cleanup.md b/dev/reports/PR_26179_CHARLIE_040-dev-artifact-location-cleanup.md
 new file mode 100644
-index 000000000..34b1dfe48
+index 000000000..93c65a43d
 --- /dev/null
-+++ b/dev/reports/PR277-post-merge-closeout_branch-validation.md
-@@ -0,0 +1,9 @@
-+# PR277 Post-Merge Branch Validation
++++ b/dev/reports/PR_26179_CHARLIE_040-dev-artifact-location-cleanup.md
+@@ -0,0 +1,103 @@
++# PR_26179_CHARLIE_040-dev-artifact-location-cleanup
 +
-+Status: PASS
++Team: CHARLIE
 +
-+- Current branch is `main`: PASS
-+- HEAD is `994b844cb6f5ddae29239962a751da997e207d9e`: PASS
-+- `main...origin/main` is `0 0`: PASS
-+- Worktree was clean before closeout report generation: PASS
-+- No code changes were made: PASS
-diff --git a/dev/reports/PR277-post-merge-closeout_manual-validation-notes.md b/dev/reports/PR277-post-merge-closeout_manual-validation-notes.md
-new file mode 100644
-index 000000000..00fd527ec
---- /dev/null
-+++ b/dev/reports/PR277-post-merge-closeout_manual-validation-notes.md
-@@ -0,0 +1,12 @@
-+# PR277 Post-Merge Manual Validation Notes
++Base branch: PR_26179_CHARLIE_039-sprites-color-and-zoom-fix
 +
-+Manual validation status: READY
-+
-+This closeout package is documentation/artifact only. No code, runtime behavior, database schema, or DEV identity data changed during this packaging step.
-+
-+Manual review:
-+
-+- Confirm PR #277 is merged in GitHub.
-+- Confirm local `main` remains on merge commit `994b844cb6f5ddae29239962a751da997e207d9e`.
-+- Confirm the closeout ZIP exists under `dev/workspace/zips/`.
-+- DEV identity sync was intentionally not run in this packaging step.
-diff --git a/dev/reports/PR277-post-merge-closeout_report.md b/dev/reports/PR277-post-merge-closeout_report.md
-new file mode 100644
-index 000000000..6f838de8f
---- /dev/null
-+++ b/dev/reports/PR277-post-merge-closeout_report.md
-@@ -0,0 +1,25 @@
-+# PR277 Post-Merge Closeout
-+
-+## Summary
-+
-+Post-merge closeout package for GitHub PR #277, `PR_26179_OWNER_035-dev-auth-user-key-db-authority`.
-+
-+No runtime code, database code, tests, product UI, or DEV identity data was changed during this packaging step.
-+
-+## Repository Gate
-+
-+- Branch: `main`
-+- HEAD: `994b844cb6f5ddae29239962a751da997e207d9e`
-+- `main...origin/main`: `0 0`
-+- Worktree before packaging: clean
-+- PR #277 merged: yes
-+- Merge commit: `994b844cb6f5ddae29239962a751da997e207d9e`
-+
-+## Validation
-+
-+- `git diff --check`: PASS
-+- `npm run validate:canonical-structure`: PASS
-+
-+## Notes
-+
-+DEV identity sync was not run in this packaging step.
-diff --git a/dev/reports/PR277-post-merge-closeout_requirement-checklist.md b/dev/reports/PR277-post-merge-closeout_requirement-checklist.md
-new file mode 100644
-index 000000000..ffa32c0e1
---- /dev/null
-+++ b/dev/reports/PR277-post-merge-closeout_requirement-checklist.md
-@@ -0,0 +1,14 @@
-+# PR277 Post-Merge Requirement Checklist
-+
-+Status: PASS
-+
-+- Confirm branch is `main`: PASS
-+- Confirm HEAD is `994b844cb6f5ddae29239962a751da997e207d9e`: PASS
-+- Confirm `main...origin/main = 0 0`: PASS
-+- Confirm worktree clean before packaging: PASS
-+- Run `git diff --check`: PASS
-+- Run `npm run validate:canonical-structure`: PASS
-+- Create reports under `dev/reports/`: PASS
-+- Create repo-structured ZIP under `dev/workspace/zips/`: PASS
-+- Do not change code: PASS
-+- Do not run DEV identity sync: PASS
-diff --git a/dev/reports/PR277-post-merge-closeout_validation-report.md b/dev/reports/PR277-post-merge-closeout_validation-report.md
-new file mode 100644
-index 000000000..69fffdfa9
---- /dev/null
-+++ b/dev/reports/PR277-post-merge-closeout_validation-report.md
-@@ -0,0 +1,25 @@
-+# PR277 Post-Merge Validation Report
-+
-+Status: PASS
-+
-+## Commands
-+
-+```text
-+git diff --check
-+```
-+
-+Result: PASS
-+
-+```text
-+npm run validate:canonical-structure
-+```
-+
-+Result: PASS
-+
-+Output summary:
-+
-+```text
-+Canonical repository structure guardrail: PASS
-+Blocking violations: 0
-+Approved legacy exceptions: 500
-+```
-diff --git a/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_branch-validation.md b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_branch-validation.md
-new file mode 100644
-index 000000000..18e9f6841
---- /dev/null
-+++ b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_branch-validation.md
-@@ -0,0 +1,10 @@
-+ï»¿# PR_26179_OWNER_036-reports-are-tracked-source Branch Validation
-+
-+Status: PASS
-+
-+- Source branch: `PR_26179_OWNER_036-reports-are-tracked-source`
-+- Base branch: `main`
-+- Branch rebased onto latest `origin/main`: PASS
-+- Existing generated report artifacts preserved: PASS
-+- Scope limited to governance docs and reports: PASS
-+- Merge conflict resolved: PASS
-diff --git a/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_eod-report.md b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_eod-report.md
-new file mode 100644
-index 000000000..ec1383ae3
---- /dev/null
-+++ b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_eod-report.md
-@@ -0,0 +1,35 @@
-+ï»¿# PR_26179_OWNER_036-reports-are-tracked-source EOD Report
-+
-+## Summary
-+
-+PR #280 conflict resolution and merge closeout for `PR_26179_OWNER_036-reports-are-tracked-source`.
++Branch: PR_26179_CHARLIE_040-dev-artifact-location-cleanup
 +
 +## Scope
 +
-+- Governance documentation only.
-+- Preserved approved Codex Reports wording.
-+- Updated PR reports and repo-structured ZIP.
-+- No runtime changes.
-+- No auth changes.
-+- No Local API changes.
-+- No seed data changes.
-+- No `.gitignore` changes.
++Development artifact location cleanup only. No runtime behavior, Sprite Editor functionality, DB/API/schema, or start_of_day files were changed.
 +
-+## Conflict Resolution
++## Project Instructions Read
 +
-+- Latest `origin/main` was merged/rebased into the PR branch.
-+- Conflicts were limited to generated report artifacts.
-+- `dev/reports/codex_changed_files.txt` and `dev/reports/codex_review.diff` were regenerated from the final PR diff.
++- dev/build/ProjectInstructions/addendums/batch_governance_mode.md
++- dev/build/ProjectInstructions/repository/canonical_repository_structure.md
++- dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
++- dev/build/ProjectInstructions/addendums/documentation_ownership.md
 +
-+## Validation
++## Canonical Artifact Mapping
 +
-+- `git diff --check`: PASS
-+- `npm run validate:canonical-structure`: PASS
-+- GitHub `platform-validation`: PASS after push
++| Legacy path | Canonical path | Action |
++| --- | --- | --- |
++| docs_build/dev/reports/PR_26179_CHARLIE_0*.md | dev/reports/PR_26179_CHARLIE_0*.md | Moved generated Charlie Sprite PR reports |
++| docs_build/dev/reports/codex_changed_files.txt | dev/reports/codex_changed_files.txt | Removed legacy tracked copy; regenerated canonical report |
++| docs_build/dev/reports/codex_review.diff | dev/reports/codex_review.diff | Removed legacy tracked copy; regenerated canonical diff |
++| dev/workspace/zip/ | dev/workspace/zips/ | Updated Charlie Sprite report references to canonical ZIP path |
 +
-+## Closeout
++Canonical ZIP path confirmed from current Project Instructions: dev/workspace/zips/
 +
-+- PR branch: `PR_26179_OWNER_036-reports-are-tracked-source`
-+- PR: #280
-+- ZIP: `dev/workspace/zips/PR_26179_OWNER_036-reports-are-tracked-source_delta.zip`
-+- Final main verification is recorded in the Codex final response after merge and pull.
-diff --git a/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_manual-validation-notes.md b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_manual-validation-notes.md
-new file mode 100644
-index 000000000..8ca887c65
---- /dev/null
-+++ b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_manual-validation-notes.md
-@@ -0,0 +1,11 @@
-+ï»¿# PR_26179_OWNER_036-reports-are-tracked-source Manual Validation Notes
++## Files Moved
 +
-+Manual validation status: READY
++- docs_build/dev/reports/PR_26179_CHARLIE_022-sprites-tool-shell.md -> dev/reports/PR_26179_CHARLIE_022-sprites-tool-shell.md
++- docs_build/dev/reports/PR_26179_CHARLIE_023-sprites-toolbar-placeholders.md -> dev/reports/PR_26179_CHARLIE_023-sprites-toolbar-placeholders.md
++- docs_build/dev/reports/PR_26179_CHARLIE_024-sprites-canvas-grid.md -> dev/reports/PR_26179_CHARLIE_024-sprites-canvas-grid.md
++- docs_build/dev/reports/PR_26179_CHARLIE_025-sprites-basic-drawing.md -> dev/reports/PR_26179_CHARLIE_025-sprites-basic-drawing.md
++- docs_build/dev/reports/PR_26179_CHARLIE_026-sprites-palette-panel.md -> dev/reports/PR_26179_CHARLIE_026-sprites-palette-panel.md
++- docs_build/dev/reports/PR_26179_CHARLIE_027-sprites-preview-export.md -> dev/reports/PR_26179_CHARLIE_027-sprites-preview-export.md
++- docs_build/dev/reports/PR_26179_CHARLIE_028-sprites-editor-polish.md -> dev/reports/PR_26179_CHARLIE_028-sprites-editor-polish.md
++- docs_build/dev/reports/PR_26179_CHARLIE_029-sprites-clear-reset-controls.md -> dev/reports/PR_26179_CHARLIE_029-sprites-clear-reset-controls.md
++- docs_build/dev/reports/PR_26179_CHARLIE_030-sprites-undo-redo.md -> dev/reports/PR_26179_CHARLIE_030-sprites-undo-redo.md
++- docs_build/dev/reports/PR_26179_CHARLIE_031-sprites-picker-zoom.md -> dev/reports/PR_26179_CHARLIE_031-sprites-picker-zoom.md
++- docs_build/dev/reports/PR_26179_CHARLIE_032-sprites-shape-tools.md -> dev/reports/PR_26179_CHARLIE_032-sprites-shape-tools.md
++- docs_build/dev/reports/PR_26179_CHARLIE_033-sprites-canvas-preview-sync.md -> dev/reports/PR_26179_CHARLIE_033-sprites-canvas-preview-sync.md
++- docs_build/dev/reports/PR_26179_CHARLIE_034-sprites-frame-strip.md -> dev/reports/PR_26179_CHARLIE_034-sprites-frame-strip.md
++- docs_build/dev/reports/PR_26179_CHARLIE_035-sprites-frame-editing.md -> dev/reports/PR_26179_CHARLIE_035-sprites-frame-editing.md
++- docs_build/dev/reports/PR_26179_CHARLIE_036-sprites-animation-preview.md -> dev/reports/PR_26179_CHARLIE_036-sprites-animation-preview.md
++- docs_build/dev/reports/PR_26179_CHARLIE_037-sprites-animation-export.md -> dev/reports/PR_26179_CHARLIE_037-sprites-animation-export.md
++- docs_build/dev/reports/PR_26179_CHARLIE_038-sprites-grid-dimension-fix.md -> dev/reports/PR_26179_CHARLIE_038-sprites-grid-dimension-fix.md
++- docs_build/dev/reports/PR_26179_CHARLIE_039-sprites-color-and-zoom-fix.md -> dev/reports/PR_26179_CHARLIE_039-sprites-color-and-zoom-fix.md
 +
-+Review the governance wording in:
++## References Updated
 +
-+- `dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md`
-+- `dev/build/ProjectInstructions/repository/canonical_repository_structure.md`
-+- `dev/build/ProjectInstructions/addendums/pr_workflow.md`
++- Updated moved Charlie Sprite PR reports from docs_build/dev/reports/ to dev/reports/.
++- Updated moved Charlie Sprite PR reports from dev/workspace/zip/ to dev/workspace/zips/.
++- Left unrelated historical/report artifacts untouched, including docs_build/dev/reports/sprite-history-inventory.md.
 +
-+Confirm the policy says `dev/reports/` contains authoritative Codex reports, reports committed to `main` are the official record, and PR-generated reports are expected to be committed as part of that PR.
-diff --git a/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_report.md b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_report.md
-new file mode 100644
-index 000000000..e4378073b
---- /dev/null
-+++ b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_report.md
-@@ -0,0 +1,33 @@
-+ï»¿# PR_26179_OWNER_036-reports-are-tracked-source
++## Files Intentionally Not Moved
 +
-+## Summary
++- Product planning intended to remain in docs_build/
++- Architecture documents intended to remain in docs_build/
++- DDL, DML, and seed files
++- Documentation intended to remain in docs_build/
++- Runtime, Sprite Editor, DB/API/schema, and start_of_day files
 +
-+This governance PR clarifies that `dev/reports/` contains the authoritative Codex reports for the repository and that reports committed to `main` are the official record. Reports generated during a PR are expected to be committed as part of that PR, while repository authority remains the report state committed to `main`.
++## Validation Checklist
 +
-+## Scope
++| Requirement | Result | Notes |
++| --- | --- | --- |
++| Batch governance mode reviewed | PASS | Read dev/build/ProjectInstructions/addendums/batch_governance_mode.md |
++| Canonical artifact paths confirmed | PASS | Reports: dev/reports/; ZIPs: dev/workspace/zips/ |
++| Generated Charlie Sprite reports moved out of docs_build/ | PASS | PR 022 through PR 039 reports moved |
++| Legacy docs_build report aliases removed | PASS | Removed tracked codex_changed_files.txt and codex_review.diff from docs_build/dev/reports/ |
++| References updated within Charlie work only | PASS | Updated moved Charlie Sprite report references only |
++| No product planning, architecture, DDL, DML, seed, or intended docs_build docs moved | PASS | Scope limited to generated Charlie report artifacts |
++| No runtime behavior changed | PASS | Changed-file scope is reports/artifacts only |
++| No Sprite Editor functionality changed | PASS | No assets/toolbox or runtime source changes |
++| No DB/API/schema files changed | PASS | Changed-file scope check passed |
++| No start_of_day files changed | PASS | Changed-file scope check passed |
 +
-+- Updated Codex artifact/reporting governance.
-+- Updated canonical repository structure wording for `dev/reports/`.
-+- Updated PR workflow clean-main guidance for intended report updates.
-+- Preserved the existing PR277 post-merge closeout report artifacts instead of deleting them.
-+- No runtime code changes.
-+- No auth changes.
-+- No Local API changes.
-+- No `.gitignore` changes.
++## Validation Lane
 +
-+## Policy Added
++- PASS: `rg -n "docs_build/dev/reports|docs_build\\dev\\reports|dev/workspace/zip/" dev/reports -g "PR_26179_CHARLIE_0*.md" -g "!PR_26179_CHARLIE_040-dev-artifact-location-cleanup.md"` returned no matches.
++- PASS: `git diff --name-only | rg -v "^(dev/reports/|docs_build/dev/reports/)"` returned no out-of-scope paths.
++- PASS: `git diff --check` returned no whitespace errors. Git reported CRLF normalization warnings only for moved markdown reports.
 +
-+- `dev/reports/` contains the authoritative Codex reports for the repository.
-+- Reports committed to `main` are the official record.
-+- Reports generated during a PR are expected to be committed as part of that PR.
-+- Once merged into `main`, those report versions become the canonical repository history.
-+- Do not delete report files solely to obtain a clean worktree.
-+- Do not add `dev/reports/` to `.gitignore`.
-+- Continue storing ZIPs under `dev/workspace/zips/`.
++## EOD Repair Note
 +
-+## Validation
++- Rebased against current `origin/main` after PRs 022 through 039 were merged.
++- Resolved generated report conflicts by regenerating `dev/reports/codex_changed_files.txt` and `dev/reports/codex_review.diff`.
++- Preserved canonical paths: reports under `dev/reports/` and ZIPs under `dev/workspace/zips/`.
++- Preserved obsolete tracked `docs_build/dev/reports/` Charlie report removals.
 +
-+PASS:
++## Manual Validation Notes
 +
-+- `git diff --check`
-+- `npm run validate:canonical-structure`
-diff --git a/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_requirement-checklist.md b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_requirement-checklist.md
-new file mode 100644
-index 000000000..4e3b40097
---- /dev/null
-+++ b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_requirement-checklist.md
-@@ -0,0 +1,16 @@
-+ï»¿# PR_26179_OWNER_036-reports-are-tracked-source Requirement Checklist
++- Confirmed this cleanup is artifact-only.
++- Confirmed canonical report files now live under dev/reports/.
++- Confirmed PR 040 ZIP will be generated under dev/workspace/zips/.
++- Confirmed unrelated docs_build/dev/reports/sprite-history-inventory.md remains untouched.
 +
-+Status: PASS
++## ZIP
 +
-+- Update Project Instructions/governance docs only: PASS
-+- Declare `dev/reports/` contains authoritative Codex reports: PASS
-+- Declare reports committed to `main` are the official record: PASS
-+- Require PR-generated reports to be committed as part of the PR: PASS
-+- Clarify repository authority is the report state committed to `main`: PASS
-+- Warn not to delete report files solely to clean worktree: PASS
-+- Warn not to add `dev/reports/` to `.gitignore`: PASS
-+- Preserve `dev/reports/` and `dev/workspace/zips/` as canonical paths: PASS
-+- No runtime code changes: PASS
-+- No auth changes: PASS
-+- No Local API changes: PASS
-+- No unrelated cleanup: PASS
-diff --git a/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_validation-report.md b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_validation-report.md
-new file mode 100644
-index 000000000..6bde7d2f0
---- /dev/null
-+++ b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_validation-report.md
-@@ -0,0 +1,33 @@
-+ï»¿# PR_26179_OWNER_036-reports-are-tracked-source Validation Report
-+
-+Status: PASS
-+
-+Conflict resolution:
-+
-+- Rebasing onto latest `origin/main` produced conflicts in generated report files only: `dev/reports/codex_changed_files.txt` and `dev/reports/codex_review.diff`.
-+- The approved Codex Reports governance wording was preserved.
-+- Generated report files were regenerated from the final post-rebase diff.
-+
-+Commands run:
-+
-+```text
-+git diff --check
-+```
-+
-+Result: PASS
-+
-+```text
-+npm run validate:canonical-structure
-+```
-+
-+Result: PASS
-+
-+Output summary:
-+
-+```text
-+Canonical repository structure guardrail: PASS
-+Blocking violations: 0
-+Approved legacy exceptions: 500
-+```
-+
-+No runtime, auth, Local API, seed, or `.gitignore` changes were made.
++- dev/workspace/zips/PR_26179_CHARLIE_040-dev-artifact-location-cleanup_delta.zip
 diff --git a/dev/reports/codex_changed_files.txt b/dev/reports/codex_changed_files.txt
-index 1d5194e5c..81cf5fdec 100644
+index 0e26265e5..dae75d365 100644
 --- a/dev/reports/codex_changed_files.txt
 +++ b/dev/reports/codex_changed_files.txt
-@@ -1,37 +1,17 @@
--# git diff --name-status merge-base(origin/main, HEAD)..working-tree
--M	dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
--M	dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
--M	dev/build/ProjectInstructions/TEAM_START_COMMANDS.md
--M	dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
--M	dev/build/ProjectInstructions/addendums/team_start_and_release.md
--M	dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
--M	dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md
--M	dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
--A	dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_branch-validation.md
--A	dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_manual-validation-notes.md
--A	dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_report.md
--A	dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_requirement-checklist.md
--A	dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_validation-report.md
-+M	dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
-+M	dev/build/ProjectInstructions/addendums/pr_workflow.md
-+M	dev/build/ProjectInstructions/repository/canonical_repository_structure.md
-+A	dev/reports/PR277-post-merge-closeout_branch-validation.md
-+A	dev/reports/PR277-post-merge-closeout_manual-validation-notes.md
-+A	dev/reports/PR277-post-merge-closeout_report.md
-+A	dev/reports/PR277-post-merge-closeout_requirement-checklist.md
-+A	dev/reports/PR277-post-merge-closeout_validation-report.md
-+A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_branch-validation.md
-+A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_manual-validation-notes.md
-+A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_report.md
-+A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_requirement-checklist.md
-+A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_validation-report.md
- M	dev/reports/codex_changed_files.txt
- M	dev/reports/codex_review.diff
+@@ -1,19 +1,23 @@
+-M	dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
+-M	dev/build/ProjectInstructions/addendums/pr_workflow.md
+-M	dev/build/ProjectInstructions/repository/canonical_repository_structure.md
+-A	dev/reports/PR277-post-merge-closeout_branch-validation.md
+-A	dev/reports/PR277-post-merge-closeout_manual-validation-notes.md
+-A	dev/reports/PR277-post-merge-closeout_report.md
+-A	dev/reports/PR277-post-merge-closeout_requirement-checklist.md
+-A	dev/reports/PR277-post-merge-closeout_validation-report.md
+-A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_branch-validation.md
+-A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_eod-report.md
+-A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_manual-validation-notes.md
+-A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_report.md
+-A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_requirement-checklist.md
+-A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_validation-report.md
+-M	dev/reports/codex_changed_files.txt
+-M	dev/reports/codex_review.diff
+-M	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_branch-validation.md
+-M	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_eod-report.md
+-M	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_validation-report.md
++dev/reports/PR_26179_CHARLIE_022-sprites-tool-shell.md
++dev/reports/PR_26179_CHARLIE_023-sprites-toolbar-placeholders.md
++dev/reports/PR_26179_CHARLIE_024-sprites-canvas-grid.md
++dev/reports/PR_26179_CHARLIE_025-sprites-basic-drawing.md
++dev/reports/PR_26179_CHARLIE_026-sprites-palette-panel.md
++dev/reports/PR_26179_CHARLIE_027-sprites-preview-export.md
++dev/reports/PR_26179_CHARLIE_028-sprites-editor-polish.md
++dev/reports/PR_26179_CHARLIE_029-sprites-clear-reset-controls.md
++dev/reports/PR_26179_CHARLIE_030-sprites-undo-redo.md
++dev/reports/PR_26179_CHARLIE_031-sprites-picker-zoom.md
++dev/reports/PR_26179_CHARLIE_032-sprites-shape-tools.md
++dev/reports/PR_26179_CHARLIE_033-sprites-canvas-preview-sync.md
++dev/reports/PR_26179_CHARLIE_034-sprites-frame-strip.md
++dev/reports/PR_26179_CHARLIE_035-sprites-frame-editing.md
++dev/reports/PR_26179_CHARLIE_036-sprites-animation-preview.md
++dev/reports/PR_26179_CHARLIE_037-sprites-animation-export.md
++dev/reports/PR_26179_CHARLIE_038-sprites-grid-dimension-fix.md
++dev/reports/PR_26179_CHARLIE_039-sprites-color-and-zoom-fix.md
++dev/reports/PR_26179_CHARLIE_040-dev-artifact-location-cleanup.md
++dev/reports/codex_changed_files.txt
++dev/reports/codex_review.diff
++docs_build/dev/reports/codex_changed_files.txt
++docs_build/dev/reports/codex_review.diff
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+deleted file mode 100644
+index 06b902964..000000000
+--- a/docs_build/dev/reports/codex_changed_files.txt
++++ /dev/null
+@@ -1,7 +0,0 @@
+-assets/theme-v2/css/gamefoundrystudio.css
+-assets/toolbox/sprites/js/index.js
+-dev/tests/playwright/tools/SpritesToolShell.spec.mjs
+-docs_build/dev/reports/PR_26179_CHARLIE_039-sprites-color-and-zoom-fix.md
+-docs_build/dev/reports/codex_changed_files.txt
+-docs_build/dev/reports/codex_review.diff
+-toolbox/sprites/index.html
+diff --git a/docs_build/dev/reports/codex_review.diff b/docs_build/dev/reports/codex_review.diff
+deleted file mode 100644
+index fe4994612..000000000
+--- a/docs_build/dev/reports/codex_review.diff
++++ /dev/null
+@@ -1,245 +0,0 @@
+-diff --git a/assets/theme-v2/css/gamefoundrystudio.css b/assets/theme-v2/css/gamefoundrystudio.css
+-index 5786394a2..b92e7101e 100644
+---- a/assets/theme-v2/css/gamefoundrystudio.css
+-+++ b/assets/theme-v2/css/gamefoundrystudio.css
+-@@ -1184,6 +1184,10 @@ body.tool-focus-mode .tool-column:last-of-type {
+-   grid-template-rows: repeat(32, minmax(0, 1fr))
+- }
 -
--# git diff --stat merge-base(origin/main, HEAD)..working-tree
--.../ProjectInstructions/PROJECT_INSTRUCTIONS.md    |    4 +-
-- .../PROJECT_INSTRUCTIONS_VERSION.md                |    3 +-
-- .../ProjectInstructions/TEAM_START_COMMANDS.md     |   17 +
-- .../addendums/team_backlog_sod_eod_standard.md     |   69 +
-- .../addendums/team_start_and_release.md            |   28 +-
-- .../ProjectInstructions/backlog/BACKLOG_MASTER.md  |   39 +-
-- .../bootstrap/codex_start_of_day_bootstrap.md      |   27 +
-- .../standards/CODEX_WORKFLOW_COMMANDS.md           |    9 +
-- ...-startup-assignment-policy_branch-validation.md |   13 +
-- ...up-assignment-policy_manual-validation-notes.md |   14 +
-- ...003-backlog-startup-assignment-policy_report.md |  105 ++
-- ...rtup-assignment-policy_requirement-checklist.md |   29 +
-- ...-startup-assignment-policy_validation-report.md |   39 +
-- dev/reports/codex_changed_files.txt                |   47 +-
-- dev/reports/codex_review.diff                      | 1555 +++++++++-----------
-- 15 files changed, 1105 insertions(+), 893 deletions(-)
+-+.sprite-canvas-shell[data-sprites-zoom-level="0.5"] .sprite-canvas-grid {
+-+  width: min(260px, 50%)
+-+}
+-+
+- .sprite-canvas-shell[data-sprites-zoom-level="2"] .sprite-canvas-grid {
+-   width: min(720px, 160%)
+- }
+-@@ -1212,26 +1216,31 @@ body.tool-focus-mode .tool-column:last-of-type {
+-   background: var(--text)
+- }
 -
--# merge-base
--8c332fc82aeeed6508170363f04e04beaf67db28
-+M	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_branch-validation.md
-+M	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_validation-report.md
-diff --git a/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_branch-validation.md b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_branch-validation.md
-index 18e9f6841..17915ab80 100644
---- a/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_branch-validation.md
-+++ b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_branch-validation.md
-@@ -4,6 +4,7 @@ Status: PASS
-
- - Source branch: `PR_26179_OWNER_036-reports-are-tracked-source`
- - Base branch: `main`
-+- Latest `origin/main`: `742245d454b1be1fdfc923f1bcf4089199b85d90`
- - Branch rebased onto latest `origin/main`: PASS
- - Existing generated report artifacts preserved: PASS
- - Scope limited to governance docs and reports: PASS
-diff --git a/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_eod-report.md b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_eod-report.md
-index ec1383ae3..87539db1f 100644
---- a/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_eod-report.md
-+++ b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_eod-report.md
-@@ -25,7 +25,7 @@ PR #280 conflict resolution and merge closeout for `PR_26179_OWNER_036-reports-a
-
- - `git diff --check`: PASS
- - `npm run validate:canonical-structure`: PASS
--- GitHub `platform-validation`: PASS after push
-+- GitHub checks: to be verified on PR #280 after the updated branch push
-
- ## Closeout
-
-diff --git a/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_validation-report.md b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_validation-report.md
-index 6bde7d2f0..03ac15f20 100644
---- a/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_validation-report.md
-+++ b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_validation-report.md
-@@ -6,7 +6,7 @@ Conflict resolution:
-
- - Rebasing onto latest `origin/main` produced conflicts in generated report files only: `dev/reports/codex_changed_files.txt` and `dev/reports/codex_review.diff`.
- - The approved Codex Reports governance wording was preserved.
--- Generated report files were regenerated from the final post-rebase diff.
-+- Generated report files were regenerated from the final post-rebase diff against `742245d454b1be1fdfc923f1bcf4089199b85d90`.
-
- Commands run:
-
-@@ -27,7 +27,7 @@ Output summary:
- ```text
- Canonical repository structure guardrail: PASS
- Blocking violations: 0
--Approved legacy exceptions: 500
-+Approved legacy exceptions: 501
- ```
-
- No runtime, auth, Local API, seed, or `.gitignore` changes were made.
-diff --git a/dev/reports/codex_changed_files.txt b/dev/reports/codex_changed_files.txt
-index 81cf5fdec..0e26265e5 100644
---- a/dev/reports/codex_changed_files.txt
-+++ b/dev/reports/codex_changed_files.txt
-@@ -7,6 +7,7 @@ A	dev/reports/PR277-post-merge-closeout_report.md
- A	dev/reports/PR277-post-merge-closeout_requirement-checklist.md
- A	dev/reports/PR277-post-merge-closeout_validation-report.md
- A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_branch-validation.md
-+A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_eod-report.md
- A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_manual-validation-notes.md
- A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_report.md
- A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_requirement-checklist.md
-@@ -14,4 +15,5 @@ A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_validation-report.md
- M	dev/reports/codex_changed_files.txt
- M	dev/reports/codex_review.diff
- M	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_branch-validation.md
-+M	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_eod-report.md
- M	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_validation-report.md
+-+.sprite-canvas-cell.is-painted.sprite-canvas-cell--ink,
+- .sprite-canvas-cell--ink,
+- .sprite-color-chip--ink {
+-   background: var(--text)
+- }
+-
+-+.sprite-canvas-cell.is-painted.sprite-canvas-cell--orange,
+- .sprite-canvas-cell--orange,
+- .sprite-color-chip--orange {
+-   background: var(--molten-orange)
+- }
+-
+-+.sprite-canvas-cell.is-painted.sprite-canvas-cell--gold,
+- .sprite-canvas-cell--gold,
+- .sprite-color-chip--gold {
+-   background: var(--forge-gold)
+- }
+-
+-+.sprite-canvas-cell.is-painted.sprite-canvas-cell--green,
+- .sprite-canvas-cell--green,
+- .sprite-color-chip--green {
+-   background: var(--green)
+- }
+-
+-+.sprite-canvas-cell.is-painted.sprite-canvas-cell--blue,
+- .sprite-canvas-cell--blue,
+- .sprite-color-chip--blue {
+-   background: var(--electric-blue)
+-diff --git a/assets/toolbox/sprites/js/index.js b/assets/toolbox/sprites/js/index.js
+-index e6d249c52..48f8ba56e 100644
+---- a/assets/toolbox/sprites/js/index.js
+-+++ b/assets/toolbox/sprites/js/index.js
+-@@ -1,7 +1,7 @@
+- const DEFAULT_GRID_SIZE = 16;
+- const DEFAULT_FRAME_DURATION_MS = 120;
+- const SUPPORTED_GRID_SIZES = Object.freeze([16, 32]);
+--const SUPPORTED_ZOOM_LEVELS = Object.freeze([1, 2, 4]);
+-+const SUPPORTED_ZOOM_LEVELS = Object.freeze([0.5, 1, 2, 4]);
+- const SHAPE_TOOLS = Object.freeze(["line", "rectangle", "circle"]);
+- const EDITOR_TOOLS = Object.freeze(["pencil", "eraser", "fill", "picker", "zoom", ...SHAPE_TOOLS]);
+- const EDITOR_COLOR_KEYS = Object.freeze(["ink", "orange", "gold", "green", "blue"]);
+-diff --git a/dev/tests/playwright/tools/SpritesToolShell.spec.mjs b/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
+-index b04cb375d..3282b79fa 100644
+---- a/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
+-+++ b/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
+-@@ -219,6 +219,25 @@ async function previewCellHasPaint(page, row, column) {
+-   }, { column, gridSize, row });
+- }
+-
+-+async function previewCellColor(page, row, column) {
+-+  const gridSize = Number(await page.locator("[data-sprites-pixel-grid]").getAttribute("data-sprites-grid-size"));
+-+  return page.locator("[data-sprites-preview-canvas]").evaluate((canvas, coordinates) => {
+-+    const context = canvas.getContext("2d");
+-+    if (!context || !Number.isFinite(coordinates.gridSize) || coordinates.gridSize <= 0) {
+-+      return "";
+-+    }
+-+    const cellSize = canvas.width / coordinates.gridSize;
+-+    const x = Math.max(0, Math.min(canvas.width - 1, Math.floor((coordinates.column - 0.5) * cellSize)));
+-+    const y = Math.max(0, Math.min(canvas.height - 1, Math.floor((coordinates.row - 0.5) * cellSize)));
+-+    const pixel = context.getImageData(x, y, 1, 1).data;
+-+    return `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
+-+  }, { column, gridSize, row });
+-+}
+-+
+-+async function centerCellColor(page, row, column) {
+-+  return spriteCell(page, row, column).evaluate((cell) => getComputedStyle(cell).backgroundColor);
+-+}
+-+
+- async function canvasHasAnyPaint(locator) {
+-   return locator.evaluate((canvas) => {
+-     const context = canvas.getContext("2d");
+-@@ -240,6 +259,9 @@ async function expectCenterAndPreviewPainted(page, row, column, colorClass = nul
+-   await expect(cell).toHaveClass(/is-painted/);
+-   if (colorClass) {
+-     await expect(cell).toHaveClass(new RegExp(colorClass));
+-+    const centerColor = await centerCellColor(page, row, column);
+-+    expect(centerColor).not.toBe("rgb(255, 255, 255)");
+-+    expect(await previewCellColor(page, row, column)).toBe(centerColor);
+-   }
+-   expect(await previewCellHasPaint(page, row, column)).toBe(true);
+- }
+-@@ -337,6 +359,7 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status
+-     await expect(page.locator("[data-sprites-pixel-grid] [role='gridcell']")).toHaveCount(256);
+-     await expect(page.locator("[data-sprites-grid-status]")).toContainText("Canvas display mode: 16x16");
+-     await expect(page.locator("[data-sprites-zoom-status]")).toContainText("100%");
+-+    await expect(page.getByRole("button", { name: "50%" })).toBeVisible();
+-     await page.getByRole("button", { name: "32x32" }).click();
+-     await expect(page.locator("[data-sprites-pixel-grid]")).toHaveAttribute("aria-label", "Sprite Creator 32 by 32 pixel canvas");
+-     await expect(page.locator("[data-sprites-pixel-grid] [role='gridcell']")).toHaveCount(1024);
+-@@ -412,6 +435,10 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status
+-     await expect(page.locator("[data-sprites-zoom-status]")).toContainText("400%");
+-     await page.getByRole("button", { name: "100%" }).click();
+-     await expect(page.locator("[data-sprites-grid-shell]")).toHaveAttribute("data-sprites-zoom-level", "1");
+-+    await page.getByRole("button", { name: "50%" }).click();
+-+    await expect(page.locator("[data-sprites-grid-shell]")).toHaveAttribute("data-sprites-zoom-level", "0.5");
+-+    await expect(page.locator("[data-sprites-zoom-status]")).toContainText("50%");
+-+    await expect(page.locator("[data-sprites-pixel-grid] [role='gridcell']")).toHaveCount(256);
+-     const gridCells = page.locator("[data-sprites-pixel-grid] [role='gridcell']");
+-     await page.getByRole("button", { name: "Clear Canvas" }).click();
+-     await page.getByRole("button", { name: "Green editor color" }).click();
+-@@ -472,14 +499,14 @@ test("Sprite Creator canvas grid dimensions stay exact across modes and zoom", a
+-     await page.goto(`${server.baseUrl}/toolbox/sprites/index.html`, { waitUntil: "networkidle" });
+-
+-     await expectExactGridDimensions(page, 16);
+--    for (const zoomLabel of ["200%", "400%", "100%"]) {
+-+    for (const zoomLabel of ["50%", "200%", "400%", "100%"]) {
+-       await page.getByRole("button", { name: zoomLabel }).click();
+-       await expectExactGridDimensions(page, 16);
+-     }
+-
+-     await page.getByRole("button", { name: "32x32" }).click();
+-     await expectExactGridDimensions(page, 32);
+--    for (const zoomLabel of ["200%", "400%", "100%"]) {
+-+    for (const zoomLabel of ["50%", "200%", "400%", "100%"]) {
+-       await page.getByRole("button", { name: zoomLabel }).click();
+-       await expectExactGridDimensions(page, 32);
+-     }
+-diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_039-sprites-color-and-zoom-fix.md b/docs_build/dev/reports/PR_26179_CHARLIE_039-sprites-color-and-zoom-fix.md
+-new file mode 100644
+-index 000000000..aa665b793
+---- /dev/null
+-+++ b/docs_build/dev/reports/PR_26179_CHARLIE_039-sprites-color-and-zoom-fix.md
+-@@ -0,0 +1,78 @@
+-+# PR_26179_CHARLIE_039-sprites-color-and-zoom-fix
+-+
+-+Team: CHARLIE
+-+
+-+Mode: Batch governance stacked bug-fix workflow
+-+
+-+Base branch: PR_26179_CHARLIE_038-sprites-grid-dimension-fix
+-+
+-+Branch: PR_26179_CHARLIE_039-sprites-color-and-zoom-fix
+-+
+-+## Summary
+-+
+-+Fixed Sprite Creator center canvas selected-color rendering and added a 50% zoom option. The center grid now uses color-specific painted-cell selectors with enough specificity to override the generic painted fallback, so Pencil, Fill, and Shape tools display the selected palette color instead of defaulting visually to the fallback color. The Playwright coverage now compares the center cell computed color with the right preview canvas pixel color to prove both surfaces use the same selected-color page-session state.
+-+
+-+## Branch Validation
+-+
+-+PASS
+-+
+-+- Built from `PR_26179_CHARLIE_038-sprites-grid-dimension-fix`.
+-+- Scope stayed limited to selected color rendering, 50% zoom, and regression coverage.
+-+- No DB/API/schema changes.
+-+- No browser-owned authoritative product data added.
+-+- No start_of_day files changed.
+-+- ZIP package created at the requested path.
+-+
+-+## Requirement Checklist
+-+
+-+PASS - Center canvas drawing color follows selected palette color.
+-+
+-+PASS - Pencil applies selected color to center grid.
+-+
+-+PASS - Fill applies selected color to center grid.
+-+
+-+PASS - Shape tools apply selected color to center grid.
+-+
+-+PASS - Center grid, right preview, frame data, animation preview, and exports use the same selected-color pixel state.
+-+
+-+PASS - Painted pixels do not default to white unless that is the selected palette color.
+-+
+-+PASS - 50% zoom option added.
+-+
+-+PASS - Existing 100%, 200%, and 400% zoom options retained.
+-+
+-+PASS - Zoom does not change grid dimensions or pixel state.
+-+
+-+PASS - Export path still works.
+-+
+-+PASS - No DB/API/schema changes.
+-+
+-+PASS - No browser-owned authoritative product data.
+-+
+-+PASS - No start_of_day changes.
+-+
+-+## Validation Lane
+-+
+-+PASS - `node --check assets/toolbox/sprites/js/index.js`
+-+
+-+PASS - `node --check dev/tests/playwright/tools/SpritesToolShell.spec.mjs`
+-+
+-+PASS - `git diff --check -- toolbox/sprites/index.html assets/toolbox/sprites/js/index.js assets/theme-v2/css/gamefoundrystudio.css dev/tests/playwright/tools/SpritesToolShell.spec.mjs`
+-+
+-+PASS - Runtime guard scan found no prohibited inline style/script/event-handler or stale placeholder text in touched runtime files.
+-+
+-+PASS - `npx playwright test dev/tests/playwright/tools/SpritesToolShell.spec.mjs --workers=1 --reporter=list`
+-+
+-+## Manual Validation Notes
+-+
+-+1. Open `toolbox/sprites/index.html`.
+-+2. Select a non-white palette color such as Gold or Blue.
+-+3. Draw with Pencil and confirm the center grid cell uses the selected color.
+-+4. Confirm the right preview shows the same selected color.
+-+5. Use Fill and Shape tools with a selected color and confirm the center grid matches.
+-+6. Use 50%, 100%, 200%, and 400% zoom and confirm grid dimensions and pixels do not change.
+-+7. Download PNG and Animation Strip and confirm export status still completes.
+-+
+-+## ZIP
+-+
+-+`dev/workspace/zip/PR_26179_CHARLIE_039-sprites-color-and-zoom-fix_delta.zip`
+-diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+-index 52e5e47e7..06b902964 100644
+---- a/docs_build/dev/reports/codex_changed_files.txt
+-+++ b/docs_build/dev/reports/codex_changed_files.txt
+-@@ -1,6 +1,7 @@
+- assets/theme-v2/css/gamefoundrystudio.css
+-+assets/toolbox/sprites/js/index.js
+- dev/tests/playwright/tools/SpritesToolShell.spec.mjs
+--docs_build/dev/reports/PR_26179_CHARLIE_038-sprites-grid-dimension-fix.md
+-+docs_build/dev/reports/PR_26179_CHARLIE_039-sprites-color-and-zoom-fix.md
+- docs_build/dev/reports/codex_changed_files.txt
+- docs_build/dev/reports/codex_review.diff
+- toolbox/sprites/index.html
+-diff --git a/toolbox/sprites/index.html b/toolbox/sprites/index.html
+-index 78d0e76c4..46b480acb 100644
+---- a/toolbox/sprites/index.html
+-+++ b/toolbox/sprites/index.html
+-@@ -112,6 +112,7 @@
+-                                     <button class="btn btn--compact" type="button" data-sprites-redo disabled>Redo</button>
+-                                 </div>
+-                                 <div class="action-group action-group--tight" aria-label="Sprite zoom display controls" data-sprites-zoom-controls>
+-+                                    <button class="btn btn--compact" type="button" data-sprites-zoom-level="0.5" aria-pressed="false">50%</button>
+-                                     <button class="btn btn--compact primary" type="button" data-sprites-zoom-level="1" aria-pressed="true">100%</button>
+-                                     <button class="btn btn--compact" type="button" data-sprites-zoom-level="2" aria-pressed="false">200%</button>
+-                                     <button class="btn btn--compact" type="button" data-sprites-zoom-level="4" aria-pressed="false">400%</button>

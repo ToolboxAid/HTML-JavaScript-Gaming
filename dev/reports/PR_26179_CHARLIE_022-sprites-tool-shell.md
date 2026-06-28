@@ -16,9 +16,9 @@ The current repository did not contain `docs_build/tool-planning/sprites/`, and 
 - toolbox/sprites/index.html
 - src/shared/toolbox/tool-metadata-inventory.js
 - dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-- docs_build/dev/reports/PR_26179_CHARLIE_022-sprites-tool-shell.md
-- docs_build/dev/reports/codex_changed_files.txt
-- docs_build/dev/reports/codex_review.diff
+- dev/reports/PR_26179_CHARLIE_022-sprites-tool-shell.md
+- dev/reports/codex_changed_files.txt
+- dev/reports/codex_review.diff
 
 ## Branch Validation
 
