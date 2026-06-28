@@ -1,91 +1,15 @@
-diff --git a/dev/build/ProjectInstructions/addendums/pr_workflow.md b/dev/build/ProjectInstructions/addendums/pr_workflow.md
-index ce6483838..6fadd0789 100644
---- a/dev/build/ProjectInstructions/addendums/pr_workflow.md
-+++ b/dev/build/ProjectInstructions/addendums/pr_workflow.md
-@@ -41,7 +41,8 @@ This file owns PR lifecycle governance. It must not duplicate command phase rule
- Team-neutral daily workflow:
+diff --git a/.gitignore b/.gitignore
+index 3ac762a04..1207a12fc 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -48,8 +48,8 @@ docs/dev/reports/playwright_v8_coverage_report.txt
+ *.mp4
+ *.mkv
 
- - SOD starts from the latest synchronized `main`.
--- SOD creates or updates one active team branch/workstream.
-+- SOD reports the active team branch/workstream recommendation only.
-+- Branch creation or branch updates happen after SOD through the appropriate PR execution phase.
- - Work must be committed only to the active team branch.
- - PR branches/commits stay on the active team branch/workstream during the day when OWNER assigned a stacked or sequential workstream.
- - Do not return to `main` between stacked/sequential PRs in the same active workstream.
-diff --git a/dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md b/dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
-index e191f9d7f..1e6a04a87 100644
---- a/dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
-+++ b/dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
-@@ -88,7 +88,8 @@ At EOD, ChatGPT/Codex must provide:
- This standard preserves the existing branch workflow:
-
- - SOD starts from latest `main`.
--- SOD creates or uses the active team branch.
-+- SOD reports the recommended active team branch/workstream only.
-+- Branch creation or use happens after SOD through the appropriate PR execution phase.
- - All commits go to the active team branch, not `main`.
- - Sequential PRs stay on the active team branch/workstream during the day.
- - EOD merges OWNER-approved work, pushes, returns to `main`, and verifies clean worktree and local/origin sync `0 0`.
-diff --git a/dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md b/dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md
-index 280abef00..f2eb2787d 100644
---- a/dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md
-+++ b/dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md
-@@ -33,7 +33,24 @@ The bootstrap loads:
- - Current branch
- - Worktree status
-
--The bootstrap must not create branches, commit files, move files, or run implementation work by itself.
-+The bootstrap requires the current branch to be `main`, the worktree to be clean, and local `main` to be synced with `origin/main`.
-+
-+Allowed bootstrap sync actions:
-+
-+```text
-+git fetch origin
-+git pull --ff-only origin main
-+```
-+
-+If the current branch is not `main`, the bootstrap must HARD STOP and return:
-+
-+```text
-+git switch main
-+git pull --ff-only origin main
-+Start of Day {Team}
-+```
-+
-+The bootstrap must not create branches, switch branches, commit files, move files, or run implementation work by itself.
-
- Start-of-Day bootstrap must satisfy the Codex Completion Contract in `dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md` with a review-only ZIP unless a hard stop occurs.
-
-diff --git a/dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md b/dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
-index 25a403486..c0066966e 100644
---- a/dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
-+++ b/dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
-@@ -25,9 +25,26 @@ Start of Day Golf
-
- Commands using non-canonical team names are invalid because active team names are Owner, Alfa, Bravo, Charlie, Delta, and Golf.
-
--Start of Day is read-only discovery only.
-+Start of Day is read-only discovery plus baseline sync only.
-
--Start of Day must not require the current branch to be `main`.
-+Start of Day requires:
-+- current branch is `main`
-+- worktree is clean
-+- `git fetch origin`
-+- `git pull --ff-only origin main`
-+- local `main` and `origin/main` are synced
-+
-+Allowed Start of Day git sync actions:
-+- `git fetch origin`
-+- `git pull --ff-only origin main`
-+
-+If the current branch is not `main`, Start of Day must HARD STOP and return these correction steps:
-+
-+```text
-+git switch main
-+git pull --ff-only origin main
-+Start of Day {Team}
-+```
-
- Start of Day must not:
- - create a branch
+-.env
+-.env.*
++# Environment files
++.env*
+ !.env.example
+ !.env.sample
+ !.env.template
