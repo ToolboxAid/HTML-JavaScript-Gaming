@@ -17,6 +17,102 @@ export const GAME_CONFIGURATION_TABLES = Object.freeze([
   "game_configuration_validation_items",
 ]);
 
+export const OBJECTS_TOOL_TABLES = Object.freeze([
+  "object_definition_records",
+]);
+
+export const CAPABILITY_LABELS = Object.freeze({
+  collectible: "Can Be Collected",
+  collides: "Can Collide",
+  damageable: "Takes Damage",
+  goal: "Completes Goal",
+  hazard: "Causes Damage",
+  killable: "Can Be Removed",
+  movable: "Can Move",
+  playerControlled: "Player Controlled",
+  scores: "Scores Points",
+});
+
+export const OBJECT_TYPE_TEMPLATES = Object.freeze([
+  Object.freeze({
+    capabilities: Object.freeze(["collectible", "scores"]),
+    modelType: "Collectible",
+    renderType: "Sprite",
+    state: "Active",
+    type: "Collectible",
+  }),
+  Object.freeze({
+    capabilities: Object.freeze([]),
+    modelType: "Static",
+    renderType: "None",
+    state: "Active",
+    type: "Custom",
+  }),
+  Object.freeze({
+    capabilities: Object.freeze([]),
+    modelType: "Static",
+    renderType: "Sprite",
+    state: "Idle",
+    type: "Decoration",
+  }),
+  Object.freeze({
+    capabilities: Object.freeze(["movable", "collides", "hazard", "damageable"]),
+    modelType: "Dynamic",
+    renderType: "Sprite",
+    state: "Active",
+    type: "Enemy",
+  }),
+  Object.freeze({
+    capabilities: Object.freeze(["goal", "scores"]),
+    modelType: "Goal",
+    renderType: "Sprite",
+    state: "Active",
+    type: "Goal",
+  }),
+  Object.freeze({
+    capabilities: Object.freeze(["hazard", "damageable"]),
+    modelType: "Hazard",
+    renderType: "Sprite",
+    state: "Active",
+    type: "Hazard",
+  }),
+  Object.freeze({
+    capabilities: Object.freeze(["playerControlled", "movable", "collides", "damageable"]),
+    modelType: "Dynamic",
+    renderType: "Sprite",
+    state: "Active",
+    type: "Hero",
+  }),
+  Object.freeze({
+    capabilities: Object.freeze(["collides"]),
+    modelType: "Static",
+    renderType: "None",
+    state: "Active",
+    type: "Platform",
+  }),
+  Object.freeze({
+    capabilities: Object.freeze(["movable", "collides", "hazard"]),
+    modelType: "Dynamic",
+    renderType: "Sprite",
+    state: "Active",
+    type: "Projectile",
+  }),
+  Object.freeze({
+    capabilities: Object.freeze([]),
+    modelType: "Static",
+    renderType: "None",
+    state: "Active",
+    type: "Spawn Point",
+  }),
+  Object.freeze({
+    capabilities: Object.freeze(["collides"]),
+    modelType: "Static",
+    renderType: "None",
+    state: "Active",
+    type: "Wall",
+  }),
+]);
+
 export const GAME_DESIGN_GAME_TYPES = Object.freeze([
   "2D Platformer",
   "Arcade Action",
@@ -112,6 +208,33 @@ const STARTER_TAGS = Object.freeze([
   Object.freeze({ label: "pixel-art", description: "Pixel art visual direction." }),
   Object.freeze({ label: "kids", description: "Designed for younger players." }),
   Object.freeze({ label: "boss-fight", description: "Includes a climactic boss encounter." }),
+]);
+
+export const STARTER_OBJECTS = Object.freeze([
+  Object.freeze({
+    behavior: "Responds to player control mapping.",
+    interaction: "Can interact with platforms, collectibles, hazards, and goals.",
+    name: "Hero",
+    render: Object.freeze({ type: "None" }),
+    role: "Hero",
+    state: "Active",
+  }),
+  Object.freeze({
+    behavior: "Moves through the scene under authored behavior.",
+    interaction: "Can collide with walls, platforms, or targets.",
+    name: "Projectile",
+    render: Object.freeze({ type: "None" }),
+    role: "Projectile",
+    state: "Active",
+  }),
+  Object.freeze({
+    behavior: "Stays fixed in the scene.",
+    interaction: "Provides a stable collision surface.",
+    name: "Wall",
+    render: Object.freeze({ type: "None" }),
+    role: "Wall",
+    state: "Active",
+  }),
 ]);
 
 const SECTION_LABELS = Object.freeze({
@@ -345,6 +468,262 @@ function starterTagRow(tag, index) {
     label: tag.label,
     slug: slugify(tag.label),
     ...auditFields(SYSTEM_USER_KEY),
+  };
+}
+
+function objectKeyFromText(value) {
+  return slugify(value);
+}
+
+function parseObjectCapabilities(value) {
+  if (Array.isArray(value)) {
+    return value.map(normalizeText).filter(Boolean);
+  }
+  const text = normalizeText(value);
+  if (!text) {
+    return [];
+  }
+  try {
+    const parsed = JSON.parse(text);
+    if (Array.isArray(parsed)) {
+      return parsed.map(normalizeText).filter(Boolean);
+    }
+  } catch {}
+  return text.split(",").map(normalizeText).filter(Boolean);
+}
+
+function objectTemplateForRole(role) {
+  return OBJECT_TYPE_TEMPLATES.find((template) => template.type === normalizeText(role)) || null;
+}
+
+function normalizeObjectRender(source = {}) {
+  const render = source.render && typeof source.render === "object" ? source.render : {};
+  const renderType = normalizeText(source.renderType || render.type) === "Sprite" ? "Sprite" : "None";
+  if (renderType !== "Sprite") {
+    return {
+      assetKey: "",
+      previewPath: "",
+      type: "None",
+    };
+  }
+  return {
+    assetKey: normalizeText(source.renderAssetKey || render.assetKey),
+    previewPath: normalizeText(source.renderPreviewPath || render.previewPath),
+    type: "Sprite",
+  };
+}
+
+function objectTextField(value) {
+  if (typeof value === "string") {
+    return normalizeText(value);
+  }
+  if (value && typeof value === "object") {
+    return normalizeText(value.text || value.description || value.summary);
+  }
+  return "";
+}
+
+function objectFromRecord(record = {}) {
+  const render = normalizeObjectRender(record);
+  return {
+    behavior: objectTextField(record.behavior),
+    id: objectKeyFromText(record.id || record.name),
+    interaction: objectTextField(record.interaction),
+    name: normalizeText(record.name),
+    render: render.type === "Sprite"
+      ? {
+          assetKey: render.assetKey,
+          previewPath: render.previewPath,
+          type: "Sprite",
+        }
+      : { type: "None" },
+    role: normalizeText(record.type),
+    state: normalizeText(record.state) || "Active",
+    traits: parseObjectCapabilities(record.capabilities),
+    type: normalizeText(record.modelType),
+  };
+}
+
+function sortedObjectRecords(rows = []) {
+  return cloneRows(rows).sort((left, right) => (
+    (Number(left.recordOrder) || 0) - (Number(right.recordOrder) || 0)
+      || normalizeText(left.name).localeCompare(normalizeText(right.name))
+  ));
+}
+
+function normalizeObjectInput(input = {}) {
+  const role = normalizeText(input.role || input.type);
+  const template = objectTemplateForRole(role);
+  const id = objectKeyFromText(input.id || input.name);
+  const render = normalizeObjectRender(input);
+  return {
+    behavior: normalizeText(input.behavior),
+    capabilities: parseObjectCapabilities(input.traits || input.capabilities),
+    id,
+    interaction: normalizeText(input.interaction),
+    modelType: normalizeText(input.type) || template?.modelType || "",
+    name: normalizeText(input.name),
+    render,
+    role,
+    state: normalizeText(input.state) || template?.state || "Active",
+  };
+}
+
+function objectRecordFromInput(input, {
+  adapter,
+  existing = null,
+  gameKey,
+  index,
+  userKey,
+}) {
+  const object = normalizeObjectInput(input);
+  const now = timestamp();
+  return {
+    behavior: object.behavior ? { text: object.behavior } : {},
+    capabilities: object.capabilities,
+    createdAt: existing?.createdAt || now,
+    createdBy: existing?.createdBy || userKey,
+    gameId: gameKey,
+    id: object.id,
+    interaction: object.interaction ? { text: object.interaction } : {},
+    key: existing?.key || adapter.createRecordKey(),
+    modelType: object.modelType,
+    name: object.name,
+    recordOrder: index + 1,
+    renderAssetKey: object.render.assetKey || null,
+    renderPreviewPath: object.render.previewPath,
+    renderType: object.render.type,
+    state: object.state,
+    type: object.role,
+    updatedAt: now,
+    updatedBy: userKey,
+  };
+}
+
+function objectsApiSetupError(action, error) {
+  if (error?.name === "ObjectsApiSetupError") {
+    return error;
+  }
+  const message = `${action} failed because the Objects API database setup is unavailable. Verify the API database connection and apply the account, Game Hub, Assets, and Objects database setup before using Objects.`;
+  const wrapped = new Error(message);
+  wrapped.name = "ObjectsApiSetupError";
+  wrapped.statusCode = typeof error?.statusCode === "number" ? error.statusCode : 503;
+  wrapped.operatorDiagnostic = `${message} Cause: ${error instanceof Error ? error.message : String(error || "Unknown database error.")}`;
+  wrapped.cause = error;
+  return wrapped;
+}
+
+export function createObjectsApiService(options = {}) {
+  let lastTables = { object_definition_records: [] };
+
+  function activeGame() {
+    return activeGameFromWorkspace(options.gameWorkspaceRepository);
+  }
+
+  function objectsFromTables(tables = lastTables, gameKey = activeGame().key) {
+    return sortedObjectRecords(tables.object_definition_records)
+      .filter((record) => normalizeText(record.gameId || record.gameKey || record.projectKey) === gameKey)
+      .map(objectFromRecord);
+  }
+
+  async function readTables() {
+    const action = "Reading Objects";
+    try {
+      const adapter = databaseAdapter(options, action);
+      await ensureGameRecord(adapter, activeGame(), activeUserKey(options));
+      lastTables = {
+        object_definition_records: await adapter.requestTable("object_definition_records"),
+      };
+      return lastTables;
+    } catch (error) {
+      throw objectsApiSetupError(action, error);
+    }
+  }
+
+  async function listObjects(gameId = "") {
+    const game = activeGameFromWorkspace(options.gameWorkspaceRepository, gameId);
+    const tables = await readTables();
+    return objectsFromTables(tables, game.key);
+  }
+
+  function listCachedObjects(gameId = "") {
+    const game = activeGameFromWorkspace(options.gameWorkspaceRepository, gameId);
+    return objectsFromTables(lastTables, game.key);
+  }
+
+  async function replaceObjects(objects = [], gameId = "") {
+    const action = "Saving Objects";
+    try {
+      const adapter = databaseAdapter(options, action);
+      const game = activeGameFromWorkspace(options.gameWorkspaceRepository, gameId);
+      const userKey = activeUserKey(options);
+      await ensureGameRecord(adapter, game, userKey);
+      const existingRows = await adapter.requestTable("object_definition_records", {
+        query: `gameId=eq.${encodeURIComponent(game.key)}`,
+      });
+      const existingById = new Map(existingRows.map((record) => [objectKeyFromText(record.id || record.name), record]));
+      for (const record of existingRows) {
+        await adapter.requestTable("object_definition_records", {
+          method: "DELETE",
+          prefer: "return=representation",
+          query: `key=eq.${encodeURIComponent(record.key)}`,
+        });
+      }
+      const nextRows = (Array.isArray(objects) ? objects : [])
+        .map((object, index) => objectRecordFromInput(object, {
+          adapter,
+          existing: existingById.get(objectKeyFromText(object.id || object.name)) || null,
+          gameKey: game.key,
+          index,
+          userKey,
+        }))
+        .filter((row) => row.id && row.name);
+      if (nextRows.length) {
+        await adapter.upsertProductTable("object_definition_records", nextRows);
+      }
+      await readTables();
+      return {
+        objects: listCachedObjects(game.id),
+        saved: true,
+        snapshot: await getSnapshot(),
+      };
+    } catch (error) {
+      throw objectsApiSetupError(action, error);
+    }
+  }
+
+  async function resetObjects(gameId = "") {
+    return replaceObjects([], gameId);
+  }
+
+  async function getSnapshot() {
+    const tables = await readTables();
+    const game = activeGame();
+    const objects = objectsFromTables(tables, game.key);
+    return {
+      activeGame: game,
+      activeProject: game,
+      objects,
+      tableCounts: OBJECTS_TOOL_TABLES.map((table) => ({ rows: tables[table].length, table })),
+      tables: cloneTables(OBJECTS_TOOL_TABLES, tables),
+    };
+  }
+
+  return {
+    CAPABILITY_LABELS,
+    OBJECTS_TOOL_TABLES,
+    OBJECT_TYPE_TEMPLATES,
+    STARTER_OBJECTS,
+    authenticationRequiredMessage: "Sign in required to save Objects through the API.",
+    getSnapshot,
+    getTables: () => cloneTables(OBJECTS_TOOL_TABLES, lastTables),
+    listCachedObjects,
+    listObjects,
+    replaceObjects,
+    requiresAuthenticatedWrites: true,
+    resetObjects,
+    usesDatabasePersistence: true,
+    writeMethods: new Set(["replaceObjects", "resetObjects"]),
   };
 }
 

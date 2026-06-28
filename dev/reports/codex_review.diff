@@ -1,122 +1,928 @@
-diff --git a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-index 58f6a709f..65d36157c 100644
---- a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-+++ b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-@@ -4,8 +4,9 @@ Before performing ANY task, Codex must:
+﻿diff --git a/assets/toolbox/objects/js/index.js b/assets/toolbox/objects/js/index.js
+index 0f332df58..8322ba56c 100644
+--- a/assets/toolbox/objects/js/index.js
++++ b/assets/toolbox/objects/js/index.js
+@@ -1,3 +1,4 @@
++import { getSessionCurrent } from "../../../../src/api/session-api-client.js";
+ import {
+   createServerRepositoryClient,
+   readServerToolConstants,
+@@ -110,6 +111,23 @@ function setText(element, value) {
+   }
+ }
 
- - Read `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md`.
- - Read the latest `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md` from the repository.
--- Treat the repository copy as authoritative.
--- Discard previously remembered Project Instructions.
-+- Treat repository Project Instructions as the only authoritative source.
-+- Discard previously remembered Project Instructions before every Codex task.
-+- Never allow conversation memory to override repository instructions.
- - Load all referenced instruction documents required by this file and the task.
- - Validate canonical paths.
- - Validate branching model.
-@@ -19,6 +20,11 @@ Startup Validation
-
- Reading latest (v<version>) Project Instructions... PASS
-
-+Instruction Source
-+------------------
-+Repository ........ PASS
-+Cached Memory ..... DISCARDED
++function currentSession() {
++  try {
++    return getSessionCurrent();
++  } catch {
++    return { authenticated: false };
++  }
++}
 +
- Canonical paths
- ---------------
- Reports .......... dev/reports
-@@ -109,7 +115,7 @@ Rules:
++function redirectGuestWriteAction() {
++  if (currentSession()?.authenticated === true) {
++    return false;
++  }
++  setText(elements.log, "Sign in before saving Objects.");
++  window.location.href = new URL("/account/sign-in.html", window.location.href).href;
++  return true;
++}
++
+ function listItem(text) {
+   const item = document.createElement("li");
+   item.textContent = text;
+@@ -585,6 +603,9 @@ function readPersistedObjects() {
+ }
 
- ## Current Version/Date
+ function persistDraftedObjects(nextObjects) {
++  if (redirectGuestWriteAction()) {
++    return null;
++  }
+   const normalizedObjects = nextObjects.map(cloneObject);
+   let result = objectsRepository.replaceObjects(normalizedObjects);
+   if (result?.error) {
+diff --git a/dev/reports/PR_26179_ALFA_011-objects-manager-mvp_branch-validation.md b/dev/reports/PR_26179_ALFA_011-objects-manager-mvp_branch-validation.md
+new file mode 100644
+index 000000000..292777e45
+--- /dev/null
++++ b/dev/reports/PR_26179_ALFA_011-objects-manager-mvp_branch-validation.md
+@@ -0,0 +1,10 @@
++# PR_26179_ALFA_011 Branch Validation
++
++| Check | Result | Evidence |
++| --- | --- | --- |
++| Project Instructions read | PASS | `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md` and `PROJECT_INSTRUCTIONS.md` read before implementation. |
++| Branch | PASS | Work performed on `PR_26179_ALFA_011-objects-manager-mvp`. |
++| Main sync before branch | PASS | `main...origin/main` was `0 0` before branch creation. |
++| Canonical report path | PASS | Reports generated under `dev/reports/`. |
++| Canonical ZIP path | PASS | ZIP generated under `dev/workspace/zips/`. |
++| Legacy output paths avoided | PASS | No new `docs_build/` or `tmp/` artifacts used for this PR. |
+diff --git a/dev/reports/PR_26179_ALFA_011-objects-manager-mvp_manual-validation-notes.md b/dev/reports/PR_26179_ALFA_011-objects-manager-mvp_manual-validation-notes.md
+new file mode 100644
+index 000000000..c6433377b
+--- /dev/null
++++ b/dev/reports/PR_26179_ALFA_011-objects-manager-mvp_manual-validation-notes.md
+@@ -0,0 +1,19 @@
++# PR_26179_ALFA_011 Manual Validation Notes
++
++## Recommended Owner Checks
++
++1. Start the local API/site using the approved developer command.
++2. Open `toolbox/objects/index.html`.
++3. Confirm Objects loads the Object Builder table.
++4. Sign in as a Creator.
++5. Add a Hero object and save.
++6. Refresh the page and confirm the Hero remains.
++7. Edit the object, save, refresh, and confirm the edit remains.
++8. Delete the object, refresh, and confirm the table is empty.
++9. Click Seed Starter Objects and confirm Hero, Projectile, and Wall appear.
++10. Sign out, attempt a save, and confirm redirect to `account/sign-in.html`.
++
++## Notes
++
++- No fallback test lane was required because targeted validation passed.
++- No runtime data is owned by the browser page.
+diff --git a/dev/reports/PR_26179_ALFA_011-objects-manager-mvp_report.md b/dev/reports/PR_26179_ALFA_011-objects-manager-mvp_report.md
+new file mode 100644
+index 000000000..e9a5b3d16
+--- /dev/null
++++ b/dev/reports/PR_26179_ALFA_011-objects-manager-mvp_report.md
+@@ -0,0 +1,39 @@
++# PR_26179_ALFA_011 Objects Manager MVP Report
++
++## Product Owner Testable Outcome
++
++The Objects tool now saves and reloads object rows through the server API/database contract. A signed-in Creator can add, edit, delete, seed starter objects, validate setup, reload the page, and see persisted Objects data for the current Game Hub game.
++
++## Implementation Summary
++
++- Added a DB-backed Objects API service for `object_definition_records`.
++- Routed the active Objects tool repository away from the mock repository and into the shared API service path.
++- Preserved the browser as an API client only; the server owns record keys, game scoping, and audit fields.
++- Added guest write protection so create/update/delete actions redirect to `account/sign-in.html`.
++- Kept the existing Theme V2 Objects UI and table workflow intact.
++
++## What Can The Product Owner Test After Applying This ZIP?
++
++Open `toolbox/objects/index.html`, sign in as a Creator, add an object, save it, refresh the page, edit it, delete it, seed starter objects, and confirm the rows persist through the API/database path. As a guest, attempt to save a row and confirm the browser redirects to sign-in.
++
++## Playwright Coverage
++
++- `dev/tests/playwright/tools/ObjectsTool.spec.mjs`
++- Covers production copy, object table workflow, guest redirect, persisted add/edit/delete, sprite-linked rows, catalog prefills, and Toolbox beta routing.
++
++## Manual Validation
++
++- Open Objects from Toolbox.
++- Confirm the Object Builder table loads without console errors.
++- Add a Hero object and save.
++- Refresh and confirm the Hero remains.
++- Edit the object name/state and save.
++- Refresh and confirm edits remain.
++- Delete the object and refresh.
++- Sign out, try to save, and confirm redirect to `account/sign-in.html`.
++
++## Stack Context
++
++- Part of stacked MVP sequence: yes.
++- Previous PR dependency: `PR_26179_ALFA_010-objects-inventory-audit`.
++- Next PR dependency: `PR_26179_ALFA_012-objects-properties-mvp`.
+diff --git a/dev/reports/PR_26179_ALFA_011-objects-manager-mvp_requirement-checklist.md b/dev/reports/PR_26179_ALFA_011-objects-manager-mvp_requirement-checklist.md
+new file mode 100644
+index 000000000..91c048d12
+--- /dev/null
++++ b/dev/reports/PR_26179_ALFA_011-objects-manager-mvp_requirement-checklist.md
+@@ -0,0 +1,16 @@
++# PR_26179_ALFA_011 Requirement Checklist
++
++| Requirement | Result | Notes |
++| --- | --- | --- |
++| Implement Objects Manager MVP exactly as described | PASS | Objects Manager now supports API/database-backed add, edit, delete, seed, validate, reload persistence. |
++| Use Local API / Local DB contract | PASS | Browser uses `createServerRepositoryClient("objects")`; server routes Objects to `createObjectsApiService`. |
++| Browser must not own product data | PASS | Browser submits object rows to API; persistence, keys, game scoping, and audit fields are server-owned. |
++| No page-local product data arrays | PASS | No authoritative object records are stored in page-local arrays; page state mirrors API data only. |
++| No silent fallbacks | PASS | Missing setup raises controlled Objects API setup errors instead of returning fake rows. |
++| Use Theme V2 classes first | PASS | Existing Theme V2 tool layout and button/table classes remain in use. |
++| No inline styles/scripts/events | PASS | No inline styles, script blocks, or inline event handlers were added. |
++| Targeted Playwright for Objects Manager | PASS | Objects Playwright lane passed 7/7. |
++| `git diff --check` | PASS | Whitespace check passed. |
++| `npm run validate:canonical-structure` | PASS | Canonical structure guardrail passed. |
++| Fallback `npm run test:workspace-v2` | PASS | Not required because targeted validation passed. |
++| Required reports and ZIP | PASS | Reports created under `dev/reports/`; ZIP created under `dev/workspace/zips/`. |
+diff --git a/dev/reports/PR_26179_ALFA_011-objects-manager-mvp_validation-lane.md b/dev/reports/PR_26179_ALFA_011-objects-manager-mvp_validation-lane.md
+new file mode 100644
+index 000000000..34e8316bd
+--- /dev/null
++++ b/dev/reports/PR_26179_ALFA_011-objects-manager-mvp_validation-lane.md
+@@ -0,0 +1,17 @@
++# PR_26179_ALFA_011 Validation Lane
++
++## Lane
++
++Objects Manager focused lane.
++
++## Coverage
++
++- Service-level DB adapter behavior for `createObjectsApiService`.
++- Browser Objects workflow against the shared API route.
++- Guest write redirect.
++- Reload persistence.
++- Toolbox registry visibility for Objects beta.
++
++## Result
++
++PASS. Objects API service tests passed 3/3. Objects Playwright tests passed 7/7.
+diff --git a/dev/reports/PR_26179_ALFA_011-objects-manager-mvp_validation-report.md b/dev/reports/PR_26179_ALFA_011-objects-manager-mvp_validation-report.md
+new file mode 100644
+index 000000000..df6ba49a3
+--- /dev/null
++++ b/dev/reports/PR_26179_ALFA_011-objects-manager-mvp_validation-report.md
+@@ -0,0 +1,19 @@
++# PR_26179_ALFA_011 Validation Report
++
++## Commands
++
++| Command | Result |
++| --- | --- |
++| `node --check src/dev-runtime/toolbox-api/alfa-tool-services.mjs` | PASS |
++| `node --check src/dev-runtime/server/local-api-router.mjs` | PASS |
++| `node --check assets/toolbox/objects/js/index.js` | PASS |
++| `node --check dev/tests/dev-runtime/ObjectsApiService.test.mjs` | PASS |
++| `node --check dev/tests/playwright/tools/ObjectsTool.spec.mjs` | PASS |
++| `node ./dev/scripts/run-node-test-files.mjs dev/tests/dev-runtime/ObjectsApiService.test.mjs` | PASS, 3/3 |
++| `git diff --check` | PASS |
++| `npm run validate:canonical-structure` | PASS |
++| `npx playwright test dev/tests/playwright/tools/ObjectsTool.spec.mjs --config=dev/config/playwright.config.cjs --project=playwright --workers=1 --reporter=list` | PASS, 7/7 |
++
++## Result
++
++PASS. Required targeted validation passed. `npm run test:workspace-v2` fallback was not required.
+diff --git a/dev/tests/dev-runtime/ObjectsApiService.test.mjs b/dev/tests/dev-runtime/ObjectsApiService.test.mjs
+new file mode 100644
+index 000000000..0e0fbc517
+--- /dev/null
++++ b/dev/tests/dev-runtime/ObjectsApiService.test.mjs
+@@ -0,0 +1,194 @@
++import assert from "node:assert/strict";
++import test from "node:test";
++import {
++  OBJECTS_TOOL_TABLES,
++  createObjectsApiService,
++  gameWorkspaceGameKeyForApi,
++} from "../../../src/dev-runtime/toolbox-api/alfa-tool-services.mjs";
++import { SEED_DB_KEYS, makeSeedUlid } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
++
++function cloneRows(rows) {
++  return rows.map((row) => ({ ...row }));
++}
++
++function createGameWorkspaceRepository() {
++  let activeGame = {
++    id: "demo-game",
++    name: "Demo Game",
++    purpose: "Game",
++    status: "Under Construction",
++  };
++  return {
++    getActiveGame() {
++      return activeGame;
++    },
++    openGame(gameId) {
++      activeGame = {
++        id: gameId,
++        name: gameId === "gravity-demo" ? "Gravity Demo" : "Demo Game",
++        purpose: "Game",
++        status: "Under Construction",
++      };
++      return activeGame;
++    },
++  };
++}
++
++class ObjectsServiceTestAdapter {
++  constructor() {
++    this.calls = [];
++    this.recordIndex = 0;
++    this.tables = {
++      game_workspace_games: [],
++      object_definition_records: [],
++      users: [],
++    };
++  }
++
++  createRecordKey() {
++    this.recordIndex += 1;
++    return makeSeedUlid(9900 + this.recordIndex);
++  }
++
++  async requestTable(tableName, options = {}) {
++    this.calls.push(["requestTable", tableName, options.method || "GET", options.query || ""]);
++    if (!Object.hasOwn(this.tables, tableName)) {
++      throw new Error(`relation "${tableName}" does not exist`);
++    }
++    if (options.method === "DELETE") {
++      const key = String(options.query || "").match(/key=eq\.([^&]+)/)?.[1] || "";
++      const decodedKey = decodeURIComponent(key);
++      const deletedRows = this.tables[tableName].filter((row) => row.key === decodedKey);
++      this.tables[tableName] = this.tables[tableName].filter((row) => row.key !== decodedKey);
++      return cloneRows(deletedRows);
++    }
++    const gameId = String(options.query || "").match(/gameId=eq\.([^&]+)/)?.[1] || "";
++    if (gameId) {
++      const decodedGameId = decodeURIComponent(gameId);
++      return cloneRows(this.tables[tableName].filter((row) => row.gameId === decodedGameId));
++    }
++    return cloneRows(this.tables[tableName]);
++  }
++
++  async upsertProductTable(tableName, rows) {
++    this.calls.push(["upsertProductTable", tableName, rows.length]);
++    this.#upsert(tableName, rows);
++    return cloneRows(rows);
++  }
++
++  async upsertTable(tableName, rows) {
++    this.calls.push(["upsertTable", tableName, rows.length]);
++    this.#upsert(tableName, rows);
++    return cloneRows(rows);
++  }
++
++  #upsert(tableName, rows) {
++    if (!Object.hasOwn(this.tables, tableName)) {
++      throw new Error(`relation "${tableName}" does not exist`);
++    }
++    rows.forEach((row) => {
++      const index = this.tables[tableName].findIndex((candidate) => candidate.key === row.key);
++      if (index >= 0) {
++        this.tables[tableName][index] = { ...this.tables[tableName][index], ...row };
++      } else {
++        this.tables[tableName].push({ ...row });
++      }
++    });
++  }
++}
++
++function createService(adapter, gameWorkspaceRepository = createGameWorkspaceRepository()) {
++  return createObjectsApiService({
++    databaseAdapter: () => adapter,
++    gameWorkspaceRepository,
++    sessionUserKey: SEED_DB_KEYS.users.user1,
++  });
++}
++
++test("Objects API service lists and replaces objects through the database adapter", async () => {
++  const adapter = new ObjectsServiceTestAdapter();
++  const service = createService(adapter);
++  const gameKey = gameWorkspaceGameKeyForApi("demo-game");
++
++  const saved = await service.replaceObjects([
++    {
++      behavior: "Moves with player input.",
++      interaction: "Can collect keys.",
++      name: "Persistent Hero",
++      render: { type: "None" },
++      role: "Hero",
++      state: "Active",
++      traits: ["playerControlled", "movable"],
++    },
++  ]);
++
++  assert.equal(saved.saved, true);
++  assert.equal(saved.objects.length, 1);
++  assert.equal(adapter.tables.object_definition_records.length, 1);
++  assert.equal(adapter.tables.object_definition_records[0].gameId, gameKey);
++  assert.equal(adapter.tables.object_definition_records[0].key.length, 26);
++  assert.equal(adapter.tables.object_definition_records[0].createdBy, SEED_DB_KEYS.users.user1);
++  assert.equal(adapter.tables.object_definition_records[0].updatedBy, SEED_DB_KEYS.users.user1);
++  assert.deepEqual(adapter.tables.object_definition_records[0].capabilities, ["playerControlled", "movable"]);
++  assert.equal(adapter.tables.game_workspace_games[0].key, gameKey);
++  assert.deepEqual(await service.listObjects(), [
++    {
++      behavior: "Moves with player input.",
++      id: "persistent-hero",
++      interaction: "Can collect keys.",
++      name: "Persistent Hero",
++      render: { type: "None" },
++      role: "Hero",
++      state: "Active",
++      traits: ["playerControlled", "movable"],
++      type: "Dynamic",
++    },
++  ]);
++  assert.deepEqual(OBJECTS_TOOL_TABLES, ["object_definition_records"]);
++  assert.equal(adapter.calls.some(([action, table]) => action === "requestTable" && table === "object_definition_records"), true);
++  assert.equal(adapter.calls.some(([action, table]) => action === "upsertProductTable" && table === "object_definition_records"), true);
++});
++
++test("Objects API service replaces only the active game object rows", async () => {
++  const adapter = new ObjectsServiceTestAdapter();
++  const gameWorkspaceRepository = createGameWorkspaceRepository();
++  const service = createService(adapter, gameWorkspaceRepository);
++  const demoKey = gameWorkspaceGameKeyForApi("demo-game");
++  const gravityKey = gameWorkspaceGameKeyForApi("gravity-demo");
++
++  await service.replaceObjects([{ name: "Demo Hero", role: "Hero", state: "Active" }], "demo-game");
++  await service.replaceObjects([{ name: "Gravity Hero", role: "Hero", state: "Active" }], "gravity-demo");
++  await service.replaceObjects([{ name: "Demo Wall", role: "Wall", state: "Active" }], "demo-game");
++
++  assert.deepEqual(
++    adapter.tables.object_definition_records
++      .filter((row) => row.gameId === demoKey)
++      .map((row) => row.name),
++    ["Demo Wall"],
++  );
++  assert.deepEqual(
++    adapter.tables.object_definition_records
++      .filter((row) => row.gameId === gravityKey)
++      .map((row) => row.name),
++    ["Gravity Hero"],
++  );
++});
++
++test("Objects API service reports controlled setup errors", async () => {
++  const service = createObjectsApiService({
++    gameWorkspaceRepository: createGameWorkspaceRepository(),
++    sessionUserKey: SEED_DB_KEYS.users.user1,
++  });
++
++  await assert.rejects(
++    () => service.listObjects(),
++    (error) => {
++      assert.equal(error.name, "ObjectsApiSetupError");
++      assert.equal(error.statusCode, 503);
++      assert.match(error.message, /Objects API database setup is unavailable/);
++      assert.doesNotMatch(error.message, /requires the configured API database adapter/);
++      assert.match(error.operatorDiagnostic, /requires the configured API database adapter/);
++      return true;
++    },
++  );
++});
+diff --git a/dev/tests/playwright/tools/ObjectsTool.spec.mjs b/dev/tests/playwright/tools/ObjectsTool.spec.mjs
+index 7e7d967d4..6d56ca5ed 100644
+--- a/dev/tests/playwright/tools/ObjectsTool.spec.mjs
++++ b/dev/tests/playwright/tools/ObjectsTool.spec.mjs
+@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
+ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
+ import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
+ import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
++import { SEED_DB_KEYS } from "../../../../src/dev-runtime/seed/seed-db-keys.mjs";
 
--- Project Instructions Version: 2026-06-28.PR_26179_OWNER_012
-+- Project Instructions Version: 2026.06.28.001
- - Date: 2026-06-28
- - Owner: OWNER
+ const TYPE_OPTIONS = ["Collectible", "Custom", "Decoration", "Enemy", "Goal", "Hazard", "Hero", "Platform", "Projectile", "Spawn Point", "Wall"];
+ const OLD_SAMPLE_PATH_PATTERN = new RegExp(["M" + "VP", "Padd" + "le", "Ba" + "ll"].join("|"), "i");
+@@ -74,9 +75,42 @@ function collectPageFailures(page) {
+   return { consoleErrors, failedRequests, pageErrors };
+ }
 
-diff --git a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
-index 415f3675b..c5dc06241 100644
---- a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
-+++ b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
-@@ -1,12 +1,13 @@
- # Project Instructions Version
+-async function openObjectsPage(page) {
++async function postApiPayload(baseUrl, path, body = {}) {
++  const response = await fetch(`${baseUrl}${path}`, {
++    body: JSON.stringify(body),
++    headers: { "content-type": "application/json" },
++    method: "POST",
++  });
++  const payload = await response.json();
++  return { payload, response };
++}
++
++async function signInCreator(baseUrl) {
++  const { response } = await postApiPayload(baseUrl, "/api/session/user", {
++    userKey: SEED_DB_KEYS.users.user1,
++  });
++  expect(response.ok).toBe(true);
++}
++
++async function clearObjectsForActiveGame(baseUrl) {
++  const repository = await postApiPayload(baseUrl, "/api/toolbox/objects/repositories", { options: {} });
++  expect(repository.response.ok).toBe(true);
++  const repositoryId = repository.payload.data.repositoryId;
++  const cleared = await postApiPayload(baseUrl, `/api/toolbox/objects/repositories/${repositoryId}/methods/replaceObjects`, {
++    args: [[]],
++  });
++  expect(cleared.response.ok).toBe(true);
++}
++
++async function openObjectsPage(page, { signedIn = true } = {}) {
+   const server = await startRepoServer();
+   const failures = collectPageFailures(page);
++  await signInCreator(server.baseUrl);
++  await clearObjectsForActiveGame(server.baseUrl);
++  if (!signedIn) {
++    const { response } = await postApiPayload(server.baseUrl, "/api/session/logout", {});
++    expect(response.ok).toBe(true);
++  }
+   await page.addInitScript(({ apiUrl, siteUrl }) => {
+     window.GameFoundryPublicConfig = {
+       apiUrl,
+@@ -343,6 +377,26 @@ test("Objects table add disables while active row can cancel, save, edit, and tr
+   }
+ });
 
--Current Project Instructions Version: 2026-06-28.PR_26179_OWNER_012
-+Current Project Instructions Version: 2026.06.28.001
++test("Guest save redirects to sign-in", async ({ page }) => {
++  const failures = await openObjectsPage(page, { signedIn: false });
++
++  try {
++    await page.getByRole("button", { name: "Add Object" }).click();
++    await fillActiveRow(page, {
++      name: "Guest Object",
++      type: "Hero",
++    });
++    await page.locator("[data-objects-save-row]").click();
++    await page.waitForURL(/\/account\/sign-in\.html$/);
++    expect(failures.failedRequests.filter((request) => /^\d/.test(request) && !request.includes("/account/sign-in.html"))).toEqual([]);
++    expect(failures.pageErrors).toEqual([]);
++    expect(failures.consoleErrors).toEqual([]);
++  } finally {
++    await workspaceV2CoverageReporter.stop(page);
++    await failures.server.close();
++  }
++});
++
+ test("Objects persists added, edited, deleted, and sprite-linked rows through shared DB", async ({ page }) => {
+   const failures = await openObjectsPage(page);
 
- Last Updated: 2026-06-28
+diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
+index bb54b12b7..bfe82e4e8 100644
+--- a/src/dev-runtime/server/local-api-router.mjs
++++ b/src/dev-runtime/server/local-api-router.mjs
+@@ -7,9 +7,6 @@ import {
+   createAssetToolMockRepository,
+   pickerDiagnosticForRole,
+ } from "../persistence/tool-repositories/assets-mock-repository.js";
+-import {
+-  createObjectsToolMockRepository,
+-} from "../persistence/tool-repositories/objects-mock-repository.js";
+ import {
+   createHitboxesToolMockRepository,
+ } from "../persistence/tool-repositories/hitboxes-mock-repository.js";
+@@ -66,6 +63,7 @@ import {
+   TAGS_TOOL_TABLES,
+   createGameConfigurationApiService,
+   createGameDesignApiService,
++  createObjectsApiService,
+   createTagsApiService,
+ } from "../toolbox-api/alfa-tool-services.mjs";
+ import {
+@@ -4077,13 +4075,15 @@ class ApiRuntimeDataSource {
+       ...this.sharedOptions,
+       sessionUserKey: () => this.sessionUserKey,
+     });
+-    this.objectsRepository = createObjectsToolMockRepository({
+-      gameWorkspaceRepository: this.gameWorkspaceRepository,
+-      ...this.sharedOptions,
++    this.objectsRepository = createObjectsApiService({
++      ...alfaServiceOptions,
++      sessionUserKey: () => this.sessionUserKey,
+     });
+     this.hitboxesRepository = createHitboxesToolMockRepository({
+       gameWorkspaceRepository: this.gameWorkspaceRepository,
+-      objectsRepository: this.objectsRepository,
++      objectsRepository: {
++        listObjects: (gameId = "") => this.objectsRepository.listCachedObjects(gameId),
++      },
+       ...this.sharedOptions,
+       sessionUserKey: () => this.sessionUserKey,
+     });
+diff --git a/src/dev-runtime/toolbox-api/alfa-tool-services.mjs b/src/dev-runtime/toolbox-api/alfa-tool-services.mjs
+index 239c22a4d..d6872d460 100644
+--- a/src/dev-runtime/toolbox-api/alfa-tool-services.mjs
++++ b/src/dev-runtime/toolbox-api/alfa-tool-services.mjs
+@@ -17,6 +17,102 @@ export const GAME_CONFIGURATION_TABLES = Object.freeze([
+   "game_configuration_validation_items",
+ ]);
 
- ## Breaking Changes Summary
++export const OBJECTS_TOOL_TABLES = Object.freeze([
++  "object_definition_records",
++]);
++
++export const CAPABILITY_LABELS = Object.freeze({
++  collectible: "Can Be Collected",
++  collides: "Can Collide",
++  damageable: "Takes Damage",
++  goal: "Completes Goal",
++  hazard: "Causes Damage",
++  killable: "Can Be Removed",
++  movable: "Can Move",
++  playerControlled: "Player Controlled",
++  scores: "Scores Points",
++});
++
++export const OBJECT_TYPE_TEMPLATES = Object.freeze([
++  Object.freeze({
++    capabilities: Object.freeze(["collectible", "scores"]),
++    modelType: "Collectible",
++    renderType: "Sprite",
++    state: "Active",
++    type: "Collectible",
++  }),
++  Object.freeze({
++    capabilities: Object.freeze([]),
++    modelType: "Static",
++    renderType: "None",
++    state: "Active",
++    type: "Custom",
++  }),
++  Object.freeze({
++    capabilities: Object.freeze([]),
++    modelType: "Static",
++    renderType: "Sprite",
++    state: "Idle",
++    type: "Decoration",
++  }),
++  Object.freeze({
++    capabilities: Object.freeze(["movable", "collides", "hazard", "damageable"]),
++    modelType: "Dynamic",
++    renderType: "Sprite",
++    state: "Active",
++    type: "Enemy",
++  }),
++  Object.freeze({
++    capabilities: Object.freeze(["goal", "scores"]),
++    modelType: "Goal",
++    renderType: "Sprite",
++    state: "Active",
++    type: "Goal",
++  }),
++  Object.freeze({
++    capabilities: Object.freeze(["hazard", "damageable"]),
++    modelType: "Hazard",
++    renderType: "Sprite",
++    state: "Active",
++    type: "Hazard",
++  }),
++  Object.freeze({
++    capabilities: Object.freeze(["playerControlled", "movable", "collides", "damageable"]),
++    modelType: "Dynamic",
++    renderType: "Sprite",
++    state: "Active",
++    type: "Hero",
++  }),
++  Object.freeze({
++    capabilities: Object.freeze(["collides"]),
++    modelType: "Static",
++    renderType: "None",
++    state: "Active",
++    type: "Platform",
++  }),
++  Object.freeze({
++    capabilities: Object.freeze(["movable", "collides", "hazard"]),
++    modelType: "Dynamic",
++    renderType: "Sprite",
++    state: "Active",
++    type: "Projectile",
++  }),
++  Object.freeze({
++    capabilities: Object.freeze([]),
++    modelType: "Static",
++    renderType: "None",
++    state: "Active",
++    type: "Spawn Point",
++  }),
++  Object.freeze({
++    capabilities: Object.freeze(["collides"]),
++    modelType: "Static",
++    renderType: "None",
++    state: "Active",
++    type: "Wall",
++  }),
++]);
++
+ export const GAME_DESIGN_GAME_TYPES = Object.freeze([
+   "2D Platformer",
+   "Arcade Action",
+@@ -114,6 +210,33 @@ const STARTER_TAGS = Object.freeze([
+   Object.freeze({ label: "boss-fight", description: "Includes a climactic boss encounter." }),
+ ]);
 
- - Codex startup validation is mandatory before every task outcome.
-+- Project Instructions versions are repository-owned and increment independently of PR numbers.
- - Codex must read this version file and the latest repository copy of `PROJECT_INSTRUCTIONS.md` before performing work.
- - Codex must discard previously remembered Project Instructions and treat the repository copy as authoritative.
- - Codex must validate canonical report and ZIP paths, branching model, and legacy path avoidance before work proceeds.
-diff --git a/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_manual-validation-notes.md b/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_manual-validation-notes.md
-index e9c040ca1..4b1e8ec61 100644
---- a/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_manual-validation-notes.md
-+++ b/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_manual-validation-notes.md
-@@ -4,6 +4,9 @@
++export const STARTER_OBJECTS = Object.freeze([
++  Object.freeze({
++    behavior: "Responds to player control mapping.",
++    interaction: "Can interact with platforms, collectibles, hazards, and goals.",
++    name: "Hero",
++    render: Object.freeze({ type: "None" }),
++    role: "Hero",
++    state: "Active",
++  }),
++  Object.freeze({
++    behavior: "Moves through the scene under authored behavior.",
++    interaction: "Can collide with walls, platforms, or targets.",
++    name: "Projectile",
++    render: Object.freeze({ type: "None" }),
++    role: "Projectile",
++    state: "Active",
++  }),
++  Object.freeze({
++    behavior: "Stays fixed in the scene.",
++    interaction: "Provides a stable collision surface.",
++    name: "Wall",
++    render: Object.freeze({ type: "None" }),
++    role: "Wall",
++    state: "Active",
++  }),
++]);
++
+ const SECTION_LABELS = Object.freeze({
+   gameDetails: "Game Details",
+   platforms: "Platforms",
+@@ -348,6 +471,262 @@ function starterTagRow(tag, index) {
+   };
+ }
 
- - Confirmed the Startup Contract is the first section in `PROJECT_INSTRUCTIONS.md`.
- - Confirmed `PROJECT_INSTRUCTIONS_VERSION.md` exists in the active Project Instructions folder.
-+- Confirmed Project Instructions version uses repository-owned `2026.06.28.001` format rather than PR-number format.
-+- Confirmed the startup response block includes `Instruction Source`, `Repository ........ PASS`, and `Cached Memory ..... DISCARDED`.
-+- Confirmed the Startup Contract says conversation memory must never override repository instructions.
- - Confirmed the startup response block uses `dev/reports` and `dev/workspace/zips`.
- - Confirmed the legacy path check calls out `tmp/` and `docs_build/` as not used.
- - Confirmed no runtime or product files were modified.
-diff --git a/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_report.md b/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_report.md
-index 6209b506c..24e485007 100644
---- a/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_report.md
-+++ b/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_report.md
-@@ -14,9 +14,12 @@ Strengthen the Project Instructions startup contract so every Codex task proves
- ## Governance Outcome
-
- - Added `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md`.
-+- Replaced PR-shaped Project Instructions versioning with repository-owned version `2026.06.28.001`.
- - Added a mandatory Startup Contract at the top of `PROJECT_INSTRUCTIONS.md`.
- - Required Codex to read the version file and latest repository Project Instructions before every task.
- - Required Codex to discard remembered Project Instructions in favor of the repository copy.
-+- Added explicit startup output for `Instruction Source`, proving repository instructions are used and cached memory is discarded.
-+- Documented that conversation memory must never override repository instructions.
- - Required startup validation for canonical paths, branching model, ZIP/report locations, and legacy path avoidance.
- - Added failure behavior when the version or canonical paths cannot be determined.
- - Documented that the startup validation applies to PLAN, BUILD, APPLY, Review, Audit, Governance, Validation, Read-only, Hard stop, No-op, and Partial completion outcomes.
-diff --git a/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_requirement-checklist.md b/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_requirement-checklist.md
-index 876a803d7..8a8502fcc 100644
---- a/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_requirement-checklist.md
-+++ b/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_requirement-checklist.md
-@@ -3,15 +3,17 @@
- | Requirement | Result | Notes |
- | --- | --- | --- |
- | Create `PROJECT_INSTRUCTIONS_VERSION.md` | PASS | Added under `dev/build/ProjectInstructions/`. |
--| Version file contains current version | PASS | `2026-06-28.PR_26179_OWNER_012`. |
-+| Version file contains current version | PASS | `2026.06.28.001`. |
-+| Version format is repository-owned, not PR-owned | PASS | Version increments independently of PR numbers. |
- | Version file contains last updated | PASS | `2026-06-28`. |
- | Version file contains breaking changes summary | PASS | Added concise startup validation summary. |
- | Add mandatory Startup Contract at top of `PROJECT_INSTRUCTIONS.md` | PASS | Added before the main Project Instructions heading. |
- | Require reading version file and latest Project Instructions | PASS | Included in Startup Contract. |
- | Require repository copy as authoritative and discard memory | PASS | Included in Startup Contract. |
-+| Conversation memory must never override repository instructions | PASS | Included in Startup Contract. |
- | Require loading referenced instruction documents | PASS | Included in Startup Contract. |
- | Require canonical path, branching model, ZIP/report validation | PASS | Included in Startup Contract. |
--| Add mandatory response block | PASS | Added exact startup validation response format. |
-+| Add mandatory response block | PASS | Added exact startup validation response format with Instruction Source section. |
- | Add failure behavior | PASS | Added STOP example and pre-work stop rule. |
- | Apply to every Codex task type | PASS | Listed all requested task/outcome types. |
- | Do not modify implementation code | PASS | Documentation/governance only. |
-diff --git a/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_validation-report.md b/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_validation-report.md
-index 1f916c634..2c5582950 100644
---- a/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_validation-report.md
-+++ b/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_validation-report.md
-@@ -5,6 +5,7 @@
- - `git diff --check`: PASS
- - `npm run validate:canonical-structure`: PASS
- - Project Instructions grep for startup validation contract: PASS
-+- Project Instructions grep for repository-owned version format and Instruction Source output: PASS
-
- ## Playwright
++function objectKeyFromText(value) {
++  return slugify(value);
++}
++
++function parseObjectCapabilities(value) {
++  if (Array.isArray(value)) {
++    return value.map(normalizeText).filter(Boolean);
++  }
++  const text = normalizeText(value);
++  if (!text) {
++    return [];
++  }
++  try {
++    const parsed = JSON.parse(text);
++    if (Array.isArray(parsed)) {
++      return parsed.map(normalizeText).filter(Boolean);
++    }
++  } catch {}
++  return text.split(",").map(normalizeText).filter(Boolean);
++}
++
++function objectTemplateForRole(role) {
++  return OBJECT_TYPE_TEMPLATES.find((template) => template.type === normalizeText(role)) || null;
++}
++
++function normalizeObjectRender(source = {}) {
++  const render = source.render && typeof source.render === "object" ? source.render : {};
++  const renderType = normalizeText(source.renderType || render.type) === "Sprite" ? "Sprite" : "None";
++  if (renderType !== "Sprite") {
++    return {
++      assetKey: "",
++      previewPath: "",
++      type: "None",
++    };
++  }
++  return {
++    assetKey: normalizeText(source.renderAssetKey || render.assetKey),
++    previewPath: normalizeText(source.renderPreviewPath || render.previewPath),
++    type: "Sprite",
++  };
++}
++
++function objectTextField(value) {
++  if (typeof value === "string") {
++    return normalizeText(value);
++  }
++  if (value && typeof value === "object") {
++    return normalizeText(value.text || value.description || value.summary);
++  }
++  return "";
++}
++
++function objectFromRecord(record = {}) {
++  const render = normalizeObjectRender(record);
++  return {
++    behavior: objectTextField(record.behavior),
++    id: objectKeyFromText(record.id || record.name),
++    interaction: objectTextField(record.interaction),
++    name: normalizeText(record.name),
++    render: render.type === "Sprite"
++      ? {
++          assetKey: render.assetKey,
++          previewPath: render.previewPath,
++          type: "Sprite",
++        }
++      : { type: "None" },
++    role: normalizeText(record.type),
++    state: normalizeText(record.state) || "Active",
++    traits: parseObjectCapabilities(record.capabilities),
++    type: normalizeText(record.modelType),
++  };
++}
++
++function sortedObjectRecords(rows = []) {
++  return cloneRows(rows).sort((left, right) => (
++    (Number(left.recordOrder) || 0) - (Number(right.recordOrder) || 0)
++      || normalizeText(left.name).localeCompare(normalizeText(right.name))
++  ));
++}
++
++function normalizeObjectInput(input = {}) {
++  const role = normalizeText(input.role || input.type);
++  const template = objectTemplateForRole(role);
++  const id = objectKeyFromText(input.id || input.name);
++  const render = normalizeObjectRender(input);
++  return {
++    behavior: normalizeText(input.behavior),
++    capabilities: parseObjectCapabilities(input.traits || input.capabilities),
++    id,
++    interaction: normalizeText(input.interaction),
++    modelType: normalizeText(input.type) || template?.modelType || "",
++    name: normalizeText(input.name),
++    render,
++    role,
++    state: normalizeText(input.state) || template?.state || "Active",
++  };
++}
++
++function objectRecordFromInput(input, {
++  adapter,
++  existing = null,
++  gameKey,
++  index,
++  userKey,
++}) {
++  const object = normalizeObjectInput(input);
++  const now = timestamp();
++  return {
++    behavior: object.behavior ? { text: object.behavior } : {},
++    capabilities: object.capabilities,
++    createdAt: existing?.createdAt || now,
++    createdBy: existing?.createdBy || userKey,
++    gameId: gameKey,
++    id: object.id,
++    interaction: object.interaction ? { text: object.interaction } : {},
++    key: existing?.key || adapter.createRecordKey(),
++    modelType: object.modelType,
++    name: object.name,
++    recordOrder: index + 1,
++    renderAssetKey: object.render.assetKey || null,
++    renderPreviewPath: object.render.previewPath,
++    renderType: object.render.type,
++    state: object.state,
++    type: object.role,
++    updatedAt: now,
++    updatedBy: userKey,
++  };
++}
++
++function objectsApiSetupError(action, error) {
++  if (error?.name === "ObjectsApiSetupError") {
++    return error;
++  }
++  const message = `${action} failed because the Objects API database setup is unavailable. Verify the API database connection and apply the account, Game Hub, Assets, and Objects database setup before using Objects.`;
++  const wrapped = new Error(message);
++  wrapped.name = "ObjectsApiSetupError";
++  wrapped.statusCode = typeof error?.statusCode === "number" ? error.statusCode : 503;
++  wrapped.operatorDiagnostic = `${message} Cause: ${error instanceof Error ? error.message : String(error || "Unknown database error.")}`;
++  wrapped.cause = error;
++  return wrapped;
++}
++
++export function createObjectsApiService(options = {}) {
++  let lastTables = { object_definition_records: [] };
++
++  function activeGame() {
++    return activeGameFromWorkspace(options.gameWorkspaceRepository);
++  }
++
++  function objectsFromTables(tables = lastTables, gameKey = activeGame().key) {
++    return sortedObjectRecords(tables.object_definition_records)
++      .filter((record) => normalizeText(record.gameId || record.gameKey || record.projectKey) === gameKey)
++      .map(objectFromRecord);
++  }
++
++  async function readTables() {
++    const action = "Reading Objects";
++    try {
++      const adapter = databaseAdapter(options, action);
++      await ensureGameRecord(adapter, activeGame(), activeUserKey(options));
++      lastTables = {
++        object_definition_records: await adapter.requestTable("object_definition_records"),
++      };
++      return lastTables;
++    } catch (error) {
++      throw objectsApiSetupError(action, error);
++    }
++  }
++
++  async function listObjects(gameId = "") {
++    const game = activeGameFromWorkspace(options.gameWorkspaceRepository, gameId);
++    const tables = await readTables();
++    return objectsFromTables(tables, game.key);
++  }
++
++  function listCachedObjects(gameId = "") {
++    const game = activeGameFromWorkspace(options.gameWorkspaceRepository, gameId);
++    return objectsFromTables(lastTables, game.key);
++  }
++
++  async function replaceObjects(objects = [], gameId = "") {
++    const action = "Saving Objects";
++    try {
++      const adapter = databaseAdapter(options, action);
++      const game = activeGameFromWorkspace(options.gameWorkspaceRepository, gameId);
++      const userKey = activeUserKey(options);
++      await ensureGameRecord(adapter, game, userKey);
++      const existingRows = await adapter.requestTable("object_definition_records", {
++        query: `gameId=eq.${encodeURIComponent(game.key)}`,
++      });
++      const existingById = new Map(existingRows.map((record) => [objectKeyFromText(record.id || record.name), record]));
++      for (const record of existingRows) {
++        await adapter.requestTable("object_definition_records", {
++          method: "DELETE",
++          prefer: "return=representation",
++          query: `key=eq.${encodeURIComponent(record.key)}`,
++        });
++      }
++      const nextRows = (Array.isArray(objects) ? objects : [])
++        .map((object, index) => objectRecordFromInput(object, {
++          adapter,
++          existing: existingById.get(objectKeyFromText(object.id || object.name)) || null,
++          gameKey: game.key,
++          index,
++          userKey,
++        }))
++        .filter((row) => row.id && row.name);
++      if (nextRows.length) {
++        await adapter.upsertProductTable("object_definition_records", nextRows);
++      }
++      await readTables();
++      return {
++        objects: listCachedObjects(game.id),
++        saved: true,
++        snapshot: await getSnapshot(),
++      };
++    } catch (error) {
++      throw objectsApiSetupError(action, error);
++    }
++  }
++
++  async function resetObjects(gameId = "") {
++    return replaceObjects([], gameId);
++  }
++
++  async function getSnapshot() {
++    const tables = await readTables();
++    const game = activeGame();
++    const objects = objectsFromTables(tables, game.key);
++    return {
++      activeGame: game,
++      activeProject: game,
++      objects,
++      tableCounts: OBJECTS_TOOL_TABLES.map((table) => ({ rows: tables[table].length, table })),
++      tables: cloneTables(OBJECTS_TOOL_TABLES, tables),
++    };
++  }
++
++  return {
++    CAPABILITY_LABELS,
++    OBJECTS_TOOL_TABLES,
++    OBJECT_TYPE_TEMPLATES,
++    STARTER_OBJECTS,
++    authenticationRequiredMessage: "Sign in required to save Objects through the API.",
++    getSnapshot,
++    getTables: () => cloneTables(OBJECTS_TOOL_TABLES, lastTables),
++    listCachedObjects,
++    listObjects,
++    replaceObjects,
++    requiresAuthenticatedWrites: true,
++    resetObjects,
++    usesDatabasePersistence: true,
++    writeMethods: new Set(["replaceObjects", "resetObjects"]),
++  };
++}
++
+ function tagLabel(tag) {
+   return tag?.label || tag?.name || "";
+ }

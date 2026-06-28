@@ -8,9 +8,6 @@ import {
   pickerDiagnosticForRole,
 } from "../persistence/tool-repositories/assets-mock-repository.js";
 import {
-  createObjectsToolMockRepository,
-} from "../persistence/tool-repositories/objects-mock-repository.js";
-import {
   createHitboxesToolMockRepository,
 } from "../persistence/tool-repositories/hitboxes-mock-repository.js";
 import {
@@ -66,6 +63,7 @@ import {
   TAGS_TOOL_TABLES,
   createGameConfigurationApiService,
   createGameDesignApiService,
+  createObjectsApiService,
   createTagsApiService,
 } from "../toolbox-api/alfa-tool-services.mjs";
 import {
@@ -4077,13 +4075,15 @@ class ApiRuntimeDataSource {
       ...this.sharedOptions,
       sessionUserKey: () => this.sessionUserKey,
     });
-    this.objectsRepository = createObjectsToolMockRepository({
-      gameWorkspaceRepository: this.gameWorkspaceRepository,
-      ...this.sharedOptions,
+    this.objectsRepository = createObjectsApiService({
+      ...alfaServiceOptions,
+      sessionUserKey: () => this.sessionUserKey,
     });
     this.hitboxesRepository = createHitboxesToolMockRepository({
       gameWorkspaceRepository: this.gameWorkspaceRepository,
-      objectsRepository: this.objectsRepository,
+      objectsRepository: {
+        listObjects: (gameId = "") => this.objectsRepository.listCachedObjects(gameId),
+      },
       ...this.sharedOptions,
       sessionUserKey: () => this.sessionUserKey,
     });
