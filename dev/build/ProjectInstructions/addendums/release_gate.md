@@ -33,7 +33,6 @@ Before a governance, documentation, or administrative PR is merged, validate:
 
 The release gate should confirm these files when relevant to the PR:
 
-- `dev/build/ProjectInstructions/README.txt`
 - `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
 - `dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md`
 - `dev/build/ProjectInstructions/addendums/governance_phase1_complete.md`

@@ -1,6 +1,6 @@
 # Naming Registry Governance
 
-Status: Approved  
+Status: Approved
 Owner: OWNER
 
 ## Purpose
@@ -41,28 +41,28 @@ Capture approved Game Foundry Studio names to reduce rename churn.
 
 ## Approved Team Naming
 
-Teams must use NATO phonetic naming.
+Teams must use the canonical Owner plus military team-name set.
 
 Official active team codes:
 
-- OWNER
-- ALFA
-- BRAVO
-- CHARLIE
-- DELTA
+- Owner
+- Alfa
+- Bravo
+- Charlie
+- Delta
+- Golf
 
 Examples:
-- Team OWNER
-- Team Alfa
-- Team Bravo
-- Team Charlie
-- Team Delta
-- Team Echo
-- Team Foxtrot
+- Owner
+- Alfa
+- Bravo
+- Charlie
+- Delta
+- Golf
 
 Rule:
-- Use `Alfa` spelling when referring to Team Alfa.
-- Do not rewrite historical snapshots, archived references, or non-team phrases such as `Alpha/Beta/User isolation framework` unless OWNER explicitly scopes that work.
+- Use `Alfa` spelling when referring to Alfa.
+- Do not rewrite historical snapshots, archived references, or non-team phrases such as `Alfa/Beta/User isolation framework` unless OWNER explicitly scopes that work.
 
 ## Rule
 

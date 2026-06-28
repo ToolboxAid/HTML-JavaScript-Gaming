@@ -4,7 +4,7 @@
 
 This section is the current OWNER-approved active ownership alignment.
 
-## Team Alfa
+## Alfa
 
 - Game Hub
 - Game Journey
@@ -13,7 +13,7 @@ This section is the current OWNER-approved active ownership alignment.
 - Creator onboarding
 - UX flow
 
-## Team Bravo
+## Bravo
 
 - Audio
 - Audio Effects
@@ -25,7 +25,7 @@ This section is the current OWNER-approved active ownership alignment.
 - MIDI Studio
 - Creator content tools
 
-## Team Charlie
+## Charlie
 
 - Repository compliance
 - Validation
@@ -39,26 +39,26 @@ This section is the current OWNER-approved active ownership alignment.
 - Sprites canvas editor MVP
 - Objects
 
-Team Charlie System Health owns:
+Charlie System Health owns:
 - Environment Summary
 - Database Health
 - Storage Health
 - Runtime Health
 - Health Check History
 
-Team Charlie Sprites ownership:
+Charlie Sprites ownership:
 - Sprites is a creator tool, not only an asset metadata library.
 - Sprites MVP requires canvas/grid editor behavior, width/height controls, Palette/Colors-only color selection, pixel painting, save/load sprite grid data through API/database, and a Product Owner testable workflow.
 - Sprites must not own reusable color definitions.
 
-Team Charlie Palette / Colors ownership:
+Charlie Palette / Colors ownership:
 - Color management
 - API/database integration
 - Reusable color source of truth
 - Palette references for Sprites and Objects
 - Product Owner testable workflow
 
-Team Charlie Objects ownership:
+Charlie Objects ownership:
 - Object library
 - Object editor
 - Sprite assignment
@@ -67,7 +67,7 @@ Team Charlie Objects ownership:
 - Runtime object metadata
 - Object API/database contracts
 
-## Team Delta
+## Delta
 
 - Engine
 - Runtime
@@ -91,22 +91,22 @@ OWNER override approved.
 
 The current active ownership lanes are:
 
-- Team Alfa
-- Team Bravo
-- Team Charlie
-- Team Delta
-- Team Golf
-- Team OWNER
+- Alfa
+- Bravo
+- Charlie
+- Delta
+- Golf
+- Owner
 
 Migration note:
-Team Gamma is retired. Team Golf is the replacement active ownership lane.
+Golf is the only active replacement for the retired prior lane.
 
 Clarification:
 - The four-team rule remains the current backlog ownership model for Alfa, Bravo, Charlie, and Delta.
-- Team Golf does not receive a standing backlog ownership area in this file.
-- Team Golf work requires OWNER assignment, an active branch, an active draft/open PR, or active release/review/cleanup responsibility.
+- Golf does not receive a standing backlog ownership area in this file.
+- Golf work requires OWNER assignment, an active branch, an active draft/open PR, or active release/review/cleanup responsibility.
 - Golf work that touches Alfa, Bravo, Charlie, or Delta areas must document the OWNER cross-team decision.
-- Historical Gamma PR references and branch names remain unchanged for traceability.
+- Historical PR references and branch names for retired non-canonical lanes remain unchanged for traceability.
 
 ## Rule
 
@@ -118,26 +118,26 @@ This current rule supersedes any prior permanent discipline ownership assumption
 
 ## Team Naming
 
-Team names must use NATO phonetic naming.
+Team names must use the canonical Owner plus military team-name set.
 
 Official active team codes:
 
-- OWNER
-- ALFA
-- BRAVO
-- CHARLIE
-- DELTA
+- Owner
+- Alfa
+- Bravo
+- Charlie
+- Delta
+- Golf
 
 Examples:
-- Team OWNER
-- Team Alfa
-- Team Bravo
-- Team Charlie
-- Team Delta
-- Team Echo
-- Team Foxtrot
+- Owner
+- Alfa
+- Bravo
+- Charlie
+- Delta
+- Golf
 
-Use `Alfa` spelling when referring to Team Alfa.
+Use `Alfa` spelling when referring to Alfa.
 
 ## Assignment Rule
 

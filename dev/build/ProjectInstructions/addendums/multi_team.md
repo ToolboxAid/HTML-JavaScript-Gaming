@@ -25,21 +25,21 @@ OWNER override approved.
 
 The current active ownership lanes are:
 
-- Team Alfa
-- Team Bravo
-- Team Charlie
-- Team Delta
-- Team Golf
-- Team OWNER
+- Alfa
+- Bravo
+- Charlie
+- Delta
+- Golf
+- Owner
 
 Migration note:
-Team Gamma is retired. Team Golf is the replacement active ownership lane.
+Golf is the only active replacement for the retired prior lane.
 
 Rules:
-- Historical PR references and branch names that mention Gamma remain unchanged for traceability.
-- New active work that would previously have used Team Gamma routes to Team Golf.
-- Team Golf work requires OWNER assignment, an active branch, an active draft/open PR, or active release/cleanup responsibility.
-- If Team Golf work touches Alfa, Bravo, Charlie, or Delta ownership areas, the PR must document the OWNER cross-team decision.
+- Historical PR references and branch names that mention retired non-canonical lane remain unchanged for traceability.
+- New active work that would previously have used a retired non-canonical lane routes to Golf.
+- Golf work requires OWNER assignment, an active branch, an active draft/open PR, or active release/cleanup responsibility.
+- If Golf work touches Alfa, Bravo, Charlie, or Delta ownership areas, the PR must document the OWNER cross-team decision.
 
 ## All-Team Preferred Codex Execution Method
 
@@ -47,8 +47,7 @@ Preferred execution model:
 Single Codex session with multiple sequential PRs.
 
 Applies to:
-- Team Alfa through Team Zulu
-- Team OWNER
+- Owner, Alfa, Bravo, Charlie, Delta, and Golf
 
 Purpose:
 Reduce back-and-forth between owner and Codex while keeping PRs reviewable and scoped.

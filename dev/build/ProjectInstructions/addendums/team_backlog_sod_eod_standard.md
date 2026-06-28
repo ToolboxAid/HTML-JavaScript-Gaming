@@ -13,23 +13,16 @@ This standard is governance/documentation only. It does not change runtime behav
 
 Use military phonetic spelling for active team names:
 
-- OWNER
-- ALFA
-- BRAVO
-- CHARLIE
-- DELTA
+- Owner
+- Alfa
+- Bravo
+- Charlie
+- Delta
+- Golf
 
-Display labels may use title case:
+Do not substitute Greek spelling for team names. Use `Alfa` spelling when referring to Alfa.
 
-- Team OWNER
-- Team Alfa
-- Team Bravo
-- Team Charlie
-- Team Delta
-
-Do not substitute Greek spelling for team names. Use `Alfa` spelling when referring to Team Alfa.
-
-Historical snapshots, archived references, and non-team phrases such as `Alpha/Beta/User isolation framework` must not be rewritten unless OWNER explicitly scopes that work.
+Historical snapshots, archived references, and non-team phrases such as `Alfa/Beta/User isolation framework` must not be rewritten unless OWNER explicitly scopes that work.
 
 ## Team Backlog Ownership
 
@@ -95,7 +88,8 @@ At EOD, ChatGPT/Codex must provide:
 This standard preserves the existing branch workflow:
 
 - SOD starts from latest `main`.
-- SOD creates or uses the active team branch.
+- SOD reports the recommended active team branch/workstream only.
+- Branch creation or use happens after SOD through the appropriate PR execution phase.
 - All commits go to the active team branch, not `main`.
 - Sequential PRs stay on the active team branch/workstream during the day.
 - EOD merges OWNER-approved work, pushes, returns to `main`, and verifies clean worktree and local/origin sync `0 0`.

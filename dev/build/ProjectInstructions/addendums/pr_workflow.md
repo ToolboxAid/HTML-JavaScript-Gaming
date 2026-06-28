@@ -1,11 +1,21 @@
 # PR Workflow Governance
 
-Status: Approved  
+Status: Approved
 Owner: OWNER
 
 ## Purpose
 
 Define the standard pull request workflow for Game Foundry Studio.
+
+Official PLAN_PR, BUILD_PR, APPLY_PR, Start of Day, and invalid command behavior lives in:
+
+`dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`
+
+The Codex Completion Contract for ZIP artifacts lives in:
+
+`dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md`
+
+This file owns PR lifecycle governance. It must not duplicate command phase rules.
 
 ## Standard Flow
 
@@ -31,7 +41,8 @@ Define the standard pull request workflow for Game Foundry Studio.
 Team-neutral daily workflow:
 
 - SOD starts from the latest synchronized `main`.
-- SOD creates or updates one active team branch/workstream.
+- SOD reports the active team branch/workstream recommendation only.
+- Branch creation or branch updates happen after SOD through the appropriate PR execution phase.
 - Work must be committed only to the active team branch.
 - PR branches/commits stay on the active team branch/workstream during the day when OWNER assigned a stacked or sequential workstream.
 - Do not return to `main` between stacked/sequential PRs in the same active workstream.
@@ -40,7 +51,7 @@ Team-neutral daily workflow:
   - current branch is `main`
   - worktree clean
   - local/origin sync is `0 0`
-- This rule applies to all teams: OWNER, Team Alfa, Team Bravo, Team Charlie, Team Delta, and any future team.
+- This rule applies to all canonical teams: Owner, Alfa, Bravo, Charlie, Delta, and Golf.
 
 This section supersedes older active wording that implies returning to `main` between every PR inside an OWNER-approved stacked/sequential workstream.
 
@@ -106,11 +117,9 @@ Closed gates:
 - If validation fails, stop and report.
 - If conflict occurs, stop and report.
 - If OWNER decision is required, stop and report.
-- Every Codex execution must produce a repo-structured ZIP under `dev/workspace/zips/`.
-- The ZIP rule applies to implementation, audit, report-only, validation-only, governance, cleanup, hard-stop, blocked, validation-failure, partial-completion, new-information, and no-change runs.
-- The ZIP must include all changed or preserved repo files from the run and must not replace required reports under `dev/reports/`.
-- If no repo files changed, Codex must still create a ZIP containing the report that proves the no-change, hard-stop, blocked, validation-failure, or partial-completion result.
-- No exceptions.
+- Every PR lifecycle state must satisfy the Codex Completion Contract when Codex executes work for that state.
+- ZIP artifacts belong under `dev/workspace/zips/` and must not replace required reports under `dev/reports/`.
+- Stacked PR chains produce one final outcome ZIP per attempted PR and stop before later PRs after failure or hard stop.
 
 ## Batch Governance Mode
 
@@ -192,13 +201,12 @@ Meaning:
 Generate the complete stacked sequential Codex PR chain required to finish the current workstream.
 
 Applies to:
-- OWNER
-- Team Alfa
-- Team Bravo
-- Team Charlie
-- Team Delta
-- Team Golf
-- Any future NATO-named team
+- Owner
+- Alfa
+- Bravo
+- Charlie
+- Delta
+- Golf
 
 Behavior:
 - Determine completed work.

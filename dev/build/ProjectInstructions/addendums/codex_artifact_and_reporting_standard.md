@@ -4,11 +4,68 @@
 
 Standardize Codex deliverables, completion reporting, and artifact generation.
 
-## ZIP Artifact Requirement
+## Codex Completion Contract
 
-Every Codex execution must produce a repo-structured ZIP artifact and the required reports.
+Every Codex execution must produce at least one repository-structured ZIP artifact and the required reports.
 
-This applies regardless of result:
+Each PR attempted by Codex must produce exactly one ZIP artifact representing that PR's final outcome.
+
+Missing ZIP means the Codex run did not complete correctly.
+
+Canonical ZIP location:
+
+```text
+dev/workspace/zips/
+```
+
+ZIP outcome suffixes:
+
+- `_delta.zip` = success
+- `_REVIEW.zip` = review-only
+- `_FAILED.zip` = validation or execution failure
+- `_HARD_STOP.zip` = governance or precondition hard stop
+
+## Stacked PR Rule
+
+Stacked PR work produces one ZIP per attempted PR.
+
+If PR 1 succeeds and PR 2 hard-stops, produce:
+
+```text
+PR_...001-..._delta.zip
+PR_...002-..._HARD_STOP.zip
+```
+
+Do not start later stacked PRs after a failure or hard stop.
+
+## ZIP Contents
+
+Success ZIP contents must include:
+
+- changed files
+- diff
+- PR report
+- validation report
+- requirement checklist
+
+Failing PR ZIP contents must include:
+
+- hard stop or failure report
+- branch/worktree status
+- validation output if run
+- requirement checklist
+- changed files and diff if changes occurred
+
+Review-only ZIP contents must include:
+
+- review report
+- branch/worktree status
+- requirement checklist or review checklist when applicable
+- supporting evidence files when applicable
+
+## Applicability
+
+The Codex Completion Contract applies regardless of result:
 
 - success
 - completion
@@ -23,16 +80,10 @@ This applies regardless of result:
 
 No exceptions.
 
-Minimum ZIP contents:
+Minimum repository-structured ZIP rules:
 
-- changed or preserved repo files from the run, stored at repo-relative paths
+- changed, preserved, or outcome evidence repo files from the run, stored at repo-relative paths
 - required reports under `dev/reports/`
-
-ZIP artifacts must be written under:
-
-```text
-dev/workspace/zips/
-```
 
 Reports must remain flat under `dev/reports/`. Use descriptive filenames that include the PR, team, runner, or lane context instead of nested team or runner report folders.
 
@@ -107,6 +158,6 @@ unless explicitly requested.
 
 ## No ZIP Means Incomplete
 
-A task is not considered complete until the ZIP artifact is generated and reported.
+A task is not considered complete until the required ZIP artifact or artifacts are generated and reported.
 
 If execution stops before implementation, validation, or commit, the stop result must still include the repo-structured ZIP and reports that document the hard stop, blocker, validation failure, or no-change result.

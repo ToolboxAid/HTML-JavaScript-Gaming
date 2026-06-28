@@ -19,7 +19,7 @@ Before a team starts, validate:
 - `main...origin/main` is `0 0`
 - `HEAD` SHA matches published EOD SHA
 - active assignment is selected or confirmed by OWNER
-- assigned team uses NATO phonetic naming
+- assigned team uses the canonical Owner plus military team-name set
 - work remains with the assigned team until complete or OWNER reassignment
 - the team's previous PR is Closed, unless OWNER documented an explicit stacked PR chain
 
@@ -29,10 +29,10 @@ Before implementation begins, ChatGPT/Codex must provide the SOD briefing define
 
 The current active delivery teams for backlog start commands are:
 
-- Team Alfa
-- Team Bravo
-- Team Charlie
-- Team Delta
+- Alfa
+- Bravo
+- Charlie
+- Delta
 
 Each team start must confirm the selected backlog item is inside that team's ownership area.
 
@@ -42,20 +42,20 @@ OWNER override approved.
 
 The current active ownership start map includes:
 
-- Team Alfa
-- Team Bravo
-- Team Charlie
-- Team Delta
-- Team Golf
-- Team OWNER
+- Alfa
+- Bravo
+- Charlie
+- Delta
+- Golf
+- Owner
 
 Migration note:
-Team Gamma is retired. Team Golf is the replacement active ownership lane.
+Golf is the only active replacement for the retired prior lane.
 
 Clarification:
 - The four-team start set remains the backlog ownership start set for Alfa, Bravo, Charlie, and Delta.
-- Team Golf is valid for OWNER-assigned, branch-backed, PR-backed, release, review packet, or cleanup work.
-- Historical Gamma references and branch names must remain unchanged.
+- Golf is valid for OWNER-assigned, branch-backed, PR-backed, release, review packet, or cleanup work.
+- Historical branch and PR references for retired non-canonical lanes must remain unchanged.
 - Golf work must not silently take ownership from Alfa, Bravo, Charlie, or Delta; cross-team work requires OWNER approval.
 
 ## Assignment Flow
@@ -79,12 +79,11 @@ For backlog-driven work:
 
 Use these as naming examples, not as a permanent roster:
 
-- Start Team Alfa
-- Start Team Bravo
-- Start Team Charlie
-- Start Team Delta
-- Start Team Echo
-- Start Team Foxtrot
+- Start Alfa
+- Start Bravo
+- Start Charlie
+- Start Delta
+- Start Golf
 
 ## Release Readiness
 

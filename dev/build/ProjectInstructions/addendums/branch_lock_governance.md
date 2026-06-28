@@ -14,7 +14,7 @@ This file owns branch lock enforcement and OWNER override handling; it must not 
 ## Active Work Lock
 
 - Work must occur on the active team branch.
-- This rule applies to all teams: OWNER, Team Alfa, Team Bravo, Team Charlie, Team Delta, and any future team.
+- This rule applies to all canonical teams: Owner, Alfa, Bravo, Charlie, Delta, and Golf.
 - An assigned work item keeps its owner of record until complete or OWNER reassignment.
 - Work must not move to another team, branch, or PR without OWNER approval.
 - A team with no active assignment, active branch, or active PR is inactive.

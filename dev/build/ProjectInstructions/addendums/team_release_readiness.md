@@ -2,11 +2,11 @@
 
 ## Purpose
 
-This gate prevents Team Alfa, Team Bravo, Team Charlie, or Team OWNER from starting regular assigned work before the ProjectInstructions operating system is ready.
+This gate prevents Alfa, Bravo, Charlie, or Owner from starting regular assigned work before the ProjectInstructions operating system is ready.
 
 Current OWNER clarification:
-- This gate also applies to Team Delta and Team Golf.
-- Team Gamma is retired. Team Golf is the replacement active ownership lane.
+- This gate also applies to Delta and Golf.
+- Golf is the only active replacement for the retired prior lane.
 - Historical wording that listed fewer teams remains traceable, but it must not exclude Delta or Golf from current active ownership governance.
 
 ## Release Rule

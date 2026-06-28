@@ -1,155 +1,105 @@
-# Project Instructions Operating System
-
-Read `README.txt` first.
-
-This file is the root index for the append-first Project Instructions operating system under `dev/build/ProjectInstructions/`.
-
-## Active Source
-
-`dev/build/ProjectInstructions/` is the only active Project Instructions source.
-
-Historical Project Instructions material outside this folder is deprecated reference material only and must not be used as an active source of governance.
+# Project Instructions
 
 ## Purpose
 
-The Project Instructions operating system provides additive governance for:
+`PROJECT_INSTRUCTIONS.md` is the only manual entry point for active Project Instructions.
 
-- backlog ownership
-- team assignments
-- multi-team branch and scope rules
-- documentation ownership
-- repository directory ownership
-- Build Path status synchronization
-- tile overlay status behavior
-- deprecation workflow
-- contract and platform standards
-- archive and history preservation
-- recognized project instruction/reference files
-- environment governance
-- tool and gameplay contract governance
+Codex and future wrappers must request this file directly. All other Project Instructions documents are loaded indirectly through the references below.
 
-## Preservation
+## Current Version/Date
 
-Existing Project Instructions outside `dev/build/ProjectInstructions/` remain preserved only as deprecated reference material. When guidance conflicts, active files under `dev/build/ProjectInstructions/` win unless OWNER explicitly approves a newer governance change.
+- Project Instructions Version: 2026-06-28.PR_26179_OWNER_010
+- Date: 2026-06-28
+- Owner: OWNER
 
-## Folders
+## Required Read Order
 
-- `addendums/` contains additive governance rules.
-- `backlog/` contains the central backlog file, `BACKLOG_MASTER.md`.
-- `team_assignments/` contains current team assignment records.
-- `standards/` contains active contract, model, and platform standards.
-- `deprecation/` contains deprecation workflow documentation.
-- Retained reference material belongs under the repository root `dev/archive/` tree, not under `dev/build/dev/`.
-- History snapshots belong under `dev/archive/legacy-docs-build/ProjectInstructions/history/`.
+1. Always read `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md`.
+2. Always read `dev/build/ProjectInstructions/PROJECT_STATE.md`.
+3. Always read `dev/build/ProjectInstructions/repository/canonical_repository_structure.md`.
+4. For Codex workflow command interpretation, read `dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`.
+5. For Start of Day, read `dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md`.
+6. Load team, backlog, database, runtime, theme, or other specialist documents only when the current task requires them.
 
-## Recognized Project Reference Files
+## Load Graph
 
-`dev/build/ProjectInstructions/addendums/project_reference_files.md` defines additional valid project instruction/reference files that must be included in future Project Instructions reviews when present in `ProjectInstructions.zip`, the active project instruction directory, or the root archive reference tree.
+```text
+PROJECT_INSTRUCTIONS.md
+|-- PROJECT_STATE.md
+|-- repository/canonical_repository_structure.md
+|-- standards/CODEX_WORKFLOW_COMMANDS.md
+|   `-- Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, or command interpretation
+|-- bootstrap/codex_start_of_day_bootstrap.md
+|   `-- Start of Day only
+|-- team/backlog docs
+|   `-- Start of Day, planning, or team-specific PRs only
+|-- database docs
+|   `-- DB, DDL, DML, seed, or API persistence changes only
+|-- runtime docs
+|   `-- runtime, API, or service changes only
+`-- theme docs
+    `-- UI, theme, or page changes only
+```
 
-## Documentation Ownership
+## When-To-Load Rules
 
-`dev/build/ProjectInstructions/addendums/documentation_ownership.md` defines the active documentation ownership model:
+- `PROJECT_INSTRUCTIONS.md`: always.
+- `PROJECT_STATE.md`: always.
+- `repository/canonical_repository_structure.md`: always.
+- `standards/CODEX_WORKFLOW_COMMANDS.md`: Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, invalid command, or command interpretation tasks.
+- `bootstrap/codex_start_of_day_bootstrap.md`: Start of Day only.
+- Backlog docs: Start of Day or planning only.
+- Database docs: DB, DDL, DML, seed, or API persistence changes only.
+- Runtime docs: runtime, API, or service changes only.
+- Theme docs: UI, theme, or page changes only.
+- Team docs: team-specific PRs only.
 
-- `dev/build/ProjectInstructions/` owns governance, team instructions, standards, and addendums.
-- `dev/build/pr/` owns PR workflow documents, templates, and examples.
-- `dev/reports/` owns generated reports and audits.
-- `dev/workspace/` owns generated non-report artifacts, repo-structured ZIPs, and local temporary workspace output.
-- root `dev/archive/` owns historical reference material only.
+## Stop Gates
 
-## Team Backlog, SOD, And EOD Governance
+Stop before changing files when:
 
-`dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md` defines required Start of Day team briefings, End of Day team summaries, active team backlog fields, completion percentage update points, backlog-driven next PR selection, and official military team-name spelling.
+- the current branch does not match the requested branch
+- the worktree is dirty and the request requires a clean start
+- the requested path does not fit `repository/canonical_repository_structure.md`
+- the request conflicts with active Project Instructions
+- the task would modify runtime code, production pages, database files, wrapper scripts, or repository folders outside the stated scope
+- a required source document is missing
+- validation fails
 
-## Canonical Governance Owners
+## Execution Modes
 
-When active guidance overlaps, use these canonical owner documents:
+Official Codex workflow command governance lives in:
 
-- Workflow and Product Owner testable completion: `dev/build/ProjectInstructions/addendums/pr_workflow.md`
-- START / WORK / END lifecycle, branch gates, mandatory hard stops, and EOD main lock: `dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`
-- Repository directory ownership, final root standard, final `src/` layer standard, final `dev/` workspace standard, and restructure boundaries: `dev/build/ProjectInstructions/addendums/repository_directory_standard.md`
-- Page-level Playwright organization and completion coverage: `dev/build/ProjectInstructions/addendums/test_structure_standardization.md`
-- API/environment model and `Browser -> API -> Database` rule: `dev/build/ProjectInstructions/addendums/environment_governance_model.md`
-- Environment variable, URL, R2 prefix, and feature flag configuration: `dev/build/ProjectInstructions/addendums/environment_configuration_standards.md`
-- Team backlog fields, completion percentages, and next logical PR ownership: `dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md`
-- Team ownership and assignment routing: `dev/build/ProjectInstructions/team_assignments/team_ownership.md`
+`dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`
 
-Other active addendums may summarize these rules, but they must point back to the canonical owner document and must not create a competing active rule.
+That file owns Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, and invalid command behavior.
 
-## Environment Governance
+## Referenced Documents
 
-`dev/build/ProjectInstructions/addendums/environment_governance_model.md` defines the official environment model, environment invariance rule, shared API/service contract rule, required Supabase/Postgres/R2 services, required R2 prefixes, and SQLite retired status.
+- Project state: `dev/build/ProjectInstructions/PROJECT_STATE.md`
+- Repository folder placement SSoT: `dev/build/ProjectInstructions/repository/canonical_repository_structure.md`
+- Codex workflow commands: `dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`
+- Codex Start-of-Day bootstrap: `dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md`
+- Branch lifecycle: `dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`
+- PR workflow: `dev/build/ProjectInstructions/addendums/pr_workflow.md`
+- Team ownership: `dev/build/ProjectInstructions/team_assignments/team_ownership.md`
+- Team assignments: `dev/build/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md`
+- Backlog: `dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md`
+- Database docs: `dev/build/database/`
+- Runtime/API standards: `dev/build/ProjectInstructions/standards/`
+- Runtime/API governance: `dev/build/ProjectInstructions/addendums/environment_governance_model.md`
+- Theme/UI governance: `dev/build/ProjectInstructions/addendums/table_first_ui.md`
+- Documentation ownership: `dev/build/ProjectInstructions/addendums/documentation_ownership.md`
+- Artifact/reporting standard: `dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md`
+- Environment governance: `dev/build/ProjectInstructions/addendums/environment_governance_model.md`
+- Environment configuration: `dev/build/ProjectInstructions/addendums/environment_configuration_standards.md`
+- Active standards: `dev/build/ProjectInstructions/standards/`
 
-`dev/build/ProjectInstructions/addendums/environment_configuration_standards.md` defines official `.env` file names, environment variable values, host/domain configuration, API URL configuration, R2 prefix configuration, and feature flag governance.
+## Single Source Of Truth Decisions
 
-## Tool And Contract Governance
-
-`dev/build/ProjectInstructions/addendums/workspace_v2_playwright_gate.md` defines the Workspace Manager V2 Playwright validation gate.
-
-`dev/build/ProjectInstructions/addendums/samples2tools_adapter_guidance.md` defines the shared sample-to-tool launch and hydration guidance.
-
-`dev/build/ProjectInstructions/addendums/koti_layout_contract.md` defines the King of the Iceberg layout data contract.
-
-`dev/build/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md` defines the Creator-facing stacked PR standard for tool MVP work.
-
-`dev/build/ProjectInstructions/addendums/no_mock_repository_runtime_source.md` defines the Browser → API → Database product-data rule and mock repository technical debt boundary.
-
-## Standards
-
-Active contract, model, and platform standards live under:
-
-`dev/build/ProjectInstructions/standards/`
-
-## Single Source and Main Lock Governance
-
-`dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md` defines the single active Project Instructions source, canonical START / WORK / END branch lifecycle, EOD main lock, next-day reset, team branch creation gate, daily synchronization baseline, and mandatory hard stops.
-
-## Merge Control
-
-No PR in this operating system is merged without explicit owner approval.
-
-## OWNER Governance
-
-OWNER override wording:
-
-`OWNER override approved: <reason>`
-
-OWNER follows the same safety rules:
-- Team OWNER follows the same one-active-branch discipline as every team.
-- One active OWNER assignment at a time.
-- OWNER may override team locks, but may not silently delete, rewrite, or remove protected instructions.
-- OWNER override must be explicitly documented.
-
-## Four-Team Ownership Alignment
-
-The single authoritative four-team ownership definition is:
-
-`dev/build/ProjectInstructions/team_assignments/team_ownership.md`
-
-Use the `Current Four-Team Ownership Model` section there for team ownership, assignment routing, and cross-team scope checks.
-
-Rules:
-- Teams pull backlog items only from their ownership area unless OWNER explicitly reassigns or splits the work.
-- Cross-team work requires OWNER approval and must identify the owning team for each PR.
-- Team start commands must remain aligned with this ownership model.
-
-## Current Active Ownership Lanes
-
-OWNER override approved.
-
-The current active ownership lanes are:
-
-- Team Alfa
-- Team Bravo
-- Team Charlie
-- Team Delta
-- Team Golf
-- Team OWNER
-
-Migration note:
-Team Gamma is retired. Team Golf is the replacement active ownership lane.
-
-Rules:
-- Do not rewrite historical PR references that mention Team Gamma.
-- Do not rename historical branches that contain Gamma.
-- Team Golf may own newly assigned work, review packets, cleanup, release, or OWNER-directed cross-team work.
-- Team Golf must not silently take backlog ownership from Alfa, Bravo, Charlie, or Delta; cross-team work requires OWNER approval.
+- `PROJECT_INSTRUCTIONS.md` owns the manual entry point, required read order, load graph, stop gates, execution modes, and pointers.
+- `PROJECT_STATE.md` owns machine-friendly project state metadata.
+- `repository/canonical_repository_structure.md` owns all folder placement and file-placement rules.
+- `standards/CODEX_WORKFLOW_COMMANDS.md` owns Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, and invalid command behavior.
+- `bootstrap/codex_start_of_day_bootstrap.md` owns Start-of-Day bootstrap architecture.
+- `addendums/codex_artifact_and_reporting_standard.md` owns the Codex Completion Contract and ZIP outcome rules.

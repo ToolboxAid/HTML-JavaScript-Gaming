@@ -155,7 +155,7 @@ The backlog is the authoritative source for determining the next logical PRs.
   - Preservation and archive governance installed.
   - Backlog governance installed.
   - Team assignment governance installed.
-  - NATO team naming installed.
+  - Canonical Owner/Alfa/Bravo/Charlie/Delta/Golf team naming installed.
   - OWNER override governance installed.
   - Branch persistence governance installed.
   - Day Work / EOD Merge governance installed.
@@ -196,25 +196,25 @@ Status: CANCELLED / NOT DOING
 
 Items removed from backlog:
 - Multi-port workspace framework
-- Alpha/Beta/User isolation framework
+- Alfa/Beta/User isolation framework
 - Runtime port management initiative
 
 Replacement governance:
 - System Health remains one page per deployed environment.
 - Each deployment actively checks only itself.
-- Environment Summary, Database Health, Storage Health, Runtime Health, and Health Check History are Team Charlie System Health ownership.
+- Environment Summary, Database Health, Storage Health, Runtime Health, and Health Check History are Charlie System Health ownership.
 - Environment governance follows the approved GFS infrastructure and System Health v1 documentation.
 
 ## Four-Team Backlog Alignment
 
 Current OWNER clarification:
 - The backlog alignment below preserves the current Alfa, Bravo, Charlie, and Delta ownership model.
-- Team Gamma is retired. Team Golf is the replacement active ownership lane.
-- Team Golf has no standing backlog ownership area in this file unless OWNER assigns one.
+- Golf is the only active replacement for the retired prior lane.
+- Golf has no standing backlog ownership area in this file unless OWNER assigns one.
 - Golf work may be OWNER-assigned, branch-backed, PR-backed, release, review packet, or cleanup work and must not silently replace Alfa, Bravo, Charlie, or Delta ownership.
-- Historical Gamma PR references and branch names are not renamed by this clarification.
+- Historical PR references and branch names for retired non-canonical lanes are not renamed by this clarification.
 
-### Team Alfa
+### Alfa
 
 - [ ] Alfa - Game Hub polish
 - [ ] Alfa - Game Journey completion tracking
@@ -222,7 +222,7 @@ Current OWNER clarification:
 - [ ] Alfa - Creator onboarding flow
 - [ ] Alfa - Game Hub image integration
 
-### Team Bravo
+### Bravo
 
 - [ ] Bravo - Audio tool improvements
 - [ ] Bravo - Audio Effects tool
@@ -233,7 +233,7 @@ Current OWNER clarification:
 - [ ] Bravo - Vector Art improvements
 - [ ] Bravo - MIDI Studio improvements
 
-### Team Charlie
+### Charlie
 
 - Active ownership: Runtime, System Health, Environment Management, Palette / Colors, Sprites, Objects.
 - Runtime: 100% Complete.
@@ -283,7 +283,7 @@ Current OWNER clarification:
   - Current completion percentage: 0%.
   - Scope: object library, object editor, Sprite assignment, object properties, collision configuration, runtime object metadata, Object API/database contracts, and Product Owner testable workflow.
 
-### Team Delta
+### Delta
 
 - [x] Delta - Shared JS consolidation
   - Completion reference: PR_26175_DELTA_002_Shared_Runtime_Consolidation.
