@@ -165,19 +165,15 @@
                             <details class="vertical-accordion" open>
                                 <summary>Animation</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Frame planning is visible here so animation support can attach later without changing the editor layout.</p>
-                                    <div class="table-wrapper">
-                                        <table class="data-table" aria-label="Sprite animation placeholder">
-                                            <thead>
-                                                <tr><th scope="col">Frame</th><th scope="col">Timing</th></tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr><td>Frame 1</td><td>Draft</td></tr>
-                                                <tr><td>Frame 2</td><td>Draft</td></tr>
-                                                <tr><td>Frame 3</td><td>Draft</td></tr>
-                                            </tbody>
-                                        </table>
+                                    <p>The frame strip mirrors the current unsaved editor draft. Frame editing remains deferred to the next scoped Sprite Creator PR.</p>
+                                    <div class="sprite-frame-strip" role="group" aria-label="Sprite Creator frame strip" data-sprites-frame-strip>
+                                        <button class="sprite-frame-card is-active" type="button" data-sprites-frame-card="0" aria-pressed="true">
+                                            <span class="sprite-frame-card-title">Frame 1</span>
+                                            <canvas class="sprite-frame-thumbnail" width="48" height="48" aria-label="Frame 1 thumbnail" data-sprites-frame-thumbnail="0"></canvas>
+                                            <span class="sprite-frame-card-meta">Unsaved draft</span>
+                                        </button>
                                     </div>
+                                    <p class="status" role="status" data-sprites-frame-status>Frame strip: 1 unsaved frame. Current editor draft is selected.</p>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>

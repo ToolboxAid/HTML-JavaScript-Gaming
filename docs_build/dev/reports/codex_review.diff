@@ -1,205 +1,225 @@
-diff --git a/assets/toolbox/sprites/js/index.js b/assets/toolbox/sprites/js/index.js
-index 7f92105d7..41ff3bdc4 100644
---- a/assets/toolbox/sprites/js/index.js
-+++ b/assets/toolbox/sprites/js/index.js
-@@ -152,6 +152,7 @@ function applySnapshot(snapshot) {
+diff --git a/assets/theme-v2/css/gamefoundrystudio.css b/assets/theme-v2/css/gamefoundrystudio.css
+index 105b24073..83a48ff98 100644
+--- a/assets/theme-v2/css/gamefoundrystudio.css
++++ b/assets/theme-v2/css/gamefoundrystudio.css
+@@ -1248,6 +1248,46 @@ body.tool-focus-mode .tool-column:last-of-type {
+   box-shadow: 0 1px 4px var(--swatch-shadow-color)
  }
 
- function updateDraftStatus() {
-+  applyPaintedPixelsToGrid();
-   const status = document.querySelector("[data-sprites-draft-status]");
-   if (status) {
++.sprite-frame-strip {
++  display: flex;
++  gap: 10px;
++  overflow-x: auto
++}
++
++.sprite-frame-card {
++  display: grid;
++  gap: 6px;
++  min-width: 96px;
++  padding: 8px;
++  border: 1px solid var(--line);
++  border-radius: var(--radius-sm);
++  background: var(--panel);
++  color: var(--text);
++  text-align: left
++}
++
++.sprite-frame-card.is-active {
++  border-color: var(--accent);
++  box-shadow: var(--shadow-soft)
++}
++
++.sprite-frame-thumbnail {
++  width: 48px;
++  height: 48px;
++  border: 1px solid var(--line);
++  background: var(--card-background);
++  image-rendering: pixelated
++}
++
++.sprite-frame-card-title {
++  font-weight: 700
++}
++
++.sprite-frame-card-meta {
++  color: var(--muted);
++  font-size: .875rem
++}
++
+ .sprite-preview-shell {
+   display: flex;
+   justify-content: center;
+diff --git a/assets/toolbox/sprites/js/index.js b/assets/toolbox/sprites/js/index.js
+index 41ff3bdc4..97cd57379 100644
+--- a/assets/toolbox/sprites/js/index.js
++++ b/assets/toolbox/sprites/js/index.js
+@@ -158,6 +158,7 @@ function updateDraftStatus() {
      status.textContent = draftStatusText();
-@@ -217,6 +218,8 @@ function setZoomLevel(zoomLevel) {
-   if (status) {
-     status.textContent = `Canvas zoom display: ${normalizedZoomLevel * 100}%.`;
    }
-+  applyPaintedPixelsToGrid();
-+  renderPreview();
+   renderPreview();
++  renderFrameStrip();
+ }
+
+ function updatePaletteStatus() {
+@@ -220,6 +221,7 @@ function setZoomLevel(zoomLevel) {
+   }
+   applyPaintedPixelsToGrid();
+   renderPreview();
++  renderFrameStrip();
  }
 
  function pickCellColor(cell) {
-@@ -232,6 +235,8 @@ function pickCellColor(cell) {
-   if (status) {
-     status.textContent = `Picker selected ${colorLabel(colorKey)} from the unsaved editor canvas.`;
+@@ -237,6 +239,7 @@ function pickCellColor(cell) {
    }
-+  applyPaintedPixelsToGrid();
-+  renderPreview();
+   applyPaintedPixelsToGrid();
+   renderPreview();
++  renderFrameStrip();
  }
 
  function setPixel(row, column, colorKey) {
-diff --git a/dev/tests/playwright/tools/SpritesToolShell.spec.mjs b/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-index e1539d1c1..e68de5145 100644
---- a/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-+++ b/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-@@ -201,6 +201,38 @@ function collectPageFailures(page) {
-   return { consoleErrors, failedRequests, pageErrors };
+@@ -414,19 +417,15 @@ function editorColorValue(colorKey) {
+   return value || "#111111";
  }
 
-+function spriteCell(page, row, column) {
-+  return page.locator(`[data-sprite-pixel-row="${row}"][data-sprite-pixel-column="${column}"]`);
+-function renderPreview() {
+-  const canvas = document.querySelector("[data-sprites-preview-canvas]");
+-  if (!canvas) {
+-    return;
+-  }
++function renderPixelsToCanvas(canvas, paintedPixels, gridSize) {
+   const context = canvas.getContext("2d");
+   if (!context) {
+     return;
+   }
+-  const size = editorState.gridSize;
++  const size = gridSize || DEFAULT_GRID_SIZE;
+   const cellSize = canvas.width / size;
+   context.clearRect(0, 0, canvas.width, canvas.height);
+-  for (const [key, colorKey] of editorState.paintedPixels.entries()) {
++  for (const [key, colorKey] of paintedPixels.entries()) {
+     const [rowText, columnText] = key.split(":");
+     const row = Number(rowText);
+     const column = Number(columnText);
+@@ -438,6 +437,25 @@ function renderPreview() {
+   }
+ }
+
++function renderPreview() {
++  const canvas = document.querySelector("[data-sprites-preview-canvas]");
++  if (!canvas) {
++    return;
++  }
++  renderPixelsToCanvas(canvas, editorState.paintedPixels, editorState.gridSize);
 +}
 +
-+async function previewCellHasPaint(page, row, column) {
-+  const gridSize = Number(await page.locator("[data-sprites-pixel-grid]").getAttribute("data-sprites-grid-size"));
-+  return page.locator("[data-sprites-preview-canvas]").evaluate((canvas, coordinates) => {
++function renderFrameStrip() {
++  const thumbnail = document.querySelector("[data-sprites-frame-thumbnail='0']");
++  const status = document.querySelector("[data-sprites-frame-status]");
++  if (thumbnail) {
++    renderPixelsToCanvas(thumbnail, editorState.paintedPixels, editorState.gridSize);
++  }
++  if (status) {
++    status.textContent = `Frame strip: 1 unsaved frame. Current editor draft has ${editorState.paintedPixels.size} painted pixel${editorState.paintedPixels.size === 1 ? "" : "s"}.`;
++  }
++}
++
+ function exportPreviewPng() {
+   const canvas = document.querySelector("[data-sprites-preview-canvas]");
+   const status = document.querySelector("[data-sprites-export-status]");
+@@ -609,3 +627,4 @@ setActiveColor(editorState.activeColor);
+ setZoomLevel(editorState.zoomLevel);
+ updateHistoryControls();
+ renderPreview();
++renderFrameStrip();
+diff --git a/dev/tests/playwright/tools/SpritesToolShell.spec.mjs b/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
+index e68de5145..394c1971b 100644
+--- a/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
++++ b/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
+@@ -219,6 +219,22 @@ async function previewCellHasPaint(page, row, column) {
+   }, { column, gridSize, row });
+ }
+
++async function canvasHasAnyPaint(locator) {
++  return locator.evaluate((canvas) => {
 +    const context = canvas.getContext("2d");
-+    if (!context || !Number.isFinite(coordinates.gridSize) || coordinates.gridSize <= 0) {
++    if (!context) {
 +      return false;
 +    }
-+    const cellSize = canvas.width / coordinates.gridSize;
-+    const x = Math.max(0, Math.min(canvas.width - 1, Math.floor((coordinates.column - 0.5) * cellSize)));
-+    const y = Math.max(0, Math.min(canvas.height - 1, Math.floor((coordinates.row - 0.5) * cellSize)));
-+    return context.getImageData(x, y, 1, 1).data[3] > 0;
-+  }, { column, gridSize, row });
++    const imageData = context.getImageData(0, 0, canvas.width, canvas.height).data;
++    for (let index = 3; index < imageData.length; index += 4) {
++      if (imageData[index] > 0) {
++        return true;
++      }
++    }
++    return false;
++  });
 +}
 +
-+async function expectCenterAndPreviewPainted(page, row, column, colorClass = null) {
-+  const cell = spriteCell(page, row, column);
-+  await expect(cell).toHaveClass(/is-painted/);
-+  if (colorClass) {
-+    await expect(cell).toHaveClass(new RegExp(colorClass));
-+  }
-+  expect(await previewCellHasPaint(page, row, column)).toBe(true);
-+}
-+
-+async function expectCenterAndPreviewEmpty(page, row, column) {
-+  await expect(spriteCell(page, row, column)).not.toHaveClass(/is-painted/);
-+  expect(await previewCellHasPaint(page, row, column)).toBe(false);
-+}
-+
- test("Sprite Creator shell loads with visible tool, canvas, details, and status regions", async ({ page }) => {
-   const server = await startSpriteShellTestServer();
-   const failures = collectPageFailures(page);
-@@ -366,3 +398,72 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status
-     await server.close();
-   }
- });
-+
-+test("Sprite Creator keeps center canvas and right preview in sync", async ({ page }) => {
-+  const server = await startSpriteShellTestServer();
-+  const failures = collectPageFailures(page);
-+
-+  try {
-+    await page.goto(`${server.baseUrl}/toolbox/sprites/index.html`, { waitUntil: "networkidle" });
-+
-+    await spriteCell(page, 1, 1).click();
-+    await expectCenterAndPreviewPainted(page, 1, 1, "sprite-canvas-cell--ink");
-+
-+    await page.getByRole("button", { name: "Eraser tool" }).click();
-+    await spriteCell(page, 1, 1).click();
-+    await expectCenterAndPreviewEmpty(page, 1, 1);
-+
-+    await page.getByRole("button", { name: "Blue editor color" }).click();
-+    await page.getByRole("button", { name: "Fill tool" }).click();
-+    await expectCenterAndPreviewPainted(page, 1, 1, "sprite-canvas-cell--blue");
-+
-+    await page.getByRole("button", { name: "Clear Canvas" }).click();
-+    await expectCenterAndPreviewEmpty(page, 1, 1);
-+
-+    await page.getByRole("button", { name: "Undo" }).click();
-+    await expectCenterAndPreviewPainted(page, 1, 1, "sprite-canvas-cell--blue");
-+
-+    await page.getByRole("button", { name: "Redo" }).click();
-+    await expectCenterAndPreviewEmpty(page, 1, 1);
-+
-+    await page.getByRole("button", { name: "Gold editor color" }).click();
-+    await page.getByRole("button", { name: "Pencil tool" }).click();
-+    await spriteCell(page, 2, 2).click();
-+    await expectCenterAndPreviewPainted(page, 2, 2, "sprite-canvas-cell--gold");
-+    await page.getByRole("button", { name: "Blue editor color" }).click();
-+    await page.getByRole("button", { name: "Picker tool" }).click();
-+    await spriteCell(page, 2, 2).click();
-+    await expect(page.locator("[data-sprites-palette-status]")).toContainText("Active editor color: Gold");
-+    await expectCenterAndPreviewPainted(page, 2, 2, "sprite-canvas-cell--gold");
-+
-+    await page.getByRole("button", { name: "Zoom tool" }).click();
-+    await page.getByRole("button", { name: "200%" }).click();
-+    await expect(page.locator("[data-sprites-grid-shell]")).toHaveAttribute("data-sprites-zoom-level", "2");
-+    await expectCenterAndPreviewPainted(page, 2, 2, "sprite-canvas-cell--gold");
-+
-+    await page.getByRole("button", { name: "Clear Canvas" }).click();
-+    await page.getByRole("button", { name: "Green editor color" }).click();
-+    await page.getByRole("button", { name: "Line tool" }).click();
-+    await spriteCell(page, 1, 1).click();
-+    await spriteCell(page, 1, 4).click();
-+    await expectCenterAndPreviewPainted(page, 1, 2, "sprite-canvas-cell--green");
-+
-+    await page.getByRole("button", { name: "Clear Canvas" }).click();
-+    await page.getByRole("button", { name: "Rectangle tool" }).click();
-+    await spriteCell(page, 2, 2).click();
-+    await spriteCell(page, 4, 4).click();
-+    await expectCenterAndPreviewPainted(page, 2, 3, "sprite-canvas-cell--green");
-+
-+    await page.getByRole("button", { name: "Clear Canvas" }).click();
-+    await page.getByRole("button", { name: "Circle tool" }).click();
-+    await spriteCell(page, 8, 8).click();
-+    await spriteCell(page, 8, 11).click();
-+    await expectCenterAndPreviewPainted(page, 8, 11, "sprite-canvas-cell--green");
-+
-+    expect(failures.failedRequests).toEqual([]);
-+    expect(failures.pageErrors).toEqual([]);
-+    expect(failures.consoleErrors).toEqual([]);
-+  } finally {
-+    await server.close();
-+  }
-+});
-diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_033-sprites-canvas-preview-sync.md b/docs_build/dev/reports/PR_26179_CHARLIE_033-sprites-canvas-preview-sync.md
+ async function expectCenterAndPreviewPainted(page, row, column, colorClass = null) {
+   const cell = spriteCell(page, row, column);
+   await expect(cell).toHaveClass(/is-painted/);
+@@ -253,6 +269,8 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status
+     await expect(page.getByText("Canvas Setup", { exact: true })).toBeVisible();
+     await expect(page.getByRole("heading", { level: 2, name: "Pixel Work Area" })).toBeVisible();
+     await expect(page.getByRole("heading", { level: 2, name: "Sprite Details" })).toBeVisible();
++    await expect(page.locator("[data-sprites-frame-strip]")).toBeVisible();
++    await expect(page.locator("[data-sprites-frame-status]")).toContainText("1 unsaved frame");
+     await expect(page.locator("[data-sprites-toolbar]")).toBeVisible();
+     await expect(page.getByRole("button", { name: "Pencil tool" })).toBeEnabled();
+     await expect(page.getByRole("button", { name: "Eraser tool" })).toBeEnabled();
+@@ -408,6 +426,8 @@ test("Sprite Creator keeps center canvas and right preview in sync", async ({ pa
+
+     await spriteCell(page, 1, 1).click();
+     await expectCenterAndPreviewPainted(page, 1, 1, "sprite-canvas-cell--ink");
++    await expect(page.locator("[data-sprites-frame-status]")).toContainText("1 painted pixel");
++    expect(await canvasHasAnyPaint(page.locator("[data-sprites-frame-thumbnail='0']"))).toBe(true);
+
+     await page.getByRole("button", { name: "Eraser tool" }).click();
+     await spriteCell(page, 1, 1).click();
+diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_034-sprites-frame-strip.md b/docs_build/dev/reports/PR_26179_CHARLIE_034-sprites-frame-strip.md
 new file mode 100644
-index 000000000..4426f9ea2
+index 000000000..ccd669c7b
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26179_CHARLIE_033-sprites-canvas-preview-sync.md
-@@ -0,0 +1,75 @@
-+# PR_26179_CHARLIE_033-sprites-canvas-preview-sync
++++ b/docs_build/dev/reports/PR_26179_CHARLIE_034-sprites-frame-strip.md
+@@ -0,0 +1,62 @@
++# PR_26179_CHARLIE_034-sprites-frame-strip
 +
 +Team: CHARLIE
 +
 +Mode: Batch governance stacked feature workflow
 +
-+Base branch: PR_26179_CHARLIE_032-sprites-shape-tools
++Base branch: PR_26179_CHARLIE_033-sprites-canvas-preview-sync
 +
-+Branch: PR_26179_CHARLIE_033-sprites-canvas-preview-sync
++Branch: PR_26179_CHARLIE_034-sprites-frame-strip
 +
 +## Summary
 +
-+Fixed the Sprite Creator center-canvas and right-preview sync path so both render from the same page-session editor state. The center grid is repainted from `editorState.paintedPixels` whenever draft status/preview refreshes, and picker/zoom paths also trigger a repaint even though they do not mutate pixels.
++Added a Theme V2-compliant Sprite Creator frame strip for the current unsaved editor frame. The Frame 1 thumbnail mirrors the same page-session editor state as the center canvas and right preview. Frame editing remains deferred to the next scoped PR.
 +
 +## Branch Validation
 +
 +PASS
 +
-+- Built from `PR_26179_CHARLIE_032-sprites-shape-tools`.
-+- Scope stayed limited to canvas/preview synchronization and regression coverage.
++- Built from `PR_26179_CHARLIE_033-sprites-canvas-preview-sync`.
++- Scope stayed limited to frame strip UI and synced thumbnail rendering.
 +- No DB/API/schema changes.
-+- No persistence or browser-owned authoritative product data added.
++- No product persistence or browser-owned authoritative product data added.
 +- No start_of_day files changed.
 +- ZIP package created at the requested path.
 +
 +## Requirement Checklist
 +
-+PASS - Right preview updates from page-session editor state.
++PASS - Added visible Sprite Creator frame strip.
 +
-+PASS - Center editor canvas updates from the same page-session editor state.
++PASS - Frame strip shows the current unsaved frame.
 +
-+PASS - Drawing repaints center canvas immediately.
++PASS - Frame thumbnail renders from page-session editor state.
 +
-+PASS - Erase repaints center canvas immediately.
++PASS - No frame editing behavior added in this slice.
 +
-+PASS - Fill repaints center canvas immediately.
++PASS - Theme V2 CSS used.
 +
-+PASS - Clear repaints center canvas immediately.
-+
-+PASS - Undo repaints center canvas immediately.
-+
-+PASS - Redo repaints center canvas immediately.
-+
-+PASS - Picker repaints center canvas and preview without mutating pixels.
-+
-+PASS - Zoom repaints center canvas and preview without mutating pixels.
-+
-+PASS - Shape tools repaint center canvas immediately.
-+
-+PASS - Playwright regression coverage added for center canvas and preview sync.
++PASS - Targeted Playwright coverage updated.
 +
 +## Validation Lane
 +
@@ -207,7 +227,7 @@ index 000000000..4426f9ea2
 +
 +PASS - `node --check dev/tests/playwright/tools/SpritesToolShell.spec.mjs`
 +
-+PASS - `git diff --check -- assets/toolbox/sprites/js/index.js dev/tests/playwright/tools/SpritesToolShell.spec.mjs`
++PASS - `git diff --check -- toolbox/sprites/index.html assets/toolbox/sprites/js/index.js assets/theme-v2/css/gamefoundrystudio.css dev/tests/playwright/tools/SpritesToolShell.spec.mjs`
 +
 +PASS - Runtime guard scan found no prohibited inline style/script/event-handler or stale placeholder text in touched runtime files.
 +
@@ -216,24 +236,56 @@ index 000000000..4426f9ea2
 +## Manual Validation Notes
 +
 +1. Open `toolbox/sprites/index.html`.
-+2. Draw a pixel and confirm the center grid and right preview both update.
-+3. Erase the pixel and confirm both surfaces clear.
-+4. Fill, clear, undo, and redo; confirm both surfaces stay matched.
-+5. Use Picker and Zoom; confirm both surfaces remain matched.
-+6. Draw Line, Rectangle, and Circle shapes; confirm center grid and right preview both show the shape.
++2. Confirm the Animation panel shows a Frame 1 strip card.
++3. Draw a pixel on the center canvas.
++4. Confirm Frame 1 status updates with painted pixel count.
++5. Confirm the Frame 1 thumbnail shows the current unsaved draft.
 +
 +## ZIP
 +
-+`dev/workspace/zip/PR_26179_CHARLIE_033-sprites-canvas-preview-sync_delta.zip`
++`dev/workspace/zip/PR_26179_CHARLIE_034-sprites-frame-strip_delta.zip`
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index c90cf54c4..9a7840b1a 100644
+index 9a7840b1a..ac83eeaa1 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,6 +1,5 @@
+@@ -1,5 +1,7 @@
++assets/theme-v2/css/gamefoundrystudio.css
  assets/toolbox/sprites/js/index.js
  dev/tests/playwright/tools/SpritesToolShell.spec.mjs
--docs_build/dev/reports/PR_26179_CHARLIE_032-sprites-shape-tools.md
-+docs_build/dev/reports/PR_26179_CHARLIE_033-sprites-canvas-preview-sync.md
+-docs_build/dev/reports/PR_26179_CHARLIE_033-sprites-canvas-preview-sync.md
++docs_build/dev/reports/PR_26179_CHARLIE_034-sprites-frame-strip.md
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
--toolbox/sprites/index.html
++toolbox/sprites/index.html
+diff --git a/toolbox/sprites/index.html b/toolbox/sprites/index.html
+index 3605cce9b..1d1db70e5 100644
+--- a/toolbox/sprites/index.html
++++ b/toolbox/sprites/index.html
+@@ -165,19 +165,15 @@
+                             <details class="vertical-accordion" open>
+                                 <summary>Animation</summary>
+                                 <div class="accordion-body content-stack">
+-                                    <p>Frame planning is visible here so animation support can attach later without changing the editor layout.</p>
+-                                    <div class="table-wrapper">
+-                                        <table class="data-table" aria-label="Sprite animation placeholder">
+-                                            <thead>
+-                                                <tr><th scope="col">Frame</th><th scope="col">Timing</th></tr>
+-                                            </thead>
+-                                            <tbody>
+-                                                <tr><td>Frame 1</td><td>Draft</td></tr>
+-                                                <tr><td>Frame 2</td><td>Draft</td></tr>
+-                                                <tr><td>Frame 3</td><td>Draft</td></tr>
+-                                            </tbody>
+-                                        </table>
++                                    <p>The frame strip mirrors the current unsaved editor draft. Frame editing remains deferred to the next scoped Sprite Creator PR.</p>
++                                    <div class="sprite-frame-strip" role="group" aria-label="Sprite Creator frame strip" data-sprites-frame-strip>
++                                        <button class="sprite-frame-card is-active" type="button" data-sprites-frame-card="0" aria-pressed="true">
++                                            <span class="sprite-frame-card-title">Frame 1</span>
++                                            <canvas class="sprite-frame-thumbnail" width="48" height="48" aria-label="Frame 1 thumbnail" data-sprites-frame-thumbnail="0"></canvas>
++                                            <span class="sprite-frame-card-meta">Unsaved draft</span>
++                                        </button>
+                                     </div>
++                                    <p class="status" role="status" data-sprites-frame-status>Frame strip: 1 unsaved frame. Current editor draft is selected.</p>
+                                 </div>
+                             </details>
+                             <details class="vertical-accordion" open>
