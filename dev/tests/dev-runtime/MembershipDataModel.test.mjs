@@ -1,9 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { SUPABASE_POSTGRES_PRODUCT_TABLES } from "../../../src/dev-runtime/auth/provider-contract-stubs.mjs";
-import { getMockDbTableSchemas } from "../../../src/dev-runtime/persistence/mock-db-store.js";
-import { SEED_DB_KEYS } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
-import { createServerSeedTables } from "../../../src/dev-runtime/seed/server-seed-loader.mjs";
+import { SUPABASE_POSTGRES_PRODUCT_TABLES } from "../../../api/auth/provider-contract-stubs.mjs";
+import { getMockDbTableSchemas } from "../../../api/persistence/mock-db-store.js";
+import { SEED_DB_KEYS } from "../../../api/seed/seed-db-keys.mjs";
+import { createServerSeedTables } from "../../../api/seed/server-seed-loader.mjs";
 
 const PLAN_FIELDS = [
   "key",

@@ -4,14 +4,14 @@ import assert from "node:assert/strict";
 import {
   adminOperationsHealth,
   createLocalApiRouter,
-} from "../../../src/dev-runtime/server/local-api-router.mjs";
+} from "../../../api/server/local-api-router.mjs";
 import {
   debitAiCreditsForAction,
   grantMonthlyAiCredits,
-} from "../../../src/dev-runtime/ai/ai-credit-service.mjs";
-import { assignUserMembership } from "../../../src/dev-runtime/memberships/membership-assignment-service.mjs";
-import { SEED_DB_KEYS, makeSeedUlid } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
-import { createServerSeedTables } from "../../../src/dev-runtime/seed/server-seed-loader.mjs";
+} from "../../../api/ai/ai-credit-service.mjs";
+import { assignUserMembership } from "../../../api/memberships/membership-assignment-service.mjs";
+import { SEED_DB_KEYS, makeSeedUlid } from "../../../api/seed/seed-db-keys.mjs";
+import { createServerSeedTables } from "../../../api/seed/server-seed-loader.mjs";
 
 function createKeyFactory(start = 12000) {
   let sequence = start;

@@ -2,12 +2,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
-import { createConfiguredProjectAssetStorage } from "../../src/dev-runtime/storage/r2-project-asset-storage.mjs";
+import { createConfiguredProjectAssetStorage } from "../../api/storage/r2-project-asset-storage.mjs";
 import {
   STORAGE_ENV_KEYS,
   STORAGE_PROJECTS_ALLOWED_PREFIXES,
   loadStorageConfig,
-} from "../../src/dev-runtime/storage/storage-config.mjs";
+} from "../../api/storage/storage-config.mjs";
 
 const ENV_FILE = ".env";
 

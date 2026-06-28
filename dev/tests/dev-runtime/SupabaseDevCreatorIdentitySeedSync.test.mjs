@@ -1,14 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { SEED_DB_KEYS } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
+import { SEED_DB_KEYS } from "../../../api/seed/seed-db-keys.mjs";
 import {
   SupabaseAuthProviderAdapter,
   SupabasePostgresProviderAdapter,
-} from "../../../src/dev-runtime/auth/provider-contract-stubs.mjs";
+} from "../../../api/auth/provider-contract-stubs.mjs";
 import {
   DEV_CREATOR_IDENTITIES,
   syncSupabaseDevCreatorIdentities,
-} from "../../../src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs";
+} from "../../../api/testing/supabase-dev-creator-identity-seed-sync.mjs";
 
 const syncEnv = Object.freeze({
   GAMEFOUNDRY_DATABASE_SSL: "disable",

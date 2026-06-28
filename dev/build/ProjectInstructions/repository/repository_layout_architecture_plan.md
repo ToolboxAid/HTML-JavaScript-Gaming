@@ -1,6 +1,6 @@
 # Repository Layout Architecture Plan
 
-Status: Active Scaffold
+Status: Active Migration
 Owner: Owner
 Scope: Documentation/governance only
 
@@ -21,6 +21,12 @@ This plan does not authorize moving files, changing runtime behavior, changing p
 `PR_26180_OWNER_006-www-migration-map` documents the current browser-served surface and safe move requirements before any browser files move into `www/`.
 
 No browser, API, server, test, script, or runtime files move in the scaffold or migration-map PRs.
+
+`PR_26180_OWNER_007-www-route-root-compatibility` prepared configurable web-root serving without moving browser files.
+
+`PR_26180_OWNER_008-move-www-application` moved browser-served application files under `www/` and made local static serving prefer `www/` while preserving public URLs.
+
+`PR_26180_OWNER_009-move-api-application` moves server/API application runtime under `api/` while preserving `/api/*` route behavior. Browser API client modules remain outside `api/`, and developer-only local startup orchestration remains under `dev/` until the local-runtime migration PR.
 
 ## Proposed Future Layout
 

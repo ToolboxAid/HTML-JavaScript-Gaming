@@ -8,12 +8,12 @@ import {
   SupabasePostgresProviderAdapter,
   SupabasePostgresProviderStub,
   createProviderContractSnapshot,
-} from "../../../src/dev-runtime/auth/provider-contract-stubs.mjs";
-import { SEED_DB_KEYS } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
+} from "../../../api/auth/provider-contract-stubs.mjs";
+import { SEED_DB_KEYS } from "../../../api/seed/seed-db-keys.mjs";
 import {
   createLocalApiRouter,
   sessionUserFromIdentityTables,
-} from "../../../src/dev-runtime/server/local-api-router.mjs";
+} from "../../../api/server/local-api-router.mjs";
 
 function withEnv(nextEnv, callback) {
   const previousEnv = {};

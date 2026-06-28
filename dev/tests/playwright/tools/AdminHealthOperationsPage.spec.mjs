@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { SEED_DB_KEYS } from "../../../../src/dev-runtime/seed/seed-db-keys.mjs";
+import { SEED_DB_KEYS } from "../../../../api/seed/seed-db-keys.mjs";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 

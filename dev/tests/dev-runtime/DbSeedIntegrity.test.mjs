@@ -4,9 +4,9 @@ import path from "node:path";
 import process from "node:process";
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createLocalApiRouter } from "../../../src/dev-runtime/server/local-api-router.mjs";
-import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store.js";
-import { getActiveToolRegistry } from "../../../src/dev-runtime/guest-seeds/tool-metadata-inventory.js";
+import { createLocalApiRouter } from "../../../api/server/local-api-router.mjs";
+import { MOCK_DB_KEYS } from "../../../api/persistence/mock-db-store.js";
+import { getActiveToolRegistry } from "../../../api/guest-seeds/tool-metadata-inventory.js";
 import { createMessagesPostgresClientStub } from "../helpers/messagesPostgresClientStub.mjs";
 
 const GUEST_SEED_GROUP_KEYS = getActiveToolRegistry()

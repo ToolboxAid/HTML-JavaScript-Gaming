@@ -3,7 +3,7 @@ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { createMessagesPostgresClientStub } from "../../helpers/messagesPostgresClientStub.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
-import { SEED_DB_KEYS } from "../../../../src/dev-runtime/seed/seed-db-keys.mjs";
+import { SEED_DB_KEYS } from "../../../../api/seed/seed-db-keys.mjs";
 
 const ULID_PATTERN = /^[0-9A-HJKMNP-TV-Z]{26}$/;
 const TEST_TTS_PROFILE_NAME = "Message Test Profile";

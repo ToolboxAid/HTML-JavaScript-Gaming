@@ -15,7 +15,7 @@ Valid top-level folders:
 
 Root product and repo sections:
 - www/ owns browser-served production website sections, Creator toolbox pages, public game discovery, production Docs & Help, and browser assets.
-- api/ is the target Node/API/server application surface for the repository layout simplification workstream.
+- api/ is the Node/API/server application surface for server entry points, API routing, API services, database access, storage access, auth, setup, publishing, and admin server logic.
 - deploy/ contains deployment configuration.
 - dev/ contains the development workspace.
 - src/ contains deployable application/runtime/API source.
@@ -30,7 +30,9 @@ Final src layer ownership:
 - src/web/ owns browser-facing deployable application modules used by public pages, account/admin surfaces, and Creator tools.
 - src/api-runtime/ owns deployable API/runtime service modules that back the shared Browser -> API -> Postgres/R2 contract.
 - src/runtime/ owns deployable game, tool, engine, and shared runtime capabilities.
-- Existing top-level src/advanced/, src/api/, src/dev-runtime/, src/engine/, src/shared/, and src/tools/ directories are legacy transition buckets until explicit migration PRs move them.
+- Existing top-level src/advanced/, src/api/, src/engine/, src/shared/, and src/tools/ directories are legacy transition buckets until explicit migration PRs move them.
+- Browser API clients remain outside `api/`; browser-served code must use API/service contracts instead of importing top-level `api/` files directly.
+- `src/dev-runtime/admin/` remains only as a legacy Admin Notes browser-viewer compatibility path until a scoped browser admin migration retires it.
 - Do not add new top-level src/ layer names outside src/web/, src/api-runtime/, or src/runtime/ without OWNER approval.
 - Do not use team names in runtime source filenames.
 
@@ -75,10 +77,10 @@ Shared JavaScript:
 Legacy transition buckets:
 - src/advanced/
 - src/api/
-- src/dev-runtime/
 - src/engine/
 - src/shared/
 - src/tools/
+- src/dev-runtime/admin/
 
 These legacy transition buckets may remain until explicit migration PRs move them into `src/web/`, `src/api-runtime/`, or `src/runtime/`.
 
@@ -86,7 +88,8 @@ These legacy transition buckets may remain until explicit migration PRs move the
 
 - Root is standard repository configuration and top-level application shells only.
 - www/ is the browser-served application surface.
-- api/ is the Node/API/server application target surface for migration.
+- api/ is the Node/API/server application surface.
+- Browser-served code must not import top-level `api/` files directly.
 - src/ is deployable application/runtime/API code.
 - dev/ is development workspace only.
 - deploy/ is deployment configuration.

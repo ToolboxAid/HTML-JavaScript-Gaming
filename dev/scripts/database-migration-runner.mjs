@@ -2,7 +2,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
-import { createPostgresConnectionClient, databaseSslMode } from "../../src/dev-runtime/persistence/postgres-connection-client.mjs";
+import { createPostgresConnectionClient, databaseSslMode } from "../../api/persistence/postgres-connection-client.mjs";
 
 const ENV_FILE = ".env";
 const PREFERRED_GROUP_ORDER = Object.freeze([

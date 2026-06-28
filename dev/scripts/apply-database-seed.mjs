@@ -2,9 +2,9 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
-import { SupabasePostgresProviderAdapter } from "../../src/dev-runtime/auth/provider-contract-stubs.mjs";
-import { SEED_DB_KEYS } from "../../src/dev-runtime/seed/seed-db-keys.mjs";
-import { syncSupabaseDevCreatorIdentities } from "../../src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs";
+import { SupabasePostgresProviderAdapter } from "../../api/auth/provider-contract-stubs.mjs";
+import { SEED_DB_KEYS } from "../../api/seed/seed-db-keys.mjs";
+import { syncSupabaseDevCreatorIdentities } from "../../api/testing/supabase-dev-creator-identity-seed-sync.mjs";
 
 const ENV_FILE = ".env";
 const DEV_DATABASE_NAME = "gamefoundry_dev";

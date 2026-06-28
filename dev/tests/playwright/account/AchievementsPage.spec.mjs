@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { MOCK_DB_KEYS } from "../../../../src/dev-runtime/persistence/mock-db-store.js";
+import { MOCK_DB_KEYS } from "../../../../api/persistence/mock-db-store.js";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 

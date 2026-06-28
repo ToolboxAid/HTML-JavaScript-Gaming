@@ -4,7 +4,7 @@ import test from "node:test";
 import {
   createMessagesPostgresService,
   handleMessagesApiContract,
-} from "../../../src/dev-runtime/messages/messages-postgres-service.mjs";
+} from "../../../api/messages/messages-postgres-service.mjs";
 import { createMessagesPostgresClientStub } from "../helpers/messagesPostgresClientStub.mjs";
 
 function createServiceHarness() {

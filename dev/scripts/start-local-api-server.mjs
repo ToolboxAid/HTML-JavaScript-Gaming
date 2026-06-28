@@ -2,9 +2,9 @@ import process from "node:process";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { databaseSslMode } from "../../src/dev-runtime/persistence/postgres-connection-client.mjs";
-import { startLocalApiServer } from "../../src/dev-runtime/server/local-api-server.mjs";
-import { loadStorageConfig } from "../../src/dev-runtime/storage/storage-config.mjs";
+import { databaseSslMode } from "../../api/persistence/postgres-connection-client.mjs";
+import { startLocalApiServer } from "../../api/server/local-api-server.mjs";
+import { loadStorageConfig } from "../../api/storage/storage-config.mjs";
 
 const RUNTIME_ENV_FILE = ".env";
 const NOT_CONFIGURED = "(not configured)";

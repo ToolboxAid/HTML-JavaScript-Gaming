@@ -1,14 +1,14 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { SUPABASE_POSTGRES_PRODUCT_TABLES } from "../../../src/dev-runtime/auth/provider-contract-stubs.mjs";
+import { SUPABASE_POSTGRES_PRODUCT_TABLES } from "../../../api/auth/provider-contract-stubs.mjs";
 import {
   REQUIRED_LEGAL_DOCUMENTS,
   readLegalDocumentCatalog,
   readPublishedLegalDocument,
-} from "../../../src/dev-runtime/legal/legal-document-service.mjs";
-import { getMockDbTableSchemas } from "../../../src/dev-runtime/persistence/mock-db-store.js";
-import { SEED_DB_KEYS, makeSeedUlid } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
-import { createServerSeedTables } from "../../../src/dev-runtime/seed/server-seed-loader.mjs";
+} from "../../../api/legal/legal-document-service.mjs";
+import { getMockDbTableSchemas } from "../../../api/persistence/mock-db-store.js";
+import { SEED_DB_KEYS, makeSeedUlid } from "../../../api/seed/seed-db-keys.mjs";
+import { createServerSeedTables } from "../../../api/seed/server-seed-loader.mjs";
 
 const REQUIRED_TYPES = Object.freeze([
   "terms_of_service",

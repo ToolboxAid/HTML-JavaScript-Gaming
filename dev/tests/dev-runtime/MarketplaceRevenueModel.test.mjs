@@ -1,9 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { calculateMarketplaceRevenue, readMarketplaceSellerRevenueModel } from "../../../src/dev-runtime/marketplace/marketplace-revenue-service.mjs";
-import { assignUserMembership } from "../../../src/dev-runtime/memberships/membership-assignment-service.mjs";
-import { SEED_DB_KEYS, makeSeedUlid } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
-import { createServerSeedTables } from "../../../src/dev-runtime/seed/server-seed-loader.mjs";
+import { calculateMarketplaceRevenue, readMarketplaceSellerRevenueModel } from "../../../api/marketplace/marketplace-revenue-service.mjs";
+import { assignUserMembership } from "../../../api/memberships/membership-assignment-service.mjs";
+import { SEED_DB_KEYS, makeSeedUlid } from "../../../api/seed/seed-db-keys.mjs";
+import { createServerSeedTables } from "../../../api/seed/server-seed-loader.mjs";
 
 function createKeyFactory(start = 1800) {
   let sequence = start;

@@ -1,11 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { SUPABASE_POSTGRES_PRODUCT_TABLES } from "../../../src/dev-runtime/auth/provider-contract-stubs.mjs";
-import { debitAiCreditsForAction, grantMonthlyAiCredits, purchaseAiCreditPack } from "../../../src/dev-runtime/ai/ai-credit-service.mjs";
-import { assignUserMembership } from "../../../src/dev-runtime/memberships/membership-assignment-service.mjs";
-import { getMockDbTableSchemas } from "../../../src/dev-runtime/persistence/mock-db-store.js";
-import { SEED_DB_KEYS, makeSeedUlid } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
-import { createServerSeedTables } from "../../../src/dev-runtime/seed/server-seed-loader.mjs";
+import { SUPABASE_POSTGRES_PRODUCT_TABLES } from "../../../api/auth/provider-contract-stubs.mjs";
+import { debitAiCreditsForAction, grantMonthlyAiCredits, purchaseAiCreditPack } from "../../../api/ai/ai-credit-service.mjs";
+import { assignUserMembership } from "../../../api/memberships/membership-assignment-service.mjs";
+import { getMockDbTableSchemas } from "../../../api/persistence/mock-db-store.js";
+import { SEED_DB_KEYS, makeSeedUlid } from "../../../api/seed/seed-db-keys.mjs";
+import { createServerSeedTables } from "../../../api/seed/server-seed-loader.mjs";
 
 function createKeyFactory(start = 1500) {
   let sequence = start;

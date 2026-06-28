@@ -2,10 +2,10 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import http from "node:http";
 import { fileURLToPath } from "node:url";
-import { handleAdminNotesDirectoryRequest } from "../../../src/dev-runtime/admin/admin-notes-directory.mjs";
-import { localAdminNotesHeaderPartialPath } from "../../../src/dev-runtime/admin/admin-notes-menu.mjs";
-import { createLocalApiRouter } from "../../../src/dev-runtime/server/local-api-router.mjs";
-import { resolveStaticRouteTarget } from "../../../src/dev-runtime/server/static-web-root.mjs";
+import { handleAdminNotesDirectoryRequest } from "../../../api/admin/admin-notes-directory.mjs";
+import { localAdminNotesHeaderPartialPath } from "../../../api/admin/admin-notes-menu.mjs";
+import { createLocalApiRouter } from "../../../api/server/local-api-router.mjs";
+import { resolveStaticRouteTarget } from "../../../api/server/static-web-root.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

@@ -2,12 +2,12 @@
 import http from "node:http";
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createLocalApiRouter } from "../../../src/dev-runtime/server/local-api-router.mjs";
+import { createLocalApiRouter } from "../../../api/server/local-api-router.mjs";
 import {
   getAdminNavigationItems,
   getOwnerNavigationItems,
 } from "../../../src/api/admin-owner-navigation.js";
-import { SEED_DB_KEYS } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
+import { SEED_DB_KEYS } from "../../../api/seed/seed-db-keys.mjs";
 
 const MOVED_API_CLIENTS = Object.freeze([
   "admin-infrastructure-api-client.js",
@@ -81,7 +81,7 @@ async function apiJson(baseUrl, pathName, request = {}) {
 }
 
 test("product and web API clients live under src/api while engine API keeps only shared server plumbing", () => {
-  assert.deepEqual(fs.readdirSync("src/engine/api").sort(), []);
+  assert.equal(fs.existsSync("src/engine/api"), false);
   assert.equal(fs.existsSync("src/api/server-api-client.js"), true);
   MOVED_API_CLIENTS.forEach((fileName) => {
     assert.equal(fs.existsSync(`src/api/${fileName}`), true, `${fileName} should live under src/api`);
@@ -120,26 +120,26 @@ test("Admin and Owner navigation are shared and include present operational/busi
 
 test("touched Admin and Owner pages do not duplicate sidebar navigation links", () => {
   [
-    "admin/invitations.html",
-    "admin/system-health.html",
-    "admin/infrastructure.html",
-    "admin/environments.html",
-    "admin/game-migration.html",
-    "admin/platform-settings.html",
-    "admin/site-setup.html",
-    "admin/tool-votes.html",
-    "admin/users.html",
-    "owner/ai-credits.html",
-    "owner/branding.html",
-    "owner/design-system.html",
-    "owner/grouping-colors.html",
-    "owner/memberships.html",
-    "owner/site-settings.html",
-    "owner/themes.html",
+    "www/admin/invitations.html",
+    "www/admin/system-health.html",
+    "www/admin/infrastructure.html",
+    "www/admin/environments.html",
+    "www/admin/game-migration.html",
+    "www/admin/platform-settings.html",
+    "www/admin/site-setup.html",
+    "www/admin/tool-votes.html",
+    "www/admin/users.html",
+    "www/owner/ai-credits.html",
+    "www/owner/branding.html",
+    "www/owner/design-system.html",
+    "www/owner/grouping-colors.html",
+    "www/owner/memberships.html",
+    "www/owner/site-settings.html",
+    "www/owner/themes.html",
   ].forEach((fileName) => {
     const source = fs.readFileSync(fileName, "utf8");
     assert.equal(source.includes("assets/theme-v2/js/admin-owner-navigation.js"), true, `${fileName} should load shared nav renderer`);
-    if (fileName.startsWith("owner/")) {
+    if (fileName.startsWith("www/owner/")) {
       assert.match(source, /data-owner-tool-menu/);
       assert.equal(source.includes("href=\"/owner/memberships.html\""), false);
     } else {
@@ -149,18 +149,18 @@ test("touched Admin and Owner pages do not duplicate sidebar navigation links", 
   });
 });
 
-test("dev-runtime boundary is documented for runtime implementation and not test ownership", () => {
-  const source = fs.readFileSync("src/dev-runtime/DEV_RUNTIME_BOUNDARY.md", "utf8");
-  assert.match(source, /dev-only runtime implementation|local development runtime implementation/i);
-  assert.match(source, /not `tests\/dev-runtime`/);
-  assert.match(source, /UAT and PROD bundles must not import, bundle, or deploy `src\/dev-runtime`/);
+test("API runtime boundary is documented for runtime implementation and not test ownership", () => {
+  const source = fs.readFileSync("api/API_RUNTIME_BOUNDARY.md", "utf8");
+  assert.match(source, /server\/API application runtime implementation/i);
+  assert.match(source, /not `dev\/tests\/dev-runtime`/);
+  assert.match(source, /Browser pages, Theme V2 scripts, toolbox pages, and `src\/engine` runtime code must use declared API\/service contracts instead of importing `api\/` directly/);
 });
 
 test("Toolbox registry consumes shared metadata without importing dev-runtime", () => {
   const registrySource = fs.readFileSync("www/toolbox/toolRegistry.js", "utf8");
-  const devRuntimeShim = fs.readFileSync("src/dev-runtime/guest-seeds/tool-metadata-inventory.js", "utf8");
+  const devRuntimeShim = fs.readFileSync("api/guest-seeds/tool-metadata-inventory.js", "utf8");
   assert.match(registrySource, /src\/shared\/toolbox\/tool-metadata-inventory\.js/);
   assert.doesNotMatch(registrySource, /src\/dev-runtime|src\\dev-runtime|dev-runtime\/guest-seeds/);
-  assert.match(devRuntimeShim, /\.\.\/\.\.\/shared\/toolbox\/tool-metadata-inventory\.js/);
+  assert.match(devRuntimeShim, /\.\.\/\.\.\/src\/shared\/toolbox\/tool-metadata-inventory\.js/);
   assert.equal(fs.existsSync("src/shared/toolbox/tool-metadata-inventory.js"), true);
 });

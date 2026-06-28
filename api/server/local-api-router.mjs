@@ -133,7 +133,7 @@ import {
 import {
   getAdminNavigationItems,
   getOwnerNavigationItems,
-} from "../../api/admin-owner-navigation.js";
+} from "../../src/api/admin-owner-navigation.js";
 import { createPaletteSourceMockDbRows } from "../guest-seeds/palette-source-mock-db.js";
 import {
   SUPABASE_AUTH_PROVIDER_ID,

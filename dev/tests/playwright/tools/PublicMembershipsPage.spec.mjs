@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
-import { SEED_DB_KEYS } from "../../../../src/dev-runtime/seed/seed-db-keys.mjs";
+import { SEED_DB_KEYS } from "../../../../api/seed/seed-db-keys.mjs";
 
 async function openMembershipsPage(page, options = {}) {
   if (options.viewport) {

@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { createMessagesPostgresClientStub } from "../../helpers/messagesPostgresClientStub.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
-import { SEED_DB_KEYS } from "../../../../src/dev-runtime/seed/seed-db-keys.mjs";
+import { SEED_DB_KEYS } from "../../../../api/seed/seed-db-keys.mjs";
 
 test.use({ trace: "off" });
 

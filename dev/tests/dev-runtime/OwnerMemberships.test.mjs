@@ -1,21 +1,21 @@
 import http from "node:http";
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createLocalApiRouter } from "../../../src/dev-runtime/server/local-api-router.mjs";
-import { assignUserMembership } from "../../../src/dev-runtime/memberships/membership-assignment-service.mjs";
+import { createLocalApiRouter } from "../../../api/server/local-api-router.mjs";
+import { assignUserMembership } from "../../../api/memberships/membership-assignment-service.mjs";
 import {
   OwnerMembershipSettingsError,
   readOwnerMembershipSettings,
   updateOwnerMembershipSettings,
-} from "../../../src/dev-runtime/memberships/owner-membership-settings-service.mjs";
-import { readMembershipCatalog } from "../../../src/dev-runtime/memberships/membership-assignment-service.mjs";
-import { readMarketplaceSellerRevenueModel } from "../../../src/dev-runtime/marketplace/marketplace-revenue-service.mjs";
+} from "../../../api/memberships/owner-membership-settings-service.mjs";
+import { readMembershipCatalog } from "../../../api/memberships/membership-assignment-service.mjs";
+import { readMarketplaceSellerRevenueModel } from "../../../api/marketplace/marketplace-revenue-service.mjs";
 import {
   ensureProjectOwnerMember,
   readProjectTeamState,
-} from "../../../src/dev-runtime/teams/project-team-service.mjs";
-import { SEED_DB_KEYS, makeSeedUlid } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
-import { createServerSeedTables } from "../../../src/dev-runtime/seed/server-seed-loader.mjs";
+} from "../../../api/teams/project-team-service.mjs";
+import { SEED_DB_KEYS, makeSeedUlid } from "../../../api/seed/seed-db-keys.mjs";
+import { createServerSeedTables } from "../../../api/seed/server-seed-loader.mjs";
 
 const OWNER_SESSION = Object.freeze({
   isOwner: true,

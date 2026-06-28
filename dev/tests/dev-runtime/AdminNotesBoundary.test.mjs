@@ -3,24 +3,24 @@ import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import test from "node:test";
-import { handleAdminNotesDirectoryApiRequest } from "../../../src/dev-runtime/admin/admin-notes-directory.mjs";
+import { handleAdminNotesDirectoryApiRequest } from "../../../api/admin/admin-notes-directory.mjs";
 import {
   ADMIN_NOTES_LOCAL_MENU_LABEL,
   ADMIN_NOTES_LOCAL_SOURCE_PATH,
   ADMIN_NOTES_LOCAL_VIEWER_PATH,
   ADMIN_MY_STUFF_MENU_LABEL,
   localAdminNotesHeaderPartialPath,
-} from "../../../src/dev-runtime/admin/admin-notes-menu.mjs";
+} from "../../../api/admin/admin-notes-menu.mjs";
 
 const repoRoot = process.cwd();
 const productionRoots = [
-  "account",
-  "admin",
-  "assets",
-  "owner",
+  "www/account",
+  "www/admin",
+  "www/assets",
+  "www/owner",
   "src/engine",
   "src/shared",
-  "toolbox",
+  "www/toolbox",
 ];
 
 const expectedDevNotes = [
@@ -36,10 +36,10 @@ const expectedDevNotes = [
 ];
 
 const retiredProductionFiles = [
-  "admin/notes.html",
+  "www/admin/notes.html",
   "src/dev-runtime/admin/admin-notes.html",
-  "admin/notes/index.txt",
-  "admin/notes/other/index.txt",
+  "www/admin/notes/index.txt",
+  "www/admin/notes/other/index.txt",
   "dev/archive/legacy-docs-build/admin-notes/notes/Other/index.txt",
 ];
 
@@ -149,21 +149,21 @@ test("Admin Notes dev files and local viewer entrypoint exist", () => {
   });
 });
 
-test("Admin Notes implementation is isolated under src/dev-runtime/admin", () => {
+test("Admin Notes browser viewer stays under src/dev-runtime/admin while server helpers live under api/admin", () => {
   assert.equal(
     fs.existsSync(repoPath("src/dev-runtime/admin/admin-notes-viewer.js")),
     true,
-    "dev-runtime Admin Notes viewer exists",
+    "legacy Admin Notes viewer exists",
   );
   assert.equal(
-    fs.existsSync(repoPath("src/dev-runtime/admin/admin-notes-directory.mjs")),
+    fs.existsSync(repoPath("api/admin/admin-notes-directory.mjs")),
     true,
-    "dev-runtime Admin Notes directory handler exists",
+    "API Admin Notes directory handler exists",
   );
   assert.equal(
-    fs.existsSync(repoPath("src/dev-runtime/admin/admin-notes-menu.mjs")),
+    fs.existsSync(repoPath("api/admin/admin-notes-menu.mjs")),
     true,
-    "dev-runtime Admin Notes local menu route helper exists",
+    "API Admin Notes local menu route helper exists",
   );
   assert.equal(
     fs.existsSync(repoPath("src/dev-runtime/admin/header-nav.local.html")),
@@ -188,7 +188,7 @@ test("Admin Notes local viewer page uses external dev-runtime JavaScript only", 
 });
 
 test("Owner Notes route is the only production-facing Admin Notes viewer route", () => {
-  const ownerNotesSource = fs.readFileSync(repoPath("owner/notes.html"), "utf8");
+  const ownerNotesSource = fs.readFileSync(repoPath("www/owner/notes.html"), "utf8");
   assert.doesNotMatch(ownerNotesSource, /<script(?![^>]*\bsrc=)/i, "Owner Notes page must not contain inline scripts");
   assert.doesNotMatch(ownerNotesSource, /<style\b/i, "Owner Notes page must not contain style blocks");
   assert.doesNotMatch(ownerNotesSource, /\son[a-z]+\s*=/i, "Owner Notes page must not contain inline event handlers");
@@ -210,6 +210,9 @@ test("production-facing paths only expose Admin Notes through Owner Notes", () =
     .flatMap(walkTextFiles)
     .filter((filePath) => {
       if (relativePath(filePath) === "owner/notes.html") {
+        return false;
+      }
+      if (relativePath(filePath) === "www/owner/notes.html") {
         return false;
       }
       const source = fs.readFileSync(filePath, "utf8");
@@ -286,11 +289,11 @@ test("local header partial does not create a competing Admin Notes menu", () => 
   assert.doesNotMatch(servedHeader, new RegExp(`>${ADMIN_NOTES_LOCAL_MENU_LABEL}<\\/a>`));
   assert.doesNotMatch(servedHeader, new RegExp(`>${ADMIN_MY_STUFF_MENU_LABEL}<\\/a>`));
   assert.doesNotMatch(source, /data-admin-notes-local-menu|Admin Notes/);
-  assert.equal(localAdminNotesHeaderPartialPath(repoRoot, repoPath("account/sign-in.html")), repoPath("account/sign-in.html"));
+  assert.equal(localAdminNotesHeaderPartialPath(repoRoot, repoPath("www/account/sign-in.html")), repoPath("www/account/sign-in.html"));
 });
 
 test("Admin page left menus use dynamic placeholders without Notes duplication", () => {
-  const adminDir = repoPath("admin");
+  const adminDir = repoPath("www/admin");
   const pages = fs.readdirSync(adminDir).filter((name) => name.endsWith(".html")).sort();
   const checkedPages = [];
 

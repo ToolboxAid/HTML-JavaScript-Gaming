@@ -12,7 +12,7 @@ import {
   resolveBrowserRoutePath,
   resolveLocalWebRoot,
   resolveStaticRouteTarget,
-} from "../../../src/dev-runtime/server/static-web-root.mjs";
+} from "../../../api/server/static-web-root.mjs";
 
 const repoRoot = path.resolve(fileURLToPath(new URL("../../..", import.meta.url)));
 

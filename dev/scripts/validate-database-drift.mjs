@@ -2,7 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
-import { createPostgresConnectionClient } from "../../src/dev-runtime/persistence/postgres-connection-client.mjs";
+import { createPostgresConnectionClient } from "../../api/persistence/postgres-connection-client.mjs";
 
 const ENV_FILE = ".env";
 const DDL_DIRECTORY = "dev/build/database/ddl";

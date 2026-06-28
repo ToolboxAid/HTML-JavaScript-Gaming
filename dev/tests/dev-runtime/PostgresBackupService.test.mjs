@@ -11,11 +11,11 @@ import {
   createPostgresBackup,
   postgresBackupFilename,
   postgresBackupObjectKey,
-} from "../../../src/dev-runtime/database/postgres-backup-service.mjs";
+} from "../../../api/database/postgres-backup-service.mjs";
 import {
   DB_BACKUP_PREFIX_ENV,
   DB_BACKUP_STORAGE_PROVIDER_ENV,
-} from "../../../src/dev-runtime/storage/storage-config.mjs";
+} from "../../../api/storage/storage-config.mjs";
 
 const TEST_ENV = Object.freeze({
   GAMEFOUNDRY_DATABASE_SSL: "disable",
