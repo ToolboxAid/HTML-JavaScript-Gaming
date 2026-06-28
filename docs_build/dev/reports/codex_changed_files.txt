@@ -1,6 +1,5 @@
 assets/toolbox/sprites/js/index.js
 dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-docs_build/dev/reports/PR_26179_CHARLIE_032-sprites-shape-tools.md
+docs_build/dev/reports/PR_26179_CHARLIE_033-sprites-canvas-preview-sync.md
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
-toolbox/sprites/index.html
