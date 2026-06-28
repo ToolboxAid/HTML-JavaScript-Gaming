@@ -1,228 +1,230 @@
 ﻿diff --git a/assets/theme-v2/css/gamefoundrystudio.css b/assets/theme-v2/css/gamefoundrystudio.css
-index 5886f125e..f7c6b39ea 100644
+index f7c6b39ea..22fc1de11 100644
 --- a/assets/theme-v2/css/gamefoundrystudio.css
 +++ b/assets/theme-v2/css/gamefoundrystudio.css
-@@ -1195,6 +1195,10 @@ body.tool-focus-mode .tool-column:last-of-type {
-   opacity: 1
+@@ -1199,6 +1199,46 @@ body.tool-focus-mode .tool-column:last-of-type {
+   background: var(--text)
  }
  
-+.sprite-canvas-cell.is-painted {
++.sprite-canvas-cell--ink,
++.sprite-color-chip--ink {
 +  background: var(--text)
++}
++
++.sprite-canvas-cell--orange,
++.sprite-color-chip--orange {
++  background: var(--molten-orange)
++}
++
++.sprite-canvas-cell--gold,
++.sprite-color-chip--gold {
++  background: var(--forge-gold)
++}
++
++.sprite-canvas-cell--green,
++.sprite-color-chip--green {
++  background: var(--green)
++}
++
++.sprite-canvas-cell--blue,
++.sprite-color-chip--blue {
++  background: var(--electric-blue)
++}
++
++.sprite-palette-panel {
++  display: flex;
++  flex-wrap: wrap;
++  gap: 8px
++}
++
++.sprite-color-chip {
++  display: inline-block;
++  width: 14px;
++  height: 14px;
++  border: 1px solid var(--swatch-border);
++  border-radius: 50%;
++  box-shadow: 0 1px 4px var(--swatch-shadow-color)
 +}
 +
  @media(max-width:980px) {
  
    .grid.cols-4,
 diff --git a/assets/toolbox/sprites/js/index.js b/assets/toolbox/sprites/js/index.js
-index 22ef6dc6f..ae67b1b7c 100644
+index ae67b1b7c..f332496d1 100644
 --- a/assets/toolbox/sprites/js/index.js
 +++ b/assets/toolbox/sprites/js/index.js
-@@ -1,5 +1,12 @@
+@@ -1,11 +1,13 @@
  const DEFAULT_GRID_SIZE = 16;
  const SUPPORTED_GRID_SIZES = Object.freeze([16, 32]);
-+const DRAWING_TOOLS = Object.freeze(["pencil", "eraser", "fill"]);
-+
-+const editorState = {
-+  activeTool: "pencil",
-+  gridSize: DEFAULT_GRID_SIZE,
-+  paintedPixels: new Set(),
-+};
+ const DRAWING_TOOLS = Object.freeze(["pencil", "eraser", "fill"]);
++const EDITOR_COLOR_KEYS = Object.freeze(["ink", "orange", "gold", "green", "blue"]);
+ 
+ const editorState = {
+   activeTool: "pencil",
++  activeColor: "ink",
+   gridSize: DEFAULT_GRID_SIZE,
+-  paintedPixels: new Set(),
++  paintedPixels: new Map(),
+ };
  
  function gridLabel(size) {
-   return `Sprite Creator ${size} by ${size} pixel canvas`;
-@@ -9,6 +16,67 @@ function buttonForSize(size) {
-   return document.querySelector(`[data-sprites-grid-size="${size}"]`);
+@@ -28,6 +30,22 @@ function draftStatusText() {
+   return `Unsaved editor state: ${count} draft pixel${count === 1 ? "" : "s"} painted.`;
  }
  
-+function pixelKey(row, column) {
-+  return `${row}:${column}`;
++function normalizeColorKey(colorKey) {
++  return EDITOR_COLOR_KEYS.includes(colorKey) ? colorKey : "ink";
 +}
 +
-+function draftStatusText() {
-+  const count = editorState.paintedPixels.size;
-+  if (count === 0) {
-+    return "Unsaved editor state: empty draft.";
-+  }
-+  return `Unsaved editor state: ${count} draft pixel${count === 1 ? "" : "s"} painted.`;
++function clearCellColor(cell) {
++  cell.classList.remove(...EDITOR_COLOR_KEYS.map((colorKey) => `sprite-canvas-cell--${colorKey}`));
++  delete cell.dataset.spriteColorKey;
 +}
 +
-+function updateDraftStatus() {
-+  const status = document.querySelector("[data-sprites-draft-status]");
++function setCellColor(cell, colorKey) {
++  const normalizedColorKey = normalizeColorKey(colorKey);
++  clearCellColor(cell);
++  cell.classList.add("is-painted", `sprite-canvas-cell--${normalizedColorKey}`);
++  cell.dataset.spriteColorKey = normalizedColorKey;
++}
++
+ function updateDraftStatus() {
+   const status = document.querySelector("[data-sprites-draft-status]");
+   if (status) {
+@@ -35,6 +53,24 @@ function updateDraftStatus() {
+   }
+ }
+ 
++function updatePaletteStatus() {
++  const status = document.querySelector("[data-sprites-palette-status]");
 +  if (status) {
-+    status.textContent = draftStatusText();
++    status.textContent = `Active editor color: ${editorState.activeColor[0].toUpperCase()}${editorState.activeColor.slice(1)}. Palette/Colors remains the reusable color source for future saved sprite records.`;
 +  }
 +}
 +
-+function setActiveTool(toolName) {
-+  if (!DRAWING_TOOLS.includes(toolName)) {
-+    return;
-+  }
-+  editorState.activeTool = toolName;
-+  document.querySelectorAll("[data-sprite-tool-button]").forEach((button) => {
-+    const isActive = button.dataset.spriteToolButton === toolName;
++function setActiveColor(colorKey) {
++  const normalizedColorKey = normalizeColorKey(colorKey);
++  editorState.activeColor = normalizedColorKey;
++  document.querySelectorAll("[data-sprite-color-button]").forEach((button) => {
++    const isActive = button.dataset.spriteColorButton === normalizedColorKey;
 +    button.classList.toggle("primary", isActive);
 +    button.setAttribute("aria-pressed", String(isActive));
 +  });
-+  const status = document.querySelector("[data-sprites-tool-status]");
-+  if (status) {
-+    status.textContent = `${toolName[0].toUpperCase()}${toolName.slice(1)} is active. Drawing stays in unsaved editor state for this page session only.`;
-+  }
++  updatePaletteStatus();
 +}
 +
-+function paintCell(cell) {
-+  const key = pixelKey(cell.dataset.spritePixelRow, cell.dataset.spritePixelColumn);
-+  if (editorState.activeTool === "eraser") {
-+    editorState.paintedPixels.delete(key);
-+    cell.classList.remove("is-painted");
-+  } else {
-+    editorState.paintedPixels.add(key);
-+    cell.classList.add("is-painted");
-+  }
-+  updateDraftStatus();
-+}
-+
-+function fillGrid() {
-+  const grid = document.querySelector("[data-sprites-pixel-grid]");
-+  if (!grid) {
-+    return;
-+  }
-+  editorState.paintedPixels.clear();
-+  grid.querySelectorAll("[data-sprite-pixel-row]").forEach((cell) => {
-+    const key = pixelKey(cell.dataset.spritePixelRow, cell.dataset.spritePixelColumn);
-+    editorState.paintedPixels.add(key);
-+    cell.classList.add("is-painted");
-+  });
-+  updateDraftStatus();
-+}
-+
- function setGridSize(size) {
-   const grid = document.querySelector("[data-sprites-pixel-grid]");
-   const status = document.querySelector("[data-sprites-grid-status]");
-@@ -17,6 +85,8 @@ function setGridSize(size) {
+ function setActiveTool(toolName) {
+   if (!DRAWING_TOOLS.includes(toolName)) {
+     return;
+@@ -56,9 +92,10 @@ function paintCell(cell) {
+   if (editorState.activeTool === "eraser") {
+     editorState.paintedPixels.delete(key);
+     cell.classList.remove("is-painted");
++    clearCellColor(cell);
+   } else {
+-    editorState.paintedPixels.add(key);
+-    cell.classList.add("is-painted");
++    editorState.paintedPixels.set(key, editorState.activeColor);
++    setCellColor(cell, editorState.activeColor);
    }
- 
-   grid.replaceChildren();
-+  editorState.gridSize = size;
-+  editorState.paintedPixels.clear();
-   grid.dataset.spritesGridSize = String(size);
-   grid.setAttribute("aria-label", gridLabel(size));
- 
-@@ -26,11 +96,11 @@ function setGridSize(size) {
-     const cell = document.createElement("button");
-     cell.className = "sprite-canvas-cell";
-     cell.type = "button";
--    cell.disabled = true;
-     cell.setAttribute("role", "gridcell");
-     cell.setAttribute("aria-label", `Pixel row ${row}, column ${column}`);
-     cell.dataset.spritePixelRow = String(row);
-     cell.dataset.spritePixelColumn = String(column);
-+    cell.addEventListener("click", () => paintCell(cell));
-     grid.append(cell);
-   }
- 
-@@ -43,6 +113,7 @@ function setGridSize(size) {
-   if (status) {
-     status.textContent = `Canvas display mode: ${size}x${size}. No pixel data is saved.`;
-   }
-+  updateDraftStatus();
+   updateDraftStatus();
  }
- 
- function wireGridControls() {
-@@ -55,5 +126,22 @@ function wireGridControls() {
+@@ -71,8 +108,8 @@ function fillGrid() {
+   editorState.paintedPixels.clear();
+   grid.querySelectorAll("[data-sprite-pixel-row]").forEach((cell) => {
+     const key = pixelKey(cell.dataset.spritePixelRow, cell.dataset.spritePixelColumn);
+-    editorState.paintedPixels.add(key);
+-    cell.classList.add("is-painted");
++    editorState.paintedPixels.set(key, editorState.activeColor);
++    setCellColor(cell, editorState.activeColor);
+   });
+   updateDraftStatus();
+ }
+@@ -141,7 +178,17 @@ function wireDrawingTools() {
    });
  }
  
-+function wireDrawingTools() {
-+  document.querySelectorAll("[data-sprite-tool-button]").forEach((button) => {
-+    const toolName = button.dataset.spriteToolButton;
-+    if (!DRAWING_TOOLS.includes(toolName) || button.disabled) {
-+      return;
-+    }
++function wirePaletteButtons() {
++  document.querySelectorAll("[data-sprite-color-button]").forEach((button) => {
 +    button.addEventListener("click", () => {
-+      setActiveTool(toolName);
-+      if (toolName === "fill") {
-+        fillGrid();
-+      }
++      setActiveColor(button.dataset.spriteColorButton);
 +    });
 +  });
 +}
 +
  wireGridControls();
-+wireDrawingTools();
+ wireDrawingTools();
++wirePaletteButtons();
  setGridSize(DEFAULT_GRID_SIZE);
-+setActiveTool(editorState.activeTool);
+ setActiveTool(editorState.activeTool);
++setActiveColor(editorState.activeColor);
 diff --git a/dev/tests/playwright/tools/SpritesToolShell.spec.mjs b/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-index 3b7805669..3fdc7decc 100644
+index 3fdc7decc..2e1825bf2 100644
 --- a/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
 +++ b/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-@@ -10,9 +10,6 @@ const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
- const repoRoot = path.resolve(__dirname, "..", "..", "..", "..");
- const SPRITE_TOOLBAR_PLACEHOLDERS = [
--  "Pencil",
--  "Eraser",
--  "Fill",
-   "Line",
-   "Rectangle",
-   "Circle",
-@@ -228,10 +225,13 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status
+@@ -220,8 +220,8 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status
+     await expect(page.locator("[data-sprites-details-panel]")).toBeVisible();
+     await expect(page.locator("[data-sprites-footer-status]")).toBeVisible();
+     await expect(page.locator("[data-sprites-tools-panel]")).toContainText("Sprite Tools");
+-    await expect(page.getByText("Drawing Tools")).toBeVisible();
+-    await expect(page.getByText("Canvas Setup")).toBeVisible();
++    await expect(page.getByText("Drawing Tools", { exact: true })).toBeVisible();
++    await expect(page.getByText("Canvas Setup", { exact: true })).toBeVisible();
      await expect(page.getByRole("heading", { level: 2, name: "Pixel Work Area" })).toBeVisible();
      await expect(page.getByRole("heading", { level: 2, name: "Sprite Details" })).toBeVisible();
      await expect(page.locator("[data-sprites-toolbar]")).toBeVisible();
-+    await expect(page.getByRole("button", { name: "Pencil tool" })).toBeEnabled();
-+    await expect(page.getByRole("button", { name: "Eraser tool" })).toBeEnabled();
-+    await expect(page.getByRole("button", { name: "Fill tool" })).toBeEnabled();
-     for (const toolName of SPRITE_TOOLBAR_PLACEHOLDERS) {
+@@ -232,6 +232,8 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status
        await expect(page.getByRole("button", { name: `${toolName} tool placeholder` })).toBeDisabled();
      }
--    await expect(page.locator("main")).toContainText("Toolbar placeholders only");
-+    await expect(page.locator("[data-sprites-tool-status]")).toContainText("Pencil is active");
+     await expect(page.locator("[data-sprites-tool-status]")).toContainText("Pencil is active");
++    await expect(page.locator("[data-sprites-palette-panel]")).toBeVisible();
++    await expect(page.locator("[data-sprites-palette-status]")).toContainText("Active editor color: Ink");
      await expect(page.locator("[data-sprites-pixel-grid]")).toBeVisible();
      await expect(page.locator("[data-sprites-pixel-grid] [role='gridcell']")).toHaveCount(256);
      await expect(page.locator("[data-sprites-grid-status]")).toContainText("Canvas display mode: 16x16");
-@@ -240,7 +240,18 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status
-     await expect(page.locator("[data-sprites-pixel-grid] [role='gridcell']")).toHaveCount(1024);
-     await expect(page.locator("[data-sprites-grid-status]")).toContainText("Canvas display mode: 32x32");
-     await expect(page.getByRole("button", { name: "32x32" })).toHaveAttribute("aria-pressed", "true");
--    await expect(page.locator("[data-sprites-shell-status]")).toContainText("Shell ready");
-+    const firstPixel = page.locator("[data-sprites-pixel-grid] [role='gridcell']").first();
+@@ -248,11 +250,18 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status
+     await firstPixel.click();
+     await expect(firstPixel).not.toHaveClass(/is-painted/);
+     await expect(page.locator("[data-sprites-draft-status]")).toContainText("empty draft");
++    await page.getByRole("button", { name: "Gold editor color" }).click();
++    await expect(page.locator("[data-sprites-palette-status]")).toContainText("Active editor color: Gold");
++    await page.getByRole("button", { name: "Pencil tool" }).click();
 +    await firstPixel.click();
-+    await expect(firstPixel).toHaveClass(/is-painted/);
-+    await expect(page.locator("[data-sprites-draft-status]")).toContainText("1 draft pixel painted");
-+    await page.getByRole("button", { name: "Eraser tool" }).click();
-+    await firstPixel.click();
-+    await expect(firstPixel).not.toHaveClass(/is-painted/);
-+    await expect(page.locator("[data-sprites-draft-status]")).toContainText("empty draft");
-+    await page.getByRole("button", { name: "Fill tool" }).click();
-+    await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(1024);
-+    await expect(page.locator("[data-sprites-draft-status]")).toContainText("1024 draft pixels painted");
-+    await expect(page.locator("[data-sprites-shell-status]")).toContainText("Editor ready");
-     await expect(page.locator("main")).toContainText("Palette/Colors keys only");
++    await expect(firstPixel).toHaveClass(/sprite-canvas-cell--gold/);
++    await page.getByRole("button", { name: "Blue editor color" }).click();
+     await page.getByRole("button", { name: "Fill tool" }).click();
+     await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(1024);
++    await expect(page.locator("[data-sprites-pixel-grid] .sprite-canvas-cell--blue")).toHaveCount(1024);
+     await expect(page.locator("[data-sprites-draft-status]")).toContainText("1024 draft pixels painted");
+     await expect(page.locator("[data-sprites-shell-status]")).toContainText("Editor ready");
+-    await expect(page.locator("main")).toContainText("Palette/Colors keys only");
++    await expect(page.locator("main")).toContainText("Palette/Colors remains the reusable color source");
      await expect(page.locator("main")).not.toContainText(/Not implemented yet|future rebuild work|Static wireframe only|Plan sprite creation/i);
      await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_025-sprites-basic-drawing.md b/docs_build/dev/reports/PR_26179_CHARLIE_025-sprites-basic-drawing.md
+ 
+diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_026-sprites-palette-panel.md b/docs_build/dev/reports/PR_26179_CHARLIE_026-sprites-palette-panel.md
 new file mode 100644
-index 000000000..7f4879aa8
+index 000000000..8a4036c83
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26179_CHARLIE_025-sprites-basic-drawing.md
-@@ -0,0 +1,64 @@
-+﻿# PR_26179_CHARLIE_025-sprites-basic-drawing
++++ b/docs_build/dev/reports/PR_26179_CHARLIE_026-sprites-palette-panel.md
+@@ -0,0 +1,61 @@
++﻿# PR_26179_CHARLIE_026-sprites-palette-panel
 +
 +Team: CHARLIE
 +Workflow: stacked feature workflow
-+Base branch: PR_26179_CHARLIE_024-sprites-canvas-grid
-+Canonical ZIP path: dev/workspace/zip/PR_26179_CHARLIE_025-sprites-basic-drawing_delta.zip
++Base branch: PR_26179_CHARLIE_025-sprites-basic-drawing
++Canonical ZIP path: dev/workspace/zip/PR_26179_CHARLIE_026-sprites-palette-panel_delta.zip
 +
 +## Summary
 +
-+Implemented basic Sprite Creator drawing for Pencil, Eraser, and Fill on the visible pixel canvas. Drawing state is page-session editor state only and is clearly labeled as unsaved. No product save, browser storage, API, DB, schema, or publishing behavior was added.
++Added an editor-only palette panel with active color selection. Selected editor colors apply to Pencil and Fill drawing in unsaved page-session state. The page still states that Palette/Colors remains the reusable color source for future saved sprite records.
 +
 +## Branch Validation
 +
 +PASS
 +
-+- Current branch: PR_26179_CHARLIE_025-sprites-basic-drawing
-+- Based on: PR_26179_CHARLIE_024-sprites-canvas-grid
++- Current branch: PR_26179_CHARLIE_026-sprites-palette-panel
++- Based on: PR_26179_CHARLIE_025-sprites-basic-drawing
 +- No start_of_day files changed
 +- No DB/API/schema files changed
 +- No stale PR #219-#228 code copied
@@ -231,14 +233,12 @@ index 000000000..7f4879aa8
 +
 +| Requirement | Status | Notes |
 +| --- | --- | --- |
-+| Implement Pencil | PASS | Clicking a pixel paints it in unsaved editor state. |
-+| Implement Eraser | PASS | Clicking a painted pixel clears it. |
-+| Implement Fill | PASS | Fill paints the current grid. |
-+| Page-session editor state only | PASS | State lives in the module runtime only. |
-+| Clearly marked unsaved | PASS | Status copy labels unsaved editor state. |
-+| No product save | PASS | No save/load/publishing contract added. |
-+| No browser-owned authoritative product data | PASS | No browser storage or persistence added. |
-+| No DB/API/schema changes | PASS | Only UI/JS/CSS/test/report files changed. |
++| Add active color selection | PASS | Palette buttons update active editor color. |
++| Add basic preset palette | PASS | Ink, Orange, Gold, Green, and Blue editor presets are visible. |
++| Connect selected color to drawing tools | PASS | Pencil and Fill apply selected color classes. |
++| Creator-facing language | PASS | Copy describes editor draft colors and future Palette/Colors source. |
++| No DB/API | PASS | No API/database changes. |
++| No browser-owned authoritative product data | PASS | No product save or browser storage. |
 +
 +## Validation Lane Report
 +
@@ -262,66 +262,44 @@ index 000000000..7f4879aa8
 +## Manual Validation Notes
 +
 +1. Open `/toolbox/sprites/index.html` from the stacked branch.
-+2. Click a pixel with Pencil active and confirm it paints.
-+3. Choose Eraser, click the painted pixel, and confirm it clears.
-+4. Choose Fill and confirm the visible grid fills.
-+5. Confirm copy says the state is unsaved editor state.
++2. Select Gold, use Pencil, and confirm the painted pixel uses Gold.
++3. Select Blue, use Fill, and confirm the grid uses Blue.
++4. Confirm the page states Palette/Colors remains the reusable color source for future saved records.
 +
 +## ZIP Path
 +
-+`dev/workspace/zip/PR_26179_CHARLIE_025-sprites-basic-drawing_delta.zip`
++`dev/workspace/zip/PR_26179_CHARLIE_026-sprites-palette-panel_delta.zip`
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 01ac40869..e1771c688 100644
+index e1771c688..ccd4e2703 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
 @@ -2,6 +2,6 @@
  assets/toolbox/sprites/js/index.js
  assets/theme-v2/css/gamefoundrystudio.css
  dev/tests/playwright/tools/SpritesToolShell.spec.mjs
--docs_build/dev/reports/PR_26179_CHARLIE_024-sprites-canvas-grid.md
-+docs_build/dev/reports/PR_26179_CHARLIE_025-sprites-basic-drawing.md
+-docs_build/dev/reports/PR_26179_CHARLIE_025-sprites-basic-drawing.md
++docs_build/dev/reports/PR_26179_CHARLIE_026-sprites-palette-panel.md
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
 diff --git a/toolbox/sprites/index.html b/toolbox/sprites/index.html
-index bf32a281b..e651fcb7c 100644
+index e651fcb7c..1ec5872c0 100644
 --- a/toolbox/sprites/index.html
 +++ b/toolbox/sprites/index.html
-@@ -35,9 +35,9 @@
+@@ -74,8 +74,15 @@
+                             <details class="vertical-accordion" open>
+                                 <summary>Palette Source</summary>
                                  <div class="accordion-body content-stack">
-                                     <p>Choose the creation action that will shape the sprite canvas in a later editor slice.</p>
-                                     <div class="action-group action-group--tight" aria-label="Sprite Creator toolbar placeholders" data-sprites-toolbar>
--                                        <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="pencil" aria-label="Pencil tool placeholder">Pencil</button>
--                                        <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="eraser" aria-label="Eraser tool placeholder">Eraser</button>
--                                        <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="fill" aria-label="Fill tool placeholder">Fill</button>
-+                                        <button class="btn btn--compact primary" type="button" data-sprite-tool-button="pencil" aria-label="Pencil tool" aria-pressed="true">Pencil</button>
-+                                        <button class="btn btn--compact" type="button" data-sprite-tool-button="eraser" aria-label="Eraser tool" aria-pressed="false">Eraser</button>
-+                                        <button class="btn btn--compact" type="button" data-sprite-tool-button="fill" aria-label="Fill tool" aria-pressed="false">Fill</button>
-                                         <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="line" aria-label="Line tool placeholder">Line</button>
-                                         <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="rectangle" aria-label="Rectangle tool placeholder">Rectangle</button>
-                                         <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="circle" aria-label="Circle tool placeholder">Circle</button>
-@@ -45,7 +45,7 @@
-                                         <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="move" aria-label="Move tool placeholder">Move</button>
-                                         <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="zoom" aria-label="Zoom tool placeholder">Zoom</button>
-                                     </div>
--                                    <p class="status" role="status">Toolbar placeholders only. Drawing behavior is not implemented in this PR.</p>
-+                                    <p class="status" role="status" data-sprites-tool-status>Pencil is active. Drawing stays in unsaved editor state for this page session only.</p>
+-                                    <p>Reusable colors come from Colors. Sprite Creator will reference Palette/Colors keys only.</p>
+-                                    <p class="status" role="status">Palette/Colors selection is reserved for the data-backed build slice.</p>
++                                    <p>Reusable colors come from Colors. These editor presets are unsaved draft colors for testing drawing tools only.</p>
++                                    <div class="sprite-palette-panel" role="group" aria-label="Sprite Creator editor color presets" data-sprites-palette-panel>
++                                        <button class="btn btn--compact primary" type="button" data-sprite-color-button="ink" aria-label="Ink editor color" aria-pressed="true"><span class="sprite-color-chip sprite-color-chip--ink" aria-hidden="true"></span>Ink</button>
++                                        <button class="btn btn--compact" type="button" data-sprite-color-button="orange" aria-label="Orange editor color" aria-pressed="false"><span class="sprite-color-chip sprite-color-chip--orange" aria-hidden="true"></span>Orange</button>
++                                        <button class="btn btn--compact" type="button" data-sprite-color-button="gold" aria-label="Gold editor color" aria-pressed="false"><span class="sprite-color-chip sprite-color-chip--gold" aria-hidden="true"></span>Gold</button>
++                                        <button class="btn btn--compact" type="button" data-sprite-color-button="green" aria-label="Green editor color" aria-pressed="false"><span class="sprite-color-chip sprite-color-chip--green" aria-hidden="true"></span>Green</button>
++                                        <button class="btn btn--compact" type="button" data-sprite-color-button="blue" aria-label="Blue editor color" aria-pressed="false"><span class="sprite-color-chip sprite-color-chip--blue" aria-hidden="true"></span>Blue</button>
++                                    </div>
++                                    <p class="status" role="status" data-sprites-palette-status>Active editor color: Ink. Palette/Colors remains the reusable color source for future saved sprite records.</p>
                                  </div>
                              </details>
-                             <details class="vertical-accordion" open>
-@@ -103,6 +103,7 @@
-                                     <div class="sprite-canvas-grid" role="grid" aria-label="Sprite Creator 16 by 16 pixel canvas" data-sprites-pixel-grid></div>
-                                 </div>
-                                 <p class="status" role="status" data-sprites-grid-status>Canvas display mode: 16x16. No pixel data is saved.</p>
-+                                <p class="status" role="status" data-sprites-draft-status>Unsaved editor state: empty draft.</p>
-                             </div>
-                         </article>
-                         <article class="card" data-sprites-footer-status>
-@@ -111,7 +112,7 @@
-                                     <div class="kicker">Status</div>
-                                     <h3>Sprite Creator Shell</h3>
-                                 </div>
--                                <p class="status" role="status" data-sprites-shell-status>Shell ready. Drawing, Palette/Colors references, and save/load data contracts remain reserved for later scoped PRs.</p>
-+                                <p class="status" role="status" data-sprites-shell-status>Editor ready. Pencil, Eraser, and Fill affect unsaved page-session draft pixels only; save/load data contracts remain reserved for later scoped PRs.</p>
-                             </div>
-                         </article>
-                     </section>
+                         </div>

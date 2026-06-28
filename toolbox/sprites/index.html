@@ -74,8 +74,15 @@
                             <details class="vertical-accordion" open>
                                 <summary>Palette Source</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Reusable colors come from Colors. Sprite Creator will reference Palette/Colors keys only.</p>
-                                    <p class="status" role="status">Palette/Colors selection is reserved for the data-backed build slice.</p>
+                                    <p>Reusable colors come from Colors. These editor presets are unsaved draft colors for testing drawing tools only.</p>
+                                    <div class="sprite-palette-panel" role="group" aria-label="Sprite Creator editor color presets" data-sprites-palette-panel>
+                                        <button class="btn btn--compact primary" type="button" data-sprite-color-button="ink" aria-label="Ink editor color" aria-pressed="true"><span class="sprite-color-chip sprite-color-chip--ink" aria-hidden="true"></span>Ink</button>
+                                        <button class="btn btn--compact" type="button" data-sprite-color-button="orange" aria-label="Orange editor color" aria-pressed="false"><span class="sprite-color-chip sprite-color-chip--orange" aria-hidden="true"></span>Orange</button>
+                                        <button class="btn btn--compact" type="button" data-sprite-color-button="gold" aria-label="Gold editor color" aria-pressed="false"><span class="sprite-color-chip sprite-color-chip--gold" aria-hidden="true"></span>Gold</button>
+                                        <button class="btn btn--compact" type="button" data-sprite-color-button="green" aria-label="Green editor color" aria-pressed="false"><span class="sprite-color-chip sprite-color-chip--green" aria-hidden="true"></span>Green</button>
+                                        <button class="btn btn--compact" type="button" data-sprite-color-button="blue" aria-label="Blue editor color" aria-pressed="false"><span class="sprite-color-chip sprite-color-chip--blue" aria-hidden="true"></span>Blue</button>
+                                    </div>
+                                    <p class="status" role="status" data-sprites-palette-status>Active editor color: Ink. Palette/Colors remains the reusable color source for future saved sprite records.</p>
                                 </div>
                             </details>
                         </div>

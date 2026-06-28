@@ -1199,6 +1199,46 @@ body.tool-focus-mode .tool-column:last-of-type {
   background: var(--text)
 }
 
+.sprite-canvas-cell--ink,
+.sprite-color-chip--ink {
+  background: var(--text)
+}
+
+.sprite-canvas-cell--orange,
+.sprite-color-chip--orange {
+  background: var(--molten-orange)
+}
+
+.sprite-canvas-cell--gold,
+.sprite-color-chip--gold {
+  background: var(--forge-gold)
+}
+
+.sprite-canvas-cell--green,
+.sprite-color-chip--green {
+  background: var(--green)
+}
+
+.sprite-canvas-cell--blue,
+.sprite-color-chip--blue {
+  background: var(--electric-blue)
+}
+
+.sprite-palette-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px
+}
+
+.sprite-color-chip {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--swatch-border);
+  border-radius: 50%;
+  box-shadow: 0 1px 4px var(--swatch-shadow-color)
+}
+
 @media(max-width:980px) {
 
   .grid.cols-4,

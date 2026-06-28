@@ -220,8 +220,8 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status 
     await expect(page.locator("[data-sprites-details-panel]")).toBeVisible();
     await expect(page.locator("[data-sprites-footer-status]")).toBeVisible();
     await expect(page.locator("[data-sprites-tools-panel]")).toContainText("Sprite Tools");
-    await expect(page.getByText("Drawing Tools")).toBeVisible();
-    await expect(page.getByText("Canvas Setup")).toBeVisible();
+    await expect(page.getByText("Drawing Tools", { exact: true })).toBeVisible();
+    await expect(page.getByText("Canvas Setup", { exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { level: 2, name: "Pixel Work Area" })).toBeVisible();
     await expect(page.getByRole("heading", { level: 2, name: "Sprite Details" })).toBeVisible();
     await expect(page.locator("[data-sprites-toolbar]")).toBeVisible();
@@ -232,6 +232,8 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status 
       await expect(page.getByRole("button", { name: `${toolName} tool placeholder` })).toBeDisabled();
     }
     await expect(page.locator("[data-sprites-tool-status]")).toContainText("Pencil is active");
+    await expect(page.locator("[data-sprites-palette-panel]")).toBeVisible();
+    await expect(page.locator("[data-sprites-palette-status]")).toContainText("Active editor color: Ink");
     await expect(page.locator("[data-sprites-pixel-grid]")).toBeVisible();
     await expect(page.locator("[data-sprites-pixel-grid] [role='gridcell']")).toHaveCount(256);
     await expect(page.locator("[data-sprites-grid-status]")).toContainText("Canvas display mode: 16x16");
@@ -248,11 +250,18 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status 
     await firstPixel.click();
     await expect(firstPixel).not.toHaveClass(/is-painted/);
     await expect(page.locator("[data-sprites-draft-status]")).toContainText("empty draft");
+    await page.getByRole("button", { name: "Gold editor color" }).click();
+    await expect(page.locator("[data-sprites-palette-status]")).toContainText("Active editor color: Gold");
+    await page.getByRole("button", { name: "Pencil tool" }).click();
+    await firstPixel.click();
+    await expect(firstPixel).toHaveClass(/sprite-canvas-cell--gold/);
+    await page.getByRole("button", { name: "Blue editor color" }).click();
     await page.getByRole("button", { name: "Fill tool" }).click();
     await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(1024);
+    await expect(page.locator("[data-sprites-pixel-grid] .sprite-canvas-cell--blue")).toHaveCount(1024);
     await expect(page.locator("[data-sprites-draft-status]")).toContainText("1024 draft pixels painted");
     await expect(page.locator("[data-sprites-shell-status]")).toContainText("Editor ready");
-    await expect(page.locator("main")).toContainText("Palette/Colors keys only");
+    await expect(page.locator("main")).toContainText("Palette/Colors remains the reusable color source");
     await expect(page.locator("main")).not.toContainText(/Not implemented yet|future rebuild work|Static wireframe only|Plan sprite creation/i);
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
 
