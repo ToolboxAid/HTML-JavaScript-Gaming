@@ -102,6 +102,36 @@ async function clearObjectsForActiveGame(baseUrl) {
   expect(cleared.response.ok).toBe(true);
 }
 
+async function createReviewMessage(baseUrl) {
+  const suffix = Date.now().toString(36);
+  const profile = await postApiPayload(baseUrl, "/api/messages/tts-profiles", {
+    emotionSettings: [{
+      emotion: "calm",
+      emotionLabel: "Calm",
+      pitch: 1,
+      rate: 1,
+      volume: 1,
+    }],
+    language: "en-US",
+    name: `Objects Review Voice ${suffix}`,
+    pitch: 1,
+    providerKey: "browser-speech",
+    rate: 1,
+    voiceName: "Default browser voice",
+    volume: 1,
+  });
+  expect(profile.response.ok).toBe(true);
+  const message = await postApiPayload(baseUrl, "/api/messages/messages", {
+    active: true,
+    emotionProfileKey: profile.payload.data.ttsProfile.emotionSettings[0].key,
+    messageText: "Review hero is ready.",
+    name: `Objects Review Message ${suffix}`,
+    voiceProfileKey: profile.payload.data.ttsProfile.key,
+  });
+  expect(message.response.ok).toBe(true);
+  return message.payload.data.message;
+}
+
 async function openObjectsPage(page, { signedIn = true } = {}) {
   const server = await startRepoServer();
   const failures = collectPageFailures(page);
@@ -492,6 +522,8 @@ test("Object Details panel saves reviewable properties through shared DB", async
   const failures = await openObjectsPage(page);
 
   try {
+    const message = await createReviewMessage(failures.server.baseUrl);
+
     await page.getByRole("button", { name: "Add Object" }).click();
     await fillActiveRow(page, {
       name: "Review Hero",
@@ -512,6 +544,10 @@ test("Object Details panel saves reviewable properties through shared DB", async
     await expect(page.locator("[data-objects-detail-sprite]")).toHaveValue("sprite_review_hero");
     await expect(page.locator("[data-objects-detail-unsaved]")).toHaveText("Unsaved changes: none");
     await expect(page.locator("[data-objects-detail-save]")).toBeDisabled();
+    await expect(page.locator("[data-objects-asset-links]")).toContainText("Sprite:");
+    await expect(page.locator("[data-objects-asset-links]")).toContainText("sprite_review_hero");
+    await expect(page.locator("[data-objects-asset-links]")).toContainText("Audio: No reference set.");
+    await expect(page.locator("[data-objects-asset-links]")).toContainText("Message: No reference set.");
     await expect(page.locator("[data-objects-details-form]")).not.toContainText(/\bBehavior\b|\bRules\b|\bWorlds\b/);
 
     await page.locator("[data-objects-detail-description]").fill("Hero object used by Product Owner review.");
@@ -534,14 +570,31 @@ test("Object Details panel saves reviewable properties through shared DB", async
     await page.locator("[data-objects-detail-active]").uncheck();
     await page.locator("[data-objects-detail-visible]").uncheck();
     await page.locator("[data-objects-detail-sprite]").fill("sprite_review_hero");
-    await page.locator("[data-objects-detail-audio]").fill("audio/review-hero.wav");
+    await page.locator("[data-objects-detail-audio]").fill("missing-review-hero.wav");
+    await page.locator("[data-objects-detail-message]").fill("missing-message-key");
     await page.locator("[data-objects-detail-defaults]").fill("speed=8\nhealth=3");
+    await page.locator("[data-objects-detail-save]").click();
+    await expect(page.locator("[data-objects-validation-list]")).toContainText("Audio reference: Use an existing audio asset reference");
+    await expect(page.locator("[data-objects-validation-list]")).toContainText("Message reference: Use an existing message reference");
+    await expect(page.locator("[data-objects-log]")).toHaveText("Object Details blocked: 2 validation actions.");
+
+    await page.locator("[data-objects-detail-audio]").fill("");
+    await page.locator("[data-objects-detail-message]").fill(message.key);
     await page.locator("[data-objects-detail-save]").click();
     await expect(page.locator("[data-objects-log]")).toHaveText("Saved Object Details for Review Hero Prime.");
     await expect(page.locator("[data-objects-list]")).toContainText("Review Hero Prime");
     await expect(page.locator("[data-objects-list] tr").first().locator("td").nth(1)).toHaveText("Enemy");
     await expect(page.locator("[data-objects-list] tr").first().locator("td").nth(2)).toHaveText("Disabled");
     await expect(page.locator("[data-objects-detail-unsaved]")).toHaveText("Unsaved changes: none");
+    await expect(page.locator("[data-objects-asset-links]")).toContainText("Audio: No reference set.");
+    await expect(page.locator("[data-objects-asset-links]")).toContainText(message.name);
+    await expect(page.locator("[data-objects-asset-link-sprite]")).toHaveAttribute(
+      "href",
+      "/toolbox/sprites/index.html?assetKey=sprite_review_hero&objectKey=review-hero-prime&sourceTool=objects"
+    );
+    await expect(page.locator("[data-objects-asset-link-audio]")).toHaveCount(0);
+    await expect(page.locator("[data-objects-message-link]")).toHaveAttribute("href", "/toolbox/messages/index.html");
+    await expect(page.locator("[data-objects-reference-warning]")).toHaveCount(0);
 
     const rows = await objectDefinitionRecords(page);
     expect(rows).toHaveLength(1);
@@ -554,9 +607,10 @@ test("Object Details panel saves reviewable properties through shared DB", async
     }));
     expect(rows[0].interaction.details).toEqual({
       active: false,
-      audioReference: "audio/review-hero.wav",
+      audioReference: "",
       defaultValues: "speed=8\nhealth=3",
       description: "Hero object used by Product Owner review.",
+      messageReference: message.key,
       spriteReference: "sprite_review_hero",
       tags: ["hero", "review", "boss-fight"],
       visible: false,
@@ -571,8 +625,11 @@ test("Object Details panel saves reviewable properties through shared DB", async
     await expect(page.locator("[data-objects-detail-active]")).not.toBeChecked();
     await expect(page.locator("[data-objects-detail-visible]")).not.toBeChecked();
     await expect(page.locator("[data-objects-detail-sprite]")).toHaveValue("sprite_review_hero");
-    await expect(page.locator("[data-objects-detail-audio]")).toHaveValue("audio/review-hero.wav");
+    await expect(page.locator("[data-objects-detail-audio]")).toHaveValue("");
+    await expect(page.locator("[data-objects-detail-message]")).toHaveValue(message.key);
     await expect(page.locator("[data-objects-detail-defaults]")).toHaveValue("speed=8\nhealth=3");
+    await expect(page.locator("[data-objects-asset-links]")).toContainText("Audio: No reference set.");
+    await expect(page.locator("[data-objects-asset-links]")).toContainText(message.name);
 
     await expectNoPageFailures(failures);
   } finally {

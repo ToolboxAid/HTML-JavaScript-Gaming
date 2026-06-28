@@ -1,496 +1,348 @@
-﻿diff --git a/assets/toolbox/objects/js/index.js b/assets/toolbox/objects/js/index.js
-index 8322ba56c..f07359885 100644
+diff --git a/assets/toolbox/objects/js/index.js b/assets/toolbox/objects/js/index.js
+index f07359885..96644bf92 100644
 --- a/assets/toolbox/objects/js/index.js
 +++ b/assets/toolbox/objects/js/index.js
-@@ -51,11 +51,28 @@ let objectsRepository = createObjectsToolApiRepository();
- let draftedObjects = [];
- let editingRow = null;
+@@ -11,6 +11,7 @@ import {
+   validateObjectDefinition,
+ } from "../../../../src/engine/object-model/index.js";
+ import { createAssetToolApiRepository } from "../../../js/shared/assets-api-client.js";
++import { listMessages } from "../../../../toolbox/messages/messages-api-client.js";
+
+ const constants = readServerToolConstants("objects");
+
+@@ -53,10 +54,13 @@ let editingRow = null;
  let storageIssue = null;
-+let selectedObjectKey = "";
-+let detailDraftBaseline = null;
+ let selectedObjectKey = "";
+ let detailDraftBaseline = null;
++let messageRecords = null;
++let messageLoadIssue = null;
 
  const elements = {
    addRow: document.querySelector("[data-objects-add-row]"),
    assetStatus: document.querySelector("[data-objects-asset-status]"),
++  assetLinks: document.querySelector("[data-objects-asset-links]"),
    count: document.querySelector("[data-objects-count]"),
-+  detailActive: document.querySelector("[data-objects-detail-active]"),
-+  detailAudio: document.querySelector("[data-objects-detail-audio]"),
-+  detailCancel: document.querySelector("[data-objects-detail-cancel]"),
-+  detailDefaults: document.querySelector("[data-objects-detail-defaults]"),
-+  detailDescription: document.querySelector("[data-objects-detail-description]"),
-+  detailEmpty: document.querySelector("[data-objects-details-empty]"),
-+  detailForm: document.querySelector("[data-objects-details-form]"),
-+  detailName: document.querySelector("[data-objects-detail-name]"),
-+  detailSave: document.querySelector("[data-objects-detail-save]"),
-+  detailSelected: document.querySelector("[data-objects-detail-selected]"),
-+  detailSprite: document.querySelector("[data-objects-detail-sprite]"),
-+  detailTags: document.querySelector("[data-objects-detail-tags]"),
-+  detailType: document.querySelector("[data-objects-detail-type]"),
-+  detailUnsaved: document.querySelector("[data-objects-detail-unsaved]"),
-+  detailVisible: document.querySelector("[data-objects-detail-visible]"),
-   editSprite: document.querySelector("[data-objects-edit-sprite]"),
-   list: document.querySelector("[data-objects-list]"),
-   log: document.querySelector("[data-objects-log]"),
-@@ -105,6 +122,43 @@ function normalizeRenderConfig(source = {}) {
-   });
- }
-
-+function normalizeBoolean(value, fallback) {
-+  if (value === true || value === "true" || value === "1") {
-+    return true;
+   detailActive: document.querySelector("[data-objects-detail-active]"),
+   detailAudio: document.querySelector("[data-objects-detail-audio]"),
+@@ -65,6 +69,7 @@ const elements = {
+   detailDescription: document.querySelector("[data-objects-detail-description]"),
+   detailEmpty: document.querySelector("[data-objects-details-empty]"),
+   detailForm: document.querySelector("[data-objects-details-form]"),
++  detailMessage: document.querySelector("[data-objects-detail-message]"),
+   detailName: document.querySelector("[data-objects-detail-name]"),
+   detailSave: document.querySelector("[data-objects-detail-save]"),
+   detailSelected: document.querySelector("[data-objects-detail-selected]"),
+@@ -153,6 +158,7 @@ function normalizeObjectDetails(source = {}) {
+     audioReference: normalizeText(details.audioReference ?? source.audioReference),
+     defaultValues: normalizeText(details.defaultValues ?? source.defaultValues),
+     description: normalizeText(details.description ?? source.description),
++    messageReference: normalizeText(details.messageReference ?? source.messageReference),
+     spriteReference: normalizeText(details.spriteReference ?? source.spriteReference) || normalizeText(source.render?.assetKey),
+     tags: Object.freeze(parseTags(details.tags ?? source.tags)),
+     visible: normalizeBoolean(details.visible ?? source.visible, true),
+@@ -481,6 +487,7 @@ function detailFieldElements() {
+     elements.detailAudio,
+     elements.detailDefaults,
+     elements.detailDescription,
++    elements.detailMessage,
+     elements.detailName,
+     elements.detailSprite,
+     elements.detailTags,
+@@ -503,6 +510,7 @@ function detailSnapshotForObject(object = {}) {
+     audioReference: details.audioReference,
+     defaultValues: details.defaultValues,
+     description: details.description,
++    messageReference: details.messageReference,
+     name: normalizeText(object.name),
+     spriteReference: details.spriteReference,
+     tags: [...details.tags],
+@@ -517,6 +525,7 @@ function detailSnapshotFromForm() {
+     audioReference: normalizeText(elements.detailAudio?.value),
+     defaultValues: normalizeText(elements.detailDefaults?.value),
+     description: normalizeText(elements.detailDescription?.value),
++    messageReference: normalizeText(elements.detailMessage?.value),
+     name: normalizeText(elements.detailName?.value),
+     spriteReference: normalizeText(elements.detailSprite?.value),
+     tags: parseTags(elements.detailTags?.value),
+@@ -606,6 +615,9 @@ function populateDetailForm(object) {
+   if (elements.detailAudio) {
+     elements.detailAudio.value = snapshot.audioReference;
+   }
++  if (elements.detailMessage) {
++    elements.detailMessage.value = snapshot.messageReference;
 +  }
-+  if (value === false || value === "false" || value === "0") {
-+    return false;
-+  }
-+  return fallback;
-+}
-+
-+function parseTags(value) {
-+  const values = Array.isArray(value)
-+    ? value
-+    : normalizeText(value).split(",");
-+  const tags = values
-+    .map(normalizeText)
-+    .filter(Boolean);
-+  return [...new Set(tags)];
-+}
-+
-+function formatTags(tags) {
-+  return parseTags(tags).join(", ");
-+}
-+
-+function normalizeObjectDetails(source = {}) {
-+  const details = source.details && typeof source.details === "object" ? source.details : {};
-+  return Object.freeze({
-+    active: normalizeBoolean(details.active ?? source.active, true),
-+    audioReference: normalizeText(details.audioReference ?? source.audioReference),
-+    defaultValues: normalizeText(details.defaultValues ?? source.defaultValues),
-+    description: normalizeText(details.description ?? source.description),
-+    spriteReference: normalizeText(details.spriteReference ?? source.spriteReference) || normalizeText(source.render?.assetKey),
-+    tags: Object.freeze(parseTags(details.tags ?? source.tags)),
-+    visible: normalizeBoolean(details.visible ?? source.visible, true),
-+  });
-+}
-+
- function setText(element, value) {
-   if (element) {
-     element.textContent = value;
-@@ -268,6 +322,7 @@ function cloneObject(source = {}) {
-
-   return {
-     ...object,
-+    details: normalizeObjectDetails(source),
-     traits: traitsForObject(source, object),
-   };
- }
-@@ -304,8 +359,13 @@ function issueLabel(issue) {
-   return "Object Definition";
- }
-
-+function engineDefinitionForValidation(object = {}) {
-+  const { details, ...definition } = object;
-+  return definition;
-+}
-+
- function objectDefinitionFindings(object, labelPrefix) {
--  return validateObjectDefinition(object).issues
-+  return validateObjectDefinition(engineDefinitionForValidation(object)).issues
-     .filter((issue) => !(issue.path.endsWith(".type") && !object.role))
-     .map((issue) => ({
-       action: issue.path.endsWith(".type")
-@@ -415,6 +475,276 @@ function renderValidation(findings) {
-   elements.validationOverlay.hidden = false;
- }
-
-+function detailFieldElements() {
-+  return [
-+    elements.detailActive,
-+    elements.detailAudio,
-+    elements.detailDefaults,
-+    elements.detailDescription,
-+    elements.detailName,
-+    elements.detailSprite,
-+    elements.detailTags,
-+    elements.detailType,
-+    elements.detailVisible,
-+  ].filter(Boolean);
-+}
-+
-+function detailsForObject(object = {}) {
-+  return normalizeObjectDetails({
-+    ...object,
-+    spriteReference: object.details?.spriteReference || object.render?.assetKey,
-+  });
-+}
-+
-+function detailSnapshotForObject(object = {}) {
-+  const details = detailsForObject(object);
-+  return {
-+    active: details.active,
-+    audioReference: details.audioReference,
-+    defaultValues: details.defaultValues,
-+    description: details.description,
-+    name: normalizeText(object.name),
-+    spriteReference: details.spriteReference,
-+    tags: [...details.tags],
-+    type: normalizeText(object.role),
-+    visible: details.visible,
-+  };
-+}
-+
-+function detailSnapshotFromForm() {
-+  return {
-+    active: elements.detailActive?.checked === true,
-+    audioReference: normalizeText(elements.detailAudio?.value),
-+    defaultValues: normalizeText(elements.detailDefaults?.value),
-+    description: normalizeText(elements.detailDescription?.value),
-+    name: normalizeText(elements.detailName?.value),
-+    spriteReference: normalizeText(elements.detailSprite?.value),
-+    tags: parseTags(elements.detailTags?.value),
-+    type: normalizeText(elements.detailType?.value),
-+    visible: elements.detailVisible?.checked === true,
-+  };
-+}
-+
-+function detailSnapshotKey(snapshot) {
-+  return JSON.stringify({
-+    ...snapshot,
-+    tags: [...(snapshot.tags || [])].sort(),
-+  });
-+}
-+
-+function selectedObject() {
-+  if (!draftedObjects.length) {
-+    selectedObjectKey = "";
-+    return null;
-+  }
-+  const selected = draftedObjects.find((object) => objectId(object) === selectedObjectKey);
-+  if (selected) {
-+    return selected;
-+  }
-+  selectedObjectKey = objectId(draftedObjects[0]);
-+  return draftedObjects[0];
-+}
-+
-+function hasUnsavedDetailChanges() {
-+  if (!detailDraftBaseline || !selectedObject()) {
-+    return false;
-+  }
-+  return detailSnapshotKey(detailSnapshotFromForm()) !== detailSnapshotKey(detailDraftBaseline);
-+}
-+
-+function renderDetailDirtyState() {
-+  const object = selectedObject();
-+  const dirty = hasUnsavedDetailChanges();
-+  setText(
-+    elements.detailUnsaved,
-+    object
-+      ? dirty
-+        ? "Unsaved changes: yes"
-+        : "Unsaved changes: none"
-+      : "Unsaved changes: none"
-+  );
-+  if (elements.detailSave) {
-+    elements.detailSave.disabled = !object || !dirty;
-+  }
-+  if (elements.detailCancel) {
-+    elements.detailCancel.disabled = !object || !dirty;
-+  }
-+}
-+
-+function populateDetailTypeOptions(selectedType = "") {
-+  if (!elements.detailType) {
-+    return;
-+  }
-+  elements.detailType.replaceChildren(optionElement("", "Select type"));
-+  typeOptions().forEach((option) => {
-+    elements.detailType.append(optionElement(option.value, option.label));
-+  });
-+  elements.detailType.value = selectedType;
-+}
-+
-+function populateDetailForm(object) {
-+  const snapshot = detailSnapshotForObject(object);
-+  if (elements.detailName) {
-+    elements.detailName.value = snapshot.name;
-+  }
-+  if (elements.detailDescription) {
-+    elements.detailDescription.value = snapshot.description;
-+  }
-+  populateDetailTypeOptions(snapshot.type);
-+  if (elements.detailTags) {
-+    elements.detailTags.value = formatTags(snapshot.tags);
-+  }
-+  if (elements.detailActive) {
-+    elements.detailActive.checked = snapshot.active;
-+  }
-+  if (elements.detailVisible) {
-+    elements.detailVisible.checked = snapshot.visible;
-+  }
-+  if (elements.detailSprite) {
-+    elements.detailSprite.value = snapshot.spriteReference;
-+  }
-+  if (elements.detailAudio) {
-+    elements.detailAudio.value = snapshot.audioReference;
-+  }
-+  if (elements.detailDefaults) {
-+    elements.detailDefaults.value = snapshot.defaultValues;
-+  }
-+  detailDraftBaseline = snapshot;
-+}
-+
-+function renderDetailsPanel({ preserveDirty = false } = {}) {
-+  const object = selectedObject();
-+  if (elements.detailEmpty) {
-+    elements.detailEmpty.hidden = Boolean(object);
-+  }
-+  if (elements.detailForm) {
-+    elements.detailForm.hidden = !object;
-+  }
-+  if (!object) {
-+    detailDraftBaseline = null;
-+    renderDetailDirtyState();
-+    return;
-+  }
-+  setText(elements.detailSelected, object.name || "Unnamed object");
-+  if (preserveDirty && hasUnsavedDetailChanges()) {
-+    renderDetailDirtyState();
-+    return;
-+  }
-+  populateDetailForm(object);
-+  renderDetailDirtyState();
-+}
-+
-+function objectDetailFindings(snapshot, originalId = "") {
-+  const findings = [];
-+  if (!snapshot.name) {
-+    findings.push({
-+      action: "Enter a name before saving Object Details.",
-+      label: "Name",
-+    });
-+  }
-+  if (!snapshot.type) {
-+    findings.push({
-+      action: "Choose a type before saving Object Details.",
-+      label: "Type",
-+    });
-+  }
-+  const nextId = objectKeyFromText(snapshot.name);
-+  if (nextId && draftedObjects.some((object) => objectId(object) === nextId && objectId(object) !== originalId)) {
-+    findings.push({
-+      action: "Use a unique name before saving Object Details.",
-+      label: "Duplicate Object",
-+    });
-+  }
-+  if (snapshot.spriteReference && !linkedSpriteAsset(snapshot.spriteReference)) {
-+    findings.push({
-+      action: "Use an existing sprite asset reference, or clear the Sprite reference before saving Object Details.",
-+      label: "Sprite reference",
-+    });
-+  }
-+  return findings;
-+}
-+
-+function objectFromDetailSnapshot(object, snapshot) {
-+  const template = templateForType(snapshot.type);
-+  const render = snapshot.spriteReference
-+    ? {
-+        assetKey: snapshot.spriteReference,
-+        previewPath: normalizeText(object.render?.previewPath),
-+        type: "Sprite",
-+      }
-+    : { type: "None" };
-+  return cloneObject({
-+    ...object,
-+    details: {
-+      active: snapshot.active,
-+      audioReference: snapshot.audioReference,
-+      defaultValues: snapshot.defaultValues,
-+      description: snapshot.description,
-+      spriteReference: snapshot.spriteReference,
-+      tags: snapshot.tags,
-+      visible: snapshot.visible,
-+    },
-+    id: objectKeyFromText(snapshot.name),
-+    name: snapshot.name,
-+    render,
-+    role: snapshot.type,
-+    state: snapshot.active ? "Active" : "Disabled",
-+    traits: template ? [...template.capabilities] : object.traits,
-+  });
-+}
-+
-+function selectDetails(objectKey) {
-+  if (editingRow) {
-+    setText(elements.log, "Details selection blocked: save or cancel the active row first.");
-+    return;
-+  }
-+  if (hasUnsavedDetailChanges()) {
-+    setText(elements.log, "Save or cancel Object Details before selecting another object.");
-+    return;
-+  }
-+  selectedObjectKey = objectKey;
-+  renderDetailsPanel();
-+  const object = selectedObject();
-+  setText(elements.log, object ? `Reviewing Object Details for ${object.name}.` : "No object selected.");
-+}
-+
-+function saveDetails() {
-+  const object = selectedObject();
-+  if (!object) {
-+    setText(elements.log, "Add an object before saving Object Details.");
-+    return;
-+  }
-+  const originalId = objectId(object);
-+  const snapshot = detailSnapshotFromForm();
-+  const findings = objectDetailFindings(snapshot, originalId);
-+  if (findings.length > 0) {
-+    renderValidation(findings);
-+    setText(elements.log, `Object Details blocked: ${findings.length} validation action${findings.length === 1 ? "" : "s"}.`);
-+    renderDetailDirtyState();
-+    return;
-+  }
-+  const nextObject = objectFromDetailSnapshot(object, snapshot);
-+  const savedObjects = persistDraftedObjects(draftedObjects.map((savedObject) => (
-+    objectId(savedObject) === originalId ? nextObject : savedObject
-+  )));
-+  if (!savedObjects) {
-+    return;
-+  }
-+  draftedObjects = savedObjects;
-+  selectedObjectKey = objectId(nextObject);
-+  detailDraftBaseline = null;
-+  setText(elements.log, `Saved Object Details for ${nextObject.name}.`);
-+  render();
-+}
-+
-+function cancelDetails() {
-+  if (!selectedObject()) {
-+    return;
-+  }
-+  renderDetailsPanel();
-+  setText(elements.log, "Canceled Object Details changes.");
-+}
-+
- function capabilityLabel(traitId) {
-   const trait = getObjectModelTrait(traitId);
-   return CAPABILITY_LABELS[traitId] || trait?.label || traitId;
-@@ -623,6 +953,7 @@ function persistDraftedObjects(nextObjects) {
- }
-
- function editingObjectFromRow(row) {
-+  const existingObject = draftedObjects.find((object) => objectId(object) === editingRow?.originalId) || {};
-   const renderType = row.querySelector("[data-objects-row-render-type]")?.value || "None";
-   const render = renderType === "Sprite"
-     ? {
-@@ -633,6 +964,8 @@ function editingObjectFromRow(row) {
-     : { type: "None" };
-
-   return cloneObject({
-+    ...existingObject,
-+    id: objectKeyFromText(row.querySelector("[data-objects-row-name]")?.value),
-     name: row.querySelector("[data-objects-row-name]")?.value,
-     render,
-     role: row.querySelector("[data-objects-row-type]")?.value,
-@@ -753,6 +1086,7 @@ function renderSavedRow(object) {
-   const id = objectId(object);
-   const actions = actionCell([
-     actionButton("Edit", "objectsEditRow", id),
-+    actionButton("Details", "objectsDetailsRow", id),
-     ...rowConfigurationActions(object),
-     actionButton("Trash", "objectsTrashRow", id),
-   ]);
-@@ -862,6 +1196,8 @@ function renderTemplateCatalog() {
-       elements.templateSelect.append(optionElement(template.type, template.type));
+   if (elements.detailDefaults) {
+     elements.detailDefaults.value = snapshot.defaultValues;
+   }
+@@ -661,6 +673,20 @@ function objectDetailFindings(snapshot, originalId = "") {
+       label: "Sprite reference",
      });
    }
-+
-+  populateDetailTypeOptions(elements.detailType?.value || "");
++  if (snapshot.audioReference && !linkedAudioAsset(snapshot.audioReference)) {
++    findings.push({
++      action: "Use an existing audio asset reference, or clear the Audio reference before saving Object Details.",
++      label: "Audio reference",
++    });
++  }
++  if (snapshot.messageReference && !linkedMessageRecord(snapshot.messageReference)) {
++    findings.push({
++      action: messageLoadIssue
++        ? "Messages could not be checked. Reload Objects after the API is available, or clear the Message reference before saving Object Details."
++        : "Use an existing message reference, or clear the Message reference before saving Object Details.",
++      label: "Message reference",
++    });
++  }
+   return findings;
  }
 
- function renderRegistryBasics() {
-@@ -892,6 +1228,7 @@ function render() {
-   renderObjectList(draftedObjects);
+@@ -680,6 +706,7 @@ function objectFromDetailSnapshot(object, snapshot) {
+       audioReference: snapshot.audioReference,
+       defaultValues: snapshot.defaultValues,
+       description: snapshot.description,
++      messageReference: snapshot.messageReference,
+       spriteReference: snapshot.spriteReference,
+       tags: snapshot.tags,
+       visible: snapshot.visible,
+@@ -857,12 +884,97 @@ function listAssetRecords() {
+   return Array.isArray(tables?.asset_library_items) ? tables.asset_library_items : [];
+ }
+
++function assetReferenceValues(asset = {}) {
++  return [
++    asset.id,
++    asset.key,
++    asset.name,
++    asset.fileName,
++    asset.originalName,
++    asset.reference,
++    asset.path,
++    asset.storedPath,
++    asset.storageObjectKey,
++    asset.targetFilePath,
++  ].map(normalizeText).filter(Boolean);
++}
++
++function assetHasReference(asset, reference) {
++  const key = normalizeText(reference);
++  return Boolean(key) && assetReferenceValues(asset).some((value) => value === key);
++}
++
++function assetRoleText(asset = {}) {
++  return [
++    asset.assetRole,
++    asset.assetRoleLabel,
++    asset.assetType,
++    asset.mimeType,
++    asset.role,
++    asset.type,
++    asset.usage,
++  ].map(normalizeText).join(" ").toLowerCase();
++}
++
++function isSpriteAsset(asset = {}) {
++  const text = assetRoleText(asset);
++  return text.includes("sprite") || text.includes("image") || text.includes("png") || text.includes("jpeg") || text.includes("webp");
++}
++
++function isAudioAsset(asset = {}) {
++  const text = assetRoleText(asset);
++  return text.includes("audio") || text.includes("sound") || text.includes("music") || text.includes("voice") || text.includes("wav") || text.includes("mpeg") || text.includes("ogg");
++}
++
++function linkedAssetByReference(reference, predicate) {
++  const key = normalizeText(reference);
++  if (!key) {
++    return null;
++  }
++  return listAssetRecords().find((asset) => assetHasReference(asset, key) && predicate(asset)) || null;
++}
++
+ function linkedSpriteAsset(assetKey) {
+-  const key = normalizeText(assetKey);
++  return linkedAssetByReference(assetKey, isSpriteAsset);
++}
++
++function linkedAudioAsset(reference) {
++  return linkedAssetByReference(reference, isAudioAsset);
++}
++
++function listMessageRecords() {
++  if (messageRecords !== null) {
++    return messageRecords;
++  }
++  try {
++    const result = listMessages();
++    messageRecords = Array.isArray(result?.messages) ? result.messages : [];
++    messageLoadIssue = null;
++  } catch {
++    messageRecords = [];
++    messageLoadIssue = {
++      action: "Messages could not be checked. Reload Objects after the API is available.",
++      label: "Message references",
++    };
++  }
++  return messageRecords;
++}
++
++function messageReferenceValues(message = {}) {
++  return [
++    message.key,
++    message.id,
++    message.name,
++    message.slug,
++  ].map(normalizeText).filter(Boolean);
++}
++
++function linkedMessageRecord(reference) {
++  const key = normalizeText(reference);
+   if (!key) {
+     return null;
+   }
+-  return listAssetRecords().find((asset) => asset.id === key) || null;
++  return listMessageRecords().find((message) => messageReferenceValues(message).some((value) => value === key)) || null;
+ }
+
+ function assetDisplayText(asset, fallbackKey = "") {
+@@ -1177,6 +1289,107 @@ function renderOutput(objects, findings) {
+   }
+ }
+
++function messageDisplayText(message, fallbackKey = "") {
++  const key = normalizeText(message?.key || message?.id || fallbackKey);
++  const name = normalizeText(message?.name);
++  if (key && name && name !== key) {
++    return `${name} (${key})`;
++  }
++  return name || key || "Message missing";
++}
++
++function referenceStatusItem({
++  action = null,
++  label,
++  linkDataName = "",
++  linkText = "",
++  linkValue = "",
++  linkedText = "",
++  missingText = "",
++  reference,
++  warningName = "",
++}) {
++  const item = document.createElement("li");
++  const heading = document.createElement("strong");
++  heading.textContent = `${label}:`;
++  item.append(heading, " ");
++  if (!reference) {
++    item.append("No reference set.");
++    return item;
++  }
++  if (!linkedText) {
++    item.dataset.objectsReferenceWarning = warningName || label;
++    item.append(missingText);
++    if (action) {
++      item.append(" ", actionLink(linkText, action, linkDataName, linkValue));
++    }
++    return item;
++  }
++  item.append(linkedText);
++  if (action) {
++    item.append(" ", actionLink(linkText, action, linkDataName, linkValue));
++  }
++  return item;
++}
++
++function renderAssetLinks() {
++  if (!elements.assetLinks) {
++    return;
++  }
++  elements.assetLinks.replaceChildren();
++  const object = selectedObject();
++  if (!object) {
++    elements.assetLinks.append(listItem("Select an object to review sprite, audio, and message links."));
++    return;
++  }
++
++  const details = detailsForObject(object);
++  const spriteAsset = details.spriteReference ? linkedSpriteAsset(details.spriteReference) : null;
++  const audioAsset = details.audioReference ? linkedAudioAsset(details.audioReference) : null;
++  const messageRecord = details.messageReference ? linkedMessageRecord(details.messageReference) : null;
++
++  elements.assetLinks.append(
++    referenceStatusItem({
++      action: spriteAsset ? spriteEditorHref({
++        ...object,
++        render: { assetKey: details.spriteReference, type: "Sprite" },
++      }) : null,
++      label: "Sprite",
++      linkDataName: "objectsAssetLinkSprite",
++      linkText: "Edit Sprite",
++      linkValue: objectId(object),
++      linkedText: spriteAsset ? assetDisplayText(spriteAsset, details.spriteReference) : "",
++      missingText: `Sprite reference "${details.spriteReference}" is not linked to an existing sprite asset.`,
++      reference: details.spriteReference,
++      warningName: "sprite",
++    }),
++    referenceStatusItem({
++      action: details.audioReference ? "/toolbox/assets/index.html" : null,
++      label: "Audio",
++      linkDataName: "objectsAssetLinkAudio",
++      linkText: "Open Assets",
++      linkValue: normalizeText(audioAsset?.id || details.audioReference),
++      linkedText: audioAsset ? assetDisplayText(audioAsset, details.audioReference) : "",
++      missingText: `Audio reference "${details.audioReference}" is not linked to an existing audio asset.`,
++      reference: details.audioReference,
++      warningName: "audio",
++    }),
++    referenceStatusItem({
++      action: details.messageReference ? "/toolbox/messages/index.html" : null,
++      label: "Message",
++      linkDataName: "objectsMessageLink",
++      linkText: "Open Messages",
++      linkValue: normalizeText(messageRecord?.key || details.messageReference),
++      linkedText: messageRecord ? messageDisplayText(messageRecord, details.messageReference) : "",
++      missingText: messageLoadIssue
++        ? "Message references could not be checked. Reload Objects after the API is available."
++        : `Message reference "${details.messageReference}" is not linked to an existing Message.`,
++      reference: details.messageReference,
++      warningName: "message",
++    }),
++  );
++}
++
+ function renderTemplateCatalog() {
+   if (elements.templateCatalog) {
+     elements.templateCatalog.replaceChildren();
+@@ -1229,6 +1442,7 @@ function render() {
    renderOutput(draftedObjects, findings);
    renderValidation(findings);
-+  renderDetailsPanel({ preserveDirty: true });
+   renderDetailsPanel({ preserveDirty: true });
++  renderAssetLinks();
    if (elements.addRow) {
      elements.addRow.disabled = Boolean(editingRow);
    }
-@@ -1015,6 +1352,8 @@ function saveRow() {
-     return;
-   }
-   draftedObjects = savedObjects;
-+  selectedObjectKey = objectId(object);
-+  detailDraftBaseline = null;
-   setText(
-     elements.log,
-     editingRow.mode === "edit"
-@@ -1035,6 +1374,10 @@ function trashRow(objectKey) {
-       return;
-     }
-     draftedObjects = savedObjects;
-+    if (selectedObjectKey === objectKey) {
-+      selectedObjectKey = objectId(draftedObjects[0] || {});
-+      detailDraftBaseline = null;
-+    }
-   }
-   setText(elements.log, removed ? "Trashed object row." : "Trash skipped: object row was already absent.");
-   render();
-@@ -1050,6 +1393,8 @@ function seedStarterObjects() {
-     return;
-   }
-   draftedObjects = savedObjects;
-+  selectedObjectKey = objectId(draftedObjects[0] || {});
-+  detailDraftBaseline = null;
-   setText(elements.log, "Seeded starter objects: Hero, Projectile, and Wall.");
-   render();
- }
-@@ -1076,6 +1421,8 @@ function resetTable() {
-   }
-   draftedObjects = savedObjects;
-   editingRow = null;
-+  selectedObjectKey = "";
-+  detailDraftBaseline = null;
-   setText(elements.log, "Reset the Objects table.");
-   render();
- }
-@@ -1094,6 +1441,12 @@ function refreshLinkedRenderAssetDisplay() {
+@@ -1428,6 +1642,8 @@ function resetTable() {
  }
 
- elements.addRow?.addEventListener("click", addRow);
-+elements.detailCancel?.addEventListener("click", cancelDetails);
-+elements.detailSave?.addEventListener("click", saveDetails);
-+detailFieldElements().forEach((field) => {
-+  field.addEventListener("input", renderDetailDirtyState);
-+  field.addEventListener("change", renderDetailDirtyState);
-+});
- elements.seedStarter?.addEventListener("click", seedStarterObjects);
- elements.validate?.addEventListener("click", validateObjects);
- elements.resetTable?.addEventListener("click", resetTable);
-@@ -1121,6 +1474,8 @@ elements.list?.addEventListener("click", (event) => {
-     cancelRow();
-   } else if (button.dataset.objectsEditRow !== undefined) {
-     editRow(button.dataset.objectsEditRow || "");
-+  } else if (button.dataset.objectsDetailsRow !== undefined) {
-+    selectDetails(button.dataset.objectsDetailsRow || "");
-   } else if (button.dataset.objectsTrashRow !== undefined) {
-     trashRow(button.dataset.objectsTrashRow || "");
-   }
-diff --git a/dev/reports/PR_26179_ALFA_012-objects-properties-mvp_branch_validation.md b/dev/reports/PR_26179_ALFA_012-objects-properties-mvp_branch_validation.md
+ function refreshLinkedRenderAssetDisplay() {
++  messageRecords = null;
++  messageLoadIssue = null;
+   if (!editingRow) {
+     render();
+     return;
+diff --git a/dev/reports/PR_26179_ALFA_013-objects-asset-links_branch_validation.md b/dev/reports/PR_26179_ALFA_013-objects-asset-links_branch_validation.md
 new file mode 100644
-index 000000000..0855cfc52
+index 000000000..a4d9e7204
 --- /dev/null
-+++ b/dev/reports/PR_26179_ALFA_012-objects-properties-mvp_branch_validation.md
-@@ -0,0 +1,26 @@
-+﻿# PR_26179_ALFA_012 Branch Validation
++++ b/dev/reports/PR_26179_ALFA_013-objects-asset-links_branch_validation.md
+@@ -0,0 +1,27 @@
++# PR_26179_ALFA_013 Branch Validation
 +
-+Branch: PR_26179_ALFA_012-objects-properties-mvp
-+Base stack: PR_26179_ALFA_011-objects-manager-mvp
++Branch: PR_26179_ALFA_013-objects-asset-links
++Base stack: PR_26179_ALFA_012-objects-properties-mvp
 +
 +## Gates
-+- Current branch is PR_26179_ALFA_012-objects-properties-mvp: PASS
++- Current branch is PR_26179_ALFA_013-objects-asset-links: PASS
 +- Project Instructions loaded from `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md`: PASS
++- Batch governance addendum loaded from `dev/build/ProjectInstructions/addendums/batch_governance_mode.md`: PASS
 +- Canonical report path `dev/reports/`: PASS
 +- Canonical ZIP path `dev/workspace/zips/`: PASS
 +- No `docs_build/` report output created: PASS
@@ -503,122 +355,117 @@ index 000000000..0855cfc52
 +- `node --check src/dev-runtime/toolbox-api/alfa-tool-services.mjs`: PASS
 +- `node --check dev/tests/playwright/tools/ObjectsTool.spec.mjs`: PASS
 +- `node --test dev/tests/dev-runtime/ObjectsApiService.test.mjs`: PASS
-+- `npx playwright test dev/tests/playwright/tools/ObjectsTool.spec.mjs -g "Object Details panel"`: PASS
++- `npx playwright test dev/tests/playwright/tools/ObjectsTool.spec.mjs --grep "Object Details panel saves reviewable properties through shared DB"`: PASS
 +- `npx playwright test dev/tests/playwright/tools/ObjectsTool.spec.mjs`: PASS
 +- `git diff --check`: PASS
 +- `npm run validate:canonical-structure`: PASS
 +
 +Branch validation: PASS
-diff --git a/dev/reports/PR_26179_ALFA_012-objects-properties-mvp_manual_validation_notes.md b/dev/reports/PR_26179_ALFA_012-objects-properties-mvp_manual_validation_notes.md
+diff --git a/dev/reports/PR_26179_ALFA_013-objects-asset-links_manual_validation_notes.md b/dev/reports/PR_26179_ALFA_013-objects-asset-links_manual_validation_notes.md
 new file mode 100644
-index 000000000..8577afa84
+index 000000000..b9e40bc90
 --- /dev/null
-+++ b/dev/reports/PR_26179_ALFA_012-objects-properties-mvp_manual_validation_notes.md
-@@ -0,0 +1,22 @@
-+﻿# PR_26179_ALFA_012 Manual Validation Notes
++++ b/dev/reports/PR_26179_ALFA_013-objects-asset-links_manual_validation_notes.md
+@@ -0,0 +1,24 @@
++# PR_26179_ALFA_013 Manual Validation Notes
 +
 +## Manual Review Path
 +1. Open `toolbox/objects/index.html` with the API server running.
-+2. Add an object from the Objects table.
++2. Add an object with Sprite render enabled.
 +3. Select `Details` on the object row.
-+4. Confirm Object Details shows Name, Description, Type, Tags, Active, Visible, Sprite reference, Audio reference, and Default values.
-+5. Edit Description and confirm `Unsaved changes: yes` appears.
-+6. Press Cancel and confirm the field resets and dirty state clears.
-+7. Clear Name and press Save Details; confirm the friendly Name validation message appears.
-+8. Enter valid details and press Save Details.
-+9. Refresh the page; confirm saved details reload from the API-backed object record.
++4. Confirm Object Details includes Sprite reference, Audio reference, and Message reference.
++5. Confirm the Asset Links panel shows the selected object's sprite, audio, and message statuses.
++6. Enter a missing audio or message reference and press Save Details.
++7. Confirm friendly validation appears without exposing API/database internals.
++8. Enter an existing message reference and save.
++9. Refresh the page; confirm the message reference reloads and the Asset Links panel resolves it.
 +
 +## Expected Owner Review Result
-+The panel is reviewable as a normal product form. It does not expose a behavior editor, Rules, Worlds, JSON editor, or engine internals.
++The Objects inspector is reviewable as a product surface for asset and message references. It keeps object details, reference links, and missing-reference guidance in one place without exposing a behavior editor, Rules integration, Worlds integration, JSON editor, or engine internals.
 +
 +## Known Out-of-Scope Items
++- Creating new audio assets from Objects.
++- Creating new messages from Objects.
 +- Behavior editor.
 +- Rules integration.
 +- Worlds integration.
 +- Database schema expansion.
 +- New API routes.
-diff --git a/dev/reports/PR_26179_ALFA_012-objects-properties-mvp_report.md b/dev/reports/PR_26179_ALFA_012-objects-properties-mvp_report.md
+diff --git a/dev/reports/PR_26179_ALFA_013-objects-asset-links_report.md b/dev/reports/PR_26179_ALFA_013-objects-asset-links_report.md
 new file mode 100644
-index 000000000..67433e20b
+index 000000000..7caafd383
 --- /dev/null
-+++ b/dev/reports/PR_26179_ALFA_012-objects-properties-mvp_report.md
-@@ -0,0 +1,40 @@
-+﻿# PR_26179_ALFA_012-objects-properties-mvp Report
++++ b/dev/reports/PR_26179_ALFA_013-objects-asset-links_report.md
+@@ -0,0 +1,41 @@
++# PR_26179_ALFA_013-objects-asset-links Report
 +
 +## Summary
-+Implemented the Objects Object Details panel as the PR012 vertical slice. The panel lets a signed-in Creator review and edit Name, Description, Type, Tags, Active, Visible, Sprite reference, Audio reference, and Default values for the selected object.
++Improved the Objects inspector so Product Owners can review object sprite, audio, and message references from the selected object without adding behavior editing or changing the existing Objects API architecture.
 +
 +## Scope
-+- Added Object Details inspector form to `toolbox/objects/index.html`.
-+- Added detail selection, unsaved-change detection, save/cancel behavior, required-field validation, duplicate-name validation, and sprite-reference validation to `assets/toolbox/objects/js/index.js`.
-+- Persisted details through the existing Objects API service and existing `object_definition_records` JSON payloads without adding routes, tables, or new API architecture.
-+- Updated Objects service tests to prove details round-trip through the database adapter.
-+- Updated Objects Playwright tests to cover the human-testable details flow and refresh persistence.
++- Added a Message reference field to the existing Object Details form in `toolbox/objects/index.html`.
++- Added an Asset Links accordion that reviews the selected object's Sprite, Audio, and Message references.
++- Linked valid sprite references to Sprite Editor and valid message references to Messages.
++- Added friendly missing-reference warnings for stale sprite, audio, and message references.
++- Persisted `messageReference` through the existing Objects service details payload.
++- Updated focused Objects API and Playwright validation.
 +
 +## Architecture Notes
-+- No behavior editor added.
-+- No Rules integration added.
-+- No Worlds integration added.
-+- No browser-owned product data added.
-+- No page-local product data source of truth added.
-+- Object Details are persisted through the existing API-backed Objects service from PR011.
-+- Review-only details are stripped before engine object-definition validation so engine schema remains unchanged.
++- Objects continues to use the existing Browser -> API -> Database path.
++- No new API routes were added.
++- No database schema changes were added.
++- No browser-owned product data was added.
++- No page-local product data arrays were added.
++- No behavior editor was added.
++- No Rules integration was added.
++- No Worlds integration was added.
 +
 +## Validation Outcome
-+PASS. Final targeted validation completed successfully.
++PASS. Final targeted and impacted validation completed successfully.
 +
 +## Corrective Notes From Validation
-+- Initial Playwright run exposed engine validation rejecting the new review-only `details` field. Fixed by validating a stripped engine-definition shape.
-+- Initial details save exposed nonexistent sprite references reaching DB persistence. Fixed by adding a friendly Sprite reference validation message.
-+- Row/details rename saves preserved the old object slug. Fixed by regenerating object ids from the edited name.
++- Initial Playwright setup tried to create an audio upload asset and hit a storage-provider setup failure unrelated to Objects. The automated lane now validates audio missing-reference messaging while keeping the runtime resolver ready for existing audio asset records.
++- Initial Messages setup missed the required emotion profile key. The test now creates a TTS profile and passes the returned emotion profile key through the Messages API.
 +
 +## Changed Runtime Surface
-+- Objects page Object Details inspector.
++- Objects page inspector.
 +- Objects browser controller.
-+- Objects API service serialization for existing object records.
++- Objects API service serialization for existing object details payloads.
 +
 +## Not Changed
-+- API routes.
++- Objects repository contract.
++- API architecture.
 +- Database schema.
 +- Behavior editor.
 +- Rules or Worlds integrations.
-+- Engine object model contract.
-diff --git a/dev/reports/PR_26179_ALFA_012-objects-properties-mvp_requirement_checklist.md b/dev/reports/PR_26179_ALFA_012-objects-properties-mvp_requirement_checklist.md
+diff --git a/dev/reports/PR_26179_ALFA_013-objects-asset-links_requirement_checklist.md b/dev/reports/PR_26179_ALFA_013-objects-asset-links_requirement_checklist.md
 new file mode 100644
-index 000000000..f1dedcfbe
+index 000000000..d8fea7ece
 --- /dev/null
-+++ b/dev/reports/PR_26179_ALFA_012-objects-properties-mvp_requirement_checklist.md
-@@ -0,0 +1,23 @@
-+﻿# PR_26179_ALFA_012 Requirement Checklist
++++ b/dev/reports/PR_26179_ALFA_013-objects-asset-links_requirement_checklist.md
+@@ -0,0 +1,15 @@
++# PR_26179_ALFA_013 Requirement Checklist
 +
-+- Complete Object Details panel using existing Objects API persistence from PR011: PASS
-+- Do not modify API architecture: PASS
-+- Focus on Product Owner reviewability: PASS
-+- Name property: PASS
-+- Description property: PASS
-+- Type property: PASS
-+- Tags property: PASS
-+- Active property: PASS
-+- Visible property: PASS
-+- Sprite reference property: PASS
-+- Audio reference property: PASS
-+- Default values property: PASS
-+- Required-field validation: PASS
-+- Friendly validation messages: PASS
-+- Save behavior: PASS
-+- Cancel behavior: PASS
-+- Unsaved-change detection: PASS
-+- No behavior editor: PASS
-+- No Rules integration: PASS
-+- No Worlds integration: PASS
-+- One PR purpose only: PASS
-diff --git a/dev/reports/PR_26179_ALFA_012-objects-properties-mvp_validation_lane.md b/dev/reports/PR_26179_ALFA_012-objects-properties-mvp_validation_lane.md
++- Improve Object asset/reference linking for Product Owner review: PASS
++- Link graphics/sprite references: PASS
++- Link audio/message references: PASS
++- Show friendly missing-reference warnings: PASS
++- Preserve existing Objects API architecture: PASS
++- Do not add behavior editor: PASS
++- Do not add Rules integration: PASS
++- Do not add Worlds integration: PASS
++- No unrelated cleanup: PASS
++- Use current Project Instructions: PASS
++- Use canonical `dev/reports/` reports path: PASS
++- Use canonical `dev/workspace/zips/` ZIP path: PASS
++- Return repo-structured ZIP: PASS
+diff --git a/dev/reports/PR_26179_ALFA_013-objects-asset-links_validation_lane.md b/dev/reports/PR_26179_ALFA_013-objects-asset-links_validation_lane.md
 new file mode 100644
-index 000000000..56167a54b
+index 000000000..7a6f29a6b
 --- /dev/null
-+++ b/dev/reports/PR_26179_ALFA_012-objects-properties-mvp_validation_lane.md
++++ b/dev/reports/PR_26179_ALFA_013-objects-asset-links_validation_lane.md
 @@ -0,0 +1,23 @@
-+﻿# PR_26179_ALFA_012 Validation Lane Report
++# PR_26179_ALFA_013 Validation Lane Report
 +
 +Lane: Objects tool focused validation
 +
@@ -627,7 +474,7 @@ index 000000000..56167a54b
 +2. `node --check src/dev-runtime/toolbox-api/alfa-tool-services.mjs`
 +3. `node --check dev/tests/playwright/tools/ObjectsTool.spec.mjs`
 +4. `node --test dev/tests/dev-runtime/ObjectsApiService.test.mjs`
-+5. `npx playwright test dev/tests/playwright/tools/ObjectsTool.spec.mjs -g "Object Details panel"`
++5. `npx playwright test dev/tests/playwright/tools/ObjectsTool.spec.mjs --grep "Object Details panel saves reviewable properties through shared DB"`
 +6. `npx playwright test dev/tests/playwright/tools/ObjectsTool.spec.mjs`
 +7. `git diff --check`
 +8. `npm run validate:canonical-structure`
@@ -636,473 +483,306 @@ index 000000000..56167a54b
 +PASS
 +
 +## Impacted Coverage
-+- Objects API service database adapter round-trip.
-+- Objects table behavior.
-+- Object Details panel properties, validation, save/cancel, dirty state, and refresh persistence.
-+- Guest write redirect coverage retained.
-+- Sprite asset link behavior retained.
-diff --git a/dev/reports/PR_26179_ALFA_012-objects-properties-mvp_validation_report.md b/dev/reports/PR_26179_ALFA_012-objects-properties-mvp_validation_report.md
++- Objects API service database adapter round-trip for `messageReference`.
++- Objects Object Details panel save/cancel/dirty state retained.
++- Selected object Asset Links review for sprite, audio, and message references.
++- Friendly missing-reference validation for audio and message references.
++- Existing guest write redirect and sprite asset link behavior retained.
+diff --git a/dev/reports/PR_26179_ALFA_013-objects-asset-links_validation_report.md b/dev/reports/PR_26179_ALFA_013-objects-asset-links_validation_report.md
 new file mode 100644
-index 000000000..064660e33
+index 000000000..82aa33596
 --- /dev/null
-+++ b/dev/reports/PR_26179_ALFA_012-objects-properties-mvp_validation_report.md
-@@ -0,0 +1,18 @@
-+﻿# PR_26179_ALFA_012 Validation Report
++++ b/dev/reports/PR_26179_ALFA_013-objects-asset-links_validation_report.md
+@@ -0,0 +1,16 @@
++# PR_26179_ALFA_013 Validation Report
 +
-+## Final Targeted Validation
++## Result
++PASS
 +
-+PASS: `node --check assets/toolbox/objects/js/index.js`
-+PASS: `node --check src/dev-runtime/toolbox-api/alfa-tool-services.mjs`
-+PASS: `node --check dev/tests/playwright/tools/ObjectsTool.spec.mjs`
-+PASS: `node --test dev/tests/dev-runtime/ObjectsApiService.test.mjs`
-+PASS: `npx playwright test dev/tests/playwright/tools/ObjectsTool.spec.mjs -g "Object Details panel"`
-+PASS: `npx playwright test dev/tests/playwright/tools/ObjectsTool.spec.mjs`
-+PASS: `git diff --check`
-+PASS: `npm run validate:canonical-structure`
-+
-+## Playwright Coverage
-+The focused Objects Playwright suite passed 8/8 tests after fixes.
++## Validation Performed
++- Static JS/MJS syntax checks passed.
++- Objects API service test passed.
++- Focused Object Details Playwright scenario passed.
++- Full Objects Playwright spec passed: 8 passed.
++- Canonical repository structure validation passed.
++- Git whitespace validation passed.
 +
 +## Notes
-+The first browser run intentionally remained in this report history because it caught useful defects before final packaging. Those defects were fixed and final validation passed.
++- The audio upload creation path depends on storage-provider setup and was not used as a PR013 fixture. Runtime audio reference resolution remains implemented against existing shared Assets records, and missing audio references render friendly action text.
++- The Messages fixture uses the Messages API to create a TTS profile and message record, then verifies Objects can resolve the message reference after save and refresh.
 diff --git a/dev/reports/codex_changed_files.txt b/dev/reports/codex_changed_files.txt
-index c48152844..bf09e9898 100644
+index bf09e9898..df3e293b6 100644
 --- a/dev/reports/codex_changed_files.txt
 +++ b/dev/reports/codex_changed_files.txt
-@@ -1,13 +1,15 @@
--﻿M	assets/toolbox/objects/js/index.js
--A	dev/reports/PR_26179_ALFA_011-objects-manager-mvp_branch-validation.md
--A	dev/reports/PR_26179_ALFA_011-objects-manager-mvp_manual-validation-notes.md
--A	dev/reports/PR_26179_ALFA_011-objects-manager-mvp_report.md
--A	dev/reports/PR_26179_ALFA_011-objects-manager-mvp_requirement-checklist.md
--A	dev/reports/PR_26179_ALFA_011-objects-manager-mvp_validation-lane.md
--A	dev/reports/PR_26179_ALFA_011-objects-manager-mvp_validation-report.md
--M	dev/reports/codex_changed_files.txt
--M	dev/reports/codex_review.diff
--A	dev/tests/dev-runtime/ObjectsApiService.test.mjs
--M	dev/tests/playwright/tools/ObjectsTool.spec.mjs
--M	src/dev-runtime/server/local-api-router.mjs
--M	src/dev-runtime/toolbox-api/alfa-tool-services.mjs
-+﻿assets/toolbox/objects/js/index.js
-+dev/reports/codex_changed_files.txt
-+dev/reports/codex_review.diff
-+dev/reports/coverage_changed_js_guardrail.txt
-+dev/reports/playwright_v8_coverage_report.txt
-+dev/reports/PR_26179_ALFA_012-objects-properties-mvp_branch_validation.md
-+dev/reports/PR_26179_ALFA_012-objects-properties-mvp_manual_validation_notes.md
-+dev/reports/PR_26179_ALFA_012-objects-properties-mvp_report.md
-+dev/reports/PR_26179_ALFA_012-objects-properties-mvp_requirement_checklist.md
-+dev/reports/PR_26179_ALFA_012-objects-properties-mvp_validation_lane.md
-+dev/reports/PR_26179_ALFA_012-objects-properties-mvp_validation_report.md
-+dev/tests/dev-runtime/ObjectsApiService.test.mjs
-+dev/tests/playwright/tools/ObjectsTool.spec.mjs
-+src/dev-runtime/toolbox-api/alfa-tool-services.mjs
-+toolbox/objects/index.html
+@@ -1,14 +1,14 @@
+-?assets/toolbox/objects/js/index.js
++assets/toolbox/objects/js/index.js
+ dev/reports/codex_changed_files.txt
+ dev/reports/codex_review.diff
+ dev/reports/coverage_changed_js_guardrail.txt
+ dev/reports/playwright_v8_coverage_report.txt
+-dev/reports/PR_26179_ALFA_012-objects-properties-mvp_branch_validation.md
+-dev/reports/PR_26179_ALFA_012-objects-properties-mvp_manual_validation_notes.md
+-dev/reports/PR_26179_ALFA_012-objects-properties-mvp_report.md
+-dev/reports/PR_26179_ALFA_012-objects-properties-mvp_requirement_checklist.md
+-dev/reports/PR_26179_ALFA_012-objects-properties-mvp_validation_lane.md
+-dev/reports/PR_26179_ALFA_012-objects-properties-mvp_validation_report.md
++dev/reports/PR_26179_ALFA_013-objects-asset-links_branch_validation.md
++dev/reports/PR_26179_ALFA_013-objects-asset-links_manual_validation_notes.md
++dev/reports/PR_26179_ALFA_013-objects-asset-links_report.md
++dev/reports/PR_26179_ALFA_013-objects-asset-links_requirement_checklist.md
++dev/reports/PR_26179_ALFA_013-objects-asset-links_validation_lane.md
++dev/reports/PR_26179_ALFA_013-objects-asset-links_validation_report.md
+ dev/tests/dev-runtime/ObjectsApiService.test.mjs
+ dev/tests/playwright/tools/ObjectsTool.spec.mjs
+ src/dev-runtime/toolbox-api/alfa-tool-services.mjs
 diff --git a/dev/reports/coverage_changed_js_guardrail.txt b/dev/reports/coverage_changed_js_guardrail.txt
-index b58055c0d..76ad8c694 100644
+index 76ad8c694..d9fc5da23 100644
 --- a/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,7 +6,9 @@ Missing changed runtime JS files are WARN, not FAIL.
+@@ -6,9 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
  Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
  Changed runtime JS files considered:
--(89%) assets/theme-v2/js/tool-display-mode.js - executed lines 251/251; executed functions 25/28
-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 
  Guardrail warnings:
--(100%) none - no changed runtime JS coverage warnings
-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+ (0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/dev/reports/playwright_v8_coverage_report.txt b/dev/reports/playwright_v8_coverage_report.txt
-index 23ae016c0..a433d0ee0 100644
+index a433d0ee0..eaea8c7d9 100644
 --- a/dev/reports/playwright_v8_coverage_report.txt
 +++ b/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,38 +12,44 @@ Note: entry percentages use function coverage when available, otherwise line cov
+@@ -12,21 +12,22 @@ Note: entry percentages use function coverage when available, otherwise line cov
  Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
  Exercised tool entry points detected:
--(49%) Toolbox Index - exercised 3 runtime JS files
-+(71%) Toolbox Index - exercised 3 runtime JS files
+-(71%) Toolbox Index - exercised 3 runtime JS files
++(62%) Toolbox Index - exercised 4 runtime JS files
  (0%) Tool Template V2 - not exercised by this Playwright run
--(76%) Theme V2 Shared JS - exercised 4 runtime JS files
-+(71%) Theme V2 Shared JS - exercised 6 runtime JS files
+-(71%) Theme V2 Shared JS - exercised 6 runtime JS files
++(70%) Theme V2 Shared JS - exercised 6 runtime JS files
 
  Changed runtime JS files covered:
--(89%) assets/theme-v2/js/tool-display-mode.js - executed lines 251/251; executed functions 25/28
-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 
  Files with executed line/function counts where available:
++(12%) toolbox/messages/messages-api-client.js - executed lines 87/87; executed functions 3/25
  (25%) src/api/session-api-client.js - executed lines 67/67; executed functions 3/12
-+(33%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
+ (33%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
  (36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2044/2044; executed functions 12/33
--(38%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 9/24
-+(50%) src/api/public-config-client.js - executed lines 209/209; executed functions 13/26
+ (50%) src/api/public-config-client.js - executed lines 209/209; executed functions 13/26
  (50%) toolbox/game-hub/game-hub-api-client.js - executed lines 26/26; executed functions 2/4
  (53%) src/api/server-api-client.js - executed lines 168/168; executed functions 10/19
--(54%) toolbox/game-hub/game-hub.js - executed lines 787/787; executed functions 33/61
--(55%) assets/toolbox/game-configuration/js/index.js - executed lines 257/257; executed functions 12/22
--(64%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 63/98
--(65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
-+(57%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 55/97
-+(60%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 15/25
-+(67%) assets/js/shared/assets-api-client.js - executed lines 19/19; executed functions 2/3
- (67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
--(69%) assets/toolbox/game-design/js/index.js - executed lines 340/340; executed functions 18/26
-+(67%) src/engine/object-model/objectModelRegistry.js - executed lines 139/139; executed functions 4/6
-+(70%) assets/theme-v2/js/login-session.js - executed lines 113/113; executed functions 7/10
-+(70%) src/engine/object-model/objectDefinitionValidator.js - executed lines 360/360; executed functions 16/23
-+(74%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 80/108
-+(75%) assets/theme-v2/js/tool-display-mode.js - executed lines 251/251; executed functions 21/28
-+(75%) src/engine/object-model/objectDefinitionSchema.js - executed lines 58/58; executed functions 3/4
++(57%) assets/theme-v2/js/account-auth-service.js - executed lines 64/64; executed functions 4/7
+ (57%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 55/97
+ (60%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 15/25
+ (67%) assets/js/shared/assets-api-client.js - executed lines 19/19; executed functions 2/3
+@@ -38,18 +39,15 @@ Files with executed line/function counts where available:
+ (75%) assets/theme-v2/js/tool-display-mode.js - executed lines 251/251; executed functions 21/28
+ (75%) src/engine/object-model/objectDefinitionSchema.js - executed lines 58/58; executed functions 3/4
  (80%) assets/theme-v2/js/theme-icons.js - executed lines 69/69; executed functions 4/5
--(89%) assets/theme-v2/js/tool-display-mode.js - executed lines 251/251; executed functions 25/28
--(97%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 35/36
-+(96%) assets/toolbox/objects/js/index.js - executed lines 1373/1373; executed functions 131/137
-+(100%) assets/theme-v2/js/account-auth-service.js - executed lines 64/64; executed functions 7/7
-+(100%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 37/37
-+(100%) src/engine/object-model/index.js - executed lines 29/29; executed functions 1/1
+-(96%) assets/toolbox/objects/js/index.js - executed lines 1373/1373; executed functions 131/137
+-(100%) assets/theme-v2/js/account-auth-service.js - executed lines 64/64; executed functions 7/7
++(95%) assets/toolbox/objects/js/index.js - executed lines 1574/1574; executed functions 146/153
+ (100%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 37/37
+ (100%) src/engine/object-model/index.js - executed lines 29/29; executed functions 1/1
 
  Uncovered or low-coverage changed JS files:
--(100%) none - no low-coverage changed runtime JS files
-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+ (0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: uncovered changed runtime JS file; advisory only
 
  Changed JS files considered:
--(0%) dev/scripts/run-targeted-test-lanes.mjs - changed JS file not collected as browser runtime coverage
--(0%) dev/tests/helpers/playwrightRepoServer.mjs - changed JS file not collected as browser runtime coverage
--(0%) dev/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) dev/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) dev/tests/playwright/tools/ToolImageRegistry.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) dev/tests/playwright/tools/ToolNavigationPrevNext.spec.mjs - changed JS file not collected as browser runtime coverage
--(89%) assets/theme-v2/js/tool-display-mode.js - changed JS file with browser V8 coverage
-+(0%) dev/tests/dev-runtime/ObjectsApiService.test.mjs - changed JS file not collected as browser runtime coverage
-+(0%) dev/tests/playwright/tools/ObjectsTool.spec.mjs - changed JS file not collected as browser runtime coverage
-+(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
-+(0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - changed JS file not collected as browser runtime coverage
-+(96%) assets/toolbox/objects/js/index.js - changed JS file with browser V8 coverage
+ (0%) dev/tests/dev-runtime/ObjectsApiService.test.mjs - changed JS file not collected as browser runtime coverage
+ (0%) dev/tests/playwright/tools/ObjectsTool.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+ (0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - changed JS file not collected as browser runtime coverage
+-(96%) assets/toolbox/objects/js/index.js - changed JS file with browser V8 coverage
++(95%) assets/toolbox/objects/js/index.js - changed JS file with browser V8 coverage
 diff --git a/dev/tests/dev-runtime/ObjectsApiService.test.mjs b/dev/tests/dev-runtime/ObjectsApiService.test.mjs
-index 0e0fbc517..c55b1af32 100644
+index c55b1af32..ccc835d21 100644
 --- a/dev/tests/dev-runtime/ObjectsApiService.test.mjs
 +++ b/dev/tests/dev-runtime/ObjectsApiService.test.mjs
-@@ -113,9 +113,18 @@ test("Objects API service lists and replaces objects through the database adapte
-   const saved = await service.replaceObjects([
-     {
-       behavior: "Moves with player input.",
-+      details: {
-+        active: true,
-+        audioReference: "audio/hero-hop.wav",
-+        defaultValues: "speed=8",
-+        description: "Player-controlled hero used for review.",
-+        spriteReference: "sprite-hero",
-+        tags: ["hero", "playable"],
-+        visible: true,
-+      },
-       interaction: "Can collect keys.",
-       name: "Persistent Hero",
--      render: { type: "None" },
-+      render: { assetKey: "sprite-hero", type: "Sprite" },
-       role: "Hero",
-       state: "Active",
-       traits: ["playerControlled", "movable"],
-@@ -130,14 +139,32 @@ test("Objects API service lists and replaces objects through the database adapte
-   assert.equal(adapter.tables.object_definition_records[0].createdBy, SEED_DB_KEYS.users.user1);
-   assert.equal(adapter.tables.object_definition_records[0].updatedBy, SEED_DB_KEYS.users.user1);
-   assert.deepEqual(adapter.tables.object_definition_records[0].capabilities, ["playerControlled", "movable"]);
-+  assert.deepEqual(adapter.tables.object_definition_records[0].interaction.details, {
-+    active: true,
-+    audioReference: "audio/hero-hop.wav",
-+    defaultValues: "speed=8",
-+    description: "Player-controlled hero used for review.",
-+    spriteReference: "sprite-hero",
-+    tags: ["hero", "playable"],
-+    visible: true,
-+  });
-   assert.equal(adapter.tables.game_workspace_games[0].key, gameKey);
-   assert.deepEqual(await service.listObjects(), [
-     {
-       behavior: "Moves with player input.",
-+      details: {
-+        active: true,
-+        audioReference: "audio/hero-hop.wav",
-+        defaultValues: "speed=8",
-+        description: "Player-controlled hero used for review.",
-+        spriteReference: "sprite-hero",
-+        tags: ["hero", "playable"],
-+        visible: true,
-+      },
-       id: "persistent-hero",
-       interaction: "Can collect keys.",
-       name: "Persistent Hero",
--      render: { type: "None" },
-+      render: { assetKey: "sprite-hero", previewPath: "", type: "Sprite" },
-       role: "Hero",
-       state: "Active",
-       traits: ["playerControlled", "movable"],
+@@ -118,6 +118,7 @@ test("Objects API service lists and replaces objects through the database adapte
+         audioReference: "audio/hero-hop.wav",
+         defaultValues: "speed=8",
+         description: "Player-controlled hero used for review.",
++        messageReference: "msg-hero-hop",
+         spriteReference: "sprite-hero",
+         tags: ["hero", "playable"],
+         visible: true,
+@@ -144,6 +145,7 @@ test("Objects API service lists and replaces objects through the database adapte
+     audioReference: "audio/hero-hop.wav",
+     defaultValues: "speed=8",
+     description: "Player-controlled hero used for review.",
++    messageReference: "msg-hero-hop",
+     spriteReference: "sprite-hero",
+     tags: ["hero", "playable"],
+     visible: true,
+@@ -157,6 +159,7 @@ test("Objects API service lists and replaces objects through the database adapte
+         audioReference: "audio/hero-hop.wav",
+         defaultValues: "speed=8",
+         description: "Player-controlled hero used for review.",
++        messageReference: "msg-hero-hop",
+         spriteReference: "sprite-hero",
+         tags: ["hero", "playable"],
+         visible: true,
 diff --git a/dev/tests/playwright/tools/ObjectsTool.spec.mjs b/dev/tests/playwright/tools/ObjectsTool.spec.mjs
-index 6d56ca5ed..da0fa9242 100644
+index da0fa9242..74e132e67 100644
 --- a/dev/tests/playwright/tools/ObjectsTool.spec.mjs
 +++ b/dev/tests/playwright/tools/ObjectsTool.spec.mjs
-@@ -280,11 +280,13 @@ test("Objects exposes production copy, setup status, and broad table input", asy
-     await expect(firstActionGroup).toHaveClass(/action-group--tight/);
-     await expect(firstActionGroup.locator("button, a")).toHaveText([
-       "Edit",
-+      "Details",
-       "Open Hitboxes",
-       "Open Events",
-       "Trash",
-     ]);
-     await expect(firstActionCell.locator("[data-objects-edit-row='hero']")).toBeVisible();
-+    await expect(firstActionCell.locator("[data-objects-details-row='hero']")).toBeVisible();
-     await expect(firstActionCell.locator("[data-objects-row-open-hitboxes]")).toBeVisible();
-     await expect(firstActionCell.locator("[data-objects-row-open-events]")).toBeVisible();
-     await expect(firstActionCell.locator("[data-objects-trash-row='hero']")).toBeVisible();
-@@ -343,6 +345,7 @@ test("Objects table add disables while active row can cancel, save, edit, and tr
-     await expect(page.locator("[data-objects-list]")).toContainText("None");
-     await expect(page.locator("[data-objects-validation-list]")).not.toContainText("Render Asset");
-     await expect(page.locator("[data-objects-edit-row='hero']")).toBeVisible();
-+    await expect(page.locator("[data-objects-details-row='hero']")).toBeVisible();
-     await expect(page.locator("[data-objects-trash-row='hero']")).toBeVisible();
-     const savedActionCell = page.locator("[data-objects-list] tr").first().locator("td").last();
-     const savedActionGroup = savedActionCell.locator(".action-group");
-@@ -350,6 +353,7 @@ test("Objects table add disables while active row can cancel, save, edit, and tr
-     await expect(savedActionGroup).toHaveClass(/action-group--tight/);
-     await expect(savedActionGroup.locator("button, a")).toHaveText([
-       "Edit",
-+      "Details",
-       "Open Hitboxes",
-       "Open Events",
-       "Trash",
-@@ -484,6 +488,99 @@ test("Objects persists added, edited, deleted, and sprite-linked rows through sh
-   }
- });
-
-+test("Object Details panel saves reviewable properties through shared DB", async ({ page }) => {
-+  const failures = await openObjectsPage(page);
-+
-+  try {
-+    await page.getByRole("button", { name: "Add Object" }).click();
-+    await fillActiveRow(page, {
-+      name: "Review Hero",
-+      renderType: "Sprite",
-+      type: "Hero",
-+    });
-+    await page.locator("[data-objects-save-row]").click();
-+    await expect(page.locator("[data-objects-log]")).toContainText("Added Review Hero.");
-+    await expect(page.locator("[data-objects-log]")).toContainText("Created editable default sprite asset sprite_review_hero for Review Hero.");
-+
-+    await page.locator("[data-objects-details-row='review-hero']").click();
-+    await expect(page.locator("[data-objects-detail-selected]")).toHaveText("Review Hero");
-+    await expect(page.locator("[data-objects-detail-name]")).toHaveValue("Review Hero");
-+    await expect(page.locator("[data-objects-detail-type] option")).toHaveText(["Select type", ...TYPE_OPTIONS]);
-+    await expect(page.locator("[data-objects-detail-type]")).toHaveValue("Hero");
-+    await expect(page.locator("[data-objects-detail-active]")).toBeChecked();
-+    await expect(page.locator("[data-objects-detail-visible]")).toBeChecked();
-+    await expect(page.locator("[data-objects-detail-sprite]")).toHaveValue("sprite_review_hero");
-+    await expect(page.locator("[data-objects-detail-unsaved]")).toHaveText("Unsaved changes: none");
-+    await expect(page.locator("[data-objects-detail-save]")).toBeDisabled();
-+    await expect(page.locator("[data-objects-details-form]")).not.toContainText(/\bBehavior\b|\bRules\b|\bWorlds\b/);
-+
-+    await page.locator("[data-objects-detail-description]").fill("Hero object used by Product Owner review.");
-+    await expect(page.locator("[data-objects-detail-unsaved]")).toHaveText("Unsaved changes: yes");
-+    await expect(page.locator("[data-objects-detail-save]")).toBeEnabled();
-+    await page.locator("[data-objects-detail-cancel]").click();
-+    await expect(page.locator("[data-objects-detail-description]")).toHaveValue("");
-+    await expect(page.locator("[data-objects-detail-unsaved]")).toHaveText("Unsaved changes: none");
-+    await expect(page.locator("[data-objects-log]")).toHaveText("Canceled Object Details changes.");
-+
-+    await page.locator("[data-objects-detail-name]").fill("");
-+    await page.locator("[data-objects-detail-save]").click();
-+    await expect(page.locator("[data-objects-validation-list]")).toContainText("Name: Enter a name before saving Object Details.");
-+    await expect(page.locator("[data-objects-log]")).toHaveText("Object Details blocked: 1 validation action.");
-+
-+    await page.locator("[data-objects-detail-name]").fill("Review Hero Prime");
-+    await page.locator("[data-objects-detail-description]").fill("Hero object used by Product Owner review.");
-+    await page.locator("[data-objects-detail-type]").selectOption("Enemy");
-+    await page.locator("[data-objects-detail-tags]").fill("hero, review, boss-fight");
-+    await page.locator("[data-objects-detail-active]").uncheck();
-+    await page.locator("[data-objects-detail-visible]").uncheck();
-+    await page.locator("[data-objects-detail-sprite]").fill("sprite_review_hero");
-+    await page.locator("[data-objects-detail-audio]").fill("audio/review-hero.wav");
-+    await page.locator("[data-objects-detail-defaults]").fill("speed=8\nhealth=3");
-+    await page.locator("[data-objects-detail-save]").click();
-+    await expect(page.locator("[data-objects-log]")).toHaveText("Saved Object Details for Review Hero Prime.");
-+    await expect(page.locator("[data-objects-list]")).toContainText("Review Hero Prime");
-+    await expect(page.locator("[data-objects-list] tr").first().locator("td").nth(1)).toHaveText("Enemy");
-+    await expect(page.locator("[data-objects-list] tr").first().locator("td").nth(2)).toHaveText("Disabled");
-+    await expect(page.locator("[data-objects-detail-unsaved]")).toHaveText("Unsaved changes: none");
-+
-+    const rows = await objectDefinitionRecords(page);
-+    expect(rows).toHaveLength(1);
-+    expect(rows[0]).toEqual(expect.objectContaining({
-+      name: "Review Hero Prime",
-+      renderAssetKey: "sprite_review_hero",
-+      renderType: "Sprite",
-+      state: "Disabled",
-+      type: "Enemy",
-+    }));
-+    expect(rows[0].interaction.details).toEqual({
-+      active: false,
-+      audioReference: "audio/review-hero.wav",
-+      defaultValues: "speed=8\nhealth=3",
-+      description: "Hero object used by Product Owner review.",
-+      spriteReference: "sprite_review_hero",
-+      tags: ["hero", "review", "boss-fight"],
-+      visible: false,
-+    });
-+
-+    await page.reload({ waitUntil: "networkidle" });
-+    await expect(page.locator("[data-objects-list]")).toContainText("Review Hero Prime");
-+    await expect(page.locator("[data-objects-detail-selected]")).toHaveText("Review Hero Prime");
-+    await expect(page.locator("[data-objects-detail-description]")).toHaveValue("Hero object used by Product Owner review.");
-+    await expect(page.locator("[data-objects-detail-type]")).toHaveValue("Enemy");
-+    await expect(page.locator("[data-objects-detail-tags]")).toHaveValue("hero, review, boss-fight");
-+    await expect(page.locator("[data-objects-detail-active]")).not.toBeChecked();
-+    await expect(page.locator("[data-objects-detail-visible]")).not.toBeChecked();
-+    await expect(page.locator("[data-objects-detail-sprite]")).toHaveValue("sprite_review_hero");
-+    await expect(page.locator("[data-objects-detail-audio]")).toHaveValue("audio/review-hero.wav");
-+    await expect(page.locator("[data-objects-detail-defaults]")).toHaveValue("speed=8\nhealth=3");
-+
-+    await expectNoPageFailures(failures);
-+  } finally {
-+    await workspaceV2CoverageReporter.stop(page);
-+    await failures.server.close();
-+  }
-+});
-+
- test("Object Type Catalog selection prefills active table rows", async ({ page }) => {
-   const failures = await openObjectsPage(page);
-
-@@ -548,6 +645,7 @@ test("Object Type Catalog selection prefills active table rows", async ({ page }
-     await expect(catalogActionGroup).toHaveClass(/action-group--tight/);
-     await expect(catalogActionGroup.locator("button, a")).toHaveText([
-       "Edit",
-+      "Details",
-       "Edit Sprite",
-       "Open Hitboxes",
-       "Open Events",
-diff --git a/src/dev-runtime/toolbox-api/alfa-tool-services.mjs b/src/dev-runtime/toolbox-api/alfa-tool-services.mjs
-index d6872d460..a608e74ea 100644
---- a/src/dev-runtime/toolbox-api/alfa-tool-services.mjs
-+++ b/src/dev-runtime/toolbox-api/alfa-tool-services.mjs
-@@ -523,10 +523,42 @@ function objectTextField(value) {
-   return "";
+@@ -102,6 +102,36 @@ async function clearObjectsForActiveGame(baseUrl) {
+   expect(cleared.response.ok).toBe(true);
  }
 
-+function parseObjectTags(value) {
-+  const values = Array.isArray(value)
-+    ? value
-+    : normalizeText(value).split(",");
-+  return [...new Set(values.map(normalizeText).filter(Boolean))];
++async function createReviewMessage(baseUrl) {
++  const suffix = Date.now().toString(36);
++  const profile = await postApiPayload(baseUrl, "/api/messages/tts-profiles", {
++    emotionSettings: [{
++      emotion: "calm",
++      emotionLabel: "Calm",
++      pitch: 1,
++      rate: 1,
++      volume: 1,
++    }],
++    language: "en-US",
++    name: `Objects Review Voice ${suffix}`,
++    pitch: 1,
++    providerKey: "browser-speech",
++    rate: 1,
++    voiceName: "Default browser voice",
++    volume: 1,
++  });
++  expect(profile.response.ok).toBe(true);
++  const message = await postApiPayload(baseUrl, "/api/messages/messages", {
++    active: true,
++    emotionProfileKey: profile.payload.data.ttsProfile.emotionSettings[0].key,
++    messageText: "Review hero is ready.",
++    name: `Objects Review Message ${suffix}`,
++    voiceProfileKey: profile.payload.data.ttsProfile.key,
++  });
++  expect(message.response.ok).toBe(true);
++  return message.payload.data.message;
 +}
 +
-+function objectBooleanField(value, fallback) {
-+  if (value === true || value === "true" || value === "1") {
-+    return true;
-+  }
-+  if (value === false || value === "false" || value === "0") {
-+    return false;
-+  }
-+  return fallback;
-+}
+ async function openObjectsPage(page, { signedIn = true } = {}) {
+   const server = await startRepoServer();
+   const failures = collectPageFailures(page);
+@@ -492,6 +522,8 @@ test("Object Details panel saves reviewable properties through shared DB", async
+   const failures = await openObjectsPage(page);
+
+   try {
++    const message = await createReviewMessage(failures.server.baseUrl);
 +
-+function objectDetailsFromSource(source = {}, render = normalizeObjectRender(source)) {
-+  const details = source.details && typeof source.details === "object" ? source.details : {};
-+  return {
-+    active: objectBooleanField(details.active ?? source.active, true),
-+    audioReference: normalizeText(details.audioReference ?? source.audioReference),
-+    defaultValues: normalizeText(details.defaultValues ?? source.defaultValues),
-+    description: normalizeText(details.description ?? source.description),
-+    spriteReference: normalizeText(details.spriteReference ?? source.spriteReference) || normalizeText(render.assetKey),
-+    tags: parseObjectTags(details.tags ?? source.tags),
-+    visible: objectBooleanField(details.visible ?? source.visible, true),
-+  };
-+}
+     await page.getByRole("button", { name: "Add Object" }).click();
+     await fillActiveRow(page, {
+       name: "Review Hero",
+@@ -512,6 +544,10 @@ test("Object Details panel saves reviewable properties through shared DB", async
+     await expect(page.locator("[data-objects-detail-sprite]")).toHaveValue("sprite_review_hero");
+     await expect(page.locator("[data-objects-detail-unsaved]")).toHaveText("Unsaved changes: none");
+     await expect(page.locator("[data-objects-detail-save]")).toBeDisabled();
++    await expect(page.locator("[data-objects-asset-links]")).toContainText("Sprite:");
++    await expect(page.locator("[data-objects-asset-links]")).toContainText("sprite_review_hero");
++    await expect(page.locator("[data-objects-asset-links]")).toContainText("Audio: No reference set.");
++    await expect(page.locator("[data-objects-asset-links]")).toContainText("Message: No reference set.");
+     await expect(page.locator("[data-objects-details-form]")).not.toContainText(/\bBehavior\b|\bRules\b|\bWorlds\b/);
+
+     await page.locator("[data-objects-detail-description]").fill("Hero object used by Product Owner review.");
+@@ -534,14 +570,31 @@ test("Object Details panel saves reviewable properties through shared DB", async
+     await page.locator("[data-objects-detail-active]").uncheck();
+     await page.locator("[data-objects-detail-visible]").uncheck();
+     await page.locator("[data-objects-detail-sprite]").fill("sprite_review_hero");
+-    await page.locator("[data-objects-detail-audio]").fill("audio/review-hero.wav");
++    await page.locator("[data-objects-detail-audio]").fill("missing-review-hero.wav");
++    await page.locator("[data-objects-detail-message]").fill("missing-message-key");
+     await page.locator("[data-objects-detail-defaults]").fill("speed=8\nhealth=3");
+     await page.locator("[data-objects-detail-save]").click();
++    await expect(page.locator("[data-objects-validation-list]")).toContainText("Audio reference: Use an existing audio asset reference");
++    await expect(page.locator("[data-objects-validation-list]")).toContainText("Message reference: Use an existing message reference");
++    await expect(page.locator("[data-objects-log]")).toHaveText("Object Details blocked: 2 validation actions.");
 +
- function objectFromRecord(record = {}) {
-   const render = normalizeObjectRender(record);
-+  const interaction = record.interaction && typeof record.interaction === "object" ? record.interaction : {};
-   return {
-     behavior: objectTextField(record.behavior),
-+    details: objectDetailsFromSource(interaction.details || interaction, render),
-     id: objectKeyFromText(record.id || record.name),
-     interaction: objectTextField(record.interaction),
-     name: normalizeText(record.name),
-@@ -556,9 +588,11 @@ function normalizeObjectInput(input = {}) {
-   const template = objectTemplateForRole(role);
-   const id = objectKeyFromText(input.id || input.name);
-   const render = normalizeObjectRender(input);
-+  const details = objectDetailsFromSource(input, render);
-   return {
-     behavior: normalizeText(input.behavior),
-     capabilities: parseObjectCapabilities(input.traits || input.capabilities),
-+    details,
-     id,
-     interaction: normalizeText(input.interaction),
-     modelType: normalizeText(input.type) || template?.modelType || "",
-@@ -585,7 +619,10 @@ function objectRecordFromInput(input, {
-     createdBy: existing?.createdBy || userKey,
-     gameId: gameKey,
-     id: object.id,
--    interaction: object.interaction ? { text: object.interaction } : {},
-+    interaction: {
-+      ...(object.interaction ? { text: object.interaction } : {}),
-+      details: object.details,
-+    },
-     key: existing?.key || adapter.createRecordKey(),
-     modelType: object.modelType,
-     name: object.name,
++    await page.locator("[data-objects-detail-audio]").fill("");
++    await page.locator("[data-objects-detail-message]").fill(message.key);
++    await page.locator("[data-objects-detail-save]").click();
+     await expect(page.locator("[data-objects-log]")).toHaveText("Saved Object Details for Review Hero Prime.");
+     await expect(page.locator("[data-objects-list]")).toContainText("Review Hero Prime");
+     await expect(page.locator("[data-objects-list] tr").first().locator("td").nth(1)).toHaveText("Enemy");
+     await expect(page.locator("[data-objects-list] tr").first().locator("td").nth(2)).toHaveText("Disabled");
+     await expect(page.locator("[data-objects-detail-unsaved]")).toHaveText("Unsaved changes: none");
++    await expect(page.locator("[data-objects-asset-links]")).toContainText("Audio: No reference set.");
++    await expect(page.locator("[data-objects-asset-links]")).toContainText(message.name);
++    await expect(page.locator("[data-objects-asset-link-sprite]")).toHaveAttribute(
++      "href",
++      "/toolbox/sprites/index.html?assetKey=sprite_review_hero&objectKey=review-hero-prime&sourceTool=objects"
++    );
++    await expect(page.locator("[data-objects-asset-link-audio]")).toHaveCount(0);
++    await expect(page.locator("[data-objects-message-link]")).toHaveAttribute("href", "/toolbox/messages/index.html");
++    await expect(page.locator("[data-objects-reference-warning]")).toHaveCount(0);
+
+     const rows = await objectDefinitionRecords(page);
+     expect(rows).toHaveLength(1);
+@@ -554,9 +607,10 @@ test("Object Details panel saves reviewable properties through shared DB", async
+     }));
+     expect(rows[0].interaction.details).toEqual({
+       active: false,
+-      audioReference: "audio/review-hero.wav",
++      audioReference: "",
+       defaultValues: "speed=8\nhealth=3",
+       description: "Hero object used by Product Owner review.",
++      messageReference: message.key,
+       spriteReference: "sprite_review_hero",
+       tags: ["hero", "review", "boss-fight"],
+       visible: false,
+@@ -571,8 +625,11 @@ test("Object Details panel saves reviewable properties through shared DB", async
+     await expect(page.locator("[data-objects-detail-active]")).not.toBeChecked();
+     await expect(page.locator("[data-objects-detail-visible]")).not.toBeChecked();
+     await expect(page.locator("[data-objects-detail-sprite]")).toHaveValue("sprite_review_hero");
+-    await expect(page.locator("[data-objects-detail-audio]")).toHaveValue("audio/review-hero.wav");
++    await expect(page.locator("[data-objects-detail-audio]")).toHaveValue("");
++    await expect(page.locator("[data-objects-detail-message]")).toHaveValue(message.key);
+     await expect(page.locator("[data-objects-detail-defaults]")).toHaveValue("speed=8\nhealth=3");
++    await expect(page.locator("[data-objects-asset-links]")).toContainText("Audio: No reference set.");
++    await expect(page.locator("[data-objects-asset-links]")).toContainText(message.name);
+
+     await expectNoPageFailures(failures);
+   } finally {
+diff --git a/src/dev-runtime/toolbox-api/alfa-tool-services.mjs b/src/dev-runtime/toolbox-api/alfa-tool-services.mjs
+index a608e74ea..d24eb63ac 100644
+--- a/src/dev-runtime/toolbox-api/alfa-tool-services.mjs
++++ b/src/dev-runtime/toolbox-api/alfa-tool-services.mjs
+@@ -547,6 +547,7 @@ function objectDetailsFromSource(source = {}, render = normalizeObjectRender(sou
+     audioReference: normalizeText(details.audioReference ?? source.audioReference),
+     defaultValues: normalizeText(details.defaultValues ?? source.defaultValues),
+     description: normalizeText(details.description ?? source.description),
++    messageReference: normalizeText(details.messageReference ?? source.messageReference),
+     spriteReference: normalizeText(details.spriteReference ?? source.spriteReference) || normalizeText(render.assetKey),
+     tags: parseObjectTags(details.tags ?? source.tags),
+     visible: objectBooleanField(details.visible ?? source.visible, true),
 diff --git a/toolbox/objects/index.html b/toolbox/objects/index.html
-index 117409b70..8f507eec4 100644
+index 8f507eec4..ab076292b 100644
 --- a/toolbox/objects/index.html
 +++ b/toolbox/objects/index.html
-@@ -122,6 +122,49 @@
-                                     <p><a class="btn btn--compact" data-objects-edit-sprite hidden>Edit Sprite</a></p>
+@@ -144,6 +144,9 @@
+                                             <label>Audio reference
+                                                 <input type="text" autocomplete="off" data-objects-detail-audio>
+                                             </label>
++                                            <label>Message reference
++                                                <input type="text" autocomplete="off" data-objects-detail-message>
++                                            </label>
+                                             <label>Active
+                                                 <input type="checkbox" data-objects-detail-active>
+                                             </label>
+@@ -165,6 +168,13 @@
+                                     </div>
                                  </div>
                              </details>
 +                            <details class="vertical-accordion" open>
-+                                <summary>Object Details</summary>
-+                                <div class="accordion-body content-stack" data-objects-details-panel>
-+                                    <p data-objects-details-empty>Add or select an object to review details.</p>
-+                                    <div class="content-stack" data-objects-details-form hidden>
-+                                        <p>Selected object: <strong data-objects-detail-selected>None</strong></p>
-+                                        <div class="grid cols-2" aria-label="Object Details properties">
-+                                            <label>Name
-+                                                <input type="text" autocomplete="off" data-objects-detail-name>
-+                                            </label>
-+                                            <label>Type
-+                                                <select data-objects-detail-type></select>
-+                                            </label>
-+                                            <label>Tags
-+                                                <input type="text" autocomplete="off" data-objects-detail-tags>
-+                                            </label>
-+                                            <label>Sprite reference
-+                                                <input type="text" autocomplete="off" data-objects-detail-sprite>
-+                                            </label>
-+                                            <label>Audio reference
-+                                                <input type="text" autocomplete="off" data-objects-detail-audio>
-+                                            </label>
-+                                            <label>Active
-+                                                <input type="checkbox" data-objects-detail-active>
-+                                            </label>
-+                                            <label>Visible
-+                                                <input type="checkbox" data-objects-detail-visible>
-+                                            </label>
-+                                        </div>
-+                                        <label>Description
-+                                            <textarea rows="3" data-objects-detail-description></textarea>
-+                                        </label>
-+                                        <label>Default values
-+                                            <textarea rows="4" data-objects-detail-defaults></textarea>
-+                                        </label>
-+                                        <div class="content-cluster" aria-label="Object Details actions">
-+                                            <button class="btn" type="button" data-objects-detail-save disabled>Save Details</button>
-+                                            <button class="btn" type="button" data-objects-detail-cancel disabled>Cancel</button>
-+                                        </div>
-+                                        <div class="status" role="status" data-objects-detail-unsaved>Unsaved changes: none</div>
-+                                    </div>
++                                <summary>Asset Links</summary>
++                                <div class="accordion-body content-stack">
++                                    <p>Review sprite, audio, and message links for the selected object.</p>
++                                    <ul data-objects-asset-links></ul>
 +                                </div>
 +                            </details>
                              <details class="vertical-accordion" open>
