@@ -1,6 +1,6 @@
 import LocalStorageService from '../../engine/persistence/LocalStorageService.js';
 import { sanitizeText } from "../string/strings.js";
-import { getToolById } from "../../../toolbox/tool-registry-api-client.js";
+import { getToolById } from "../../../www/toolbox/tool-registry-api-client.js";
 
 export const SHARED_ASSET_HANDOFF_KEY = "toolboxaid.shared.assetHandoff";
 export const SHARED_PALETTE_HANDOFF_KEY = "toolboxaid.shared.paletteHandoff";

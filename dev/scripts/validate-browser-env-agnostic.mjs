@@ -1,4 +1,4 @@
-import fs from "node:fs/promises";
+﻿import fs from "node:fs/promises";
 import path from "node:path";
 
 const repoRoot = process.cwd();
@@ -6,7 +6,7 @@ const reportPath = path.join(repoRoot, "dev", "reports", "environment_agnostic_b
 const browserScanRoots = [
   "account",
   "admin",
-  "assets/theme-v2/js",
+  "www/assets/theme-v2/js",
   "toolbox",
   "src/engine",
 ];
@@ -56,42 +56,42 @@ const deploymentTernaryDecisionPattern = /(?:GAMEFOUNDRY_(?:ENV|DEPLOYMENT_ENV|S
 const accountDependencyPattern = new RegExp(`\\b(?:Local(?: DB| API)?|${retiredFileDbToken}|Supabase|provider|localhost|DEV|UAT|PROD|Prod)\\b|data-local-db-|local-db-page-data\\.js`, "i");
 const userFacingImplementationPattern = new RegExp(`\\b(?:DEV|UAT|PROD|Local DB|Local API|${retiredFileDbToken}|Supabase|provider)\\b`, "i");
 const accountBrowserFiles = new Set([
-  "assets/theme-v2/js/account-auth-actions.js",
-  "assets/theme-v2/js/account-auth-service.js",
-  "assets/theme-v2/js/account-page-data.js",
-  "assets/theme-v2/js/login-session.js",
+  "www/assets/theme-v2/js/account-auth-actions.js",
+  "www/assets/theme-v2/js/account-auth-service.js",
+  "www/assets/theme-v2/js/account-page-data.js",
+  "www/assets/theme-v2/js/login-session.js",
 ]);
 const accountAuthPages = Object.freeze([
   Object.freeze({
     expectedScript: "../assets/theme-v2/js/login-session.js",
     formAttribute: "data-login-form",
-    page: "account/sign-in.html",
+    page: "www/account/sign-in.html",
   }),
   Object.freeze({
     expectedScript: "../assets/theme-v2/js/account-auth-actions.js",
     formAttribute: "data-account-auth-form=\"create-account\"",
-    page: "account/create-account.html",
+    page: "www/account/create-account.html",
   }),
   Object.freeze({
     expectedScript: "../assets/theme-v2/js/account-auth-actions.js",
     formAttribute: "data-account-auth-form=\"password-reset\"",
-    page: "account/password-reset.html",
+    page: "www/account/password-reset.html",
   }),
 ]);
 const productApiClientFiles = Object.freeze([
-  "assets/js/shared/assets-api-client.js",
-  "assets/toolbox/colors/js/index.js",
-  "assets/js/shared/controls-api-client.js",
-  "assets/toolbox/game-configuration/js/index.js",
-  "assets/toolbox/game-design/js/index.js",
-  "assets/js/shared/game-journey-api-client.js",
-  "toolbox/game-hub/game-hub-api-client.js",
-  "assets/toolbox/objects/js/index.js",
-  "assets/toolbox/tags/js/index.js",
+  "www/assets/js/shared/assets-api-client.js",
+  "www/assets/toolbox/colors/js/index.js",
+  "www/assets/js/shared/controls-api-client.js",
+  "www/assets/toolbox/game-configuration/js/index.js",
+  "www/assets/toolbox/game-design/js/index.js",
+  "www/assets/js/shared/game-journey-api-client.js",
+  "www/toolbox/game-hub/game-hub-api-client.js",
+  "www/assets/toolbox/objects/js/index.js",
+  "www/assets/toolbox/tags/js/index.js",
 ]);
-const userFacingUiRoots = Object.freeze(["account", "toolbox"]);
+const userFacingUiRoots = Object.freeze(["www/account", "www/toolbox"]);
 const nonUiCompatibilityFiles = new Set([
-  "toolbox/toolRegistry.js",
+  "www/toolbox/toolRegistry.js",
 ]);
 const deprecatedLocalDbDebt = Object.freeze([]);
 
@@ -291,30 +291,30 @@ async function validateAccountServiceContract() {
     );
   }
 
-  const authActions = await readRequiredRepoFile("assets/theme-v2/js/account-auth-actions.js", findings, "Account auth actions module is missing");
-  requireSnippet(authActions, "assets/theme-v2/js/account-auth-actions.js", "./account-auth-service.js", findings, "Create/reset actions must use the shared account auth service module.");
-  requireSnippet(authActions, "assets/theme-v2/js/account-auth-actions.js", "requestAccountAuth(endpoint", findings, "Create/reset actions must call requestAccountAuth through the service contract.");
-  rejectPattern(authActions, "assets/theme-v2/js/account-auth-actions.js", /\bfetch\s*\(/, findings, "Create/reset actions must not call fetch directly.");
+  const authActions = await readRequiredRepoFile("www/assets/theme-v2/js/account-auth-actions.js", findings, "Account auth actions module is missing");
+  requireSnippet(authActions, "www/assets/theme-v2/js/account-auth-actions.js", "./account-auth-service.js", findings, "Create/reset actions must use the shared account auth service module.");
+  requireSnippet(authActions, "www/assets/theme-v2/js/account-auth-actions.js", "requestAccountAuth(endpoint", findings, "Create/reset actions must call requestAccountAuth through the service contract.");
+  rejectPattern(authActions, "www/assets/theme-v2/js/account-auth-actions.js", /\bfetch\s*\(/, findings, "Create/reset actions must not call fetch directly.");
 
-  const loginSession = await readRequiredRepoFile("assets/theme-v2/js/login-session.js", findings, "Login session module is missing");
-  requireSnippet(loginSession, "assets/theme-v2/js/login-session.js", "./account-auth-service.js", findings, "Sign-in flow must use the shared account auth service module.");
-  requireSnippet(loginSession, "assets/theme-v2/js/login-session.js", "requestAccountAuth(SIGN_IN_ACTION", findings, "Sign-in flow must call requestAccountAuth through the service contract.");
-  requireSnippet(loginSession, "assets/theme-v2/js/login-session.js", "requestCurrentSession(", findings, "Sign-in flow must resolve sessions through requestCurrentSession.");
-  rejectPattern(loginSession, "assets/theme-v2/js/login-session.js", /\bfetch\s*\(/, findings, "Sign-in flow must not call fetch directly.");
+  const loginSession = await readRequiredRepoFile("www/assets/theme-v2/js/login-session.js", findings, "Login session module is missing");
+  requireSnippet(loginSession, "www/assets/theme-v2/js/login-session.js", "./account-auth-service.js", findings, "Sign-in flow must use the shared account auth service module.");
+  requireSnippet(loginSession, "www/assets/theme-v2/js/login-session.js", "requestAccountAuth(SIGN_IN_ACTION", findings, "Sign-in flow must call requestAccountAuth through the service contract.");
+  requireSnippet(loginSession, "www/assets/theme-v2/js/login-session.js", "requestCurrentSession(", findings, "Sign-in flow must resolve sessions through requestCurrentSession.");
+  rejectPattern(loginSession, "www/assets/theme-v2/js/login-session.js", /\bfetch\s*\(/, findings, "Sign-in flow must not call fetch directly.");
 
-  const accountService = await readRequiredRepoFile("assets/theme-v2/js/account-auth-service.js", findings, "Account auth service module is missing");
-  requireSnippet(accountService, "assets/theme-v2/js/account-auth-service.js", "fetchServerApi(`/auth/${path}`", findings, "Account auth service must own configured /api/auth requests.");
-  requireSnippet(accountService, "assets/theme-v2/js/account-auth-service.js", "fetchServerApi(\"/session/current\"", findings, "Account auth service must own configured /api/session/current requests.");
-  rejectPattern(accountService, "assets/theme-v2/js/account-auth-service.js", providerLeakPattern, findings, "Account auth service must not expose provider or environment implementation details.");
+  const accountService = await readRequiredRepoFile("www/assets/theme-v2/js/account-auth-service.js", findings, "Account auth service module is missing");
+  requireSnippet(accountService, "www/assets/theme-v2/js/account-auth-service.js", "fetchServerApi(`/auth/${path}`", findings, "Account auth service must own configured /api/auth requests.");
+  requireSnippet(accountService, "www/assets/theme-v2/js/account-auth-service.js", "fetchServerApi(\"/session/current\"", findings, "Account auth service must own configured /api/session/current requests.");
+  rejectPattern(accountService, "www/assets/theme-v2/js/account-auth-service.js", providerLeakPattern, findings, "Account auth service must not expose provider or environment implementation details.");
 
   return findings;
 }
 
 async function validateProductServiceContract() {
   const findings = [];
-  const registryClient = await readRequiredRepoFile("toolbox/tool-registry-api-client.js", findings, "Toolbox registry client is missing");
-  requireSnippet(registryClient, "toolbox/tool-registry-api-client.js", "safeRequestServerApi(\"/toolbox/registry/snapshot\")", findings, "Toolbox registry must read through the server API service contract.");
-  rejectPattern(registryClient, "toolbox/tool-registry-api-client.js", providerLeakPattern, findings, "Toolbox registry client must not expose provider/environment implementation details.");
+  const registryClient = await readRequiredRepoFile("www/toolbox/tool-registry-api-client.js", findings, "Toolbox registry client is missing");
+  requireSnippet(registryClient, "www/toolbox/tool-registry-api-client.js", "safeRequestServerApi(\"/toolbox/registry/snapshot\")", findings, "Toolbox registry must read through the server API service contract.");
+  rejectPattern(registryClient, "www/toolbox/tool-registry-api-client.js", providerLeakPattern, findings, "Toolbox registry client must not expose provider/environment implementation details.");
 
   const votesClient = await readRequiredRepoFile("src/api/toolbox-votes-api-client.js", findings, "Toolbox votes API client is missing");
   requireSnippet(votesClient, "src/api/toolbox-votes-api-client.js", "safeRequestServerApi(\"/toolbox/votes/snapshot\")", findings, "Toolbox votes must read through the server API service contract.");

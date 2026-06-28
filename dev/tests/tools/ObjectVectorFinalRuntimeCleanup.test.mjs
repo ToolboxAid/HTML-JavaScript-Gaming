@@ -1,8 +1,8 @@
-import assert from "node:assert/strict";
+﻿import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { getToolById } from "../../../toolbox/toolRegistry.js";
+import { getToolById } from "../../../www/toolbox/toolRegistry.js";
 
 const REPO_ROOT = fileURLToPath(new URL("../../..", import.meta.url));
 const ACTIVE_OBJECT_VECTOR_PATHS = Object.freeze([

@@ -1,4 +1,4 @@
-import fs from "node:fs";
+﻿import fs from "node:fs";
 import http from "node:http";
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -157,7 +157,7 @@ test("dev-runtime boundary is documented for runtime implementation and not test
 });
 
 test("Toolbox registry consumes shared metadata without importing dev-runtime", () => {
-  const registrySource = fs.readFileSync("toolbox/toolRegistry.js", "utf8");
+  const registrySource = fs.readFileSync("www/toolbox/toolRegistry.js", "utf8");
   const devRuntimeShim = fs.readFileSync("src/dev-runtime/guest-seeds/tool-metadata-inventory.js", "utf8");
   assert.match(registrySource, /src\/shared\/toolbox\/tool-metadata-inventory\.js/);
   assert.doesNotMatch(registrySource, /src\/dev-runtime|src\\dev-runtime|dev-runtime\/guest-seeds/);

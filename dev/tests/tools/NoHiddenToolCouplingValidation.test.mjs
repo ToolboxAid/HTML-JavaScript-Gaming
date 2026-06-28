@@ -1,8 +1,8 @@
-import assert from "node:assert/strict";
+﻿import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { getActiveToolRegistry } from "../../../toolbox/toolRegistry.js";
+import { getActiveToolRegistry } from "../../../www/toolbox/toolRegistry.js";
 
 const REPO_ROOT = fileURLToPath(new URL("../../..", import.meta.url));
 

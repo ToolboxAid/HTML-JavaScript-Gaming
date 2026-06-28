@@ -9,14 +9,18 @@ const repoRoot = path.resolve(fileURLToPath(new URL("../../../..", import.meta.u
 test("repo server preserves current public route URLs with default root serving", async ({ page }) => {
   const server = await startRepoServer();
   try {
-    const homeResponse = await page.goto(`${server.baseUrl}/index.html`, { waitUntil: "domcontentloaded" });
-    expect(homeResponse?.status()).toBe(200);
-
-    const toolboxResponse = await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "domcontentloaded" });
-    expect(toolboxResponse?.status()).toBe(200);
-
-    const assetResponse = await page.request.get(`${server.baseUrl}/assets/theme-v2/css/theme.css`);
-    expect(assetResponse.status()).toBe(200);
+    const routes = [
+      "/index.html",
+      "/toolbox/index.html",
+      "/assets/theme-v2/css/theme.css",
+      "/account/sign-in.html",
+      "/admin/system-health.html",
+      "/games/index.html",
+    ];
+    for (const route of routes) {
+      const response = await page.request.get(`${server.baseUrl}${route}`);
+      expect(response.status(), route).toBe(200);
+    }
   } finally {
     await server.close();
   }

@@ -1,4 +1,4 @@
-import { getActiveToolRegistry } from "../../../toolbox/tool-registry-api-client.js";
+import { getActiveToolRegistry } from "../../../www/toolbox/tool-registry-api-client.js";
 import { normalizeText, normalizeToken } from "../string/strings.js";
 
 const ALLOWED_LAUNCH_SOURCES = Object.freeze(["samples", "games", "tools", "workspace", "internal"]);

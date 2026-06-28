@@ -116,37 +116,42 @@ Rules:
    - Document current browser-served root paths, imports, local server behavior, test assumptions, compatibility needs, and validation lanes.
    - Do not move browser files or change package commands.
 
-3. `PR_26180_OWNER_007-move-www-application`
+3. `PR_26180_OWNER_007-www-route-root-compatibility`
+   - Prepare runtime/test route-root compatibility for the future `www/` move.
+   - Preserve public URLs.
+   - Keep repository-root serving as the default until the actual move.
+
+4. `PR_26180_OWNER_008-move-www-application`
    - Move browser-served application files into `www/`.
    - Include root HTML pages, `assets/`, `toolbox/`, `account/`, `legal/`, `learn/`, `play/`, and other browser-served static routes.
    - Update internal static references only as needed.
    - Do not move API/server files.
 
-4. `PR_26180_OWNER_008-move-api-application`
+5. `PR_26180_OWNER_009-move-api-application`
    - Move server/API application files into `api/`.
    - Include Local API server runtime files, API routes, services, database, storage, auth, publishing, and admin server code.
    - Do not move developer-only startup orchestration.
    - Browser code must not import from `api/`.
 
-5. `PR_26180_OWNER_009-move-dev-local-runtime`
+6. `PR_26180_OWNER_010-move-dev-local-runtime`
    - Move developer-only local runtime into `dev/local-runtime/`.
    - Include team-aware bootstrap, port config, local startup orchestration, local diagnostics, and browser launch support.
    - Update `package.json` commands to point to the new local-runtime paths.
 
-6. `PR_26180_OWNER_010-move-tests-and-validation`
+7. `PR_26180_OWNER_011-move-tests-and-validation`
    - Ensure all tests and validation suites live under `dev/tests/` or the current canonical dev test structure.
    - Update test paths after the `www/`, `api/`, and `dev/` migrations.
    - Do not change behavior.
 
-7. `PR_26180_OWNER_011-update-ci-and-scripts`
+8. `PR_26180_OWNER_012-update-ci-and-scripts`
    - Update CI, package scripts, validation scripts, and developer utilities for the new layout.
    - Preserve `npm run dev:bootstrap`, `npm run dev:api`, `npm run dev:web`, and `npm run dev:local-api`.
 
-8. `PR_26180_OWNER_012-remove-legacy-layout`
+9. `PR_26180_OWNER_013-remove-legacy-layout`
    - Remove or retire obsolete legacy paths after all references are updated.
    - Hard stop if any runtime, test, or CI reference still points to old locations.
 
-9. `PR_26180_OWNER_013-final-layout-validation`
+10. `PR_26180_OWNER_014-final-layout-validation`
    - Validate final repository layout.
    - Confirm `www/` owns the browser-served app, `api/` owns the server app, and `dev/` owns the developer workspace.
    - Confirm runtime does not depend on `dev/`, browser code does not import `api/`, and legacy references are removed or documented.

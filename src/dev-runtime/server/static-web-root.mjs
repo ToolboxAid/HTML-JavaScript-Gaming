@@ -2,8 +2,9 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 export const LOCAL_WEB_ROOT_ENV = "GAMEFOUNDRY_LOCAL_WEB_ROOT";
-export const DEFAULT_LOCAL_WEB_ROOT = ".";
 export const WWW_LOCAL_WEB_ROOT = "www";
+export const REPO_ROOT_LOCAL_WEB_ROOT = ".";
+export const DEFAULT_LOCAL_WEB_ROOT = WWW_LOCAL_WEB_ROOT;
 
 export function isInsideRoot(rootPath, absolutePath) {
   const relativePath = path.relative(rootPath, absolutePath);
@@ -12,8 +13,11 @@ export function isInsideRoot(rootPath, absolutePath) {
 
 function normalizeWebRootValue(value) {
   const normalizedValue = String(value || "").trim();
-  if (!normalizedValue || normalizedValue === "." || normalizedValue === "root" || normalizedValue === "repo-root") {
+  if (!normalizedValue) {
     return DEFAULT_LOCAL_WEB_ROOT;
+  }
+  if (normalizedValue === "." || normalizedValue === "root" || normalizedValue === "repo-root") {
+    return REPO_ROOT_LOCAL_WEB_ROOT;
   }
   return normalizedValue.replace(/\\/g, "/").replace(/^\/+/, "").replace(/\/+$/, "") || DEFAULT_LOCAL_WEB_ROOT;
 }

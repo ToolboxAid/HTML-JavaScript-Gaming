@@ -1,4 +1,4 @@
-/*
+﻿/*
 Toolbox Aid
 David Quesenberry
 06/02/2026
@@ -10,10 +10,10 @@ import {
 } from "../../../src/shared/contracts/tools/toolContractsIndex.js";
 import {
   getActiveToolRegistry,
-} from "../../../toolbox/toolRegistry.js";
+} from "../../../www/toolbox/toolRegistry.js";
 import {
   WorkspaceManagerV2ContextService,
-} from "../../../toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js";
+} from "../../../www/toolbox/workspace-manager-v2/js/services/WorkspaceManagerV2ContextService.js";
 import {
   validateProjectWorkspaceLaunchBoundary,
 } from "./ProjectWorkspaceLaunchBoundaryValidation.test.mjs";

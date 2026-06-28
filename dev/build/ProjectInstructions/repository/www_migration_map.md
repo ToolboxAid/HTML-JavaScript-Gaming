@@ -1,27 +1,27 @@
 # www Migration Map
 
-Status: Active planning map
+Status: Implemented migration map
 Owner: Owner
 Workstream: Repository Architecture Simplification
-PR: PR_26180_OWNER_006-www-migration-map
+PR: PR_26180_OWNER_006-www-migration-map; PR_26180_OWNER_008-move-www-application
 
 ## Purpose
 
 Document the current browser-served repository surface and the safe sequence required before moving files into `www/`.
 
-This map is a no-runtime-change governance artifact. It does not move browser files, change package commands, change local server behavior, or update runtime imports.
+This map began as a no-runtime-change governance artifact. `PR_26180_OWNER_008-move-www-application` used it to move browser-served files under `www/` while preserving public URLs.
 
 ## Executive Summary
 
-The browser-served application currently depends on repository-root static serving.
+The browser-served application now lives under `www/`.
 
-Current local runtime, test helpers, and browser pages assume URLs such as `/index.html`, `/toolbox/index.html`, `/assets/theme-v2/css/theme.css`, `/account/sign-in.html`, `/admin/system-health.html`, and `/games/index.html` resolve from the repository root.
+Current local runtime, test helpers, and browser pages keep URLs such as `/index.html`, `/toolbox/index.html`, `/assets/theme-v2/css/theme.css`, `/account/sign-in.html`, `/admin/system-health.html`, and `/games/index.html` while resolving browser-served files from `www/`.
 
-Moving browser files into `www/` is feasible, but the move must preserve public route URLs while changing the filesystem lookup root. A direct folder move without route compatibility would break Playwright tests, local API static serving, team-aware bootstrap static serving, Node test root aliases, and browser imports that still reference root-level `src/`, `toolbox/`, and `assets/`.
+The move preserved public route URLs while changing the filesystem lookup root. Repository-root fallback remains available for transition-only compatibility, including browser imports that still reference root-level `src/`.
 
 ## Current Browser-Served Surface
 
-Current root-level browser-served entry points and folders include:
+Current browser-served entry points and folders now live under `www/`:
 
 | Path | Current role | Files | HTML files | Move target |
 | --- | --- | ---: | ---: | --- |
@@ -75,7 +75,7 @@ These URLs should continue working for users and tests during the move:
 - `/marketplace/index.html`
 - `/memberships/index.html`
 
-### Rewrite filesystem lookup paths
+### Rewritten filesystem lookup paths
 
 Static servers and test helpers should map public URLs to `www/` filesystem paths after the move:
 
@@ -172,17 +172,21 @@ Recommended approach for the actual move PR:
 
 ## Route Root Compatibility Toggle
 
-`PR_26180_OWNER_007-www-route-root-compatibility` installs the local compatibility switch without moving browser files.
+`PR_26180_OWNER_007-www-route-root-compatibility` installed the local compatibility switch without moving browser files.
 
-The future activation toggle is:
+`PR_26180_OWNER_008-move-www-application` moves browser-served files into `www/` and makes local static serving prefer `www/` by default.
+
+The local static serving root is now `www/` by default. The explicit activation toggle remains:
 
 ```text
 GAMEFOUNDRY_LOCAL_WEB_ROOT=www
 ```
 
-Default behavior remains current repository-root static serving when `GAMEFOUNDRY_LOCAL_WEB_ROOT` is unset, empty, `.`, `root`, or `repo-root`.
+Default behavior is now `www/` static serving when `GAMEFOUNDRY_LOCAL_WEB_ROOT` is unset or empty.
 
-When `GAMEFOUNDRY_LOCAL_WEB_ROOT=www`, local static serving prefers `www/` for public browser URLs while retaining repository-root fallback for compatibility during migration.
+When `GAMEFOUNDRY_LOCAL_WEB_ROOT=www`, local static serving explicitly prefers `www/` for public browser URLs while retaining repository-root fallback for compatibility during migration.
+
+When local validation needs the prior root behavior, `GAMEFOUNDRY_LOCAL_WEB_ROOT=repo-root` resolves static files from the repository root.
 
 This toggle is for local runtime and test helpers only. It does not change production deployment, public URLs, API routes, or package commands.
 

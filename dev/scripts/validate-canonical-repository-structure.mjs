@@ -6,14 +6,14 @@ import { fileURLToPath } from "node:url";
 const repoRoot = path.resolve(fileURLToPath(new URL("../..", import.meta.url)));
 
 export const APPROVED_LEGACY_JS_PATHS = Object.freeze(new Set([
-  "toolbox/game-hub/game-hub-api-client.js",
-  "toolbox/game-hub/game-hub.js",
-  "toolbox/messages/message-tts-service-registry.js",
-  "toolbox/messages/messages-api-client.js",
-  "toolbox/messages/messages.js",
-  "toolbox/tool-registry-api-client.js",
-  "toolbox/toolRegistry.js",
-  "toolbox/tools-page-accordions.js",
+  "www/toolbox/game-hub/game-hub-api-client.js",
+  "www/toolbox/game-hub/game-hub.js",
+  "www/toolbox/messages/message-tts-service-registry.js",
+  "www/toolbox/messages/messages-api-client.js",
+  "www/toolbox/messages/messages.js",
+  "www/toolbox/tool-registry-api-client.js",
+  "www/toolbox/toolRegistry.js",
+  "www/toolbox/tools-page-accordions.js",
   "src/engine/paletteList.js",
 ]));
 
@@ -91,8 +91,8 @@ function isCss(filePath) {
 }
 
 function relevantPath(filePath) {
-  return filePath.startsWith("assets/") ||
-    filePath.startsWith("toolbox/") ||
+  return filePath.startsWith("www/assets/") ||
+    filePath.startsWith("www/toolbox/") ||
     filePath.startsWith("src/engine/") ||
     filePath.startsWith("dev/tests/");
 }
@@ -102,39 +102,39 @@ function record(severity, area, file, message, expected) {
 }
 
 function isCanonicalAssetJs(filePath) {
-  return /^assets\/toolbox\/[^/]+\/js\/index\.js$/.test(filePath) ||
-    /^assets\/toolbox\/[^/]+\/js\/[^/]+-worker\.js$/.test(filePath) ||
-    filePath.startsWith("assets/js/shared/") ||
-    filePath.startsWith("assets/theme-v2/js/");
+  return /^www\/assets\/toolbox\/[^/]+\/js\/index\.js$/.test(filePath) ||
+    /^www\/assets\/toolbox\/[^/]+\/js\/[^/]+-worker\.js$/.test(filePath) ||
+    filePath.startsWith("www/assets/js/shared/") ||
+    filePath.startsWith("www/assets/theme-v2/js/");
 }
 
 function isCanonicalAssetCss(filePath) {
-  return /^assets\/toolbox\/[^/]+\/css\/index\.css$/.test(filePath) ||
-    filePath.startsWith("assets/theme-v2/css/") ||
-    filePath.startsWith("assets/theme-v2/fonts/");
+  return /^www\/assets\/toolbox\/[^/]+\/css\/index\.css$/.test(filePath) ||
+    filePath.startsWith("www/assets/theme-v2/css/") ||
+    filePath.startsWith("www/assets/theme-v2/fonts/");
 }
 
 function auditJavaScript(filePath) {
   if (!isJavaScript(filePath)) {
     return null;
   }
-  if (filePath.startsWith("assets/") && !isCanonicalAssetJs(filePath)) {
+  if (filePath.startsWith("www/assets/") && !isCanonicalAssetJs(filePath)) {
     return record(
       "FAIL",
       "JS",
       filePath,
-      "JavaScript under assets must use assets/toolbox/{tool}/js/index.js, assets/toolbox/{tool}/js/{worker-name}.js for tool-local workers, assets/js/shared/, or assets/theme-v2/js/.",
-      "assets/toolbox/{tool}/js/index.js, assets/toolbox/{tool}/js/{worker-name}.js, or assets/js/shared/",
+      "JavaScript under www/assets must use www/assets/toolbox/{tool}/js/index.js, www/assets/toolbox/{tool}/js/{worker-name}.js for tool-local workers, www/assets/js/shared/, or www/assets/theme-v2/js/.",
+      "www/assets/toolbox/{tool}/js/index.js, www/assets/toolbox/{tool}/js/{worker-name}.js, or www/assets/js/shared/",
     );
   }
-  if (filePath.startsWith("toolbox/")) {
+  if (filePath.startsWith("www/toolbox/")) {
     if (APPROVED_LEGACY_JS_PATHS.has(filePath)) {
       return record(
         "LEGACY",
         "JS",
         filePath,
         "Approved legacy toolbox JavaScript sidecar awaiting canonical migration.",
-        "assets/toolbox/{tool}/js/index.js, assets/toolbox/{tool}/js/{worker-name}.js, or assets/js/shared/",
+        "www/assets/toolbox/{tool}/js/index.js, www/assets/toolbox/{tool}/js/{worker-name}.js, or www/assets/js/shared/",
       );
     }
     return record(
@@ -142,7 +142,7 @@ function auditJavaScript(filePath) {
       "JS",
       filePath,
       "New or unapproved toolbox JavaScript sidecar is outside canonical structure.",
-      "assets/toolbox/{tool}/js/index.js or assets/js/shared/",
+      "www/assets/toolbox/{tool}/js/index.js or www/assets/js/shared/",
     );
   }
   if (/^src\/engine\/[^/]+\.m?js$/.test(filePath)) {
@@ -170,22 +170,22 @@ function auditCss(filePath) {
   if (!isCss(filePath)) {
     return null;
   }
-  if (filePath.startsWith("assets/") && !isCanonicalAssetCss(filePath)) {
+  if (filePath.startsWith("www/assets/") && !isCanonicalAssetCss(filePath)) {
     return record(
       "FAIL",
       "CSS",
       filePath,
-      "CSS under assets must use assets/toolbox/{tool}/css/index.css or assets/theme-v2/css/.",
-      "assets/toolbox/{tool}/css/index.css or assets/theme-v2/css/",
+      "CSS under www/assets must use www/assets/toolbox/{tool}/css/index.css or www/assets/theme-v2/css/.",
+      "www/assets/toolbox/{tool}/css/index.css or www/assets/theme-v2/css/",
     );
   }
-  if (filePath.startsWith("toolbox/")) {
+  if (filePath.startsWith("www/toolbox/")) {
     return record(
       "FAIL",
       "CSS",
       filePath,
       "Toolbox CSS sidecar is outside canonical tool asset structure.",
-      "assets/toolbox/{tool}/css/index.css",
+      "www/assets/toolbox/{tool}/css/index.css",
     );
   }
   if (filePath.startsWith("src/engine/") && APPROVED_LEGACY_CSS_PATHS.has(filePath)) {

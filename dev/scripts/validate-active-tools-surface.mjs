@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "../..");
-const toolboxRoot = path.join(repoRoot, "toolbox");
+const toolboxRoot = path.join(repoRoot, "www", "toolbox");
 const NON_TOOLBOX_PAGE_FOLDERS = new Set([
   "learn",
   "users",
@@ -15,10 +15,10 @@ const NON_TOOLBOX_PAGE_FOLDERS = new Set([
 ]);
 
 const ACTIVE_NAV_TARGETS = [
-  "assets/theme-v2/partials/header-nav.html",
-  "assets/theme-v2/js/gamefoundry-partials.js",
-  "toolbox/index.html",
-  "toolbox/tools-page-accordions.js"
+  "www/assets/theme-v2/partials/header-nav.html",
+  "www/assets/theme-v2/js/gamefoundry-partials.js",
+  "www/toolbox/index.html",
+  "www/toolbox/tools-page-accordions.js"
 ];
 
 const RETIRED_ACTIVE_PATTERNS = [
@@ -83,11 +83,11 @@ async function main() {
     }
   }
 
-  const headerNav = await readText("assets/theme-v2/partials/header-nav.html");
-  const partials = await readText("assets/theme-v2/js/gamefoundry-partials.js");
-  const toolboxIndex = await readText("toolbox/index.html");
-  const toolsAccordions = await readText("toolbox/tools-page-accordions.js");
-  const toolRegistry = await readText("toolbox/toolRegistry.js");
+  const headerNav = await readText("www/assets/theme-v2/partials/header-nav.html");
+  const partials = await readText("www/assets/theme-v2/js/gamefoundry-partials.js");
+  const toolboxIndex = await readText("www/toolbox/index.html");
+  const toolsAccordions = await readText("www/toolbox/tools-page-accordions.js");
+  const toolRegistry = await readText("www/toolbox/toolRegistry.js");
 
   for (const folderName of activeTools) {
     const route = routeForTool(folderName);
