@@ -1,30 +1,36 @@
-# PR_26179_OWNER_035-dev-auth-user-key-db-authority
+﻿# PR_26179_OWNER_035-dev-auth-user-key-db-authority
 
 ## Summary
 
 This PR makes DEV account session resolution treat the database `users` row as authoritative.
 
-Runtime sign-in now resolves a session only when the Supabase Auth user id matches `users.authProviderUserId`. Matching by email alone is no longer accepted for login/session resolution. Email remains valid only for the DEV identity sync step that locates the existing database `users` row before writing the real Supabase Auth id back to `users.authProviderUserId`.
+Runtime sign-in now resolves a session only when the Supabase Auth user id matches `users.authProviderUserId`. Matching by email alone is not accepted for login/session resolution. Email remains valid only for the approved DEV identity sync step that locates the existing database `users` row before writing the real Supabase Auth id back to `users.authProviderUserId`.
+
+## Branch Status
+
+- Source branch: `PR_26179_OWNER_035-dev-auth-user-key-db-authority`
+- Base branch: `main`
+- Rebased onto main HEAD: `13cbe98955c1bcc014bff07480b7d3399386e72f`
+- Main still excludes this fix until PR merge: yes
 
 ## Diagnostic Findings
 
-### Where `users.key` currently comes from
+### Where `users.key` comes from
 
-- DEV seed setup defines static user keys in `src/dev-runtime/seed/seed-db-keys.mjs`.
-- Current database seed DML also contains DEV account rows under `dev/build/database/dml/account.sql`.
-- Before this PR, `src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs` imported those seed keys and used them as the canonical keys during DEV Supabase identity sync.
-- After this PR, DEV sync locates existing `users` rows by email and reads `users.key` from the database row. The sync no longer imports `SEED_DB_KEYS`.
+- DEV seed setup still defines static fixture keys in `src/dev-runtime/seed/seed-db-keys.mjs` for seed/bootstrap data.
+- Before this PR, DEV Supabase identity sync used those seed constants as the authoritative app user keys.
+- After this PR, DEV sync locates existing database `users` rows by email and reads `users.key` from the database row. Missing or duplicate database rows are explicit setup errors.
 
 ### Where `authProviderUserId` is populated
 
-- Account creation provisioning still writes `authProviderUserId` in `src/dev-runtime/server/local-api-router.mjs` through `provisionSupabaseIdentityForAuthPayload()`.
-- DEV identity sync now reads `auth.users.id` from Supabase Auth, reads `users.key` from the database row found by email, and sends that database-owned key plus the real Auth id through `databaseProvider.initializeIdentity()`.
+- Account provisioning continues to write `authProviderUserId` in `src/dev-runtime/server/local-api-router.mjs` through the API/server path.
+- DEV identity sync reads Supabase Auth `auth.users.id`, reads the existing product `users.key` from the database row found by email, then writes the real Auth id to `users.authProviderUserId`.
 
-### Seed constant use
+### Runtime resolution
 
-- Seed constants remain valid for DEV seed setup, seed fixtures, and existing test/demo data.
-- They are no longer used by the DEV identity sync helper as the authoritative app user key source.
-- Runtime sign-in/session resolution does not hardcode DavidQ or other user keys. It reads identity tables and resolves `matchingUser.key` after matching Supabase Auth id to `users.authProviderUserId`.
+- Supabase sign-in/session resolution now requires an active product `users` row whose `authProviderUserId` equals the Supabase Auth user id.
+- If Auth succeeds but the product row is not linked, the API returns a controlled setup message directing the operator to run the approved DEV identity sync.
+- Runtime login no longer hardcodes DavidQ/user keys and no longer uses display name as an identity key.
 
 ## Exact Fix
 
@@ -33,61 +39,43 @@ Runtime sign-in now resolves a session only when the Supabase Auth user id match
 - Added a narrow server-side Postgres client injection hook for tests, with default runtime behavior unchanged.
 - Refactored DEV creator identity sync so canonical identity definitions are email-based and database `users.key` is read from existing rows.
 - Changed role assignment and cleanup repair logic to derive canonical user keys from database rows.
-- Removed the Alfa toolbox tag/design/configuration helper behavior that upserted seed `users` rows over the static DEV account keys.
-- Changed the DEV identity sync default so existing Supabase Auth users are updated without sending a password. Password updates now require an explicit `--update-passwords` flag.
-- Added regression tests proving:
-  - Sign-in uses the database-owned `users.key` matched by `authProviderUserId`.
-  - Sign-in does not create a session from matching email when `authProviderUserId` is stale.
-  - DEV sync preserves non-seed database user keys.
-  - DEV sync fails if an expected database `users` row is missing.
-  - Tags API seeding does not upsert rows into `users`.
-  - Existing Auth user sync does not send a password by default.
+- Removed the Alfa toolbox tag/design/configuration helper behavior that upserted seed `users` rows over DEV account keys.
+- Changed the DEV identity sync default so existing Supabase Auth users are updated without sending a password. Password updates now require explicit `--update-passwords`.
+- Added regression tests for auth id matching, stale authProviderUserId handling, existing database key preservation, missing database rows, Tags API seeding not modifying `users`, and password-safe sync defaults.
 
-## DEV Database Verification
+## Current DEV Data Note
 
-Performed against the current `.env` DEV database target.
+Read-only verification before packaging found:
 
-Initial audit:
+- `qbytes.dq@gmail.com` exists in Supabase Auth.
+- `qbytes.dq@gmail.com` is currently missing from the product `users` table.
+- Therefore `users.authProviderUserId` is not synced for that account yet.
 
-- `qbytes.dq@gmail.com` existed in Supabase Auth.
-- `qbytes.dq@gmail.com` was missing from the product `users` table.
-- The reserved static DEV account keys for User 1 and DavidQ had been overwritten by seed `Creator` / `Forge Bot` rows.
-
-Repair and sync:
-
-- Re-applied the approved DEV account DML to restore the missing database identity rows.
-- Ran the DEV identity sync with `updatePasswords: false`.
-- qbytes sync action: `updated`.
-- qbytes password update: `false`.
-
-Final audit:
-
-- Supabase Auth match count: `1`.
-- Product `users` match count: `1`.
-- `users.authProviderUserId` equals Supabase Auth `auth.users.id`: PASS.
-- Sign-in smoke through `/api/auth/sign-in`: PASS.
-- Session resolved to the database `users.key`: PASS.
+The mutating DEV identity sync was not run during this package/push step. Next action after this PR is merged: run the approved DEV identity sync against the current DEV database, then re-test sign-in.
 
 ## Files Changed
 
-- `src/dev-runtime/server/local-api-router.mjs`
-- `src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs`
-- `dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
-- `dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`
+- `src/dev-runtime/server/local-api-router.mjs` - updated
+- `src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs` - updated
+- `src/dev-runtime/toolbox-api/alfa-tool-services.mjs` - updated
+- `dev/scripts/sync-supabase-dev-creator-identities.mjs` - updated
+- `dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs` - updated
+- `dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs` - updated
+- `dev/tests/dev-runtime/TagsApiService.test.mjs` - updated
 
 ## Validation
 
 PASS:
 
+- `git diff --check`
+- `npm run validate:canonical-structure`
 - `node --check src/dev-runtime/server/local-api-router.mjs`
 - `node --check src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs`
-- `node --check dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
-- `node --check dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`
 - `node --check src/dev-runtime/toolbox-api/alfa-tool-services.mjs`
 - `node --check dev/scripts/sync-supabase-dev-creator-identities.mjs`
+- `node --check dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
+- `node --check dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`
 - `node --check dev/tests/dev-runtime/TagsApiService.test.mjs`
 - `node --test dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`
 - `node --test --test-name-pattern "Supabase sign-in resolves|Supabase sign-in does not" dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
 - `node --test dev/tests/dev-runtime/TagsApiService.test.mjs`
-- `git diff --check`
-- `npm run validate:canonical-structure`

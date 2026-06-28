@@ -1,21 +1,17 @@
-# Validation Lane Report: PR_26179_OWNER_035-dev-auth-user-key-db-authority
+﻿# PR_26179_OWNER_035-dev-auth-user-key-db-authority Validation Lane Report
 
-## Lane
+Status: PASS
 
-Targeted auth and DEV identity sync validation.
+Lane: Owner auth identity authority and DEV sync guardrails.
 
-## Commands
+Coverage:
 
-- PASS `node --test dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`
-- PASS `node --test --test-name-pattern "Supabase sign-in resolves|Supabase sign-in does not" dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
-- PASS `node --test dev/tests/dev-runtime/TagsApiService.test.mjs`
-- PASS live DEV identity audit and sign-in smoke for `qbytes.dq@gmail.com`
+- Supabase session resolution requires `users.authProviderUserId` to match Auth id.
+- Stale `authProviderUserId` does not create a session by email fallback.
+- DEV identity sync requires existing product users rows and preserves DB-owned keys.
+- Tags API service seeding does not write seed user rows into `users`.
+- Canonical repository structure remains valid.
 
-## Coverage
+Not run:
 
-- DEV identity sync reads existing database `users.key` values by email.
-- DEV identity sync writes real Supabase Auth ids to `users.authProviderUserId`.
-- Existing Auth user sync does not update passwords by default.
-- Session resolution accepts only `auth.users.id` matched to `users.authProviderUserId`.
-- Email-only session resolution is rejected with the existing Creator-safe setup message.
-- Tags API setup no longer writes seed rows to the account `users` table.
+- Full workspace smoke. Not required for this package/push step; targeted auth and Tags guardrail validation passed.
