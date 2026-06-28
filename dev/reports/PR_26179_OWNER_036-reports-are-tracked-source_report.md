@@ -2,13 +2,13 @@
 
 ## Summary
 
-This governance PR clarifies that `dev/reports/` is authoritative tracked repository source. Codex-generated reports are expected to be committed with the PR that generated them, and generated post-merge closeout reports should be committed through a follow-up governance/report PR or avoided on `main` when no commit is intended.
+This governance PR clarifies that `dev/reports/` contains the authoritative Codex reports for the repository and that reports committed to `main` are the official record. Reports generated during a PR are expected to be committed as part of that PR, while repository authority remains the report state committed to `main`.
 
 ## Scope
 
 - Updated Codex artifact/reporting governance.
 - Updated canonical repository structure wording for `dev/reports/`.
-- Updated PR workflow clean-main guidance for tracked reports.
+- Updated PR workflow clean-main guidance for intended report updates.
 - Preserved the existing PR277 post-merge closeout report artifacts instead of deleting them.
 - No runtime code changes.
 - No auth changes.
@@ -17,15 +17,17 @@ This governance PR clarifies that `dev/reports/` is authoritative tracked reposi
 
 ## Policy Added
 
-- `dev/reports/` is authoritative and tracked by Git.
-- Any changes to `dev/reports/` generated during a PR are expected to be included in that PR.
-- A clean `main` means the latest report files have been committed and merged.
-- Do not delete report files only to make the worktree clean.
+- `dev/reports/` contains the authoritative Codex reports for the repository.
+- Reports committed to `main` are the official record.
+- Reports generated during a PR are expected to be committed as part of that PR.
+- Once merged into `main`, those report versions become the canonical repository history.
+- Do not delete report files solely to obtain a clean worktree.
 - Do not add `dev/reports/` to `.gitignore`.
-- Do not move reports outside the repository.
-- Continue using `dev/reports/` for reports and `dev/workspace/zips/` for ZIPs.
-- Generated post-merge closeout reports should either be committed in a follow-up governance/report PR or avoided on `main` if no commit is intended.
+- Continue storing ZIPs under `dev/workspace/zips/`.
 
 ## Validation
 
-Pending at report creation; final results are recorded in the validation report.
+PASS:
+
+- `git diff --check`
+- `npm run validate:canonical-structure`
