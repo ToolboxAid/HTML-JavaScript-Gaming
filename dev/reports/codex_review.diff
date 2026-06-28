@@ -1,10 +1,237 @@
-diff --git a/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-branch-validation.md b/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-branch-validation.md
+diff --git a/dev/build/ProjectInstructions/TEAM_START_COMMANDS.md b/dev/build/ProjectInstructions/TEAM_START_COMMANDS.md
+index 76a830bc9..8f54dda30 100644
+--- a/dev/build/ProjectInstructions/TEAM_START_COMMANDS.md
++++ b/dev/build/ProjectInstructions/TEAM_START_COMMANDS.md
+@@ -8,13 +8,15 @@ Official Start of Day command format lives in:
+
+ The ready-to-copy team assignment commands below are OWNER assignment helpers, not Start of Day bootstrap commands.
+
+-No team creates a PR branch until all checks pass:
++For Independent PRs and for the first PR in a new stacked workstream, no team creates a PR branch until all checks pass:
+
+ - Current branch: `main`
+ - Worktree: clean
+ - `main...origin/main`: `0 0`
+ - `HEAD` SHA matches the published EOD SHA
+
++Dependent Stacked PRs may start from the documented previous PR branch only when `dev/build/ProjectInstructions/addendums/pr_workflow.md` defines the direct dependency and merge order.
++
+ Use `dev/build/ProjectInstructions/` as the only active Project Instructions source.
+ Read `dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md` before implementation.
+
+diff --git a/dev/build/ProjectInstructions/addendums/branch_context_governance.md b/dev/build/ProjectInstructions/addendums/branch_context_governance.md
+index 066793bb0..dbcd890ca 100644
+--- a/dev/build/ProjectInstructions/addendums/branch_context_governance.md
++++ b/dev/build/ProjectInstructions/addendums/branch_context_governance.md
+@@ -23,6 +23,8 @@ At the start of work, report or validate:
+ - active team
+ - active assignment
+ - active PR number/name or explicit `PLAN_ONLY`
++- requested PR branching model: Independent PR or Stacked PR
++- expected starting branch for the requested PR branching model
+ - previous PR Closed status unless this is an explicitly documented stacked PR chain
+
+ Session start must follow the canonical START phase in `dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`.
+@@ -32,12 +34,14 @@ Session start must follow the canonical START phase in `dev/build/ProjectInstruc
+ Stop and report before changing files when:
+
+ - current branch does not match the expected branch
++- requested PR branching model does not match the current/start branch
+ - local branch is behind or ahead unexpectedly
+ - worktree has unrelated changes
+ - active assignment is missing or unclear
+ - active team does not match the branch or OWNER instruction
+ - BUILD_PR work has no PR name and active branch/PR identity, unless explicitly marked `PLAN_ONLY`
+ - the team's previous PR is not Closed and no stacked PR chain is documented
++- the request describes a Stacked PR but does not document the dependency order
+ - the requested work would modify files outside the approved scope
+
+ ## Continuation Rule
+diff --git a/dev/build/ProjectInstructions/addendums/branch_lock_governance.md b/dev/build/ProjectInstructions/addendums/branch_lock_governance.md
+index e3eff6660..c37b34ffd 100644
+--- a/dev/build/ProjectInstructions/addendums/branch_lock_governance.md
++++ b/dev/build/ProjectInstructions/addendums/branch_lock_governance.md
+@@ -26,9 +26,12 @@ This file owns branch lock enforcement and OWNER override handling; it must not
+
+ ## Branch Rules
+
+-- Start from current `main`.
+-- Pull latest `origin/main` before creating a work branch.
+-- Do not create a PR branch unless current branch is `main`, worktree is clean, `main...origin/main` is `0 0`, and `HEAD` SHA matches the published EOD SHA.
++- Identify the PR branching model before creating or continuing a PR branch.
++- Independent PRs and new stacked workstreams start from current `main`.
++- Dependent Stacked PRs may start from the documented previous PR branch only when a direct dependency and dependency order are documented in `dev/build/ProjectInstructions/addendums/pr_workflow.md`.
++- Pull latest `origin/main` before creating an Independent PR branch or the first branch in a new stack.
++- Do not create an Independent PR branch unless current branch is `main`, worktree is clean, `main...origin/main` is `0 0`, and `HEAD` SHA matches the published EOD SHA.
++- HARD STOP if the current branch does not match the requested PR branching model.
+ - Follow the canonical START / WORK / END lifecycle in `dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`.
+ - Keep work on the active branch until the PR is merged, the branch is retired, EOD closeout begins, or OWNER says to return to `main`.
+ - For OWNER-approved stacked/sequential workstreams, PR branches/commits stay on the active team branch/workstream during the day and do not return to `main` between PRs.
+diff --git a/dev/build/ProjectInstructions/addendums/pr_workflow.md b/dev/build/ProjectInstructions/addendums/pr_workflow.md
+index 6fadd0789..459ac0b73 100644
+--- a/dev/build/ProjectInstructions/addendums/pr_workflow.md
++++ b/dev/build/ProjectInstructions/addendums/pr_workflow.md
+@@ -19,22 +19,69 @@ This file owns PR lifecycle governance. It must not duplicate command phase rule
+
+ ## Standard Flow
+
+-1. Start from main.
+-2. Pull latest origin/main.
+-3. Verify clean worktree.
+-4. Create a PR branch and PR identity.
+-5. Mark lifecycle state as PR Open.
+-6. Plan on the same PR branch.
+-7. Build on the same PR branch.
+-8. Validate the change.
+-9. Commit with a clear OWNER/team message.
+-10. Push the branch.
+-11. Open or update the draft PR.
+-12. Review the PR.
+-13. OWNER approves merge.
+-14. Merge to main.
+-15. Pull latest main before starting the next unrelated workstream, or before a new PR when the work is not an OWNER-approved stacked/sequential workstream.
+-16. Verify Main Verified and Closed gates.
++1. Identify the PR branching model: Independent PR or Stacked PR.
++2. Start from the required branch for that model.
++3. Pull or confirm the required base branch is current.
++4. Verify clean worktree.
++5. Create a PR branch and PR identity.
++6. Mark lifecycle state as PR Open.
++7. Plan on the same PR branch.
++8. Build on the same PR branch.
++9. Validate the change.
++10. Commit with a clear OWNER/team message.
++11. Push the branch.
++12. Open or update the draft PR.
++13. Review the PR.
++14. OWNER approves merge.
++15. Merge to main in the valid order for the PR model.
++16. Pull latest main before starting the next unrelated workstream, or before a new PR when the work is not an OWNER-approved stacked/sequential workstream.
++17. Verify Main Verified and Closed gates.
++
++## PR Branching Models
++
++Every PR must declare one branching model before branch creation or branch continuation.
++
++### Independent PR
++
++Use an Independent PR when the change has no direct dependency on another open PR.
++
++Rules:
++- Independent PRs must start from synchronized `main`.
++- Independent PRs must target `main`.
++- Independent PRs must not reuse another feature branch as their starting point.
++- Codex must HARD STOP if the requested Independent PR starts from any branch other than `main`.
++- Codex must return to synchronized `main` before starting the next unrelated Independent PR.
++
++### Stacked PR
++
++Use a Stacked PR only when the PR has a direct dependency on the previous PR branch.
++
++Rules:
++- Stacked PRs may start from the previous PR branch when there is a direct dependency.
++- Stacked PRs must document the dependency order before BUILD begins.
++- Stacked PR reports must name:
++  - the stack order
++  - the previous PR dependency
++  - the next PR dependency, if known
++  - the starting branch
++  - the intended merge order
++- Stacked PRs must be reviewed in dependency order.
++- Stacked PRs must be merged in dependency order.
++- A later stacked PR must not merge before every prior dependency PR is merged.
++- Codex must HARD STOP if the requested Stacked PR starts from a branch that is not the documented previous PR branch.
++- Codex must HARD STOP if a Stacked PR lacks a documented dependency order.
++
++### Model Mismatch Hard Stop
++
++Codex must verify the requested PR model before changing files.
++
++HARD STOP when:
++- an Independent PR is requested but the current/start branch is not `main`
++- a Stacked PR is requested but the current/start branch is not the documented previous PR branch
++- the request does not say whether the PR is Independent or Stacked and the start branch is not clearly valid
++- a PR is described as stacked but no direct dependency or merge order is documented
++
++When the model is unclear, Codex must report the current branch, expected starting branch, and the missing model/dependency information before making changes.
+
+ ## Daily Branch Workflow
+
+@@ -109,7 +156,7 @@ Closed gates:
+ - Plan, Build, validation, reports, ZIP packaging, and closeout must stay tied to the same PR identity and source branch.
+ - Source branches are retained by default after merge and closeout.
+ - Do not mix unrelated scopes.
+-- Do not start dependent PRs until the required base PR is merged.
++- Do not start dependent PRs until the required base PR is merged unless the work is an explicitly documented Stacked PR with a direct dependency on the previous PR branch.
+ - Return to `main` before starting an unrelated PR or new workstream.
+ - Do not return to `main` between PRs in the same OWNER-approved stacked/sequential workstream unless OWNER approves an EOD or intermediate merge checkpoint.
+ - A team must not begin another PR if its previous PR is not Closed.
+diff --git a/dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md b/dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
+index ea047d563..3fd3524a6 100644
+--- a/dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
++++ b/dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
+@@ -47,13 +47,15 @@ git rev-parse HEAD
+
+ ## Team Branch Creation Gate
+
+-No team creates a PR branch until:
++For Independent PRs and for the first PR in a new stacked workstream, no team creates a PR branch until:
+ - Current branch: `main`
+ - Worktree: clean
+ - `main...origin/main`: `0 0`
+ - `HEAD` SHA matches published EOD SHA
+
+-If any check fails, stop before branch creation and restore main to the published EOD state or request OWNER direction.
++For dependent Stacked PRs, the start branch may be the documented previous PR branch only when `dev/build/ProjectInstructions/addendums/pr_workflow.md` identifies a direct dependency and dependency order.
++
++If any required check fails, or if the current branch does not match the requested PR model, stop before branch creation and restore the expected branch state or request OWNER direction.
+
+ ## Branch Lifecycle (Canonical)
+
+@@ -90,7 +92,7 @@ main...origin/main
+ HEAD equals published EOD SHA
+ ```
+
+-Only after ALL four pass may a branch be created or the active team branch/workstream be updated.
++Only after ALL required checks for the requested PR branching model pass may a branch be created or the active team branch/workstream be updated.
+
+ Create the PR branch:
+
+diff --git a/dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md b/dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
+index c0066966e..8adaa8385 100644
+--- a/dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
++++ b/dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
+@@ -101,6 +101,8 @@ PLAN_PR is planning only.
+ Rules:
+ - Do not change files unless the user explicitly requests a planning artifact update.
+ - Identify the correct branch or start point.
++- Identify whether the PR is Independent or Stacked.
++- For Stacked PRs, identify the previous PR branch and dependency order.
+ - Identify the intended PR name, purpose, and scope.
+ - Identify required validation and reporting.
+ - Identify the required ZIP outcome path from the Codex Completion Contract.
+@@ -113,12 +115,14 @@ BUILD_PR is the implementation phase.
+
+ Rules:
+ - Verify branch and worktree rules for the PR before changing files.
++- Verify the requested PR branching model before changing files.
+ - Use the latest Project Instructions.
+ - Stay inside the approved PR purpose.
+ - Create required reports.
+ - Create the required repo-structured ZIP artifact for the attempted PR according to the Codex Completion Contract.
+ - Run scoped validation required by the PR and Project Instructions.
+ - HARD STOP on wrong branch.
++- HARD STOP when the current/start branch does not match the requested Independent or Stacked PR model.
+ - HARD STOP on dirty worktree when the PR requires a clean start.
+ - HARD STOP on scope conflict.
+ - HARD STOP on missing required Project Instructions.
+diff --git a/dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_branch-validation.md b/dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_branch-validation.md
 new file mode 100644
-index 000000000..16f7682d6
+index 000000000..c21e58d54
 --- /dev/null
-+++ b/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-branch-validation.md
-@@ -0,0 +1,16 @@
-+# PR_26179_ALFA_010-tool-display-single-line-summary EOD Branch Validation
++++ b/dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_branch-validation.md
+@@ -0,0 +1,15 @@
++# PR_26179_OWNER_011-pr-branching-model-docs Branch Validation
 +
 +## Result
 +
@@ -14,106 +241,93 @@ index 000000000..16f7682d6
 +
 +| Check | Result | Notes |
 +| --- | --- | --- |
-+| Started EOD from `main` | PASS | Worktree was clean before merge. |
-+| PR #254 merged into `main` | PASS | Merge commit `283e2247625fea0916b55119e4072342b207c317`. |
-+| Local `main` synced after merge | PASS | `main...origin/main` was `0 0` after fast-forward. |
-+| Stale PR #196 closed | PASS | Closed as replaced by PR #254. |
-+| Stale PR #198 closed | PASS | Closed as replaced by PR #254. |
-+| Feature branch cleanup | PASS | Remote branch deletion was requested during merge; local branch deletion handled after syncing `main`. |
-diff --git a/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-closeout-report.md b/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-closeout-report.md
++| Started from `main` | PASS | `main...origin/main` was `0 0`. |
++| Worktree clean before branch creation | PASS | Verified before branch creation. |
++| PR branch created | PASS | `PR_26179_OWNER_011-pr-branching-model-docs`. |
++| Work stayed on PR branch | PASS | No direct commit to `main`. |
++| Documentation/governance scope | PASS | Only Project Instructions and reports changed. |
+diff --git a/dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_manual-validation-notes.md b/dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_manual-validation-notes.md
 new file mode 100644
-index 000000000..43d16f559
+index 000000000..89aafd49c
 --- /dev/null
-+++ b/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-closeout-report.md
-@@ -0,0 +1,31 @@
-+# PR_26179_ALFA_010-tool-display-single-line-summary EOD Closeout Report
-+
-+## Summary
-+
-+PR #254 `PR_26179_ALFA_010-tool-display-single-line-summary` was merged into `main`.
-+
-+## Merge
-+
-+- PR: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/254
-+- Merge commit: `283e2247625fea0916b55119e4072342b207c317`
-+- Merged at: `2026-06-28T14:28:04Z`
-+- Base branch: `main`
-+- Source branch: `PR_26179_ALFA_010-tool-display-single-line-summary`
-+
-+## Replaced Stale PRs
-+
-+- PR #196 closed: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/196
-+- PR #198 closed: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/198
-+
-+Both stale PRs were replaced by PR #254. PR #196 provided the obsolete Tool Display Mode single-line layout attempt, and PR #198 provided historical validation intent that was folded into PR #254.
-+
-+## Validation
-+
-+- GitHub platform-validation for PR #254: PASS
-+- Local `git diff --check`: PASS
-+- Local `npm run validate:canonical-structure`: PASS
-+- Local targeted Tool Display Mode Playwright lane: PASS, 3/3
-+
-+## Artifact
-+
-+- EOD ZIP: `dev/workspace/zips/PR_26179_ALFA_010-tool-display-single-line-summary_eod-closeout_delta.zip`
-diff --git a/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-manual-validation-notes.md b/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-manual-validation-notes.md
-new file mode 100644
-index 000000000..fd3ca1ffb
---- /dev/null
-+++ b/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-manual-validation-notes.md
++++ b/dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_manual-validation-notes.md
 @@ -0,0 +1,8 @@
-+# PR_26179_ALFA_010-tool-display-single-line-summary EOD Manual Validation Notes
++# PR_26179_OWNER_011-pr-branching-model-docs Manual Validation Notes
 +
 +## Notes
 +
-+- Confirmed PR #254 was non-draft, mergeable, and had passing GitHub platform validation before merge.
-+- Confirmed PR #196 and PR #198 were stale drafts replaced by PR #254 before closing them.
-+- No additional runtime or UI edits were made during EOD closeout beyond tracked governance/report artifacts.
-+- The repo-structured EOD ZIP is generated under `dev/workspace/zips/`.
-diff --git a/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-requirement-checklist.md b/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-requirement-checklist.md
++- Reviewed active Project Instructions for existing stacked/sequential branch wording.
++- Added the canonical Independent PR vs Stacked PR model in `pr_workflow.md`.
++- Updated adjacent branch and command governance documents to point enforcement at the requested PR model.
++- Confirmed the old dependent-PR rule now allows the explicitly documented Stacked PR exception.
+diff --git a/dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_report.md b/dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_report.md
 new file mode 100644
-index 000000000..aaad0e510
+index 000000000..eed3b5df1
 --- /dev/null
-+++ b/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-requirement-checklist.md
-@@ -0,0 +1,16 @@
-+# PR_26179_ALFA_010-tool-display-single-line-summary EOD Requirement Checklist
++++ b/dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_report.md
+@@ -0,0 +1,31 @@
++# PR_26179_OWNER_011-pr-branching-model-docs Report
++
++## Purpose
++
++Define Independent PRs and Stacked PRs in active Project Instructions.
++
++## Scope
++
++Documentation/governance only. No implementation code, runtime files, API files, database files, or product pages changed.
++
++## Governance Outcome
++
++- `pr_workflow.md` now owns the canonical Independent PR vs Stacked PR model.
++- Independent PRs must start from synchronized `main`.
++- Stacked PRs may start from the documented previous PR branch only when there is a direct dependency.
++- Stacked PRs must document stack order, previous dependency, next dependency when known, starting branch, and merge order.
++- Stacked PRs must be reviewed and merged in dependency order.
++- Codex must HARD STOP when the requested PR model does not match the current/start branch.
++
++## Updated Documents
++
++- `dev/build/ProjectInstructions/addendums/pr_workflow.md`
++- `dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`
++- `dev/build/ProjectInstructions/addendums/branch_lock_governance.md`
++- `dev/build/ProjectInstructions/addendums/branch_context_governance.md`
++- `dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`
++- `dev/build/ProjectInstructions/TEAM_START_COMMANDS.md`
++
++## ZIP
++
++- `dev/workspace/zips/PR_26179_OWNER_011-pr-branching-model-docs_delta.zip`
+diff --git a/dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_requirement-checklist.md b/dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_requirement-checklist.md
+new file mode 100644
+index 000000000..7b3923464
+--- /dev/null
++++ b/dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_requirement-checklist.md
+@@ -0,0 +1,11 @@
++# PR_26179_OWNER_011-pr-branching-model-docs Requirement Checklist
 +
 +| Requirement | Result | Notes |
 +| --- | --- | --- |
-+| Verify current branch is `main` before beginning | PASS | Switched to clean synced `main` before merge operations. |
-+| Verify worktree is clean | PASS | Clean before merge and before EOD report generation. |
-+| Verify required validation passed | PASS | PR CI and local required validation passed. |
-+| Merge PR #254 | PASS | Merged into `main`. |
-+| Push/sync `main` to origin | PASS | Merge landed on origin and local `main` fast-forwarded. |
-+| Verify clean status and `main...origin/main` is `0 0` | PASS | Confirmed after merge sync. |
-+| Close stale PR #196 | PASS | Closed as replaced by #254. |
-+| Close stale PR #198 | PASS | Closed as replaced by #254. |
-+| Return repository to `main` | PASS | EOD closeout remains on `main`. |
-+| Delete local feature branch if appropriate | PASS | Local branch deletion handled after merge and sync. |
-+| Delete remote feature branch if policy allows | PASS | Remote branch deletion was requested through GitHub merge flow. |
-+| Produce EOD reports and ZIP | PASS | Reports under `dev/reports/`; ZIP under `dev/workspace/zips/`. |
-diff --git a/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-validation-report.md b/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-validation-report.md
++| Define Independent PRs vs Stacked PRs | PASS | Added canonical model in `pr_workflow.md`. |
++| Independent PRs must start from `main` | PASS | Documented in Independent PR rules. |
++| Stacked PRs may start from previous PR branch with direct dependency | PASS | Documented in Stacked PR rules and branch gates. |
++| Stacked PRs must document dependency order | PASS | Required before BUILD begins and in reports. |
++| Stacked PRs must be reviewed and merged in order | PASS | Required in Stacked PR rules. |
++| Codex hard-stops on starting branch/model mismatch | PASS | Added to PR workflow, branch context, branch lock, and command docs. |
++| Do not change implementation code | PASS | Documentation/governance only. |
+diff --git a/dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_validation-report.md b/dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_validation-report.md
 new file mode 100644
-index 000000000..8a78dd606
+index 000000000..03bbceab3
 --- /dev/null
-+++ b/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-validation-report.md
-@@ -0,0 +1,18 @@
-+# PR_26179_ALFA_010-tool-display-single-line-summary EOD Validation Report
++++ b/dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_validation-report.md
+@@ -0,0 +1,11 @@
++# PR_26179_OWNER_011-pr-branching-model-docs Validation Report
 +
-+## GitHub Validation
-+
-+- PR #254 platform-validation: PASS
-+- PR #254 mergeability before merge: MERGEABLE
-+- PR #254 draft status before merge: false
-+
-+## Local Validation
++## Validation
 +
 +- `git diff --check`: PASS
 +- `npm run validate:canonical-structure`: PASS
-+- `npm run test:lane:tool-display-mode`: PASS, 3/3
++- Project Instructions grep for Independent/Stacked PR rules: PASS
 +
-+## Stale PR Closure
++## Runtime Impact
 +
-+- PR #196: CLOSED
-+- PR #198: CLOSED
++No runtime, API, database, or product page files changed. Playwright was not impacted.
