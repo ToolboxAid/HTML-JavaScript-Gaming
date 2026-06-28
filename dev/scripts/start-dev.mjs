@@ -1,0 +1,346 @@
+import fs from "node:fs/promises";
+import { existsSync, readFileSync } from "node:fs";
+import http from "node:http";
+import path from "node:path";
+import process from "node:process";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { localAdminNotesHeaderPartialPath } from "../../src/dev-runtime/admin/admin-notes-menu.mjs";
+import { startLocalApiServer } from "../../src/dev-runtime/server/local-api-server.mjs";
+import {
+  parseRoleArgument,
+  parseTeamArgument,
+  resolveTeamPortConfig,
+  supportedBootstrapRolesLabel,
+  supportedBootstrapTeamsLabel,
+} from "./team-port-config.mjs";
+
+const repoRoot = fileURLToPath(new URL("../..", import.meta.url));
+const DEFAULT_HOST = "127.0.0.1";
+const RUNTIME_ENV_FILE = ".env";
+const VALID_MODES = Object.freeze(["bootstrap", "api", "web"]);
+const HOP_BY_HOP_HEADERS = new Set([
+  "connection",
+  "content-length",
+  "keep-alive",
+  "proxy-authenticate",
+  "proxy-authorization",
+  "te",
+  "trailer",
+  "transfer-encoding",
+  "upgrade",
+]);
+
+function parseRuntimeEnvLine(line) {
+  const trimmed = line.trim();
+  if (!trimmed || trimmed.startsWith("#") || !trimmed.includes("=")) {
+    return null;
+  }
+  const index = trimmed.indexOf("=");
+  const key = trimmed.slice(0, index).trim();
+  let value = trimmed.slice(index + 1).trim();
+  if (!key) {
+    return null;
+  }
+  if ((value.startsWith("\"") && value.endsWith("\"")) || (value.startsWith("'") && value.endsWith("'"))) {
+    value = value.slice(1, -1);
+  }
+  return { key, value };
+}
+
+export function loadRuntimeEnv({
+  cwd = process.cwd(),
+  env = process.env,
+} = {}) {
+  const envPath = path.resolve(cwd, RUNTIME_ENV_FILE);
+  if (!existsSync(envPath)) {
+    return {
+      loaded: false,
+      loadedKeys: 0,
+    };
+  }
+  let loadedKeys = 0;
+  readFileSync(envPath, "utf8").split(/\r?\n/).forEach((line) => {
+    const parsed = parseRuntimeEnvLine(line);
+    if (!parsed || env[parsed.key] !== undefined) {
+      return;
+    }
+    env[parsed.key] = parsed.value;
+    loadedKeys += 1;
+  });
+  return {
+    loaded: true,
+    loadedKeys,
+  };
+}
+
+function contentTypeForPath(filePath) {
+  const extension = path.extname(filePath).toLowerCase();
+  if (extension === ".html") return "text/html; charset=utf-8";
+  if (extension === ".js" || extension === ".mjs") return "text/javascript; charset=utf-8";
+  if (extension === ".json") return "application/json";
+  if (extension === ".css") return "text/css; charset=utf-8";
+  if (extension === ".svg") return "image/svg+xml";
+  if (extension === ".png") return "image/png";
+  if (extension === ".jpg" || extension === ".jpeg") return "image/jpeg";
+  if (extension === ".webp") return "image/webp";
+  if (extension === ".gif") return "image/gif";
+  if (extension === ".wav") return "audio/wav";
+  if (extension === ".mp3") return "audio/mpeg";
+  if (extension === ".ogg") return "audio/ogg";
+  if (extension === ".m4a") return "audio/mp4";
+  if (extension === ".woff2") return "font/woff2";
+  if (extension === ".woff") return "font/woff";
+  if (extension === ".ttf") return "font/ttf";
+  if (extension === ".otf") return "font/otf";
+  if (extension === ".csv") return "text/csv; charset=utf-8";
+  if (extension === ".txt") return "text/plain; charset=utf-8";
+  return "application/octet-stream";
+}
+
+function isInsideRepoRoot(absolutePath) {
+  const relativePath = path.relative(repoRoot, absolutePath);
+  return relativePath === "" || (!relativePath.startsWith("..") && !path.isAbsolute(relativePath));
+}
+
+function resolveBrowserRoutePath(decodedPath) {
+  const normalizedPath = path.normalize(decodedPath).replace(/^(\.\.[/\\])+/, "");
+  const webPath = normalizedPath.replace(/\\/g, "/");
+  if (webPath === "/") {
+    return "/index.html";
+  }
+  if (webPath === "/tools" || webPath.startsWith("/tools/")) {
+    return `/toolbox${webPath.slice("/tools".length)}`;
+  }
+  if (webPath === "/admin/admin-notes.html") {
+    return "/src/dev-runtime/admin/notes.html";
+  }
+  return normalizedPath;
+}
+
+function parseModeArgument(args = []) {
+  const values = Array.from(args);
+  for (let index = 0; index < values.length; index += 1) {
+    const argument = values[index];
+    if (argument === "--mode") {
+      const value = values[index + 1];
+      if (!value || value.startsWith("--")) {
+        throw new Error(`Missing bootstrap mode after --mode. Use one of: ${VALID_MODES.join(", ")}.`);
+      }
+      return value.trim().toLowerCase();
+    }
+    if (argument.startsWith("--mode=")) {
+      const value = argument.slice("--mode=".length).trim().toLowerCase();
+      if (!value) {
+        throw new Error(`Missing bootstrap mode after --mode=. Use one of: ${VALID_MODES.join(", ")}.`);
+      }
+      return value;
+    }
+  }
+  return "bootstrap";
+}
+
+export function parseBootstrapOptions(args = []) {
+  const mode = parseModeArgument(args);
+  if (!VALID_MODES.includes(mode)) {
+    throw new Error(`Unknown bootstrap mode "${mode}". Use one of: ${VALID_MODES.join(", ")}.`);
+  }
+  const role = parseRoleArgument(args);
+  const team = parseTeamArgument(args);
+  const ports = resolveTeamPortConfig({ role, team });
+  return Object.freeze({
+    api: mode === "api" || mode === "bootstrap",
+    mode,
+    ports,
+    role: ports.role,
+    team: ports.team,
+    web: mode === "web" || mode === "bootstrap",
+  });
+}
+
+function localUrl(host, port) {
+  return `http://${host}:${port}`;
+}
+
+function apiUrl(host, port) {
+  return `${localUrl(host, port)}/api`;
+}
+
+export function applyBootstrapEnvironment({
+  env = process.env,
+  host = DEFAULT_HOST,
+  ports,
+}) {
+  env.GAMEFOUNDRY_LOCAL_API_HOST = env.GAMEFOUNDRY_LOCAL_API_HOST || host;
+  env.GAMEFOUNDRY_LOCAL_API_PORT = String(ports.apiPort);
+  env.GAMEFOUNDRY_API_URL = apiUrl(host, ports.apiPort);
+  env.GAMEFOUNDRY_SITE_URL = localUrl(host, ports.webPort);
+  return env;
+}
+
+export function formatBootstrapDiagnostics({
+  apiBaseUrl,
+  mode,
+  role,
+  runtimeEnv,
+  team,
+  webBaseUrl,
+}) {
+  return [
+    "GameFoundry team-aware dev bootstrap",
+    `Mode: ${mode}`,
+    `Team: ${team}`,
+    `Role: ${role}`,
+    `Web URL: ${webBaseUrl}`,
+    `API URL: ${apiBaseUrl}/api`,
+    "Environment source: .env + process environment",
+    `.env loaded: ${runtimeEnv.loaded ? `yes (${runtimeEnv.loadedKeys} new key(s))` : "no"}`,
+    `Supported teams: ${supportedBootstrapTeamsLabel()}`,
+    `Supported roles: ${supportedBootstrapRolesLabel()}`,
+    "Legacy API alias remains: npm run dev:local-api",
+    "Press Ctrl+C to stop.",
+  ];
+}
+
+async function readRequestBody(request) {
+  const chunks = [];
+  for await (const chunk of request) {
+    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+  }
+  return chunks.length ? Buffer.concat(chunks) : undefined;
+}
+
+async function proxyApiRequest(request, response, requestUrl, apiBaseUrl) {
+  const targetUrl = new URL(`${requestUrl.pathname}${requestUrl.search}`, apiBaseUrl);
+  const headers = {};
+  Object.entries(request.headers).forEach(([key, value]) => {
+    if (!HOP_BY_HOP_HEADERS.has(key.toLowerCase()) && value !== undefined) {
+      headers[key] = value;
+    }
+  });
+  const method = request.method || "GET";
+  const upstreamResponse = await fetch(targetUrl, {
+    body: ["GET", "HEAD"].includes(method.toUpperCase()) ? undefined : await readRequestBody(request),
+    headers,
+    method,
+  });
+  response.statusCode = upstreamResponse.status;
+  upstreamResponse.headers.forEach((value, key) => {
+    if (!HOP_BY_HOP_HEADERS.has(key.toLowerCase())) {
+      response.setHeader(key, value);
+    }
+  });
+  const body = Buffer.from(await upstreamResponse.arrayBuffer());
+  response.end(body);
+}
+
+export async function startStaticWebServer({
+  apiBaseUrl,
+  host = DEFAULT_HOST,
+  port,
+} = {}) {
+  if (!apiBaseUrl) {
+    throw new Error("startStaticWebServer requires apiBaseUrl.");
+  }
+  const server = http.createServer(async (request, response) => {
+    try {
+      const requestUrl = new URL(request.url || "/", `http://${host}:${port}`);
+      if (requestUrl.pathname === "/api" || requestUrl.pathname.startsWith("/api/")) {
+        await proxyApiRequest(request, response, requestUrl, apiBaseUrl);
+        return;
+      }
+      const decodedPath = decodeURIComponent(requestUrl.pathname);
+      const normalizedPath = resolveBrowserRoutePath(decodedPath);
+      const absolutePath = path.resolve(repoRoot, `.${normalizedPath}`);
+      if (!isInsideRepoRoot(absolutePath)) {
+        response.statusCode = 403;
+        response.end("Forbidden");
+        return;
+      }
+      let targetPath = absolutePath;
+      const stat = await fs.stat(targetPath).catch(() => null);
+      if (stat && stat.isDirectory()) {
+        targetPath = path.join(targetPath, "index.html");
+      }
+      targetPath = localAdminNotesHeaderPartialPath(repoRoot, targetPath);
+      const responseContents = await fs.readFile(targetPath);
+      response.statusCode = 200;
+      response.setHeader("Content-Type", contentTypeForPath(targetPath));
+      response.end(responseContents);
+    } catch {
+      response.statusCode = 404;
+      response.end("Not Found");
+    }
+  });
+
+  await new Promise((resolve, reject) => {
+    server.once("error", reject);
+    server.listen(port, host, resolve);
+  });
+
+  return {
+    baseUrl: localUrl(host, port),
+    close: async () => {
+      await new Promise((resolve, reject) => {
+        server.close((error) => {
+          if (error) reject(error);
+          else resolve();
+        });
+      });
+    },
+    server,
+  };
+}
+
+export async function startBootstrapRuntime(options = parseBootstrapOptions(process.argv.slice(2))) {
+  const runtimeEnv = loadRuntimeEnv();
+  const host = process.env.GAMEFOUNDRY_LOCAL_API_HOST || DEFAULT_HOST;
+  applyBootstrapEnvironment({ host, ports: options.ports });
+  const apiBaseUrl = localUrl(host, options.ports.apiPort);
+  const webBaseUrl = localUrl(host, options.ports.webPort);
+  const servers = [];
+
+  if (options.api) {
+    servers.push(await startLocalApiServer({ host, port: options.ports.apiPort }));
+  }
+  if (options.web) {
+    servers.push(await startStaticWebServer({ apiBaseUrl, host, port: options.ports.webPort }));
+  }
+
+  return {
+    close: async () => {
+      await Promise.all(servers.map((server) => server.close()));
+    },
+    diagnostics: formatBootstrapDiagnostics({
+      apiBaseUrl,
+      mode: options.mode,
+      role: options.role,
+      runtimeEnv,
+      team: options.team,
+      webBaseUrl,
+    }),
+    servers,
+  };
+}
+
+async function main() {
+  let runtime;
+  try {
+    runtime = await startBootstrapRuntime();
+    runtime.diagnostics.forEach((line) => console.log(line));
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exitCode = 1;
+    return;
+  }
+
+  for (const signal of ["SIGINT", "SIGTERM"]) {
+    process.once(signal, async () => {
+      await runtime.close();
+      process.exit(0);
+    });
+  }
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  await main();
+}

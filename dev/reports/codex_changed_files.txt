@@ -1,1 +1,24 @@
-﻿dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+# git status --short
+M package.json
+?? dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_branch-validation.md
+?? dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_manual-validation-notes.md
+?? dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_report.md
+?? dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_requirement-checklist.md
+?? dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_validation-report.md
+?? dev/scripts/start-dev.mjs
+?? dev/scripts/team-port-config.mjs
+?? dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs
+
+# git ls-files --others --exclude-standard
+dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_branch-validation.md
+dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_manual-validation-notes.md
+dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_report.md
+dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_requirement-checklist.md
+dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_validation-report.md
+dev/scripts/start-dev.mjs
+dev/scripts/team-port-config.mjs
+dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs
+
+# git diff --stat
+package.json | 3 +++
+ 1 file changed, 3 insertions(+)

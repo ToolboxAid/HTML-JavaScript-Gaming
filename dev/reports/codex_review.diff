@@ -1,47 +1,913 @@
-﻿diff --git a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-index 5b1b8f9a6..c6f5c5744 100644
---- a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-+++ b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-@@ -6,9 +6,42 @@
-
- Codex and future wrappers must request this file directly. All other Project Instructions documents are loaded indirectly through the references below.
-
-+## Canonical Source Rule
+diff --git a/package.json b/package.json
+index 2a6d66c76..65e67bf62 100644
+--- a/package.json
++++ b/package.json
+@@ -25,6 +25,9 @@
+     "test:lane:integration": "node ./dev/scripts/run-targeted-test-lanes.mjs --lane integration",
+     "test:lane:engine-src": "node ./dev/scripts/run-targeted-test-lanes.mjs --lane engine-src",
+     "test:lane:samples": "node ./dev/scripts/run-targeted-test-lanes.mjs --lane samples --include-samples",
++    "dev:bootstrap": "node --use-system-ca ./dev/scripts/start-dev.mjs --mode bootstrap",
++    "dev:api": "node --use-system-ca ./dev/scripts/start-dev.mjs --mode api",
++    "dev:web": "node ./dev/scripts/start-dev.mjs --mode web",
+     "dev:local-api": "node --use-system-ca ./dev/scripts/start-local-api-server.mjs",
+     "validate:local-postgres-runtime": "node --use-system-ca ./dev/scripts/validate-local-postgres-runtime.mjs",
+     "validate:database-drift": "node ./dev/scripts/validate-database-drift.mjs",
+diff --git a/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_branch-validation.md b/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_branch-validation.md
+new file mode 100644
+index 000000000..aa96a1077
+--- /dev/null
++++ b/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_branch-validation.md
+@@ -0,0 +1,10 @@
++# PR_26171_ALFA_009 Branch Validation
 +
-+The repository is the canonical source of truth for project rules.
++| Check | Status | Evidence |
++| --- | --- | --- |
++| Failed dirty attempt recorded | PASS | Dirty files listed in PR report before reset. |
++| Failed dirty attempt discarded | PASS | Ran `git reset --hard` and `git clean -fd`. |
++| Clean `main` confirmed before implementation | PASS | `main...origin/main` was `0 0`; worktree was clean. |
++| Branch recreated from `main` | PASS | Current branch is `PR_26171_ALFA_009-team-aware-bootstrap` at source commit `a4e671ec8`. |
++| Scope check | PASS | Changes limited to approved bootstrap scripts, package scripts, tests, and reports. |
++| Validation | PASS | Targeted validation commands passed. |
+diff --git a/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_manual-validation-notes.md b/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_manual-validation-notes.md
+new file mode 100644
+index 000000000..729a5f789
+--- /dev/null
++++ b/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_manual-validation-notes.md
+@@ -0,0 +1,63 @@
++# PR_26171_ALFA_009 Manual Validation Notes
 +
-+Codex, ChatGPT, wrappers, and team operators must use the current repository documentation under `dev/build/ProjectInstructions/` as authority for active rules. Prior chat history, remembered conversation context, generated reports, archived documents, local notes, or stale external instructions must not override repository documentation.
++## Primary Alfa Owner Command
 +
-+If current chat instructions conflict with repository documentation, Codex must follow the active repository documentation or HARD STOP and request OWNER direction.
-+
-+## Canonical Team Naming
-+
-+Canonical active teams:
-+
-+- Owner
-+- Alfa
-+- Bravo
-+- Charlie
-+- Golf
-+
-+Official NATO spellings:
-+
-+```text
-+Alfa, Bravo, Charlie, Delta, Echo, Foxtrot, Golf, Hotel, India, Juliett, Kilo, Lima, Mike, November, Oscar, Papa, Quebec, Romeo, Sierra, Tango, Uniform, Victor, Whiskey, Xray, Yankee, Zulu.
++```powershell
++npm run dev:bootstrap -- --team alfa
 +```
 +
-+Rules:
++Expected diagnostics:
 +
-+- Use official NATO spelling for all team names.
-+- Do not use `Alpha`, `Beta`, or `Gamma` for active teams.
-+- Deprecated or historical names must not be used for active team routing, new work ownership, or current governance.
-+- Historical PR names, branch names, and references may remain unchanged when they are already merged or clearly referenced as history.
-+- New branches, PRs, reports, and documentation must use canonical team names.
-+- Repository documentation overrides prior conversations.
++- `Team: alfa`
++- `Role: owner`
++- `Web URL: http://127.0.0.1:5510`
++- `API URL: http://127.0.0.1:5511/api`
 +
- ## Current Version/Date
-
--- Project Instructions Version: 2026-06-28.PR_26179_OWNER_010
-+- Project Instructions Version: 2026-06-28.PR_26172_OWNER_034
- - Date: 2026-06-28
- - Owner: OWNER
++## Primary Alfa Codex Command
++
++```powershell
++npm run dev:bootstrap -- --team alfa --role codex
++```
++
++Expected diagnostics:
++
++- `Team: alfa`
++- `Role: codex`
++- `Web URL: http://127.0.0.1:5512`
++- `API URL: http://127.0.0.1:5513/api`
++
++## Legacy Command
++
++```powershell
++npm run dev:local-api
++```
++
++Expected result:
++
++- Legacy startup remains available.
++- The legacy command still runs `node --use-system-ca ./dev/scripts/start-local-api-server.mjs`.
++
++## Other Startup Commands
++
++```powershell
++npm run dev:bootstrap -- --team owner
++npm run dev:bootstrap -- --team bravo
++npm run dev:bootstrap -- --team charlie
++npm run dev:bootstrap -- --team delta
++npm run dev:bootstrap -- --team echo
++npm run dev:bootstrap -- --team foxtrot
++npm run dev:bootstrap -- --team golf
++npm run dev:bootstrap -- --team hotel
++```
++
++## Failure Checks
++
++```powershell
++npm run dev:bootstrap -- --team omega
++npm run dev:bootstrap -- --team alfa --role reviewer
++```
++
++Expected result:
++
++- Unknown team fails with the supported team list.
++- Unknown role fails with the supported role list.
+diff --git a/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_report.md b/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_report.md
+new file mode 100644
+index 000000000..3aab1164d
+--- /dev/null
++++ b/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_report.md
+@@ -0,0 +1,99 @@
++# PR_26171_ALFA_009 Team-Aware Bootstrap Report
++
++## Purpose
++
++Implement team-aware local dev bootstrap commands with role-aware port assignment while preserving the legacy local API command.
++
++## Reset Note
++
++Before rebuilding from clean `main`, the failed dirty attempt included:
++
++- `dev/reports/codex_changed_files.txt`
++- `dev/reports/codex_review.diff`
++- `dev/scripts/start-local-api-server.mjs`
++- `package.json`
++- untracked bootstrap reports
++- untracked `dev/scripts/start-dev.mjs`
++- untracked `dev/scripts/team-port-config.mjs`
++- untracked `dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs`
++
++Per OWNER instruction, those uncommitted changes were discarded with `git reset --hard` and `git clean -fd`, then this branch was recreated from clean `main`.
++
++## Implementation Summary
++
++- Added `npm run dev:bootstrap`.
++- Added `npm run dev:api`.
++- Added `npm run dev:web`.
++- Preserved `npm run dev:local-api` unchanged as the legacy alias.
++- Added `dev/scripts/team-port-config.mjs` for full team name and role-aware port resolution.
++- Added `dev/scripts/start-dev.mjs` as the bootstrap orchestrator.
++- Added focused node tests for team resolution, role offsets, invalid team/role validation, script wiring, `.env` loading behavior, and bootstrap diagnostics.
++
++## Supported Teams
++
++`owner`, `alfa`, `bravo`, `charlie`, `delta`, `echo`, `foxtrot`, `golf`, `hotel`
++
++## Supported Roles
++
++`owner`, `codex`
++
++## Port Mapping
++
++`owner` role uses base ports. `codex` role uses base ports plus 2.
++
++| Team | Owner Web | Owner API | Codex Web | Codex API |
++| --- | ---: | ---: | ---: | ---: |
++| owner | 5500 | 5501 | 5502 | 5503 |
++| alfa | 5510 | 5511 | 5512 | 5513 |
++| bravo | 5520 | 5521 | 5522 | 5523 |
++| charlie | 5530 | 5531 | 5532 | 5533 |
++| delta | 5540 | 5541 | 5542 | 5543 |
++| echo | 5550 | 5551 | 5552 | 5553 |
++| foxtrot | 5560 | 5561 | 5562 | 5563 |
++| golf | 5570 | 5571 | 5572 | 5573 |
++| hotel | 5580 | 5581 | 5582 | 5583 |
++
++## Commands Added
++
++```powershell
++npm run dev:bootstrap
++npm run dev:api
++npm run dev:web
++```
++
++## Legacy Command Preserved
++
++```powershell
++npm run dev:local-api
++```
++
++## Exact Startup Commands
++
++```powershell
++npm run dev:bootstrap -- --team owner
++npm run dev:bootstrap -- --team alfa
++npm run dev:bootstrap -- --team bravo
++npm run dev:bootstrap -- --team charlie
++npm run dev:bootstrap -- --team delta
++npm run dev:bootstrap -- --team echo
++npm run dev:bootstrap -- --team foxtrot
++npm run dev:bootstrap -- --team golf
++npm run dev:bootstrap -- --team hotel
++```
++
++Codex role example:
++
++```powershell
++npm run dev:bootstrap -- --team alfa --role codex
++```
++
++## Files Changed
++
++- `package.json` - updated
++- `dev/scripts/start-dev.mjs` - added
++- `dev/scripts/team-port-config.mjs` - added
++- `dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs` - added
++
++## Validation Summary
++
++All requested targeted validation passed.
+diff --git a/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_requirement-checklist.md b/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_requirement-checklist.md
+new file mode 100644
+index 000000000..4d9238295
+--- /dev/null
++++ b/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_requirement-checklist.md
+@@ -0,0 +1,25 @@
++# PR_26171_ALFA_009 Requirement Checklist
++
++| Requirement | Status | Evidence |
++| --- | --- | --- |
++| Start from clean `main` | PASS | Reset failed attempt, switched to `main`, pulled fast-forward, confirmed `main...origin/main` was `0 0`, then recreated branch. |
++| Add `npm run dev:bootstrap` | PASS | Added to `package.json`. |
++| Keep `npm run dev:local-api` as legacy alias | PASS | Existing command remains unchanged. |
++| Add `npm run dev:api` | PASS | Added to `package.json`. |
++| Add `npm run dev:web` | PASS | Added to `package.json`. |
++| Create `dev/scripts/start-dev.mjs` | PASS | Added orchestrator. |
++| Create `dev/scripts/team-port-config.mjs` | PASS | Added team/role port resolver. |
++| Support full team names only | PASS | Supported teams are owner, alfa, bravo, charlie, delta, echo, foxtrot, golf, hotel. |
++| Support roles owner/codex | PASS | Role resolver supports owner and codex only. |
++| Codex role uses base ports plus 2 | PASS | Covered by targeted unit test. |
++| Do not use unsupported old team names | PASS | Scan returned no matches in new bootstrap files. |
++| Do not use single-letter public team commands | PASS | Scan returned no matches in new bootstrap files. |
++| Validate unknown team names | PASS | `omega` fails clearly with supported team list. |
++| Validate unknown role names | PASS | `reviewer` fails clearly with supported role list. |
++| Load environment | PASS | Orchestrator loads `.env` values without overriding existing environment values. |
++| Resolve team ports | PASS | Unit tests cover all teams and both roles. |
++| Start Local API | PASS | `dev:bootstrap` starts the existing Local API server on resolved API port. |
++| Start web server when requested | PASS | `dev:bootstrap` starts web plus API; `dev:web` mode is wired. |
++| Print startup diagnostics | PASS | Diagnostics include mode, team, role, web URL, API URL, environment source, supported teams, and supported roles. |
++| Preserve legacy behavior | PASS | `dev:local-api` command unchanged and startup validation passed. |
++| No unrelated cleanup | PASS | Scope limited to package scripts, new dev scripts, targeted tests, and reports. |
+diff --git a/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_validation-report.md b/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_validation-report.md
+new file mode 100644
+index 000000000..1ca55c459
+--- /dev/null
++++ b/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_validation-report.md
+@@ -0,0 +1,22 @@
++# PR_26171_ALFA_009 Validation Report
++
++## Validation Results
++
++| Command | Result | Notes |
++| --- | --- | --- |
++| `node --check dev/scripts/team-port-config.mjs` | PASS | Syntax valid. |
++| `node --check dev/scripts/start-dev.mjs` | PASS | Syntax valid. |
++| `node --check dev/scripts/start-local-api-server.mjs` | PASS | Legacy startup entrypoint remains valid. |
++| `node --check dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs` | PASS | Test syntax valid. |
++| `node ./dev/scripts/run-node-test-files.mjs dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs dev/tests/dev-runtime/LocalApiStartupLogging.test.mjs` | PASS | 2 targeted files passed; 10 subtests passed. |
++| Unsupported team token scan in new bootstrap files | PASS | No unsupported old team names or single-letter public team commands found. |
++| `npm run validate:canonical-structure` | PASS | Canonical repository structure guardrail passed. |
++| `npm run dev:bootstrap -- --team alfa` | PASS | Started with team `alfa`, role `owner`, web `5510`, API `5511`, then process tree was stopped. |
++| `npm run dev:bootstrap -- --team alfa --role codex` | PASS | Started with team `alfa`, role `codex`, web `5512`, API `5513`, then process tree was stopped. |
++| `npm run dev:bootstrap -- --team omega` | PASS | Failed clearly with supported team list. |
++| `npm run dev:bootstrap -- --team alfa --role reviewer` | PASS | Failed clearly with supported role list. |
++| `npm run dev:local-api` | PASS | Legacy command started and printed legacy startup diagnostics, then process tree was stopped. |
++
++## Notes
++
++The startup-command validations used short-lived process launches and `taskkill /T /F` cleanup after expected diagnostics appeared, so no dev servers were left running.
+diff --git a/dev/scripts/start-dev.mjs b/dev/scripts/start-dev.mjs
+new file mode 100644
+index 000000000..625360989
+--- /dev/null
++++ b/dev/scripts/start-dev.mjs
+@@ -0,0 +1,346 @@
++import fs from "node:fs/promises";
++import { existsSync, readFileSync } from "node:fs";
++import http from "node:http";
++import path from "node:path";
++import process from "node:process";
++import { fileURLToPath, pathToFileURL } from "node:url";
++import { localAdminNotesHeaderPartialPath } from "../../src/dev-runtime/admin/admin-notes-menu.mjs";
++import { startLocalApiServer } from "../../src/dev-runtime/server/local-api-server.mjs";
++import {
++  parseRoleArgument,
++  parseTeamArgument,
++  resolveTeamPortConfig,
++  supportedBootstrapRolesLabel,
++  supportedBootstrapTeamsLabel,
++} from "./team-port-config.mjs";
++
++const repoRoot = fileURLToPath(new URL("../..", import.meta.url));
++const DEFAULT_HOST = "127.0.0.1";
++const RUNTIME_ENV_FILE = ".env";
++const VALID_MODES = Object.freeze(["bootstrap", "api", "web"]);
++const HOP_BY_HOP_HEADERS = new Set([
++  "connection",
++  "content-length",
++  "keep-alive",
++  "proxy-authenticate",
++  "proxy-authorization",
++  "te",
++  "trailer",
++  "transfer-encoding",
++  "upgrade",
++]);
++
++function parseRuntimeEnvLine(line) {
++  const trimmed = line.trim();
++  if (!trimmed || trimmed.startsWith("#") || !trimmed.includes("=")) {
++    return null;
++  }
++  const index = trimmed.indexOf("=");
++  const key = trimmed.slice(0, index).trim();
++  let value = trimmed.slice(index + 1).trim();
++  if (!key) {
++    return null;
++  }
++  if ((value.startsWith("\"") && value.endsWith("\"")) || (value.startsWith("'") && value.endsWith("'"))) {
++    value = value.slice(1, -1);
++  }
++  return { key, value };
++}
++
++export function loadRuntimeEnv({
++  cwd = process.cwd(),
++  env = process.env,
++} = {}) {
++  const envPath = path.resolve(cwd, RUNTIME_ENV_FILE);
++  if (!existsSync(envPath)) {
++    return {
++      loaded: false,
++      loadedKeys: 0,
++    };
++  }
++  let loadedKeys = 0;
++  readFileSync(envPath, "utf8").split(/\r?\n/).forEach((line) => {
++    const parsed = parseRuntimeEnvLine(line);
++    if (!parsed || env[parsed.key] !== undefined) {
++      return;
++    }
++    env[parsed.key] = parsed.value;
++    loadedKeys += 1;
++  });
++  return {
++    loaded: true,
++    loadedKeys,
++  };
++}
++
++function contentTypeForPath(filePath) {
++  const extension = path.extname(filePath).toLowerCase();
++  if (extension === ".html") return "text/html; charset=utf-8";
++  if (extension === ".js" || extension === ".mjs") return "text/javascript; charset=utf-8";
++  if (extension === ".json") return "application/json";
++  if (extension === ".css") return "text/css; charset=utf-8";
++  if (extension === ".svg") return "image/svg+xml";
++  if (extension === ".png") return "image/png";
++  if (extension === ".jpg" || extension === ".jpeg") return "image/jpeg";
++  if (extension === ".webp") return "image/webp";
++  if (extension === ".gif") return "image/gif";
++  if (extension === ".wav") return "audio/wav";
++  if (extension === ".mp3") return "audio/mpeg";
++  if (extension === ".ogg") return "audio/ogg";
++  if (extension === ".m4a") return "audio/mp4";
++  if (extension === ".woff2") return "font/woff2";
++  if (extension === ".woff") return "font/woff";
++  if (extension === ".ttf") return "font/ttf";
++  if (extension === ".otf") return "font/otf";
++  if (extension === ".csv") return "text/csv; charset=utf-8";
++  if (extension === ".txt") return "text/plain; charset=utf-8";
++  return "application/octet-stream";
++}
++
++function isInsideRepoRoot(absolutePath) {
++  const relativePath = path.relative(repoRoot, absolutePath);
++  return relativePath === "" || (!relativePath.startsWith("..") && !path.isAbsolute(relativePath));
++}
++
++function resolveBrowserRoutePath(decodedPath) {
++  const normalizedPath = path.normalize(decodedPath).replace(/^(\.\.[/\\])+/, "");
++  const webPath = normalizedPath.replace(/\\/g, "/");
++  if (webPath === "/") {
++    return "/index.html";
++  }
++  if (webPath === "/tools" || webPath.startsWith("/tools/")) {
++    return `/toolbox${webPath.slice("/tools".length)}`;
++  }
++  if (webPath === "/admin/admin-notes.html") {
++    return "/src/dev-runtime/admin/notes.html";
++  }
++  return normalizedPath;
++}
++
++function parseModeArgument(args = []) {
++  const values = Array.from(args);
++  for (let index = 0; index < values.length; index += 1) {
++    const argument = values[index];
++    if (argument === "--mode") {
++      const value = values[index + 1];
++      if (!value || value.startsWith("--")) {
++        throw new Error(`Missing bootstrap mode after --mode. Use one of: ${VALID_MODES.join(", ")}.`);
++      }
++      return value.trim().toLowerCase();
++    }
++    if (argument.startsWith("--mode=")) {
++      const value = argument.slice("--mode=".length).trim().toLowerCase();
++      if (!value) {
++        throw new Error(`Missing bootstrap mode after --mode=. Use one of: ${VALID_MODES.join(", ")}.`);
++      }
++      return value;
++    }
++  }
++  return "bootstrap";
++}
++
++export function parseBootstrapOptions(args = []) {
++  const mode = parseModeArgument(args);
++  if (!VALID_MODES.includes(mode)) {
++    throw new Error(`Unknown bootstrap mode "${mode}". Use one of: ${VALID_MODES.join(", ")}.`);
++  }
++  const role = parseRoleArgument(args);
++  const team = parseTeamArgument(args);
++  const ports = resolveTeamPortConfig({ role, team });
++  return Object.freeze({
++    api: mode === "api" || mode === "bootstrap",
++    mode,
++    ports,
++    role: ports.role,
++    team: ports.team,
++    web: mode === "web" || mode === "bootstrap",
++  });
++}
++
++function localUrl(host, port) {
++  return `http://${host}:${port}`;
++}
++
++function apiUrl(host, port) {
++  return `${localUrl(host, port)}/api`;
++}
++
++export function applyBootstrapEnvironment({
++  env = process.env,
++  host = DEFAULT_HOST,
++  ports,
++}) {
++  env.GAMEFOUNDRY_LOCAL_API_HOST = env.GAMEFOUNDRY_LOCAL_API_HOST || host;
++  env.GAMEFOUNDRY_LOCAL_API_PORT = String(ports.apiPort);
++  env.GAMEFOUNDRY_API_URL = apiUrl(host, ports.apiPort);
++  env.GAMEFOUNDRY_SITE_URL = localUrl(host, ports.webPort);
++  return env;
++}
++
++export function formatBootstrapDiagnostics({
++  apiBaseUrl,
++  mode,
++  role,
++  runtimeEnv,
++  team,
++  webBaseUrl,
++}) {
++  return [
++    "GameFoundry team-aware dev bootstrap",
++    `Mode: ${mode}`,
++    `Team: ${team}`,
++    `Role: ${role}`,
++    `Web URL: ${webBaseUrl}`,
++    `API URL: ${apiBaseUrl}/api`,
++    "Environment source: .env + process environment",
++    `.env loaded: ${runtimeEnv.loaded ? `yes (${runtimeEnv.loadedKeys} new key(s))` : "no"}`,
++    `Supported teams: ${supportedBootstrapTeamsLabel()}`,
++    `Supported roles: ${supportedBootstrapRolesLabel()}`,
++    "Legacy API alias remains: npm run dev:local-api",
++    "Press Ctrl+C to stop.",
++  ];
++}
++
++async function readRequestBody(request) {
++  const chunks = [];
++  for await (const chunk of request) {
++    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
++  }
++  return chunks.length ? Buffer.concat(chunks) : undefined;
++}
++
++async function proxyApiRequest(request, response, requestUrl, apiBaseUrl) {
++  const targetUrl = new URL(`${requestUrl.pathname}${requestUrl.search}`, apiBaseUrl);
++  const headers = {};
++  Object.entries(request.headers).forEach(([key, value]) => {
++    if (!HOP_BY_HOP_HEADERS.has(key.toLowerCase()) && value !== undefined) {
++      headers[key] = value;
++    }
++  });
++  const method = request.method || "GET";
++  const upstreamResponse = await fetch(targetUrl, {
++    body: ["GET", "HEAD"].includes(method.toUpperCase()) ? undefined : await readRequestBody(request),
++    headers,
++    method,
++  });
++  response.statusCode = upstreamResponse.status;
++  upstreamResponse.headers.forEach((value, key) => {
++    if (!HOP_BY_HOP_HEADERS.has(key.toLowerCase())) {
++      response.setHeader(key, value);
++    }
++  });
++  const body = Buffer.from(await upstreamResponse.arrayBuffer());
++  response.end(body);
++}
++
++export async function startStaticWebServer({
++  apiBaseUrl,
++  host = DEFAULT_HOST,
++  port,
++} = {}) {
++  if (!apiBaseUrl) {
++    throw new Error("startStaticWebServer requires apiBaseUrl.");
++  }
++  const server = http.createServer(async (request, response) => {
++    try {
++      const requestUrl = new URL(request.url || "/", `http://${host}:${port}`);
++      if (requestUrl.pathname === "/api" || requestUrl.pathname.startsWith("/api/")) {
++        await proxyApiRequest(request, response, requestUrl, apiBaseUrl);
++        return;
++      }
++      const decodedPath = decodeURIComponent(requestUrl.pathname);
++      const normalizedPath = resolveBrowserRoutePath(decodedPath);
++      const absolutePath = path.resolve(repoRoot, `.${normalizedPath}`);
++      if (!isInsideRepoRoot(absolutePath)) {
++        response.statusCode = 403;
++        response.end("Forbidden");
++        return;
++      }
++      let targetPath = absolutePath;
++      const stat = await fs.stat(targetPath).catch(() => null);
++      if (stat && stat.isDirectory()) {
++        targetPath = path.join(targetPath, "index.html");
++      }
++      targetPath = localAdminNotesHeaderPartialPath(repoRoot, targetPath);
++      const responseContents = await fs.readFile(targetPath);
++      response.statusCode = 200;
++      response.setHeader("Content-Type", contentTypeForPath(targetPath));
++      response.end(responseContents);
++    } catch {
++      response.statusCode = 404;
++      response.end("Not Found");
++    }
++  });
++
++  await new Promise((resolve, reject) => {
++    server.once("error", reject);
++    server.listen(port, host, resolve);
++  });
++
++  return {
++    baseUrl: localUrl(host, port),
++    close: async () => {
++      await new Promise((resolve, reject) => {
++        server.close((error) => {
++          if (error) reject(error);
++          else resolve();
++        });
++      });
++    },
++    server,
++  };
++}
++
++export async function startBootstrapRuntime(options = parseBootstrapOptions(process.argv.slice(2))) {
++  const runtimeEnv = loadRuntimeEnv();
++  const host = process.env.GAMEFOUNDRY_LOCAL_API_HOST || DEFAULT_HOST;
++  applyBootstrapEnvironment({ host, ports: options.ports });
++  const apiBaseUrl = localUrl(host, options.ports.apiPort);
++  const webBaseUrl = localUrl(host, options.ports.webPort);
++  const servers = [];
++
++  if (options.api) {
++    servers.push(await startLocalApiServer({ host, port: options.ports.apiPort }));
++  }
++  if (options.web) {
++    servers.push(await startStaticWebServer({ apiBaseUrl, host, port: options.ports.webPort }));
++  }
++
++  return {
++    close: async () => {
++      await Promise.all(servers.map((server) => server.close()));
++    },
++    diagnostics: formatBootstrapDiagnostics({
++      apiBaseUrl,
++      mode: options.mode,
++      role: options.role,
++      runtimeEnv,
++      team: options.team,
++      webBaseUrl,
++    }),
++    servers,
++  };
++}
++
++async function main() {
++  let runtime;
++  try {
++    runtime = await startBootstrapRuntime();
++    runtime.diagnostics.forEach((line) => console.log(line));
++  } catch (error) {
++    console.error(error instanceof Error ? error.message : String(error));
++    process.exitCode = 1;
++    return;
++  }
++
++  for (const signal of ["SIGINT", "SIGTERM"]) {
++    process.once(signal, async () => {
++      await runtime.close();
++      process.exit(0);
++    });
++  }
++}
++
++if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
++  await main();
++}
+diff --git a/dev/scripts/team-port-config.mjs b/dev/scripts/team-port-config.mjs
+new file mode 100644
+index 000000000..2dfa98fc3
+--- /dev/null
++++ b/dev/scripts/team-port-config.mjs
+@@ -0,0 +1,89 @@
++const TEAM_BASE_PORTS = Object.freeze({
++  owner: Object.freeze({ apiPort: 5501, webPort: 5500 }),
++  alfa: Object.freeze({ apiPort: 5511, webPort: 5510 }),
++  bravo: Object.freeze({ apiPort: 5521, webPort: 5520 }),
++  charlie: Object.freeze({ apiPort: 5531, webPort: 5530 }),
++  delta: Object.freeze({ apiPort: 5541, webPort: 5540 }),
++  echo: Object.freeze({ apiPort: 5551, webPort: 5550 }),
++  foxtrot: Object.freeze({ apiPort: 5561, webPort: 5560 }),
++  golf: Object.freeze({ apiPort: 5571, webPort: 5570 }),
++  hotel: Object.freeze({ apiPort: 5581, webPort: 5580 }),
++});
++
++const ROLE_PORT_OFFSETS = Object.freeze({
++  owner: 0,
++  codex: 2,
++});
++
++export const DEFAULT_BOOTSTRAP_ROLE = "owner";
++export const DEFAULT_BOOTSTRAP_TEAM = "owner";
++export const SUPPORTED_BOOTSTRAP_ROLES = Object.freeze(Object.keys(ROLE_PORT_OFFSETS));
++export const SUPPORTED_BOOTSTRAP_TEAMS = Object.freeze(Object.keys(TEAM_BASE_PORTS));
++
++function normalizeToken(value, fallback) {
++  return String(value || fallback).trim().toLowerCase();
++}
++
++export function supportedBootstrapRolesLabel() {
++  return SUPPORTED_BOOTSTRAP_ROLES.join(", ");
++}
++
++export function supportedBootstrapTeamsLabel() {
++  return SUPPORTED_BOOTSTRAP_TEAMS.join(", ");
++}
++
++export function resolveTeamPortConfig({
++  role = DEFAULT_BOOTSTRAP_ROLE,
++  team = DEFAULT_BOOTSTRAP_TEAM,
++} = {}) {
++  const normalizedTeam = normalizeToken(team, DEFAULT_BOOTSTRAP_TEAM);
++  const normalizedRole = normalizeToken(role, DEFAULT_BOOTSTRAP_ROLE);
++  const basePorts = TEAM_BASE_PORTS[normalizedTeam];
++  if (!basePorts) {
++    throw new Error(
++      `Unknown bootstrap team "${String(team || "").trim() || "(empty)"}". Use one of: ${supportedBootstrapTeamsLabel()}.`
++    );
++  }
++  const offset = ROLE_PORT_OFFSETS[normalizedRole];
++  if (offset === undefined) {
++    throw new Error(
++      `Unknown bootstrap role "${String(role || "").trim() || "(empty)"}". Use one of: ${supportedBootstrapRolesLabel()}.`
++    );
++  }
++  return Object.freeze({
++    apiPort: basePorts.apiPort + offset,
++    role: normalizedRole,
++    team: normalizedTeam,
++    webPort: basePorts.webPort + offset,
++  });
++}
++
++function parseNamedArgument(args, name, fallback, supportedLabel) {
++  const values = Array.from(args);
++  for (let index = 0; index < values.length; index += 1) {
++    const argument = values[index];
++    if (argument === `--${name}`) {
++      const value = values[index + 1];
++      if (!value || value.startsWith("--")) {
++        throw new Error(`Missing bootstrap ${name} after --${name}. Use one of: ${supportedLabel()}.`);
++      }
++      return normalizeToken(value, fallback);
++    }
++    if (argument.startsWith(`--${name}=`)) {
++      const value = argument.slice(`--${name}=`.length);
++      if (!value) {
++        throw new Error(`Missing bootstrap ${name} after --${name}=. Use one of: ${supportedLabel()}.`);
++      }
++      return normalizeToken(value, fallback);
++    }
++  }
++  return fallback;
++}
++
++export function parseRoleArgument(args = []) {
++  return parseNamedArgument(args, "role", DEFAULT_BOOTSTRAP_ROLE, supportedBootstrapRolesLabel);
++}
++
++export function parseTeamArgument(args = []) {
++  return parseNamedArgument(args, "team", DEFAULT_BOOTSTRAP_TEAM, supportedBootstrapTeamsLabel);
++}
+diff --git a/dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs b/dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs
+new file mode 100644
+index 000000000..0576d4db2
+--- /dev/null
++++ b/dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs
+@@ -0,0 +1,197 @@
++import assert from "node:assert/strict";
++import { readFileSync } from "node:fs";
++import test from "node:test";
++import { fileURLToPath } from "node:url";
++import {
++  applyBootstrapEnvironment,
++  formatBootstrapDiagnostics,
++  loadRuntimeEnv,
++  parseBootstrapOptions,
++} from "../../scripts/start-dev.mjs";
++import {
++  parseRoleArgument,
++  parseTeamArgument,
++  resolveTeamPortConfig,
++  supportedBootstrapRolesLabel,
++  supportedBootstrapTeamsLabel,
++} from "../../scripts/team-port-config.mjs";
++
++const repoRoot = fileURLToPath(new URL("../../..", import.meta.url));
++
++const BASE_PORTS = Object.freeze({
++  owner: Object.freeze({ apiPort: 5501, webPort: 5500 }),
++  alfa: Object.freeze({ apiPort: 5511, webPort: 5510 }),
++  bravo: Object.freeze({ apiPort: 5521, webPort: 5520 }),
++  charlie: Object.freeze({ apiPort: 5531, webPort: 5530 }),
++  delta: Object.freeze({ apiPort: 5541, webPort: 5540 }),
++  echo: Object.freeze({ apiPort: 5551, webPort: 5550 }),
++  foxtrot: Object.freeze({ apiPort: 5561, webPort: 5560 }),
++  golf: Object.freeze({ apiPort: 5571, webPort: 5570 }),
++  hotel: Object.freeze({ apiPort: 5581, webPort: 5580 }),
++});
++
++test("team port config resolves owner role base ports", () => {
++  Object.entries(BASE_PORTS).forEach(([team, ports]) => {
++    assert.deepEqual(resolveTeamPortConfig({ team }), {
++      apiPort: ports.apiPort,
++      role: "owner",
++      team,
++      webPort: ports.webPort,
++    });
++  });
++});
++
++test("team port config resolves codex role ports as base ports plus two", () => {
++  Object.entries(BASE_PORTS).forEach(([team, ports]) => {
++    assert.deepEqual(resolveTeamPortConfig({ role: "codex", team }), {
++      apiPort: ports.apiPort + 2,
++      role: "codex",
++      team,
++      webPort: ports.webPort + 2,
++    });
++  });
++});
++
++test("team and role parsers accept canonical argument forms", () => {
++  assert.equal(parseTeamArgument([]), "owner");
++  assert.equal(parseTeamArgument(["--team", "alfa"]), "alfa");
++  assert.equal(parseTeamArgument(["--team=bravo"]), "bravo");
++  assert.equal(parseRoleArgument([]), "owner");
++  assert.equal(parseRoleArgument(["--role", "codex"]), "codex");
++  assert.equal(parseRoleArgument(["--role=owner"]), "owner");
++});
++
++test("invalid teams and roles fail with supported values", () => {
++  assert.throws(
++    () => resolveTeamPortConfig({ team: "omega" }),
++    /Unknown bootstrap team "omega".*owner, alfa, bravo, charlie, delta, echo, foxtrot, golf, hotel/
++  );
++  assert.throws(
++    () => resolveTeamPortConfig({ role: "reviewer", team: "alfa" }),
++    /Unknown bootstrap role "reviewer".*owner, codex/
++  );
++  assert.throws(
++    () => parseTeamArgument(["--team"]),
++    /Missing bootstrap team after --team/
++  );
++  assert.throws(
++    () => parseRoleArgument(["--role"]),
++    /Missing bootstrap role after --role/
++  );
++});
++
++test("bootstrap option parser maps npm script modes to server startup plan", () => {
++  assert.deepEqual(parseBootstrapOptions(["--mode", "bootstrap", "--team", "alfa"]), {
++    api: true,
++    mode: "bootstrap",
++    ports: {
++      apiPort: 5511,
++      role: "owner",
++      team: "alfa",
++      webPort: 5510,
++    },
++    role: "owner",
++    team: "alfa",
++    web: true,
++  });
++  assert.deepEqual(parseBootstrapOptions(["--mode=bootstrap", "--team=alfa", "--role=codex"]), {
++    api: true,
++    mode: "bootstrap",
++    ports: {
++      apiPort: 5513,
++      role: "codex",
++      team: "alfa",
++      webPort: 5512,
++    },
++    role: "codex",
++    team: "alfa",
++    web: true,
++  });
++  assert.deepEqual(parseBootstrapOptions(["--mode=api", "--team=charlie", "--role=codex"]), {
++    api: true,
++    mode: "api",
++    ports: {
++      apiPort: 5533,
++      role: "codex",
++      team: "charlie",
++      webPort: 5532,
++    },
++    role: "codex",
++    team: "charlie",
++    web: false,
++  });
++  assert.deepEqual(parseBootstrapOptions(["--mode=web", "--team=owner"]), {
++    api: false,
++    mode: "web",
++    ports: {
++      apiPort: 5501,
++      role: "owner",
++      team: "owner",
++      webPort: 5500,
++    },
++    role: "owner",
++    team: "owner",
++    web: true,
++  });
++  assert.throws(
++    () => parseBootstrapOptions(["--mode=deploy", "--team=alfa"]),
++    /Unknown bootstrap mode "deploy"/
++  );
++});
++
++test("bootstrap environment applies resolved team and role ports for browser API routing", () => {
++  const env = {
++    GAMEFOUNDRY_API_URL: "http://127.0.0.1:5501/api",
++    GAMEFOUNDRY_SITE_URL: "http://127.0.0.1:5500",
++  };
++  applyBootstrapEnvironment({
++    env,
++    host: "127.0.0.1",
++    ports: resolveTeamPortConfig({ role: "codex", team: "alfa" }),
++  });
++
++  assert.equal(env.GAMEFOUNDRY_LOCAL_API_HOST, "127.0.0.1");
++  assert.equal(env.GAMEFOUNDRY_LOCAL_API_PORT, "5513");
++  assert.equal(env.GAMEFOUNDRY_API_URL, "http://127.0.0.1:5513/api");
++  assert.equal(env.GAMEFOUNDRY_SITE_URL, "http://127.0.0.1:5512");
++});
++
++test("startup diagnostics and package scripts expose team-aware bootstrap commands", () => {
++  const lines = formatBootstrapDiagnostics({
++    apiBaseUrl: "http://127.0.0.1:5513",
++    mode: "bootstrap",
++    role: "codex",
++    runtimeEnv: {
++      loaded: true,
++      loadedKeys: 3,
++    },
++    team: "alfa",
++    webBaseUrl: "http://127.0.0.1:5512",
++  });
++
++  assert.equal(lines.includes("Team: alfa"), true);
++  assert.equal(lines.includes("Role: codex"), true);
++  assert.equal(lines.includes("Web URL: http://127.0.0.1:5512"), true);
++  assert.equal(lines.includes("API URL: http://127.0.0.1:5513/api"), true);
++  assert.equal(lines.includes(`Supported teams: ${supportedBootstrapTeamsLabel()}`), true);
++  assert.equal(lines.includes(`Supported roles: ${supportedBootstrapRolesLabel()}`), true);
++
++  const packageJson = JSON.parse(readFileSync(`${repoRoot}/package.json`, "utf8"));
++  assert.equal(packageJson.scripts["dev:bootstrap"], "node --use-system-ca ./dev/scripts/start-dev.mjs --mode bootstrap");
++  assert.equal(packageJson.scripts["dev:api"], "node --use-system-ca ./dev/scripts/start-dev.mjs --mode api");
++  assert.equal(packageJson.scripts["dev:web"], "node ./dev/scripts/start-dev.mjs --mode web");
++  assert.equal(packageJson.scripts["dev:local-api"], "node --use-system-ca ./dev/scripts/start-local-api-server.mjs");
++});
++
++test("runtime env loader applies .env values without overriding existing process values", () => {
++  const env = {
++    GAMEFOUNDRY_API_URL: "http://127.0.0.1:5999/api",
++  };
++  const result = loadRuntimeEnv({
++    cwd: repoRoot,
++    env,
++  });
++
++  assert.equal(typeof result.loaded, "boolean");
++  assert.equal(env.GAMEFOUNDRY_API_URL, "http://127.0.0.1:5999/api");
++});
