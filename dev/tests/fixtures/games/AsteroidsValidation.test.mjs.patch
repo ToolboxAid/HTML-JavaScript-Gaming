@@ -1,4 +1,4 @@
-*** MANUAL PATCH FOR tests/games/AsteroidsValidation.test.mjs ***
+*** MANUAL PATCH FOR dev/tests/games/AsteroidsValidation.test.mjs ***
 
 1) Export the test runner function
 

@@ -47,7 +47,7 @@ npx playwright --version
 ## ▶️ Run your test
 
 ```powershell
-npx playwright test tests/ui/workspace-v2.asset-manager.spec.js
+npx playwright test dev/tests/ui/workspace-v2.asset-manager.spec.js
 ```
 
 ---
@@ -100,7 +100,7 @@ npx playwright show-trace
 
 ```text
 HTML-JavaScript-Gaming/
-├── tests/
+├── dev/tests/
 │   └── ui/
 │       └── workspace-v2.asset-manager.spec.js <<<< test code goes here
 ├── dev/config/playwright.config.cjs

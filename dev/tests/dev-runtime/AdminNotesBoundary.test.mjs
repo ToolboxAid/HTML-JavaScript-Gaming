@@ -194,14 +194,14 @@ test("Owner Notes route is the only production-facing Admin Notes viewer route",
   assert.doesNotMatch(ownerNotesSource, /\son[a-z]+\s*=/i, "Owner Notes page must not contain inline event handlers");
   assert.match(ownerNotesSource, /data-owner-notes/, "Owner Notes page keeps Owner route marker");
   assert.match(ownerNotesSource, /data-admin-notes-viewer/, "Owner Notes page reuses the Admin Notes viewer pattern");
-  assert.match(ownerNotesSource, /docs_build\/dev\/admin-notes/, "Owner Notes page points at the admin-notes source folder");
+  assert.match(ownerNotesSource, /dev\/archive\/legacy-docs-build\/admin-notes/, "Owner Notes page points at the admin-notes source folder");
   assert.match(ownerNotesSource, /\.\.\/src\/dev-runtime\/admin\/admin-notes-viewer\.js/, "Owner Notes page reuses the existing viewer script");
   assert.doesNotMatch(ownerNotesSource, /Game Journey owns note editing|Open Game Journey/, "Owner Notes page must not use the old placeholder workflow");
 });
 
 test("production-facing paths only expose Admin Notes through Owner Notes", () => {
   const headerSource = fs.readFileSync(repoPath("www/assets/theme-v2/partials/header-nav.html"), "utf8");
-  assert.doesNotMatch(headerSource, /docs_build\/dev\/admin-notes|admin-notes-dev|data-admin-notes-local-menu|data-admin-my-stuff-menu|My Stuff|Admin Notes/);
+  assert.doesNotMatch(headerSource, /dev\/archive\/legacy-docs-build\/admin-notes|admin-notes-dev|data-admin-notes-local-menu|data-admin-my-stuff-menu|My Stuff|Admin Notes/);
   for (const label of devOnlyAdminLabels) {
     assert.doesNotMatch(headerSource, new RegExp(`>${label}<\\/a>`), `production Admin menu omits dev-only ${label}`);
   }
@@ -216,7 +216,7 @@ test("production-facing paths only expose Admin Notes through Owner Notes", () =
         return false;
       }
       const source = fs.readFileSync(filePath, "utf8");
-      return /docs_build\/dev\/admin-notes|docs_build\\dev\\admin-notes|src\/dev-runtime\/admin|src\\dev-runtime\\admin|data-admin-my-stuff-menu|My Stuff|admin-notes|Admin Notes/.test(source);
+      return /dev\/archive\/legacy-docs-build\/admin-notes|dev\\archive\\legacy-docs-build\\admin-notes|src\/dev-runtime\/admin|src\\dev-runtime\\admin|data-admin-my-stuff-menu|My Stuff|admin-notes|Admin Notes/.test(source);
     })
     .map(relativePath);
 
@@ -306,7 +306,7 @@ test("Admin page left menus use dynamic placeholders without Notes duplication",
     for (const label of devOnlyAdminLabels) {
       assert.doesNotMatch(source, new RegExp(`>${label}<\\/a>`), `${pageName} left menu omits ${label}`);
     }
-    assert.doesNotMatch(source, /docs_build\/dev\/admin-notes|src\/dev-runtime\/admin|admin-notes|Admin Notes/);
+    assert.doesNotMatch(source, /dev\/archive\/legacy-docs-build\/admin-notes|src\/dev-runtime\/admin|admin-notes|Admin Notes/);
   }
 
   assert.ok(checkedPages.length > 0, "Admin pages with side menus were checked");

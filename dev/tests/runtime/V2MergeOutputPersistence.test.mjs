@@ -69,7 +69,7 @@ export function run() {
   if (!htmlExists) failures.push("Missing toolbox/workspace-v2/index.html.");
   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
-  if (!testSyntax.ok) failures.push("tests/runtime/V2MergeOutputPersistence.test.mjs failed syntax check.");
+  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2MergeOutputPersistence.test.mjs failed syntax check.");
 
   const requiredHtml = [
     "id=\"workspaceV2MergedSessionId\"",

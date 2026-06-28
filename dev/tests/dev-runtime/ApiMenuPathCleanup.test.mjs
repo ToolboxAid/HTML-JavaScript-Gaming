@@ -131,9 +131,9 @@ test("business-control pages moved under owner and are absent from admin", () =>
 test("active app code no longer links to moved Admin business paths", () => {
   const offenders = activeTextSources()
     .filter(({ fileName, source }) => {
-      if (fileName.startsWith("tests/playwright/tools/LoginSessionMode.spec.mjs")
-        || fileName.startsWith("tests/playwright/tools/RootToolsFutureState.spec.mjs")
-        || fileName.startsWith("tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs")) {
+      if (fileName.startsWith("dev/tests/playwright/tools/LoginSessionMode.spec.mjs")
+        || fileName.startsWith("dev/tests/playwright/tools/RootToolsFutureState.spec.mjs")
+        || fileName.startsWith("dev/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs")) {
         return false;
       }
       return /admin\/(branding|design-system|grouping-colors|site-settings|themes)\.html|admin-(branding|design-system|grouping-colors|site-settings|themes)/.test(source);

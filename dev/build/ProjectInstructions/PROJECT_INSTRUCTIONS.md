@@ -117,7 +117,7 @@ Rules:
 
 ## Current Version/Date
 
-- Project Instructions Version: 2026.06.28.012
+- Project Instructions Version: 2026.06.28.013
 - Date: 2026-06-28
 - Owner: OWNER
 

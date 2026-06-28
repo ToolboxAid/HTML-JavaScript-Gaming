@@ -56,7 +56,7 @@ function validateFlow(flow) {
   let launchUrl = "";
 
   if (!sourceFixtureExists) {
-    failures.push(`Missing source fixture: tests/fixtures/v2-tools/${flow.sourceTool}.json`);
+    failures.push(`Missing source fixture: dev/tests/fixtures/v2-tools/${flow.sourceTool}.json`);
   } else {
     const beforeText = fs.readFileSync(sourceFixturePath, "utf8");
     let sourceFixture = null;
@@ -67,7 +67,7 @@ function validateFlow(flow) {
       sourceFixtureValid = false;
     }
     if (!sourceFixtureValid) {
-      failures.push(`Invalid source fixture JSON: tests/fixtures/v2-tools/${flow.sourceTool}.json`);
+      failures.push(`Invalid source fixture JSON: dev/tests/fixtures/v2-tools/${flow.sourceTool}.json`);
     } else {
       sourceHostContextId = typeof sourceFixture.hostContextId === "string" ? sourceFixture.hostContextId.trim() : "";
       if (!sourceHostContextId) {

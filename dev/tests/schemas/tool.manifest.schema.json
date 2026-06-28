@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "tests/schemas/tool.manifest.schema.json",
+  "$id": "dev/tests/schemas/tool.manifest.schema.json",
   "title": "Tool Manifest",
   "type": "object",
   "required": ["tool", "schema", "data"],

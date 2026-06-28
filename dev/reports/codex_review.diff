@@ -1,56 +1,46 @@
-﻿diff --git a/.github/workflows/platform-validation.yml b/.github/workflows/platform-validation.yml
-index c08529826..f325fa440 100644
---- a/.github/workflows/platform-validation.yml
-+++ b/.github/workflows/platform-validation.yml
-@@ -20,4 +20,4 @@ jobs:
-           node-version: "20"
-
-       - name: Run Platform Validation Suite
--        run: node ./dev/scripts/run-platform-validation-suite.mjs
-+        run: npm run validate:platform
-diff --git a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-index 7badd5846..b925f8c69 100644
+﻿diff --git a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+index b925f8c69..765f465fc 100644
 --- a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 +++ b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 @@ -117,7 +117,7 @@ Rules:
 
  ## Current Version/Date
 
--- Project Instructions Version: 2026.06.28.011
-+- Project Instructions Version: 2026.06.28.012
+-- Project Instructions Version: 2026.06.28.012
++- Project Instructions Version: 2026.06.28.013
  - Date: 2026-06-28
  - Owner: OWNER
 
 diff --git a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
-index 66021b01c..f16929b46 100644
+index f16929b46..a46ee7657 100644
 --- a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
 +++ b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
 @@ -1,6 +1,6 @@
  # Project Instructions Version
 
--Current Project Instructions Version: 2026.06.28.011
-+Current Project Instructions Version: 2026.06.28.012
+-Current Project Instructions Version: 2026.06.28.012
++Current Project Instructions Version: 2026.06.28.013
 
  Last Updated: 2026-06-28
 
-@@ -19,6 +19,7 @@ Last Updated: 2026-06-28
- - Moved server/API application runtime under `api/`; browser API clients remain outside `api/`.
+@@ -20,6 +20,7 @@ Last Updated: 2026-06-28
  - Moved developer-only local runtime/bootstrap entrypoints under `dev/local-runtime/` and preserved the public npm command surface.
  - Finalized moved test and validation path assumptions for the `www/`, `api/`, and `dev/local-runtime/` layout.
-+- Updated CI, package scripts, and developer utilities for the `www/`, `api/`, and `dev/` layout.
+ - Updated CI, package scripts, and developer utilities for the `www/`, `api/`, and `dev/` layout.
++- Removed active references to obsolete legacy layout paths after the `www/`, `api/`, and `dev/` migration steps.
  - Codex must read this version file and the latest repository copy of `PROJECT_INSTRUCTIONS.md` before performing work.
  - Codex must discard previously remembered Project Instructions and treat the repository copy as authoritative.
  - Codex must validate canonical report and ZIP paths, branching model, and legacy path avoidance before work proceeds.
 diff --git a/dev/build/ProjectInstructions/PROJECT_STATE.md b/dev/build/ProjectInstructions/PROJECT_STATE.md
-index 37c2f19f4..ad1fd5158 100644
+index ad1fd5158..0e5fac9bd 100644
 --- a/dev/build/ProjectInstructions/PROJECT_STATE.md
 +++ b/dev/build/ProjectInstructions/PROJECT_STATE.md
 @@ -1,7 +1,7 @@
  # Project State
 
  ```yaml
--project_state_version: "2026.06.28.011"
-+project_state_version: "2026.06.28.012"
+-project_state_version: "2026.06.28.012"
++project_state_version: "2026.06.28.013"
  last_updated: "2026-06-28"
  current_main_commit: "40de767476d70cadfd1292c916844c2f31b6f185"
  repository_status:
@@ -58,12 +48,12 @@ index 37c2f19f4..ad1fd5158 100644
    runtime_database: "Postgres"
    creator_metadata: "API to Postgres"
    creator_assets: "API to R2"
--project_instructions_version: "2026.06.28.011"
--repository_structure_version: "2026.06.28.011"
--canonical_layout_version: "2026.06.28.011"
-+project_instructions_version: "2026.06.28.012"
-+repository_structure_version: "2026.06.28.012"
-+canonical_layout_version: "2026.06.28.012"
+-project_instructions_version: "2026.06.28.012"
+-repository_structure_version: "2026.06.28.012"
+-canonical_layout_version: "2026.06.28.012"
++project_instructions_version: "2026.06.28.013"
++repository_structure_version: "2026.06.28.013"
++canonical_layout_version: "2026.06.28.013"
  active_teams:
    - "Owner"
    - "Alfa"
@@ -71,344 +61,1397 @@ index 37c2f19f4..ad1fd5158 100644
    - "Charlie"
    - "Delta"
    - "Golf"
--latest_owner_pr: "PR_26180_OWNER_011-move-tests-and-validation"
--latest_structure_pr: "PR_26180_OWNER_011-move-tests-and-validation"
-+latest_owner_pr: "PR_26180_OWNER_012-update-ci-and-scripts"
-+latest_structure_pr: "PR_26180_OWNER_012-update-ci-and-scripts"
+-latest_owner_pr: "PR_26180_OWNER_012-update-ci-and-scripts"
+-latest_structure_pr: "PR_26180_OWNER_012-update-ci-and-scripts"
++latest_owner_pr: "PR_26180_OWNER_013-remove-legacy-layout"
++latest_structure_pr: "PR_26180_OWNER_013-remove-legacy-layout"
  valid_top_level_folders:
    - "api/"
    - "deploy/"
 diff --git a/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md b/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
-index 78b9ff4f0..d0d974e9c 100644
+index d0d974e9c..047761f31 100644
 --- a/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
 +++ b/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
 @@ -39,9 +39,9 @@ The backlog is the authoritative source for determining the next logical PRs.
  - Team: Owner
  - Product Area: Repository Architecture Simplification
  - Status: Active
--- Percent Complete: 60%
--- Active PR: PR_26180_OWNER_011-move-tests-and-validation
--- Next Milestone: Update CI, package scripts, validation scripts, and developer utilities for the new layout
-+- Percent Complete: 70%
-+- Active PR: PR_26180_OWNER_012-update-ci-and-scripts
-+- Next Milestone: Remove or retire obsolete legacy paths after all references are updated
+-- Percent Complete: 70%
+-- Active PR: PR_26180_OWNER_012-update-ci-and-scripts
+-- Next Milestone: Remove or retire obsolete legacy paths after all references are updated
++- Percent Complete: 80%
++- Active PR: PR_26180_OWNER_013-remove-legacy-layout
++- Next Milestone: Final layout validation and completion report
  - Source / Reference: `dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md`; `dev/build/ProjectInstructions/repository/www_migration_map.md`
 
  ## Game Journey MVP
 diff --git a/dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md b/dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
-index e7e87b4aa..c9dd538ec 100644
+index c9dd538ec..fadb42722 100644
 --- a/dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
 +++ b/dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
-@@ -32,6 +32,8 @@ No browser, API, server, test, script, or runtime files move in the scaffold or
+@@ -34,6 +34,8 @@ No browser, API, server, test, script, or runtime files move in the scaffold or
 
- `PR_26180_OWNER_011-move-tests-and-validation` finalizes moved test and validation path assumptions for the `www/`, `api/`, and `dev/local-runtime/` layout while keeping product behavior unchanged.
+ `PR_26180_OWNER_012-update-ci-and-scripts` updates CI, package scripts, and developer utilities for the `www/`, `api/`, and `dev/` layout while preserving the public developer command surface.
 
-+`PR_26180_OWNER_012-update-ci-and-scripts` updates CI, package scripts, and developer utilities for the `www/`, `api/`, and `dev/` layout while preserving the public developer command surface.
++`PR_26180_OWNER_013-remove-legacy-layout` removes active stale references to obsolete legacy paths after the tracked `www/`, `api/`, and `dev/` migration steps.
 +
  ## Proposed Future Layout
 
  ```text
-diff --git a/dev/reports/PR_26180_OWNER_012-update-ci-and-scripts_branch-validation.md b/dev/reports/PR_26180_OWNER_012-update-ci-and-scripts_branch-validation.md
+diff --git a/dev/reports/PR_26180_OWNER_013-remove-legacy-layout_branch-validation.md b/dev/reports/PR_26180_OWNER_013-remove-legacy-layout_branch-validation.md
 new file mode 100644
-index 000000000..9ad0a88c0
+index 000000000..f2e3e086b
 --- /dev/null
-+++ b/dev/reports/PR_26180_OWNER_012-update-ci-and-scripts_branch-validation.md
-@@ -0,0 +1,22 @@
-+# PR_26180_OWNER_012 Branch Validation
++++ b/dev/reports/PR_26180_OWNER_013-remove-legacy-layout_branch-validation.md
+@@ -0,0 +1,74 @@
++# PR_26180_OWNER_013-remove-legacy-layout Branch Validation
 +
-+## Result
++Generated: 2026-06-28T23:33:01.682Z
 +
-+PASS
++| Check | Result | Evidence |
++|---|---|---|
++| Current branch | PASS | PR_26180_OWNER_013-remove-legacy-layout |
++| Expected branch | PASS | PR_26180_OWNER_013-remove-legacy-layout |
++| Stacked base | PASS | PR_26180_OWNER_012-update-ci-and-scripts is an ancestor of HEAD |
++| Worktree reviewed | PASS | Only governance, dev test/reference cleanup, reports, and one path-copy Owner page update are in scope |
++| Runtime behavior change | PASS | No product behavior change intended |
++| New www/api/dev files moved | PASS | No move of new www/api/dev application files in this PR |
++| Legacy folders deleted | PASS | No tracked legacy folders remained to delete; untracked/ignored local files left untouched |
 +
-+## Details
++HEAD at start of report: b802afcd33b892d33610a577b160cb096fe2e721
 +
-+- Current branch: `PR_26180_OWNER_012-update-ci-and-scripts`
-+- Expected branch: `PR_26180_OWNER_012-update-ci-and-scripts`
-+- Base branch: `PR_26180_OWNER_011-move-tests-and-validation`
-+- PR model: Owner stacked PR
-+- Previous dependency: `PR_26180_OWNER_011-move-tests-and-validation`
-+- Worktree before report generation: contained only scoped PR012 changes
++## Current Status Snapshot
 +
-+## Hard Stop Review
-+
-+- Wrong branch: PASS
-+- Dirty unrelated worktree: PASS
-+- Missing Project Instructions: PASS
-+- Missing branching policy: PASS
-+- Runtime/product behavior change required: PASS
-diff --git a/dev/reports/PR_26180_OWNER_012-update-ci-and-scripts_manual-validation-notes.md b/dev/reports/PR_26180_OWNER_012-update-ci-and-scripts_manual-validation-notes.md
++```text
++M dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
++ M dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
++ M dev/build/ProjectInstructions/PROJECT_STATE.md
++ M dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
++ M dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
++ M dev/tests/dev-runtime/AdminNotesBoundary.test.mjs
++ M dev/tests/dev-runtime/ApiMenuPathCleanup.test.mjs
++ M dev/tests/final/ToolchainEngineIntegrationValidation.test.mjs
++ M dev/tests/fixtures/games/AsteroidsValidation.test.mjs.patch
++ M dev/tests/fixtures/tools/VectorNativeTemplate.test.mjs.patch
++ M dev/tests/fixtures/workspace-v2/uat.manifest.json
++ M dev/tests/helpers/playwrightV8CoverageReporter.mjs
++ M dev/tests/helpers/testCoverageCatalog.mjs
++ M dev/tests/playwright_installation.txt
++ M dev/tests/production/TestsValidationCombinedPass.test.mjs
++ M dev/tests/runtime/V2BlockFakeSessionSave.test.mjs
++ M dev/tests/runtime/V2ClearStaleMergePreview.test.mjs
++ M dev/tests/runtime/V2ConfirmPreviewEnableState.test.mjs
++ M dev/tests/runtime/V2CrossToolFlow.test.mjs
++ M dev/tests/runtime/V2CrossToolMergeBlock.test.mjs
++ M dev/tests/runtime/V2DeterministicStateTransitions.test.mjs
++ M dev/tests/runtime/V2DiffViewerMessaging.test.mjs
++ M dev/tests/runtime/V2DiffViewerSummaryCounts.test.mjs
++ M dev/tests/runtime/V2EnableStateFeedback.test.mjs
++ M dev/tests/runtime/V2MergeConflictSummary.test.mjs
++ M dev/tests/runtime/V2MergeOutputPersistence.test.mjs
++ M dev/tests/runtime/V2MergePreviewOverlayFix.test.mjs
++ M dev/tests/runtime/V2MergeResultSummary.test.mjs
++ M dev/tests/runtime/V2MergeStateSingleSourceOfTruth.test.mjs
++ M dev/tests/runtime/V2MergeStateStatusReset.test.mjs
++ M dev/tests/runtime/V2MergedRecentSessionRegistration.test.mjs
++ M dev/tests/runtime/V2SaveLibraryFromRecentSession.test.mjs
++ M dev/tests/runtime/V2SavedSessionRowActions.test.mjs
++ M dev/tests/runtime/V2SelectionSyncRowActions.test.mjs
++ M dev/tests/runtime/V2SessionLibraryActionCleanup.test.mjs
++ M dev/tests/runtime/V2SessionLibraryActionLabel.test.mjs
++ M dev/tests/runtime/V2SessionLibraryActions.test.mjs
++ M dev/tests/runtime/V2SessionLibraryCardOverwrite.test.mjs
++ M dev/tests/runtime/V2SessionLibrarySaveGuard.test.mjs
++ M dev/tests/runtime/V2SessionStateModelConsolidation.test.mjs
++ M dev/tests/runtime/V2SessionToolsCloseoutBundle.test.mjs
++ M dev/tests/runtime/V2SessionUxStabilization.test.mjs
++ M dev/tests/runtime/V2ToolLaunch.test.mjs
++ M dev/tests/runtime/V2UndoButtonRender.test.mjs
++ M dev/tests/runtime/V2UndoEnableStateActualAvailability.test.mjs
++ M dev/tests/runtime/V2UndoEnableStateRefresh.test.mjs
++ M dev/tests/runtime/V2UndoLastMerge.test.mjs
++ M dev/tests/runtime/V2WorkspaceDefaultToolInitialization.test.mjs
++ M dev/tests/schemas/tool.manifest.schema.json
++ M dev/tests/shared/ContractFixtureIsolationValidation.test.mjs
++ M dev/tests/shared/ContractIndexValidation.test.mjs
++ M dev/tests/shared/ContractNegativeCaseCoverage.test.mjs
++ M dev/tests/tools/ToolManifestBoundary.test.mjs
++ M www/owner/notes.html
++```
+diff --git a/dev/reports/PR_26180_OWNER_013-remove-legacy-layout_manual-validation-notes.md b/dev/reports/PR_26180_OWNER_013-remove-legacy-layout_manual-validation-notes.md
 new file mode 100644
-index 000000000..c99695172
+index 000000000..866319806
 --- /dev/null
-+++ b/dev/reports/PR_26180_OWNER_012-update-ci-and-scripts_manual-validation-notes.md
-@@ -0,0 +1,17 @@
-+# PR_26180_OWNER_012 Manual Validation Notes
++++ b/dev/reports/PR_26180_OWNER_013-remove-legacy-layout_manual-validation-notes.md
+@@ -0,0 +1,10 @@
++# PR_26180_OWNER_013-remove-legacy-layout Manual Validation Notes
 +
-+## Manual Review
++Generated: 2026-06-28T23:33:01.682Z
 +
-+- Confirmed `package.json` still exposes:
-+  - `npm run dev:bootstrap`
-+  - `npm run dev:api`
-+  - `npm run dev:web`
-+  - `npm run dev:local-api`
-+- Confirmed GitHub Actions platform validation now calls a package script instead of hardcoding the runner path.
-+- Confirmed developer scripts use current `www/games/` and `www/toolbox/` assumptions where they route or report moved browser-served paths.
-+- Confirmed no `www/` or `api/` files were moved.
-+- Confirmed no production page, API route, database, or product runtime behavior was modified.
-+
-+## Notes For Reviewer
-+
-+This PR is infrastructure-path maintenance for the layout migration stack. It should be reviewed after PR011 and before the legacy-layout retirement PR.
-diff --git a/dev/reports/PR_26180_OWNER_012-update-ci-and-scripts_report.md b/dev/reports/PR_26180_OWNER_012-update-ci-and-scripts_report.md
++- Reviewed changed files for scope: governance/status docs, dev test/reference cleanup, validation evidence, and one Owner notes archived path reference.
++- Confirmed no UI redesign, API behavior change, database change, or product feature work is included.
++- Confirmed public URL references remain intentionally preserved for route compatibility.
++- Confirmed tracked obsolete root legacy folders were not present for deletion in this PR.
++- Confirmed untracked/ignored local legacy-looking files were not staged or committed.
++- Outcome ZIP is expected at dev/workspace/zips/PR_26180_OWNER_013-remove-legacy-layout_delta.zip.
+diff --git a/dev/reports/PR_26180_OWNER_013-remove-legacy-layout_report.md b/dev/reports/PR_26180_OWNER_013-remove-legacy-layout_report.md
 new file mode 100644
-index 000000000..24e8b44ee
+index 000000000..ea68ec1b5
 --- /dev/null
-+++ b/dev/reports/PR_26180_OWNER_012-update-ci-and-scripts_report.md
-@@ -0,0 +1,35 @@
-+# PR_26180_OWNER_012-update-ci-and-scripts Report
++++ b/dev/reports/PR_26180_OWNER_013-remove-legacy-layout_report.md
+@@ -0,0 +1,104 @@
++# PR_26180_OWNER_013-remove-legacy-layout Report
 +
-+## Executive Summary
++Generated: 2026-06-28T23:33:01.682Z
++Team: Owner
++Mode: BUILD_PR
++Branch: PR_26180_OWNER_013-remove-legacy-layout
++Base dependency: PR_26180_OWNER_012-update-ci-and-scripts
++Stack order: after PR_26180_OWNER_012, before final layout validation
 +
-+PR_26180_OWNER_012 updates CI, package scripts, and developer utilities for the current `www/`, `api/`, and `dev/` repository layout.
++## Purpose
 +
-+This PR is stacked on `PR_26180_OWNER_011-move-tests-and-validation`.
++Remove active obsolete legacy layout references after the www/api/dev migration stack, without changing product behavior or moving the new www/api/dev files.
 +
-+## Scope Decision
++## Scope Summary
 +
-+- Scope: CI, package scripts, and developer utilities only.
-+- No `www/` files moved.
-+- No `api/` files moved.
-+- No runtime product behavior changed.
-+- No production UI files changed.
++- Updated Project Instructions, project state, backlog, and repository layout plan to version 2026.06.28.013 and this PR's migration status.
++- Retired active references to obsolete filesystem paths such as root tests/, docs_build/, root toolbox filesystem references, and dev/build/dev contract spec paths.
++- Updated dev test helpers and validation evidence to use canonical dev/tests, www/, and dev/build/ProjectInstructions paths.
++- Kept public URL compatibility references such as /toolbox, /assets, and /games intentionally intact.
++- Updated www/owner/notes.html only to point its Admin Notes status/help text at the archived dev location already used by the service.
 +
-+## Changes
++## Files Changed
 +
-+- Added `npm run validate:platform` as a package script for the platform validation suite.
-+- Updated the GitHub platform validation workflow to call the package script.
-+- Updated Node test runner absolute import aliases so `/assets/` and `/toolbox/` resolve through `www/` while `/src/` remains rooted at `src/`.
-+- Updated developer validation scripts to recognize `www/games/` and `www/toolbox/` paths.
-+- Updated tool registry validation messages to report current `www/toolbox/` locations.
-+- Updated Project Instructions version/status and repository architecture backlog status for PR_26180_OWNER_012.
++- dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
++- dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
++- dev/build/ProjectInstructions/PROJECT_STATE.md
++- dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
++- dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
++- dev/reports/PR_26180_OWNER_013-remove-legacy-layout_branch-validation.md
++- dev/reports/PR_26180_OWNER_013-remove-legacy-layout_manual-validation-notes.md
++- dev/reports/PR_26180_OWNER_013-remove-legacy-layout_report.md
++- dev/reports/PR_26180_OWNER_013-remove-legacy-layout_requirement-checklist.md
++- dev/reports/PR_26180_OWNER_013-remove-legacy-layout_validation-report.md
++- dev/reports/codex_changed_files.txt
++- dev/reports/codex_review.diff
++- dev/tests/dev-runtime/AdminNotesBoundary.test.mjs
++- dev/tests/dev-runtime/ApiMenuPathCleanup.test.mjs
++- dev/tests/final/ToolchainEngineIntegrationValidation.test.mjs
++- dev/tests/fixtures/games/AsteroidsValidation.test.mjs.patch
++- dev/tests/fixtures/tools/VectorNativeTemplate.test.mjs.patch
++- dev/tests/fixtures/workspace-v2/uat.manifest.json
++- dev/tests/helpers/playwrightV8CoverageReporter.mjs
++- dev/tests/helpers/testCoverageCatalog.mjs
++- dev/tests/playwright_installation.txt
++- dev/tests/production/TestsValidationCombinedPass.test.mjs
++- dev/tests/runtime/V2BlockFakeSessionSave.test.mjs
++- dev/tests/runtime/V2ClearStaleMergePreview.test.mjs
++- dev/tests/runtime/V2ConfirmPreviewEnableState.test.mjs
++- dev/tests/runtime/V2CrossToolFlow.test.mjs
++- dev/tests/runtime/V2CrossToolMergeBlock.test.mjs
++- dev/tests/runtime/V2DeterministicStateTransitions.test.mjs
++- dev/tests/runtime/V2DiffViewerMessaging.test.mjs
++- dev/tests/runtime/V2DiffViewerSummaryCounts.test.mjs
++- dev/tests/runtime/V2EnableStateFeedback.test.mjs
++- dev/tests/runtime/V2MergeConflictSummary.test.mjs
++- dev/tests/runtime/V2MergeOutputPersistence.test.mjs
++- dev/tests/runtime/V2MergePreviewOverlayFix.test.mjs
++- dev/tests/runtime/V2MergeResultSummary.test.mjs
++- dev/tests/runtime/V2MergeStateSingleSourceOfTruth.test.mjs
++- dev/tests/runtime/V2MergeStateStatusReset.test.mjs
++- dev/tests/runtime/V2MergedRecentSessionRegistration.test.mjs
++- dev/tests/runtime/V2SaveLibraryFromRecentSession.test.mjs
++- dev/tests/runtime/V2SavedSessionRowActions.test.mjs
++- dev/tests/runtime/V2SelectionSyncRowActions.test.mjs
++- dev/tests/runtime/V2SessionLibraryActionCleanup.test.mjs
++- dev/tests/runtime/V2SessionLibraryActionLabel.test.mjs
++- dev/tests/runtime/V2SessionLibraryActions.test.mjs
++- dev/tests/runtime/V2SessionLibraryCardOverwrite.test.mjs
++- dev/tests/runtime/V2SessionLibrarySaveGuard.test.mjs
++- dev/tests/runtime/V2SessionStateModelConsolidation.test.mjs
++- dev/tests/runtime/V2SessionToolsCloseoutBundle.test.mjs
++- dev/tests/runtime/V2SessionUxStabilization.test.mjs
++- dev/tests/runtime/V2ToolLaunch.test.mjs
++- dev/tests/runtime/V2UndoButtonRender.test.mjs
++- dev/tests/runtime/V2UndoEnableStateActualAvailability.test.mjs
++- dev/tests/runtime/V2UndoEnableStateRefresh.test.mjs
++- dev/tests/runtime/V2UndoLastMerge.test.mjs
++- dev/tests/runtime/V2WorkspaceDefaultToolInitialization.test.mjs
++- dev/tests/schemas/tool.manifest.schema.json
++- dev/tests/shared/ContractFixtureIsolationValidation.test.mjs
++- dev/tests/shared/ContractIndexValidation.test.mjs
++- dev/tests/shared/ContractNegativeCaseCoverage.test.mjs
++- dev/tests/tools/ToolManifestBoundary.test.mjs
++- www/owner/notes.html
++
++## Legacy Layout Decision
++
++No tracked root legacy folders were removed because git tracking showed no active tracked files under obsolete root locations such as docs_build/, tests/, archive/, tmp/, projects/, scripts/, project-instructions/, dev/docs_build/, dev/project-instructions/, dev/workspace/artifacts/, or dev/build/dev/.
++
++Local ignored or untracked legacy-looking files were left untouched and were not staged.
++
++## Compatibility Notes
++
++Browser public routes remain unchanged. References to /toolbox, /assets, /games, /account, /admin, and related public URLs are compatibility routes, not obsolete filesystem references.
 +
 +## Dependency Order
 +
-+- Previous PR: `PR_26180_OWNER_011-move-tests-and-validation`
-+- Current PR: `PR_26180_OWNER_012-update-ci-and-scripts`
-+- Next PR: `PR_26180_OWNER_013-remove-legacy-layout`
-+- Merge order: PR011, then PR012, then PR013.
++- Previous dependency: PR_26180_OWNER_012-update-ci-and-scripts
++- Current PR: PR_26180_OWNER_013-remove-legacy-layout
++- Next dependency: final layout validation PR
 +
 +## Owner Recommendation
 +
-+Ready for review after validation passes and the draft PR is opened against `PR_26180_OWNER_011-move-tests-and-validation`.
-diff --git a/dev/reports/PR_26180_OWNER_012-update-ci-and-scripts_requirement-checklist.md b/dev/reports/PR_26180_OWNER_012-update-ci-and-scripts_requirement-checklist.md
++Ready for review after validation, with no product behavior changes and no new feature scope.
+diff --git a/dev/reports/PR_26180_OWNER_013-remove-legacy-layout_requirement-checklist.md b/dev/reports/PR_26180_OWNER_013-remove-legacy-layout_requirement-checklist.md
 new file mode 100644
-index 000000000..fffd07519
+index 000000000..16c303f6a
 --- /dev/null
-+++ b/dev/reports/PR_26180_OWNER_012-update-ci-and-scripts_requirement-checklist.md
-@@ -0,0 +1,16 @@
-+# PR_26180_OWNER_012 Requirement Checklist
++++ b/dev/reports/PR_26180_OWNER_013-remove-legacy-layout_requirement-checklist.md
+@@ -0,0 +1,14 @@
++# PR_26180_OWNER_013-remove-legacy-layout Requirement Checklist
 +
-+| Requirement | Status | Notes |
-+| --- | --- | --- |
-+| Update CI/path references for `www/`, `api/`, `dev/` | PASS | Platform workflow now uses `npm run validate:platform`; developer scripts recognize `www/` paths. |
-+| Update package scripts only where needed | PASS | Added `validate:platform`; preserved existing command surface. |
-+| Preserve `npm run dev:bootstrap` | PASS | Script remains present. |
-+| Preserve `npm run dev:api` | PASS | Script remains present. |
-+| Preserve `npm run dev:web` | PASS | Script remains present. |
-+| Preserve `npm run dev:local-api` | PASS | Legacy alias remains present. |
-+| Update developer scripts after moved paths | PASS | Node test runners, Playwright location audit, targeted lane routing, duplicate audit, and tool registry validator updated. |
-+| Do not move `www` files | PASS | No `www/` files moved. |
-+| Do not move `api` files | PASS | No `api/` files moved. |
-+| Do not change product behavior | PASS | Changes are CI/script/path-governance only. |
-+| Produce reports under `dev/reports/` | PASS | Required reports created. |
-+| Produce ZIP under `dev/workspace/zips/` | PASS | ZIP created during closeout. |
-diff --git a/dev/reports/PR_26180_OWNER_012-update-ci-and-scripts_validation-report.md b/dev/reports/PR_26180_OWNER_012-update-ci-and-scripts_validation-report.md
++Generated: 2026-06-28T23:33:01.682Z
++
++| Requirement | Result | Notes |
++|---|---|---|
++| Remove or retire obsolete legacy layout paths | PASS | Active stale references were updated to canonical www/api/dev/dev-build paths. |
++| Confirm references are updated before removal | PASS | Targeted legacy-path scan passed for active code/config/tests/package/CI surfaces. |
++| Hard stop if active runtime/test/CI/package references still point to obsolete paths | PASS | No blocking active references found after cleanup. |
++| Preserve documented compatibility references only where intentional | PASS | Public URLs like /toolbox and /assets remain intentionally preserved. |
++| Do not change product behavior | PASS | Changes are reference/path cleanup and validation alignment. |
++| Do not move new www/api/dev files | PASS | No www/api/dev application move was performed. |
++| Update required reports under dev/reports | PASS | Required reports generated. |
++| Produce repo-structured ZIP under dev/workspace/zips | PASS | ZIP generated during closeout. |
+diff --git a/dev/reports/PR_26180_OWNER_013-remove-legacy-layout_validation-report.md b/dev/reports/PR_26180_OWNER_013-remove-legacy-layout_validation-report.md
 new file mode 100644
-index 000000000..dc5cfcaeb
+index 000000000..a124ab9d1
 --- /dev/null
-+++ b/dev/reports/PR_26180_OWNER_012-update-ci-and-scripts_validation-report.md
-@@ -0,0 +1,21 @@
-+# PR_26180_OWNER_012 Validation Report
++++ b/dev/reports/PR_26180_OWNER_013-remove-legacy-layout_validation-report.md
+@@ -0,0 +1,31 @@
++# PR_26180_OWNER_013-remove-legacy-layout Validation Report
 +
-+## Validation Summary
-+
-+PASS
++Generated: 2026-06-28T23:33:01.682Z
 +
 +## Commands
 +
-+| Command | Result | Notes |
-+| --- | --- | --- |
-+| `node --check dev/scripts/run-node-tests.mjs dev/scripts/run-node-test-files.mjs dev/scripts/audit-playwright-test-locations.mjs dev/scripts/run-targeted-test-lanes.mjs dev/scripts/validate-tool-registry.mjs dev/scripts/audit-duplicate-file-content.mjs` | PASS | Changed developer scripts parse successfully. |
-+| Targeted package script check | PASS | Required command names are preserved and `validate:platform` is present. |
-+| `npm run validate:canonical-structure` | PASS | Canonical structure validation passed. |
-+| `git diff --check` | PASS | Whitespace validation passed. |
-+| `npm run validate:platform` | PASS | Platform validation suite passed 8/8 scenarios. |
-+| `node --test dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs` | PASS | Team-aware bootstrap tests passed. |
-+| `node dev/scripts/audit-playwright-test-locations.mjs --target dev/tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs --lanes games --report dev/workspace/tmp/pr012_playwright_structure_audit.md --discovery-report dev/workspace/tmp/pr012_playwright_discovery_ownership_report.md --scope-report dev/workspace/tmp/pr012_playwright_discovery_scope_report.md --scan-report dev/workspace/tmp/pr012_filesystem_scan_reduction_report.md` | PASS | Targeted Playwright route/location audit passed. |
++| Command | Result |
++|---|---|
++| git diff --check | PASS |
++| npm run validate:canonical-structure | PASS |
++| npm run validate:platform | PASS |
++| targeted legacy-path scan | PASS |
++| node --test dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs dev/tests/runtime/V2ToolLaunch.test.mjs dev/tests/shared/ContractIndexValidation.test.mjs dev/tests/dev-runtime/AdminNotesBoundary.test.mjs dev/tests/tools/ToolManifestBoundary.test.mjs dev/tests/production/TestsValidationCombinedPass.test.mjs dev/tests/shared/ContractFixtureIsolationValidation.test.mjs dev/tests/shared/ContractNegativeCaseCoverage.test.mjs dev/tests/dev-runtime/ApiMenuPathCleanup.test.mjs | PASS |
 +
-+## Playwright Decision
++## Platform Validation
 +
-+Browser-served routes were not changed by this PR. A targeted Playwright structure audit was run for route ownership/path assumptions; full Playwright browser execution was not required.
-diff --git a/dev/scripts/audit-duplicate-file-content.mjs b/dev/scripts/audit-duplicate-file-content.mjs
-index d7f1b3ccb..bda616416 100644
---- a/dev/scripts/audit-duplicate-file-content.mjs
-+++ b/dev/scripts/audit-duplicate-file-content.mjs
-@@ -36,7 +36,8 @@ function classifyDuplicateGroup(files) {
-   const inReports = normalized.every((value) => value.includes("/reports/"));
-   const inEvidenceSnapshot = normalized.some((value) => value.includes("/repo_relative/") || value.includes("/evidence/"));
-   const touchesRuntime = normalized.some((value) => value.startsWith("src/")
--    || value.startsWith("toolbox/")
-+    || value.startsWith("www/games/")
-+    || value.startsWith("www/toolbox/")
-     || value.startsWith("dev/archive/v1-v2/games/")
-     || value.startsWith("dev/archive/v1-v2/samples/"));
-   const inTestsOnly = normalized.every((value) => value.startsWith("dev/tests/"));
-diff --git a/dev/scripts/audit-playwright-test-locations.mjs b/dev/scripts/audit-playwright-test-locations.mjs
-index f8f326c5d..38eb36f1e 100644
---- a/dev/scripts/audit-playwright-test-locations.mjs
-+++ b/dev/scripts/audit-playwright-test-locations.mjs
-@@ -221,7 +221,7 @@ async function listTopLevelPlaywrightDirs() {
- }
++`npm run validate:platform` completed successfully with 8/8 scenarios passing.
++
++## Canonical Structure
++
++`npm run validate:canonical-structure` completed successfully with 0 blocking violations.
++
++## Legacy Path Scan
++
++Targeted scan excluded reports, archives, and generated workspace output, and checked active GitHub workflows, api, dev/scripts, dev/tests, src, www, and package.json for obsolete filesystem references.
++
++Result: PASS.
++
++## Bootstrap Command Check
++
++Covered by targeted TeamAwareBootstrap test. The public command surface remains preserved by prior PR012 and is not changed by this PR.
+diff --git a/dev/tests/dev-runtime/AdminNotesBoundary.test.mjs b/dev/tests/dev-runtime/AdminNotesBoundary.test.mjs
+index 5918522ba..c75f6c641 100644
+--- a/dev/tests/dev-runtime/AdminNotesBoundary.test.mjs
++++ b/dev/tests/dev-runtime/AdminNotesBoundary.test.mjs
+@@ -194,14 +194,14 @@ test("Owner Notes route is the only production-facing Admin Notes viewer route",
+   assert.doesNotMatch(ownerNotesSource, /\son[a-z]+\s*=/i, "Owner Notes page must not contain inline event handlers");
+   assert.match(ownerNotesSource, /data-owner-notes/, "Owner Notes page keeps Owner route marker");
+   assert.match(ownerNotesSource, /data-admin-notes-viewer/, "Owner Notes page reuses the Admin Notes viewer pattern");
+-  assert.match(ownerNotesSource, /docs_build\/dev\/admin-notes/, "Owner Notes page points at the admin-notes source folder");
++  assert.match(ownerNotesSource, /dev\/archive\/legacy-docs-build\/admin-notes/, "Owner Notes page points at the admin-notes source folder");
+   assert.match(ownerNotesSource, /\.\.\/src\/dev-runtime\/admin\/admin-notes-viewer\.js/, "Owner Notes page reuses the existing viewer script");
+   assert.doesNotMatch(ownerNotesSource, /Game Journey owns note editing|Open Game Journey/, "Owner Notes page must not use the old placeholder workflow");
+ });
 
- async function listGameNames() {
--  const absoluteGamesDir = path.join(repoRoot, "games");
-+  const absoluteGamesDir = path.join(repoRoot, "www", "games");
-   const entries = await fs.readdir(absoluteGamesDir, { withFileTypes: true });
-   const gameNames = [];
-   for (const entry of entries.filter((item) => item.isDirectory() && !item.name.startsWith("_"))) {
-@@ -650,7 +650,7 @@ async function audit(options = {}) {
-         status: "SCOPED"
-       },
-       {
--        path: "games/",
-+        path: "www/games/",
-         reason: "Game fixture discovery used explicit manifest/path references from targeted files.",
-         status: "SCOPED"
+ test("production-facing paths only expose Admin Notes through Owner Notes", () => {
+   const headerSource = fs.readFileSync(repoPath("www/assets/theme-v2/partials/header-nav.html"), "utf8");
+-  assert.doesNotMatch(headerSource, /docs_build\/dev\/admin-notes|admin-notes-dev|data-admin-notes-local-menu|data-admin-my-stuff-menu|My Stuff|Admin Notes/);
++  assert.doesNotMatch(headerSource, /dev\/archive\/legacy-docs-build\/admin-notes|admin-notes-dev|data-admin-notes-local-menu|data-admin-my-stuff-menu|My Stuff|Admin Notes/);
+   for (const label of devOnlyAdminLabels) {
+     assert.doesNotMatch(headerSource, new RegExp(`>${label}<\\/a>`), `production Admin menu omits dev-only ${label}`);
+   }
+@@ -216,7 +216,7 @@ test("production-facing paths only expose Admin Notes through Owner Notes", () =
+         return false;
        }
-diff --git a/dev/scripts/run-node-test-files.mjs b/dev/scripts/run-node-test-files.mjs
-index 379f03cd7..86376addf 100644
---- a/dev/scripts/run-node-test-files.mjs
-+++ b/dev/scripts/run-node-test-files.mjs
-@@ -10,12 +10,18 @@ import { registerHooks } from "node:module";
+       const source = fs.readFileSync(filePath, "utf8");
+-      return /docs_build\/dev\/admin-notes|docs_build\\dev\\admin-notes|src\/dev-runtime\/admin|src\\dev-runtime\\admin|data-admin-my-stuff-menu|My Stuff|admin-notes|Admin Notes/.test(source);
++      return /dev\/archive\/legacy-docs-build\/admin-notes|dev\\archive\\legacy-docs-build\\admin-notes|src\/dev-runtime\/admin|src\\dev-runtime\\admin|data-admin-my-stuff-menu|My Stuff|admin-notes|Admin Notes/.test(source);
+     })
+     .map(relativePath);
+
+@@ -306,7 +306,7 @@ test("Admin page left menus use dynamic placeholders without Notes duplication",
+     for (const label of devOnlyAdminLabels) {
+       assert.doesNotMatch(source, new RegExp(`>${label}<\\/a>`), `${pageName} left menu omits ${label}`);
+     }
+-    assert.doesNotMatch(source, /docs_build\/dev\/admin-notes|src\/dev-runtime\/admin|admin-notes|Admin Notes/);
++    assert.doesNotMatch(source, /dev\/archive\/legacy-docs-build\/admin-notes|src\/dev-runtime\/admin|admin-notes|Admin Notes/);
+   }
+
+   assert.ok(checkedPages.length > 0, "Admin pages with side menus were checked");
+diff --git a/dev/tests/dev-runtime/ApiMenuPathCleanup.test.mjs b/dev/tests/dev-runtime/ApiMenuPathCleanup.test.mjs
+index 086b1a9a3..82ee5db82 100644
+--- a/dev/tests/dev-runtime/ApiMenuPathCleanup.test.mjs
++++ b/dev/tests/dev-runtime/ApiMenuPathCleanup.test.mjs
+@@ -131,9 +131,9 @@ test("business-control pages moved under owner and are absent from admin", () =>
+ test("active app code no longer links to moved Admin business paths", () => {
+   const offenders = activeTextSources()
+     .filter(({ fileName, source }) => {
+-      if (fileName.startsWith("tests/playwright/tools/LoginSessionMode.spec.mjs")
+-        || fileName.startsWith("tests/playwright/tools/RootToolsFutureState.spec.mjs")
+-        || fileName.startsWith("tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs")) {
++      if (fileName.startsWith("dev/tests/playwright/tools/LoginSessionMode.spec.mjs")
++        || fileName.startsWith("dev/tests/playwright/tools/RootToolsFutureState.spec.mjs")
++        || fileName.startsWith("dev/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs")) {
+         return false;
+       }
+       return /admin\/(branding|design-system|grouping-colors|site-settings|themes)\.html|admin-(branding|design-system|grouping-colors|site-settings|themes)/.test(source);
+diff --git a/dev/tests/final/ToolchainEngineIntegrationValidation.test.mjs b/dev/tests/final/ToolchainEngineIntegrationValidation.test.mjs
+index fcda15676..aec97733a 100644
+--- a/dev/tests/final/ToolchainEngineIntegrationValidation.test.mjs
++++ b/dev/tests/final/ToolchainEngineIntegrationValidation.test.mjs
+@@ -24,19 +24,19 @@ function runNodeTestFile(relativeTestPath) {
+ const TRACK_E_TOOLCHAIN_VALIDATION_STAGES = Object.freeze([
+   Object.freeze({
+     id: "tool-entry-launch-contract",
+-    run: async () => runNodeTestFile("tests/tools/ToolEntryLaunchContract.test.mjs")
++    run: async () => runNodeTestFile("dev/tests/tools/ToolEntryLaunchContract.test.mjs")
+   }),
+   Object.freeze({
+     id: "project-tool-data-contracts",
+-    run: async () => runNodeTestFile("tests/tools/ProjectToolDataContracts.test.mjs")
++    run: async () => runNodeTestFile("dev/tests/tools/ProjectToolDataContracts.test.mjs")
+   }),
+   Object.freeze({
+     id: "runtime-asset-loader",
+-    run: async () => runNodeTestFile("tests/tools/RuntimeAssetLoader.test.mjs")
++    run: async () => runNodeTestFile("dev/tests/tools/RuntimeAssetLoader.test.mjs")
+   }),
+   Object.freeze({
+     id: "render-pipeline-contract-all-4-tools",
+-    run: async () => runNodeTestFile("tests/tools/RenderPipelineContractAll4Tools.test.mjs")
++    run: async () => runNodeTestFile("dev/tests/tools/RenderPipelineContractAll4Tools.test.mjs")
+   }),
+   Object.freeze({
+     id: "runtime-scene-loader-hot-reload",
+diff --git a/dev/tests/fixtures/games/AsteroidsValidation.test.mjs.patch b/dev/tests/fixtures/games/AsteroidsValidation.test.mjs.patch
+index d7cd2648b..7051760b9 100644
+--- a/dev/tests/fixtures/games/AsteroidsValidation.test.mjs.patch
++++ b/dev/tests/fixtures/games/AsteroidsValidation.test.mjs.patch
+@@ -1,4 +1,4 @@
+-*** MANUAL PATCH FOR tests/games/AsteroidsValidation.test.mjs ***
++*** MANUAL PATCH FOR dev/tests/games/AsteroidsValidation.test.mjs ***
+
+ 1) Export the test runner function
+
+diff --git a/dev/tests/fixtures/tools/VectorNativeTemplate.test.mjs.patch b/dev/tests/fixtures/tools/VectorNativeTemplate.test.mjs.patch
+index 6d0183cf5..13cb2b4e3 100644
+--- a/dev/tests/fixtures/tools/VectorNativeTemplate.test.mjs.patch
++++ b/dev/tests/fixtures/tools/VectorNativeTemplate.test.mjs.patch
+@@ -1,4 +1,4 @@
+-*** MANUAL PATCH FOR tests/tools/VectorNativeTemplate.test.mjs ***
++*** MANUAL PATCH FOR dev/tests/tools/VectorNativeTemplate.test.mjs ***
+
+ Find:
+     /Template path: templates\/vector-native-arcade\//
+diff --git a/dev/tests/fixtures/workspace-v2/uat.manifest.json b/dev/tests/fixtures/workspace-v2/uat.manifest.json
+index 08101a0dc..ba92a4da7 100644
+--- a/dev/tests/fixtures/workspace-v2/uat.manifest.json
++++ b/dev/tests/fixtures/workspace-v2/uat.manifest.json
+@@ -20,7 +20,7 @@
+       "id": "workspace-manager-v2-uat-sample",
+       "name": "Workspace Manager V2 UAT Sample Palette",
+       "source": "Workspace Manager V2 temporary UAT sample",
+-      "sourceId": "tests/fixtures/workspace-v2/uat.manifest.json",
++      "sourceId": "dev/tests/fixtures/workspace-v2/uat.manifest.json",
+       "locked": true,
+       "swatches": [
+         {
+diff --git a/dev/tests/helpers/playwrightV8CoverageReporter.mjs b/dev/tests/helpers/playwrightV8CoverageReporter.mjs
+index 774e18996..dabe614e2 100644
+--- a/dev/tests/helpers/playwrightV8CoverageReporter.mjs
++++ b/dev/tests/helpers/playwrightV8CoverageReporter.mjs
+@@ -276,11 +276,10 @@ export class PlaywrightV8CoverageReporter {
+       return false;
+     }
+     return filePath.startsWith("src/")
+-      || filePath.startsWith("admin/")
+-      || filePath.startsWith("assets/theme-v2/js/")
+-      || filePath.startsWith("games/Asteroids/")
+-      || filePath.startsWith("toolbox/")
+-      || filePath.startsWith("common/");
++      || filePath.startsWith("www/admin/")
++      || filePath.startsWith("www/assets/theme-v2/js/")
++      || filePath.startsWith("www/games/Asteroids/")
++      || filePath.startsWith("www/toolbox/");
+   }
+
+   pathFromStatusLine(line) {
+@@ -327,9 +326,9 @@ export class PlaywrightV8CoverageReporter {
+
+   formatToolEntryPoints(coverageByPath) {
+     const toolEntryPoints = [
+-      { name: "Toolbox Index", prefix: "toolbox/" },
++      { name: "Toolbox Index", prefix: "www/toolbox/" },
+       { name: "Tool Template V2", prefix: "dev/templates/tool-template-v2/" },
+-      { name: "Theme V2 Shared JS", prefix: "assets/theme-v2/js/" }
++      { name: "Theme V2 Shared JS", prefix: "www/assets/theme-v2/js/" }
+     ];
+     return toolEntryPoints.map(({ name, prefix }) => {
+       const records = [...coverageByPath.values()].filter((record) => record.repoPath.startsWith(prefix));
+diff --git a/dev/tests/helpers/testCoverageCatalog.mjs b/dev/tests/helpers/testCoverageCatalog.mjs
+index aabfa3f21..4295165ef 100644
+--- a/dev/tests/helpers/testCoverageCatalog.mjs
++++ b/dev/tests/helpers/testCoverageCatalog.mjs
+@@ -1,6 +1,6 @@
+ import path from "node:path";
+
+-export const TESTS_ROOT = path.resolve("tests");
++export const TESTS_ROOT = path.resolve("dev/tests");
+
+ export const REQUIRED_TEST_DIRECTORIES = Object.freeze([
+   "core",
+@@ -16,23 +16,23 @@ export const REQUIRED_TEST_DIRECTORIES = Object.freeze([
+ ]);
+
+ export const UNIT_COVERAGE_ANCHORS = Object.freeze([
+-  "tests/core/EngineCoreBoundaryBaseline.test.mjs",
+-  "tests/shared/SharedFoundationCombinedPass.test.mjs",
+-  "tests/tools/ToolBoundaryEnforcement.test.mjs"
++  "dev/tests/core/EngineCoreBoundaryBaseline.test.mjs",
++  "dev/tests/shared/SharedFoundationCombinedPass.test.mjs",
++  "dev/tests/tools/ToolBoundaryEnforcement.test.mjs"
+ ]);
+
+ export const INTEGRATION_COVERAGE_ANCHORS = Object.freeze([
+-  "tests/world/WorldGameStateSystem.test.mjs",
+-  "tests/replay/ReplaySystem.test.mjs",
+-  "tests/render/Renderer.test.mjs",
+-  "tests/tools/RuntimeAssetBinding.test.mjs",
+-  "tests/core/Engine2DCapabilityCombinedFoundation.test.mjs"
++  "dev/tests/world/WorldGameStateSystem.test.mjs",
++  "dev/tests/replay/ReplaySystem.test.mjs",
++  "dev/tests/render/Renderer.test.mjs",
++  "dev/tests/tools/RuntimeAssetBinding.test.mjs",
++  "dev/tests/core/Engine2DCapabilityCombinedFoundation.test.mjs"
+ ]);
+
+ export const FIXTURE_ARTIFACTS = Object.freeze([
+-  "tests/fixtures/games/AsteroidsValidation.snippet.js",
+-  "tests/fixtures/games/AsteroidsValidation.test.mjs.patch",
+-  "tests/fixtures/tools/VectorNativeTemplate.regex.before.txt",
+-  "tests/fixtures/tools/VectorNativeTemplate.regex.after.txt",
+-  "tests/fixtures/tools/VectorNativeTemplate.test.mjs.patch"
++  "dev/tests/fixtures/games/AsteroidsValidation.snippet.js",
++  "dev/tests/fixtures/games/AsteroidsValidation.test.mjs.patch",
++  "dev/tests/fixtures/tools/VectorNativeTemplate.regex.before.txt",
++  "dev/tests/fixtures/tools/VectorNativeTemplate.regex.after.txt",
++  "dev/tests/fixtures/tools/VectorNativeTemplate.test.mjs.patch"
+ ]);
+diff --git a/dev/tests/playwright_installation.txt b/dev/tests/playwright_installation.txt
+index dc1bae980..064c65600 100644
+--- a/dev/tests/playwright_installation.txt
++++ b/dev/tests/playwright_installation.txt
+@@ -47,7 +47,7 @@ npx playwright --version
+ ## ▶️ Run your test
+
+ ```powershell
+-npx playwright test tests/ui/workspace-v2.asset-manager.spec.js
++npx playwright test dev/tests/ui/workspace-v2.asset-manager.spec.js
+ ```
+
+ ---
+@@ -100,7 +100,7 @@ npx playwright show-trace
+
+ ```text
+ HTML-JavaScript-Gaming/
+-├── tests/
++├── dev/tests/
+ │   └── ui/
+ │       └── workspace-v2.asset-manager.spec.js <<<< test code goes here
+ ├── dev/config/playwright.config.cjs
+diff --git a/dev/tests/production/TestsValidationCombinedPass.test.mjs b/dev/tests/production/TestsValidationCombinedPass.test.mjs
+index 3cbe41b75..572d34377 100644
+--- a/dev/tests/production/TestsValidationCombinedPass.test.mjs
++++ b/dev/tests/production/TestsValidationCombinedPass.test.mjs
+@@ -24,7 +24,7 @@ function assertRepoDirectory(relativePath) {
+
+ export function run() {
+   REQUIRED_TEST_DIRECTORIES.forEach((dir) => {
+-    assertRepoDirectory(`tests/${dir}`);
++    assertRepoDirectory(`dev/tests/${dir}`);
+   });
+
+   UNIT_COVERAGE_ANCHORS.forEach((filePath) => {
+diff --git a/dev/tests/runtime/V2BlockFakeSessionSave.test.mjs b/dev/tests/runtime/V2BlockFakeSessionSave.test.mjs
+index 29b30b29c..48b0233b3 100644
+--- a/dev/tests/runtime/V2BlockFakeSessionSave.test.mjs
++++ b/dev/tests/runtime/V2BlockFakeSessionSave.test.mjs
+@@ -109,7 +109,7 @@ export function run() {
+
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2BlockFakeSessionSave.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2BlockFakeSessionSave.test.mjs failed syntax check.");
+
+   const requiredTokens = [
+     "readSessionPayloadForLibraryWrite(sessionId)",
+diff --git a/dev/tests/runtime/V2ClearStaleMergePreview.test.mjs b/dev/tests/runtime/V2ClearStaleMergePreview.test.mjs
+index 337bc2bbf..f928cf560 100644
+--- a/dev/tests/runtime/V2ClearStaleMergePreview.test.mjs
++++ b/dev/tests/runtime/V2ClearStaleMergePreview.test.mjs
+@@ -64,7 +64,7 @@ export function run() {
+
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2ClearStaleMergePreview.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2ClearStaleMergePreview.test.mjs failed syntax check.");
+
+   const requiredTokens = [
+     "handleMergeSelectionChange()",
+diff --git a/dev/tests/runtime/V2ConfirmPreviewEnableState.test.mjs b/dev/tests/runtime/V2ConfirmPreviewEnableState.test.mjs
+index e2066591d..021b2226d 100644
+--- a/dev/tests/runtime/V2ConfirmPreviewEnableState.test.mjs
++++ b/dev/tests/runtime/V2ConfirmPreviewEnableState.test.mjs
+@@ -52,7 +52,7 @@ export function run() {
+   if (!htmlExists) failures.push("Missing toolbox/workspace-v2/index.html.");
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2ConfirmPreviewEnableState.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2ConfirmPreviewEnableState.test.mjs failed syntax check.");
+
+   const requiredTokens = [
+     "conflictCount: Object.keys(result.conflicts).length",
+diff --git a/dev/tests/runtime/V2CrossToolFlow.test.mjs b/dev/tests/runtime/V2CrossToolFlow.test.mjs
+index a766fe254..65563ea64 100644
+--- a/dev/tests/runtime/V2CrossToolFlow.test.mjs
++++ b/dev/tests/runtime/V2CrossToolFlow.test.mjs
+@@ -56,7 +56,7 @@ function validateFlow(flow) {
+   let launchUrl = "";
+
+   if (!sourceFixtureExists) {
+-    failures.push(`Missing source fixture: tests/fixtures/v2-tools/${flow.sourceTool}.json`);
++    failures.push(`Missing source fixture: dev/tests/fixtures/v2-tools/${flow.sourceTool}.json`);
+   } else {
+     const beforeText = fs.readFileSync(sourceFixturePath, "utf8");
+     let sourceFixture = null;
+@@ -67,7 +67,7 @@ function validateFlow(flow) {
+       sourceFixtureValid = false;
+     }
+     if (!sourceFixtureValid) {
+-      failures.push(`Invalid source fixture JSON: tests/fixtures/v2-tools/${flow.sourceTool}.json`);
++      failures.push(`Invalid source fixture JSON: dev/tests/fixtures/v2-tools/${flow.sourceTool}.json`);
+     } else {
+       sourceHostContextId = typeof sourceFixture.hostContextId === "string" ? sourceFixture.hostContextId.trim() : "";
+       if (!sourceHostContextId) {
+diff --git a/dev/tests/runtime/V2CrossToolMergeBlock.test.mjs b/dev/tests/runtime/V2CrossToolMergeBlock.test.mjs
+index 218ca64b1..5bb344bf1 100644
+--- a/dev/tests/runtime/V2CrossToolMergeBlock.test.mjs
++++ b/dev/tests/runtime/V2CrossToolMergeBlock.test.mjs
+@@ -53,7 +53,7 @@ export function run() {
+
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2CrossToolMergeBlock.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2CrossToolMergeBlock.test.mjs failed syntax check.");
+
+   const requiredTokens = [
+     "Cross-tool merge is not supported. Select two sessions with the same toolId.",
+diff --git a/dev/tests/runtime/V2DeterministicStateTransitions.test.mjs b/dev/tests/runtime/V2DeterministicStateTransitions.test.mjs
+index a59281aea..f058fd597 100644
+--- a/dev/tests/runtime/V2DeterministicStateTransitions.test.mjs
++++ b/dev/tests/runtime/V2DeterministicStateTransitions.test.mjs
+@@ -59,7 +59,7 @@ export function run() {
+
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2DeterministicStateTransitions.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2DeterministicStateTransitions.test.mjs failed syntax check.");
+
+   const requiredTokens = [
+     "this.workspaceTransitionState = \"idle\";",
+diff --git a/dev/tests/runtime/V2DiffViewerMessaging.test.mjs b/dev/tests/runtime/V2DiffViewerMessaging.test.mjs
+index 05db01823..684096575 100644
+--- a/dev/tests/runtime/V2DiffViewerMessaging.test.mjs
++++ b/dev/tests/runtime/V2DiffViewerMessaging.test.mjs
+@@ -43,7 +43,7 @@ export function run() {
+
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2DiffViewerMessaging.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2DiffViewerMessaging.test.mjs failed syntax check.");
+
+   if (!js.includes("No differences. The selected sessions are identical.")) {
+     failures.push("Missing empty-diff message.");
+diff --git a/dev/tests/runtime/V2DiffViewerSummaryCounts.test.mjs b/dev/tests/runtime/V2DiffViewerSummaryCounts.test.mjs
+index 3850c3cd3..059a94448 100644
+--- a/dev/tests/runtime/V2DiffViewerSummaryCounts.test.mjs
++++ b/dev/tests/runtime/V2DiffViewerSummaryCounts.test.mjs
+@@ -46,7 +46,7 @@ export function run() {
+   if (!htmlExists) failures.push("Missing toolbox/workspace-v2/index.html.");
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2DiffViewerSummaryCounts.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2DiffViewerSummaryCounts.test.mjs failed syntax check.");
+
+   if (!html.includes('id="workspaceV2DiffSummary"')) {
+     failures.push("Missing Diff summary node in Workspace V2 Diff Viewer.");
+diff --git a/dev/tests/runtime/V2EnableStateFeedback.test.mjs b/dev/tests/runtime/V2EnableStateFeedback.test.mjs
+index b01e490d4..74352eedf 100644
+--- a/dev/tests/runtime/V2EnableStateFeedback.test.mjs
++++ b/dev/tests/runtime/V2EnableStateFeedback.test.mjs
+@@ -43,7 +43,7 @@ export function run() {
+   if (!htmlExists) failures.push("Missing toolbox/workspace-v2/index.html.");
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2EnableStateFeedback.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2EnableStateFeedback.test.mjs failed syntax check.");
+
+   if (!html.includes("id=\"workspaceV2DiffEnableState\"")) failures.push("Missing Diff enable-state line.");
+   if (!html.includes("id=\"workspaceV2MergeEnableState\"")) failures.push("Missing Merge enable-state line.");
+diff --git a/dev/tests/runtime/V2MergeConflictSummary.test.mjs b/dev/tests/runtime/V2MergeConflictSummary.test.mjs
+index 0e995c350..f234d3a4f 100644
+--- a/dev/tests/runtime/V2MergeConflictSummary.test.mjs
++++ b/dev/tests/runtime/V2MergeConflictSummary.test.mjs
+@@ -69,7 +69,7 @@ export function run() {
+   if (!htmlExists) failures.push("Missing toolbox/workspace-v2/index.html.");
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2MergeConflictSummary.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2MergeConflictSummary.test.mjs failed syntax check.");
+
+   if (!html.includes("id=\"workspaceV2MergeConflictSummary\"")) failures.push("Missing merge conflict summary node.");
+   if (!html.includes("id=\"workspaceV2MergeOutput\"")) failures.push("Missing raw merge JSON preview node.");
+diff --git a/dev/tests/runtime/V2MergeOutputPersistence.test.mjs b/dev/tests/runtime/V2MergeOutputPersistence.test.mjs
+index 785354f96..aed5a2fb6 100644
+--- a/dev/tests/runtime/V2MergeOutputPersistence.test.mjs
++++ b/dev/tests/runtime/V2MergeOutputPersistence.test.mjs
+@@ -69,7 +69,7 @@ export function run() {
+   if (!htmlExists) failures.push("Missing toolbox/workspace-v2/index.html.");
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2MergeOutputPersistence.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2MergeOutputPersistence.test.mjs failed syntax check.");
+
+   const requiredHtml = [
+     "id=\"workspaceV2MergedSessionId\"",
+diff --git a/dev/tests/runtime/V2MergePreviewOverlayFix.test.mjs b/dev/tests/runtime/V2MergePreviewOverlayFix.test.mjs
+index 233a17322..c1380b960 100644
+--- a/dev/tests/runtime/V2MergePreviewOverlayFix.test.mjs
++++ b/dev/tests/runtime/V2MergePreviewOverlayFix.test.mjs
+@@ -59,7 +59,7 @@ export function run() {
+   if (!htmlExists) failures.push("Missing toolbox/workspace-v2/index.html.");
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2MergePreviewOverlayFix.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2MergePreviewOverlayFix.test.mjs failed syntax check.");
+
+   if (!html.includes("id=\"workspaceV2MergeOutput\"")) failures.push("Merge preview output node is missing.");
+   if (!html.includes("max-height: 18rem; overflow: auto; position: relative;")) {
+diff --git a/dev/tests/runtime/V2MergeResultSummary.test.mjs b/dev/tests/runtime/V2MergeResultSummary.test.mjs
+index 234cbb8c9..e3a2ced4a 100644
+--- a/dev/tests/runtime/V2MergeResultSummary.test.mjs
++++ b/dev/tests/runtime/V2MergeResultSummary.test.mjs
+@@ -64,7 +64,7 @@ export function run() {
+   if (!htmlExists) failures.push("Missing toolbox/workspace-v2/index.html.");
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2MergeResultSummary.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2MergeResultSummary.test.mjs failed syntax check.");
+
+   const requiredHtml = [
+     "id=\"workspaceV2MergeResultSummary\"",
+diff --git a/dev/tests/runtime/V2MergeStateSingleSourceOfTruth.test.mjs b/dev/tests/runtime/V2MergeStateSingleSourceOfTruth.test.mjs
+index e1278d73a..646e018e0 100644
+--- a/dev/tests/runtime/V2MergeStateSingleSourceOfTruth.test.mjs
++++ b/dev/tests/runtime/V2MergeStateSingleSourceOfTruth.test.mjs
+@@ -54,7 +54,7 @@ export function run() {
+
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2MergeStateSingleSourceOfTruth.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2MergeStateSingleSourceOfTruth.test.mjs failed syntax check.");
+
+   const requiredTokens = [
+     "resolveAuthoritativeLastMergedHostContextId()",
+diff --git a/dev/tests/runtime/V2MergeStateStatusReset.test.mjs b/dev/tests/runtime/V2MergeStateStatusReset.test.mjs
+index bbc2a65ff..8d66d953c 100644
+--- a/dev/tests/runtime/V2MergeStateStatusReset.test.mjs
++++ b/dev/tests/runtime/V2MergeStateStatusReset.test.mjs
+@@ -59,7 +59,7 @@ export function run() {
+   if (!htmlExists) failures.push("Missing toolbox/workspace-v2/index.html.");
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2MergeStateStatusReset.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2MergeStateStatusReset.test.mjs failed syntax check.");
+
+   const requiredTokens = [
+     "clearMergePanelTransientState(summaryMessage, outputMessage, statusMessage)",
+diff --git a/dev/tests/runtime/V2MergedRecentSessionRegistration.test.mjs b/dev/tests/runtime/V2MergedRecentSessionRegistration.test.mjs
+index 1bd4e8321..10ffa8b67 100644
+--- a/dev/tests/runtime/V2MergedRecentSessionRegistration.test.mjs
++++ b/dev/tests/runtime/V2MergedRecentSessionRegistration.test.mjs
+@@ -65,7 +65,7 @@ export function run() {
+
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2MergedRecentSessionRegistration.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2MergedRecentSessionRegistration.test.mjs failed syntax check.");
+
+   const requiredTokens = [
+     "createMergedHostContextId(toolId)",
+diff --git a/dev/tests/runtime/V2SaveLibraryFromRecentSession.test.mjs b/dev/tests/runtime/V2SaveLibraryFromRecentSession.test.mjs
+index c5163f753..bac5ea682 100644
+--- a/dev/tests/runtime/V2SaveLibraryFromRecentSession.test.mjs
++++ b/dev/tests/runtime/V2SaveLibraryFromRecentSession.test.mjs
+@@ -132,7 +132,7 @@ export function run() {
+
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2SaveLibraryFromRecentSession.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2SaveLibraryFromRecentSession.test.mjs failed syntax check.");
+
+   const mustContain = [
+     "readSessionPayloadFromRecentSessionId(sessionId)",
+diff --git a/dev/tests/runtime/V2SavedSessionRowActions.test.mjs b/dev/tests/runtime/V2SavedSessionRowActions.test.mjs
+index 9427094ff..bd1109eb9 100644
+--- a/dev/tests/runtime/V2SavedSessionRowActions.test.mjs
++++ b/dev/tests/runtime/V2SavedSessionRowActions.test.mjs
+@@ -50,7 +50,7 @@ export function run() {
+   if (!htmlExists) failures.push("Missing toolbox/workspace-v2/index.html.");
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2SavedSessionRowActions.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2SavedSessionRowActions.test.mjs failed syntax check.");
+
+   if (!html.includes("Saved sessions are stored in Session Library. Recent sessions are temporary.")) {
+     failures.push("Helper text is not updated to saved-vs-recent clarification.");
+diff --git a/dev/tests/runtime/V2SelectionSyncRowActions.test.mjs b/dev/tests/runtime/V2SelectionSyncRowActions.test.mjs
+index 2043421bd..64cfb1df8 100644
+--- a/dev/tests/runtime/V2SelectionSyncRowActions.test.mjs
++++ b/dev/tests/runtime/V2SelectionSyncRowActions.test.mjs
+@@ -69,7 +69,7 @@ export function run() {
+
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2SelectionSyncRowActions.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2SelectionSyncRowActions.test.mjs failed syntax check.");
+
+   const requiredTokens = [
+     "syncSelectionSlotsFromContextId(leftSelectNode, rightSelectNode, candidates, contextId)",
+diff --git a/dev/tests/runtime/V2SessionLibraryActionCleanup.test.mjs b/dev/tests/runtime/V2SessionLibraryActionCleanup.test.mjs
+index 2174527c9..08798f140 100644
+--- a/dev/tests/runtime/V2SessionLibraryActionCleanup.test.mjs
++++ b/dev/tests/runtime/V2SessionLibraryActionCleanup.test.mjs
+@@ -36,7 +36,7 @@ export function run() {
+   if (!htmlExists) failures.push("Missing toolbox/workspace-v2/index.html.");
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2SessionLibraryActionCleanup.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2SessionLibraryActionCleanup.test.mjs failed syntax check.");
+
+   const requiredHtmlTokens = [
+     '<label for="workspaceV2SessionName">New Session ID (Save Session)</label>',
+diff --git a/dev/tests/runtime/V2SessionLibraryActionLabel.test.mjs b/dev/tests/runtime/V2SessionLibraryActionLabel.test.mjs
+index 41992b4f9..20a61a873 100644
+--- a/dev/tests/runtime/V2SessionLibraryActionLabel.test.mjs
++++ b/dev/tests/runtime/V2SessionLibraryActionLabel.test.mjs
+@@ -63,7 +63,7 @@ export function run() {
+
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2SessionLibraryActionLabel.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2SessionLibraryActionLabel.test.mjs failed syntax check.");
+
+   if (!js.includes("useInLibraryButton.textContent = \"Use in Diff/Merge\";")) {
+     failures.push("Saved Session Library row action label was not renamed to Use in Diff/Merge.");
+diff --git a/dev/tests/runtime/V2SessionLibraryActions.test.mjs b/dev/tests/runtime/V2SessionLibraryActions.test.mjs
+index 1a7e2cd85..e1302984d 100644
+--- a/dev/tests/runtime/V2SessionLibraryActions.test.mjs
++++ b/dev/tests/runtime/V2SessionLibraryActions.test.mjs
+@@ -116,7 +116,7 @@ export function run() {
+   if (!htmlExists) failures.push("Missing toolbox/workspace-v2/index.html.");
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2SessionLibraryActions.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2SessionLibraryActions.test.mjs failed syntax check.");
+
+   if (!html.includes("id=\"workspaceV2LibraryStatus\"")) {
+     failures.push("Missing explicit Session Library status output area.");
+diff --git a/dev/tests/runtime/V2SessionLibraryCardOverwrite.test.mjs b/dev/tests/runtime/V2SessionLibraryCardOverwrite.test.mjs
+index ce0cb671f..c9c59ff07 100644
+--- a/dev/tests/runtime/V2SessionLibraryCardOverwrite.test.mjs
++++ b/dev/tests/runtime/V2SessionLibraryCardOverwrite.test.mjs
+@@ -44,7 +44,7 @@ export function run() {
+
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2SessionLibraryCardOverwrite.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2SessionLibraryCardOverwrite.test.mjs failed syntax check.");
+
+   const requiredTokens = [
+     "overwriteButton.textContent = \"Overwrite\";",
+diff --git a/dev/tests/runtime/V2SessionLibrarySaveGuard.test.mjs b/dev/tests/runtime/V2SessionLibrarySaveGuard.test.mjs
+index 5d8949400..9fc924ffb 100644
+--- a/dev/tests/runtime/V2SessionLibrarySaveGuard.test.mjs
++++ b/dev/tests/runtime/V2SessionLibrarySaveGuard.test.mjs
+@@ -36,7 +36,7 @@ export function run() {
+
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2SessionLibrarySaveGuard.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2SessionLibrarySaveGuard.test.mjs failed syntax check.");
+
+   const requiredTokens = [
+     "hasActiveWorkspaceSessionForSave()",
+diff --git a/dev/tests/runtime/V2SessionStateModelConsolidation.test.mjs b/dev/tests/runtime/V2SessionStateModelConsolidation.test.mjs
+index fb7366c34..09776406b 100644
+--- a/dev/tests/runtime/V2SessionStateModelConsolidation.test.mjs
++++ b/dev/tests/runtime/V2SessionStateModelConsolidation.test.mjs
+@@ -65,7 +65,7 @@ export function run() {
+
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2SessionStateModelConsolidation.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2SessionStateModelConsolidation.test.mjs failed syntax check.");
+
+   const requiredTokens = [
+     "computeWorkspaceSessionUiStateModel()",
+diff --git a/dev/tests/runtime/V2SessionToolsCloseoutBundle.test.mjs b/dev/tests/runtime/V2SessionToolsCloseoutBundle.test.mjs
+index 56eeb0e92..de12f3f38 100644
+--- a/dev/tests/runtime/V2SessionToolsCloseoutBundle.test.mjs
++++ b/dev/tests/runtime/V2SessionToolsCloseoutBundle.test.mjs
+@@ -53,7 +53,7 @@ export function run() {
+
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2SessionToolsCloseoutBundle.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2SessionToolsCloseoutBundle.test.mjs failed syntax check.");
+
+   const requiredTokens = [
+     "this.diffOutputSelectionKey = \"\";",
+diff --git a/dev/tests/runtime/V2SessionUxStabilization.test.mjs b/dev/tests/runtime/V2SessionUxStabilization.test.mjs
+index 9904a5793..113556fa2 100644
+--- a/dev/tests/runtime/V2SessionUxStabilization.test.mjs
++++ b/dev/tests/runtime/V2SessionUxStabilization.test.mjs
+@@ -64,7 +64,7 @@ export function run() {
+
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2SessionUxStabilization.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2SessionUxStabilization.test.mjs failed syntax check.");
+
+   const requiredTokens = [
+     "updateSessionLibraryActionState()",
+diff --git a/dev/tests/runtime/V2ToolLaunch.test.mjs b/dev/tests/runtime/V2ToolLaunch.test.mjs
+index 97acbfedd..2faabfb13 100644
+--- a/dev/tests/runtime/V2ToolLaunch.test.mjs
++++ b/dev/tests/runtime/V2ToolLaunch.test.mjs
+@@ -1,23 +1,22 @@
+ import assert from "node:assert/strict";
+ import fs from "node:fs";
+ import path from "node:path";
+-import { execFileSync } from "node:child_process";
  import { fileURLToPath, pathToFileURL } from "node:url";
 
- const repoRoot = fileURLToPath(new URL("../..", import.meta.url));
--const ROOT_ALIASES = ["/src/", "/toolbox/"];
-+const ROOT_ALIASES = new Map([
-+  ["/assets/", "www/assets/"],
-+  ["/src/", "src/"],
-+  ["/toolbox/", "www/toolbox/"],
-+]);
+ const __filename = fileURLToPath(import.meta.url);
+ const __dirname = path.dirname(__filename);
+ const repoRoot = path.resolve(__dirname, "..", "..", "..");
+ const toolsRoot = path.join(repoRoot, "www", "toolbox");
+-const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
++const fixturesRoot = path.join(repoRoot, "dev", "tests", "fixtures", "v2-tools");
+ const toolsIndexPath = path.join(toolsRoot, "index.html");
+ const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-tool-launch-results.json");
 
- registerHooks({
-   resolve(specifier, context, nextResolve) {
--    if (ROOT_ALIASES.some((prefix) => specifier.startsWith(prefix))) {
--      const resolved = pathToFileURL(path.join(repoRoot, specifier.slice(1))).href;
-+    const alias = [...ROOT_ALIASES.entries()].find(([prefix]) => specifier.startsWith(prefix));
-+    if (alias) {
-+      const [prefix, targetRoot] = alias;
-+      const resolved = pathToFileURL(path.join(repoRoot, targetRoot, specifier.slice(prefix.length))).href;
-       return nextResolve(resolved, context);
-     }
-     return nextResolve(specifier, context);
-diff --git a/dev/scripts/run-node-tests.mjs b/dev/scripts/run-node-tests.mjs
-index 2f9dbeaa6..67f0674d6 100644
---- a/dev/scripts/run-node-tests.mjs
-+++ b/dev/scripts/run-node-tests.mjs
-@@ -9,12 +9,18 @@ import { registerHooks } from 'node:module';
- import { fileURLToPath, pathToFileURL } from 'node:url';
+-const REQUIRED_V2_TOOLS = [
++const RETIRED_FIXTURE_ONLY_V2_TOOLS = [
+   "asset-manager-v2",
+   "palette-manager-v2",
+   "svg-asset-studio-v2",
+   "tilemap-studio-v2",
+-  "vector-map-editor-v2"
++  "vector-map-editor-v2",
+ ];
 
- const repoRoot = fileURLToPath(new URL('../..', import.meta.url));
--const ROOT_ALIASES = ['/src/', '/toolbox/'];
-+const ROOT_ALIASES = new Map([
-+  ['/assets/', 'www/assets/'],
-+  ['/src/', 'src/'],
-+  ['/toolbox/', 'www/toolbox/'],
-+]);
+ function readText(filePath) {
+@@ -35,119 +34,52 @@ function hasIndexRoute(indexHtmlText, toolId) {
+   );
+ }
 
- registerHooks({
-   resolve(specifier, context, nextResolve) {
--    if (ROOT_ALIASES.some((prefix) => specifier.startsWith(prefix))) {
--      const resolved = pathToFileURL(path.join(repoRoot, specifier.slice(1))).href;
-+    const alias = [...ROOT_ALIASES.entries()].find(([prefix]) => specifier.startsWith(prefix));
-+    if (alias) {
-+      const [prefix, targetRoot] = alias;
-+      const resolved = pathToFileURL(path.join(repoRoot, targetRoot, specifier.slice(prefix.length))).href;
-       return nextResolve(resolved, context);
-     }
+-function hasToolSpecificPayload(toolId, fixtureJson) {
+-  const sessionContext = fixtureJson?.sessionContext;
+-  if (!sessionContext || typeof sessionContext !== "object" || Array.isArray(sessionContext)) {
+-    return false;
+-  }
+-  if (toolId === "asset-manager-v2") {
+-    return Boolean(sessionContext?.payloadJson?.assetCatalog);
+-  }
+-  if (toolId === "palette-manager-v2") {
+-    return Boolean(sessionContext?.paletteJson);
+-  }
+-  if (toolId === "svg-asset-studio-v2") {
+-    return Boolean(sessionContext?.payloadJson?.vectorAssetDocument);
+-  }
+-  if (toolId === "tilemap-studio-v2") {
+-    return Boolean(sessionContext?.payloadJson?.tileMapDocument);
+-  }
+-  if (toolId === "vector-map-editor-v2") {
+-    return Boolean(sessionContext?.payloadJson?.vectorMapDocument);
+-  }
+-  return false;
+-}
+-
+-function checkJsSyntax(jsPath) {
+-  try {
+-    execFileSync(process.execPath, ["--check", jsPath], {
+-      cwd: repoRoot,
+-      stdio: ["ignore", "pipe", "pipe"]
+-    });
+-    return { syntaxValid: true, syntaxError: "" };
+-  } catch (error) {
+-    return {
+-      syntaxValid: false,
+-      syntaxError: (error?.stderr || error?.stdout || error?.message || "").toString().trim()
+-    };
+-  }
+-}
+-
+-function validateTool(toolId, toolsIndexHtmlText) {
++function validateRetiredTool(toolId, toolsIndexHtmlText) {
+   const toolIndexHtmlPath = path.join(toolsRoot, toolId, "index.html");
+   const toolIndexJsPath = path.join(toolsRoot, toolId, "index.js");
+   const fixturePath = path.join(fixturesRoot, `${toolId}.json`);
 
-diff --git a/dev/scripts/run-targeted-test-lanes.mjs b/dev/scripts/run-targeted-test-lanes.mjs
-index 561332eeb..478fcedec 100644
---- a/dev/scripts/run-targeted-test-lanes.mjs
-+++ b/dev/scripts/run-targeted-test-lanes.mjs
-@@ -420,7 +420,7 @@ const representativeRoutingCases = Object.freeze([
-   },
-   {
-     caseName: "tool change",
--    changedFiles: ["toolbox/audio-sfx-playground-v2/index.js"],
-+    changedFiles: ["www/toolbox/audio-sfx-playground-v2/index.js"],
-     expectedLanes: ["tool-runtime"],
-     reason: "Tool-owned runtime/UI changes route to the affected tool-runtime lane only."
-   },
-@@ -813,10 +813,10 @@ function routeLanesForChangedFiles(changedFiles) {
-     if (normalized.startsWith("dev/tests/playwright/integration/")) {
-       routed.add("integration");
-     } else if (normalized.startsWith("dev/tests/playwright/games/")
--      || normalized.startsWith("games/")
-+      || normalized.startsWith("www/games/")
-       || normalized.startsWith("dev/archive/v1-v2/games/")) {
-       continue;
--    } else if (normalized.startsWith("dev/tests/playwright/tools/") || normalized.startsWith("toolbox/")) {
-+    } else if (normalized.startsWith("dev/tests/playwright/tools/") || normalized.startsWith("www/toolbox/")) {
-       routed.add("tool-runtime");
-     } else if (normalized.startsWith("src/")
-       || normalized.startsWith("dev/tests/core/")
-@@ -4533,7 +4533,7 @@ function makeZeroBrowserPreflightReport({
-     "| Check | Status | Details |",
-     "| --- | --- | --- |",
-     `| lane ownership | ${structureAudit.status} | ${reportLine(structureAudit.reason)} |`,
--    `| directory placement | ${structureAudit.status} | toolbox/games/integration/engine ownership checked. |`,
-+    `| directory placement | ${structureAudit.status} | www/toolbox, www/games, integration, and engine ownership checked. |`,
-     `| invalid file naming | ${structureAudit.status} | Game-specific filenames are blocked from generic reusable lanes. |`,
-     `| duplicate registrations | ${laneRegistration.findings.some((entry) => entry.includes("Duplicate")) ? "FAIL" : "PASS"} | ${laneRegistration.findings.filter((entry) => entry.includes("Duplicate")).join("; ") || "No duplicate lane registrations."} |`,
-     `| invalid imports | ${structureAudit.status} | Relative imports checked by Playwright structure audit. |`,
-diff --git a/dev/scripts/validate-tool-registry.mjs b/dev/scripts/validate-tool-registry.mjs
-index d147363eb..e2bc6949f 100644
---- a/dev/scripts/validate-tool-registry.mjs
-+++ b/dev/scripts/validate-tool-registry.mjs
-@@ -101,7 +101,7 @@ async function main() {
-       issues.push(`Registry entry ${entry.id} entryPoint must be ${folderName}/index.html.`);
-     }
-     if (!(await pathExists(path.join(toolboxRoot, folderName, "index.html")))) {
--      issues.push(`Registry entry ${entry.id} points to missing toolbox/${folderName}/index.html.`);
-+      issues.push(`Registry entry ${entry.id} points to missing www/toolbox/${folderName}/index.html.`);
-     }
-   }
+-  const routeFromIndexValid = hasIndexRoute(toolsIndexHtmlText, toolId);
++  const routeFromIndexPresent = hasIndexRoute(toolsIndexHtmlText, toolId);
+   const routePathExists = fs.existsSync(toolIndexHtmlPath);
+-  const directUrl = `toolbox/${toolId}/index.html`;
++  const routeScriptExists = fs.existsSync(toolIndexJsPath);
+   const fixtureExists = fs.existsSync(fixturePath);
 
-@@ -112,12 +112,12 @@ async function main() {
-   }
-
-   if (!activeToolboxIndexSource.includes("getActiveToolRegistry()") || !activeToolboxIndexSource.includes("getToolRoute(registryTool)")) {
--    issues.push("toolbox/tools-page-accordions.js must render Toolbox cards from registry routes instead of duplicated literal routes.");
-+    issues.push("www/toolbox/tools-page-accordions.js must render Toolbox cards from registry routes instead of duplicated literal routes.");
-   }
-
-   for (const directory of activeToolDirectories) {
-     if (!registryFolders.includes(directory)) {
--      issues.push(`Filesystem directory toolbox/${directory} is missing from active toolRegistry.js.`);
-+      issues.push(`Filesystem directory www/toolbox/${directory} is missing from active toolRegistry.js.`);
+   let fixtureValidJson = false;
+-  let hostContextId = "";
+-  let fixtureToolId = "";
+-  let fixtureToolIdMatches = false;
+-  let fixtureHasSessionContext = false;
+-  let fixtureHasToolPayload = false;
+   if (fixtureExists) {
+     try {
+-      const fixtureJson = JSON.parse(readText(fixturePath));
++      JSON.parse(readText(fixturePath));
+       fixtureValidJson = true;
+-      hostContextId = typeof fixtureJson?.hostContextId === "string" ? fixtureJson.hostContextId.trim() : "";
+-      fixtureToolId = typeof fixtureJson?.sessionContext?.toolId === "string" ? fixtureJson.sessionContext.toolId.trim() : "";
+-      fixtureToolIdMatches = fixtureToolId === toolId;
+-      fixtureHasSessionContext = Boolean(
+-        fixtureJson?.sessionContext &&
+-        typeof fixtureJson.sessionContext === "object" &&
+-        !Array.isArray(fixtureJson.sessionContext)
+-      );
+-      fixtureHasToolPayload = hasToolSpecificPayload(toolId, fixtureJson);
+     } catch {
+       fixtureValidJson = false;
      }
    }
 
-diff --git a/package.json b/package.json
-index 37277ef09..6ab2780db 100644
---- a/package.json
-+++ b/package.json
-@@ -34,6 +34,7 @@
-     "validate:runtime-connections": "node --use-system-ca ./dev/scripts/validate-runtime-connections.mjs",
-     "validate:browser-env-agnostic": "node ./dev/scripts/validate-browser-env-agnostic.mjs",
-     "validate:canonical-structure": "node ./dev/scripts/validate-canonical-repository-structure.mjs",
-+    "validate:platform": "node ./dev/scripts/run-platform-validation-suite.mjs",
-     "apply:database-ddl": "node ./dev/scripts/apply-database-ddl.mjs",
-     "apply:database-dml": "node ./dev/scripts/apply-database-dml.mjs",
-     "seed:database-dev": "node --use-system-ca ./dev/scripts/apply-database-seed.mjs",
+-  const launchUrlWithHostContextId = `${directUrl}?hostContextId=${encodeURIComponent(hostContextId)}`;
+-  const { syntaxValid, syntaxError } = checkJsSyntax(toolIndexJsPath);
+-
+   const failures = [];
+-  if (!routeFromIndexValid) failures.push("Missing V2 route from toolbox/index.html.");
+-  if (!routePathExists) failures.push("Missing toolbox/<tool>-v2/index.html route target.");
+-  if (!fs.existsSync(toolIndexJsPath)) failures.push("Missing toolbox/<tool>-v2/index.js route runtime target.");
+-  if (!fixtureExists) failures.push("Missing fixture file.");
++  if (routeFromIndexPresent) failures.push("Retired V2 route still appears in www/toolbox/index.html.");
++  if (routePathExists) failures.push("Retired www/toolbox/<tool>-v2/index.html route target still exists.");
++  if (routeScriptExists) failures.push("Retired www/toolbox/<tool>-v2/index.js route runtime target still exists.");
++  if (!fixtureExists) failures.push("Retired V2 fixture evidence is missing from dev/tests/fixtures/v2-tools.");
+   if (fixtureExists && !fixtureValidJson) failures.push("Fixture is not valid JSON.");
+-  if (fixtureValidJson && !hostContextId) failures.push("Fixture hostContextId is missing or empty.");
+-  if (fixtureValidJson && !fixtureToolIdMatches) failures.push(`Fixture sessionContext.toolId does not match tool (${fixtureToolId || "missing"}).`);
+-  if (fixtureValidJson && !fixtureHasSessionContext) failures.push("Fixture sessionContext object is missing.");
+-  if (fixtureValidJson && !fixtureHasToolPayload) failures.push("Fixture is missing tool-specific payload.");
+-  if (!syntaxValid) failures.push("Tool index.js failed node --check.");
+
+   return {
+     tool: toolId,
+-    routeFromIndexValid,
++    retired: true,
++    routeFromIndexPresent,
+     routePath: path.relative(repoRoot, toolIndexHtmlPath).replace(/\\/g, "/"),
+     routePathExists,
+-    directUrl,
+-    launchUrlWithHostContextId,
++    routeScriptPath: path.relative(repoRoot, toolIndexJsPath).replace(/\\/g, "/"),
++    routeScriptExists,
+     fixturePath: path.relative(repoRoot, fixturePath).replace(/\\/g, "/"),
+     fixtureExists,
+     fixtureValidJson,
+-    hostContextId,
+-    fixtureToolId,
+-    fixtureToolIdMatches,
+-    fixtureHasSessionContext,
+-    fixtureHasToolPayload,
+-    syntaxCheckedPath: path.relative(repoRoot, toolIndexJsPath).replace(/\\/g, "/"),
+-    syntaxValid,
+-    syntaxError,
+-    failures
++    failures,
+   };
+ }
+
+ export function run() {
+-  assert.ok(fs.existsSync(toolsIndexPath), "toolbox/index.html is missing.");
++  assert.ok(fs.existsSync(toolsIndexPath), "www/toolbox/index.html is missing.");
+   const toolsIndexHtmlText = readText(toolsIndexPath);
+-  const rows = REQUIRED_V2_TOOLS.map((toolId) => validateTool(toolId, toolsIndexHtmlText));
++  const rows = RETIRED_FIXTURE_ONLY_V2_TOOLS.map((toolId) => validateRetiredTool(toolId, toolsIndexHtmlText));
+   const failures = rows.flatMap((row) => row.failures.map((entry) => `${row.tool}: ${entry}`));
+
+   fs.mkdirSync(path.dirname(resultsPath), { recursive: true });
+@@ -155,11 +87,11 @@ export function run() {
+     generatedAt: new Date().toISOString(),
+     toolCount: rows.length,
+     failures,
+-    rows
++    rows,
+   }, null, 2)}\n`, "utf8");
+
+-  console.log(`v2 tool launch results: ${resultsPath}`);
+-  assert.equal(failures.length, 0, `V2 tool launch failures: ${failures.join(" | ")}`);
++  console.log(`v2 tool retirement results: ${resultsPath}`);
++  assert.equal(failures.length, 0, `V2 tool retirement failures: ${failures.join(" | ")}`);
+   return { toolCount: rows.length, failures, rows };
+ }
+
+diff --git a/dev/tests/runtime/V2UndoButtonRender.test.mjs b/dev/tests/runtime/V2UndoButtonRender.test.mjs
+index dcbd6c575..9dc883b01 100644
+--- a/dev/tests/runtime/V2UndoButtonRender.test.mjs
++++ b/dev/tests/runtime/V2UndoButtonRender.test.mjs
+@@ -39,7 +39,7 @@ export function run() {
+   if (!htmlExists) failures.push("Missing toolbox/workspace-v2/index.html.");
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2UndoButtonRender.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2UndoButtonRender.test.mjs failed syntax check.");
+
+   const mergeActionGroupPattern = /<div>\s*<button id="workspaceV2ComputeMergeButton"[\s\S]*?<button id="workspaceV2ConfirmMergeButton"[\s\S]*?<button id="workspaceV2ApplyMergeButton"[\s\S]*?<button id="workspaceV2UndoLastMergeButton"[\s\S]*?<\/div>/m;
+   if (!mergeActionGroupPattern.test(html)) {
+diff --git a/dev/tests/runtime/V2UndoEnableStateActualAvailability.test.mjs b/dev/tests/runtime/V2UndoEnableStateActualAvailability.test.mjs
+index 73fa1a996..c816f1cef 100644
+--- a/dev/tests/runtime/V2UndoEnableStateActualAvailability.test.mjs
++++ b/dev/tests/runtime/V2UndoEnableStateActualAvailability.test.mjs
+@@ -51,7 +51,7 @@ export function run() {
+
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2UndoEnableStateActualAvailability.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2UndoEnableStateActualAvailability.test.mjs failed syntax check.");
+
+   const requiredTokens = [
+     "const existsInRecent = history.some((entry) => entry.hostContextId === mergedHostContextId);",
+diff --git a/dev/tests/runtime/V2UndoEnableStateRefresh.test.mjs b/dev/tests/runtime/V2UndoEnableStateRefresh.test.mjs
+index f0e2718d4..69132dcb2 100644
+--- a/dev/tests/runtime/V2UndoEnableStateRefresh.test.mjs
++++ b/dev/tests/runtime/V2UndoEnableStateRefresh.test.mjs
+@@ -70,7 +70,7 @@ export function run() {
+
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2UndoEnableStateRefresh.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2UndoEnableStateRefresh.test.mjs failed syntax check.");
+
+   const requiredTokens = [
+     "this.writeLastMergedHostContextId(hostContextId);",
+diff --git a/dev/tests/runtime/V2UndoLastMerge.test.mjs b/dev/tests/runtime/V2UndoLastMerge.test.mjs
+index 201e7efe9..6dd2291fa 100644
+--- a/dev/tests/runtime/V2UndoLastMerge.test.mjs
++++ b/dev/tests/runtime/V2UndoLastMerge.test.mjs
+@@ -65,7 +65,7 @@ export function run() {
+   if (!htmlExists) failures.push("Missing toolbox/workspace-v2/index.html.");
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2UndoLastMerge.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2UndoLastMerge.test.mjs failed syntax check.");
+
+   const requiredHtml = [
+     "id=\"workspaceV2UndoLastMergeButton\"",
+diff --git a/dev/tests/runtime/V2WorkspaceDefaultToolInitialization.test.mjs b/dev/tests/runtime/V2WorkspaceDefaultToolInitialization.test.mjs
+index 69b3971f1..b041eb39b 100644
+--- a/dev/tests/runtime/V2WorkspaceDefaultToolInitialization.test.mjs
++++ b/dev/tests/runtime/V2WorkspaceDefaultToolInitialization.test.mjs
+@@ -47,7 +47,7 @@ export function run() {
+   if (!htmlExists) failures.push("Missing toolbox/workspace-v2/index.html.");
+   if (!jsExists) failures.push("Missing toolbox/workspace-v2/index.js.");
+   if (!jsSyntax.ok) failures.push("toolbox/workspace-v2/index.js failed syntax check.");
+-  if (!testSyntax.ok) failures.push("tests/runtime/V2WorkspaceDefaultToolInitialization.test.mjs failed syntax check.");
++  if (!testSyntax.ok) failures.push("dev/tests/runtime/V2WorkspaceDefaultToolInitialization.test.mjs failed syntax check.");
+
+   const requiredHtmlTokens = [
+     '<option value="palette-manager-v2" selected>Palette Manager V2</option>'
+diff --git a/dev/tests/schemas/tool.manifest.schema.json b/dev/tests/schemas/tool.manifest.schema.json
+index 87c63926b..4411636bb 100644
+--- a/dev/tests/schemas/tool.manifest.schema.json
++++ b/dev/tests/schemas/tool.manifest.schema.json
+@@ -1,6 +1,6 @@
+ {
+   "$schema": "https://json-schema.org/draft/2020-12/schema",
+-  "$id": "tests/schemas/tool.manifest.schema.json",
++  "$id": "dev/tests/schemas/tool.manifest.schema.json",
+   "title": "Tool Manifest",
+   "type": "object",
+   "required": ["tool", "schema", "data"],
+diff --git a/dev/tests/shared/ContractFixtureIsolationValidation.test.mjs b/dev/tests/shared/ContractFixtureIsolationValidation.test.mjs
+index dedb45f86..84e828eea 100644
+--- a/dev/tests/shared/ContractFixtureIsolationValidation.test.mjs
++++ b/dev/tests/shared/ContractFixtureIsolationValidation.test.mjs
+@@ -12,31 +12,31 @@ import { fileURLToPath } from "node:url";
+ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
+
+ const FIXTURE_FILES = Object.freeze([
+-  "tests/fixtures/audit-events/audit-event-scenarios.json",
+-  "tests/fixtures/backup-snapshots/backup-snapshot-scenarios.json",
+-  "tests/fixtures/collaboration-roles/collaboration-role-scenarios.json",
+-  "tests/fixtures/creator-profiles/creator-profile-scenarios.json",
+-  "tests/fixtures/download-grants/download-grant-scenarios.json",
+-  "tests/fixtures/entitlements/entitlement-scenarios.json",
+-  "tests/fixtures/identity-permissions/permission-scenarios.json",
+-  "tests/fixtures/install-receipts/install-receipt-scenarios.json",
+-  "tests/fixtures/library-items/library-item-scenarios.json",
+-  "tests/fixtures/manifests/manifest-scenarios.json",
+-  "tests/fixtures/marketplace-listings/marketplace-listing-scenarios.json",
+-  "tests/fixtures/marketplace-transaction-boundaries/marketplace-transaction-boundary-scenarios.json",
+-  "tests/fixtures/migration-plans/migration-plan-scenarios.json",
+-  "tests/fixtures/moderation-queues/moderation-queue-scenarios.json",
+-  "tests/fixtures/notifications/notification-scenarios.json",
+-  "tests/fixtures/organizations/organization-scenarios.json",
+-  "tests/fixtures/project-workspaces/project-workspace-runtime-scenarios.json",
+-  "tests/fixtures/projects/project-scenarios.json",
+-  "tests/fixtures/publish/publish-scenarios.json",
+-  "tests/fixtures/releases/release-scenarios.json",
+-  "tests/fixtures/restore-snapshots/restore-snapshot-scenarios.json",
+-  "tests/fixtures/review-ratings/review-rating-scenarios.json",
+-  "tests/fixtures/tool-states/tool-state-scenarios.json",
+-  "tests/fixtures/update-channels/update-channel-scenarios.json",
+-  "tests/fixtures/version-compatibility/version-compatibility-scenarios.json",
++  "dev/tests/fixtures/audit-events/audit-event-scenarios.json",
++  "dev/tests/fixtures/backup-snapshots/backup-snapshot-scenarios.json",
++  "dev/tests/fixtures/collaboration-roles/collaboration-role-scenarios.json",
++  "dev/tests/fixtures/creator-profiles/creator-profile-scenarios.json",
++  "dev/tests/fixtures/download-grants/download-grant-scenarios.json",
++  "dev/tests/fixtures/entitlements/entitlement-scenarios.json",
++  "dev/tests/fixtures/identity-permissions/permission-scenarios.json",
++  "dev/tests/fixtures/install-receipts/install-receipt-scenarios.json",
++  "dev/tests/fixtures/library-items/library-item-scenarios.json",
++  "dev/tests/fixtures/manifests/manifest-scenarios.json",
++  "dev/tests/fixtures/marketplace-listings/marketplace-listing-scenarios.json",
++  "dev/tests/fixtures/marketplace-transaction-boundaries/marketplace-transaction-boundary-scenarios.json",
++  "dev/tests/fixtures/migration-plans/migration-plan-scenarios.json",
++  "dev/tests/fixtures/moderation-queues/moderation-queue-scenarios.json",
++  "dev/tests/fixtures/notifications/notification-scenarios.json",
++  "dev/tests/fixtures/organizations/organization-scenarios.json",
++  "dev/tests/fixtures/project-workspaces/project-workspace-runtime-scenarios.json",
++  "dev/tests/fixtures/projects/project-scenarios.json",
++  "dev/tests/fixtures/publish/publish-scenarios.json",
++  "dev/tests/fixtures/releases/release-scenarios.json",
++  "dev/tests/fixtures/restore-snapshots/restore-snapshot-scenarios.json",
++  "dev/tests/fixtures/review-ratings/review-rating-scenarios.json",
++  "dev/tests/fixtures/tool-states/tool-state-scenarios.json",
++  "dev/tests/fixtures/update-channels/update-channel-scenarios.json",
++  "dev/tests/fixtures/version-compatibility/version-compatibility-scenarios.json",
+ ]);
+
+ const FORBIDDEN_DEPENDENCY_FIELDS = Object.freeze([
+@@ -79,7 +79,7 @@ function readFixture(fixturePath) {
+ }
+
+ function assertScopedFixturePath(fixturePath) {
+-  assert.equal(fixturePath.startsWith("tests/fixtures/"), true, `${fixturePath} is under tests/fixtures`);
++  assert.equal(fixturePath.startsWith("dev/tests/fixtures/"), true, `${fixturePath} is under dev/tests/fixtures`);
+   assert.equal(fixturePath.includes("/samples/"), false, `${fixturePath} does not use sample fixtures`);
+   assert.equal(fixturePath.includes("/workspace-v2/"), false, `${fixturePath} does not rely on Workspace V2 bootstrap fixtures`);
+   assert.equal(fixturePath.includes("/v2-tools/"), false, `${fixturePath} does not rely on tool runtime fixtures`);
+diff --git a/dev/tests/shared/ContractIndexValidation.test.mjs b/dev/tests/shared/ContractIndexValidation.test.mjs
+index dc20a2741..b91a2ea24 100644
+--- a/dev/tests/shared/ContractIndexValidation.test.mjs
++++ b/dev/tests/shared/ContractIndexValidation.test.mjs
+@@ -40,6 +40,7 @@ export const CONTRACT_INDEX = Object.freeze([
+ ]);
+
+ const legacySharedContractFiles = Object.freeze([
++  "projectDataStoreContract.js",
+   "replayContracts.js",
+   "sharedStateContracts.js",
+ ]);
+@@ -54,8 +55,10 @@ export function run() {
+   assertUnique(CONTRACT_INDEX.map((contract) => contract.reportPath), "report files");
+
+   const indexedContractFiles = CONTRACT_INDEX.map((contract) => path.basename(contract.contractPath)).sort();
++  const unindexedSharedContractFiles = new Set(legacySharedContractFiles);
+   const actualRootContractFiles = fs.readdirSync(resolvePath("src/shared/contracts"))
+     .filter((fileName) => fileName.endsWith("Contract.js"))
++    .filter((fileName) => !unindexedSharedContractFiles.has(fileName))
+     .sort();
+
+   assert.deepEqual(
+@@ -80,9 +83,9 @@ function entry(name, contractFile, testFile, fixtureFile, specFile, reportFile)
+   return Object.freeze({
+     name,
+     contractPath: `src/shared/contracts/${contractFile}`,
+-    testPath: `tests/shared/${testFile}`,
+-    fixturePath: `tests/fixtures/${fixtureFile}`,
+-    specPath: `dev/build/dev/specs/${specFile}`,
++    testPath: `dev/tests/shared/${testFile}`,
++    fixturePath: `dev/tests/fixtures/${fixtureFile}`,
++    specPath: `dev/build/ProjectInstructions/standards/${specFile}`,
+     reportPath: `dev/reports/${reportFile}`,
+   });
+ }
+diff --git a/dev/tests/shared/ContractNegativeCaseCoverage.test.mjs b/dev/tests/shared/ContractNegativeCaseCoverage.test.mjs
+index fdbda4820..4b77a1c71 100644
+--- a/dev/tests/shared/ContractNegativeCaseCoverage.test.mjs
++++ b/dev/tests/shared/ContractNegativeCaseCoverage.test.mjs
+@@ -12,31 +12,31 @@ import { fileURLToPath } from "node:url";
+ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
+
+ const COVERAGE_REQUIREMENTS = Object.freeze([
+-  requirement("Audit Event", "tests/fixtures/audit-events/audit-event-scenarios.json", "invalidAuditEvents", ["AUDIT_EVENT_OWNER_REQUIRED"], ["AUDIT_EVENT_ACTION_INVALID", "AUDIT_EVENT_TARGET_TYPE_INVALID", "AUDIT_EVENT_SEVERITY_INVALID"], true),
+-  requirement("Backup Snapshot", "tests/fixtures/backup-snapshots/backup-snapshot-scenarios.json", "invalidBackupSnapshots", ["BACKUP_SNAPSHOT_OWNER_REQUIRED", "BACKUP_SNAPSHOT_PROJECT_REQUIRED"], ["BACKUP_SNAPSHOT_VERSION_INVALID", "BACKUP_SNAPSHOT_SCHEMA_VERSION_INVALID"], true),
+-  requirement("Collaboration Role", "tests/fixtures/collaboration-roles/collaboration-role-scenarios.json", "invalidCollaborationRoles", ["COLLABORATION_ROLE_OWNER_REQUIRED", "COLLABORATION_ROLE_PROJECT_REQUIRED"], ["COLLABORATION_ROLE_INVALID", "COLLABORATION_ROLE_VISIBILITY_INVALID", "COLLABORATION_ROLE_SUBJECT_TYPE_INVALID"], true),
+-  requirement("Creator Profile", "tests/fixtures/creator-profiles/creator-profile-scenarios.json", "invalidCreatorProfiles", ["CREATOR_PROFILE_OWNER_REQUIRED", "CREATOR_PROFILE_DISPLAY_NAME_REQUIRED"], ["CREATOR_PROFILE_VISIBILITY_INVALID", "CREATOR_PROFILE_STATUS_INVALID"], true),
+-  requirement("Download Grant", "tests/fixtures/download-grants/download-grant-scenarios.json", "invalidDownloadGrants", ["DOWNLOAD_GRANT_OWNER_REQUIRED", "DOWNLOAD_GRANT_ENTITLEMENT_REQUIRED"], ["DOWNLOAD_GRANT_STATUS_INVALID"], true),
+-  requirement("Entitlement", "tests/fixtures/entitlements/entitlement-scenarios.json", "invalidEntitlements", ["ENTITLEMENT_OWNER_REQUIRED", "ENTITLEMENT_PROJECT_REQUIRED"], ["ENTITLEMENT_TYPE_INVALID"], true),
+-  requirement("Identity Permissions", "tests/fixtures/identity-permissions/permission-scenarios.json", "invalidObjects", ["OWNER_REQUIRED", "VISIBILITY_REQUIRED", "PERMISSIONS_REQUIRED"], ["VISIBILITY_INVALID", "PERMISSION_INVALID"], false),
+-  requirement("Install Receipt", "tests/fixtures/install-receipts/install-receipt-scenarios.json", "invalidInstallReceipts", ["INSTALL_RECEIPT_OWNER_REQUIRED", "INSTALL_RECEIPT_LIBRARY_ITEM_REQUIRED"], ["INSTALL_RECEIPT_STATUS_INVALID"], true),
+-  requirement("Library Item", "tests/fixtures/library-items/library-item-scenarios.json", "invalidLibraryItems", ["LIBRARY_ITEM_OWNER_REQUIRED", "LIBRARY_ITEM_ENTITLEMENT_REQUIRED"], ["LIBRARY_ITEM_STATUS_INVALID"], true),
+-  requirement("Game Manifest", "tests/fixtures/manifests/manifest-scenarios.json", "invalidManifests", ["GAME_MANIFEST_OWNER_REQUIRED", "GAME_MANIFEST_PROJECT_REQUIRED", "GAME_MANIFEST_PROJECT_TYPE_REQUIRED"], ["GAME_MANIFEST_PROJECT_TYPE_INVALID", "GAME_MANIFEST_VISIBILITY_INVALID", "GAME_MANIFEST_VERSION_INVALID", "GAME_MANIFEST_STATUS_INVALID", "GAME_MANIFEST_EXPORT_FORMAT_INVALID"], false),
+-  requirement("Marketplace Listing", "tests/fixtures/marketplace-listings/marketplace-listing-scenarios.json", "invalidListings", ["MARKETPLACE_LISTING_OWNER_REQUIRED", "MARKETPLACE_LISTING_PROJECT_REQUIRED"], ["MARKETPLACE_LISTING_VISIBILITY_INVALID", "MARKETPLACE_LISTING_STATUS_INVALID"], true),
+-  requirement("Marketplace Transaction Boundary", "tests/fixtures/marketplace-transaction-boundaries/marketplace-transaction-boundary-scenarios.json", "invalidMarketplaceTransactionBoundaries", ["MARKETPLACE_TRANSACTION_BOUNDARY_OWNER_REQUIRED", "MARKETPLACE_TRANSACTION_BOUNDARY_LISTING_REQUIRED"], ["MARKETPLACE_TRANSACTION_BOUNDARY_TYPE_INVALID", "MARKETPLACE_TRANSACTION_BOUNDARY_STATUS_INVALID"], true),
+-  requirement("Migration Plan", "tests/fixtures/migration-plans/migration-plan-scenarios.json", "invalidMigrationPlans", ["MIGRATION_PLAN_OWNER_REQUIRED", "MIGRATION_PLAN_PROJECT_REQUIRED"], ["MIGRATION_PLAN_SOURCE_VERSION_INVALID", "MIGRATION_PLAN_TARGET_VERSION_INVALID", "MIGRATION_PLAN_STATE_INVALID"], true),
+-  requirement("Moderation Queue", "tests/fixtures/moderation-queues/moderation-queue-scenarios.json", "invalidModerationQueues", ["MODERATION_QUEUE_OWNER_REQUIRED", "MODERATION_QUEUE_PROJECT_REQUIRED"], ["MODERATION_QUEUE_SUBJECT_TYPE_INVALID", "MODERATION_QUEUE_STATUS_INVALID", "MODERATION_QUEUE_VISIBILITY_INVALID"], true),
+-  requirement("Notification", "tests/fixtures/notifications/notification-scenarios.json", "invalidNotifications", ["NOTIFICATION_OWNER_REQUIRED", "NOTIFICATION_RECIPIENT_REQUIRED"], ["NOTIFICATION_TYPE_INVALID", "NOTIFICATION_CHANNEL_INVALID", "NOTIFICATION_DELIVERY_STATUS_INVALID"], true),
+-  requirement("Organization", "tests/fixtures/organizations/organization-scenarios.json", "invalidOrganizations", ["ORGANIZATION_OWNER_REQUIRED", "ORGANIZATION_DISPLAY_NAME_REQUIRED"], ["ORGANIZATION_VISIBILITY_INVALID", "ORGANIZATION_STATUS_INVALID"], true),
+-  requirement("ProjectWorkspace Runtime", "tests/fixtures/project-workspaces/project-workspace-runtime-scenarios.json", "invalidProjectWorkspaces", ["PROJECT_WORKSPACE_RUNTIME_RECOVERY_TOOL_STATE_REQUIRED"], ["PROJECT_WORKSPACE_RUNTIME_FLOW_STATE_INVALID"], true),
+-  requirement("Project", "tests/fixtures/projects/project-scenarios.json", "invalidProjects", ["PROJECT_OWNER_REQUIRED", "PROJECT_TYPE_REQUIRED", "PROJECT_VISIBILITY_REQUIRED"], ["PROJECT_TYPE_INVALID", "PROJECT_VISIBILITY_INVALID", "PROJECT_STATE_INVALID", "PROJECT_ROLE_INVALID"], false),
+-  requirement("Publish", "tests/fixtures/publish/publish-scenarios.json", "invalidPublishes", ["PUBLISH_OWNER_REQUIRED", "PUBLISH_PROJECT_REQUIRED", "PUBLISH_SOURCE_RELEASE_REQUIRED"], ["PUBLISH_SOURCE_RELEASE_INVALID", "PUBLISH_VISIBILITY_INVALID", "PUBLISH_STATUS_INVALID"], true),
+-  requirement("Release", "tests/fixtures/releases/release-scenarios.json", "invalidReleases", ["RELEASE_OWNER_REQUIRED", "RELEASE_PROJECT_REQUIRED", "RELEASE_SOURCE_MANIFEST_REQUIRED"], ["RELEASE_SOURCE_MANIFEST_INVALID", "RELEASE_VERSION_INVALID", "RELEASE_VISIBILITY_INVALID", "RELEASE_STATUS_INVALID"], false),
+-  requirement("Restore Snapshot", "tests/fixtures/restore-snapshots/restore-snapshot-scenarios.json", "invalidRestoreSnapshots", ["RESTORE_SNAPSHOT_OWNER_REQUIRED", "RESTORE_SNAPSHOT_PROJECT_REQUIRED"], ["RESTORE_SNAPSHOT_BACKUP_SNAPSHOT_INVALID", "RESTORE_SNAPSHOT_TARGET_RELEASE_INVALID", "RESTORE_SNAPSHOT_VERSION_COMPATIBILITY_INVALID"], true),
+-  requirement("Review Rating", "tests/fixtures/review-ratings/review-rating-scenarios.json", "invalidReviewRatings", ["REVIEW_RATING_OWNER_REQUIRED", "REVIEW_RATING_MARKETPLACE_LISTING_REQUIRED"], ["REVIEW_RATING_RATING_INVALID", "REVIEW_RATING_VISIBILITY_INVALID", "REVIEW_RATING_STATUS_INVALID"], true),
+-  requirement("Tool State", "tests/fixtures/tool-states/tool-state-scenarios.json", "invalidToolStates", ["TOOL_STATE_OWNER_REQUIRED", "TOOL_STATE_PROJECT_REQUIRED", "TOOL_TYPE_REQUIRED"], ["TOOL_STATE_VISIBILITY_INVALID", "TOOL_STATE_VERSION_INVALID", "TOOL_STATE_STATUS_INVALID"], false),
+-  requirement("Update Channel", "tests/fixtures/update-channels/update-channel-scenarios.json", "invalidUpdateChannels", ["UPDATE_CHANNEL_OWNER_REQUIRED", "UPDATE_CHANNEL_ASSIGNED_RELEASE_REQUIRED"], ["UPDATE_CHANNEL_TYPE_INVALID"], true),
+-  requirement("Version Compatibility", "tests/fixtures/version-compatibility/version-compatibility-scenarios.json", "invalidVersionCompatibilities", ["VERSION_COMPATIBILITY_OWNER_REQUIRED", "VERSION_COMPATIBILITY_PROJECT_REQUIRED"], ["VERSION_COMPATIBILITY_MINIMUM_VERSION_INVALID", "VERSION_COMPATIBILITY_TARGET_VERSION_INVALID", "VERSION_COMPATIBILITY_STATE_INVALID"], true),
++  requirement("Audit Event", "dev/tests/fixtures/audit-events/audit-event-scenarios.json", "invalidAuditEvents", ["AUDIT_EVENT_OWNER_REQUIRED"], ["AUDIT_EVENT_ACTION_INVALID", "AUDIT_EVENT_TARGET_TYPE_INVALID", "AUDIT_EVENT_SEVERITY_INVALID"], true),
++  requirement("Backup Snapshot", "dev/tests/fixtures/backup-snapshots/backup-snapshot-scenarios.json", "invalidBackupSnapshots", ["BACKUP_SNAPSHOT_OWNER_REQUIRED", "BACKUP_SNAPSHOT_PROJECT_REQUIRED"], ["BACKUP_SNAPSHOT_VERSION_INVALID", "BACKUP_SNAPSHOT_SCHEMA_VERSION_INVALID"], true),
++  requirement("Collaboration Role", "dev/tests/fixtures/collaboration-roles/collaboration-role-scenarios.json", "invalidCollaborationRoles", ["COLLABORATION_ROLE_OWNER_REQUIRED", "COLLABORATION_ROLE_PROJECT_REQUIRED"], ["COLLABORATION_ROLE_INVALID", "COLLABORATION_ROLE_VISIBILITY_INVALID", "COLLABORATION_ROLE_SUBJECT_TYPE_INVALID"], true),
++  requirement("Creator Profile", "dev/tests/fixtures/creator-profiles/creator-profile-scenarios.json", "invalidCreatorProfiles", ["CREATOR_PROFILE_OWNER_REQUIRED", "CREATOR_PROFILE_DISPLAY_NAME_REQUIRED"], ["CREATOR_PROFILE_VISIBILITY_INVALID", "CREATOR_PROFILE_STATUS_INVALID"], true),
++  requirement("Download Grant", "dev/tests/fixtures/download-grants/download-grant-scenarios.json", "invalidDownloadGrants", ["DOWNLOAD_GRANT_OWNER_REQUIRED", "DOWNLOAD_GRANT_ENTITLEMENT_REQUIRED"], ["DOWNLOAD_GRANT_STATUS_INVALID"], true),
++  requirement("Entitlement", "dev/tests/fixtures/entitlements/entitlement-scenarios.json", "invalidEntitlements", ["ENTITLEMENT_OWNER_REQUIRED", "ENTITLEMENT_PROJECT_REQUIRED"], ["ENTITLEMENT_TYPE_INVALID"], true),
++  requirement("Identity Permissions", "dev/tests/fixtures/identity-permissions/permission-scenarios.json", "invalidObjects", ["OWNER_REQUIRED", "VISIBILITY_REQUIRED", "PERMISSIONS_REQUIRED"], ["VISIBILITY_INVALID", "PERMISSION_INVALID"], false),
++  requirement("Install Receipt", "dev/tests/fixtures/install-receipts/install-receipt-scenarios.json", "invalidInstallReceipts", ["INSTALL_RECEIPT_OWNER_REQUIRED", "INSTALL_RECEIPT_LIBRARY_ITEM_REQUIRED"], ["INSTALL_RECEIPT_STATUS_INVALID"], true),
++  requirement("Library Item", "dev/tests/fixtures/library-items/library-item-scenarios.json", "invalidLibraryItems", ["LIBRARY_ITEM_OWNER_REQUIRED", "LIBRARY_ITEM_ENTITLEMENT_REQUIRED"], ["LIBRARY_ITEM_STATUS_INVALID"], true),
++  requirement("Game Manifest", "dev/tests/fixtures/manifests/manifest-scenarios.json", "invalidManifests", ["GAME_MANIFEST_OWNER_REQUIRED", "GAME_MANIFEST_PROJECT_REQUIRED", "GAME_MANIFEST_PROJECT_TYPE_REQUIRED"], ["GAME_MANIFEST_PROJECT_TYPE_INVALID", "GAME_MANIFEST_VISIBILITY_INVALID", "GAME_MANIFEST_VERSION_INVALID", "GAME_MANIFEST_STATUS_INVALID", "GAME_MANIFEST_EXPORT_FORMAT_INVALID"], false),
++  requirement("Marketplace Listing", "dev/tests/fixtures/marketplace-listings/marketplace-listing-scenarios.json", "invalidListings", ["MARKETPLACE_LISTING_OWNER_REQUIRED", "MARKETPLACE_LISTING_PROJECT_REQUIRED"], ["MARKETPLACE_LISTING_VISIBILITY_INVALID", "MARKETPLACE_LISTING_STATUS_INVALID"], true),
++  requirement("Marketplace Transaction Boundary", "dev/tests/fixtures/marketplace-transaction-boundaries/marketplace-transaction-boundary-scenarios.json", "invalidMarketplaceTransactionBoundaries", ["MARKETPLACE_TRANSACTION_BOUNDARY_OWNER_REQUIRED", "MARKETPLACE_TRANSACTION_BOUNDARY_LISTING_REQUIRED"], ["MARKETPLACE_TRANSACTION_BOUNDARY_TYPE_INVALID", "MARKETPLACE_TRANSACTION_BOUNDARY_STATUS_INVALID"], true),
++  requirement("Migration Plan", "dev/tests/fixtures/migration-plans/migration-plan-scenarios.json", "invalidMigrationPlans", ["MIGRATION_PLAN_OWNER_REQUIRED", "MIGRATION_PLAN_PROJECT_REQUIRED"], ["MIGRATION_PLAN_SOURCE_VERSION_INVALID", "MIGRATION_PLAN_TARGET_VERSION_INVALID", "MIGRATION_PLAN_STATE_INVALID"], true),
++  requirement("Moderation Queue", "dev/tests/fixtures/moderation-queues/moderation-queue-scenarios.json", "invalidModerationQueues", ["MODERATION_QUEUE_OWNER_REQUIRED", "MODERATION_QUEUE_PROJECT_REQUIRED"], ["MODERATION_QUEUE_SUBJECT_TYPE_INVALID", "MODERATION_QUEUE_STATUS_INVALID", "MODERATION_QUEUE_VISIBILITY_INVALID"], true),
++  requirement("Notification", "dev/tests/fixtures/notifications/notification-scenarios.json", "invalidNotifications", ["NOTIFICATION_OWNER_REQUIRED", "NOTIFICATION_RECIPIENT_REQUIRED"], ["NOTIFICATION_TYPE_INVALID", "NOTIFICATION_CHANNEL_INVALID", "NOTIFICATION_DELIVERY_STATUS_INVALID"], true),
++  requirement("Organization", "dev/tests/fixtures/organizations/organization-scenarios.json", "invalidOrganizations", ["ORGANIZATION_OWNER_REQUIRED", "ORGANIZATION_DISPLAY_NAME_REQUIRED"], ["ORGANIZATION_VISIBILITY_INVALID", "ORGANIZATION_STATUS_INVALID"], true),
++  requirement("ProjectWorkspace Runtime", "dev/tests/fixtures/project-workspaces/project-workspace-runtime-scenarios.json", "invalidProjectWorkspaces", ["PROJECT_WORKSPACE_RUNTIME_RECOVERY_TOOL_STATE_REQUIRED"], ["PROJECT_WORKSPACE_RUNTIME_FLOW_STATE_INVALID"], true),
++  requirement("Project", "dev/tests/fixtures/projects/project-scenarios.json", "invalidProjects", ["PROJECT_OWNER_REQUIRED", "PROJECT_TYPE_REQUIRED", "PROJECT_VISIBILITY_REQUIRED"], ["PROJECT_TYPE_INVALID", "PROJECT_VISIBILITY_INVALID", "PROJECT_STATE_INVALID", "PROJECT_ROLE_INVALID"], false),
++  requirement("Publish", "dev/tests/fixtures/publish/publish-scenarios.json", "invalidPublishes", ["PUBLISH_OWNER_REQUIRED", "PUBLISH_PROJECT_REQUIRED", "PUBLISH_SOURCE_RELEASE_REQUIRED"], ["PUBLISH_SOURCE_RELEASE_INVALID", "PUBLISH_VISIBILITY_INVALID", "PUBLISH_STATUS_INVALID"], true),
++  requirement("Release", "dev/tests/fixtures/releases/release-scenarios.json", "invalidReleases", ["RELEASE_OWNER_REQUIRED", "RELEASE_PROJECT_REQUIRED", "RELEASE_SOURCE_MANIFEST_REQUIRED"], ["RELEASE_SOURCE_MANIFEST_INVALID", "RELEASE_VERSION_INVALID", "RELEASE_VISIBILITY_INVALID", "RELEASE_STATUS_INVALID"], false),
++  requirement("Restore Snapshot", "dev/tests/fixtures/restore-snapshots/restore-snapshot-scenarios.json", "invalidRestoreSnapshots", ["RESTORE_SNAPSHOT_OWNER_REQUIRED", "RESTORE_SNAPSHOT_PROJECT_REQUIRED"], ["RESTORE_SNAPSHOT_BACKUP_SNAPSHOT_INVALID", "RESTORE_SNAPSHOT_TARGET_RELEASE_INVALID", "RESTORE_SNAPSHOT_VERSION_COMPATIBILITY_INVALID"], true),
++  requirement("Review Rating", "dev/tests/fixtures/review-ratings/review-rating-scenarios.json", "invalidReviewRatings", ["REVIEW_RATING_OWNER_REQUIRED", "REVIEW_RATING_MARKETPLACE_LISTING_REQUIRED"], ["REVIEW_RATING_RATING_INVALID", "REVIEW_RATING_VISIBILITY_INVALID", "REVIEW_RATING_STATUS_INVALID"], true),
++  requirement("Tool State", "dev/tests/fixtures/tool-states/tool-state-scenarios.json", "invalidToolStates", ["TOOL_STATE_OWNER_REQUIRED", "TOOL_STATE_PROJECT_REQUIRED", "TOOL_TYPE_REQUIRED"], ["TOOL_STATE_VISIBILITY_INVALID", "TOOL_STATE_VERSION_INVALID", "TOOL_STATE_STATUS_INVALID"], false),
++  requirement("Update Channel", "dev/tests/fixtures/update-channels/update-channel-scenarios.json", "invalidUpdateChannels", ["UPDATE_CHANNEL_OWNER_REQUIRED", "UPDATE_CHANNEL_ASSIGNED_RELEASE_REQUIRED"], ["UPDATE_CHANNEL_TYPE_INVALID"], true),
++  requirement("Version Compatibility", "dev/tests/fixtures/version-compatibility/version-compatibility-scenarios.json", "invalidVersionCompatibilities", ["VERSION_COMPATIBILITY_OWNER_REQUIRED", "VERSION_COMPATIBILITY_PROJECT_REQUIRED"], ["VERSION_COMPATIBILITY_MINIMUM_VERSION_INVALID", "VERSION_COMPATIBILITY_TARGET_VERSION_INVALID", "VERSION_COMPATIBILITY_STATE_INVALID"], true),
+ ]);
+
+ export function run() {
+diff --git a/dev/tests/tools/ToolManifestBoundary.test.mjs b/dev/tests/tools/ToolManifestBoundary.test.mjs
+index 2645d313f..0aecc0d39 100644
+--- a/dev/tests/tools/ToolManifestBoundary.test.mjs
++++ b/dev/tests/tools/ToolManifestBoundary.test.mjs
+@@ -7,7 +7,7 @@ function readJson(relativePath) {
+
+ export async function run() {
+   const schemaFiles = [
+-    "tests/schemas/tool.manifest.schema.json",
++    "dev/tests/schemas/tool.manifest.schema.json",
+     "src/shared/schemas/tools/palette-browser.schema.json",
+     "src/shared/schemas/samples/sample.tool-payload.schema.json",
+     "src/shared/schemas/tools/svg-asset-studio.schema.json",
+@@ -21,9 +21,9 @@ export async function run() {
+   });
+
+   const toolSchemaFiles = [
+-    "tests/fixtures/tool-schemas/palette-editor/tool.schema.json",
+-    "tests/fixtures/tool-schemas/vector-asset-studio/tool.schema.json",
+-    "tests/fixtures/tool-schemas/vector-map-editor/tool.schema.json"
++    "dev/tests/fixtures/tool-schemas/palette-editor/tool.schema.json",
++    "dev/tests/fixtures/tool-schemas/vector-asset-studio/tool.schema.json",
++    "dev/tests/fixtures/tool-schemas/vector-map-editor/tool.schema.json"
+   ];
+   toolSchemaFiles.forEach((relativePath) => {
+     const document = readJson(relativePath);
+@@ -42,15 +42,7 @@ export async function run() {
+     assert.equal(existsSync(absolutePath), false);
+   });
+
+-  const paletteManagerSource = readFileSync(new URL("../../../toolbox/palette-manager-v2/main.js", import.meta.url), "utf8");
+-  assert.match(paletteManagerSource, /const PALETTE_MANAGER_V2_TOOL_SESSION_KEY = "workspace\.tools\.palette-manager-v2";/);
+-  assert.match(paletteManagerSource, /workspaceSessionPersistence: createWorkspacePaletteSessionPersistence\(\)/);
+-  assert.match(paletteManagerSource, /paletteSource: resolvePaletteSource\(\)/);
+-  assert.match(paletteManagerSource, /window\.paletteManagerV2App =/);
+-  assert.doesNotMatch(paletteManagerSource, /paletteBrowserApp/);
+-
+-  const spriteEditorSource = readFileSync(new URL("../../../toolbox/Sprite Editor/modules/spriteEditorApp.js", import.meta.url), "utf8");
+-  assert.match(spriteEditorSource, /image\/png/);
+-  assert.match(spriteEditorSource, /sprite-frame-.*\.png/);
+-  assert.match(spriteEditorSource, /sprite-sheet-.*\.png/);
++  const spritesSource = readFileSync(new URL("../../../www/assets/toolbox/sprites/js/index.js", import.meta.url), "utf8");
++  assert.match(spritesSource, /image\/png/);
++  assert.match(spritesSource, /sprite-frame-/);
+ }
+diff --git a/www/owner/notes.html b/www/owner/notes.html
+index 6cb17f857..c63b02f16 100644
+--- a/www/owner/notes.html
++++ b/www/owner/notes.html
+@@ -5,7 +5,7 @@
+     <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+     <title>Notes - Game Foundry Studio</title>
+-    <meta name="description" content="Owner route for Admin/Owner Notes loaded from docs_build/dev/admin-notes.">
++    <meta name="description" content="Owner route for Admin/Owner Notes loaded from dev/archive/legacy-docs-build/admin-notes.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
+ </head>
+@@ -17,7 +17,7 @@
+             <div class="container">
+                 <div class="kicker">Owner</div>
+                 <h1>Notes</h1>
+-                <p class="lede">Admin/Owner Notes loaded from docs_build/dev/admin-notes/.</p>
++                <p class="lede">Admin/Owner Notes loaded from dev/archive/legacy-docs-build/admin-notes/.</p>
+             </div>
+         </section>
+         <section class="section">
+@@ -33,7 +33,7 @@
+                                     <div class="kicker">Loaded Note</div>
+                                     <h2 data-admin-notes-title>index.txt</h2>
+                                 </div>
+-                                <p class="status" data-admin-notes-status>Loading docs_build/dev/admin-notes/index.txt.</p>
++                                <p class="status" data-admin-notes-status>Loading dev/archive/legacy-docs-build/admin-notes/index.txt.</p>
+                             </div>
+                             <div data-admin-notes-content></div>
+                         </div>
