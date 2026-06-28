@@ -33,7 +33,24 @@ The bootstrap loads:
 - Current branch
 - Worktree status
 
-The bootstrap must not create branches, commit files, move files, or run implementation work by itself.
+The bootstrap requires the current branch to be `main`, the worktree to be clean, and local `main` to be synced with `origin/main`.
+
+Allowed bootstrap sync actions:
+
+```text
+git fetch origin
+git pull --ff-only origin main
+```
+
+If the current branch is not `main`, the bootstrap must HARD STOP and return:
+
+```text
+git switch main
+git pull --ff-only origin main
+Start of Day {Team}
+```
+
+The bootstrap must not create branches, switch branches, commit files, move files, or run implementation work by itself.
 
 Start-of-Day bootstrap must satisfy the Codex Completion Contract in `dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md` with a review-only ZIP unless a hard stop occurs.
 

@@ -1,30 +1,30 @@
 # PR_26179_OWNER_010-canonical-project-folder-instructions
 
-Updated: 2026-06-28T02:44:56Z
+Updated: 2026-06-28T02:50:06Z
 Team: OWNER
 Branch: PR_26179_OWNER_010-canonical-project-folder-instructions
 Scope: Documentation/governance only. No runtime code or production pages changed.
 
 ## Summary
-- Added the Codex Completion Contract to the artifact/reporting standard.
-- Defined canonical ZIP location as `dev/workspace/zips/`.
-- Defined outcome suffixes: `_delta.zip`, `_REVIEW.zip`, `_FAILED.zip`, and `_HARD_STOP.zip`.
-- Clarified one ZIP per attempted PR, with at least one repository-structured ZIP for every Codex execution.
-- Added stacked PR ZIP handling and failure/hard-stop ZIP content requirements.
-- Updated Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, and PR workflow references to the completion contract.
+- Fixed Start of Day baseline governance in the Codex workflow command SSoT.
+- Start of Day now requires current branch `main`, clean worktree, latest `origin/main`, and local/origin main sync.
+- Removed conflicting wording that Start of Day must not require `main`.
+- Documented allowed Start of Day sync actions: `git fetch origin` and `git pull --ff-only origin main`.
+- Documented hard-stop correction steps when Start of Day is invoked away from `main`.
+- Updated bootstrap and workflow docs so SOD reports recommendations only; branch creation/use happens after SOD through PR execution phases.
 
-## Completion Contract Result
-- SSoT: `dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md`.
-- Every Codex execution must produce at least one repository-structured ZIP.
-- Each PR attempted by Codex must produce exactly one final outcome ZIP.
-- Missing ZIP means the Codex run did not complete correctly.
-- Grep for conflicting `exactly one repository-structured ZIP` wording: PASS, no conflicting wording found.
+## SOD Baseline Result
+- Start of Day requires `main`: PASS.
+- Start of Day requires clean worktree: PASS.
+- Start of Day fetch/pull latest `origin/main`: PASS.
+- Start of Day verifies local `main` and `origin/main` sync: PASS.
+- If not on `main`, SOD HARD STOP steps documented: PASS.
+- Read-only SOD preserved except allowed git sync actions: PASS.
 
 ## Changed Files
 ```
-M	dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-M	dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
 M	dev/build/ProjectInstructions/addendums/pr_workflow.md
+M	dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
 M	dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md
 M	dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
 M	dev/reports/codex_changed_files.txt
@@ -38,7 +38,7 @@ M	dev/reports/PR_26179_OWNER_010-canonical-project-folder-instructions_validatio
 - `git diff --check`: PASS.
 - `npm run validate:canonical-structure`: PASS.
 - `node ./dev/scripts/run-platform-validation-suite.mjs`: PASS, 8/8 scenarios.
-- Grep for `exactly one repository-structured ZIP`: PASS, no replacement needed beyond SSoT wording.
+- Conflict scan for `Start of Day must not require` and SOD branch-creation wording: PASS.
 
 ## Blockers
 None.

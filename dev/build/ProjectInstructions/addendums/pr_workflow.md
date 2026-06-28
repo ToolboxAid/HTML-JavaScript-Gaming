@@ -41,7 +41,8 @@ This file owns PR lifecycle governance. It must not duplicate command phase rule
 Team-neutral daily workflow:
 
 - SOD starts from the latest synchronized `main`.
-- SOD creates or updates one active team branch/workstream.
+- SOD reports the active team branch/workstream recommendation only.
+- Branch creation or branch updates happen after SOD through the appropriate PR execution phase.
 - Work must be committed only to the active team branch.
 - PR branches/commits stay on the active team branch/workstream during the day when OWNER assigned a stacked or sequential workstream.
 - Do not return to `main` between stacked/sequential PRs in the same active workstream.

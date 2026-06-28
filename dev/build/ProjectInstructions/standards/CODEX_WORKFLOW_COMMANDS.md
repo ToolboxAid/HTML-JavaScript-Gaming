@@ -25,9 +25,26 @@ Start of Day Golf
 
 Commands using non-canonical team names are invalid because active team names are Owner, Alfa, Bravo, Charlie, Delta, and Golf.
 
-Start of Day is read-only discovery only.
+Start of Day is read-only discovery plus baseline sync only.
 
-Start of Day must not require the current branch to be `main`.
+Start of Day requires:
+- current branch is `main`
+- worktree is clean
+- `git fetch origin`
+- `git pull --ff-only origin main`
+- local `main` and `origin/main` are synced
+
+Allowed Start of Day git sync actions:
+- `git fetch origin`
+- `git pull --ff-only origin main`
+
+If the current branch is not `main`, Start of Day must HARD STOP and return these correction steps:
+
+```text
+git switch main
+git pull --ff-only origin main
+Start of Day {Team}
+```
 
 Start of Day must not:
 - create a branch

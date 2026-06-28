@@ -1,204 +1,91 @@
-diff --git a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-index 3b916dc17..5b1b8f9a6 100644
---- a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-+++ b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-@@ -102,3 +102,4 @@ That file owns Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, and invalid command be
- - `repository/canonical_repository_structure.md` owns all folder placement and file-placement rules.
- - `standards/CODEX_WORKFLOW_COMMANDS.md` owns Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, and invalid command behavior.
- - `bootstrap/codex_start_of_day_bootstrap.md` owns Start-of-Day bootstrap architecture.
-+- `addendums/codex_artifact_and_reporting_standard.md` owns the Codex Completion Contract and ZIP outcome rules.
-diff --git a/dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md b/dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
-index 82846de96..b35ebe90f 100644
---- a/dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
-+++ b/dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
-@@ -4,11 +4,68 @@
-
- Standardize Codex deliverables, completion reporting, and artifact generation.
-
--## ZIP Artifact Requirement
-+## Codex Completion Contract
-
--Every Codex execution must produce a repo-structured ZIP artifact and the required reports.
-+Every Codex execution must produce at least one repository-structured ZIP artifact and the required reports.
-
--This applies regardless of result:
-+Each PR attempted by Codex must produce exactly one ZIP artifact representing that PR's final outcome.
-+
-+Missing ZIP means the Codex run did not complete correctly.
-+
-+Canonical ZIP location:
-+
-+```text
-+dev/workspace/zips/
-+```
-+
-+ZIP outcome suffixes:
-+
-+- `_delta.zip` = success
-+- `_REVIEW.zip` = review-only
-+- `_FAILED.zip` = validation or execution failure
-+- `_HARD_STOP.zip` = governance or precondition hard stop
-+
-+## Stacked PR Rule
-+
-+Stacked PR work produces one ZIP per attempted PR.
-+
-+If PR 1 succeeds and PR 2 hard-stops, produce:
-+
-+```text
-+PR_...001-..._delta.zip
-+PR_...002-..._HARD_STOP.zip
-+```
-+
-+Do not start later stacked PRs after a failure or hard stop.
-+
-+## ZIP Contents
-+
-+Success ZIP contents must include:
-+
-+- changed files
-+- diff
-+- PR report
-+- validation report
-+- requirement checklist
-+
-+Failing PR ZIP contents must include:
-+
-+- hard stop or failure report
-+- branch/worktree status
-+- validation output if run
-+- requirement checklist
-+- changed files and diff if changes occurred
-+
-+Review-only ZIP contents must include:
-+
-+- review report
-+- branch/worktree status
-+- requirement checklist or review checklist when applicable
-+- supporting evidence files when applicable
-+
-+## Applicability
-+
-+The Codex Completion Contract applies regardless of result:
-
- - success
- - completion
-@@ -23,17 +80,11 @@ This applies regardless of result:
-
- No exceptions.
-
--Minimum ZIP contents:
-+Minimum repository-structured ZIP rules:
-
--- changed or preserved repo files from the run, stored at repo-relative paths
-+- changed, preserved, or outcome evidence repo files from the run, stored at repo-relative paths
- - required reports under `dev/reports/`
-
--ZIP artifacts must be written under:
--
--```text
--dev/workspace/zips/
--```
--
- Reports must remain flat under `dev/reports/`. Use descriptive filenames that include the PR, team, runner, or lane context instead of nested team or runner report folders.
-
- Optional:
-@@ -107,6 +158,6 @@ unless explicitly requested.
-
- ## No ZIP Means Incomplete
-
--A task is not considered complete until the ZIP artifact is generated and reported.
-+A task is not considered complete until the required ZIP artifact or artifacts are generated and reported.
-
- If execution stops before implementation, validation, or commit, the stop result must still include the repo-structured ZIP and reports that document the hard stop, blocker, validation failure, or no-change result.
 diff --git a/dev/build/ProjectInstructions/addendums/pr_workflow.md b/dev/build/ProjectInstructions/addendums/pr_workflow.md
-index 8461c07c7..ce6483838 100644
+index ce6483838..6fadd0789 100644
 --- a/dev/build/ProjectInstructions/addendums/pr_workflow.md
 +++ b/dev/build/ProjectInstructions/addendums/pr_workflow.md
-@@ -11,6 +11,10 @@ Official PLAN_PR, BUILD_PR, APPLY_PR, Start of Day, and invalid command behavior
+@@ -41,7 +41,8 @@ This file owns PR lifecycle governance. It must not duplicate command phase rule
+ Team-neutral daily workflow:
 
- `dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`
+ - SOD starts from the latest synchronized `main`.
+-- SOD creates or updates one active team branch/workstream.
++- SOD reports the active team branch/workstream recommendation only.
++- Branch creation or branch updates happen after SOD through the appropriate PR execution phase.
+ - Work must be committed only to the active team branch.
+ - PR branches/commits stay on the active team branch/workstream during the day when OWNER assigned a stacked or sequential workstream.
+ - Do not return to `main` between stacked/sequential PRs in the same active workstream.
+diff --git a/dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md b/dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
+index e191f9d7f..1e6a04a87 100644
+--- a/dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
++++ b/dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
+@@ -88,7 +88,8 @@ At EOD, ChatGPT/Codex must provide:
+ This standard preserves the existing branch workflow:
 
-+The Codex Completion Contract for ZIP artifacts lives in:
-+
-+`dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md`
-+
- This file owns PR lifecycle governance. It must not duplicate command phase rules.
-
- ## Standard Flow
-@@ -112,11 +116,9 @@ Closed gates:
- - If validation fails, stop and report.
- - If conflict occurs, stop and report.
- - If OWNER decision is required, stop and report.
--- Every Codex execution must produce a repo-structured ZIP under `dev/workspace/zips/`.
--- The ZIP rule applies to implementation, audit, report-only, validation-only, governance, cleanup, hard-stop, blocked, validation-failure, partial-completion, new-information, and no-change runs.
--- The ZIP must include all changed or preserved repo files from the run and must not replace required reports under `dev/reports/`.
--- If no repo files changed, Codex must still create a ZIP containing the report that proves the no-change, hard-stop, blocked, validation-failure, or partial-completion result.
--- No exceptions.
-+- Every PR lifecycle state must satisfy the Codex Completion Contract when Codex executes work for that state.
-+- ZIP artifacts belong under `dev/workspace/zips/` and must not replace required reports under `dev/reports/`.
-+- Stacked PR chains produce one final outcome ZIP per attempted PR and stop before later PRs after failure or hard stop.
-
- ## Batch Governance Mode
-
+ - SOD starts from latest `main`.
+-- SOD creates or uses the active team branch.
++- SOD reports the recommended active team branch/workstream only.
++- Branch creation or use happens after SOD through the appropriate PR execution phase.
+ - All commits go to the active team branch, not `main`.
+ - Sequential PRs stay on the active team branch/workstream during the day.
+ - EOD merges OWNER-approved work, pushes, returns to `main`, and verifies clean worktree and local/origin sync `0 0`.
 diff --git a/dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md b/dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md
-index 9de8f576a..280abef00 100644
+index 280abef00..f2eb2787d 100644
 --- a/dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md
 +++ b/dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md
-@@ -35,6 +35,8 @@ The bootstrap loads:
+@@ -33,7 +33,24 @@ The bootstrap loads:
+ - Current branch
+ - Worktree status
 
- The bootstrap must not create branches, commit files, move files, or run implementation work by itself.
-
-+Start-of-Day bootstrap must satisfy the Codex Completion Contract in `dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md` with a review-only ZIP unless a hard stop occurs.
+-The bootstrap must not create branches, commit files, move files, or run implementation work by itself.
++The bootstrap requires the current branch to be `main`, the worktree to be clean, and local `main` to be synced with `origin/main`.
 +
- ## Wrapper Responsibilities
++Allowed bootstrap sync actions:
++
++```text
++git fetch origin
++git pull --ff-only origin main
++```
++
++If the current branch is not `main`, the bootstrap must HARD STOP and return:
++
++```text
++git switch main
++git pull --ff-only origin main
++Start of Day {Team}
++```
++
++The bootstrap must not create branches, switch branches, commit files, move files, or run implementation work by itself.
 
- The wrapper performs:
-@@ -87,7 +89,7 @@ If a chat instruction conflicts with Project Instructions:
-
- - Stop.
- - Do not continue the PR.
--- Produce the required ZIP artifact when the active artifact rules require one.
-+- Produce the required ZIP artifact according to the Codex Completion Contract.
- - Document the conflict in the run summary or PR report.
- - Ask for OWNER direction.
+ Start-of-Day bootstrap must satisfy the Codex Completion Contract in `dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md` with a review-only ZIP unless a hard stop occurs.
 
 diff --git a/dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md b/dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
-index de48a748c..25a403486 100644
+index 25a403486..c0066966e 100644
 --- a/dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
 +++ b/dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
-@@ -50,6 +50,8 @@ Start of Day reports:
+@@ -25,9 +25,26 @@ Start of Day Golf
 
- Start of Day may recommend the next execution phase, but it must not execute that phase.
+ Commands using non-canonical team names are invalid because active team names are Owner, Alfa, Bravo, Charlie, Delta, and Golf.
 
-+Start of Day must satisfy the Codex Completion Contract in `dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md`. Because Start of Day is read-only discovery, its ZIP outcome is review-only unless another outcome is explicitly documented.
+-Start of Day is read-only discovery only.
++Start of Day is read-only discovery plus baseline sync only.
+
+-Start of Day must not require the current branch to be `main`.
++Start of Day requires:
++- current branch is `main`
++- worktree is clean
++- `git fetch origin`
++- `git pull --ff-only origin main`
++- local `main` and `origin/main` are synced
 +
- ## Execution Phases
++Allowed Start of Day git sync actions:
++- `git fetch origin`
++- `git pull --ff-only origin main`
++
++If the current branch is not `main`, Start of Day must HARD STOP and return these correction steps:
++
++```text
++git switch main
++git pull --ff-only origin main
++Start of Day {Team}
++```
 
- PLAN_PR, BUILD_PR, and APPLY_PR are Codex PR execution phases after Start of Day. They are not part of Start of Day.
-@@ -84,6 +86,7 @@ Rules:
- - Identify the correct branch or start point.
- - Identify the intended PR name, purpose, and scope.
- - Identify required validation and reporting.
-+- Identify the required ZIP outcome path from the Codex Completion Contract.
- - HARD STOP on unclear scope.
- - HARD STOP if Project Instructions conflict with the requested plan.
-
-@@ -96,7 +99,7 @@ Rules:
- - Use the latest Project Instructions.
- - Stay inside the approved PR purpose.
- - Create required reports.
--- Create the required repo-structured ZIP artifact when the active artifact rules require one.
-+- Create the required repo-structured ZIP artifact for the attempted PR according to the Codex Completion Contract.
- - Run scoped validation required by the PR and Project Instructions.
- - HARD STOP on wrong branch.
- - HARD STOP on dirty worktree when the PR requires a clean start.
-@@ -111,7 +114,7 @@ APPLY_PR is the merge and closeout phase.
- Rules:
- - Verify CI status, validation status, and mergeability before merge.
- - Verify the PR merge state is clean.
--- Verify required reports and ZIP artifacts exist.
-+- Verify required reports and Codex Completion Contract ZIP artifacts exist.
- - Merge only when Project Instructions and OWNER direction allow the merge.
- - Update local `main` after merge.
- - Report final branch, worktree status, local/origin sync status, final commit, and blockers.
+ Start of Day must not:
+ - create a branch

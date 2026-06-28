@@ -88,7 +88,8 @@ At EOD, ChatGPT/Codex must provide:
 This standard preserves the existing branch workflow:
 
 - SOD starts from latest `main`.
-- SOD creates or uses the active team branch.
+- SOD reports the recommended active team branch/workstream only.
+- Branch creation or use happens after SOD through the appropriate PR execution phase.
 - All commits go to the active team branch, not `main`.
 - Sequential PRs stay on the active team branch/workstream during the day.
 - EOD merges OWNER-approved work, pushes, returns to `main`, and verifies clean worktree and local/origin sync `0 0`.

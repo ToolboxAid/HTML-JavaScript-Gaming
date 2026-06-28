@@ -1,17 +1,15 @@
 PR_26179_OWNER_010-canonical-project-folder-instructions
-Updated: 2026-06-28T02:44:56Z
+Updated: 2026-06-28T02:50:06Z
 Branch: PR_26179_OWNER_010-canonical-project-folder-instructions
 
 Changed files staged for this update:
-M	dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-M	dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
 M	dev/build/ProjectInstructions/addendums/pr_workflow.md
+M	dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
 M	dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md
 M	dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
 
 Working tree status at report generation:
-M  dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-M  dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
 M  dev/build/ProjectInstructions/addendums/pr_workflow.md
+M  dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
 M  dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md
 M  dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
