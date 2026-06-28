@@ -1239,6 +1239,24 @@ body.tool-focus-mode .tool-column:last-of-type {
   box-shadow: 0 1px 4px var(--swatch-shadow-color)
 }
 
+.sprite-preview-shell {
+  display: flex;
+  justify-content: center;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--panel-soft)
+}
+
+.sprite-preview-canvas {
+  width: min(100%, 160px);
+  height: auto;
+  aspect-ratio: 1;
+  border: 1px solid var(--line);
+  background: var(--card-background);
+  image-rendering: pixelated
+}
+
 @media(max-width:980px) {
 
   .grid.cols-4,

@@ -2,6 +2,6 @@
 assets/toolbox/sprites/js/index.js
 assets/theme-v2/css/gamefoundrystudio.css
 dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-docs_build/dev/reports/PR_26179_CHARLIE_026-sprites-palette-panel.md
+docs_build/dev/reports/PR_26179_CHARLIE_027-sprites-preview-export.md
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff

@@ -260,6 +260,18 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status 
     await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(1024);
     await expect(page.locator("[data-sprites-pixel-grid] .sprite-canvas-cell--blue")).toHaveCount(1024);
     await expect(page.locator("[data-sprites-draft-status]")).toContainText("1024 draft pixels painted");
+    await expect(page.locator("[data-sprites-preview-canvas]")).toBeVisible();
+    const previewHasPaint = await page.locator("[data-sprites-preview-canvas]").evaluate((canvas) => {
+      const context = canvas.getContext("2d");
+      const pixel = context.getImageData(1, 1, 1, 1).data;
+      return pixel[3] > 0;
+    });
+    expect(previewHasPaint).toBe(true);
+    const downloadPromise = page.waitForEvent("download");
+    await page.getByRole("button", { name: "Download PNG" }).click();
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toBe("sprite-creator-draft.png");
+    await expect(page.locator("[data-sprites-export-status]")).toContainText("PNG downloaded");
     await expect(page.locator("[data-sprites-shell-status]")).toContainText("Editor ready");
     await expect(page.locator("main")).toContainText("Palette/Colors remains the reusable color source");
     await expect(page.locator("main")).not.toContainText(/Not implemented yet|future rebuild work|Static wireframe only|Plan sprite creation/i);
