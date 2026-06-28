@@ -1,7 +1,7 @@
 const DEFAULT_GRID_SIZE = 16;
 const DEFAULT_FRAME_DURATION_MS = 120;
 const SUPPORTED_GRID_SIZES = Object.freeze([16, 32]);
-const SUPPORTED_ZOOM_LEVELS = Object.freeze([1, 2, 4]);
+const SUPPORTED_ZOOM_LEVELS = Object.freeze([0.5, 1, 2, 4]);
 const SHAPE_TOOLS = Object.freeze(["line", "rectangle", "circle"]);
 const EDITOR_TOOLS = Object.freeze(["pencil", "eraser", "fill", "picker", "zoom", ...SHAPE_TOOLS]);
 const EDITOR_COLOR_KEYS = Object.freeze(["ink", "orange", "gold", "green", "blue"]);

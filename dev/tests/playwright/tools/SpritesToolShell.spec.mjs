@@ -219,6 +219,25 @@ async function previewCellHasPaint(page, row, column) {
   }, { column, gridSize, row });
 }
 
+async function previewCellColor(page, row, column) {
+  const gridSize = Number(await page.locator("[data-sprites-pixel-grid]").getAttribute("data-sprites-grid-size"));
+  return page.locator("[data-sprites-preview-canvas]").evaluate((canvas, coordinates) => {
+    const context = canvas.getContext("2d");
+    if (!context || !Number.isFinite(coordinates.gridSize) || coordinates.gridSize <= 0) {
+      return "";
+    }
+    const cellSize = canvas.width / coordinates.gridSize;
+    const x = Math.max(0, Math.min(canvas.width - 1, Math.floor((coordinates.column - 0.5) * cellSize)));
+    const y = Math.max(0, Math.min(canvas.height - 1, Math.floor((coordinates.row - 0.5) * cellSize)));
+    const pixel = context.getImageData(x, y, 1, 1).data;
+    return `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
+  }, { column, gridSize, row });
+}
+
+async function centerCellColor(page, row, column) {
+  return spriteCell(page, row, column).evaluate((cell) => getComputedStyle(cell).backgroundColor);
+}
+
 async function canvasHasAnyPaint(locator) {
   return locator.evaluate((canvas) => {
     const context = canvas.getContext("2d");
@@ -240,6 +259,9 @@ async function expectCenterAndPreviewPainted(page, row, column, colorClass = nul
   await expect(cell).toHaveClass(/is-painted/);
   if (colorClass) {
     await expect(cell).toHaveClass(new RegExp(colorClass));
+    const centerColor = await centerCellColor(page, row, column);
+    expect(centerColor).not.toBe("rgb(255, 255, 255)");
+    expect(await previewCellColor(page, row, column)).toBe(centerColor);
   }
   expect(await previewCellHasPaint(page, row, column)).toBe(true);
 }
@@ -337,6 +359,7 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status 
     await expect(page.locator("[data-sprites-pixel-grid] [role='gridcell']")).toHaveCount(256);
     await expect(page.locator("[data-sprites-grid-status]")).toContainText("Canvas display mode: 16x16");
     await expect(page.locator("[data-sprites-zoom-status]")).toContainText("100%");
+    await expect(page.getByRole("button", { name: "50%" })).toBeVisible();
     await page.getByRole("button", { name: "32x32" }).click();
     await expect(page.locator("[data-sprites-pixel-grid]")).toHaveAttribute("aria-label", "Sprite Creator 32 by 32 pixel canvas");
     await expect(page.locator("[data-sprites-pixel-grid] [role='gridcell']")).toHaveCount(1024);
@@ -412,6 +435,10 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status 
     await expect(page.locator("[data-sprites-zoom-status]")).toContainText("400%");
     await page.getByRole("button", { name: "100%" }).click();
     await expect(page.locator("[data-sprites-grid-shell]")).toHaveAttribute("data-sprites-zoom-level", "1");
+    await page.getByRole("button", { name: "50%" }).click();
+    await expect(page.locator("[data-sprites-grid-shell]")).toHaveAttribute("data-sprites-zoom-level", "0.5");
+    await expect(page.locator("[data-sprites-zoom-status]")).toContainText("50%");
+    await expect(page.locator("[data-sprites-pixel-grid] [role='gridcell']")).toHaveCount(256);
     const gridCells = page.locator("[data-sprites-pixel-grid] [role='gridcell']");
     await page.getByRole("button", { name: "Clear Canvas" }).click();
     await page.getByRole("button", { name: "Green editor color" }).click();
@@ -472,14 +499,14 @@ test("Sprite Creator canvas grid dimensions stay exact across modes and zoom", a
     await page.goto(`${server.baseUrl}/toolbox/sprites/index.html`, { waitUntil: "networkidle" });
 
     await expectExactGridDimensions(page, 16);
-    for (const zoomLabel of ["200%", "400%", "100%"]) {
+    for (const zoomLabel of ["50%", "200%", "400%", "100%"]) {
       await page.getByRole("button", { name: zoomLabel }).click();
       await expectExactGridDimensions(page, 16);
     }
 
     await page.getByRole("button", { name: "32x32" }).click();
     await expectExactGridDimensions(page, 32);
-    for (const zoomLabel of ["200%", "400%", "100%"]) {
+    for (const zoomLabel of ["50%", "200%", "400%", "100%"]) {
       await page.getByRole("button", { name: zoomLabel }).click();
       await expectExactGridDimensions(page, 32);
     }

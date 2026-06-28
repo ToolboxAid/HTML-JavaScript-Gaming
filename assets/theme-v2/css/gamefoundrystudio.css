@@ -1184,6 +1184,10 @@ body.tool-focus-mode .tool-column:last-of-type {
   grid-template-rows: repeat(32, minmax(0, 1fr))
 }
 
+.sprite-canvas-shell[data-sprites-zoom-level="0.5"] .sprite-canvas-grid {
+  width: min(260px, 50%)
+}
+
 .sprite-canvas-shell[data-sprites-zoom-level="2"] .sprite-canvas-grid {
   width: min(720px, 160%)
 }
@@ -1212,26 +1216,31 @@ body.tool-focus-mode .tool-column:last-of-type {
   background: var(--text)
 }
 
+.sprite-canvas-cell.is-painted.sprite-canvas-cell--ink,
 .sprite-canvas-cell--ink,
 .sprite-color-chip--ink {
   background: var(--text)
 }
 
+.sprite-canvas-cell.is-painted.sprite-canvas-cell--orange,
 .sprite-canvas-cell--orange,
 .sprite-color-chip--orange {
   background: var(--molten-orange)
 }
 
+.sprite-canvas-cell.is-painted.sprite-canvas-cell--gold,
 .sprite-canvas-cell--gold,
 .sprite-color-chip--gold {
   background: var(--forge-gold)
 }
 
+.sprite-canvas-cell.is-painted.sprite-canvas-cell--green,
 .sprite-canvas-cell--green,
 .sprite-color-chip--green {
   background: var(--green)
 }
 
+.sprite-canvas-cell.is-painted.sprite-canvas-cell--blue,
 .sprite-canvas-cell--blue,
 .sprite-color-chip--blue {
   background: var(--electric-blue)
