@@ -2,6 +2,13 @@ const DEFAULT_GRID_SIZE = 16;
 const SUPPORTED_GRID_SIZES = Object.freeze([16, 32]);
 const DRAWING_TOOLS = Object.freeze(["pencil", "eraser", "fill"]);
 const EDITOR_COLOR_KEYS = Object.freeze(["ink", "orange", "gold", "green", "blue"]);
+const EDITOR_COLOR_CSS_VARIABLES = Object.freeze({
+  blue: "--electric-blue",
+  gold: "--forge-gold",
+  green: "--green",
+  ink: "--text",
+  orange: "--molten-orange",
+});
 
 const editorState = {
   activeTool: "pencil",
@@ -51,6 +58,7 @@ function updateDraftStatus() {
   if (status) {
     status.textContent = draftStatusText();
   }
+  renderPreview();
 }
 
 function updatePaletteStatus() {
@@ -112,6 +120,64 @@ function fillGrid() {
     setCellColor(cell, editorState.activeColor);
   });
   updateDraftStatus();
+}
+
+function editorColorValue(colorKey) {
+  const variableName = EDITOR_COLOR_CSS_VARIABLES[normalizeColorKey(colorKey)];
+  const value = getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
+  return value || "#111111";
+}
+
+function renderPreview() {
+  const canvas = document.querySelector("[data-sprites-preview-canvas]");
+  if (!canvas) {
+    return;
+  }
+  const context = canvas.getContext("2d");
+  if (!context) {
+    return;
+  }
+  const size = editorState.gridSize;
+  const cellSize = canvas.width / size;
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  for (const [key, colorKey] of editorState.paintedPixels.entries()) {
+    const [rowText, columnText] = key.split(":");
+    const row = Number(rowText);
+    const column = Number(columnText);
+    if (!Number.isFinite(row) || !Number.isFinite(column)) {
+      continue;
+    }
+    context.fillStyle = editorColorValue(colorKey);
+    context.fillRect((column - 1) * cellSize, (row - 1) * cellSize, cellSize, cellSize);
+  }
+}
+
+function exportPreviewPng() {
+  const canvas = document.querySelector("[data-sprites-preview-canvas]");
+  const status = document.querySelector("[data-sprites-export-status]");
+  if (!canvas) {
+    return;
+  }
+  canvas.toBlob((blob) => {
+    if (!blob) {
+      if (status) {
+        status.textContent = "PNG export is unavailable in this browser session.";
+      }
+      return;
+    }
+    const objectUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = objectUrl;
+    link.download = "sprite-creator-draft.png";
+    link.rel = "noopener";
+    document.body.append(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(objectUrl);
+    if (status) {
+      status.textContent = "PNG downloaded from unsaved editor draft.";
+    }
+  }, "image/png");
 }
 
 function setGridSize(size) {
@@ -186,9 +252,18 @@ function wirePaletteButtons() {
   });
 }
 
+function wireExportButton() {
+  const button = document.querySelector("[data-sprites-export-png]");
+  if (button) {
+    button.addEventListener("click", exportPreviewPng);
+  }
+}
+
 wireGridControls();
 wireDrawingTools();
 wirePaletteButtons();
+wireExportButton();
 setGridSize(DEFAULT_GRID_SIZE);
 setActiveTool(editorState.activeTool);
 setActiveColor(editorState.activeColor);
+renderPreview();
