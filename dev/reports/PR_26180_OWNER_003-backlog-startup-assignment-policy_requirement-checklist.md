@@ -21,5 +21,5 @@
 | Update BACKLOG_MASTER header if needed | PASS | Updated. |
 | Update Tool Votes page header if needed | PASS | Not needed; UI/tool page left untouched due governance-only scope. |
 | Preserve startup validation, branching policy, ZIP/report contract, canonical paths, Batch Governance Mode, and no legacy paths | PASS | No conflicting edits made. |
+| Bump Project Instructions version | PASS | `PROJECT_INSTRUCTIONS_VERSION.md` and `PROJECT_INSTRUCTIONS.md` now use `2026.06.28.003`. |
 | No runtime/UI/API/database/tool implementation changes | PASS | Only Project Instructions and reports changed. |
-

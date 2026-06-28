@@ -2,7 +2,7 @@
 
 | Gate | Result | Evidence |
 |---|---|---|
-| Project Instructions version loaded | PASS | `2026.06.28.002` |
+| Project Instructions version loaded | PASS | `2026.06.28.003` |
 | Repository Project Instructions source | PASS | Loaded from `dev/build/ProjectInstructions/` |
 | Cached memory discarded | PASS | Repository instructions used as authority |
 | Branching policy loaded | PASS | `dev/build/ProjectInstructions/PROJECT_BRANCHING_POLICY.md` |
@@ -11,4 +11,3 @@
 | Owner independent PR model | PASS | Branch created from synchronized `main` |
 | Worktree before edits | PASS | Clean before PR edits |
 | Scope | PASS | Governance/documentation only |
-

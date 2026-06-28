@@ -6,6 +6,8 @@ PASS: This PR updates Project Instructions so team startup must load `BACKLOG_MA
 
 The change is governance/documentation only. No runtime, UI, API, database, or tool implementation files were modified.
 
+Project Instructions version was bumped to `2026.06.28.003`.
+
 ## Scope Decision
 
 Updated active Project Instructions and the backlog header only.

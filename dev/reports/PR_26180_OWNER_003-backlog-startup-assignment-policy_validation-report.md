@@ -20,6 +20,7 @@ Approved legacy exceptions: 500
 Changed files are limited to:
 
 - `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
+- `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md`
 - `dev/build/ProjectInstructions/TEAM_START_COMMANDS.md`
 - `dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md`
 - `dev/build/ProjectInstructions/addendums/team_start_and_release.md`
@@ -29,4 +30,3 @@ Changed files are limited to:
 - `dev/reports/*`
 
 No runtime, UI, API, database, or tool implementation files were changed.
-
