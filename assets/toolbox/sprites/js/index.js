@@ -152,6 +152,7 @@ function applySnapshot(snapshot) {
 }
 
 function updateDraftStatus() {
+  applyPaintedPixelsToGrid();
   const status = document.querySelector("[data-sprites-draft-status]");
   if (status) {
     status.textContent = draftStatusText();
@@ -217,6 +218,8 @@ function setZoomLevel(zoomLevel) {
   if (status) {
     status.textContent = `Canvas zoom display: ${normalizedZoomLevel * 100}%.`;
   }
+  applyPaintedPixelsToGrid();
+  renderPreview();
 }
 
 function pickCellColor(cell) {
@@ -232,6 +235,8 @@ function pickCellColor(cell) {
   if (status) {
     status.textContent = `Picker selected ${colorLabel(colorKey)} from the unsaved editor canvas.`;
   }
+  applyPaintedPixelsToGrid();
+  renderPreview();
 }
 
 function setPixel(row, column, colorKey) {

@@ -201,6 +201,38 @@ function collectPageFailures(page) {
   return { consoleErrors, failedRequests, pageErrors };
 }
 
+function spriteCell(page, row, column) {
+  return page.locator(`[data-sprite-pixel-row="${row}"][data-sprite-pixel-column="${column}"]`);
+}
+
+async function previewCellHasPaint(page, row, column) {
+  const gridSize = Number(await page.locator("[data-sprites-pixel-grid]").getAttribute("data-sprites-grid-size"));
+  return page.locator("[data-sprites-preview-canvas]").evaluate((canvas, coordinates) => {
+    const context = canvas.getContext("2d");
+    if (!context || !Number.isFinite(coordinates.gridSize) || coordinates.gridSize <= 0) {
+      return false;
+    }
+    const cellSize = canvas.width / coordinates.gridSize;
+    const x = Math.max(0, Math.min(canvas.width - 1, Math.floor((coordinates.column - 0.5) * cellSize)));
+    const y = Math.max(0, Math.min(canvas.height - 1, Math.floor((coordinates.row - 0.5) * cellSize)));
+    return context.getImageData(x, y, 1, 1).data[3] > 0;
+  }, { column, gridSize, row });
+}
+
+async function expectCenterAndPreviewPainted(page, row, column, colorClass = null) {
+  const cell = spriteCell(page, row, column);
+  await expect(cell).toHaveClass(/is-painted/);
+  if (colorClass) {
+    await expect(cell).toHaveClass(new RegExp(colorClass));
+  }
+  expect(await previewCellHasPaint(page, row, column)).toBe(true);
+}
+
+async function expectCenterAndPreviewEmpty(page, row, column) {
+  await expect(spriteCell(page, row, column)).not.toHaveClass(/is-painted/);
+  expect(await previewCellHasPaint(page, row, column)).toBe(false);
+}
+
 test("Sprite Creator shell loads with visible tool, canvas, details, and status regions", async ({ page }) => {
   const server = await startSpriteShellTestServer();
   const failures = collectPageFailures(page);
@@ -358,6 +390,75 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status 
     await expect(page.locator("main")).toContainText("Palette/Colors remains the reusable color source");
     await expect(page.locator("main")).not.toContainText(/Not implemented yet|future rebuild work|Static wireframe only|Plan sprite creation|later editor slice/i);
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+
+    expect(failures.failedRequests).toEqual([]);
+    expect(failures.pageErrors).toEqual([]);
+    expect(failures.consoleErrors).toEqual([]);
+  } finally {
+    await server.close();
+  }
+});
+
+test("Sprite Creator keeps center canvas and right preview in sync", async ({ page }) => {
+  const server = await startSpriteShellTestServer();
+  const failures = collectPageFailures(page);
+
+  try {
+    await page.goto(`${server.baseUrl}/toolbox/sprites/index.html`, { waitUntil: "networkidle" });
+
+    await spriteCell(page, 1, 1).click();
+    await expectCenterAndPreviewPainted(page, 1, 1, "sprite-canvas-cell--ink");
+
+    await page.getByRole("button", { name: "Eraser tool" }).click();
+    await spriteCell(page, 1, 1).click();
+    await expectCenterAndPreviewEmpty(page, 1, 1);
+
+    await page.getByRole("button", { name: "Blue editor color" }).click();
+    await page.getByRole("button", { name: "Fill tool" }).click();
+    await expectCenterAndPreviewPainted(page, 1, 1, "sprite-canvas-cell--blue");
+
+    await page.getByRole("button", { name: "Clear Canvas" }).click();
+    await expectCenterAndPreviewEmpty(page, 1, 1);
+
+    await page.getByRole("button", { name: "Undo" }).click();
+    await expectCenterAndPreviewPainted(page, 1, 1, "sprite-canvas-cell--blue");
+
+    await page.getByRole("button", { name: "Redo" }).click();
+    await expectCenterAndPreviewEmpty(page, 1, 1);
+
+    await page.getByRole("button", { name: "Gold editor color" }).click();
+    await page.getByRole("button", { name: "Pencil tool" }).click();
+    await spriteCell(page, 2, 2).click();
+    await expectCenterAndPreviewPainted(page, 2, 2, "sprite-canvas-cell--gold");
+    await page.getByRole("button", { name: "Blue editor color" }).click();
+    await page.getByRole("button", { name: "Picker tool" }).click();
+    await spriteCell(page, 2, 2).click();
+    await expect(page.locator("[data-sprites-palette-status]")).toContainText("Active editor color: Gold");
+    await expectCenterAndPreviewPainted(page, 2, 2, "sprite-canvas-cell--gold");
+
+    await page.getByRole("button", { name: "Zoom tool" }).click();
+    await page.getByRole("button", { name: "200%" }).click();
+    await expect(page.locator("[data-sprites-grid-shell]")).toHaveAttribute("data-sprites-zoom-level", "2");
+    await expectCenterAndPreviewPainted(page, 2, 2, "sprite-canvas-cell--gold");
+
+    await page.getByRole("button", { name: "Clear Canvas" }).click();
+    await page.getByRole("button", { name: "Green editor color" }).click();
+    await page.getByRole("button", { name: "Line tool" }).click();
+    await spriteCell(page, 1, 1).click();
+    await spriteCell(page, 1, 4).click();
+    await expectCenterAndPreviewPainted(page, 1, 2, "sprite-canvas-cell--green");
+
+    await page.getByRole("button", { name: "Clear Canvas" }).click();
+    await page.getByRole("button", { name: "Rectangle tool" }).click();
+    await spriteCell(page, 2, 2).click();
+    await spriteCell(page, 4, 4).click();
+    await expectCenterAndPreviewPainted(page, 2, 3, "sprite-canvas-cell--green");
+
+    await page.getByRole("button", { name: "Clear Canvas" }).click();
+    await page.getByRole("button", { name: "Circle tool" }).click();
+    await spriteCell(page, 8, 8).click();
+    await spriteCell(page, 8, 11).click();
+    await expectCenterAndPreviewPainted(page, 8, 11, "sprite-canvas-cell--green");
 
     expect(failures.failedRequests).toEqual([]);
     expect(failures.pageErrors).toEqual([]);
