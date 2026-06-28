@@ -36,7 +36,8 @@ function classifyDuplicateGroup(files) {
   const inReports = normalized.every((value) => value.includes("/reports/"));
   const inEvidenceSnapshot = normalized.some((value) => value.includes("/repo_relative/") || value.includes("/evidence/"));
   const touchesRuntime = normalized.some((value) => value.startsWith("src/")
-    || value.startsWith("toolbox/")
+    || value.startsWith("www/games/")
+    || value.startsWith("www/toolbox/")
     || value.startsWith("dev/archive/v1-v2/games/")
     || value.startsWith("dev/archive/v1-v2/samples/"));
   const inTestsOnly = normalized.every((value) => value.startsWith("dev/tests/"));

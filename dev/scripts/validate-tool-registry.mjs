@@ -101,7 +101,7 @@ async function main() {
       issues.push(`Registry entry ${entry.id} entryPoint must be ${folderName}/index.html.`);
     }
     if (!(await pathExists(path.join(toolboxRoot, folderName, "index.html")))) {
-      issues.push(`Registry entry ${entry.id} points to missing toolbox/${folderName}/index.html.`);
+      issues.push(`Registry entry ${entry.id} points to missing www/toolbox/${folderName}/index.html.`);
     }
   }
 
@@ -112,12 +112,12 @@ async function main() {
   }
 
   if (!activeToolboxIndexSource.includes("getActiveToolRegistry()") || !activeToolboxIndexSource.includes("getToolRoute(registryTool)")) {
-    issues.push("toolbox/tools-page-accordions.js must render Toolbox cards from registry routes instead of duplicated literal routes.");
+    issues.push("www/toolbox/tools-page-accordions.js must render Toolbox cards from registry routes instead of duplicated literal routes.");
   }
 
   for (const directory of activeToolDirectories) {
     if (!registryFolders.includes(directory)) {
-      issues.push(`Filesystem directory toolbox/${directory} is missing from active toolRegistry.js.`);
+      issues.push(`Filesystem directory www/toolbox/${directory} is missing from active toolRegistry.js.`);
     }
   }
 

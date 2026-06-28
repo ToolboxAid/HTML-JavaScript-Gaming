@@ -39,9 +39,9 @@ The backlog is the authoritative source for determining the next logical PRs.
 - Team: Owner
 - Product Area: Repository Architecture Simplification
 - Status: Active
-- Percent Complete: 60%
-- Active PR: PR_26180_OWNER_011-move-tests-and-validation
-- Next Milestone: Update CI, package scripts, validation scripts, and developer utilities for the new layout
+- Percent Complete: 70%
+- Active PR: PR_26180_OWNER_012-update-ci-and-scripts
+- Next Milestone: Remove or retire obsolete legacy paths after all references are updated
 - Source / Reference: `dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md`; `dev/build/ProjectInstructions/repository/www_migration_map.md`
 
 ## Game Journey MVP

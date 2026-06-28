@@ -32,6 +32,8 @@ No browser, API, server, test, script, or runtime files move in the scaffold or 
 
 `PR_26180_OWNER_011-move-tests-and-validation` finalizes moved test and validation path assumptions for the `www/`, `api/`, and `dev/local-runtime/` layout while keeping product behavior unchanged.
 
+`PR_26180_OWNER_012-update-ci-and-scripts` updates CI, package scripts, and developer utilities for the `www/`, `api/`, and `dev/` layout while preserving the public developer command surface.
+
 ## Proposed Future Layout
 
 ```text

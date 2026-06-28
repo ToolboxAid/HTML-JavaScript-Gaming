@@ -34,6 +34,7 @@
     "validate:runtime-connections": "node --use-system-ca ./dev/scripts/validate-runtime-connections.mjs",
     "validate:browser-env-agnostic": "node ./dev/scripts/validate-browser-env-agnostic.mjs",
     "validate:canonical-structure": "node ./dev/scripts/validate-canonical-repository-structure.mjs",
+    "validate:platform": "node ./dev/scripts/run-platform-validation-suite.mjs",
     "apply:database-ddl": "node ./dev/scripts/apply-database-ddl.mjs",
     "apply:database-dml": "node ./dev/scripts/apply-database-dml.mjs",
     "seed:database-dev": "node --use-system-ca ./dev/scripts/apply-database-seed.mjs",

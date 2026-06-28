@@ -1,46 +1,56 @@
-﻿diff --git a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-index dbb28c44e..7badd5846 100644
+﻿diff --git a/.github/workflows/platform-validation.yml b/.github/workflows/platform-validation.yml
+index c08529826..f325fa440 100644
+--- a/.github/workflows/platform-validation.yml
++++ b/.github/workflows/platform-validation.yml
+@@ -20,4 +20,4 @@ jobs:
+           node-version: "20"
+
+       - name: Run Platform Validation Suite
+-        run: node ./dev/scripts/run-platform-validation-suite.mjs
++        run: npm run validate:platform
+diff --git a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+index 7badd5846..b925f8c69 100644
 --- a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 +++ b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 @@ -117,7 +117,7 @@ Rules:
 
  ## Current Version/Date
 
--- Project Instructions Version: 2026.06.28.010
-+- Project Instructions Version: 2026.06.28.011
+-- Project Instructions Version: 2026.06.28.011
++- Project Instructions Version: 2026.06.28.012
  - Date: 2026-06-28
  - Owner: OWNER
 
 diff --git a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
-index c2417d5e3..66021b01c 100644
+index 66021b01c..f16929b46 100644
 --- a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
 +++ b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
 @@ -1,6 +1,6 @@
  # Project Instructions Version
 
--Current Project Instructions Version: 2026.06.28.010
-+Current Project Instructions Version: 2026.06.28.011
+-Current Project Instructions Version: 2026.06.28.011
++Current Project Instructions Version: 2026.06.28.012
 
  Last Updated: 2026-06-28
 
-@@ -18,6 +18,7 @@ Last Updated: 2026-06-28
- - Moved browser-served application files under `www/` and made local static serving prefer `www/` by default.
+@@ -19,6 +19,7 @@ Last Updated: 2026-06-28
  - Moved server/API application runtime under `api/`; browser API clients remain outside `api/`.
  - Moved developer-only local runtime/bootstrap entrypoints under `dev/local-runtime/` and preserved the public npm command surface.
-+- Finalized moved test and validation path assumptions for the `www/`, `api/`, and `dev/local-runtime/` layout.
+ - Finalized moved test and validation path assumptions for the `www/`, `api/`, and `dev/local-runtime/` layout.
++- Updated CI, package scripts, and developer utilities for the `www/`, `api/`, and `dev/` layout.
  - Codex must read this version file and the latest repository copy of `PROJECT_INSTRUCTIONS.md` before performing work.
  - Codex must discard previously remembered Project Instructions and treat the repository copy as authoritative.
  - Codex must validate canonical report and ZIP paths, branching model, and legacy path avoidance before work proceeds.
 diff --git a/dev/build/ProjectInstructions/PROJECT_STATE.md b/dev/build/ProjectInstructions/PROJECT_STATE.md
-index fc5b3d5af..37c2f19f4 100644
+index 37c2f19f4..ad1fd5158 100644
 --- a/dev/build/ProjectInstructions/PROJECT_STATE.md
 +++ b/dev/build/ProjectInstructions/PROJECT_STATE.md
 @@ -1,7 +1,7 @@
  # Project State
 
  ```yaml
--project_state_version: "2026.06.28.010"
-+project_state_version: "2026.06.28.011"
+-project_state_version: "2026.06.28.011"
++project_state_version: "2026.06.28.012"
  last_updated: "2026-06-28"
  current_main_commit: "40de767476d70cadfd1292c916844c2f31b6f185"
  repository_status:
@@ -48,12 +58,12 @@ index fc5b3d5af..37c2f19f4 100644
    runtime_database: "Postgres"
    creator_metadata: "API to Postgres"
    creator_assets: "API to R2"
--project_instructions_version: "2026.06.28.010"
--repository_structure_version: "2026.06.28.010"
--canonical_layout_version: "2026.06.28.010"
-+project_instructions_version: "2026.06.28.011"
-+repository_structure_version: "2026.06.28.011"
-+canonical_layout_version: "2026.06.28.011"
+-project_instructions_version: "2026.06.28.011"
+-repository_structure_version: "2026.06.28.011"
+-canonical_layout_version: "2026.06.28.011"
++project_instructions_version: "2026.06.28.012"
++repository_structure_version: "2026.06.28.012"
++canonical_layout_version: "2026.06.28.012"
  active_teams:
    - "Owner"
    - "Alfa"
@@ -61,1879 +71,344 @@ index fc5b3d5af..37c2f19f4 100644
    - "Charlie"
    - "Delta"
    - "Golf"
--latest_owner_pr: "PR_26180_OWNER_010-move-dev-local-runtime"
--latest_structure_pr: "PR_26180_OWNER_010-move-dev-local-runtime"
-+latest_owner_pr: "PR_26180_OWNER_011-move-tests-and-validation"
-+latest_structure_pr: "PR_26180_OWNER_011-move-tests-and-validation"
+-latest_owner_pr: "PR_26180_OWNER_011-move-tests-and-validation"
+-latest_structure_pr: "PR_26180_OWNER_011-move-tests-and-validation"
++latest_owner_pr: "PR_26180_OWNER_012-update-ci-and-scripts"
++latest_structure_pr: "PR_26180_OWNER_012-update-ci-and-scripts"
  valid_top_level_folders:
    - "api/"
    - "deploy/"
 diff --git a/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md b/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
-index 16c1068f8..78b9ff4f0 100644
+index 78b9ff4f0..d0d974e9c 100644
 --- a/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
 +++ b/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
 @@ -39,9 +39,9 @@ The backlog is the authoritative source for determining the next logical PRs.
  - Team: Owner
  - Product Area: Repository Architecture Simplification
  - Status: Active
--- Percent Complete: 50%
--- Active PR: PR_26180_OWNER_010-move-dev-local-runtime
--- Next Milestone: Move tests and validation path references for the new layout
-+- Percent Complete: 60%
-+- Active PR: PR_26180_OWNER_011-move-tests-and-validation
-+- Next Milestone: Update CI, package scripts, validation scripts, and developer utilities for the new layout
+-- Percent Complete: 60%
+-- Active PR: PR_26180_OWNER_011-move-tests-and-validation
+-- Next Milestone: Update CI, package scripts, validation scripts, and developer utilities for the new layout
++- Percent Complete: 70%
++- Active PR: PR_26180_OWNER_012-update-ci-and-scripts
++- Next Milestone: Remove or retire obsolete legacy paths after all references are updated
  - Source / Reference: `dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md`; `dev/build/ProjectInstructions/repository/www_migration_map.md`
 
  ## Game Journey MVP
 diff --git a/dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md b/dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
-index f311571fd..e7e87b4aa 100644
+index e7e87b4aa..c9dd538ec 100644
 --- a/dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
 +++ b/dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
-@@ -30,6 +30,8 @@ No browser, API, server, test, script, or runtime files move in the scaffold or
+@@ -32,6 +32,8 @@ No browser, API, server, test, script, or runtime files move in the scaffold or
 
- `PR_26180_OWNER_010-move-dev-local-runtime` moves developer-only local runtime/bootstrap entrypoints under `dev/local-runtime/` while preserving `npm run dev:bootstrap`, `npm run dev:api`, `npm run dev:web`, and `npm run dev:local-api`.
+ `PR_26180_OWNER_011-move-tests-and-validation` finalizes moved test and validation path assumptions for the `www/`, `api/`, and `dev/local-runtime/` layout while keeping product behavior unchanged.
 
-+`PR_26180_OWNER_011-move-tests-and-validation` finalizes moved test and validation path assumptions for the `www/`, `api/`, and `dev/local-runtime/` layout while keeping product behavior unchanged.
++`PR_26180_OWNER_012-update-ci-and-scripts` updates CI, package scripts, and developer utilities for the `www/`, `api/`, and `dev/` layout while preserving the public developer command surface.
 +
  ## Proposed Future Layout
 
  ```text
-diff --git a/dev/reports/PR_26180_OWNER_011-move-tests-and-validation_branch-validation.md b/dev/reports/PR_26180_OWNER_011-move-tests-and-validation_branch-validation.md
+diff --git a/dev/reports/PR_26180_OWNER_012-update-ci-and-scripts_branch-validation.md b/dev/reports/PR_26180_OWNER_012-update-ci-and-scripts_branch-validation.md
 new file mode 100644
-index 000000000..1db4761a2
+index 000000000..9ad0a88c0
 --- /dev/null
-+++ b/dev/reports/PR_26180_OWNER_011-move-tests-and-validation_branch-validation.md
-@@ -0,0 +1,11 @@
-+# PR_26180_OWNER_011-move-tests-and-validation Branch Validation
++++ b/dev/reports/PR_26180_OWNER_012-update-ci-and-scripts_branch-validation.md
+@@ -0,0 +1,22 @@
++# PR_26180_OWNER_012 Branch Validation
 +
-+Generated: 2026-06-28T22:57:50.322Z
++## Result
 +
-+| Check | Result | Evidence |
++PASS
++
++## Details
++
++- Current branch: `PR_26180_OWNER_012-update-ci-and-scripts`
++- Expected branch: `PR_26180_OWNER_012-update-ci-and-scripts`
++- Base branch: `PR_26180_OWNER_011-move-tests-and-validation`
++- PR model: Owner stacked PR
++- Previous dependency: `PR_26180_OWNER_011-move-tests-and-validation`
++- Worktree before report generation: contained only scoped PR012 changes
++
++## Hard Stop Review
++
++- Wrong branch: PASS
++- Dirty unrelated worktree: PASS
++- Missing Project Instructions: PASS
++- Missing branching policy: PASS
++- Runtime/product behavior change required: PASS
+diff --git a/dev/reports/PR_26180_OWNER_012-update-ci-and-scripts_manual-validation-notes.md b/dev/reports/PR_26180_OWNER_012-update-ci-and-scripts_manual-validation-notes.md
+new file mode 100644
+index 000000000..c99695172
+--- /dev/null
++++ b/dev/reports/PR_26180_OWNER_012-update-ci-and-scripts_manual-validation-notes.md
+@@ -0,0 +1,17 @@
++# PR_26180_OWNER_012 Manual Validation Notes
++
++## Manual Review
++
++- Confirmed `package.json` still exposes:
++  - `npm run dev:bootstrap`
++  - `npm run dev:api`
++  - `npm run dev:web`
++  - `npm run dev:local-api`
++- Confirmed GitHub Actions platform validation now calls a package script instead of hardcoding the runner path.
++- Confirmed developer scripts use current `www/games/` and `www/toolbox/` assumptions where they route or report moved browser-served paths.
++- Confirmed no `www/` or `api/` files were moved.
++- Confirmed no production page, API route, database, or product runtime behavior was modified.
++
++## Notes For Reviewer
++
++This PR is infrastructure-path maintenance for the layout migration stack. It should be reviewed after PR011 and before the legacy-layout retirement PR.
+diff --git a/dev/reports/PR_26180_OWNER_012-update-ci-and-scripts_report.md b/dev/reports/PR_26180_OWNER_012-update-ci-and-scripts_report.md
+new file mode 100644
+index 000000000..24e8b44ee
+--- /dev/null
++++ b/dev/reports/PR_26180_OWNER_012-update-ci-and-scripts_report.md
+@@ -0,0 +1,35 @@
++# PR_26180_OWNER_012-update-ci-and-scripts Report
++
++## Executive Summary
++
++PR_26180_OWNER_012 updates CI, package scripts, and developer utilities for the current `www/`, `api/`, and `dev/` repository layout.
++
++This PR is stacked on `PR_26180_OWNER_011-move-tests-and-validation`.
++
++## Scope Decision
++
++- Scope: CI, package scripts, and developer utilities only.
++- No `www/` files moved.
++- No `api/` files moved.
++- No runtime product behavior changed.
++- No production UI files changed.
++
++## Changes
++
++- Added `npm run validate:platform` as a package script for the platform validation suite.
++- Updated the GitHub platform validation workflow to call the package script.
++- Updated Node test runner absolute import aliases so `/assets/` and `/toolbox/` resolve through `www/` while `/src/` remains rooted at `src/`.
++- Updated developer validation scripts to recognize `www/games/` and `www/toolbox/` paths.
++- Updated tool registry validation messages to report current `www/toolbox/` locations.
++- Updated Project Instructions version/status and repository architecture backlog status for PR_26180_OWNER_012.
++
++## Dependency Order
++
++- Previous PR: `PR_26180_OWNER_011-move-tests-and-validation`
++- Current PR: `PR_26180_OWNER_012-update-ci-and-scripts`
++- Next PR: `PR_26180_OWNER_013-remove-legacy-layout`
++- Merge order: PR011, then PR012, then PR013.
++
++## Owner Recommendation
++
++Ready for review after validation passes and the draft PR is opened against `PR_26180_OWNER_011-move-tests-and-validation`.
+diff --git a/dev/reports/PR_26180_OWNER_012-update-ci-and-scripts_requirement-checklist.md b/dev/reports/PR_26180_OWNER_012-update-ci-and-scripts_requirement-checklist.md
+new file mode 100644
+index 000000000..fffd07519
+--- /dev/null
++++ b/dev/reports/PR_26180_OWNER_012-update-ci-and-scripts_requirement-checklist.md
+@@ -0,0 +1,16 @@
++# PR_26180_OWNER_012 Requirement Checklist
++
++| Requirement | Status | Notes |
 +| --- | --- | --- |
-+| Current branch | PASS | PR_26180_OWNER_011-move-tests-and-validation |
-+| Stacked base | PASS | PR_26180_OWNER_010-move-dev-local-runtime is an ancestor of HEAD |
-+| PR model | PASS | Owner stacked PR under Repository Architecture Simplification workstream |
-+| Scope | PASS | dev tests, validation script, and governance/status docs only |
-+| Product/runtime files | PASS | No www/, api/, or product runtime behavior files changed |
-diff --git a/dev/reports/PR_26180_OWNER_011-move-tests-and-validation_manual-validation-notes.md b/dev/reports/PR_26180_OWNER_011-move-tests-and-validation_manual-validation-notes.md
++| Update CI/path references for `www/`, `api/`, `dev/` | PASS | Platform workflow now uses `npm run validate:platform`; developer scripts recognize `www/` paths. |
++| Update package scripts only where needed | PASS | Added `validate:platform`; preserved existing command surface. |
++| Preserve `npm run dev:bootstrap` | PASS | Script remains present. |
++| Preserve `npm run dev:api` | PASS | Script remains present. |
++| Preserve `npm run dev:web` | PASS | Script remains present. |
++| Preserve `npm run dev:local-api` | PASS | Legacy alias remains present. |
++| Update developer scripts after moved paths | PASS | Node test runners, Playwright location audit, targeted lane routing, duplicate audit, and tool registry validator updated. |
++| Do not move `www` files | PASS | No `www/` files moved. |
++| Do not move `api` files | PASS | No `api/` files moved. |
++| Do not change product behavior | PASS | Changes are CI/script/path-governance only. |
++| Produce reports under `dev/reports/` | PASS | Required reports created. |
++| Produce ZIP under `dev/workspace/zips/` | PASS | ZIP created during closeout. |
+diff --git a/dev/reports/PR_26180_OWNER_012-update-ci-and-scripts_validation-report.md b/dev/reports/PR_26180_OWNER_012-update-ci-and-scripts_validation-report.md
 new file mode 100644
-index 000000000..5b4eab506
+index 000000000..dc5cfcaeb
 --- /dev/null
-+++ b/dev/reports/PR_26180_OWNER_011-move-tests-and-validation_manual-validation-notes.md
-@@ -0,0 +1,10 @@
-+# PR_26180_OWNER_011-move-tests-and-validation Manual Validation Notes
++++ b/dev/reports/PR_26180_OWNER_012-update-ci-and-scripts_validation-report.md
+@@ -0,0 +1,21 @@
++# PR_26180_OWNER_012 Validation Report
 +
-+Generated: 2026-06-28T22:57:50.322Z
++## Validation Summary
 +
-+- Confirmed branch is PR_26180_OWNER_011-move-tests-and-validation.
-+- Confirmed PR011 is based on PR_26180_OWNER_010-move-dev-local-runtime.
-+- Confirmed no www/ or api/ files were moved or edited.
-+- Confirmed local static route smoke preserves public URLs while resolving files from the current web root.
-+- Confirmed Project Instructions version/status metadata now records 2026.06.28.011 and PR011 as the active structure PR.
-+- No manual browser session was required because route smoke was covered by targeted Playwright.
-diff --git a/dev/reports/PR_26180_OWNER_011-move-tests-and-validation_report.md b/dev/reports/PR_26180_OWNER_011-move-tests-and-validation_report.md
-new file mode 100644
-index 000000000..8cf1631d2
---- /dev/null
-+++ b/dev/reports/PR_26180_OWNER_011-move-tests-and-validation_report.md
-@@ -0,0 +1,34 @@
-+# PR_26180_OWNER_011-move-tests-and-validation Report
++PASS
 +
-+Generated: 2026-06-28T22:57:50.322Z
++## Commands
 +
-+## Purpose
-+
-+Finalize tests and validation paths for the www/api/dev layout without moving www or api files and without changing product behavior.
-+
-+## Summary
-+
-+- Updated moved dev test path assumptions from old root tests layout to dev/tests depth.
-+- Updated test-generated output/local-db paths from root tmp/ to dev/workspace/tmp/.
-+- Updated browser-served test fixture paths from root toolbox/assets/games to www/toolbox, www/assets, and www/games.
-+- Updated canonical structure validation to reject tracked legacy root tests/scripts/tmp/docs_build paths and old dev/local-runtime entrypoints.
-+- Bumped Project Instructions/status metadata to 2026.06.28.011 for PR011.
-+
-+## Scope Confirmation
-+
-+- Runtime/product behavior changed: No.
-+- www or api files moved: No.
-+- Product UI files changed: No.
-+- API/server behavior changed: No.
-+- Test and validation path assumptions updated: Yes.
-+
-+## Stack Dependency
-+
-+- Previous PR dependency: PR_26180_OWNER_010-move-dev-local-runtime.
-+- Current PR: PR_26180_OWNER_011-move-tests-and-validation.
-+- Next PR dependency: PR_26180_OWNER_012-update-ci-and-scripts.
-+- Merge order: PR010, then PR011, then PR012.
-+
-+## Notes
-+
-+The formal validation lane is the moved-path dev-runtime Node test set plus the static web-root Playwright route smoke. Direct legacy V2 runtime scripts still reference retired workspace-v2/asset-manager-v2 fixtures; this PR corrected their repository-root and artifact paths only and does not recreate retired tool fixtures.
-diff --git a/dev/reports/PR_26180_OWNER_011-move-tests-and-validation_requirement-checklist.md b/dev/reports/PR_26180_OWNER_011-move-tests-and-validation_requirement-checklist.md
-new file mode 100644
-index 000000000..d49136d1d
---- /dev/null
-+++ b/dev/reports/PR_26180_OWNER_011-move-tests-and-validation_requirement-checklist.md
-@@ -0,0 +1,13 @@
-+# PR_26180_OWNER_011-move-tests-and-validation Requirement Checklist
-+
-+Generated: 2026-06-28T22:57:50.322Z
-+
-+| Requirement | Result | Notes |
++| Command | Result | Notes |
 +| --- | --- | --- |
-+| Ensure tests live under dev/tests/ | PASS | No tracked root tests/ path remains; moved tests now resolve repo root from dev/tests. |
-+| Update validation scripts for www/api/dev/local-runtime | PASS | Canonical validation now rejects legacy root paths and old dev/local-runtime entrypoints. |
-+| Fix remaining path assumptions | PASS | Updated old root tmp/, toolbox/, assets/, games/, and two-level repoRoot assumptions in tests. |
-+| Do not move www or api files | PASS | No www/api file moves were made. |
-+| Do not change product behavior | PASS | Changes are limited to tests, validation guardrails, and governance/status docs. |
-+| Required reports | PASS | Reports generated under dev/reports/. |
-+| Required ZIP | PASS | Repo-structured ZIP generated under dev/workspace/zips/. |
-diff --git a/dev/reports/PR_26180_OWNER_011-move-tests-and-validation_validation-report.md b/dev/reports/PR_26180_OWNER_011-move-tests-and-validation_validation-report.md
-new file mode 100644
-index 000000000..9ea5bdaa2
---- /dev/null
-+++ b/dev/reports/PR_26180_OWNER_011-move-tests-and-validation_validation-report.md
-@@ -0,0 +1,15 @@
-+# PR_26180_OWNER_011-move-tests-and-validation Validation Report
++| `node --check dev/scripts/run-node-tests.mjs dev/scripts/run-node-test-files.mjs dev/scripts/audit-playwright-test-locations.mjs dev/scripts/run-targeted-test-lanes.mjs dev/scripts/validate-tool-registry.mjs dev/scripts/audit-duplicate-file-content.mjs` | PASS | Changed developer scripts parse successfully. |
++| Targeted package script check | PASS | Required command names are preserved and `validate:platform` is present. |
++| `npm run validate:canonical-structure` | PASS | Canonical structure validation passed. |
++| `git diff --check` | PASS | Whitespace validation passed. |
++| `npm run validate:platform` | PASS | Platform validation suite passed 8/8 scenarios. |
++| `node --test dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs` | PASS | Team-aware bootstrap tests passed. |
++| `node dev/scripts/audit-playwright-test-locations.mjs --target dev/tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs --lanes games --report dev/workspace/tmp/pr012_playwright_structure_audit.md --discovery-report dev/workspace/tmp/pr012_playwright_discovery_ownership_report.md --scope-report dev/workspace/tmp/pr012_playwright_discovery_scope_report.md --scan-report dev/workspace/tmp/pr012_filesystem_scan_reduction_report.md` | PASS | Targeted Playwright route/location audit passed. |
 +
-+Generated: 2026-06-28T22:57:50.322Z
++## Playwright Decision
 +
-+| Command | Result |
-+| --- | --- |
-+| git diff --check | PASS |
-+| npm run validate:canonical-structure | PASS |
-+| node --check dev/scripts/validate-canonical-repository-structure.mjs | PASS |
-+| node --test dev/tests/dev-runtime/ApiMenuPathCleanup.test.mjs dev/tests/dev-runtime/AdminNotesBoundary.test.mjs dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs dev/tests/dev-runtime/StaticWebRootCompatibility.test.mjs dev/tests/dev-runtime/LocalApiStartupLogging.test.mjs | PASS, 32 tests |
-+| npx playwright test --config=dev/config/playwright.config.cjs --project=playwright dev/tests/playwright/tools/StaticWebRootCompatibility.spec.mjs | PASS, 2 tests |
-+
-+## Non-Blocking Legacy Observation
-+
-+Exploratory direct runtime scripts that target retired V2 workspace fixtures remain out of the required validation lane. Their repository-root and artifact paths were corrected, but this PR does not restore retired workspace-v2 or asset-manager-v2 fixtures.
-diff --git a/dev/scripts/validate-canonical-repository-structure.mjs b/dev/scripts/validate-canonical-repository-structure.mjs
-index 85f25ee38..405e2c5ea 100644
---- a/dev/scripts/validate-canonical-repository-structure.mjs
-+++ b/dev/scripts/validate-canonical-repository-structure.mjs
-@@ -71,6 +71,27 @@ const canonicalTestPrefixes = Object.freeze([
-   "dev/tests/regression/",
- ]);
++Browser-served routes were not changed by this PR. A targeted Playwright structure audit was run for route ownership/path assumptions; full Playwright browser execution was not required.
+diff --git a/dev/scripts/audit-duplicate-file-content.mjs b/dev/scripts/audit-duplicate-file-content.mjs
+index d7f1b3ccb..bda616416 100644
+--- a/dev/scripts/audit-duplicate-file-content.mjs
++++ b/dev/scripts/audit-duplicate-file-content.mjs
+@@ -36,7 +36,8 @@ function classifyDuplicateGroup(files) {
+   const inReports = normalized.every((value) => value.includes("/reports/"));
+   const inEvidenceSnapshot = normalized.some((value) => value.includes("/repo_relative/") || value.includes("/evidence/"));
+   const touchesRuntime = normalized.some((value) => value.startsWith("src/")
+-    || value.startsWith("toolbox/")
++    || value.startsWith("www/games/")
++    || value.startsWith("www/toolbox/")
+     || value.startsWith("dev/archive/v1-v2/games/")
+     || value.startsWith("dev/archive/v1-v2/samples/"));
+   const inTestsOnly = normalized.every((value) => value.startsWith("dev/tests/"));
+diff --git a/dev/scripts/audit-playwright-test-locations.mjs b/dev/scripts/audit-playwright-test-locations.mjs
+index f8f326c5d..38eb36f1e 100644
+--- a/dev/scripts/audit-playwright-test-locations.mjs
++++ b/dev/scripts/audit-playwright-test-locations.mjs
+@@ -221,7 +221,7 @@ async function listTopLevelPlaywrightDirs() {
+ }
 
-+const INVALID_LEGACY_PATH_PREFIXES = Object.freeze([
-+  ["archive/", "Historical reference belongs under dev/archive/."],
-+  ["docs_build/", "Project Instructions and build governance belong under dev/build/."],
-+  ["project-instructions/", "Project Instructions belong under dev/build/ProjectInstructions/."],
-+  ["projects/", "Creator project data must not be stored in repo folders."],
-+  ["scripts/", "Development scripts belong under dev/scripts/."],
-+  ["tests/", "Tests belong under dev/tests/."],
-+  ["tmp/", "Generated output belongs under dev/workspace/tmp/ or dev/workspace/zips/."],
-+  ["dev/docs_build/", "Build governance belongs under dev/build/."],
-+  ["dev/project-instructions/", "Project Instructions belong under dev/build/ProjectInstructions/."],
-+  ["dev/workspace/artifacts/", "Generated output belongs directly under dev/workspace/ buckets."],
-+  ["dev/build/dev/", "Nested legacy dev workspace folders are not active ownership locations."],
-+  ["src/dev-runtime/server/", "Server/API runtime belongs under api/."],
+ async function listGameNames() {
+-  const absoluteGamesDir = path.join(repoRoot, "games");
++  const absoluteGamesDir = path.join(repoRoot, "www", "games");
+   const entries = await fs.readdir(absoluteGamesDir, { withFileTypes: true });
+   const gameNames = [];
+   for (const entry of entries.filter((item) => item.isDirectory() && !item.name.startsWith("_"))) {
+@@ -650,7 +650,7 @@ async function audit(options = {}) {
+         status: "SCOPED"
+       },
+       {
+-        path: "games/",
++        path: "www/games/",
+         reason: "Game fixture discovery used explicit manifest/path references from targeted files.",
+         status: "SCOPED"
+       }
+diff --git a/dev/scripts/run-node-test-files.mjs b/dev/scripts/run-node-test-files.mjs
+index 379f03cd7..86376addf 100644
+--- a/dev/scripts/run-node-test-files.mjs
++++ b/dev/scripts/run-node-test-files.mjs
+@@ -10,12 +10,18 @@ import { registerHooks } from "node:module";
+ import { fileURLToPath, pathToFileURL } from "node:url";
+
+ const repoRoot = fileURLToPath(new URL("../..", import.meta.url));
+-const ROOT_ALIASES = ["/src/", "/toolbox/"];
++const ROOT_ALIASES = new Map([
++  ["/assets/", "www/assets/"],
++  ["/src/", "src/"],
++  ["/toolbox/", "www/toolbox/"],
 +]);
-+
-+const INVALID_LOCAL_RUNTIME_FILES = Object.freeze(new Map([
-+  ["dev/scripts/start-dev.mjs", "Developer local bootstrap belongs under dev/local-runtime/start-dev.mjs."],
-+  ["dev/scripts/start-local-api-server.mjs", "Local API startup belongs under dev/local-runtime/start-local-api-server.mjs."],
-+  ["dev/scripts/team-port-config.mjs", "Team port configuration belongs under dev/local-runtime/team-port-config.mjs."],
-+]));
-+
- function normalizeRepoPath(filePath) {
-   return String(filePath || "")
-     .replace(/\\/g, "/")
-@@ -244,12 +265,41 @@ function auditTestPath(filePath) {
-   );
- }
 
-+function auditLayoutMigrationPath(filePath) {
-+  const localRuntimeMessage = INVALID_LOCAL_RUNTIME_FILES.get(filePath);
-+  if (localRuntimeMessage) {
-+    return record(
-+      "FAIL",
-+      "Layout",
-+      filePath,
-+      localRuntimeMessage,
-+      "dev/local-runtime/",
-+    );
-+  }
-+  const legacyMatch = INVALID_LEGACY_PATH_PREFIXES.find(([prefix]) => filePath.startsWith(prefix));
-+  if (!legacyMatch) {
-+    return null;
-+  }
-+  return record(
-+    "FAIL",
-+    "Layout",
-+    filePath,
-+    legacyMatch[1],
-+    "www/, api/, dev/, deploy/, or src/ according to canonical ownership",
-+  );
-+}
-+
- export function auditCanonicalRepositoryStructure(files) {
-   const findings = [];
-   const legacy = [];
--  [...new Set(files.map(normalizeRepoPath).filter(Boolean))]
--    .filter(relevantPath)
-+  const normalizedFiles = [...new Set(files.map(normalizeRepoPath).filter(Boolean))]
-     .sort((left, right) => left.localeCompare(right))
-+  normalizedFiles
-+    .map(auditLayoutMigrationPath)
-+    .filter(Boolean)
-+    .forEach((entry) => findings.push(entry));
-+  normalizedFiles
-+    .filter(relevantPath)
-     .forEach((filePath) => {
-       const records = [
-         auditJavaScript(filePath),
-diff --git a/dev/tests/dev-runtime/AdminNotesBoundary.test.mjs b/dev/tests/dev-runtime/AdminNotesBoundary.test.mjs
-index ca041fa9d..5918522ba 100644
---- a/dev/tests/dev-runtime/AdminNotesBoundary.test.mjs
-+++ b/dev/tests/dev-runtime/AdminNotesBoundary.test.mjs
-@@ -136,8 +136,8 @@ async function adminNotesDirectoryPayload(folderPath, root = repoRoot) {
- }
+ registerHooks({
+   resolve(specifier, context, nextResolve) {
+-    if (ROOT_ALIASES.some((prefix) => specifier.startsWith(prefix))) {
+-      const resolved = pathToFileURL(path.join(repoRoot, specifier.slice(1))).href;
++    const alias = [...ROOT_ALIASES.entries()].find(([prefix]) => specifier.startsWith(prefix));
++    if (alias) {
++      const [prefix, targetRoot] = alias;
++      const resolved = pathToFileURL(path.join(repoRoot, targetRoot, specifier.slice(prefix.length))).href;
+       return nextResolve(resolved, context);
+     }
+     return nextResolve(specifier, context);
+diff --git a/dev/scripts/run-node-tests.mjs b/dev/scripts/run-node-tests.mjs
+index 2f9dbeaa6..67f0674d6 100644
+--- a/dev/scripts/run-node-tests.mjs
++++ b/dev/scripts/run-node-tests.mjs
+@@ -9,12 +9,18 @@ import { registerHooks } from 'node:module';
+ import { fileURLToPath, pathToFileURL } from 'node:url';
 
- function makeTempRepoRoot() {
--  fs.mkdirSync(repoPath("tmp"), { recursive: true });
--  return fs.mkdtempSync(path.join(repoPath("tmp"), "admin-notes-boundary-"));
-+  fs.mkdirSync(repoPath("dev/workspace/tmp"), { recursive: true });
-+  return fs.mkdtempSync(path.join(repoPath("dev/workspace/tmp"), "admin-notes-boundary-"));
- }
+ const repoRoot = fileURLToPath(new URL('../..', import.meta.url));
+-const ROOT_ALIASES = ['/src/', '/toolbox/'];
++const ROOT_ALIASES = new Map([
++  ['/assets/', 'www/assets/'],
++  ['/src/', 'src/'],
++  ['/toolbox/', 'www/toolbox/'],
++]);
 
- test("Admin Notes dev files and local viewer entrypoint exist", () => {
-diff --git a/dev/tests/dev-runtime/ApiMenuPathCleanup.test.mjs b/dev/tests/dev-runtime/ApiMenuPathCleanup.test.mjs
-index 9d3267ac3..086b1a9a3 100644
---- a/dev/tests/dev-runtime/ApiMenuPathCleanup.test.mjs
-+++ b/dev/tests/dev-runtime/ApiMenuPathCleanup.test.mjs
-@@ -8,13 +8,13 @@ import {
- } from "../../../src/api/admin-owner-navigation.js";
+ registerHooks({
+   resolve(specifier, context, nextResolve) {
+-    if (ROOT_ALIASES.some((prefix) => specifier.startsWith(prefix))) {
+-      const resolved = pathToFileURL(path.join(repoRoot, specifier.slice(1))).href;
++    const alias = [...ROOT_ALIASES.entries()].find(([prefix]) => specifier.startsWith(prefix));
++    if (alias) {
++      const [prefix, targetRoot] = alias;
++      const resolved = pathToFileURL(path.join(repoRoot, targetRoot, specifier.slice(prefix.length))).href;
+       return nextResolve(resolved, context);
+     }
 
- const ACTIVE_SCAN_ROOTS = Object.freeze([
--  "account",
--  "admin",
--  "assets",
--  "owner",
--  "scripts",
-+  "api",
-   "src",
--  "toolbox",
-+  "www/account",
-+  "www/admin",
-+  "www/assets",
-+  "www/owner",
-+  "www/toolbox",
- ]);
-
- const EXPECTED_ADMIN_LABELS = Object.freeze([
-@@ -78,7 +78,8 @@ function assertActivePathExists(item) {
-     return;
+diff --git a/dev/scripts/run-targeted-test-lanes.mjs b/dev/scripts/run-targeted-test-lanes.mjs
+index 561332eeb..478fcedec 100644
+--- a/dev/scripts/run-targeted-test-lanes.mjs
++++ b/dev/scripts/run-targeted-test-lanes.mjs
+@@ -420,7 +420,7 @@ const representativeRoutingCases = Object.freeze([
+   },
+   {
+     caseName: "tool change",
+-    changedFiles: ["toolbox/audio-sfx-playground-v2/index.js"],
++    changedFiles: ["www/toolbox/audio-sfx-playground-v2/index.js"],
+     expectedLanes: ["tool-runtime"],
+     reason: "Tool-owned runtime/UI changes route to the affected tool-runtime lane only."
+   },
+@@ -813,10 +813,10 @@ function routeLanesForChangedFiles(changedFiles) {
+     if (normalized.startsWith("dev/tests/playwright/integration/")) {
+       routed.add("integration");
+     } else if (normalized.startsWith("dev/tests/playwright/games/")
+-      || normalized.startsWith("games/")
++      || normalized.startsWith("www/games/")
+       || normalized.startsWith("dev/archive/v1-v2/games/")) {
+       continue;
+-    } else if (normalized.startsWith("dev/tests/playwright/tools/") || normalized.startsWith("toolbox/")) {
++    } else if (normalized.startsWith("dev/tests/playwright/tools/") || normalized.startsWith("www/toolbox/")) {
+       routed.add("tool-runtime");
+     } else if (normalized.startsWith("src/")
+       || normalized.startsWith("dev/tests/core/")
+@@ -4533,7 +4533,7 @@ function makeZeroBrowserPreflightReport({
+     "| Check | Status | Details |",
+     "| --- | --- | --- |",
+     `| lane ownership | ${structureAudit.status} | ${reportLine(structureAudit.reason)} |`,
+-    `| directory placement | ${structureAudit.status} | toolbox/games/integration/engine ownership checked. |`,
++    `| directory placement | ${structureAudit.status} | www/toolbox, www/games, integration, and engine ownership checked. |`,
+     `| invalid file naming | ${structureAudit.status} | Game-specific filenames are blocked from generic reusable lanes. |`,
+     `| duplicate registrations | ${laneRegistration.findings.some((entry) => entry.includes("Duplicate")) ? "FAIL" : "PASS"} | ${laneRegistration.findings.filter((entry) => entry.includes("Duplicate")).join("; ") || "No duplicate lane registrations."} |`,
+     `| invalid imports | ${structureAudit.status} | Relative imports checked by Playwright structure audit. |`,
+diff --git a/dev/scripts/validate-tool-registry.mjs b/dev/scripts/validate-tool-registry.mjs
+index d147363eb..e2bc6949f 100644
+--- a/dev/scripts/validate-tool-registry.mjs
++++ b/dev/scripts/validate-tool-registry.mjs
+@@ -101,7 +101,7 @@ async function main() {
+       issues.push(`Registry entry ${entry.id} entryPoint must be ${folderName}/index.html.`);
+     }
+     if (!(await pathExists(path.join(toolboxRoot, folderName, "index.html")))) {
+-      issues.push(`Registry entry ${entry.id} points to missing toolbox/${folderName}/index.html.`);
++      issues.push(`Registry entry ${entry.id} points to missing www/toolbox/${folderName}/index.html.`);
+     }
    }
-   assert.match(item.path, /^(admin|owner)\//, `${item.label} should use an Admin or Owner page path`);
--  assert.equal(fs.existsSync(item.path), true, `${item.label} active menu path should exist: ${item.path}`);
-+  const browserFilePath = path.join("www", item.path);
-+  assert.equal(fs.existsSync(browserFilePath), true, `${item.label} active menu path should exist: ${browserFilePath}`);
- }
 
- test("server API client lives under src/api and active code does not reference src/engine/api", () => {
-@@ -112,7 +113,7 @@ test("Owner Notes is active under owner path only", () => {
-   assert.equal(ownerNotes?.planned, undefined, "Owner Notes should not be planned");
-   assert.equal(ownerNotes?.path, "owner/notes.html");
-   assert.equal(ownerNotes?.route, "owner-notes");
--  assert.equal(fs.existsSync("owner/notes.html"), true, "Owner Notes route should exist");
-+  assert.equal(fs.existsSync("www/owner/notes.html"), true, "Owner Notes route should exist");
- });
-
- test("Admin and Owner shared menu active links resolve or are explicitly disabled", () => {
-@@ -122,8 +123,8 @@ test("Admin and Owner shared menu active links resolve or are explicitly disable
-
- test("business-control pages moved under owner and are absent from admin", () => {
-   ["branding", "design-system", "grouping-colors", "site-settings", "themes"].forEach((slug) => {
--    assert.equal(fs.existsSync(`owner/${slug}.html`), true, `owner/${slug}.html should exist`);
--    assert.equal(fs.existsSync(`admin/${slug}.html`), false, `admin/${slug}.html should be removed`);
-+    assert.equal(fs.existsSync(`www/owner/${slug}.html`), true, `www/owner/${slug}.html should exist`);
-+    assert.equal(fs.existsSync(`www/admin/${slug}.html`), false, `www/admin/${slug}.html should be removed`);
-   });
- });
-
-diff --git a/dev/tests/dev-runtime/DbSeedIntegrity.test.mjs b/dev/tests/dev-runtime/DbSeedIntegrity.test.mjs
-index 5dd1fcfc3..45e7dff2a 100644
---- a/dev/tests/dev-runtime/DbSeedIntegrity.test.mjs
-+++ b/dev/tests/dev-runtime/DbSeedIntegrity.test.mjs
-@@ -176,7 +176,7 @@ async function replaceSampleLabel(baseUrl, sampleKey, sampleLabel) {
-
- test("server Local DB seed includes runtime timestamps, read-only guest packages, and unique user-owned samples", async () => {
-   const previousLocalDbPath = process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
--  const localDbPath = path.join(process.cwd(), "tmp", "local-db", `db-seed-integrity-${process.pid}.local-db-state`);
-+  const localDbPath = path.join(process.cwd(), "dev", "workspace", "tmp", "local-db", `db-seed-integrity-${process.pid}.local-db-state`);
-   process.env.GAMEFOUNDRY_LOCAL_DB_PATH = localDbPath;
-   const server = await startApiServer();
-   try {
-@@ -221,7 +221,7 @@ test("server Local DB seed includes runtime timestamps, read-only guest packages
-
- test("server reseed targets Local DB and rejects retired Local Mem mode", async () => {
-   const previousLocalDbPath = process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
--  const localDbPath = path.join(process.cwd(), "tmp", "local-db", `db-reseed-integrity-${process.pid}.local-db-state`);
-+  const localDbPath = path.join(process.cwd(), "dev", "workspace", "tmp", "local-db", `db-reseed-integrity-${process.pid}.local-db-state`);
-   process.env.GAMEFOUNDRY_LOCAL_DB_PATH = localDbPath;
-   const server = await startApiServer();
-   try {
-diff --git a/dev/tests/final/ToolchainEngineIntegrationValidation.test.mjs b/dev/tests/final/ToolchainEngineIntegrationValidation.test.mjs
-index b13a7a465..fcda15676 100644
---- a/dev/tests/final/ToolchainEngineIntegrationValidation.test.mjs
-+++ b/dev/tests/final/ToolchainEngineIntegrationValidation.test.mjs
-@@ -12,7 +12,7 @@ import { fileURLToPath } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-
- function runNodeTestFile(relativeTestPath) {
-   execFileSync(process.execPath, ["--test", relativeTestPath], {
-diff --git a/dev/tests/games/asteroidsManifestObjectGeometry.mjs b/dev/tests/games/asteroidsManifestObjectGeometry.mjs
-index fc3fe8824..9b42619c8 100644
---- a/dev/tests/games/asteroidsManifestObjectGeometry.mjs
-+++ b/dev/tests/games/asteroidsManifestObjectGeometry.mjs
-@@ -5,7 +5,7 @@ import { createAsteroidGeometryProfilesFromObjectVectorPayload } from '../../../
- import { loadAsteroidsObjectGeometryFromManifest } from '../../../games/Asteroids/game/asteroidsObjectGeometryManifest.js';
-
- const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
--const manifestPath = path.join(repoRoot, 'games', 'Asteroids', 'game.manifest.json');
-+const manifestPath = path.join(repoRoot, 'www', 'games', 'Asteroids', 'game.manifest.json');
-
- export function loadAsteroidsManifest() {
-   return JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-diff --git a/dev/tests/playwright/tools/AdminDbViewer.spec.mjs b/dev/tests/playwright/tools/AdminDbViewer.spec.mjs
-index a7eb62c53..1d2944dfb 100644
---- a/dev/tests/playwright/tools/AdminDbViewer.spec.mjs
-+++ b/dev/tests/playwright/tools/AdminDbViewer.spec.mjs
-@@ -77,7 +77,7 @@ test.afterAll(async () => {
-
- function nextLocalDbStoragePath() {
-   localDbRunId += 1;
--  return path.join(process.cwd(), "tmp", "local-db", `admin-db-viewer-${process.pid}-${localDbRunId}.local-db-state`);
-+  return path.join(process.cwd(), "dev", "workspace", "tmp", "local-db", `admin-db-viewer-${process.pid}-${localDbRunId}.local-db-state`);
- }
-
- async function withSupabaseEnv(baseUrl, callback) {
-diff --git a/dev/tests/playwright/tools/GameJourneyTool.spec.mjs b/dev/tests/playwright/tools/GameJourneyTool.spec.mjs
-index f9708c173..329f7a146 100644
---- a/dev/tests/playwright/tools/GameJourneyTool.spec.mjs
-+++ b/dev/tests/playwright/tools/GameJourneyTool.spec.mjs
-@@ -275,7 +275,7 @@ test("Game Journey exposes static tool ownership areas without automatic counts"
-
- test("Game Journey progress dashboard summarizes completion metrics", async ({ page }) => {
-   const previousLocalDbPath = process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
--  const localDbPath = path.join(process.cwd(), "tmp", "local-db", `game-journey-targets-${process.pid}-${Date.now()}.local-db-state`);
-+  const localDbPath = path.join(process.cwd(), "dev", "workspace", "tmp", "local-db", `game-journey-targets-${process.pid}-${Date.now()}.local-db-state`);
-   process.env.GAMEFOUNDRY_LOCAL_DB_PATH = localDbPath;
-   const gameJourneyCompletionMetricsPostgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
-   const server = await startRepoServer({
-diff --git a/dev/tests/playwright/tools/LoginSessionMode.spec.mjs b/dev/tests/playwright/tools/LoginSessionMode.spec.mjs
-index 805acd0b7..1da30d035 100644
---- a/dev/tests/playwright/tools/LoginSessionMode.spec.mjs
-+++ b/dev/tests/playwright/tools/LoginSessionMode.spec.mjs
-@@ -53,7 +53,7 @@ const UAT_PROD_ADMIN_LABELS = [
-
- function nextLocalDbStoragePath() {
-   localDbRunId += 1;
--  return path.join(process.cwd(), "tmp", "local-db", `login-session-mode-${process.pid}-${localDbRunId}.local-db-state`);
-+  return path.join(process.cwd(), "dev", "workspace", "tmp", "local-db", `login-session-mode-${process.pid}-${localDbRunId}.local-db-state`);
- }
-
- async function withSupabaseEnv(nextEnv, callback) {
-diff --git a/dev/tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs b/dev/tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs
-index 4bc5a0ff8..6b795c895 100644
---- a/dev/tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs
-+++ b/dev/tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs
-@@ -7,9 +7,9 @@ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
- const repoRoot = path.resolve(__dirname, "..", "..", "..");
--const svgRoot = path.join(repoRoot, "assets", "theme-v2", "svg");
-+const svgRoot = path.join(repoRoot, "www", "assets", "theme-v2", "svg");
- const readmePath = path.join(svgRoot, "README.md");
--const themeIconsPath = path.join(repoRoot, "assets", "theme-v2", "js", "theme-icons.js");
-+const themeIconsPath = path.join(repoRoot, "www", "assets", "theme-v2", "js", "theme-icons.js");
- const styleGuidePath = path.join(repoRoot, "dev", "build", "design", "theme-v2-icons", "theme-v2-icon-style-guide.md");
-
- const REQUIRED_SVG_FILES = [
-diff --git a/dev/tests/runtime/GameManifestPayloadExpectations.test.mjs b/dev/tests/runtime/GameManifestPayloadExpectations.test.mjs
-index 0be0dcbf9..bb71fd81b 100644
---- a/dev/tests/runtime/GameManifestPayloadExpectations.test.mjs
-+++ b/dev/tests/runtime/GameManifestPayloadExpectations.test.mjs
-@@ -5,9 +5,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const gamesRoot = path.join(repoRoot, "games");
--const summaryPath = path.join(repoRoot, "tmp", "manifest-payload-expectations-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const gamesRoot = path.join(repoRoot, "www", "games");
-+const summaryPath = path.join(repoRoot, "dev", "workspace", "tmp", "manifest-payload-expectations-results.json");
-
- const DISALLOWED_ROOT_KEYS = new Set(["lineage", "sources", "assets", "palette", "palettes"]);
- const LEGACY_PATH_MARKERS = ["tools.manifest.json"];
-diff --git a/dev/tests/runtime/GamesIndexWorkspaceManagerOpen.test.mjs b/dev/tests/runtime/GamesIndexWorkspaceManagerOpen.test.mjs
-index 2581497de..0056f3cf1 100644
---- a/dev/tests/runtime/GamesIndexWorkspaceManagerOpen.test.mjs
-+++ b/dev/tests/runtime/GamesIndexWorkspaceManagerOpen.test.mjs
-@@ -7,9 +7,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-
--const tmpRoot = path.join(repoRoot, "tmp");
-+const tmpRoot = path.join(repoRoot, "dev", "workspace", "tmp");
- const resultsPath = path.join(tmpRoot, "workspace-manager-open-test-results.json");
- const isolatedNodeModulesRoot = path.join(tmpRoot, "node_modules");
- const isolatedPackageJsonPath = path.join(tmpRoot, "package.json");
-@@ -333,7 +333,7 @@ async function waitForGameCards(page, timeoutMs = 15000) {
- }
-
- function readExpectedMetadataSets() {
--  const metadataPath = path.join(repoRoot, "games", "metadata", "games.index.metadata.json");
-+  const metadataPath = path.join(repoRoot, "www", "games", "metadata", "games.index.metadata.json");
-   const metadata = JSON.parse(fs.readFileSync(metadataPath, "utf8"));
-   const games = Array.isArray(metadata?.games) ? metadata.games : [];
-   const normalized = games
-diff --git a/dev/tests/runtime/LaunchSmokeAllEntries.test.mjs b/dev/tests/runtime/LaunchSmokeAllEntries.test.mjs
-index 3d9f27f89..a8e11c096 100644
---- a/dev/tests/runtime/LaunchSmokeAllEntries.test.mjs
-+++ b/dev/tests/runtime/LaunchSmokeAllEntries.test.mjs
-@@ -7,11 +7,11 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, '..', '..');
-+const repoRoot = path.resolve(__dirname, '..', '..', '..');
- const reportsDir = path.join(repoRoot, 'dev', 'reports');
- const reportPath = path.join(reportsDir, 'launch_smoke_report.md');
-
--const tmpRoot = path.join(repoRoot, 'tmp');
-+const tmpRoot = path.join(repoRoot, 'dev', 'workspace', 'tmp');
- const ownedManifestPath = path.join(tmpRoot, 'launch-smoke-owned.json');
- const isolatedNodeModulesRoot = path.join(tmpRoot, 'node_modules');
- const isolatedPackageJsonPath = path.join(tmpRoot, 'package.json');
-@@ -22,7 +22,7 @@ const DEFAULT_LOAD_WAIT_MS = 1500;
- const GAME_POST_START_WAIT_MS = 3000;
- const DEBUG_PORT = 9222;
- const EXECUTION_STEPS = [
--  'npm install --prefix ./tmp ws',
-+  'npm install --prefix ./dev/workspace/tmp ws',
-   'npm run test:launch-smoke',
- ].join(' â†’ ');
-
-@@ -577,7 +577,7 @@ export async function run() {
-   assert.ok(entries.length > 0, 'No matching games, samples, or tools discovered.');
-
-   log(`filters: games=${filters.includeGames} samples=${filters.includeSamples} tools=${filters.includeTools} sampleRange=${filters.sampleRange ? `${filters.sampleRange.start}-${filters.sampleRange.end}` : 'all'}`);
--  log(`isolated deps: ${path.join('<project>', 'tmp', 'node_modules')}`);
-+  log(`isolated deps: ${path.join('<project>', 'dev', 'workspace', 'tmp', 'node_modules')}`);
-   log(`discovered ${entries.length} entries`);
-
-   const { server, port } = await launchServer(repoRoot);
-diff --git a/dev/tests/runtime/Phase18OverlayCssUiNormalizationSlice.test.mjs b/dev/tests/runtime/Phase18OverlayCssUiNormalizationSlice.test.mjs
-index 6c91d45bf..8f92e7e81 100644
---- a/dev/tests/runtime/Phase18OverlayCssUiNormalizationSlice.test.mjs
-+++ b/dev/tests/runtime/Phase18OverlayCssUiNormalizationSlice.test.mjs
-@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, '..', '..');
-+const repoRoot = path.resolve(__dirname, '..', '..', '..');
-
- const overlaySampleIds = ['1708', '1709', '1710', '1711', '1712', '1713'];
-
-diff --git a/dev/tests/runtime/V2AssetBrowserStrictJson.test.mjs b/dev/tests/runtime/V2AssetBrowserStrictJson.test.mjs
-index 547981f24..d1b90498f 100644
---- a/dev/tests/runtime/V2AssetBrowserStrictJson.test.mjs
-+++ b/dev/tests/runtime/V2AssetBrowserStrictJson.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
- const fixturePath = path.join(repoRoot, "tests", "fixtures", "v2-tools", "asset-manager-v2.json");
--const toolJsPath = path.join(repoRoot, "toolbox", "asset-manager-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "pr_11_313_asset_browser_results.json");
-+const toolJsPath = path.join(repoRoot, "www", "toolbox", "asset-manager-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "pr_11_313_asset_browser_results.json");
-
- function cloneJson(value) {
-   return JSON.parse(JSON.stringify(value));
-diff --git a/dev/tests/runtime/V2AssetManagerAddRemoveHardening.test.mjs b/dev/tests/runtime/V2AssetManagerAddRemoveHardening.test.mjs
-index e1956b43e..7601eb68b 100644
---- a/dev/tests/runtime/V2AssetManagerAddRemoveHardening.test.mjs
-+++ b/dev/tests/runtime/V2AssetManagerAddRemoveHardening.test.mjs
-@@ -7,9 +7,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const toolPath = path.join(repoRoot, "toolbox", "asset-manager-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "pr_11_316_asset_manager_add_remove_results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const toolPath = path.join(repoRoot, "www", "toolbox", "asset-manager-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "pr_11_316_asset_manager_add_remove_results.json");
-
- function checkSyntax(filePath) {
-   execFileSync(process.execPath, ["--check", filePath], {
-diff --git a/dev/tests/runtime/V2AssetManagerWorkspacePersistence.test.mjs b/dev/tests/runtime/V2AssetManagerWorkspacePersistence.test.mjs
-index 97b80315d..c49f8f0ab 100644
---- a/dev/tests/runtime/V2AssetManagerWorkspacePersistence.test.mjs
-+++ b/dev/tests/runtime/V2AssetManagerWorkspacePersistence.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const assetManagerPath = path.join(repoRoot, "toolbox", "asset-manager-v2", "index.js");
--const workspacePath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "pr_11_314_asset_manager_workspace_persistence_results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const assetManagerPath = path.join(repoRoot, "www", "toolbox", "asset-manager-v2", "index.js");
-+const workspacePath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "pr_11_314_asset_manager_workspace_persistence_results.json");
-
- function readText(filePath) {
-   return fs.readFileSync(filePath, "utf8");
-diff --git a/dev/tests/runtime/V2BackNav.test.mjs b/dev/tests/runtime/V2BackNav.test.mjs
-index da855ef62..08c1fddcb 100644
---- a/dev/tests/runtime/V2BackNav.test.mjs
-+++ b/dev/tests/runtime/V2BackNav.test.mjs
-@@ -6,9 +6,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const toolsRoot = path.join(repoRoot, "toolbox");
--const resultsPath = path.join(repoRoot, "tmp", "v2-back-nav-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const toolsRoot = path.join(repoRoot, "www", "toolbox");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-back-nav-results.json");
-
- const FLOWS = [
-   {
-diff --git a/dev/tests/runtime/V2BlockFakeSessionSave.test.mjs b/dev/tests/runtime/V2BlockFakeSessionSave.test.mjs
-index 9e1d1de82..29b30b29c 100644
---- a/dev/tests/runtime/V2BlockFakeSessionSave.test.mjs
-+++ b/dev/tests/runtime/V2BlockFakeSessionSave.test.mjs
-@@ -6,9 +6,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-block-fake-session-save-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-block-fake-session-save-results.json");
-
- function readText(filePath) {
-   return fs.readFileSync(filePath, "utf8");
-diff --git a/dev/tests/runtime/V2ClearStaleMergePreview.test.mjs b/dev/tests/runtime/V2ClearStaleMergePreview.test.mjs
-index aa189d227..337bc2bbf 100644
---- a/dev/tests/runtime/V2ClearStaleMergePreview.test.mjs
-+++ b/dev/tests/runtime/V2ClearStaleMergePreview.test.mjs
-@@ -6,9 +6,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-clear-stale-merge-preview-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-clear-stale-merge-preview-results.json");
-
- function checkSyntax(filePath) {
-   try {
-diff --git a/dev/tests/runtime/V2ConfirmPreviewEnableState.test.mjs b/dev/tests/runtime/V2ConfirmPreviewEnableState.test.mjs
-index 3f4084f0b..e2066591d 100644
---- a/dev/tests/runtime/V2ConfirmPreviewEnableState.test.mjs
-+++ b/dev/tests/runtime/V2ConfirmPreviewEnableState.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const htmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-confirm-preview-enable-state-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const htmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-confirm-preview-enable-state-results.json");
-
- function checkSyntax(filePath) {
-   try {
-diff --git a/dev/tests/runtime/V2CrossToolFlow.test.mjs b/dev/tests/runtime/V2CrossToolFlow.test.mjs
-index 3a1b86406..a766fe254 100644
---- a/dev/tests/runtime/V2CrossToolFlow.test.mjs
-+++ b/dev/tests/runtime/V2CrossToolFlow.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const toolsRoot = path.join(repoRoot, "toolbox");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const toolsRoot = path.join(repoRoot, "www", "toolbox");
- const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
--const resultsPath = path.join(repoRoot, "tmp", "v2-cross-tool-results.json");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-cross-tool-results.json");
-
- const FLOWS = [
-   {
-diff --git a/dev/tests/runtime/V2CrossToolMergeBlock.test.mjs b/dev/tests/runtime/V2CrossToolMergeBlock.test.mjs
-index 8c7d2239b..218ca64b1 100644
---- a/dev/tests/runtime/V2CrossToolMergeBlock.test.mjs
-+++ b/dev/tests/runtime/V2CrossToolMergeBlock.test.mjs
-@@ -6,9 +6,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-cross-tool-merge-block-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-cross-tool-merge-block-results.json");
-
- function checkSyntax(filePath) {
-   try {
-diff --git a/dev/tests/runtime/V2DeterministicStateTransitions.test.mjs b/dev/tests/runtime/V2DeterministicStateTransitions.test.mjs
-index 52a333b4c..a59281aea 100644
---- a/dev/tests/runtime/V2DeterministicStateTransitions.test.mjs
-+++ b/dev/tests/runtime/V2DeterministicStateTransitions.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
- const testPath = path.join(repoRoot, "tests", "runtime", "V2DeterministicStateTransitions.test.mjs");
--const resultsPath = path.join(repoRoot, "tmp", "v2-deterministic-state-transitions-results.json");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-deterministic-state-transitions-results.json");
-
- function checkSyntax(filePath) {
-   try {
-diff --git a/dev/tests/runtime/V2Diagnostics.test.mjs b/dev/tests/runtime/V2Diagnostics.test.mjs
-index ba3ef00f6..cb89fdb21 100644
---- a/dev/tests/runtime/V2Diagnostics.test.mjs
-+++ b/dev/tests/runtime/V2Diagnostics.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const workspaceHtmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
--const resultsPath = path.join(repoRoot, "tmp", "v2-diagnostics-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const workspaceJsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const workspaceHtmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-diagnostics-results.json");
-
- class MemoryStorage {
-   constructor() {
-diff --git a/dev/tests/runtime/V2DiffMergeButtonState.test.mjs b/dev/tests/runtime/V2DiffMergeButtonState.test.mjs
-index 7b5c32ab9..fbdefcbf1 100644
---- a/dev/tests/runtime/V2DiffMergeButtonState.test.mjs
-+++ b/dev/tests/runtime/V2DiffMergeButtonState.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const workspaceHtmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
--const resultsPath = path.join(repoRoot, "tmp", "v2-diff-merge-button-state-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const workspaceJsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const workspaceHtmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-diff-merge-button-state-results.json");
-
- function readText(filePath) {
-   return fs.readFileSync(filePath, "utf8");
-diff --git a/dev/tests/runtime/V2DiffViewerMessaging.test.mjs b/dev/tests/runtime/V2DiffViewerMessaging.test.mjs
-index 876527a2d..05db01823 100644
---- a/dev/tests/runtime/V2DiffViewerMessaging.test.mjs
-+++ b/dev/tests/runtime/V2DiffViewerMessaging.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
- const testPath = path.join(repoRoot, "tests", "runtime", "V2DiffViewerMessaging.test.mjs");
--const resultsPath = path.join(repoRoot, "tmp", "v2-diff-viewer-messaging-results.json");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-diff-viewer-messaging-results.json");
-
- function checkSyntax(filePath) {
-   try {
-diff --git a/dev/tests/runtime/V2DiffViewerSummaryCounts.test.mjs b/dev/tests/runtime/V2DiffViewerSummaryCounts.test.mjs
-index d3882f3ba..3850c3cd3 100644
---- a/dev/tests/runtime/V2DiffViewerSummaryCounts.test.mjs
-+++ b/dev/tests/runtime/V2DiffViewerSummaryCounts.test.mjs
-@@ -6,11 +6,11 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const htmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const htmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
- const testPath = path.join(repoRoot, "tests", "runtime", "V2DiffViewerSummaryCounts.test.mjs");
--const resultsPath = path.join(repoRoot, "tmp", "v2-diff-viewer-summary-counts-results.json");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-diff-viewer-summary-counts-results.json");
-
- function checkSyntax(filePath) {
-   try {
-diff --git a/dev/tests/runtime/V2EnableStateFeedback.test.mjs b/dev/tests/runtime/V2EnableStateFeedback.test.mjs
-index c93c9fcdc..b01e490d4 100644
---- a/dev/tests/runtime/V2EnableStateFeedback.test.mjs
-+++ b/dev/tests/runtime/V2EnableStateFeedback.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const htmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-enable-state-feedback-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const htmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-enable-state-feedback-results.json");
-
- function checkSyntax(filePath) {
-   try {
-diff --git a/dev/tests/runtime/V2EntryFlow.test.mjs b/dev/tests/runtime/V2EntryFlow.test.mjs
-index 566dbf836..84622c0c4 100644
---- a/dev/tests/runtime/V2EntryFlow.test.mjs
-+++ b/dev/tests/runtime/V2EntryFlow.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const toolsRoot = path.join(repoRoot, "toolbox");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const toolsRoot = path.join(repoRoot, "www", "toolbox");
- const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
--const resultsPath = path.join(repoRoot, "tmp", "v2-entry-flow-results.json");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-entry-flow-results.json");
-
- const TOOL_IDS = [
-   "asset-manager-v2",
-diff --git a/dev/tests/runtime/V2ErrorLogging.test.mjs b/dev/tests/runtime/V2ErrorLogging.test.mjs
-index 67aea7021..4f3c1f48b 100644
---- a/dev/tests/runtime/V2ErrorLogging.test.mjs
-+++ b/dev/tests/runtime/V2ErrorLogging.test.mjs
-@@ -6,9 +6,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const toolsRoot = path.join(repoRoot, "toolbox");
--const resultsPath = path.join(repoRoot, "tmp", "v2-error-logging-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const toolsRoot = path.join(repoRoot, "www", "toolbox");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-error-logging-results.json");
-
- const TOOLS = [
-   "asset-manager-v2",
-diff --git a/dev/tests/runtime/V2ErrorViewer.test.mjs b/dev/tests/runtime/V2ErrorViewer.test.mjs
-index c080cb7b7..0fd64a791 100644
---- a/dev/tests/runtime/V2ErrorViewer.test.mjs
-+++ b/dev/tests/runtime/V2ErrorViewer.test.mjs
-@@ -6,9 +6,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-error-viewer-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const workspaceJsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-error-viewer-results.json");
-
- const LOG_STORAGE_KEY = "v2-error-logs";
- const VALID_TYPES = new Set(["EMPTY", "INVALID", "RUNTIME"]);
-diff --git a/dev/tests/runtime/V2ImportExport.test.mjs b/dev/tests/runtime/V2ImportExport.test.mjs
-index 71dfc8c72..b36766abe 100644
---- a/dev/tests/runtime/V2ImportExport.test.mjs
-+++ b/dev/tests/runtime/V2ImportExport.test.mjs
-@@ -6,11 +6,11 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
- const fixturePath = path.join(repoRoot, "tests", "fixtures", "v2-tools", "asset-manager-v2.json");
--const workspaceHtmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
--const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-import-export-results.json");
-+const workspaceHtmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
-+const workspaceJsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-import-export-results.json");
-
- class MemorySessionStorage {
-   constructor() {
-diff --git a/dev/tests/runtime/V2MergeApplyGuardAudit.test.mjs b/dev/tests/runtime/V2MergeApplyGuardAudit.test.mjs
-index 90df20218..875b1a481 100644
---- a/dev/tests/runtime/V2MergeApplyGuardAudit.test.mjs
-+++ b/dev/tests/runtime/V2MergeApplyGuardAudit.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const workspaceHtmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
--const resultsPath = path.join(repoRoot, "tmp", "v2-merge-apply-guard-audit-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const workspaceJsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const workspaceHtmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-merge-apply-guard-audit-results.json");
-
- function readText(filePath) {
-   return fs.readFileSync(filePath, "utf8");
-diff --git a/dev/tests/runtime/V2MergeApplySessionGateFix.test.mjs b/dev/tests/runtime/V2MergeApplySessionGateFix.test.mjs
-index 1ce785879..7f2e763c8 100644
---- a/dev/tests/runtime/V2MergeApplySessionGateFix.test.mjs
-+++ b/dev/tests/runtime/V2MergeApplySessionGateFix.test.mjs
-@@ -6,9 +6,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-merge-apply-session-gate-fix-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const workspaceJsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-merge-apply-session-gate-fix-results.json");
-
- function readText(filePath) {
-   return fs.readFileSync(filePath, "utf8");
-diff --git a/dev/tests/runtime/V2MergeConflictSummary.test.mjs b/dev/tests/runtime/V2MergeConflictSummary.test.mjs
-index cba855acd..0e995c350 100644
---- a/dev/tests/runtime/V2MergeConflictSummary.test.mjs
-+++ b/dev/tests/runtime/V2MergeConflictSummary.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const htmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-merge-conflict-summary-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const htmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-merge-conflict-summary-results.json");
-
- function checkSyntax(filePath) {
-   try {
-diff --git a/dev/tests/runtime/V2MergeOutputPersistence.test.mjs b/dev/tests/runtime/V2MergeOutputPersistence.test.mjs
-index a0e7ac075..785354f96 100644
---- a/dev/tests/runtime/V2MergeOutputPersistence.test.mjs
-+++ b/dev/tests/runtime/V2MergeOutputPersistence.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const htmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-merge-output-persistence-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const htmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-merge-output-persistence-results.json");
-
- function checkSyntax(filePath) {
-   try {
-diff --git a/dev/tests/runtime/V2MergePreviewOverlayFix.test.mjs b/dev/tests/runtime/V2MergePreviewOverlayFix.test.mjs
-index f01553962..233a17322 100644
---- a/dev/tests/runtime/V2MergePreviewOverlayFix.test.mjs
-+++ b/dev/tests/runtime/V2MergePreviewOverlayFix.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const htmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-merge-preview-overlay-fix-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const htmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-merge-preview-overlay-fix-results.json");
-
- function checkSyntax(filePath) {
-   try {
-diff --git a/dev/tests/runtime/V2MergePreviewSelectionFix.test.mjs b/dev/tests/runtime/V2MergePreviewSelectionFix.test.mjs
-index cd2de0c67..37135d586 100644
---- a/dev/tests/runtime/V2MergePreviewSelectionFix.test.mjs
-+++ b/dev/tests/runtime/V2MergePreviewSelectionFix.test.mjs
-@@ -6,9 +6,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-merge-preview-selection-fix-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const workspaceJsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-merge-preview-selection-fix-results.json");
-
- function readText(filePath) {
-   return fs.readFileSync(filePath, "utf8");
-diff --git a/dev/tests/runtime/V2MergeResultSummary.test.mjs b/dev/tests/runtime/V2MergeResultSummary.test.mjs
-index 6845f8212..234cbb8c9 100644
---- a/dev/tests/runtime/V2MergeResultSummary.test.mjs
-+++ b/dev/tests/runtime/V2MergeResultSummary.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const htmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-merge-result-summary-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const htmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-merge-result-summary-results.json");
-
- function checkSyntax(filePath) {
-   try {
-diff --git a/dev/tests/runtime/V2MergeSelectorPopulation.test.mjs b/dev/tests/runtime/V2MergeSelectorPopulation.test.mjs
-index cbe9cd62f..6a8dd51a1 100644
---- a/dev/tests/runtime/V2MergeSelectorPopulation.test.mjs
-+++ b/dev/tests/runtime/V2MergeSelectorPopulation.test.mjs
-@@ -6,9 +6,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-merge-selector-population-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const workspaceJsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-merge-selector-population-results.json");
-
- function readText(filePath) {
-   return fs.readFileSync(filePath, "utf8");
-diff --git a/dev/tests/runtime/V2MergeStateSingleSourceOfTruth.test.mjs b/dev/tests/runtime/V2MergeStateSingleSourceOfTruth.test.mjs
-index 6ff0e4477..e1278d73a 100644
---- a/dev/tests/runtime/V2MergeStateSingleSourceOfTruth.test.mjs
-+++ b/dev/tests/runtime/V2MergeStateSingleSourceOfTruth.test.mjs
-@@ -6,9 +6,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-merge-state-ssot-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-merge-state-ssot-results.json");
-
- function checkSyntax(filePath) {
-   try {
-diff --git a/dev/tests/runtime/V2MergeStateStatusReset.test.mjs b/dev/tests/runtime/V2MergeStateStatusReset.test.mjs
-index 2b07c2a42..bbc2a65ff 100644
---- a/dev/tests/runtime/V2MergeStateStatusReset.test.mjs
-+++ b/dev/tests/runtime/V2MergeStateStatusReset.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const htmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-merge-state-status-reset-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const htmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-merge-state-status-reset-results.json");
-
- function checkSyntax(filePath) {
-   try {
-diff --git a/dev/tests/runtime/V2MergedRecentSessionRegistration.test.mjs b/dev/tests/runtime/V2MergedRecentSessionRegistration.test.mjs
-index f1fb59cff..1bd4e8321 100644
---- a/dev/tests/runtime/V2MergedRecentSessionRegistration.test.mjs
-+++ b/dev/tests/runtime/V2MergedRecentSessionRegistration.test.mjs
-@@ -6,9 +6,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-merged-recent-session-registration-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-merged-recent-session-registration-results.json");
-
- function checkSyntax(filePath) {
-   try {
-diff --git a/dev/tests/runtime/V2Performance.test.mjs b/dev/tests/runtime/V2Performance.test.mjs
-index f65a2e229..7fae0bb1a 100644
---- a/dev/tests/runtime/V2Performance.test.mjs
-+++ b/dev/tests/runtime/V2Performance.test.mjs
-@@ -7,10 +7,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const toolsRoot = path.join(repoRoot, "toolbox");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const toolsRoot = path.join(repoRoot, "www", "toolbox");
- const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
--const resultsPath = path.join(repoRoot, "tmp", "v2-performance-results.json");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-performance-results.json");
-
- const TOOLS = [
-   "asset-manager-v2",
-diff --git a/dev/tests/runtime/V2ProducerRender.test.mjs b/dev/tests/runtime/V2ProducerRender.test.mjs
-index 6e5f5a63c..ffe5b298c 100644
---- a/dev/tests/runtime/V2ProducerRender.test.mjs
-+++ b/dev/tests/runtime/V2ProducerRender.test.mjs
-@@ -6,11 +6,11 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
- const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
--const toolsRoot = path.join(repoRoot, "toolbox");
--const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-producer-render-results.json");
-+const toolsRoot = path.join(repoRoot, "www", "toolbox");
-+const workspaceJsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-producer-render-results.json");
-
- const TOOLS = [
-   {
-diff --git a/dev/tests/runtime/V2RecentSessionDelete.test.mjs b/dev/tests/runtime/V2RecentSessionDelete.test.mjs
-index 924d9a810..78226440f 100644
---- a/dev/tests/runtime/V2RecentSessionDelete.test.mjs
-+++ b/dev/tests/runtime/V2RecentSessionDelete.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const htmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-recent-session-delete-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const htmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-recent-session-delete-results.json");
-
- function readText(filePath) {
-   return fs.readFileSync(filePath, "utf8");
-diff --git a/dev/tests/runtime/V2RecentSessionSelectorBinding.test.mjs b/dev/tests/runtime/V2RecentSessionSelectorBinding.test.mjs
-index 91bccb123..863dada3e 100644
---- a/dev/tests/runtime/V2RecentSessionSelectorBinding.test.mjs
-+++ b/dev/tests/runtime/V2RecentSessionSelectorBinding.test.mjs
-@@ -6,9 +6,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-recent-session-selector-binding-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const workspaceJsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-recent-session-selector-binding-results.json");
-
- function readText(filePath) {
-   return fs.readFileSync(filePath, "utf8");
-diff --git a/dev/tests/runtime/V2ResetState.test.mjs b/dev/tests/runtime/V2ResetState.test.mjs
-index 13b6db6ff..762c012f6 100644
---- a/dev/tests/runtime/V2ResetState.test.mjs
-+++ b/dev/tests/runtime/V2ResetState.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const workspaceHtmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
--const resultsPath = path.join(repoRoot, "tmp", "v2-reset-state-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const workspaceJsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const workspaceHtmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-reset-state-results.json");
-
- class MemoryStorage {
-   constructor() {
-diff --git a/dev/tests/runtime/V2SaveLibraryFromRecentSession.test.mjs b/dev/tests/runtime/V2SaveLibraryFromRecentSession.test.mjs
-index 5936886dd..c5163f753 100644
---- a/dev/tests/runtime/V2SaveLibraryFromRecentSession.test.mjs
-+++ b/dev/tests/runtime/V2SaveLibraryFromRecentSession.test.mjs
-@@ -6,9 +6,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-save-library-from-recent-session-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-save-library-from-recent-session-results.json");
-
- function readText(filePath) {
-   return fs.readFileSync(filePath, "utf8");
-diff --git a/dev/tests/runtime/V2SavedSessionDeleteFeedback.test.mjs b/dev/tests/runtime/V2SavedSessionDeleteFeedback.test.mjs
-index 88a71c921..c0b543c0c 100644
---- a/dev/tests/runtime/V2SavedSessionDeleteFeedback.test.mjs
-+++ b/dev/tests/runtime/V2SavedSessionDeleteFeedback.test.mjs
-@@ -6,9 +6,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-saved-session-delete-feedback-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-saved-session-delete-feedback-results.json");
-
- function readText(filePath) {
-   return fs.readFileSync(filePath, "utf8");
-diff --git a/dev/tests/runtime/V2SavedSessionRowActions.test.mjs b/dev/tests/runtime/V2SavedSessionRowActions.test.mjs
-index b1de51275..9427094ff 100644
---- a/dev/tests/runtime/V2SavedSessionRowActions.test.mjs
-+++ b/dev/tests/runtime/V2SavedSessionRowActions.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const htmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-saved-session-row-actions-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const htmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-saved-session-row-actions-results.json");
-
- function readText(filePath) {
-   return fs.readFileSync(filePath, "utf8");
-diff --git a/dev/tests/runtime/V2SelectionFeedbackEnableState.test.mjs b/dev/tests/runtime/V2SelectionFeedbackEnableState.test.mjs
-index 5dfd84a2a..fee2a9189 100644
---- a/dev/tests/runtime/V2SelectionFeedbackEnableState.test.mjs
-+++ b/dev/tests/runtime/V2SelectionFeedbackEnableState.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const workspaceHtmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
--const resultsPath = path.join(repoRoot, "tmp", "v2-selection-feedback-enable-state-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const workspaceJsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const workspaceHtmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-selection-feedback-enable-state-results.json");
-
- function read(filePath) {
-   return fs.readFileSync(filePath, "utf8");
-diff --git a/dev/tests/runtime/V2SelectionPersistence.test.mjs b/dev/tests/runtime/V2SelectionPersistence.test.mjs
-index 7be673dc7..49fc8a2b2 100644
---- a/dev/tests/runtime/V2SelectionPersistence.test.mjs
-+++ b/dev/tests/runtime/V2SelectionPersistence.test.mjs
-@@ -6,9 +6,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-selection-persistence-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const workspaceJsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-selection-persistence-results.json");
-
- function readText(filePath) {
-   return fs.readFileSync(filePath, "utf8");
-diff --git a/dev/tests/runtime/V2SelectionSyncRowActions.test.mjs b/dev/tests/runtime/V2SelectionSyncRowActions.test.mjs
-index 534823f42..2043421bd 100644
---- a/dev/tests/runtime/V2SelectionSyncRowActions.test.mjs
-+++ b/dev/tests/runtime/V2SelectionSyncRowActions.test.mjs
-@@ -6,9 +6,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-selection-sync-row-actions-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-selection-sync-row-actions-results.json");
-
- function readText(filePath) {
-   return fs.readFileSync(filePath, "utf8");
-diff --git a/dev/tests/runtime/V2SessionDiff.test.mjs b/dev/tests/runtime/V2SessionDiff.test.mjs
-index 343e7bc70..2468e0e88 100644
---- a/dev/tests/runtime/V2SessionDiff.test.mjs
-+++ b/dev/tests/runtime/V2SessionDiff.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const workspaceHtmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
--const resultsPath = path.join(repoRoot, "tmp", "v2-session-diff-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const workspaceJsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const workspaceHtmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-session-diff-results.json");
-
- function readText(filePath) {
-   return fs.readFileSync(filePath, "utf8");
-diff --git a/dev/tests/runtime/V2SessionHistory.test.mjs b/dev/tests/runtime/V2SessionHistory.test.mjs
-index e84877b84..d031abf27 100644
---- a/dev/tests/runtime/V2SessionHistory.test.mjs
-+++ b/dev/tests/runtime/V2SessionHistory.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const workspaceHtmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
--const resultsPath = path.join(repoRoot, "tmp", "v2-session-history-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const workspaceJsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const workspaceHtmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-session-history-results.json");
-
- const HISTORY_KEY = "v2-session-history";
- const HISTORY_MAX_ENTRIES = 10;
-diff --git a/dev/tests/runtime/V2SessionIdUsability.test.mjs b/dev/tests/runtime/V2SessionIdUsability.test.mjs
-index f2a6b0e93..d14d120f2 100644
---- a/dev/tests/runtime/V2SessionIdUsability.test.mjs
-+++ b/dev/tests/runtime/V2SessionIdUsability.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const htmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-session-id-usability-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const htmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-session-id-usability-results.json");
-
- function readText(filePath) {
-   return fs.readFileSync(filePath, "utf8");
-diff --git a/dev/tests/runtime/V2SessionInventoryDiffMerge.test.mjs b/dev/tests/runtime/V2SessionInventoryDiffMerge.test.mjs
-index ee7ad3f1b..740f160c8 100644
---- a/dev/tests/runtime/V2SessionInventoryDiffMerge.test.mjs
-+++ b/dev/tests/runtime/V2SessionInventoryDiffMerge.test.mjs
-@@ -6,9 +6,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-session-inventory-diff-merge-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const workspaceJsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-session-inventory-diff-merge-results.json");
-
- function readText(filePath) {
-   return fs.readFileSync(filePath, "utf8");
-diff --git a/dev/tests/runtime/V2SessionLibrary.test.mjs b/dev/tests/runtime/V2SessionLibrary.test.mjs
-index 096b614b7..a096628f9 100644
---- a/dev/tests/runtime/V2SessionLibrary.test.mjs
-+++ b/dev/tests/runtime/V2SessionLibrary.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const workspaceHtmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
--const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-session-library-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const workspaceHtmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
-+const workspaceJsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-session-library-results.json");
-
- class MemoryStorage {
-   constructor() {
-diff --git a/dev/tests/runtime/V2SessionLibraryActionCleanup.test.mjs b/dev/tests/runtime/V2SessionLibraryActionCleanup.test.mjs
-index a62f7a781..2174527c9 100644
---- a/dev/tests/runtime/V2SessionLibraryActionCleanup.test.mjs
-+++ b/dev/tests/runtime/V2SessionLibraryActionCleanup.test.mjs
-@@ -6,11 +6,11 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const htmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const htmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
- const testPath = path.join(repoRoot, "tests", "runtime", "V2SessionLibraryActionCleanup.test.mjs");
--const resultsPath = path.join(repoRoot, "tmp", "v2-session-library-action-cleanup-results.json");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-session-library-action-cleanup-results.json");
-
- function checkSyntax(filePath) {
-   try {
-diff --git a/dev/tests/runtime/V2SessionLibraryActionLabel.test.mjs b/dev/tests/runtime/V2SessionLibraryActionLabel.test.mjs
-index d7098acaa..41992b4f9 100644
---- a/dev/tests/runtime/V2SessionLibraryActionLabel.test.mjs
-+++ b/dev/tests/runtime/V2SessionLibraryActionLabel.test.mjs
-@@ -6,9 +6,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-session-library-action-label-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-session-library-action-label-results.json");
-
- function checkSyntax(filePath) {
-   try {
-diff --git a/dev/tests/runtime/V2SessionLibraryActions.test.mjs b/dev/tests/runtime/V2SessionLibraryActions.test.mjs
-index 946696c28..1a7e2cd85 100644
---- a/dev/tests/runtime/V2SessionLibraryActions.test.mjs
-+++ b/dev/tests/runtime/V2SessionLibraryActions.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const htmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-session-library-actions-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const htmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-session-library-actions-results.json");
-
- function readText(filePath) {
-   return fs.readFileSync(filePath, "utf8");
-diff --git a/dev/tests/runtime/V2SessionLibraryCardOverwrite.test.mjs b/dev/tests/runtime/V2SessionLibraryCardOverwrite.test.mjs
-index fd0c62bae..ce0cb671f 100644
---- a/dev/tests/runtime/V2SessionLibraryCardOverwrite.test.mjs
-+++ b/dev/tests/runtime/V2SessionLibraryCardOverwrite.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
- const testPath = path.join(repoRoot, "tests", "runtime", "V2SessionLibraryCardOverwrite.test.mjs");
--const resultsPath = path.join(repoRoot, "tmp", "v2-session-library-card-overwrite-results.json");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-session-library-card-overwrite-results.json");
-
- function checkSyntax(filePath) {
-   try {
-diff --git a/dev/tests/runtime/V2SessionLibrarySaveGuard.test.mjs b/dev/tests/runtime/V2SessionLibrarySaveGuard.test.mjs
-index 4c645d20f..5d8949400 100644
---- a/dev/tests/runtime/V2SessionLibrarySaveGuard.test.mjs
-+++ b/dev/tests/runtime/V2SessionLibrarySaveGuard.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
- const testPath = path.join(repoRoot, "tests", "runtime", "V2SessionLibrarySaveGuard.test.mjs");
--const resultsPath = path.join(repoRoot, "tmp", "v2-session-library-save-guard-results.json");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-session-library-save-guard-results.json");
-
- function checkSyntax(filePath) {
-   try {
-diff --git a/dev/tests/runtime/V2SessionMerge.test.mjs b/dev/tests/runtime/V2SessionMerge.test.mjs
-index 12ec787ef..f77fe5191 100644
---- a/dev/tests/runtime/V2SessionMerge.test.mjs
-+++ b/dev/tests/runtime/V2SessionMerge.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const workspaceHtmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
--const resultsPath = path.join(repoRoot, "tmp", "v2-session-merge-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const workspaceJsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const workspaceHtmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-session-merge-results.json");
-
- function readText(filePath) {
-   return fs.readFileSync(filePath, "utf8");
-diff --git a/dev/tests/runtime/V2SessionMergePreview.test.mjs b/dev/tests/runtime/V2SessionMergePreview.test.mjs
-index 67c0ba0cf..c8b89a419 100644
---- a/dev/tests/runtime/V2SessionMergePreview.test.mjs
-+++ b/dev/tests/runtime/V2SessionMergePreview.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const workspaceHtmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
--const resultsPath = path.join(repoRoot, "tmp", "v2-session-merge-preview-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const workspaceJsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const workspaceHtmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-session-merge-preview-results.json");
-
- function readText(filePath) {
-   return fs.readFileSync(filePath, "utf8");
-diff --git a/dev/tests/runtime/V2SessionMigration.test.mjs b/dev/tests/runtime/V2SessionMigration.test.mjs
-index 68e35e1c0..f244128dd 100644
---- a/dev/tests/runtime/V2SessionMigration.test.mjs
-+++ b/dev/tests/runtime/V2SessionMigration.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const toolsRoot = path.join(repoRoot, "toolbox");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const toolsRoot = path.join(repoRoot, "www", "toolbox");
- const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
--const resultsPath = path.join(repoRoot, "tmp", "v2-session-migration-results.json");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-session-migration-results.json");
-
- const TOOLS = [
-   "asset-manager-v2",
-diff --git a/dev/tests/runtime/V2SessionPersistence.test.mjs b/dev/tests/runtime/V2SessionPersistence.test.mjs
-index 16db5549c..82219231a 100644
---- a/dev/tests/runtime/V2SessionPersistence.test.mjs
-+++ b/dev/tests/runtime/V2SessionPersistence.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const toolsRoot = path.join(repoRoot, "toolbox");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const toolsRoot = path.join(repoRoot, "www", "toolbox");
- const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
--const resultsPath = path.join(repoRoot, "tmp", "v2-session-persistence-results.json");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-session-persistence-results.json");
-
- const TOOLS = [
-   "asset-manager-v2",
-diff --git a/dev/tests/runtime/V2SessionProducer.test.mjs b/dev/tests/runtime/V2SessionProducer.test.mjs
-index 874a3a787..a8de7ee67 100644
---- a/dev/tests/runtime/V2SessionProducer.test.mjs
-+++ b/dev/tests/runtime/V2SessionProducer.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
- const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
--const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-session-producer-results.json");
-+const workspaceJsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-session-producer-results.json");
-
- const TOOLS = [
-   "asset-manager-v2",
-@@ -70,8 +70,8 @@ function buildToolUrl(toolId, hostContextId) {
-
- function validateTool(toolId) {
-   const fixturePath = path.join(fixturesRoot, `${toolId}.json`);
--  const toolJsPath = path.join(repoRoot, "toolbox", toolId, "index.js");
--  const toolHtmlPath = path.join(repoRoot, "toolbox", toolId, "index.html");
-+  const toolJsPath = path.join(repoRoot, "www", "toolbox", toolId, "index.js");
-+  const toolHtmlPath = path.join(repoRoot, "www", "toolbox", toolId, "index.html");
-   const failures = [];
-   const fixtureExists = fs.existsSync(fixturePath);
-   const toolJsExists = fs.existsSync(toolJsPath);
-diff --git a/dev/tests/runtime/V2SessionSize.test.mjs b/dev/tests/runtime/V2SessionSize.test.mjs
-index 0a0bc41b5..ad7bb749c 100644
---- a/dev/tests/runtime/V2SessionSize.test.mjs
-+++ b/dev/tests/runtime/V2SessionSize.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const toolsRoot = path.join(repoRoot, "toolbox");
--const resultsPath = path.join(repoRoot, "tmp", "v2-session-size-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const workspaceJsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const toolsRoot = path.join(repoRoot, "www", "toolbox");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-session-size-results.json");
-
- const URL_LENGTH_LIMIT = 2000;
- const SESSION_PAYLOAD_BYTES_LIMIT = 1024 * 1024;
-diff --git a/dev/tests/runtime/V2SessionSource.test.mjs b/dev/tests/runtime/V2SessionSource.test.mjs
-index 41e32b724..d32f09d0b 100644
---- a/dev/tests/runtime/V2SessionSource.test.mjs
-+++ b/dev/tests/runtime/V2SessionSource.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const toolsRoot = path.join(repoRoot, "toolbox");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const toolsRoot = path.join(repoRoot, "www", "toolbox");
- const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
--const resultsPath = path.join(repoRoot, "tmp", "v2-session-source-results.json");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-session-source-results.json");
-
- const TOOLS = [
-   "asset-manager-v2",
-diff --git a/dev/tests/runtime/V2SessionStateModelConsolidation.test.mjs b/dev/tests/runtime/V2SessionStateModelConsolidation.test.mjs
-index 03ce83b7b..fb7366c34 100644
---- a/dev/tests/runtime/V2SessionStateModelConsolidation.test.mjs
-+++ b/dev/tests/runtime/V2SessionStateModelConsolidation.test.mjs
-@@ -6,9 +6,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-session-state-model-consolidation-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-session-state-model-consolidation-results.json");
-
- function checkSyntax(filePath) {
-   try {
-diff --git a/dev/tests/runtime/V2SessionStorage.test.mjs b/dev/tests/runtime/V2SessionStorage.test.mjs
-index 991bc8841..0280bf696 100644
---- a/dev/tests/runtime/V2SessionStorage.test.mjs
-+++ b/dev/tests/runtime/V2SessionStorage.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const toolsRoot = path.join(repoRoot, "toolbox");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const toolsRoot = path.join(repoRoot, "www", "toolbox");
- const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
--const resultsPath = path.join(repoRoot, "tmp", "v2-session-storage-results.json");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-session-storage-results.json");
-
- const TOOLS = [
-   "asset-manager-v2",
-diff --git a/dev/tests/runtime/V2SessionToolsCloseoutBundle.test.mjs b/dev/tests/runtime/V2SessionToolsCloseoutBundle.test.mjs
-index 22f256e71..56eeb0e92 100644
---- a/dev/tests/runtime/V2SessionToolsCloseoutBundle.test.mjs
-+++ b/dev/tests/runtime/V2SessionToolsCloseoutBundle.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
- const testPath = path.join(repoRoot, "tests", "runtime", "V2SessionToolsCloseoutBundle.test.mjs");
--const resultsPath = path.join(repoRoot, "tmp", "v2-session-tools-closeout-results.json");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-session-tools-closeout-results.json");
-
- function checkSyntax(filePath) {
-   try {
-diff --git a/dev/tests/runtime/V2SessionUxStabilization.test.mjs b/dev/tests/runtime/V2SessionUxStabilization.test.mjs
-index 20e2d4fce..9904a5793 100644
---- a/dev/tests/runtime/V2SessionUxStabilization.test.mjs
-+++ b/dev/tests/runtime/V2SessionUxStabilization.test.mjs
-@@ -6,9 +6,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-session-ux-stabilization-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-session-ux-stabilization-results.json");
-
- function checkSyntax(filePath) {
-   try {
-diff --git a/dev/tests/runtime/V2SessionValidation.test.mjs b/dev/tests/runtime/V2SessionValidation.test.mjs
-index 73ecbb50f..2274f1474 100644
---- a/dev/tests/runtime/V2SessionValidation.test.mjs
-+++ b/dev/tests/runtime/V2SessionValidation.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const toolsRoot = path.join(repoRoot, "toolbox");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const toolsRoot = path.join(repoRoot, "www", "toolbox");
- const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
--const resultsPath = path.join(repoRoot, "tmp", "v2-session-validation-results.json");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-session-validation-results.json");
-
- const TOOLS = [
-   "asset-manager-v2",
-diff --git a/dev/tests/runtime/V2SessionVersion.test.mjs b/dev/tests/runtime/V2SessionVersion.test.mjs
-index b81058cfe..0e0a013a1 100644
---- a/dev/tests/runtime/V2SessionVersion.test.mjs
-+++ b/dev/tests/runtime/V2SessionVersion.test.mjs
-@@ -6,11 +6,11 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const toolsRoot = path.join(repoRoot, "toolbox");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const toolsRoot = path.join(repoRoot, "www", "toolbox");
- const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
--const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-session-version-results.json");
-+const workspaceJsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-session-version-results.json");
-
- const TOOLS = [
-   "asset-manager-v2",
-diff --git a/dev/tests/runtime/V2ShareLinks.test.mjs b/dev/tests/runtime/V2ShareLinks.test.mjs
-index b8f102754..676ca312e 100644
---- a/dev/tests/runtime/V2ShareLinks.test.mjs
-+++ b/dev/tests/runtime/V2ShareLinks.test.mjs
-@@ -6,11 +6,11 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
- const fixturePath = path.join(repoRoot, "tests", "fixtures", "v2-tools", "asset-manager-v2.json");
--const workspaceHtmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
--const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-share-links-results.json");
-+const workspaceHtmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
-+const workspaceJsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-share-links-results.json");
-
- class MemorySessionStorage {
-   constructor() {
-diff --git a/dev/tests/runtime/V2Snapshot.test.mjs b/dev/tests/runtime/V2Snapshot.test.mjs
-index 8a67fba39..d5319f76f 100644
---- a/dev/tests/runtime/V2Snapshot.test.mjs
-+++ b/dev/tests/runtime/V2Snapshot.test.mjs
-@@ -6,11 +6,11 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const toolsRoot = path.join(repoRoot, "toolbox");
--const workspaceHtmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
--const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-snapshot-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const toolsRoot = path.join(repoRoot, "www", "toolbox");
-+const workspaceHtmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
-+const workspaceJsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-snapshot-results.json");
-
- const TOOLS = [
-   "asset-manager-v2",
-diff --git a/dev/tests/runtime/V2ToolActionFlow.test.mjs b/dev/tests/runtime/V2ToolActionFlow.test.mjs
-index aef19f820..74aa6da61 100644
---- a/dev/tests/runtime/V2ToolActionFlow.test.mjs
-+++ b/dev/tests/runtime/V2ToolActionFlow.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
- const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
--const toolsRoot = path.join(repoRoot, "toolbox");
--const resultsPath = path.join(repoRoot, "tmp", "v2-tool-action-results.json");
-+const toolsRoot = path.join(repoRoot, "www", "toolbox");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-tool-action-results.json");
-
- const FLOWS = [
-   {
-diff --git a/dev/tests/runtime/V2ToolLaunch.test.mjs b/dev/tests/runtime/V2ToolLaunch.test.mjs
-index 70136b5f6..97acbfedd 100644
---- a/dev/tests/runtime/V2ToolLaunch.test.mjs
-+++ b/dev/tests/runtime/V2ToolLaunch.test.mjs
-@@ -6,11 +6,11 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const toolsRoot = path.join(repoRoot, "toolbox");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const toolsRoot = path.join(repoRoot, "www", "toolbox");
- const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
- const toolsIndexPath = path.join(toolsRoot, "index.html");
--const resultsPath = path.join(repoRoot, "tmp", "v2-tool-launch-results.json");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-tool-launch-results.json");
-
- const REQUIRED_V2_TOOLS = [
-   "asset-manager-v2",
-diff --git a/dev/tests/runtime/V2UndoButtonRender.test.mjs b/dev/tests/runtime/V2UndoButtonRender.test.mjs
-index 40c97861b..dcbd6c575 100644
---- a/dev/tests/runtime/V2UndoButtonRender.test.mjs
-+++ b/dev/tests/runtime/V2UndoButtonRender.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const htmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-undo-button-render-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const htmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-undo-button-render-results.json");
-
- function checkSyntax(filePath) {
-   try {
-diff --git a/dev/tests/runtime/V2UndoEnableStateActualAvailability.test.mjs b/dev/tests/runtime/V2UndoEnableStateActualAvailability.test.mjs
-index cf4592079..73fa1a996 100644
---- a/dev/tests/runtime/V2UndoEnableStateActualAvailability.test.mjs
-+++ b/dev/tests/runtime/V2UndoEnableStateActualAvailability.test.mjs
-@@ -6,9 +6,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-undo-enable-state-actual-availability-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-undo-enable-state-actual-availability-results.json");
-
- function checkSyntax(filePath) {
-   try {
-diff --git a/dev/tests/runtime/V2UndoEnableStateRefresh.test.mjs b/dev/tests/runtime/V2UndoEnableStateRefresh.test.mjs
-index 99533b386..f0e2718d4 100644
---- a/dev/tests/runtime/V2UndoEnableStateRefresh.test.mjs
-+++ b/dev/tests/runtime/V2UndoEnableStateRefresh.test.mjs
-@@ -6,9 +6,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-undo-enable-state-refresh-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-undo-enable-state-refresh-results.json");
-
- function checkSyntax(filePath) {
-   try {
-diff --git a/dev/tests/runtime/V2UndoLastMerge.test.mjs b/dev/tests/runtime/V2UndoLastMerge.test.mjs
-index d3e5f4d29..201e7efe9 100644
---- a/dev/tests/runtime/V2UndoLastMerge.test.mjs
-+++ b/dev/tests/runtime/V2UndoLastMerge.test.mjs
-@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const htmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const resultsPath = path.join(repoRoot, "tmp", "v2-undo-last-merge-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const htmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-undo-last-merge-results.json");
-
- function checkSyntax(filePath) {
-   try {
-diff --git a/dev/tests/runtime/V2UrlState.test.mjs b/dev/tests/runtime/V2UrlState.test.mjs
-index b6fbcfb87..a3ae2c2a5 100644
---- a/dev/tests/runtime/V2UrlState.test.mjs
-+++ b/dev/tests/runtime/V2UrlState.test.mjs
-@@ -6,9 +6,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const toolsRoot = path.join(repoRoot, "toolbox");
--const resultsPath = path.join(repoRoot, "tmp", "v2-url-state-results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const toolsRoot = path.join(repoRoot, "www", "toolbox");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-url-state-results.json");
-
- const REQUIRED_V2_TOOLS = [
-   "asset-manager-v2",
-diff --git a/dev/tests/runtime/V2WorkspaceAssetManagerLaunch.test.mjs b/dev/tests/runtime/V2WorkspaceAssetManagerLaunch.test.mjs
-index 35e7f7c42..7615e9e46 100644
---- a/dev/tests/runtime/V2WorkspaceAssetManagerLaunch.test.mjs
-+++ b/dev/tests/runtime/V2WorkspaceAssetManagerLaunch.test.mjs
-@@ -6,13 +6,13 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const workspaceHtmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
--const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
--const assetHtmlPath = path.join(repoRoot, "toolbox", "asset-manager-v2", "index.html");
--const assetJsPath = path.join(repoRoot, "toolbox", "asset-manager-v2", "index.js");
--const toolsIndexPath = path.join(repoRoot, "toolbox", "index.html");
--const resultsPath = path.join(repoRoot, "tmp", "pr_11_313_workspace_asset_manager_launch_results.json");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const workspaceHtmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
-+const workspaceJsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
-+const assetHtmlPath = path.join(repoRoot, "www", "toolbox", "asset-manager-v2", "index.html");
-+const assetJsPath = path.join(repoRoot, "www", "toolbox", "asset-manager-v2", "index.js");
-+const toolsIndexPath = path.join(repoRoot, "www", "toolbox", "index.html");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "pr_11_313_workspace_asset_manager_launch_results.json");
-
- function readText(filePath) {
-   return fs.readFileSync(filePath, "utf8");
-diff --git a/dev/tests/runtime/V2WorkspaceDefaultToolInitialization.test.mjs b/dev/tests/runtime/V2WorkspaceDefaultToolInitialization.test.mjs
-index 85866996b..69b3971f1 100644
---- a/dev/tests/runtime/V2WorkspaceDefaultToolInitialization.test.mjs
-+++ b/dev/tests/runtime/V2WorkspaceDefaultToolInitialization.test.mjs
-@@ -6,11 +6,11 @@ import { fileURLToPath, pathToFileURL } from "node:url";
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
--const htmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
--const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
-+const htmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
-+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
- const testPath = path.join(repoRoot, "tests", "runtime", "V2WorkspaceDefaultToolInitialization.test.mjs");
--const resultsPath = path.join(repoRoot, "tmp", "v2-workspace-default-tool-init-results.json");
-+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-workspace-default-tool-init-results.json");
-
- function checkSyntax(filePath) {
-   try {
+@@ -112,12 +112,12 @@ async function main() {
+   }
+
+   if (!activeToolboxIndexSource.includes("getActiveToolRegistry()") || !activeToolboxIndexSource.includes("getToolRoute(registryTool)")) {
+-    issues.push("toolbox/tools-page-accordions.js must render Toolbox cards from registry routes instead of duplicated literal routes.");
++    issues.push("www/toolbox/tools-page-accordions.js must render Toolbox cards from registry routes instead of duplicated literal routes.");
+   }
+
+   for (const directory of activeToolDirectories) {
+     if (!registryFolders.includes(directory)) {
+-      issues.push(`Filesystem directory toolbox/${directory} is missing from active toolRegistry.js.`);
++      issues.push(`Filesystem directory www/toolbox/${directory} is missing from active toolRegistry.js.`);
+     }
+   }
+
+diff --git a/package.json b/package.json
+index 37277ef09..6ab2780db 100644
+--- a/package.json
++++ b/package.json
+@@ -34,6 +34,7 @@
+     "validate:runtime-connections": "node --use-system-ca ./dev/scripts/validate-runtime-connections.mjs",
+     "validate:browser-env-agnostic": "node ./dev/scripts/validate-browser-env-agnostic.mjs",
+     "validate:canonical-structure": "node ./dev/scripts/validate-canonical-repository-structure.mjs",
++    "validate:platform": "node ./dev/scripts/run-platform-validation-suite.mjs",
+     "apply:database-ddl": "node ./dev/scripts/apply-database-ddl.mjs",
+     "apply:database-dml": "node ./dev/scripts/apply-database-dml.mjs",
+     "seed:database-dev": "node --use-system-ca ./dev/scripts/apply-database-seed.mjs",

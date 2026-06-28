@@ -221,7 +221,7 @@ async function listTopLevelPlaywrightDirs() {
 }
 
 async function listGameNames() {
-  const absoluteGamesDir = path.join(repoRoot, "games");
+  const absoluteGamesDir = path.join(repoRoot, "www", "games");
   const entries = await fs.readdir(absoluteGamesDir, { withFileTypes: true });
   const gameNames = [];
   for (const entry of entries.filter((item) => item.isDirectory() && !item.name.startsWith("_"))) {
@@ -650,7 +650,7 @@ async function audit(options = {}) {
         status: "SCOPED"
       },
       {
-        path: "games/",
+        path: "www/games/",
         reason: "Game fixture discovery used explicit manifest/path references from targeted files.",
         status: "SCOPED"
       }
