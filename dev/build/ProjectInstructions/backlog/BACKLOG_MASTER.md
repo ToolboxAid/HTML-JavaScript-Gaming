@@ -32,6 +32,18 @@ Completion percentages are updated at SOD, after every accepted PR, and at EOD.
 
 The backlog is the authoritative source for determining the next logical PRs.
 
+## Owner Assignments
+
+### Repository Architecture Simplification
+
+- Team: Owner
+- Product Area: Repository Architecture Simplification
+- Status: Planned
+- Percent Complete: 0%
+- Active PR: PR_26180_OWNER_004-repository-layout-architecture-plan
+- Next Milestone: Architecture plan
+- Source / Reference: `dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md`
+
 ## Game Journey MVP
 
 ### Idea
