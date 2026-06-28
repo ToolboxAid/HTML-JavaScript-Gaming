@@ -1,6 +1,16 @@
-dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-dev/reports/PR_26180_OWNER_002-add-delta-to-canonical-active-teams_report.md
-dev/reports/PR_26180_OWNER_002-add-delta-to-canonical-active-teams_validation-checklist.md
-dev/reports/PR_26180_OWNER_002-add-delta-to-canonical-active-teams_manual-validation-notes.md
-dev/reports/codex_changed_files.txt
-dev/reports/codex_review.diff
+# git status --short
+?? dev/reports/PR_26180_OWNER_002-product-backlog-discovery_branch-validation.md
+?? dev/reports/PR_26180_OWNER_002-product-backlog-discovery_manual-validation-notes.md
+?? dev/reports/PR_26180_OWNER_002-product-backlog-discovery_report.md
+?? dev/reports/PR_26180_OWNER_002-product-backlog-discovery_requirement-checklist.md
+?? dev/reports/PR_26180_OWNER_002-product-backlog-discovery_validation-report.md
+
+# git ls-files --others --exclude-standard
+dev/reports/PR_26180_OWNER_002-product-backlog-discovery_branch-validation.md
+dev/reports/PR_26180_OWNER_002-product-backlog-discovery_manual-validation-notes.md
+dev/reports/PR_26180_OWNER_002-product-backlog-discovery_report.md
+dev/reports/PR_26180_OWNER_002-product-backlog-discovery_requirement-checklist.md
+dev/reports/PR_26180_OWNER_002-product-backlog-discovery_validation-report.md
+
+# git diff --stat
+(no output)
