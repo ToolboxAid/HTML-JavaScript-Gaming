@@ -1,188 +1,52 @@
-﻿diff --git a/assets/theme-v2/css/gamefoundrystudio.css b/assets/theme-v2/css/gamefoundrystudio.css
-index 22fc1de11..82dff717c 100644
---- a/assets/theme-v2/css/gamefoundrystudio.css
-+++ b/assets/theme-v2/css/gamefoundrystudio.css
-@@ -1239,6 +1239,24 @@ body.tool-focus-mode .tool-column:last-of-type {
-   box-shadow: 0 1px 4px var(--swatch-shadow-color)
- }
- 
-+.sprite-preview-shell {
-+  display: flex;
-+  justify-content: center;
-+  padding: 12px;
-+  border: 1px solid var(--line);
-+  border-radius: var(--radius-md);
-+  background: var(--panel-soft)
-+}
-+
-+.sprite-preview-canvas {
-+  width: min(100%, 160px);
-+  height: auto;
-+  aspect-ratio: 1;
-+  border: 1px solid var(--line);
-+  background: var(--card-background);
-+  image-rendering: pixelated
-+}
-+
- @media(max-width:980px) {
- 
-   .grid.cols-4,
-diff --git a/assets/toolbox/sprites/js/index.js b/assets/toolbox/sprites/js/index.js
-index f332496d1..9db241a60 100644
---- a/assets/toolbox/sprites/js/index.js
-+++ b/assets/toolbox/sprites/js/index.js
-@@ -2,6 +2,13 @@ const DEFAULT_GRID_SIZE = 16;
- const SUPPORTED_GRID_SIZES = Object.freeze([16, 32]);
- const DRAWING_TOOLS = Object.freeze(["pencil", "eraser", "fill"]);
- const EDITOR_COLOR_KEYS = Object.freeze(["ink", "orange", "gold", "green", "blue"]);
-+const EDITOR_COLOR_CSS_VARIABLES = Object.freeze({
-+  blue: "--electric-blue",
-+  gold: "--forge-gold",
-+  green: "--green",
-+  ink: "--text",
-+  orange: "--molten-orange",
-+});
- 
- const editorState = {
-   activeTool: "pencil",
-@@ -51,6 +58,7 @@ function updateDraftStatus() {
-   if (status) {
-     status.textContent = draftStatusText();
-   }
-+  renderPreview();
- }
- 
- function updatePaletteStatus() {
-@@ -114,6 +122,64 @@ function fillGrid() {
-   updateDraftStatus();
- }
- 
-+function editorColorValue(colorKey) {
-+  const variableName = EDITOR_COLOR_CSS_VARIABLES[normalizeColorKey(colorKey)];
-+  const value = getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
-+  return value || "#111111";
-+}
-+
-+function renderPreview() {
-+  const canvas = document.querySelector("[data-sprites-preview-canvas]");
-+  if (!canvas) {
-+    return;
-+  }
-+  const context = canvas.getContext("2d");
-+  if (!context) {
-+    return;
-+  }
-+  const size = editorState.gridSize;
-+  const cellSize = canvas.width / size;
-+  context.clearRect(0, 0, canvas.width, canvas.height);
-+  for (const [key, colorKey] of editorState.paintedPixels.entries()) {
-+    const [rowText, columnText] = key.split(":");
-+    const row = Number(rowText);
-+    const column = Number(columnText);
-+    if (!Number.isFinite(row) || !Number.isFinite(column)) {
-+      continue;
-+    }
-+    context.fillStyle = editorColorValue(colorKey);
-+    context.fillRect((column - 1) * cellSize, (row - 1) * cellSize, cellSize, cellSize);
-+  }
-+}
-+
-+function exportPreviewPng() {
-+  const canvas = document.querySelector("[data-sprites-preview-canvas]");
-+  const status = document.querySelector("[data-sprites-export-status]");
-+  if (!canvas) {
-+    return;
-+  }
-+  canvas.toBlob((blob) => {
-+    if (!blob) {
-+      if (status) {
-+        status.textContent = "PNG export is unavailable in this browser session.";
-+      }
-+      return;
-+    }
-+    const objectUrl = URL.createObjectURL(blob);
-+    const link = document.createElement("a");
-+    link.href = objectUrl;
-+    link.download = "sprite-creator-draft.png";
-+    link.rel = "noopener";
-+    document.body.append(link);
-+    link.click();
-+    link.remove();
-+    URL.revokeObjectURL(objectUrl);
-+    if (status) {
-+      status.textContent = "PNG downloaded from unsaved editor draft.";
-+    }
-+  }, "image/png");
-+}
-+
- function setGridSize(size) {
-   const grid = document.querySelector("[data-sprites-pixel-grid]");
-   const status = document.querySelector("[data-sprites-grid-status]");
-@@ -186,9 +252,18 @@ function wirePaletteButtons() {
-   });
- }
- 
-+function wireExportButton() {
-+  const button = document.querySelector("[data-sprites-export-png]");
-+  if (button) {
-+    button.addEventListener("click", exportPreviewPng);
-+  }
-+}
-+
- wireGridControls();
- wireDrawingTools();
- wirePaletteButtons();
-+wireExportButton();
- setGridSize(DEFAULT_GRID_SIZE);
- setActiveTool(editorState.activeTool);
- setActiveColor(editorState.activeColor);
-+renderPreview();
-diff --git a/dev/tests/playwright/tools/SpritesToolShell.spec.mjs b/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-index 2e1825bf2..af9c022c7 100644
+﻿diff --git a/dev/tests/playwright/tools/SpritesToolShell.spec.mjs b/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
+index af9c022c7..9b6aefb61 100644
 --- a/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
 +++ b/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-@@ -260,6 +260,18 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status
-     await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(1024);
-     await expect(page.locator("[data-sprites-pixel-grid] .sprite-canvas-cell--blue")).toHaveCount(1024);
-     await expect(page.locator("[data-sprites-draft-status]")).toContainText("1024 draft pixels painted");
-+    await expect(page.locator("[data-sprites-preview-canvas]")).toBeVisible();
-+    const previewHasPaint = await page.locator("[data-sprites-preview-canvas]").evaluate((canvas) => {
-+      const context = canvas.getContext("2d");
-+      const pixel = context.getImageData(1, 1, 1, 1).data;
-+      return pixel[3] > 0;
-+    });
-+    expect(previewHasPaint).toBe(true);
-+    const downloadPromise = page.waitForEvent("download");
-+    await page.getByRole("button", { name: "Download PNG" }).click();
-+    const download = await downloadPromise;
-+    expect(download.suggestedFilename()).toBe("sprite-creator-draft.png");
-+    await expect(page.locator("[data-sprites-export-status]")).toContainText("PNG downloaded");
+@@ -219,6 +219,8 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status
+     await expect(page.locator("[data-sprites-work-area]")).toBeVisible();
+     await expect(page.locator("[data-sprites-details-panel]")).toBeVisible();
+     await expect(page.locator("[data-sprites-footer-status]")).toBeVisible();
++    await expect(page.locator("main")).toContainText("Choose a drawing action for the current unsaved sprite draft.");
++    await expect(page.locator("main")).toContainText("Saving to the sprite library remains deferred");
+     await expect(page.locator("[data-sprites-tools-panel]")).toContainText("Sprite Tools");
+     await expect(page.getByText("Drawing Tools", { exact: true })).toBeVisible();
+     await expect(page.getByText("Canvas Setup", { exact: true })).toBeVisible();
+@@ -274,7 +276,7 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status
+     await expect(page.locator("[data-sprites-export-status]")).toContainText("PNG downloaded");
      await expect(page.locator("[data-sprites-shell-status]")).toContainText("Editor ready");
      await expect(page.locator("main")).toContainText("Palette/Colors remains the reusable color source");
-     await expect(page.locator("main")).not.toContainText(/Not implemented yet|future rebuild work|Static wireframe only|Plan sprite creation/i);
-diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_027-sprites-preview-export.md b/docs_build/dev/reports/PR_26179_CHARLIE_027-sprites-preview-export.md
+-    await expect(page.locator("main")).not.toContainText(/Not implemented yet|future rebuild work|Static wireframe only|Plan sprite creation/i);
++    await expect(page.locator("main")).not.toContainText(/Not implemented yet|future rebuild work|Static wireframe only|Plan sprite creation|later editor slice/i);
+     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+ 
+     expect(failures.failedRequests).toEqual([]);
+diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_028-sprites-editor-polish.md b/docs_build/dev/reports/PR_26179_CHARLIE_028-sprites-editor-polish.md
 new file mode 100644
-index 000000000..f1a8fa62f
+index 000000000..43a4c0b56
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26179_CHARLIE_027-sprites-preview-export.md
-@@ -0,0 +1,62 @@
-+﻿# PR_26179_CHARLIE_027-sprites-preview-export
++++ b/docs_build/dev/reports/PR_26179_CHARLIE_028-sprites-editor-polish.md
+@@ -0,0 +1,72 @@
++# PR_26179_CHARLIE_028-sprites-editor-polish
 +
 +Team: CHARLIE
 +Workflow: stacked feature workflow
-+Base branch: PR_26179_CHARLIE_026-sprites-palette-panel
-+Canonical ZIP path: dev/workspace/zip/PR_26179_CHARLIE_027-sprites-preview-export_delta.zip
++Base branch: PR_26179_CHARLIE_027-sprites-preview-export
++Canonical ZIP path for this batch: dev/workspace/zip/PR_26179_CHARLIE_028-sprites-editor-polish_delta.zip
 +
 +## Summary
 +
-+Added live preview and PNG download/export for the unsaved Sprite Creator editor draft. Export uses canvas `toBlob` and browser download behavior. This PR does not save to library, publish, write browser storage, or add API/DB/schema changes.
++Polished Sprite Creator editor copy and status text. Removed stale wording such as "later editor slice" and improved manual validation clarity. Behavior is intentionally unchanged.
++
++## Product Owner Testable Outcome
++
++The Product Owner can open Sprite Creator and verify the editor communicates its current unsaved-draft behavior clearly while all existing editor interactions still work.
 +
 +## Branch Validation
 +
 +PASS
 +
-+- Current branch: PR_26179_CHARLIE_027-sprites-preview-export
-+- Based on: PR_26179_CHARLIE_026-sprites-palette-panel
++- Current branch: PR_26179_CHARLIE_028-sprites-editor-polish
++- Based on: PR_26179_CHARLIE_027-sprites-preview-export
 +- No start_of_day files changed
 +- No DB/API/schema files changed
 +- No stale PR #219-#228 code copied
@@ -191,12 +55,11 @@ index 000000000..f1a8fa62f
 +
 +| Requirement | Status | Notes |
 +| --- | --- | --- |
-+| Add live preview | PASS | Preview canvas reflects unsaved draft pixels. |
-+| Add PNG export/download | PASS | Download button exports `sprite-creator-draft.png`. |
-+| No save-to-library | PASS | No saved sprite library or product persistence added. |
-+| No publishing | PASS | Export is local download only. |
-+| Avoid persisted data URLs | PASS | Uses `canvas.toBlob`; no `imageDataUrl` or `toDataURL`. |
-+| No DB/API/schema changes | PASS | Only UI/JS/CSS/test/report files changed. |
++| Fix outdated copy | PASS | Removed "later editor slice" wording. |
++| Improve status/manual validation clarity | PASS | Copy now explains unsaved editor workspace and deferred API-backed library save. |
++| Keep behavior unchanged | PASS | Only HTML copy and Playwright assertions changed. |
++| No DB/API/schema changes | PASS | None changed. |
++| No browser-owned authoritative product data | PASS | No persistence added. |
 +
 +## Validation Lane Report
 +
@@ -205,8 +68,8 @@ index 000000000..f1a8fa62f
 +```text
 +node --check assets/toolbox/sprites/js/index.js
 +node --check dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-+git diff --check -- toolbox/sprites/index.html assets/toolbox/sprites/js/index.js assets/theme-v2/css/gamefoundrystudio.css dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-+rg --pcre2 -n -i "localStorage|sessionStorage|indexedDB|imageDataUrl|toDataURL|<style|style=|<script(?![^>]+src=)|on(click|change|submit|input|load|error)=|local-mem|fake-login|MEM DB" toolbox/sprites/index.html assets/toolbox/sprites/js/index.js dev/tests/playwright/tools/SpritesToolShell.spec.mjs
++git diff --check -- toolbox/sprites/index.html dev/tests/playwright/tools/SpritesToolShell.spec.mjs
++rg --pcre2 -n -i "later editor slice|Not implemented yet|future rebuild work|Static wireframe only|Plan sprite creation|localStorage|sessionStorage|indexedDB|imageDataUrl|toDataURL|<style|style=|<script(?![^>]+src=)|on(click|change|submit|input|load|error)=|local-mem|fake-login|MEM DB" toolbox/sprites/index.html assets/toolbox/sprites/js/index.js
 +npx playwright test dev/tests/playwright/tools/SpritesToolShell.spec.mjs --workers=1 --reporter=list --output=<temp>
 +```
 +
@@ -214,51 +77,103 @@ index 000000000..f1a8fa62f
 +
 +- Node syntax checks: PASS
 +- `git diff --check`: PASS
-+- Guard scan: PASS, no matches
++- Guard scan: PASS, no matches in page/runtime files
 +- Targeted Playwright: PASS, 1 test passed
 +
 +## Manual Validation Notes
 +
-+1. Open `/toolbox/sprites/index.html` from the stacked branch.
-+2. Draw or fill pixels.
-+3. Confirm the preview canvas shows the draft.
-+4. Click Download PNG and confirm a `sprite-creator-draft.png` download starts.
-+5. Confirm no save-to-library or publishing controls are present.
++1. Open `/toolbox/sprites/index.html`.
++2. Confirm the tools panel says "Choose a drawing action for the current unsaved sprite draft."
++3. Confirm the work area explains the sprite library save remains deferred to a future API-backed PR.
++4. Confirm Pencil/Eraser/Fill, palette, preview, and PNG export still work.
++
++## Previous PR Dependency
++
++PR_26179_CHARLIE_027-sprites-preview-export
++
++## Next PR Dependency
++
++PR_26179_CHARLIE_029-sprites-clear-reset-controls
 +
 +## ZIP Path
 +
-+`dev/workspace/zip/PR_26179_CHARLIE_027-sprites-preview-export_delta.zip`
++`dev/workspace/zip/PR_26179_CHARLIE_028-sprites-editor-polish_delta.zip`
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index ccd4e2703..2a0f79d1d 100644
+index 2a0f79d1d..a1c1d52c9 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -2,6 +2,6 @@
- assets/toolbox/sprites/js/index.js
- assets/theme-v2/css/gamefoundrystudio.css
+@@ -1,7 +1,5 @@
+-﻿toolbox/sprites/index.html
+-assets/toolbox/sprites/js/index.js
+-assets/theme-v2/css/gamefoundrystudio.css
++toolbox/sprites/index.html
  dev/tests/playwright/tools/SpritesToolShell.spec.mjs
--docs_build/dev/reports/PR_26179_CHARLIE_026-sprites-palette-panel.md
-+docs_build/dev/reports/PR_26179_CHARLIE_027-sprites-preview-export.md
+-docs_build/dev/reports/PR_26179_CHARLIE_027-sprites-preview-export.md
++docs_build/dev/reports/PR_26179_CHARLIE_028-sprites-editor-polish.md
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
 diff --git a/toolbox/sprites/index.html b/toolbox/sprites/index.html
-index 1ec5872c0..330824b43 100644
+index 330824b43..8c40cc255 100644
 --- a/toolbox/sprites/index.html
 +++ b/toolbox/sprites/index.html
-@@ -169,6 +169,17 @@
-                                     </div>
-                                 </div>
-                             </details>
-+                            <details class="vertical-accordion" open>
-+                                <summary>Preview & Export</summary>
-+                                <div class="accordion-body content-stack">
-+                                    <p>Preview the unsaved editor draft and download it as a PNG. This does not save to the sprite library or publish the asset.</p>
-+                                    <div class="sprite-preview-shell">
-+                                        <canvas class="sprite-preview-canvas" width="160" height="160" aria-label="Sprite Creator live preview" data-sprites-preview-canvas></canvas>
-+                                    </div>
-+                                    <button class="btn btn--compact primary" type="button" data-sprites-export-png>Download PNG</button>
-+                                    <p class="status" role="status" data-sprites-export-status>PNG export is ready for the unsaved editor draft.</p>
-+                                </div>
-+                            </details>
+@@ -33,7 +33,7 @@
+                             <details class="vertical-accordion" open>
+                                 <summary>Drawing Tools</summary>
+                                 <div class="accordion-body content-stack">
+-                                    <p>Choose the creation action that will shape the sprite canvas in a later editor slice.</p>
++                                    <p>Choose a drawing action for the current unsaved sprite draft.</p>
+                                     <div class="action-group action-group--tight" aria-label="Sprite Creator toolbar placeholders" data-sprites-toolbar>
+                                         <button class="btn btn--compact primary" type="button" data-sprite-tool-button="pencil" aria-label="Pencil tool" aria-pressed="true">Pencil</button>
+                                         <button class="btn btn--compact" type="button" data-sprite-tool-button="eraser" aria-label="Eraser tool" aria-pressed="false">Eraser</button>
+@@ -64,7 +64,7 @@
+                                                 </tr>
+                                                 <tr>
+                                                     <th scope="row">Mode</th>
+-                                                    <td>Draft canvas shell</td>
++                                                    <td>Unsaved editor canvas</td>
+                                                 </tr>
+                                             </tbody>
+                                         </table>
+@@ -90,11 +90,11 @@
+                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="sprites" data-tool-icon-src="assets/theme-v2/images/badges/sprites.png" data-tool-character-src="assets/theme-v2/images/tools/sprites.png"></div>
+                     <section class="tool-center-panel" data-sprites-work-area>
+                         <h2>Pixel Work Area</h2>
+-                        <p>Use this canvas space to compose sprite art once drawing and save/load contracts are added.</p>
++                        <p>Compose sprite pixels in the unsaved editor workspace. Saving to the sprite library remains deferred to a future API-backed PR.</p>
+                         <div class="grid cols-3" aria-label="Sprite Creator shell summary">
+-                            <article class="mini-stat"><strong>Draft</strong>Canvas</article>
+-                            <article class="mini-stat"><strong>Ready</strong>Workspace</article>
+-                            <article class="mini-stat"><strong>Pending</strong>Save/Load</article>
++                            <article class="mini-stat"><strong>Unsaved</strong>Draft</article>
++                            <article class="mini-stat"><strong>Ready</strong>Editor</article>
++                            <article class="mini-stat"><strong>Local</strong>PNG Export</article>
+                         </div>
+                         <article class="card">
+                             <div class="card-body content-stack">
+@@ -144,7 +144,7 @@
+                                                 </tr>
+                                                 <tr>
+                                                     <th scope="row">Storage</th>
+-                                                    <td>Not connected in this shell</td>
++                                                    <td>Library save is not connected in this editor stack</td>
+                                                 </tr>
+                                             </tbody>
+                                         </table>
+@@ -154,7 +154,7 @@
+                             <details class="vertical-accordion" open>
+                                 <summary>Animation</summary>
+                                 <div class="accordion-body content-stack">
+-                                    <p>Frame planning is visible here so animation support can attach without changing the shell layout.</p>
++                                    <p>Frame planning is visible here so animation support can attach later without changing the editor layout.</p>
+                                     <div class="table-wrapper">
+                                         <table class="data-table" aria-label="Sprite animation placeholder">
+                                             <thead>
+@@ -183,7 +183,7 @@
                              <details class="vertical-accordion" open>
                                  <summary>Readiness</summary>
                                  <div class="accordion-body content-stack">
+-                                    <p class="status" role="status">Creator shell visible.</p>
++                                    <p class="status" role="status">Sprite Creator editor visible.</p>
+                                     <p class="status" role="status">No browser-owned sprite data is stored by this page.</p>
+                                     <p class="status" role="status">No Local DB schema or API endpoint is introduced in this PR.</p>
+                                 </div>
