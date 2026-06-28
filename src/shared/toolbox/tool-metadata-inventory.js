@@ -453,16 +453,16 @@ export const TOOL_REGISTRY = Object.freeze([
   },
   {
     "id": "sprites",
-    "name": "Sprites",
-    "displayName": "Sprites",
-    "shortDescription": "Plan sprite creation, review, and game-ready export workflows.",
+    "name": "Sprite Creator",
+    "displayName": "Sprite Creator",
+    "shortDescription": "Shape game-ready sprites with a focused workspace for drawing, details, and animation planning.",
     "shortLabel": "Sprites",
     "path": "sprites",
     "folderName": "sprites",
     "entryPoint": "sprites/index.html",
     "badge": "/assets/theme-v2/images/badges/sprites.png",
     "tool": "/assets/theme-v2/images/tools/sprites.png",
-    "description": "Plan sprite creation, review, and game-ready export workflows.",
+    "description": "Shape game-ready sprites with a focused workspace for drawing, details, and animation planning.",
     "category": "Design",
     "colorGroup": "tool-group-design",
     "active": true,
@@ -473,8 +473,10 @@ export const TOOL_REGISTRY = Object.freeze([
     "requires": [],
     "status": "Wireframe",
     "progressChecklist": [
-      "Review readiness",
-      "Static planned text only"
+      "Sprite Creator shell visible",
+      "Drawing tools panel visible",
+      "Pixel work area visible",
+      "Details and animation panel visible"
     ],
     "deferred": false,
     "hidden": false,

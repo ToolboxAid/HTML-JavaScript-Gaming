@@ -1,0 +1,6 @@
+﻿toolbox/sprites/index.html
+src/shared/toolbox/tool-metadata-inventory.js
+dev/tests/playwright/tools/SpritesToolShell.spec.mjs
+docs_build/dev/reports/PR_26179_CHARLIE_022-sprites-tool-shell.md
+docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/codex_review.diff
