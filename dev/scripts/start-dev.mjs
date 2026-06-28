@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import { existsSync, readFileSync } from "node:fs";
+import { spawn } from "node:child_process";
 import http from "node:http";
 import path from "node:path";
 import process from "node:process";
@@ -165,6 +166,14 @@ function apiUrl(host, port) {
   return `${localUrl(host, port)}/api`;
 }
 
+export function teamIndexUrl(webBaseUrl) {
+  return `${String(webBaseUrl || "").replace(/\/+$/, "")}/index.html`;
+}
+
+export function shouldLaunchBrowser(options) {
+  return Boolean(options?.api && options?.web && options?.role === "owner");
+}
+
 export function applyBootstrapEnvironment({
   env = process.env,
   host = DEFAULT_HOST,
@@ -179,6 +188,7 @@ export function applyBootstrapEnvironment({
 
 export function formatBootstrapDiagnostics({
   apiBaseUrl,
+  browserLaunch,
   mode,
   role,
   runtimeEnv,
@@ -192,6 +202,9 @@ export function formatBootstrapDiagnostics({
     `Role: ${role}`,
     `Web URL: ${webBaseUrl}`,
     `API URL: ${apiBaseUrl}/api`,
+    browserLaunch?.enabled
+      ? `Browser launch: opened ${browserLaunch.url}`
+      : `Browser launch: ${browserLaunch?.reason || "not requested"}`,
     "Environment source: .env + process environment",
     `.env loaded: ${runtimeEnv.loaded ? `yes (${runtimeEnv.loadedKeys} new key(s))` : "no"}`,
     `Supported teams: ${supportedBootstrapTeamsLabel()}`,
@@ -199,6 +212,36 @@ export function formatBootstrapDiagnostics({
     "Legacy API alias remains: npm run dev:local-api",
     "Press Ctrl+C to stop.",
   ];
+}
+
+export function launchBrowser(url, {
+  platform = process.platform,
+  spawnFn = spawn,
+} = {}) {
+  let command;
+  let args;
+  if (platform === "win32") {
+    command = "cmd";
+    args = ["/c", "start", "", url];
+  } else if (platform === "darwin") {
+    command = "open";
+    args = [url];
+  } else {
+    command = "xdg-open";
+    args = [url];
+  }
+  const child = spawnFn(command, args, {
+    detached: true,
+    stdio: "ignore",
+    windowsHide: true,
+  });
+  child?.unref?.();
+  return {
+    args,
+    command,
+    enabled: true,
+    url,
+  };
 }
 
 async function readRequestBody(request) {
@@ -291,20 +334,40 @@ export async function startStaticWebServer({
   };
 }
 
-export async function startBootstrapRuntime(options = parseBootstrapOptions(process.argv.slice(2))) {
-  const runtimeEnv = loadRuntimeEnv();
-  const host = process.env.GAMEFOUNDRY_LOCAL_API_HOST || DEFAULT_HOST;
-  applyBootstrapEnvironment({ host, ports: options.ports });
+export async function startBootstrapRuntime(
+  options = parseBootstrapOptions(process.argv.slice(2)),
+  {
+    apiServerStarter = startLocalApiServer,
+    browserLauncher = launchBrowser,
+    env = process.env,
+    loadEnv = () => loadRuntimeEnv({ env }),
+    webServerStarter = startStaticWebServer,
+  } = {},
+) {
+  const runtimeEnv = loadEnv();
+  const host = env.GAMEFOUNDRY_LOCAL_API_HOST || DEFAULT_HOST;
+  applyBootstrapEnvironment({ env, host, ports: options.ports });
   const apiBaseUrl = localUrl(host, options.ports.apiPort);
   const webBaseUrl = localUrl(host, options.ports.webPort);
   const servers = [];
 
   if (options.api) {
-    servers.push(await startLocalApiServer({ host, port: options.ports.apiPort }));
+    servers.push(await apiServerStarter({ host, port: options.ports.apiPort }));
   }
   if (options.web) {
-    servers.push(await startStaticWebServer({ apiBaseUrl, host, port: options.ports.webPort }));
+    servers.push(await webServerStarter({ apiBaseUrl, host, port: options.ports.webPort }));
   }
+
+  const browserUrl = teamIndexUrl(webBaseUrl);
+  const browserLaunch = shouldLaunchBrowser(options)
+    ? browserLauncher(browserUrl)
+    : {
+      enabled: false,
+      reason: options.role === "codex"
+        ? "suppressed for codex role"
+        : "requires bootstrap mode with API and web servers",
+      url: browserUrl,
+    };
 
   return {
     close: async () => {
@@ -312,6 +375,7 @@ export async function startBootstrapRuntime(options = parseBootstrapOptions(proc
     },
     diagnostics: formatBootstrapDiagnostics({
       apiBaseUrl,
+      browserLaunch,
       mode: options.mode,
       role: options.role,
       runtimeEnv,

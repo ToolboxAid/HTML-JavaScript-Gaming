@@ -5,8 +5,12 @@ import { fileURLToPath } from "node:url";
 import {
   applyBootstrapEnvironment,
   formatBootstrapDiagnostics,
+  launchBrowser,
   loadRuntimeEnv,
   parseBootstrapOptions,
+  shouldLaunchBrowser,
+  startBootstrapRuntime,
+  teamIndexUrl,
 } from "../../scripts/start-dev.mjs";
 import {
   parseRoleArgument,
@@ -159,6 +163,11 @@ test("bootstrap environment applies resolved team and role ports for browser API
 test("startup diagnostics and package scripts expose team-aware bootstrap commands", () => {
   const lines = formatBootstrapDiagnostics({
     apiBaseUrl: "http://127.0.0.1:5513",
+    browserLaunch: {
+      enabled: false,
+      reason: "suppressed for codex role",
+      url: "http://127.0.0.1:5512/index.html",
+    },
     mode: "bootstrap",
     role: "codex",
     runtimeEnv: {
@@ -173,6 +182,7 @@ test("startup diagnostics and package scripts expose team-aware bootstrap comman
   assert.equal(lines.includes("Role: codex"), true);
   assert.equal(lines.includes("Web URL: http://127.0.0.1:5512"), true);
   assert.equal(lines.includes("API URL: http://127.0.0.1:5513/api"), true);
+  assert.equal(lines.includes("Browser launch: suppressed for codex role"), true);
   assert.equal(lines.includes(`Supported teams: ${supportedBootstrapTeamsLabel()}`), true);
   assert.equal(lines.includes(`Supported roles: ${supportedBootstrapRolesLabel()}`), true);
 
@@ -194,4 +204,113 @@ test("runtime env loader applies .env values without overriding existing process
 
   assert.equal(typeof result.loaded, "boolean");
   assert.equal(env.GAMEFOUNDRY_API_URL, "http://127.0.0.1:5999/api");
+});
+
+test("browser launch targets team index after API and web servers are ready for owner role", async () => {
+  const events = [];
+  const runtime = await startBootstrapRuntime(
+    parseBootstrapOptions(["--mode=bootstrap", "--team=alfa"]),
+    {
+      apiServerStarter: async ({ port }) => {
+        events.push(`api:${port}`);
+        return {
+          close: async () => events.push("api:closed"),
+        };
+      },
+      browserLauncher: (url) => {
+        events.push(`browser:${url}`);
+        return {
+          enabled: true,
+          url,
+        };
+      },
+      env: {},
+      loadEnv: () => ({
+        loaded: false,
+        loadedKeys: 0,
+      }),
+      webServerStarter: async ({ port }) => {
+        events.push(`web:${port}`);
+        return {
+          close: async () => events.push("web:closed"),
+        };
+      },
+    },
+  );
+
+  assert.deepEqual(events, [
+    "api:5511",
+    "web:5510",
+    "browser:http://127.0.0.1:5510/index.html",
+  ]);
+  assert.equal(runtime.diagnostics.includes("Browser launch: opened http://127.0.0.1:5510/index.html"), true);
+  await runtime.close();
+  assert.deepEqual(events.slice(-2), ["api:closed", "web:closed"]);
+});
+
+test("codex role suppresses browser launch even after API and web servers are ready", async () => {
+  const events = [];
+  const runtime = await startBootstrapRuntime(
+    parseBootstrapOptions(["--mode=bootstrap", "--team=alfa", "--role=codex"]),
+    {
+      apiServerStarter: async () => {
+        events.push("api");
+        return {
+          close: async () => {},
+        };
+      },
+      browserLauncher: (url) => {
+        events.push(`browser:${url}`);
+        return {
+          enabled: true,
+          url,
+        };
+      },
+      env: {},
+      loadEnv: () => ({
+        loaded: false,
+        loadedKeys: 0,
+      }),
+      webServerStarter: async () => {
+        events.push("web");
+        return {
+          close: async () => {},
+        };
+      },
+    },
+  );
+
+  assert.deepEqual(events, ["api", "web"]);
+  assert.equal(runtime.diagnostics.includes("Browser launch: suppressed for codex role"), true);
+  await runtime.close();
+});
+
+test("browser launch helper uses platform conventions and team index URLs", () => {
+  const launches = [];
+  const result = launchBrowser(teamIndexUrl("http://127.0.0.1:5510/"), {
+    platform: "win32",
+    spawnFn: (command, args, options) => {
+      launches.push({ args, command, options });
+      return {
+        unref: () => launches.push({ unref: true }),
+      };
+    },
+  });
+
+  assert.deepEqual(result, {
+    args: ["/c", "start", "", "http://127.0.0.1:5510/index.html"],
+    command: "cmd",
+    enabled: true,
+    url: "http://127.0.0.1:5510/index.html",
+  });
+  assert.equal(launches[0].options.detached, true);
+  assert.equal(launches[0].options.stdio, "ignore");
+  assert.deepEqual(launches[1], { unref: true });
+});
+
+test("browser launch policy only opens for owner role when API and web are both active", () => {
+  assert.equal(shouldLaunchBrowser(parseBootstrapOptions(["--mode=bootstrap", "--team=alfa"])), true);
+  assert.equal(shouldLaunchBrowser(parseBootstrapOptions(["--mode=bootstrap", "--team=alfa", "--role=codex"])), false);
+  assert.equal(shouldLaunchBrowser(parseBootstrapOptions(["--mode=api", "--team=alfa"])), false);
+  assert.equal(shouldLaunchBrowser(parseBootstrapOptions(["--mode=web", "--team=alfa"])), false);
 });

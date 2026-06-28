@@ -28,6 +28,8 @@ Per OWNER instruction, those uncommitted changes were discarded with `git reset 
 - Added `dev/scripts/team-port-config.mjs` for full team name and role-aware port resolution.
 - Added `dev/scripts/start-dev.mjs` as the bootstrap orchestrator.
 - Added focused node tests for team resolution, role offsets, invalid team/role validation, script wiring, `.env` loading behavior, and bootstrap diagnostics.
+- Added automatic browser launch for owner-role `dev:bootstrap` after the API and web servers are both ready.
+- Suppressed automatic browser launch for the `codex` role.
 
 ## Supported Teams
 
@@ -86,6 +88,14 @@ Codex role example:
 ```powershell
 npm run dev:bootstrap -- --team alfa --role codex
 ```
+
+## Browser Launch Behavior
+
+- `owner` role launches the browser automatically to the selected team's `index.html`.
+- `codex` role suppresses browser launch.
+- Browser launch happens only after both API and web servers are ready.
+- The Alfa owner launch target is `http://127.0.0.1:5510/index.html`.
+- The Alfa codex launch target is suppressed while using web `5512` and API `5513`.
 
 ## Files Changed
 

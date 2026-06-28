@@ -12,6 +12,7 @@ Expected diagnostics:
 - `Role: owner`
 - `Web URL: http://127.0.0.1:5510`
 - `API URL: http://127.0.0.1:5511/api`
+- `Browser launch: opened http://127.0.0.1:5510/index.html`
 
 ## Primary Alfa Codex Command
 
@@ -25,6 +26,7 @@ Expected diagnostics:
 - `Role: codex`
 - `Web URL: http://127.0.0.1:5512`
 - `API URL: http://127.0.0.1:5513/api`
+- `Browser launch: suppressed for codex role`
 
 ## Legacy Command
 
