@@ -1,59 +1,60 @@
 # PR_26179_OWNER_010-canonical-project-folder-instructions
 
-Updated: 2026-06-28T01:49:46Z
+Updated: 2026-06-28T02:02:53Z
 Team: OWNER
 Branch: PR_26179_OWNER_010-canonical-project-folder-instructions
-Scope: Documentation/governance only. No files moved. No runtime behavior, wrapper script, or production page changes.
-
-## SSoT Decision
-`dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md` is the only direct Codex bootstrap entry point.
-
-Bootstrap loads supporting Project Instructions indirectly through references from `PROJECT_INSTRUCTIONS.md`.
-
-Single source ownership:
-- `PROJECT_INSTRUCTIONS.md`: active entry point, index, and referenced load graph.
-- `PROJECT_STATE.md`: current project/repository/team state metadata for bootstrap summaries.
-- `addendums/canonical_repository_structure.md`: repository folder placement and file-placement rules.
+Scope: Documentation/governance only. No runtime code, production pages, or wrapper scripts changed. Repo folders outside ProjectInstructions were not moved.
 
 ## Summary
-- Added `PROJECT_STATE.md` as the project state SSoT document.
-- Added `addendums/codex_start_of_day_bootstrap.md` to define bootstrap phrases, responsibilities, wrapper responsibilities, standard bootstrap report, loading rules, SSoT ownership, and future wrapper direction.
-- Updated `PROJECT_INSTRUCTIONS.md`, `README.txt`, and `codex_project_instructions_startup.md` so wrappers request only `PROJECT_INSTRUCTIONS.md` directly.
-- Did not implement or modify wrappers.
+- Tightened `PROJECT_INSTRUCTIONS.md` into the only manual Project Instructions entry point.
+- Reduced `PROJECT_INSTRUCTIONS.md` to purpose, version/date, required read order, load graph, stop gates, execution modes, and pointers.
+- Moved canonical folder placement and bootstrap documents into dedicated `repository/` and `bootstrap/` buckets under ProjectInstructions.
+- Converted `PROJECT_STATE.md` into a machine-friendly state document with the required metadata fields and no backlog tasks.
+- Reduced `README.txt`, retired startup guidance, and retired repository directory standard content to pointer/superseded references.
+
+## SSoT Decisions
+- Manual entry point SSoT: `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md`.
+- Project state SSoT: `dev/build/ProjectInstructions/PROJECT_STATE.md`.
+- Folder placement SSoT: `dev/build/ProjectInstructions/repository/canonical_repository_structure.md`.
+- Bootstrap/startup SSoT: `dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md`.
+- Retired pointer docs: `README.txt`, `addendums/codex_project_instructions_startup.md`, and `addendums/repository_directory_standard.md`.
+
+## Moved Docs
+- `dev/build/ProjectInstructions/addendums/codex_start_of_day_bootstrap.md` -> `dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md`.
+- `dev/build/ProjectInstructions/addendums/canonical_repository_structure.md` -> `dev/build/ProjectInstructions/repository/canonical_repository_structure.md`.
+
+## Removed Docs
+None. Retired docs were retained only as short pointers where references may still exist.
 
 ## Changed Files
 ```
 M	dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-A	dev/build/ProjectInstructions/PROJECT_STATE.md
+M	dev/build/ProjectInstructions/PROJECT_STATE.md
 M	dev/build/ProjectInstructions/README.txt
+M	dev/build/ProjectInstructions/TEAM_START_COMMANDS.md
 M	dev/build/ProjectInstructions/addendums/codex_project_instructions_startup.md
-A	dev/build/ProjectInstructions/addendums/codex_start_of_day_bootstrap.md
+M	dev/build/ProjectInstructions/addendums/release_gate.md
+M	dev/build/ProjectInstructions/addendums/repository_directory_standard.md
+R064	dev/build/ProjectInstructions/addendums/codex_start_of_day_bootstrap.md	dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md
+R100	dev/build/ProjectInstructions/addendums/canonical_repository_structure.md	dev/build/ProjectInstructions/repository/canonical_repository_structure.md
+M	dev/reports/codex_changed_files.txt
+M	dev/reports/codex_review.diff
+M	dev/reports/PR_26179_OWNER_010-canonical-project-folder-instructions.md
+M	dev/reports/PR_26179_OWNER_010-canonical-project-folder-instructions_requirement-checklist.md
+M	dev/reports/PR_26179_OWNER_010-canonical-project-folder-instructions_validation-report.md
 ```
 
-## Documentation Review Evidence
-```
-dev/build/ProjectInstructions\PROJECT_STATE.md:11:`PROJECT_STATE.md` is the single source of truth for current repository and team state metadata used by Codex Start-of-Day bootstrap summaries.
-dev/build/ProjectInstructions\PROJECT_STATE.md:16:- `PROJECT_STATE.md` owns current project state metadata.
-dev/build/ProjectInstructions\PROJECT_INSTRUCTIONS.md:22:- Project state: `dev/build/ProjectInstructions/PROJECT_STATE.md`
-dev/build/ProjectInstructions\PROJECT_INSTRUCTIONS.md:64:- `PROJECT_STATE.md` owns current repository/team state metadata used by bootstrap summaries.
-dev/build/ProjectInstructions\PROJECT_INSTRUCTIONS.md:121:`dev/build/ProjectInstructions/addendums/codex_start_of_day_bootstrap.md` defines Bootstrap Phrases, Bootstrap Responsibilities, Wrapper Responsibilities, Standard Bootstrap Report, loading rules, SSoT ownership, and the future wrapper direction for the phrase `Use Latest Project Instructions`.
-dev/build/ProjectInstructions\addendums\codex_start_of_day_bootstrap.md:19:- Owner Start of Day
-dev/build/ProjectInstructions\addendums\codex_start_of_day_bootstrap.md:20:- Team Alpha Start of Day
-dev/build/ProjectInstructions\addendums\codex_start_of_day_bootstrap.md:21:- Team Bravo Start of Day
-dev/build/ProjectInstructions\addendums\codex_start_of_day_bootstrap.md:22:- Team Charlie Start of Day
-dev/build/ProjectInstructions\addendums\codex_start_of_day_bootstrap.md:23:- Team Gamma Start of Day
-dev/build/ProjectInstructions\addendums\codex_start_of_day_bootstrap.md:26:- `Team Alpha Start of Day` is accepted as a user phrase alias for the canonical Team Alfa lane.
-dev/build/ProjectInstructions\addendums\codex_start_of_day_bootstrap.md:29:## Bootstrap Responsibilities
-dev/build/ProjectInstructions\addendums\codex_start_of_day_bootstrap.md:34:- `PROJECT_STATE.md`
-dev/build/ProjectInstructions\addendums\codex_start_of_day_bootstrap.md:44:## Wrapper Responsibilities
-dev/build/ProjectInstructions\addendums\codex_start_of_day_bootstrap.md:57:## Standard Bootstrap Report
-dev/build/ProjectInstructions\addendums\codex_start_of_day_bootstrap.md:96:`PROJECT_STATE.md` owns:
-dev/build/ProjectInstructions\addendums\codex_start_of_day_bootstrap.md:115:Use Latest Project Instructions
-```
+## Duplicate Guidance Review
+- Bootstrap/startup guidance SSoT check: PASS. Full bootstrap responsibilities remain only in `bootstrap/codex_start_of_day_bootstrap.md`; the retired startup document is a pointer.
+- Folder ownership SSoT check: PASS. Full folder placement rules remain in `repository/canonical_repository_structure.md`.
+- Intentional non-SSoT references: `PROJECT_STATE.md` carries machine-readable current folder fields, and the bootstrap doc carries short SSoT summary pointers only.
 
 ## Validation
-- Documentation review: PASS
-- git diff --check: PASS
+- `git diff --check`: PASS.
+- `npm run validate:canonical-structure`: PASS.
+- `node ./dev/scripts/run-platform-validation-suite.mjs`: PASS, 8/8 scenarios.
+- Grep for duplicate bootstrap/startup guidance: PASS.
+- Grep for duplicate full folder ownership tables outside canonical SSoT: PASS, only intentional state/summary references found.
 
 ## Blockers
 None.

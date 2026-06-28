@@ -1,32 +1,53 @@
 # Project State
 
-Status: Active
-
-Owner: OWNER
-
-Version: 2026-06-27.PR_26179_OWNER_010
-
-## Purpose
-
-`PROJECT_STATE.md` is the single source of truth for current repository and team state metadata used by Codex Start-of-Day bootstrap summaries.
-
-## Ownership
-
-- `PROJECT_INSTRUCTIONS.md` owns the Project Instructions entry point and referenced load graph.
-- `PROJECT_STATE.md` owns current project state metadata.
-- `addendums/canonical_repository_structure.md` owns repository folder placement and file-placement rules.
-
-## Current State Fields
-
-Wrappers and Codex bootstrap summaries may report:
-
-- Project State Version
-- Repository Version
-- Team
-- Branch
-- Worktree
-- Backlog Loaded
-- Additional Documents Loaded
-- Next Recommended PR
-
-This file documents the state contract only. It does not implement wrapper behavior.
+```yaml
+project_state_version: "2026-06-27.PR_26179_OWNER_010"
+last_updated: "2026-06-27"
+current_main_commit: "40de767476d70cadfd1292c916844c2f31b6f185"
+repository_status:
+  state: "active-owner-pr"
+  current_pr: "PR_26179_OWNER_010-canonical-project-folder-instructions"
+  required_start_branch: "main"
+  required_start_sync: "main...origin/main == 0 0"
+project_instructions_version: "2026-06-27.PR_26179_OWNER_010"
+canonical_layout_version: "2026-06-27.PR_26179_OWNER_010"
+active_teams:
+  - "Team OWNER"
+  - "Team Alfa"
+  - "Team Bravo"
+  - "Team Charlie"
+  - "Team Delta"
+  - "Team Golf"
+latest_owner_pr: "PR_26179_OWNER_010-canonical-project-folder-instructions"
+latest_structure_pr: "PR_26179_OWNER_010-canonical-project-folder-instructions"
+current_valid_top_level_folders:
+  - "account/"
+  - "admin/"
+  - "assets/"
+  - "community/"
+  - "company/"
+  - "deploy/"
+  - "dev/"
+  - "docs/"
+  - "games/"
+  - "learn/"
+  - "legal/"
+  - "marketplace/"
+  - "memberships/"
+  - "owner/"
+  - "src/"
+  - "toolbox/"
+current_valid_dev_folders:
+  - "dev/archive/"
+  - "dev/build/"
+  - "dev/config/"
+  - "dev/reports/"
+  - "dev/scripts/"
+  - "dev/templates/"
+  - "dev/tests/"
+  - "dev/tools/"
+  - "dev/workspace/"
+known_technical_debt:
+  - "Legacy transition src buckets remain until scoped migration PRs move them into src/web/, src/api-runtime/, or src/runtime/."
+  - "repository_directory_standard.md and codex_project_instructions_startup.md are superseded pointers retained for compatibility."
+```

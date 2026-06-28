@@ -54,6 +54,66 @@ The wrapper performs:
 
 The wrapper must not modify runtime code, production pages, or existing wrapper scripts as part of this architecture definition.
 
+## Startup Governance Included Here
+
+This bootstrap document supersedes `dev/build/ProjectInstructions/addendums/codex_project_instructions_startup.md`.
+
+Codex must use Project Instructions as the only active source of truth for:
+
+- Governance rules
+- Repository standards
+- Ownership rules
+- Workflow rules
+- Addendums
+- Execution modes
+- Artifact requirements
+
+Codex must follow the canonical lifecycle in:
+
+```text
+dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
+```
+
+This bootstrap architecture only requires Codex to read and apply that canonical lifecycle; it must not define a competing lifecycle rule.
+
+Deprecated Project Instructions material outside `dev/build/ProjectInstructions/` is reference-only and must not override active governance.
+
+## Project Reference File Review
+
+When present in `ProjectInstructions.zip`, the active project instruction directory, or `dev/archive/legacy-docs-build/admin-notes/`, Codex must include these recognized project instruction/reference files in the Project Instructions read set:
+
+- `Installs required.txt`
+- `Table layout.txt`
+
+Archived reference files are historical reference only. They must not be treated as active Project Instructions.
+
+## Conflict Handling
+
+If a chat instruction conflicts with Project Instructions:
+
+- Stop.
+- Do not continue the PR.
+- Produce the required ZIP artifact when the active artifact rules require one.
+- Document the conflict in the run summary or PR report.
+- Ask for OWNER direction.
+
+## Execution Mode Validation
+
+When a request contains:
+
+- Build PR
+- Continue
+- Follow Project Instructions
+- Next PR
+
+Codex must treat the request as Execution Mode.
+
+Execution Mode means:
+
+- Execute the requested work order.
+- Do not redesign the process.
+- Do not provide alternatives unless a Stop Gate condition exists.
+
 ## Standard Bootstrap Report
 
 ```text

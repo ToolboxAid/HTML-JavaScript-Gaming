@@ -1,5 +1,25 @@
-dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-dev/build/ProjectInstructions/PROJECT_STATE.md
-dev/build/ProjectInstructions/README.txt
-dev/build/ProjectInstructions/addendums/codex_project_instructions_startup.md
-dev/build/ProjectInstructions/addendums/codex_start_of_day_bootstrap.md
+PR_26179_OWNER_010-canonical-project-folder-instructions
+Updated: 2026-06-28T02:02:53Z
+Branch: PR_26179_OWNER_010-canonical-project-folder-instructions
+
+Changed files from HEAD:
+M	dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+M	dev/build/ProjectInstructions/PROJECT_STATE.md
+M	dev/build/ProjectInstructions/README.txt
+M	dev/build/ProjectInstructions/TEAM_START_COMMANDS.md
+M	dev/build/ProjectInstructions/addendums/codex_project_instructions_startup.md
+M	dev/build/ProjectInstructions/addendums/release_gate.md
+M	dev/build/ProjectInstructions/addendums/repository_directory_standard.md
+R064	dev/build/ProjectInstructions/addendums/codex_start_of_day_bootstrap.md	dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md
+R100	dev/build/ProjectInstructions/addendums/canonical_repository_structure.md	dev/build/ProjectInstructions/repository/canonical_repository_structure.md
+
+Working tree status at report generation:
+ M dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+ M dev/build/ProjectInstructions/PROJECT_STATE.md
+ M dev/build/ProjectInstructions/README.txt
+ M dev/build/ProjectInstructions/TEAM_START_COMMANDS.md
+ M dev/build/ProjectInstructions/addendums/codex_project_instructions_startup.md
+ M dev/build/ProjectInstructions/addendums/release_gate.md
+ M dev/build/ProjectInstructions/addendums/repository_directory_standard.md
+RM dev/build/ProjectInstructions/addendums/codex_start_of_day_bootstrap.md -> dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md
+R  dev/build/ProjectInstructions/addendums/canonical_repository_structure.md -> dev/build/ProjectInstructions/repository/canonical_repository_structure.md

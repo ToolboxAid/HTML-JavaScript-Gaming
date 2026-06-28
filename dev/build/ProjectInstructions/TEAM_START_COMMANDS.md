@@ -19,7 +19,7 @@ Branch Lifecycle (Canonical):
 
 Team Alfa, Team Bravo, Team Charlie, and historical Team Gamma lanes must update from current `main` before starting work and use the folder-placement SSoT:
 
-`dev/build/ProjectInstructions/addendums/canonical_repository_structure.md`
+`dev/build/ProjectInstructions/repository/canonical_repository_structure.md`
 
 Do not create or reuse invalid legacy folders. Use the SSoT invalid legacy path list.
 
@@ -32,7 +32,7 @@ Ready-to-copy command:
 ```text
 OWNER override approved: Start Team Alfa from the ProjectInstructions release gate.
 
-Read dev/build/ProjectInstructions/README.txt first.
+Read dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md first.
 Read dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md.
 Read dev/build/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
 
@@ -54,7 +54,7 @@ Ready-to-copy command:
 ```text
 OWNER override approved: Start Team Bravo from the ProjectInstructions release gate.
 
-Read dev/build/ProjectInstructions/README.txt first.
+Read dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md first.
 Read dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md.
 Read dev/build/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
 
@@ -76,7 +76,7 @@ Ready-to-copy command:
 ```text
 OWNER override approved: Start Team Charlie from the ProjectInstructions release gate.
 
-Read dev/build/ProjectInstructions/README.txt first.
+Read dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md first.
 Read dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md.
 Read dev/build/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
 
@@ -98,7 +98,7 @@ Ready-to-copy command:
 ```text
 OWNER override approved: Start Team Delta from the ProjectInstructions release gate.
 
-Read dev/build/ProjectInstructions/README.txt first.
+Read dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md first.
 Read dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md.
 Read dev/build/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
 Read dev/build/ProjectInstructions/team_assignments/team_ownership.md.
@@ -122,7 +122,7 @@ Ready-to-copy command:
 ```text
 OWNER override approved: Start Team Golf from the ProjectInstructions release gate.
 
-Read dev/build/ProjectInstructions/README.txt first.
+Read dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md first.
 Read dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md.
 Read dev/build/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
 Read dev/build/ProjectInstructions/team_assignments/team_ownership.md.
