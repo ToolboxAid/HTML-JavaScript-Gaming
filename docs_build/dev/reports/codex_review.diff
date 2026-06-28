@@ -1,570 +1,152 @@
 ﻿diff --git a/dev/tests/playwright/tools/SpritesToolShell.spec.mjs b/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-new file mode 100644
-index 000000000..9187fe485
---- /dev/null
+index 9187fe485..b2c3d9922 100644
+--- a/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
 +++ b/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-@@ -0,0 +1,234 @@
-+import { expect, test } from "@playwright/test";
-+import fs from "node:fs/promises";
-+import http from "node:http";
-+import path from "node:path";
-+import { fileURLToPath } from "node:url";
-+import { isBrowserExtensionNoise } from "../../helpers/browserExtensionNoise.mjs";
-+import { getToolRegistrySnapshot } from "../../../../toolbox/toolRegistry.js";
-+
-+const __filename = fileURLToPath(import.meta.url);
-+const __dirname = path.dirname(__filename);
-+const repoRoot = path.resolve(__dirname, "..", "..", "..", "..");
-+
-+function contentTypeForPath(filePath) {
-+  const extension = path.extname(filePath).toLowerCase();
-+  if (extension === ".html") return "text/html; charset=utf-8";
-+  if (extension === ".js" || extension === ".mjs") return "text/javascript; charset=utf-8";
-+  if (extension === ".json") return "application/json";
-+  if (extension === ".css") return "text/css; charset=utf-8";
-+  if (extension === ".svg") return "image/svg+xml";
-+  if (extension === ".png") return "image/png";
-+  if (extension === ".jpg" || extension === ".jpeg") return "image/jpeg";
-+  if (extension === ".webp") return "image/webp";
-+  if (extension === ".woff2") return "font/woff2";
-+  if (extension === ".woff") return "font/woff";
-+  return "application/octet-stream";
-+}
-+
-+function isInsideRepoRoot(absolutePath) {
-+  const relativePath = path.relative(repoRoot, absolutePath);
-+  return relativePath === "" || (!relativePath.startsWith("..") && !path.isAbsolute(relativePath));
-+}
-+
-+function jsonResponse(response, payload) {
-+  response.statusCode = 200;
-+  response.setHeader("Content-Type", "application/json");
-+  response.end(JSON.stringify(payload));
-+}
-+
-+async function startSpriteShellTestServer() {
-+  const server = http.createServer(async (request, response) => {
-+    try {
-+      const requestUrl = new URL(request.url || "/", "http://127.0.0.1");
-+      const requestOrigin = `http://${request.headers.host}`;
-+
-+      if (requestUrl.pathname === "/api/public/config") {
-+        jsonResponse(response, {
-+          data: {
-+            publicConfig: {
-+              apiUrl: `${requestOrigin}/api`,
-+              environmentLabel: "Playwright",
-+              siteUrl: requestOrigin,
-+            },
-+          },
-+          ok: true,
-+        });
-+        return;
-+      }
-+
-+      if (requestUrl.pathname === "/api/toolbox/registry/snapshot") {
-+        jsonResponse(response, {
-+          data: getToolRegistrySnapshot(),
-+          ok: true,
-+        });
-+        return;
-+      }
-+
-+      if (requestUrl.pathname === "/api/session/current") {
-+        jsonResponse(response, {
-+          data: {
-+            authenticated: false,
-+            session: null,
-+            user: null,
-+          },
-+          ok: true,
-+        });
-+        return;
-+      }
-+
-+      if (requestUrl.pathname === "/api/platform-settings/banner") {
-+        jsonResponse(response, {
-+          data: {
-+            banner: null,
-+            enabled: false,
-+          },
-+          ok: true,
-+        });
-+        return;
-+      }
-+
-+      if (requestUrl.pathname === "/api/toolbox/game-hub/repositories") {
-+        jsonResponse(response, {
-+          data: {
-+            repositoryId: "sprites-shell-playwright",
-+          },
-+          ok: true,
-+        });
-+        return;
-+      }
-+
-+      if (/^\/api\/toolbox\/game-hub\/repositories\/[^/]+\/methods\//.test(requestUrl.pathname)) {
-+        jsonResponse(response, {
-+          data: {
-+            result: null,
-+          },
-+          ok: true,
-+        });
-+        return;
-+      }
-+
-+      if (requestUrl.pathname === "/api/game-journey/completion-metrics") {
-+        jsonResponse(response, {
-+          data: {
-+            metrics: [],
-+          },
-+          ok: true,
-+        });
-+        return;
-+      }
-+
-+      const decodedPath = decodeURIComponent(requestUrl.pathname);
-+      const normalizedPath = path.normalize(decodedPath).replace(/^(\.\.[/\\])+/, "");
-+      const absolutePath = path.resolve(repoRoot, `.${normalizedPath}`);
-+      if (!isInsideRepoRoot(absolutePath)) {
-+        response.statusCode = 403;
-+        response.end("Forbidden");
-+        return;
-+      }
-+
-+      let targetPath = absolutePath;
-+      const stat = await fs.stat(targetPath).catch(() => null);
-+      if (stat && stat.isDirectory()) {
-+        targetPath = path.join(targetPath, "index.html");
-+      }
-+
-+      const responseContents = await fs.readFile(targetPath);
-+      response.statusCode = 200;
-+      response.setHeader("Content-Type", contentTypeForPath(targetPath));
-+      response.end(responseContents);
-+    } catch {
-+      response.statusCode = 404;
-+      response.end("Not Found");
+@@ -9,6 +9,17 @@ import { getToolRegistrySnapshot } from "../../../../toolbox/toolRegistry.js";
+ const __filename = fileURLToPath(import.meta.url);
+ const __dirname = path.dirname(__filename);
+ const repoRoot = path.resolve(__dirname, "..", "..", "..", "..");
++const SPRITE_TOOLBAR_PLACEHOLDERS = [
++  "Pencil",
++  "Eraser",
++  "Fill",
++  "Line",
++  "Rectangle",
++  "Circle",
++  "Picker",
++  "Move",
++  "Zoom",
++];
+ 
+ function contentTypeForPath(filePath) {
+   const extension = path.extname(filePath).toLowerCase();
+@@ -216,9 +227,11 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status
+     await expect(page.getByText("Canvas Setup")).toBeVisible();
+     await expect(page.getByRole("heading", { level: 2, name: "Pixel Work Area" })).toBeVisible();
+     await expect(page.getByRole("heading", { level: 2, name: "Sprite Details" })).toBeVisible();
+-    await expect(page.getByRole("button", { name: "Pencil" })).toBeDisabled();
+-    await expect(page.getByRole("button", { name: "Eraser" })).toBeDisabled();
+-    await expect(page.getByRole("button", { name: "Fill" })).toBeDisabled();
++    await expect(page.locator("[data-sprites-toolbar]")).toBeVisible();
++    for (const toolName of SPRITE_TOOLBAR_PLACEHOLDERS) {
++      await expect(page.getByRole("button", { name: `${toolName} tool placeholder` })).toBeDisabled();
 +    }
-+  });
-+
-+  await new Promise((resolve, reject) => {
-+    server.listen(0, "127.0.0.1", () => resolve());
-+    server.on("error", reject);
-+  });
-+
-+  const address = server.address();
-+  if (!address || typeof address === "string") {
-+    throw new Error("Failed to start Sprite Creator shell test server.");
-+  }
-+
-+  return {
-+    baseUrl: `http://127.0.0.1:${address.port}`,
-+    close: async () => {
-+      await new Promise((resolve, reject) => {
-+        const forceClose = setTimeout(() => {
-+          server.closeAllConnections?.();
-+        }, 250);
-+        server.close((error) => {
-+          clearTimeout(forceClose);
-+          if (error) reject(error);
-+          else resolve();
-+        });
-+        server.closeIdleConnections?.();
-+      });
-+    },
-+  };
-+}
-+
-+function collectPageFailures(page) {
-+  const failedRequests = [];
-+  const pageErrors = [];
-+  const consoleErrors = [];
-+
-+  page.on("response", (response) => {
-+    if (response.status() >= 400) {
-+      failedRequests.push(`${response.status()} ${response.url()}`);
-+    }
-+  });
-+  page.on("requestfailed", (request) => {
-+    failedRequests.push(`FAILED ${request.url()}`);
-+  });
-+  page.on("pageerror", (error) => {
-+    const text = error.stack || error.message;
-+    if (!isBrowserExtensionNoise(text)) {
-+      pageErrors.push(error.message);
-+    }
-+  });
-+  page.on("console", (message) => {
-+    if (message.type() === "error" && !isBrowserExtensionNoise(message.text())) {
-+      consoleErrors.push(message.text());
-+    }
-+  });
-+
-+  return { consoleErrors, failedRequests, pageErrors };
-+}
-+
-+test("Sprite Creator shell loads with visible tool, canvas, details, and status regions", async ({ page }) => {
-+  const server = await startSpriteShellTestServer();
-+  const failures = collectPageFailures(page);
-+
-+  try {
-+    await page.goto(`${server.baseUrl}/toolbox/sprites/index.html`, { waitUntil: "networkidle" });
-+
-+    await expect(page).toHaveTitle(/Sprite Creator - GameFoundryStudio/);
-+    await expect(page.getByRole("heading", { level: 1, name: "Sprite Creator" })).toBeVisible();
-+    await expect(page.locator("[data-sprites-tools-panel]")).toBeVisible();
-+    await expect(page.locator("[data-sprites-work-area]")).toBeVisible();
-+    await expect(page.locator("[data-sprites-details-panel]")).toBeVisible();
-+    await expect(page.locator("[data-sprites-footer-status]")).toBeVisible();
-+    await expect(page.locator("[data-sprites-tools-panel]")).toContainText("Sprite Tools");
-+    await expect(page.getByText("Drawing Tools")).toBeVisible();
-+    await expect(page.getByText("Canvas Setup")).toBeVisible();
-+    await expect(page.getByRole("heading", { level: 2, name: "Pixel Work Area" })).toBeVisible();
-+    await expect(page.getByRole("heading", { level: 2, name: "Sprite Details" })).toBeVisible();
-+    await expect(page.getByRole("button", { name: "Pencil" })).toBeDisabled();
-+    await expect(page.getByRole("button", { name: "Eraser" })).toBeDisabled();
-+    await expect(page.getByRole("button", { name: "Fill" })).toBeDisabled();
-+    await expect(page.locator("[data-sprites-pixel-grid]")).toBeVisible();
-+    await expect(page.locator("[data-sprites-shell-status]")).toContainText("Shell ready");
-+    await expect(page.locator("main")).toContainText("Palette/Colors keys only");
-+    await expect(page.locator("main")).not.toContainText(/Not implemented yet|future rebuild work|Static wireframe only|Plan sprite creation/i);
-+    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-+
-+    expect(failures.failedRequests).toEqual([]);
-+    expect(failures.pageErrors).toEqual([]);
-+    expect(failures.consoleErrors).toEqual([]);
-+  } finally {
-+    await server.close();
-+  }
-+});
-diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_022-sprites-tool-shell.md b/docs_build/dev/reports/PR_26179_CHARLIE_022-sprites-tool-shell.md
++    await expect(page.locator("main")).toContainText("Toolbar placeholders only");
+     await expect(page.locator("[data-sprites-pixel-grid]")).toBeVisible();
+     await expect(page.locator("[data-sprites-shell-status]")).toContainText("Shell ready");
+     await expect(page.locator("main")).toContainText("Palette/Colors keys only");
+diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_023-sprites-toolbar-placeholders.md b/docs_build/dev/reports/PR_26179_CHARLIE_023-sprites-toolbar-placeholders.md
 new file mode 100644
-index 000000000..7833d2346
+index 000000000..b5925c595
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26179_CHARLIE_022-sprites-tool-shell.md
-@@ -0,0 +1,89 @@
-+﻿# PR_26179_CHARLIE_022-sprites-tool-shell
++++ b/docs_build/dev/reports/PR_26179_CHARLIE_023-sprites-toolbar-placeholders.md
+@@ -0,0 +1,68 @@
++﻿# PR_26179_CHARLIE_023-sprites-toolbar-placeholders
 +
 +Team: CHARLIE
-+Date: 2026-06-28
-+Branch: PR_26179_CHARLIE_022-sprites-tool-shell
-+Scope: Sprite Creator shell only
++Workflow: stacked feature workflow
++Base branch: PR_26179_CHARLIE_022-sprites-tool-shell
++Canonical ZIP path: dev/workspace/zip/PR_26179_CHARLIE_023-sprites-toolbar-placeholders_delta.zip
 +
 +## Summary
 +
-+Updated the existing Sprites placeholder page into a Theme V2-compliant Sprite Creator shell. The shell is public Creator-facing and provides the requested left tools panel, center pixel work area placeholder, right sprite details / animation placeholder, and status area.
-+
-+The current repository did not contain `docs_build/tool-planning/sprites/`, and no local/remote/GitHub branch named `PR_26179_CHARLIE_021` was available during startup. This PR did not merge, cherry-pick, or copy stale PR #219-#228 implementation code.
-+
-+## Changed Files
-+
-+- toolbox/sprites/index.html
-+- src/shared/toolbox/tool-metadata-inventory.js
-+- dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-+- docs_build/dev/reports/PR_26179_CHARLIE_022-sprites-tool-shell.md
-+- docs_build/dev/reports/codex_changed_files.txt
-+- docs_build/dev/reports/codex_review.diff
++Added Sprite Creator toolbar placeholders for Pencil, Eraser, Fill, Line, Rectangle, Circle, Picker, Move, and Zoom. This PR intentionally adds visible controls only; no drawing behavior, persistence, API, DB, schema, or authoritative browser product data was added.
 +
 +## Branch Validation
 +
 +PASS
 +
-+- Current branch: `PR_26179_CHARLIE_022-sprites-tool-shell`
-+- Started from `main`
-+- Scope remained shell-only
-+- No `start_of_day` files changed
-+- No runtime/API/database schema files changed
-+- No browser-owned product data added
++- Current branch: PR_26179_CHARLIE_023-sprites-toolbar-placeholders
++- Based on: PR_26179_CHARLIE_022-sprites-tool-shell
++- No start_of_day files changed
++- No DB/API/schema files changed
++- No stale PR #219-#228 code copied
 +
 +## Requirement Checklist
 +
 +| Requirement | Status | Notes |
 +| --- | --- | --- |
-+| Read `docs_build/tool-planning/sprites/` from PR_26179_CHARLIE_021 | WARN | Folder/branch was unavailable in local, remote, and GitHub searches; proceeded without stale code. |
-+| Do not merge/cherry-pick/copy stale PR #219-#228 code | PASS | Implemented shell directly from current main patterns. |
-+| Update `toolbox/sprites/index.html` placeholder | PASS | Replaced placeholder-only copy with Sprite Creator shell. |
-+| Use public Creator-facing language | PASS | Page title and copy use Sprite Creator / Sprites language. |
-+| Theme V2 classes first | PASS | Uses existing container, page-title, tool-workspace, tool-column, accordion, card, table, status, and mini-stat classes. |
-+| No inline styles/style blocks/script blocks/inline handlers | PASS | Static scan found no violations. |
-+| External JS only if needed | PASS | Only existing Theme V2 external scripts are used. |
-+| Add navigation only if required | PASS | No catalog route change required; metadata label updated for the existing Sprites route. |
-+| No browser-owned product data | PASS | Shell contains static placeholders only; no persistence or authored data arrays. |
-+| No Local DB schema/API endpoints/key generation | PASS | No database/API/runtime changes. |
-+| Left panel tools placeholder | PASS | Visible Sprite Tools region with Drawing Tools, Canvas Setup, and Palette Source. |
-+| Center pixel work area placeholder | PASS | Visible Pixel Work Area with static grid placeholder. |
-+| Right details/animation placeholder | PASS | Visible Sprite Details and Animation regions. |
-+| Footer/status area | PASS | Visible shell status card. |
-+| Targeted shell test | PASS | Added `SpritesToolShell.spec.mjs`. |
++| Add Pencil placeholder | PASS | Visible disabled control. |
++| Add Eraser placeholder | PASS | Visible disabled control. |
++| Add Fill placeholder | PASS | Visible disabled control. |
++| Add Line placeholder | PASS | Visible disabled control. |
++| Add Rectangle placeholder | PASS | Visible disabled control. |
++| Add Circle placeholder | PASS | Visible disabled control. |
++| Add Picker placeholder | PASS | Visible disabled control. |
++| Add Move placeholder | PASS | Visible disabled control. |
++| Add Zoom placeholder | PASS | Visible disabled control. |
++| No drawing behavior | PASS | Buttons remain disabled; no new runtime JS. |
++| No DB/API/schema changes | PASS | Changed only shell/test/report files. |
++| No browser-owned authoritative product data | PASS | No product persistence added. |
++| No stale PR #219-#228 code | PASS | Direct current-main stack edit only. |
 +
 +## Validation Lane Report
 +
-+PASS with one environment note.
-+
-+Commands run:
++Commands:
 +
 +```text
-+node --check src/shared/toolbox/tool-metadata-inventory.js
 +node --check dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-+git diff --check -- toolbox/sprites/index.html src/shared/toolbox/tool-metadata-inventory.js dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-+rg --pcre2 -n -i "Not implemented yet|future rebuild work|Static wireframe only|Plan sprite creation|<style|style=|<script(?![^>]+src=)|on(click|change|submit|input|load|error)=" toolbox/sprites/index.html
-+npx playwright test dev/tests/playwright/tools/SpritesToolShell.spec.mjs --workers=1 --reporter=list
++node --check src/shared/toolbox/tool-metadata-inventory.js
++git diff --check -- toolbox/sprites/index.html dev/tests/playwright/tools/SpritesToolShell.spec.mjs
++rg --pcre2 -n -i "<style|style=|<script(?![^>]+src=)|on(click|change|submit|input|load|error)=|imageDataUrl|local-mem|fake-login|MEM DB" toolbox/sprites/index.html dev/tests/playwright/tools/SpritesToolShell.spec.mjs
++npx playwright test dev/tests/playwright/tools/SpritesToolShell.spec.mjs --workers=1 --reporter=list --output=<temp>
 +```
 +
 +Results:
 +
 +- Node syntax checks: PASS
 +- `git diff --check`: PASS
-+- Placeholder/inline-style scan: PASS, no matches
++- Guard scan: PASS, no matches
 +- Targeted Playwright: PASS, 1 test passed
-+
-+Environment note: `node_modules` was absent initially. `npm ci` was run using the committed lockfile so the declared `@playwright/test` dependency could execute the targeted test. No package metadata was changed.
 +
 +## Manual Validation Notes
 +
-+1. Open `/toolbox/sprites/index.html`.
-+2. Confirm the page title reads `Sprite Creator`.
-+3. Confirm the left panel shows Sprite Tools, Drawing Tools, Canvas Setup, and Palette Source.
-+4. Confirm the center panel shows Pixel Work Area and the static Pixel Grid placeholder.
-+5. Confirm the right panel shows Sprite Details, Animation, and Readiness sections.
-+6. Confirm the status card says the shell is ready and that save/load/data contracts remain later scoped work.
-+7. Confirm no visible `Not implemented yet`, `future rebuild work`, `Static wireframe only`, or `Plan sprite creation` wording remains.
++1. Open `/toolbox/sprites/index.html` from the stacked branch.
++2. Confirm the Sprite Tools panel shows Pencil, Eraser, Fill, Line, Rectangle, Circle, Picker, Move, and Zoom.
++3. Confirm toolbar controls are placeholders only and disabled.
++4. Confirm there is no drawing behavior yet.
 +
-+## ZIP Artifact
++## ZIP Path
 +
-+`tmp/PR_26179_CHARLIE_022-sprites-tool-shell_delta.zip`
++`dev/workspace/zip/PR_26179_CHARLIE_023-sprites-toolbar-placeholders_delta.zip`
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-new file mode 100644
-index 000000000..3f6b76a1b
---- /dev/null
+index 3f6b76a1b..3947ffbc8 100644
+--- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -0,0 +1,6 @@
-+﻿toolbox/sprites/index.html
-+src/shared/toolbox/tool-metadata-inventory.js
-+dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-+docs_build/dev/reports/PR_26179_CHARLIE_022-sprites-tool-shell.md
-+docs_build/dev/reports/codex_changed_files.txt
-+docs_build/dev/reports/codex_review.diff
-diff --git a/src/shared/toolbox/tool-metadata-inventory.js b/src/shared/toolbox/tool-metadata-inventory.js
-index 0a368a985..12b4e165c 100644
---- a/src/shared/toolbox/tool-metadata-inventory.js
-+++ b/src/shared/toolbox/tool-metadata-inventory.js
-@@ -453,16 +453,16 @@ export const TOOL_REGISTRY = Object.freeze([
-   },
-   {
-     "id": "sprites",
--    "name": "Sprites",
--    "displayName": "Sprites",
--    "shortDescription": "Plan sprite creation, review, and game-ready export workflows.",
-+    "name": "Sprite Creator",
-+    "displayName": "Sprite Creator",
-+    "shortDescription": "Shape game-ready sprites with a focused workspace for drawing, details, and animation planning.",
-     "shortLabel": "Sprites",
-     "path": "sprites",
-     "folderName": "sprites",
-     "entryPoint": "sprites/index.html",
-     "badge": "/assets/theme-v2/images/badges/sprites.png",
-     "tool": "/assets/theme-v2/images/tools/sprites.png",
--    "description": "Plan sprite creation, review, and game-ready export workflows.",
-+    "description": "Shape game-ready sprites with a focused workspace for drawing, details, and animation planning.",
-     "category": "Design",
-     "colorGroup": "tool-group-design",
-     "active": true,
-@@ -473,8 +473,10 @@ export const TOOL_REGISTRY = Object.freeze([
-     "requires": [],
-     "status": "Wireframe",
-     "progressChecklist": [
--      "Review readiness",
--      "Static planned text only"
-+      "Sprite Creator shell visible",
-+      "Drawing tools panel visible",
-+      "Pixel work area visible",
-+      "Details and animation panel visible"
-     ],
-     "deferred": false,
-     "hidden": false,
+@@ -1,6 +1,5 @@
+ ﻿toolbox/sprites/index.html
+-src/shared/toolbox/tool-metadata-inventory.js
+ dev/tests/playwright/tools/SpritesToolShell.spec.mjs
+-docs_build/dev/reports/PR_26179_CHARLIE_022-sprites-tool-shell.md
++docs_build/dev/reports/PR_26179_CHARLIE_023-sprites-toolbar-placeholders.md
+ docs_build/dev/reports/codex_changed_files.txt
+ docs_build/dev/reports/codex_review.diff
 diff --git a/toolbox/sprites/index.html b/toolbox/sprites/index.html
-index c66454371..8afd3b04c 100644
+index 8afd3b04c..cbedd6703 100644
 --- a/toolbox/sprites/index.html
 +++ b/toolbox/sprites/index.html
-@@ -5,8 +5,8 @@
-     <meta charset="utf-8">
-     <base href="/">
-     <meta name="viewport" content="width=device-width, initial-scale=1">
--    <title>Sprites - GameFoundryStudio</title>
--    <meta name="description" content="Sprites Toolbox wireframe. Plan sprite creation, review, and game-ready export workflows.">
-+    <title>Sprite Creator - GameFoundryStudio</title>
-+    <meta name="description" content="Create and review pixel sprites for games with a Creator-focused workspace shell.">
-     <link rel="icon" href="/favicon.svg">
-     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
- </head>
-@@ -17,36 +17,156 @@
-         <section class="page-title">
-             <div class="container">
-                 <div class="kicker">Toolbox / Sprites</div>
--                <h1>Sprites</h1>
--                <p class="lede">Plan sprite creation, review, and game-ready export workflows. Static wireframe only; no database, persistence, save, load, or runtime behavior is implemented.</p>
-+                <h1>Sprite Creator</h1>
-+                <p class="lede">Shape game-ready sprites with a focused workspace for drawing, details, and animation planning.</p>
-             </div>
-         </section>
-         <section class="section">
-             <div class="container container--tool-wide">
-                 <div class="tool-workspace tool-workspace--wide">
--                    <aside class="tool-column tool-group-design">
-+                    <aside class="tool-column tool-group-design" data-sprites-tools-panel>
-                         <div class="tool-column-header">
--                            <h2>Sprites</h2>
-+                            <h2>Sprite Tools</h2>
-                         </div>
-+                        <p class="kicker">Sprite Tools</p>
-                         <div class="accordion-stack">
+@@ -33,12 +33,19 @@
                              <details class="vertical-accordion" open>
--                                <summary>Setup</summary>
--                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
-+                                <summary>Drawing Tools</summary>
-+                                <div class="accordion-body content-stack">
-+                                    <p>Choose the creation action that will shape the sprite canvas in the next data build.</p>
-+                                    <div class="action-group action-group--tight" aria-label="Sprite drawing tools">
-+                                        <button class="btn btn--compact" type="button" disabled>Pencil</button>
-+                                        <button class="btn btn--compact" type="button" disabled>Eraser</button>
-+                                        <button class="btn btn--compact" type="button" disabled>Fill</button>
-+                                    </div>
-+                                </div>
-+                            </details>
-+                            <details class="vertical-accordion" open>
-+                                <summary>Canvas Setup</summary>
-+                                <div class="accordion-body content-stack">
-+                                    <div class="table-wrapper">
-+                                        <table class="data-table tool-form-table" aria-label="Sprite canvas setup fields">
-+                                            <tbody>
-+                                                <tr>
-+                                                    <th scope="row">Width</th>
-+                                                    <td>16 pixels</td>
-+                                                </tr>
-+                                                <tr>
-+                                                    <th scope="row">Height</th>
-+                                                    <td>16 pixels</td>
-+                                                </tr>
-+                                                <tr>
-+                                                    <th scope="row">Mode</th>
-+                                                    <td>Draft canvas shell</td>
-+                                                </tr>
-+                                            </tbody>
-+                                        </table>
-+                                    </div>
-+                                </div>
-+                            </details>
-+                            <details class="vertical-accordion" open>
-+                                <summary>Palette Source</summary>
-+                                <div class="accordion-body content-stack">
-+                                    <p>Reusable colors come from Colors. Sprite Creator will reference Palette/Colors keys only.</p>
-+                                    <p class="status" role="status">Palette/Colors selection is reserved for the data-backed build slice.</p>
-+                                </div>
+                                 <summary>Drawing Tools</summary>
+                                 <div class="accordion-body content-stack">
+-                                    <p>Choose the creation action that will shape the sprite canvas in the next data build.</p>
+-                                    <div class="action-group action-group--tight" aria-label="Sprite drawing tools">
+-                                        <button class="btn btn--compact" type="button" disabled>Pencil</button>
+-                                        <button class="btn btn--compact" type="button" disabled>Eraser</button>
+-                                        <button class="btn btn--compact" type="button" disabled>Fill</button>
++                                    <p>Choose the creation action that will shape the sprite canvas in a later editor slice.</p>
++                                    <div class="action-group action-group--tight" aria-label="Sprite Creator toolbar placeholders" data-sprites-toolbar>
++                                        <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="pencil" aria-label="Pencil tool placeholder">Pencil</button>
++                                        <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="eraser" aria-label="Eraser tool placeholder">Eraser</button>
++                                        <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="fill" aria-label="Fill tool placeholder">Fill</button>
++                                        <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="line" aria-label="Line tool placeholder">Line</button>
++                                        <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="rectangle" aria-label="Rectangle tool placeholder">Rectangle</button>
++                                        <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="circle" aria-label="Circle tool placeholder">Circle</button>
++                                        <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="picker" aria-label="Picker tool placeholder">Picker</button>
++                                        <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="move" aria-label="Move tool placeholder">Move</button>
++                                        <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="zoom" aria-label="Zoom tool placeholder">Zoom</button>
+                                     </div>
++                                    <p class="status" role="status">Toolbar placeholders only. Drawing behavior is not implemented in this PR.</p>
+                                 </div>
                              </details>
-                         </div>
-                     </aside>
--                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="sprites" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
--                    <section class="tool-center-panel"><h2>Workspace</h2>
--                        <p>Plan sprite creation, review, and game-ready export workflows. This page preserves the shared Theme V2 tool template structure for future rebuild work.</p>
-+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="sprites" data-tool-icon-src="assets/theme-v2/images/badges/sprites.png" data-tool-character-src="assets/theme-v2/images/tools/sprites.png"></div>
-+                    <section class="tool-center-panel" data-sprites-work-area>
-+                        <h2>Pixel Work Area</h2>
-+                        <p>Use this canvas space to compose sprite art once drawing and save/load contracts are added.</p>
-+                        <div class="grid cols-3" aria-label="Sprite Creator shell summary">
-+                            <article class="mini-stat"><strong>Draft</strong>Canvas</article>
-+                            <article class="mini-stat"><strong>Ready</strong>Workspace</article>
-+                            <article class="mini-stat"><strong>Pending</strong>Save/Load</article>
-+                        </div>
-+                        <article class="card">
-+                            <div class="card-body content-stack">
-+                                <div>
-+                                    <div class="kicker">Canvas Preview</div>
-+                                    <h3>Pixel Grid</h3>
-+                                </div>
-+                                <div class="table-wrapper">
-+                                    <table class="data-table" aria-label="Sprite Creator pixel canvas placeholder" data-sprites-pixel-grid>
-+                                        <tbody>
-+                                            <tr><td>1,1</td><td>1,2</td><td>1,3</td><td>1,4</td><td>1,5</td><td>1,6</td><td>1,7</td><td>1,8</td></tr>
-+                                            <tr><td>2,1</td><td>2,2</td><td>2,3</td><td>2,4</td><td>2,5</td><td>2,6</td><td>2,7</td><td>2,8</td></tr>
-+                                            <tr><td>3,1</td><td>3,2</td><td>3,3</td><td>3,4</td><td>3,5</td><td>3,6</td><td>3,7</td><td>3,8</td></tr>
-+                                            <tr><td>4,1</td><td>4,2</td><td>4,3</td><td>4,4</td><td>4,5</td><td>4,6</td><td>4,7</td><td>4,8</td></tr>
-+                                            <tr><td>5,1</td><td>5,2</td><td>5,3</td><td>5,4</td><td>5,5</td><td>5,6</td><td>5,7</td><td>5,8</td></tr>
-+                                            <tr><td>6,1</td><td>6,2</td><td>6,3</td><td>6,4</td><td>6,5</td><td>6,6</td><td>6,7</td><td>6,8</td></tr>
-+                                            <tr><td>7,1</td><td>7,2</td><td>7,3</td><td>7,4</td><td>7,5</td><td>7,6</td><td>7,7</td><td>7,8</td></tr>
-+                                            <tr><td>8,1</td><td>8,2</td><td>8,3</td><td>8,4</td><td>8,5</td><td>8,6</td><td>8,7</td><td>8,8</td></tr>
-+                                        </tbody>
-+                                    </table>
-+                                </div>
-+                            </div>
-+                        </article>
-+                        <article class="card" data-sprites-footer-status>
-+                            <div class="card-body content-stack">
-+                                <div>
-+                                    <div class="kicker">Status</div>
-+                                    <h3>Sprite Creator Shell</h3>
-+                                </div>
-+                                <p class="status" role="status" data-sprites-shell-status>Shell ready. Drawing, Palette/Colors references, and save/load data contracts remain reserved for later scoped PRs.</p>
-+                            </div>
-+                        </article>
-                     </section>
--                    <aside class="tool-column tool-group-design">
-+                    <aside class="tool-column tool-group-design" data-sprites-details-panel>
-                         <div class="tool-column-header">
--                            <h2>Inspector</h2>
-+                            <h2>Sprite Details</h2>
-                         </div>
-                         <div class="accordion-stack">
                              <details class="vertical-accordion" open>
--                                <summary>Output</summary>
--                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
-+                                <summary>Details</summary>
-+                                <div class="accordion-body content-stack">
-+                                    <div class="table-wrapper">
-+                                        <table class="data-table tool-form-table" aria-label="Sprite details fields">
-+                                            <tbody>
-+                                                <tr>
-+                                                    <th scope="row">Name</th>
-+                                                    <td>Untitled sprite</td>
-+                                                </tr>
-+                                                <tr>
-+                                                    <th scope="row">Purpose</th>
-+                                                    <td>Game asset draft</td>
-+                                                </tr>
-+                                                <tr>
-+                                                    <th scope="row">Storage</th>
-+                                                    <td>Not connected in this shell</td>
-+                                                </tr>
-+                                            </tbody>
-+                                        </table>
-+                                    </div>
-+                                </div>
-+                            </details>
-+                            <details class="vertical-accordion" open>
-+                                <summary>Animation</summary>
-+                                <div class="accordion-body content-stack">
-+                                    <p>Frame planning is visible here so animation support can attach without changing the shell layout.</p>
-+                                    <div class="table-wrapper">
-+                                        <table class="data-table" aria-label="Sprite animation placeholder">
-+                                            <thead>
-+                                                <tr><th scope="col">Frame</th><th scope="col">Timing</th></tr>
-+                                            </thead>
-+                                            <tbody>
-+                                                <tr><td>Frame 1</td><td>Draft</td></tr>
-+                                                <tr><td>Frame 2</td><td>Draft</td></tr>
-+                                                <tr><td>Frame 3</td><td>Draft</td></tr>
-+                                            </tbody>
-+                                        </table>
-+                                    </div>
-+                                </div>
-+                            </details>
-+                            <details class="vertical-accordion" open>
-+                                <summary>Readiness</summary>
-+                                <div class="accordion-body content-stack">
-+                                    <p class="status" role="status">Creator shell visible.</p>
-+                                    <p class="status" role="status">No browser-owned sprite data is stored by this page.</p>
-+                                    <p class="status" role="status">No Local DB schema or API endpoint is introduced in this PR.</p>
-+                                </div>
-                             </details>
-                         </div>
-                     </aside>

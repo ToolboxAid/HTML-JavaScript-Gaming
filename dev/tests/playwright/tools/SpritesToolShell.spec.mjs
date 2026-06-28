@@ -9,6 +9,17 @@ import { getToolRegistrySnapshot } from "../../../../toolbox/toolRegistry.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..", "..", "..");
+const SPRITE_TOOLBAR_PLACEHOLDERS = [
+  "Pencil",
+  "Eraser",
+  "Fill",
+  "Line",
+  "Rectangle",
+  "Circle",
+  "Picker",
+  "Move",
+  "Zoom",
+];
 
 function contentTypeForPath(filePath) {
   const extension = path.extname(filePath).toLowerCase();
@@ -216,9 +227,11 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status 
     await expect(page.getByText("Canvas Setup")).toBeVisible();
     await expect(page.getByRole("heading", { level: 2, name: "Pixel Work Area" })).toBeVisible();
     await expect(page.getByRole("heading", { level: 2, name: "Sprite Details" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Pencil" })).toBeDisabled();
-    await expect(page.getByRole("button", { name: "Eraser" })).toBeDisabled();
-    await expect(page.getByRole("button", { name: "Fill" })).toBeDisabled();
+    await expect(page.locator("[data-sprites-toolbar]")).toBeVisible();
+    for (const toolName of SPRITE_TOOLBAR_PLACEHOLDERS) {
+      await expect(page.getByRole("button", { name: `${toolName} tool placeholder` })).toBeDisabled();
+    }
+    await expect(page.locator("main")).toContainText("Toolbar placeholders only");
     await expect(page.locator("[data-sprites-pixel-grid]")).toBeVisible();
     await expect(page.locator("[data-sprites-shell-status]")).toContainText("Shell ready");
     await expect(page.locator("main")).toContainText("Palette/Colors keys only");
