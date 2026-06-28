@@ -558,6 +558,11 @@ test("Sprite Creator previews unsaved animation frames", async ({ page }) => {
     await page.getByRole("button", { name: "Stop Preview" }).click();
     await expect(page.locator("[data-sprites-animation-status]")).toContainText("Selected Frame 2 is shown");
     await expectCenterAndPreviewPainted(page, 1, 1, "sprite-canvas-cell--blue");
+    const stripDownloadPromise = page.waitForEvent("download");
+    await page.getByRole("button", { name: "Download Animation Strip" }).click();
+    const stripDownload = await stripDownloadPromise;
+    expect(stripDownload.suggestedFilename()).toBe("sprite-creator-animation-strip.png");
+    await expect(page.locator("[data-sprites-export-status]")).toContainText("Animation strip PNG downloaded from 2 unsaved frames");
 
     expect(failures.failedRequests).toEqual([]);
     expect(failures.pageErrors).toEqual([]);

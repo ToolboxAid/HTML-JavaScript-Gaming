@@ -457,8 +457,12 @@ function renderPixelsToCanvas(canvas, paintedPixels, gridSize) {
     return;
   }
   const size = gridSize || DEFAULT_GRID_SIZE;
-  const cellSize = canvas.width / size;
   context.clearRect(0, 0, canvas.width, canvas.height);
+  drawPixelsToContext(context, paintedPixels, size, 0, 0, canvas.width);
+}
+
+function drawPixelsToContext(context, paintedPixels, gridSize, offsetX, offsetY, outputSize) {
+  const cellSize = outputSize / gridSize;
   for (const [key, colorKey] of paintedPixels.entries()) {
     const [rowText, columnText] = key.split(":");
     const row = Number(rowText);
@@ -467,7 +471,7 @@ function renderPixelsToCanvas(canvas, paintedPixels, gridSize) {
       continue;
     }
     context.fillStyle = editorColorValue(colorKey);
-    context.fillRect((column - 1) * cellSize, (row - 1) * cellSize, cellSize, cellSize);
+    context.fillRect(offsetX + (column - 1) * cellSize, offsetY + (row - 1) * cellSize, cellSize, cellSize);
   }
 }
 
@@ -647,6 +651,52 @@ function exportPreviewPng() {
   }, "image/png");
 }
 
+function exportAnimationStripPng() {
+  const status = document.querySelector("[data-sprites-export-status]");
+  if (editorState.frames.length < 2) {
+    if (status) {
+      status.textContent = "Animation strip export needs at least two unsaved frames.";
+    }
+    return;
+  }
+  stopAnimationPreview("Animation preview stopped before export.");
+  const frameSize = 160;
+  const canvas = document.createElement("canvas");
+  canvas.width = frameSize * editorState.frames.length;
+  canvas.height = frameSize;
+  const context = canvas.getContext("2d");
+  if (!context) {
+    if (status) {
+      status.textContent = "Animation strip export is unavailable in this browser session.";
+    }
+    return;
+  }
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  editorState.frames.forEach((frame, index) => {
+    drawPixelsToContext(context, frame.paintedPixels, editorState.gridSize, index * frameSize, 0, frameSize);
+  });
+  canvas.toBlob((blob) => {
+    if (!blob) {
+      if (status) {
+        status.textContent = "Animation strip export is unavailable in this browser session.";
+      }
+      return;
+    }
+    const objectUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = objectUrl;
+    link.download = "sprite-creator-animation-strip.png";
+    link.rel = "noopener";
+    document.body.append(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(objectUrl);
+    if (status) {
+      status.textContent = `Animation strip PNG downloaded from ${editorState.frames.length} unsaved frames.`;
+    }
+  }, "image/png");
+}
+
 function setGridSize(size, options = {}) {
   const grid = document.querySelector("[data-sprites-pixel-grid]");
   const status = document.querySelector("[data-sprites-grid-status]");
@@ -806,6 +856,10 @@ function wireExportButton() {
   const button = document.querySelector("[data-sprites-export-png]");
   if (button) {
     button.addEventListener("click", exportPreviewPng);
+  }
+  const animationButton = document.querySelector("[data-sprites-export-animation]");
+  if (animationButton) {
+    animationButton.addEventListener("click", exportAnimationStripPng);
   }
 }
 
