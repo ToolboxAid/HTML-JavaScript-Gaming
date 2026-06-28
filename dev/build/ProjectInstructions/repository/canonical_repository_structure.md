@@ -49,6 +49,7 @@ Final src layer ownership:
 
 Valid dev workspace folders:
 - dev/archive/
+- dev/bootstrap/
 - dev/build/
 - dev/config/
 - dev/reports/
@@ -60,6 +61,7 @@ Valid dev workspace folders:
 
 Dev workspace ownership:
 - dev/archive/ owns historical reference material only.
+- dev/bootstrap/ owns development-only local bootstrap orchestration.
 - dev/build/ owns active Project Instructions, architecture, database DDL/DML/seed docs, standards, backlog, PR planning, and governance.
 - dev/config/ owns development-only runner and tooling configuration.
 - dev/reports/ owns active and historical generated reports.

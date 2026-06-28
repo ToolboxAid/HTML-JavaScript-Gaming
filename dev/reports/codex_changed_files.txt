@@ -1,6 +1,6 @@
-PR_26179_OWNER_012-gitignore-env-simplification
-Updated: 2026-06-28T03:47:16Z
-Branch: PR_26179_OWNER_012-gitignore-env-simplification
-
-Changed files:
-M	.gitignore
+﻿dev/bootstrap/start-dev.mjs
+dev/bootstrap/team-port-config.mjs
+dev/build/ProjectInstructions/PROJECT_STATE.md
+dev/build/ProjectInstructions/repository/canonical_repository_structure.md
+dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs
+package.json

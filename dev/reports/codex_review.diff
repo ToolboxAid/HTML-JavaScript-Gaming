@@ -1,15 +1,599 @@
-diff --git a/.gitignore b/.gitignore
-index 3ac762a04..1207a12fc 100644
---- a/.gitignore
-+++ b/.gitignore
-@@ -48,8 +48,8 @@ docs/dev/reports/playwright_v8_coverage_report.txt
- *.mp4
- *.mkv
+﻿diff --git a/dev/bootstrap/start-dev.mjs b/dev/bootstrap/start-dev.mjs
+new file mode 100644
+index 000000000..13b4798ab
+--- /dev/null
++++ b/dev/bootstrap/start-dev.mjs
+@@ -0,0 +1,363 @@
++import { spawn } from "node:child_process";
++import { existsSync, readFileSync } from "node:fs";
++import fs from "node:fs/promises";
++import http from "node:http";
++import path from "node:path";
++import process from "node:process";
++import { fileURLToPath, pathToFileURL } from "node:url";
++import { resolveTeamPortConfig, supportedBootstrapTeamsMessage } from "./team-port-config.mjs";
++
++const __filename = fileURLToPath(import.meta.url);
++const __dirname = path.dirname(__filename);
++const repoRoot = path.resolve(__dirname, "..", "..");
++const DEFAULT_ENV_FILE = ".env";
++
++function parseEnvValue(value) {
++  const trimmed = String(value || "").trim();
++  if (
++    (trimmed.startsWith("\"") && trimmed.endsWith("\"")) ||
++    (trimmed.startsWith("'") && trimmed.endsWith("'"))
++  ) {
++    return trimmed.slice(1, -1);
++  }
++  return trimmed;
++}
++
++function parseEnvLine(line) {
++  const trimmed = String(line || "").trim();
++  if (!trimmed || trimmed.startsWith("#") || !trimmed.includes("=")) {
++    return null;
++  }
++  const separatorIndex = trimmed.indexOf("=");
++  const key = trimmed.slice(0, separatorIndex).trim();
++  if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(key)) {
++    return null;
++  }
++  return {
++    key,
++    value: parseEnvValue(trimmed.slice(separatorIndex + 1)),
++  };
++}
++
++export function loadEnvironmentFile({
++  env = process.env,
++  envFile = path.resolve(repoRoot, DEFAULT_ENV_FILE),
++} = {}) {
++  if (!existsSync(envFile)) {
++    return Object.freeze({
++      loaded: false,
++      loadedKeys: [],
++      path: envFile,
++    });
++  }
++  const loadedKeys = [];
++  readFileSync(envFile, "utf8").split(/\r?\n/).forEach((line) => {
++    const parsed = parseEnvLine(line);
++    if (!parsed || env[parsed.key] !== undefined) {
++      return;
++    }
++    env[parsed.key] = parsed.value;
++    loadedKeys.push(parsed.key);
++  });
++  return Object.freeze({
++    loaded: true,
++    loadedKeys: Object.freeze(loadedKeys),
++    path: envFile,
++  });
++}
++
++export function applyTeamBootstrapEnvironment(env, teamConfig) {
++  env.GAMEFOUNDRY_LOCAL_API_HOST = teamConfig.host;
++  env.GAMEFOUNDRY_LOCAL_API_PORT = String(teamConfig.apiPort);
++  env.GAMEFOUNDRY_SITE_URL = teamConfig.webUrl;
++  env.GAMEFOUNDRY_API_URL = teamConfig.apiUrl;
++  return env;
++}
++
++export function parseBootstrapArgs(argv = []) {
++  const options = {
++    openBrowser: false,
++    startApi: true,
++    startWeb: true,
++    team: "owner",
++  };
++
++  for (let index = 0; index < argv.length; index += 1) {
++    const argument = argv[index];
++    if (argument === "--team") {
++      const value = argv[index + 1];
++      if (!value || value.startsWith("--")) {
++        throw new Error(`Missing value for --team. Use --team ${supportedBootstrapTeamsMessage()}.`);
++      }
++      options.team = value;
++      index += 1;
++    } else if (argument.startsWith("--team=")) {
++      options.team = argument.slice("--team=".length);
++    } else if (argument === "--api-only") {
++      options.startApi = true;
++      options.startWeb = false;
++    } else if (argument === "--web-only") {
++      options.startApi = false;
++      options.startWeb = true;
++    } else if (argument === "--api") {
++      options.startApi = true;
++    } else if (argument === "--web") {
++      options.startWeb = true;
++    } else if (argument === "--no-api") {
++      options.startApi = false;
++    } else if (argument === "--no-web") {
++      options.startWeb = false;
++    } else if (argument === "--open") {
++      options.openBrowser = true;
++    } else if (argument === "--no-open") {
++      options.openBrowser = false;
++    } else if (argument === "--help" || argument === "-h") {
++      options.help = true;
++    } else {
++      throw new Error(`Unknown bootstrap option "${argument}". Use --team ${supportedBootstrapTeamsMessage()}, --api-only, --web-only, or --open.`);
++    }
++  }
++
++  if (!options.help && !options.startApi && !options.startWeb) {
++    throw new Error("Bootstrap must start at least one process. Use --api-only, --web-only, or the default combined startup.");
++  }
++
++  return Object.freeze(options);
++}
++
++function contentTypeForPath(filePath) {
++  const extension = path.extname(filePath).toLowerCase();
++  if (extension === ".html") return "text/html; charset=utf-8";
++  if (extension === ".js" || extension === ".mjs") return "text/javascript; charset=utf-8";
++  if (extension === ".json") return "application/json; charset=utf-8";
++  if (extension === ".css") return "text/css; charset=utf-8";
++  if (extension === ".svg") return "image/svg+xml";
++  if (extension === ".png") return "image/png";
++  if (extension === ".jpg" || extension === ".jpeg") return "image/jpeg";
++  if (extension === ".webp") return "image/webp";
++  if (extension === ".gif") return "image/gif";
++  if (extension === ".wav") return "audio/wav";
++  if (extension === ".mp3") return "audio/mpeg";
++  if (extension === ".ogg") return "audio/ogg";
++  if (extension === ".m4a") return "audio/mp4";
++  if (extension === ".woff2") return "font/woff2";
++  if (extension === ".woff") return "font/woff";
++  if (extension === ".ttf") return "font/ttf";
++  if (extension === ".otf") return "font/otf";
++  if (extension === ".csv") return "text/csv; charset=utf-8";
++  if (extension === ".txt") return "text/plain; charset=utf-8";
++  return "application/octet-stream";
++}
++
++function isInsideRoot(root, absolutePath) {
++  const relativePath = path.relative(root, absolutePath);
++  return relativePath === "" || (!relativePath.startsWith("..") && !path.isAbsolute(relativePath));
++}
++
++function resolveWebRoutePath(requestPath) {
++  const normalizedPath = path.normalize(decodeURIComponent(requestPath || "/")).replace(/^(\.\.[/\\])+/, "");
++  const webPath = normalizedPath.replace(/\\/g, "/");
++  if (webPath === "/tools" || webPath.startsWith("/tools/")) {
++    return `/toolbox${webPath.slice("/tools".length)}`;
++  }
++  return normalizedPath;
++}
++
++export async function startStaticWebServer({
++  host,
++  port,
++  root = repoRoot,
++} = {}) {
++  const server = http.createServer(async (request, response) => {
++    try {
++      const requestUrl = new URL(request.url || "/", `http://${host}:${port}`);
++      const routePath = resolveWebRoutePath(requestUrl.pathname);
++      const absolutePath = path.resolve(root, `.${routePath}`);
++      if (!isInsideRoot(root, absolutePath)) {
++        response.statusCode = 403;
++        response.end("Forbidden");
++        return;
++      }
++
++      let targetPath = absolutePath;
++      const stat = await fs.stat(targetPath).catch(() => null);
++      if (stat && stat.isDirectory()) {
++        targetPath = path.join(targetPath, "index.html");
++      }
++      const responseContents = await fs.readFile(targetPath);
++      response.statusCode = 200;
++      response.setHeader("Content-Type", contentTypeForPath(targetPath));
++      response.end(responseContents);
++    } catch {
++      response.statusCode = 404;
++      response.end("Not Found");
++    }
++  });
++
++  await new Promise((resolve, reject) => {
++    server.once("error", reject);
++    server.listen(port, host, resolve);
++  });
++
++  return Object.freeze({
++    close: () => new Promise((resolve, reject) => {
++      server.close((error) => {
++        if (error) reject(error);
++        else resolve();
++      });
++    }),
++    server,
++    url: `http://${host}:${port}`,
++  });
++}
++
++export function formatBootstrapDiagnostics({
++  envLoad,
++  openBrowser,
++  startApi,
++  startWeb,
++  teamConfig,
++} = {}) {
++  const envStatus = envLoad?.loaded
++    ? `${path.relative(repoRoot, envLoad.path).replace(/\\/g, "/")} loaded (${envLoad.loadedKeys.length} key(s) applied)`
++    : `${DEFAULT_ENV_FILE} not found; using process environment`;
++  return [
++    "GameFoundry local bootstrap",
++    `Team: ${teamConfig.team}`,
++    `Web: ${startWeb ? `enabled ${teamConfig.webUrl}` : "disabled"}`,
++    `API: ${startApi ? `enabled ${teamConfig.apiUrl}` : "disabled"}`,
++    `Selected ports: web ${teamConfig.webPort}, api ${teamConfig.apiPort}`,
++    `Environment: ${envStatus}`,
++    `Browser launch: ${openBrowser ? "enabled" : "disabled"}`,
++  ];
++}
++
++function startApiProcess({ env }) {
++  return spawn(
++    process.execPath,
++    ["--use-system-ca", "./dev/scripts/start-local-api-server.mjs"],
++    {
++      cwd: repoRoot,
++      env,
++      stdio: "inherit",
++    }
++  );
++}
++
++function browserLaunchCommand(url) {
++  if (process.platform === "win32") {
++    return { args: ["/c", "start", "", url], command: "cmd" };
++  }
++  if (process.platform === "darwin") {
++    return { args: [url], command: "open" };
++  }
++  return { args: [url], command: "xdg-open" };
++}
++
++function openBrowser(url) {
++  const launch = browserLaunchCommand(url);
++  const child = spawn(launch.command, launch.args, {
++    detached: true,
++    stdio: "ignore",
++  });
++  child.unref();
++}
++
++function printHelp() {
++  console.log([
++    "Usage: node ./dev/bootstrap/start-dev.mjs [--team owner|alpha|bravo|charlie|gamma|beta|default] [--api-only|--web-only] [--open]",
++    "",
++    "Default startup launches both the API runtime and static web server.",
++    "Use --api-only for API-only startup or --web-only for web-only startup.",
++  ].join("\n"));
++}
++
++export async function runBootstrap(argv = process.argv.slice(2), {
++  env = process.env,
++  startApi = startApiProcess,
++  startWeb = startStaticWebServer,
++} = {}) {
++  const options = parseBootstrapArgs(argv);
++  if (options.help) {
++    printHelp();
++    return Object.freeze({ status: "help" });
++  }
++
++  const teamConfig = resolveTeamPortConfig(options.team);
++  const envLoad = loadEnvironmentFile({ env });
++  const processEnv = applyTeamBootstrapEnvironment({ ...env }, teamConfig);
++
++  formatBootstrapDiagnostics({
++    envLoad,
++    openBrowser: options.openBrowser,
++    startApi: options.startApi,
++    startWeb: options.startWeb,
++    teamConfig,
++  }).forEach((line) => console.log(line));
++
++  let webServer = null;
++  let apiProcess = null;
++  let shuttingDown = false;
++
++  async function shutdown(exitCode = 0) {
++    if (shuttingDown) {
++      return;
++    }
++    shuttingDown = true;
++    if (apiProcess && !apiProcess.killed) {
++      apiProcess.kill("SIGTERM");
++    }
++    if (webServer) {
++      await webServer.close();
++    }
++    process.exit(exitCode);
++  }
++
++  if (options.startWeb) {
++    webServer = await startWeb({
++      host: teamConfig.host,
++      port: teamConfig.webPort,
++      root: repoRoot,
++    });
++    console.log(`GameFoundry static web server running at ${webServer.url}`);
++  }
++
++  if (options.startApi) {
++    apiProcess = startApi({ env: processEnv });
++    apiProcess.once("exit", async (code, signal) => {
++      if (shuttingDown) {
++        return;
++      }
++      const exitReason = signal || (code ?? "unknown");
++      console.error(`GameFoundry API process exited (${exitReason}).`);
++      await shutdown(code || 1);
++    });
++  }
++
++  if (options.openBrowser) {
++    openBrowser(options.startWeb ? teamConfig.webUrl : teamConfig.apiUrl);
++  }
++
++  for (const signal of ["SIGINT", "SIGTERM"]) {
++    process.once(signal, () => {
++      shutdown(0).catch((error) => {
++        console.error(error instanceof Error ? error.stack || error.message : String(error));
++        process.exit(1);
++      });
++    });
++  }
++
++  return Object.freeze({
++    apiProcess,
++    envLoad,
++    teamConfig,
++    webServer,
++  });
++}
++
++if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
++  runBootstrap().catch((error) => {
++    console.error(error instanceof Error ? error.message : String(error));
++    process.exitCode = 1;
++  });
++}
+diff --git a/dev/bootstrap/team-port-config.mjs b/dev/bootstrap/team-port-config.mjs
+new file mode 100644
+index 000000000..21a90b686
+--- /dev/null
++++ b/dev/bootstrap/team-port-config.mjs
+@@ -0,0 +1,44 @@
++const TEAM_PORTS = Object.freeze({
++  owner: Object.freeze({ apiPort: 5501, webPort: 5500 }),
++  alpha: Object.freeze({ apiPort: 5511, webPort: 5510 }),
++  bravo: Object.freeze({ apiPort: 5521, webPort: 5520 }),
++  charlie: Object.freeze({ apiPort: 5531, webPort: 5530 }),
++  gamma: Object.freeze({ apiPort: 5541, webPort: 5540 }),
++  beta: Object.freeze({ apiPort: 5551, webPort: 5550 }),
++});
++
++export const DEFAULT_BOOTSTRAP_TEAM = "owner";
++export const DEFAULT_BOOTSTRAP_HOST = "127.0.0.1";
++export const BOOTSTRAP_TEAM_ALIASES = Object.freeze({
++  default: DEFAULT_BOOTSTRAP_TEAM,
++});
++
++export const SUPPORTED_BOOTSTRAP_TEAMS = Object.freeze(Object.keys(TEAM_PORTS));
++
++export function supportedBootstrapTeamsMessage() {
++  return [...SUPPORTED_BOOTSTRAP_TEAMS, "default"].join("|");
++}
++
++export function normalizeBootstrapTeam(team = DEFAULT_BOOTSTRAP_TEAM) {
++  const requestedTeam = String(team || DEFAULT_BOOTSTRAP_TEAM).trim().toLowerCase();
++  return BOOTSTRAP_TEAM_ALIASES[requestedTeam] || requestedTeam;
++}
++
++export function resolveTeamPortConfig(team = DEFAULT_BOOTSTRAP_TEAM) {
++  const normalizedTeam = normalizeBootstrapTeam(team);
++  const ports = TEAM_PORTS[normalizedTeam];
++  if (!ports) {
++    throw new Error(
++      `Unknown bootstrap team "${team}". Use --team ${supportedBootstrapTeamsMessage()}.`
++    );
++  }
++  return Object.freeze({
++    apiPort: ports.apiPort,
++    apiUrl: `http://${DEFAULT_BOOTSTRAP_HOST}:${ports.apiPort}/api`,
++    host: DEFAULT_BOOTSTRAP_HOST,
++    requestedTeam: String(team || DEFAULT_BOOTSTRAP_TEAM).trim() || DEFAULT_BOOTSTRAP_TEAM,
++    team: normalizedTeam,
++    webPort: ports.webPort,
++    webUrl: `http://${DEFAULT_BOOTSTRAP_HOST}:${ports.webPort}`,
++  });
++}
+diff --git a/dev/build/ProjectInstructions/PROJECT_STATE.md b/dev/build/ProjectInstructions/PROJECT_STATE.md
+index 145a9f088..c293caf8a 100644
+--- a/dev/build/ProjectInstructions/PROJECT_STATE.md
++++ b/dev/build/ProjectInstructions/PROJECT_STATE.md
+@@ -41,6 +41,7 @@ valid_top_level_folders:
+   - "toolbox/"
+ valid_dev_folders:
+   - "dev/archive/"
++  - "dev/bootstrap/"
+   - "dev/build/"
+   - "dev/config/"
+   - "dev/reports/"
+diff --git a/dev/build/ProjectInstructions/repository/canonical_repository_structure.md b/dev/build/ProjectInstructions/repository/canonical_repository_structure.md
+index 7cf74694e..9e58a43c5 100644
+--- a/dev/build/ProjectInstructions/repository/canonical_repository_structure.md
++++ b/dev/build/ProjectInstructions/repository/canonical_repository_structure.md
+@@ -49,6 +49,7 @@ Final src layer ownership:
 
--.env
--.env.*
-+# Environment files
-+.env*
- !.env.example
- !.env.sample
- !.env.template
+ Valid dev workspace folders:
+ - dev/archive/
++- dev/bootstrap/
+ - dev/build/
+ - dev/config/
+ - dev/reports/
+@@ -60,6 +61,7 @@ Valid dev workspace folders:
+
+ Dev workspace ownership:
+ - dev/archive/ owns historical reference material only.
++- dev/bootstrap/ owns development-only local bootstrap orchestration.
+ - dev/build/ owns active Project Instructions, architecture, database DDL/DML/seed docs, standards, backlog, PR planning, and governance.
+ - dev/config/ owns development-only runner and tooling configuration.
+ - dev/reports/ owns active and historical generated reports.
+diff --git a/dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs b/dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs
+new file mode 100644
+index 000000000..aaa12250f
+--- /dev/null
++++ b/dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs
+@@ -0,0 +1,126 @@
++import assert from "node:assert/strict";
++import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
++import os from "node:os";
++import path from "node:path";
++import test from "node:test";
++import {
++  applyTeamBootstrapEnvironment,
++  formatBootstrapDiagnostics,
++  loadEnvironmentFile,
++  parseBootstrapArgs,
++} from "../../bootstrap/start-dev.mjs";
++import { resolveTeamPortConfig } from "../../bootstrap/team-port-config.mjs";
++
++test("team-aware bootstrap resolves required team port mapping", () => {
++  assert.deepEqual(
++    ["owner", "default", "alpha", "bravo", "charlie", "gamma", "beta"].map((team) => {
++      const config = resolveTeamPortConfig(team);
++      return [team, config.team, config.webPort, config.apiPort, config.webUrl, config.apiUrl];
++    }),
++    [
++      ["owner", "owner", 5500, 5501, "http://127.0.0.1:5500", "http://127.0.0.1:5501/api"],
++      ["default", "owner", 5500, 5501, "http://127.0.0.1:5500", "http://127.0.0.1:5501/api"],
++      ["alpha", "alpha", 5510, 5511, "http://127.0.0.1:5510", "http://127.0.0.1:5511/api"],
++      ["bravo", "bravo", 5520, 5521, "http://127.0.0.1:5520", "http://127.0.0.1:5521/api"],
++      ["charlie", "charlie", 5530, 5531, "http://127.0.0.1:5530", "http://127.0.0.1:5531/api"],
++      ["gamma", "gamma", 5540, 5541, "http://127.0.0.1:5540", "http://127.0.0.1:5541/api"],
++      ["beta", "beta", 5550, 5551, "http://127.0.0.1:5550", "http://127.0.0.1:5551/api"],
++    ]
++  );
++});
++
++test("team-aware bootstrap rejects unknown team names clearly", () => {
++  assert.throws(
++    () => resolveTeamPortConfig("omega"),
++    /Unknown bootstrap team "omega"\. Use --team owner\|alpha\|bravo\|charlie\|gamma\|beta\|default\./
++  );
++});
++
++test("bootstrap argument parser supports combined, API-only, web-only, team, and browser launch modes", () => {
++  assert.deepEqual(parseBootstrapArgs([]), {
++    openBrowser: false,
++    startApi: true,
++    startWeb: true,
++    team: "owner",
++  });
++  assert.deepEqual(parseBootstrapArgs(["--team", "beta", "--api-only", "--open"]), {
++    openBrowser: true,
++    startApi: true,
++    startWeb: false,
++    team: "beta",
++  });
++  assert.deepEqual(parseBootstrapArgs(["--team=gamma", "--web-only"]), {
++    openBrowser: false,
++    startApi: false,
++    startWeb: true,
++    team: "gamma",
++  });
++  assert.throws(
++    () => parseBootstrapArgs(["--no-api", "--no-web"]),
++    /Bootstrap must start at least one process/
++  );
++});
++
++test("bootstrap loads environment before applying team ports", async () => {
++  const tempRoot = await mkdtemp(path.join(os.tmpdir(), "gamefoundry-bootstrap-"));
++  const envPath = path.join(tempRoot, ".env");
++  await writeFile(envPath, [
++    "GAMEFOUNDRY_SITE_URL=http://127.0.0.1:5500",
++    "GAMEFOUNDRY_API_URL=http://127.0.0.1:5501/api",
++    "EXISTING_VALUE=from-env-file",
++    "",
++  ].join("\n"), "utf8");
++
++  try {
++    const env = {};
++    const envLoad = loadEnvironmentFile({ env, envFile: envPath });
++    const config = resolveTeamPortConfig("charlie");
++    applyTeamBootstrapEnvironment(env, config);
++
++    assert.equal(envLoad.loaded, true);
++    assert.deepEqual(envLoad.loadedKeys, [
++      "GAMEFOUNDRY_SITE_URL",
++      "GAMEFOUNDRY_API_URL",
++      "EXISTING_VALUE",
++    ]);
++    assert.equal(env.EXISTING_VALUE, "from-env-file");
++    assert.equal(env.GAMEFOUNDRY_LOCAL_API_HOST, "127.0.0.1");
++    assert.equal(env.GAMEFOUNDRY_LOCAL_API_PORT, "5531");
++    assert.equal(env.GAMEFOUNDRY_SITE_URL, "http://127.0.0.1:5530");
++    assert.equal(env.GAMEFOUNDRY_API_URL, "http://127.0.0.1:5531/api");
++  } finally {
++    await rm(tempRoot, { force: true, recursive: true });
++  }
++});
++
++test("bootstrap diagnostics include team, URLs, ports, and environment status", () => {
++  const lines = formatBootstrapDiagnostics({
++    envLoad: {
++      loaded: true,
++      loadedKeys: ["GAMEFOUNDRY_SITE_URL"],
++      path: path.resolve(".env"),
++    },
++    openBrowser: true,
++    startApi: true,
++    startWeb: true,
++    teamConfig: resolveTeamPortConfig("alpha"),
++  });
++
++  assert.deepEqual(lines, [
++    "GameFoundry local bootstrap",
++    "Team: alpha",
++    "Web: enabled http://127.0.0.1:5510",
++    "API: enabled http://127.0.0.1:5511/api",
++    "Selected ports: web 5510, api 5511",
++    "Environment: .env loaded (1 key(s) applied)",
++    "Browser launch: enabled",
++  ]);
++});
++
++test("package scripts expose team-aware bootstrap commands", async () => {
++  const packageJson = JSON.parse(await readFile("package.json", "utf8"));
++  assert.equal(packageJson.scripts["dev:bootstrap"], "node --use-system-ca ./dev/bootstrap/start-dev.mjs");
++  assert.equal(packageJson.scripts["dev:local-api"], "node --use-system-ca ./dev/bootstrap/start-dev.mjs --api-only");
++  assert.equal(packageJson.scripts["dev:api"], "node --use-system-ca ./dev/bootstrap/start-dev.mjs --api-only");
++  assert.equal(packageJson.scripts["dev:web"], "node --use-system-ca ./dev/bootstrap/start-dev.mjs --web-only");
++});
+diff --git a/package.json b/package.json
+index 2a6d66c76..b49c3ac91 100644
+--- a/package.json
++++ b/package.json
+@@ -25,7 +25,10 @@
+     "test:lane:integration": "node ./dev/scripts/run-targeted-test-lanes.mjs --lane integration",
+     "test:lane:engine-src": "node ./dev/scripts/run-targeted-test-lanes.mjs --lane engine-src",
+     "test:lane:samples": "node ./dev/scripts/run-targeted-test-lanes.mjs --lane samples --include-samples",
+-    "dev:local-api": "node --use-system-ca ./dev/scripts/start-local-api-server.mjs",
++    "dev:bootstrap": "node --use-system-ca ./dev/bootstrap/start-dev.mjs",
++    "dev:local-api": "node --use-system-ca ./dev/bootstrap/start-dev.mjs --api-only",
++    "dev:api": "node --use-system-ca ./dev/bootstrap/start-dev.mjs --api-only",
++    "dev:web": "node --use-system-ca ./dev/bootstrap/start-dev.mjs --web-only",
+     "validate:local-postgres-runtime": "node --use-system-ca ./dev/scripts/validate-local-postgres-runtime.mjs",
+     "validate:database-drift": "node ./dev/scripts/validate-database-drift.mjs",
+     "validate:runtime-connections": "node --use-system-ca ./dev/scripts/validate-runtime-connections.mjs",

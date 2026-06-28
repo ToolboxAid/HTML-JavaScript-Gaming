@@ -41,6 +41,7 @@ valid_top_level_folders:
   - "toolbox/"
 valid_dev_folders:
   - "dev/archive/"
+  - "dev/bootstrap/"
   - "dev/build/"
   - "dev/config/"
   - "dev/reports/"
