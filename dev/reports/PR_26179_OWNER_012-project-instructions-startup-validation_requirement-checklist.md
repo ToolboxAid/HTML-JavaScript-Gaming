@@ -3,15 +3,17 @@
 | Requirement | Result | Notes |
 | --- | --- | --- |
 | Create `PROJECT_INSTRUCTIONS_VERSION.md` | PASS | Added under `dev/build/ProjectInstructions/`. |
-| Version file contains current version | PASS | `2026-06-28.PR_26179_OWNER_012`. |
+| Version file contains current version | PASS | `2026.06.28.001`. |
+| Version format is repository-owned, not PR-owned | PASS | Version increments independently of PR numbers. |
 | Version file contains last updated | PASS | `2026-06-28`. |
 | Version file contains breaking changes summary | PASS | Added concise startup validation summary. |
 | Add mandatory Startup Contract at top of `PROJECT_INSTRUCTIONS.md` | PASS | Added before the main Project Instructions heading. |
 | Require reading version file and latest Project Instructions | PASS | Included in Startup Contract. |
 | Require repository copy as authoritative and discard memory | PASS | Included in Startup Contract. |
+| Conversation memory must never override repository instructions | PASS | Included in Startup Contract. |
 | Require loading referenced instruction documents | PASS | Included in Startup Contract. |
 | Require canonical path, branching model, ZIP/report validation | PASS | Included in Startup Contract. |
-| Add mandatory response block | PASS | Added exact startup validation response format. |
+| Add mandatory response block | PASS | Added exact startup validation response format with Instruction Source section. |
 | Add failure behavior | PASS | Added STOP example and pre-work stop rule. |
 | Apply to every Codex task type | PASS | Listed all requested task/outcome types. |
 | Do not modify implementation code | PASS | Documentation/governance only. |

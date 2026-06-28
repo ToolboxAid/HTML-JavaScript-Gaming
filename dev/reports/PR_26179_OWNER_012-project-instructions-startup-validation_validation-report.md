@@ -5,6 +5,7 @@
 - `git diff --check`: PASS
 - `npm run validate:canonical-structure`: PASS
 - Project Instructions grep for startup validation contract: PASS
+- Project Instructions grep for repository-owned version format and Instruction Source output: PASS
 
 ## Playwright
 

@@ -1,266 +1,122 @@
 diff --git a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-index c6f5c5744..58f6a709f 100644
+index 58f6a709f..65d36157c 100644
 --- a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 +++ b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-@@ -1,3 +1,71 @@
-+# Startup Contract
-+
-+Before performing ANY task, Codex must:
-+
-+- Read `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md`.
-+- Read the latest `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md` from the repository.
-+- Treat the repository copy as authoritative.
-+- Discard previously remembered Project Instructions.
-+- Load all referenced instruction documents required by this file and the task.
-+- Validate canonical paths.
-+- Validate branching model.
-+- Validate ZIP and report locations.
-+
-+Every Codex response must begin with:
-+
-+```text
-+Startup Validation
-+==================
-+
-+Reading latest (v<version>) Project Instructions... PASS
-+
-+Canonical paths
-+---------------
-+Reports .......... dev/reports
-+ZIPs ............. dev/workspace/zips
-+
-+Branching model
-+---------------
-+Owner ............ Independent PRs allowed
-+Teams ............ Stacked PRs by default
-+
-+Legacy path check
-+-----------------
-+tmp/ ............. PASS (not used)
-+docs_build/ ...... PASS (not used)
-+
-+Project Instructions loaded successfully.
-+```
-+
-+If Codex cannot determine the current version or cannot validate canonical paths, it must STOP before performing any work.
-+
-+Failure response example:
-+
-+```text
-+Startup Validation
-+==================
-+
-+Unable to determine Project Instructions version.
-+
-+STOP
-+
-+Project Instructions were not successfully loaded.
-+```
-+
-+This startup validation applies to every Codex task and outcome:
-+
-+- PLAN
-+- BUILD
-+- APPLY
-+- Review
-+- Audit
-+- Governance
-+- Validation
-+- Read-only
-+- Hard stop
-+- No-op
-+- Partial completion
-+
- # Project Instructions
+@@ -4,8 +4,9 @@ Before performing ANY task, Codex must:
 
- ## Purpose
-@@ -41,23 +109,25 @@ Rules:
+ - Read `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md`.
+ - Read the latest `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md` from the repository.
+-- Treat the repository copy as authoritative.
+-- Discard previously remembered Project Instructions.
++- Treat repository Project Instructions as the only authoritative source.
++- Discard previously remembered Project Instructions before every Codex task.
++- Never allow conversation memory to override repository instructions.
+ - Load all referenced instruction documents required by this file and the task.
+ - Validate canonical paths.
+ - Validate branching model.
+@@ -19,6 +20,11 @@ Startup Validation
+
+ Reading latest (v<version>) Project Instructions... PASS
+
++Instruction Source
++------------------
++Repository ........ PASS
++Cached Memory ..... DISCARDED
++
+ Canonical paths
+ ---------------
+ Reports .......... dev/reports
+@@ -109,7 +115,7 @@ Rules:
 
  ## Current Version/Date
 
--- Project Instructions Version: 2026-06-28.PR_26172_OWNER_034
-+- Project Instructions Version: 2026-06-28.PR_26179_OWNER_012
+-- Project Instructions Version: 2026-06-28.PR_26179_OWNER_012
++- Project Instructions Version: 2026.06.28.001
  - Date: 2026-06-28
  - Owner: OWNER
 
- ## Required Read Order
-
--1. Always read `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md`.
--2. Always read `dev/build/ProjectInstructions/PROJECT_STATE.md`.
--3. Always read `dev/build/ProjectInstructions/repository/canonical_repository_structure.md`.
--4. For Codex workflow command interpretation, read `dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`.
--5. For Start of Day, read `dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md`.
--6. Load team, backlog, database, runtime, theme, or other specialist documents only when the current task requires them.
-+1. Always read `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md`.
-+2. Always read `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md`.
-+3. Always read `dev/build/ProjectInstructions/PROJECT_STATE.md`.
-+4. Always read `dev/build/ProjectInstructions/repository/canonical_repository_structure.md`.
-+5. For Codex workflow command interpretation, read `dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`.
-+6. For Start of Day, read `dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md`.
-+7. Load team, backlog, database, runtime, theme, or other specialist documents only when the current task requires them.
-
- ## Load Graph
-
- ```text
- PROJECT_INSTRUCTIONS.md
-+|-- PROJECT_INSTRUCTIONS_VERSION.md
- |-- PROJECT_STATE.md
- |-- repository/canonical_repository_structure.md
- |-- standards/CODEX_WORKFLOW_COMMANDS.md
-@@ -76,6 +146,7 @@ PROJECT_INSTRUCTIONS.md
-
- ## When-To-Load Rules
-
-+- `PROJECT_INSTRUCTIONS_VERSION.md`: always.
- - `PROJECT_INSTRUCTIONS.md`: always.
- - `PROJECT_STATE.md`: always.
- - `repository/canonical_repository_structure.md`: always.
-@@ -109,6 +180,7 @@ That file owns Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, and invalid command be
-
- ## Referenced Documents
-
-+- Project Instructions version: `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md`
- - Project state: `dev/build/ProjectInstructions/PROJECT_STATE.md`
- - Repository folder placement SSoT: `dev/build/ProjectInstructions/repository/canonical_repository_structure.md`
- - Codex workflow commands: `dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`
-@@ -130,7 +202,8 @@ That file owns Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, and invalid command be
-
- ## Single Source Of Truth Decisions
-
--- `PROJECT_INSTRUCTIONS.md` owns the manual entry point, required read order, load graph, stop gates, execution modes, and pointers.
-+- `PROJECT_INSTRUCTIONS_VERSION.md` owns the current Project Instructions version and startup version proof.
-+- `PROJECT_INSTRUCTIONS.md` owns the manual entry point, startup contract, required read order, load graph, stop gates, execution modes, and pointers.
- - `PROJECT_STATE.md` owns machine-friendly project state metadata.
- - `repository/canonical_repository_structure.md` owns all folder placement and file-placement rules.
- - `standards/CODEX_WORKFLOW_COMMANDS.md` owns Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, and invalid command behavior.
 diff --git a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
-new file mode 100644
-index 000000000..415f3675b
---- /dev/null
+index 415f3675b..c5dc06241 100644
+--- a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
 +++ b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
-@@ -0,0 +1,12 @@
-+# Project Instructions Version
-+
-+Current Project Instructions Version: 2026-06-28.PR_26179_OWNER_012
-+
-+Last Updated: 2026-06-28
-+
-+## Breaking Changes Summary
-+
-+- Codex startup validation is mandatory before every task outcome.
-+- Codex must read this version file and the latest repository copy of `PROJECT_INSTRUCTIONS.md` before performing work.
-+- Codex must discard previously remembered Project Instructions and treat the repository copy as authoritative.
-+- Codex must validate canonical report and ZIP paths, branching model, and legacy path avoidance before work proceeds.
-diff --git a/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_branch-validation.md b/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_branch-validation.md
-new file mode 100644
-index 000000000..f7d699413
---- /dev/null
-+++ b/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_branch-validation.md
-@@ -0,0 +1,16 @@
-+# PR_26179_OWNER_012-project-instructions-startup-validation Branch Validation
-+
-+## Result
-+
-+PASS
-+
-+## Checks
-+
-+| Check | Result | Notes |
-+| --- | --- | --- |
-+| Stacked PR model identified | PASS | This PR depends on PR #256. |
-+| Started from documented previous PR branch | PASS | Started from `PR_26179_OWNER_011-team-stacked-pr-policy`. |
-+| Worktree clean before branch creation | PASS | Verified before branch creation. |
-+| PR branch created | PASS | `PR_26179_OWNER_012-project-instructions-startup-validation`. |
-+| Work stayed on PR branch | PASS | No direct commit to `main`. |
-+| Documentation/governance scope | PASS | Only Project Instructions and reports changed. |
+@@ -1,12 +1,13 @@
+ # Project Instructions Version
+
+-Current Project Instructions Version: 2026-06-28.PR_26179_OWNER_012
++Current Project Instructions Version: 2026.06.28.001
+
+ Last Updated: 2026-06-28
+
+ ## Breaking Changes Summary
+
+ - Codex startup validation is mandatory before every task outcome.
++- Project Instructions versions are repository-owned and increment independently of PR numbers.
+ - Codex must read this version file and the latest repository copy of `PROJECT_INSTRUCTIONS.md` before performing work.
+ - Codex must discard previously remembered Project Instructions and treat the repository copy as authoritative.
+ - Codex must validate canonical report and ZIP paths, branching model, and legacy path avoidance before work proceeds.
 diff --git a/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_manual-validation-notes.md b/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_manual-validation-notes.md
-new file mode 100644
-index 000000000..e9c040ca1
---- /dev/null
+index e9c040ca1..4b1e8ec61 100644
+--- a/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_manual-validation-notes.md
 +++ b/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_manual-validation-notes.md
-@@ -0,0 +1,9 @@
-+# PR_26179_OWNER_012-project-instructions-startup-validation Manual Validation Notes
-+
-+## Notes
-+
-+- Confirmed the Startup Contract is the first section in `PROJECT_INSTRUCTIONS.md`.
-+- Confirmed `PROJECT_INSTRUCTIONS_VERSION.md` exists in the active Project Instructions folder.
-+- Confirmed the startup response block uses `dev/reports` and `dev/workspace/zips`.
-+- Confirmed the legacy path check calls out `tmp/` and `docs_build/` as not used.
-+- Confirmed no runtime or product files were modified.
+@@ -4,6 +4,9 @@
+
+ - Confirmed the Startup Contract is the first section in `PROJECT_INSTRUCTIONS.md`.
+ - Confirmed `PROJECT_INSTRUCTIONS_VERSION.md` exists in the active Project Instructions folder.
++- Confirmed Project Instructions version uses repository-owned `2026.06.28.001` format rather than PR-number format.
++- Confirmed the startup response block includes `Instruction Source`, `Repository ........ PASS`, and `Cached Memory ..... DISCARDED`.
++- Confirmed the Startup Contract says conversation memory must never override repository instructions.
+ - Confirmed the startup response block uses `dev/reports` and `dev/workspace/zips`.
+ - Confirmed the legacy path check calls out `tmp/` and `docs_build/` as not used.
+ - Confirmed no runtime or product files were modified.
 diff --git a/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_report.md b/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_report.md
-new file mode 100644
-index 000000000..6209b506c
---- /dev/null
+index 6209b506c..24e485007 100644
+--- a/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_report.md
 +++ b/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_report.md
-@@ -0,0 +1,30 @@
-+# PR_26179_OWNER_012-project-instructions-startup-validation Report
-+
-+## Purpose
-+
-+Strengthen the Project Instructions startup contract so every Codex task proves it loaded the latest Project Instructions before performing work.
-+
-+## Branching Model
-+
-+- Model: Stacked PR
-+- Previous PR dependency: `PR_26179_OWNER_011-team-stacked-pr-policy` / PR #256
-+- Starting branch: `PR_26179_OWNER_011-team-stacked-pr-policy`
-+- Merge order: PR #255, then PR #256, then this PR
-+
-+## Governance Outcome
-+
-+- Added `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md`.
-+- Added a mandatory Startup Contract at the top of `PROJECT_INSTRUCTIONS.md`.
-+- Required Codex to read the version file and latest repository Project Instructions before every task.
-+- Required Codex to discard remembered Project Instructions in favor of the repository copy.
-+- Required startup validation for canonical paths, branching model, ZIP/report locations, and legacy path avoidance.
-+- Added failure behavior when the version or canonical paths cannot be determined.
-+- Documented that the startup validation applies to PLAN, BUILD, APPLY, Review, Audit, Governance, Validation, Read-only, Hard stop, No-op, and Partial completion outcomes.
-+
-+## Runtime Impact
-+
-+None. This PR changes documentation/governance only.
-+
-+## ZIP
-+
-+- `dev/workspace/zips/PR_26179_OWNER_012-project-instructions-startup-validation_delta.zip`
+@@ -14,9 +14,12 @@ Strengthen the Project Instructions startup contract so every Codex task proves
+ ## Governance Outcome
+
+ - Added `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md`.
++- Replaced PR-shaped Project Instructions versioning with repository-owned version `2026.06.28.001`.
+ - Added a mandatory Startup Contract at the top of `PROJECT_INSTRUCTIONS.md`.
+ - Required Codex to read the version file and latest repository Project Instructions before every task.
+ - Required Codex to discard remembered Project Instructions in favor of the repository copy.
++- Added explicit startup output for `Instruction Source`, proving repository instructions are used and cached memory is discarded.
++- Documented that conversation memory must never override repository instructions.
+ - Required startup validation for canonical paths, branching model, ZIP/report locations, and legacy path avoidance.
+ - Added failure behavior when the version or canonical paths cannot be determined.
+ - Documented that the startup validation applies to PLAN, BUILD, APPLY, Review, Audit, Governance, Validation, Read-only, Hard stop, No-op, and Partial completion outcomes.
 diff --git a/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_requirement-checklist.md b/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_requirement-checklist.md
-new file mode 100644
-index 000000000..876a803d7
---- /dev/null
+index 876a803d7..8a8502fcc 100644
+--- a/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_requirement-checklist.md
 +++ b/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_requirement-checklist.md
-@@ -0,0 +1,17 @@
-+# PR_26179_OWNER_012-project-instructions-startup-validation Requirement Checklist
-+
-+| Requirement | Result | Notes |
-+| --- | --- | --- |
-+| Create `PROJECT_INSTRUCTIONS_VERSION.md` | PASS | Added under `dev/build/ProjectInstructions/`. |
-+| Version file contains current version | PASS | `2026-06-28.PR_26179_OWNER_012`. |
-+| Version file contains last updated | PASS | `2026-06-28`. |
-+| Version file contains breaking changes summary | PASS | Added concise startup validation summary. |
-+| Add mandatory Startup Contract at top of `PROJECT_INSTRUCTIONS.md` | PASS | Added before the main Project Instructions heading. |
-+| Require reading version file and latest Project Instructions | PASS | Included in Startup Contract. |
-+| Require repository copy as authoritative and discard memory | PASS | Included in Startup Contract. |
-+| Require loading referenced instruction documents | PASS | Included in Startup Contract. |
-+| Require canonical path, branching model, ZIP/report validation | PASS | Included in Startup Contract. |
-+| Add mandatory response block | PASS | Added exact startup validation response format. |
-+| Add failure behavior | PASS | Added STOP example and pre-work stop rule. |
-+| Apply to every Codex task type | PASS | Listed all requested task/outcome types. |
-+| Do not modify implementation code | PASS | Documentation/governance only. |
+@@ -3,15 +3,17 @@
+ | Requirement | Result | Notes |
+ | --- | --- | --- |
+ | Create `PROJECT_INSTRUCTIONS_VERSION.md` | PASS | Added under `dev/build/ProjectInstructions/`. |
+-| Version file contains current version | PASS | `2026-06-28.PR_26179_OWNER_012`. |
++| Version file contains current version | PASS | `2026.06.28.001`. |
++| Version format is repository-owned, not PR-owned | PASS | Version increments independently of PR numbers. |
+ | Version file contains last updated | PASS | `2026-06-28`. |
+ | Version file contains breaking changes summary | PASS | Added concise startup validation summary. |
+ | Add mandatory Startup Contract at top of `PROJECT_INSTRUCTIONS.md` | PASS | Added before the main Project Instructions heading. |
+ | Require reading version file and latest Project Instructions | PASS | Included in Startup Contract. |
+ | Require repository copy as authoritative and discard memory | PASS | Included in Startup Contract. |
++| Conversation memory must never override repository instructions | PASS | Included in Startup Contract. |
+ | Require loading referenced instruction documents | PASS | Included in Startup Contract. |
+ | Require canonical path, branching model, ZIP/report validation | PASS | Included in Startup Contract. |
+-| Add mandatory response block | PASS | Added exact startup validation response format. |
++| Add mandatory response block | PASS | Added exact startup validation response format with Instruction Source section. |
+ | Add failure behavior | PASS | Added STOP example and pre-work stop rule. |
+ | Apply to every Codex task type | PASS | Listed all requested task/outcome types. |
+ | Do not modify implementation code | PASS | Documentation/governance only. |
 diff --git a/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_validation-report.md b/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_validation-report.md
-new file mode 100644
-index 000000000..1f916c634
---- /dev/null
+index 1f916c634..2c5582950 100644
+--- a/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_validation-report.md
 +++ b/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_validation-report.md
-@@ -0,0 +1,11 @@
-+# PR_26179_OWNER_012-project-instructions-startup-validation Validation Report
-+
-+## Validation
-+
-+- `git diff --check`: PASS
-+- `npm run validate:canonical-structure`: PASS
-+- Project Instructions grep for startup validation contract: PASS
-+
-+## Playwright
-+
-+Not impacted. No runtime, UI, API, database, or product page files changed.
+@@ -5,6 +5,7 @@
+ - `git diff --check`: PASS
+ - `npm run validate:canonical-structure`: PASS
+ - Project Instructions grep for startup validation contract: PASS
++- Project Instructions grep for repository-owned version format and Instruction Source output: PASS
+
+ ## Playwright

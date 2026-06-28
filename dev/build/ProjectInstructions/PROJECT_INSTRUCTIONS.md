@@ -4,8 +4,9 @@ Before performing ANY task, Codex must:
 
 - Read `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md`.
 - Read the latest `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md` from the repository.
-- Treat the repository copy as authoritative.
-- Discard previously remembered Project Instructions.
+- Treat repository Project Instructions as the only authoritative source.
+- Discard previously remembered Project Instructions before every Codex task.
+- Never allow conversation memory to override repository instructions.
 - Load all referenced instruction documents required by this file and the task.
 - Validate canonical paths.
 - Validate branching model.
@@ -18,6 +19,11 @@ Startup Validation
 ==================
 
 Reading latest (v<version>) Project Instructions... PASS
+
+Instruction Source
+------------------
+Repository ........ PASS
+Cached Memory ..... DISCARDED
 
 Canonical paths
 ---------------
@@ -109,7 +115,7 @@ Rules:
 
 ## Current Version/Date
 
-- Project Instructions Version: 2026-06-28.PR_26179_OWNER_012
+- Project Instructions Version: 2026.06.28.001
 - Date: 2026-06-28
 - Owner: OWNER
 
