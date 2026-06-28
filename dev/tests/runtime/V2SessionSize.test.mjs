@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const repoRoot = path.resolve(__dirname, "..", "..");
-const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
-const toolsRoot = path.join(repoRoot, "toolbox");
-const resultsPath = path.join(repoRoot, "tmp", "v2-session-size-results.json");
+const repoRoot = path.resolve(__dirname, "..", "..", "..");
+const workspaceJsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
+const toolsRoot = path.join(repoRoot, "www", "toolbox");
+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-session-size-results.json");
 
 const URL_LENGTH_LIMIT = 2000;
 const SESSION_PAYLOAD_BYTES_LIMIT = 1024 * 1024;

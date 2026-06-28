@@ -5,9 +5,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const repoRoot = path.resolve(__dirname, "..", "..");
-const gamesRoot = path.join(repoRoot, "games");
-const summaryPath = path.join(repoRoot, "tmp", "manifest-payload-expectations-results.json");
+const repoRoot = path.resolve(__dirname, "..", "..", "..");
+const gamesRoot = path.join(repoRoot, "www", "games");
+const summaryPath = path.join(repoRoot, "dev", "workspace", "tmp", "manifest-payload-expectations-results.json");
 
 const DISALLOWED_ROOT_KEYS = new Set(["lineage", "sources", "assets", "palette", "palettes"]);
 const LEGACY_PATH_MARKERS = ["tools.manifest.json"];

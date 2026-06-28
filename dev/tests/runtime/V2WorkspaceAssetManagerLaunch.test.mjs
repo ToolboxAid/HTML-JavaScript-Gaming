@@ -6,13 +6,13 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const repoRoot = path.resolve(__dirname, "..", "..");
-const workspaceHtmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
-const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
-const assetHtmlPath = path.join(repoRoot, "toolbox", "asset-manager-v2", "index.html");
-const assetJsPath = path.join(repoRoot, "toolbox", "asset-manager-v2", "index.js");
-const toolsIndexPath = path.join(repoRoot, "toolbox", "index.html");
-const resultsPath = path.join(repoRoot, "tmp", "pr_11_313_workspace_asset_manager_launch_results.json");
+const repoRoot = path.resolve(__dirname, "..", "..", "..");
+const workspaceHtmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
+const workspaceJsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
+const assetHtmlPath = path.join(repoRoot, "www", "toolbox", "asset-manager-v2", "index.html");
+const assetJsPath = path.join(repoRoot, "www", "toolbox", "asset-manager-v2", "index.js");
+const toolsIndexPath = path.join(repoRoot, "www", "toolbox", "index.html");
+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "pr_11_313_workspace_asset_manager_launch_results.json");
 
 function readText(filePath) {
   return fs.readFileSync(filePath, "utf8");

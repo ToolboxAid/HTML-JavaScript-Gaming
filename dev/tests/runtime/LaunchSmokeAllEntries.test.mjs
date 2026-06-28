@@ -7,11 +7,11 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const repoRoot = path.resolve(__dirname, '..', '..');
+const repoRoot = path.resolve(__dirname, '..', '..', '..');
 const reportsDir = path.join(repoRoot, 'dev', 'reports');
 const reportPath = path.join(reportsDir, 'launch_smoke_report.md');
 
-const tmpRoot = path.join(repoRoot, 'tmp');
+const tmpRoot = path.join(repoRoot, 'dev', 'workspace', 'tmp');
 const ownedManifestPath = path.join(tmpRoot, 'launch-smoke-owned.json');
 const isolatedNodeModulesRoot = path.join(tmpRoot, 'node_modules');
 const isolatedPackageJsonPath = path.join(tmpRoot, 'package.json');
@@ -22,7 +22,7 @@ const DEFAULT_LOAD_WAIT_MS = 1500;
 const GAME_POST_START_WAIT_MS = 3000;
 const DEBUG_PORT = 9222;
 const EXECUTION_STEPS = [
-  'npm install --prefix ./tmp ws',
+  'npm install --prefix ./dev/workspace/tmp ws',
   'npm run test:launch-smoke',
 ].join(' â†’ ');
 
@@ -577,7 +577,7 @@ export async function run() {
   assert.ok(entries.length > 0, 'No matching games, samples, or tools discovered.');
 
   log(`filters: games=${filters.includeGames} samples=${filters.includeSamples} tools=${filters.includeTools} sampleRange=${filters.sampleRange ? `${filters.sampleRange.start}-${filters.sampleRange.end}` : 'all'}`);
-  log(`isolated deps: ${path.join('<project>', 'tmp', 'node_modules')}`);
+  log(`isolated deps: ${path.join('<project>', 'dev', 'workspace', 'tmp', 'node_modules')}`);
   log(`discovered ${entries.length} entries`);
 
   const { server, port } = await launchServer(repoRoot);

@@ -136,8 +136,8 @@ async function adminNotesDirectoryPayload(folderPath, root = repoRoot) {
 }
 
 function makeTempRepoRoot() {
-  fs.mkdirSync(repoPath("tmp"), { recursive: true });
-  return fs.mkdtempSync(path.join(repoPath("tmp"), "admin-notes-boundary-"));
+  fs.mkdirSync(repoPath("dev/workspace/tmp"), { recursive: true });
+  return fs.mkdtempSync(path.join(repoPath("dev/workspace/tmp"), "admin-notes-boundary-"));
 }
 
 test("Admin Notes dev files and local viewer entrypoint exist", () => {

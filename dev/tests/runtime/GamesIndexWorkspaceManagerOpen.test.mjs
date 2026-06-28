@@ -7,9 +7,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const repoRoot = path.resolve(__dirname, "..", "..");
+const repoRoot = path.resolve(__dirname, "..", "..", "..");
 
-const tmpRoot = path.join(repoRoot, "tmp");
+const tmpRoot = path.join(repoRoot, "dev", "workspace", "tmp");
 const resultsPath = path.join(tmpRoot, "workspace-manager-open-test-results.json");
 const isolatedNodeModulesRoot = path.join(tmpRoot, "node_modules");
 const isolatedPackageJsonPath = path.join(tmpRoot, "package.json");
@@ -333,7 +333,7 @@ async function waitForGameCards(page, timeoutMs = 15000) {
 }
 
 function readExpectedMetadataSets() {
-  const metadataPath = path.join(repoRoot, "games", "metadata", "games.index.metadata.json");
+  const metadataPath = path.join(repoRoot, "www", "games", "metadata", "games.index.metadata.json");
   const metadata = JSON.parse(fs.readFileSync(metadataPath, "utf8"));
   const games = Array.isArray(metadata?.games) ? metadata.games : [];
   const normalized = games

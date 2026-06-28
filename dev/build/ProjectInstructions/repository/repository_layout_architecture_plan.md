@@ -30,6 +30,8 @@ No browser, API, server, test, script, or runtime files move in the scaffold or 
 
 `PR_26180_OWNER_010-move-dev-local-runtime` moves developer-only local runtime/bootstrap entrypoints under `dev/local-runtime/` while preserving `npm run dev:bootstrap`, `npm run dev:api`, `npm run dev:web`, and `npm run dev:local-api`.
 
+`PR_26180_OWNER_011-move-tests-and-validation` finalizes moved test and validation path assumptions for the `www/`, `api/`, and `dev/local-runtime/` layout while keeping product behavior unchanged.
+
 ## Proposed Future Layout
 
 ```text

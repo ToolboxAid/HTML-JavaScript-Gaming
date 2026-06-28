@@ -71,6 +71,27 @@ const canonicalTestPrefixes = Object.freeze([
   "dev/tests/regression/",
 ]);
 
+const INVALID_LEGACY_PATH_PREFIXES = Object.freeze([
+  ["archive/", "Historical reference belongs under dev/archive/."],
+  ["docs_build/", "Project Instructions and build governance belong under dev/build/."],
+  ["project-instructions/", "Project Instructions belong under dev/build/ProjectInstructions/."],
+  ["projects/", "Creator project data must not be stored in repo folders."],
+  ["scripts/", "Development scripts belong under dev/scripts/."],
+  ["tests/", "Tests belong under dev/tests/."],
+  ["tmp/", "Generated output belongs under dev/workspace/tmp/ or dev/workspace/zips/."],
+  ["dev/docs_build/", "Build governance belongs under dev/build/."],
+  ["dev/project-instructions/", "Project Instructions belong under dev/build/ProjectInstructions/."],
+  ["dev/workspace/artifacts/", "Generated output belongs directly under dev/workspace/ buckets."],
+  ["dev/build/dev/", "Nested legacy dev workspace folders are not active ownership locations."],
+  ["src/dev-runtime/server/", "Server/API runtime belongs under api/."],
+]);
+
+const INVALID_LOCAL_RUNTIME_FILES = Object.freeze(new Map([
+  ["dev/scripts/start-dev.mjs", "Developer local bootstrap belongs under dev/local-runtime/start-dev.mjs."],
+  ["dev/scripts/start-local-api-server.mjs", "Local API startup belongs under dev/local-runtime/start-local-api-server.mjs."],
+  ["dev/scripts/team-port-config.mjs", "Team port configuration belongs under dev/local-runtime/team-port-config.mjs."],
+]));
+
 function normalizeRepoPath(filePath) {
   return String(filePath || "")
     .replace(/\\/g, "/")
@@ -244,12 +265,41 @@ function auditTestPath(filePath) {
   );
 }
 
+function auditLayoutMigrationPath(filePath) {
+  const localRuntimeMessage = INVALID_LOCAL_RUNTIME_FILES.get(filePath);
+  if (localRuntimeMessage) {
+    return record(
+      "FAIL",
+      "Layout",
+      filePath,
+      localRuntimeMessage,
+      "dev/local-runtime/",
+    );
+  }
+  const legacyMatch = INVALID_LEGACY_PATH_PREFIXES.find(([prefix]) => filePath.startsWith(prefix));
+  if (!legacyMatch) {
+    return null;
+  }
+  return record(
+    "FAIL",
+    "Layout",
+    filePath,
+    legacyMatch[1],
+    "www/, api/, dev/, deploy/, or src/ according to canonical ownership",
+  );
+}
+
 export function auditCanonicalRepositoryStructure(files) {
   const findings = [];
   const legacy = [];
-  [...new Set(files.map(normalizeRepoPath).filter(Boolean))]
-    .filter(relevantPath)
+  const normalizedFiles = [...new Set(files.map(normalizeRepoPath).filter(Boolean))]
     .sort((left, right) => left.localeCompare(right))
+  normalizedFiles
+    .map(auditLayoutMigrationPath)
+    .filter(Boolean)
+    .forEach((entry) => findings.push(entry));
+  normalizedFiles
+    .filter(relevantPath)
     .forEach((filePath) => {
       const records = [
         auditJavaScript(filePath),

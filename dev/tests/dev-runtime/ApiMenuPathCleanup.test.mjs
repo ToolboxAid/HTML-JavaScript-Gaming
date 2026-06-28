@@ -8,13 +8,13 @@ import {
 } from "../../../src/api/admin-owner-navigation.js";
 
 const ACTIVE_SCAN_ROOTS = Object.freeze([
-  "account",
-  "admin",
-  "assets",
-  "owner",
-  "scripts",
+  "api",
   "src",
-  "toolbox",
+  "www/account",
+  "www/admin",
+  "www/assets",
+  "www/owner",
+  "www/toolbox",
 ]);
 
 const EXPECTED_ADMIN_LABELS = Object.freeze([
@@ -78,7 +78,8 @@ function assertActivePathExists(item) {
     return;
   }
   assert.match(item.path, /^(admin|owner)\//, `${item.label} should use an Admin or Owner page path`);
-  assert.equal(fs.existsSync(item.path), true, `${item.label} active menu path should exist: ${item.path}`);
+  const browserFilePath = path.join("www", item.path);
+  assert.equal(fs.existsSync(browserFilePath), true, `${item.label} active menu path should exist: ${browserFilePath}`);
 }
 
 test("server API client lives under src/api and active code does not reference src/engine/api", () => {
@@ -112,7 +113,7 @@ test("Owner Notes is active under owner path only", () => {
   assert.equal(ownerNotes?.planned, undefined, "Owner Notes should not be planned");
   assert.equal(ownerNotes?.path, "owner/notes.html");
   assert.equal(ownerNotes?.route, "owner-notes");
-  assert.equal(fs.existsSync("owner/notes.html"), true, "Owner Notes route should exist");
+  assert.equal(fs.existsSync("www/owner/notes.html"), true, "Owner Notes route should exist");
 });
 
 test("Admin and Owner shared menu active links resolve or are explicitly disabled", () => {
@@ -122,8 +123,8 @@ test("Admin and Owner shared menu active links resolve or are explicitly disable
 
 test("business-control pages moved under owner and are absent from admin", () => {
   ["branding", "design-system", "grouping-colors", "site-settings", "themes"].forEach((slug) => {
-    assert.equal(fs.existsSync(`owner/${slug}.html`), true, `owner/${slug}.html should exist`);
-    assert.equal(fs.existsSync(`admin/${slug}.html`), false, `admin/${slug}.html should be removed`);
+    assert.equal(fs.existsSync(`www/owner/${slug}.html`), true, `www/owner/${slug}.html should exist`);
+    assert.equal(fs.existsSync(`www/admin/${slug}.html`), false, `www/admin/${slug}.html should be removed`);
   });
 });
 

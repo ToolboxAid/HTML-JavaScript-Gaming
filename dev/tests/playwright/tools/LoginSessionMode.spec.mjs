@@ -53,7 +53,7 @@ const UAT_PROD_ADMIN_LABELS = [
 
 function nextLocalDbStoragePath() {
   localDbRunId += 1;
-  return path.join(process.cwd(), "tmp", "local-db", `login-session-mode-${process.pid}-${localDbRunId}.local-db-state`);
+  return path.join(process.cwd(), "dev", "workspace", "tmp", "local-db", `login-session-mode-${process.pid}-${localDbRunId}.local-db-state`);
 }
 
 async function withSupabaseEnv(nextEnv, callback) {

@@ -6,11 +6,11 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const repoRoot = path.resolve(__dirname, "..", "..");
-const toolsRoot = path.join(repoRoot, "toolbox");
+const repoRoot = path.resolve(__dirname, "..", "..", "..");
+const toolsRoot = path.join(repoRoot, "www", "toolbox");
 const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
 const toolsIndexPath = path.join(toolsRoot, "index.html");
-const resultsPath = path.join(repoRoot, "tmp", "v2-tool-launch-results.json");
+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-tool-launch-results.json");
 
 const REQUIRED_V2_TOOLS = [
   "asset-manager-v2",

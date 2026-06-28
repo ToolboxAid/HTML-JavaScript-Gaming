@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const repoRoot = path.resolve(__dirname, "..", "..");
-const htmlPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.html");
-const jsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
-const resultsPath = path.join(repoRoot, "tmp", "v2-undo-last-merge-results.json");
+const repoRoot = path.resolve(__dirname, "..", "..", "..");
+const htmlPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.html");
+const jsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-undo-last-merge-results.json");
 
 function checkSyntax(filePath) {
   try {

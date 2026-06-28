@@ -5,7 +5,7 @@ import { createAsteroidGeometryProfilesFromObjectVectorPayload } from '../../../
 import { loadAsteroidsObjectGeometryFromManifest } from '../../../games/Asteroids/game/asteroidsObjectGeometryManifest.js';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
-const manifestPath = path.join(repoRoot, 'games', 'Asteroids', 'game.manifest.json');
+const manifestPath = path.join(repoRoot, 'www', 'games', 'Asteroids', 'game.manifest.json');
 
 export function loadAsteroidsManifest() {
   return JSON.parse(fs.readFileSync(manifestPath, 'utf8'));

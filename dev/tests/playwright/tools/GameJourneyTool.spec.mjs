@@ -275,7 +275,7 @@ test("Game Journey exposes static tool ownership areas without automatic counts"
 
 test("Game Journey progress dashboard summarizes completion metrics", async ({ page }) => {
   const previousLocalDbPath = process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
-  const localDbPath = path.join(process.cwd(), "tmp", "local-db", `game-journey-targets-${process.pid}-${Date.now()}.local-db-state`);
+  const localDbPath = path.join(process.cwd(), "dev", "workspace", "tmp", "local-db", `game-journey-targets-${process.pid}-${Date.now()}.local-db-state`);
   process.env.GAMEFOUNDRY_LOCAL_DB_PATH = localDbPath;
   const gameJourneyCompletionMetricsPostgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
   const server = await startRepoServer({

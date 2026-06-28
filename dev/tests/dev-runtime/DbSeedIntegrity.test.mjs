@@ -176,7 +176,7 @@ async function replaceSampleLabel(baseUrl, sampleKey, sampleLabel) {
 
 test("server Local DB seed includes runtime timestamps, read-only guest packages, and unique user-owned samples", async () => {
   const previousLocalDbPath = process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
-  const localDbPath = path.join(process.cwd(), "tmp", "local-db", `db-seed-integrity-${process.pid}.local-db-state`);
+  const localDbPath = path.join(process.cwd(), "dev", "workspace", "tmp", "local-db", `db-seed-integrity-${process.pid}.local-db-state`);
   process.env.GAMEFOUNDRY_LOCAL_DB_PATH = localDbPath;
   const server = await startApiServer();
   try {
@@ -221,7 +221,7 @@ test("server Local DB seed includes runtime timestamps, read-only guest packages
 
 test("server reseed targets Local DB and rejects retired Local Mem mode", async () => {
   const previousLocalDbPath = process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
-  const localDbPath = path.join(process.cwd(), "tmp", "local-db", `db-reseed-integrity-${process.pid}.local-db-state`);
+  const localDbPath = path.join(process.cwd(), "dev", "workspace", "tmp", "local-db", `db-reseed-integrity-${process.pid}.local-db-state`);
   process.env.GAMEFOUNDRY_LOCAL_DB_PATH = localDbPath;
   const server = await startApiServer();
   try {

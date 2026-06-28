@@ -6,11 +6,11 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const repoRoot = path.resolve(__dirname, "..", "..");
-const toolsRoot = path.join(repoRoot, "toolbox");
+const repoRoot = path.resolve(__dirname, "..", "..", "..");
+const toolsRoot = path.join(repoRoot, "www", "toolbox");
 const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
-const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
-const resultsPath = path.join(repoRoot, "tmp", "v2-session-version-results.json");
+const workspaceJsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-session-version-results.json");
 
 const TOOLS = [
   "asset-manager-v2",
