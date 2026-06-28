@@ -1,25 +1,16 @@
-# git diff --name-status merge-base(origin/main, HEAD)..working-tree
-M	dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-M	dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
-M	dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
-M	dev/reports/codex_changed_files.txt
-M	dev/reports/codex_review.diff
-
-# git ls-files --others --exclude-standard
+api/.gitkeep
+dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
+dev/build/ProjectInstructions/PROJECT_STATE.md
+dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
+dev/build/ProjectInstructions/repository/canonical_repository_structure.md
 dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
-dev/reports/PR_26180_OWNER_004-repository-layout-architecture-plan_branch-validation.md
-dev/reports/PR_26180_OWNER_004-repository-layout-architecture-plan_manual-validation-notes.md
-dev/reports/PR_26180_OWNER_004-repository-layout-architecture-plan_report.md
-dev/reports/PR_26180_OWNER_004-repository-layout-architecture-plan_requirement-checklist.md
-dev/reports/PR_26180_OWNER_004-repository-layout-architecture-plan_validation-report.md
-
-# git diff --stat merge-base(origin/main, HEAD)..working-tree
-.../ProjectInstructions/PROJECT_INSTRUCTIONS.md    |    3 +-
- .../PROJECT_INSTRUCTIONS_VERSION.md                |    3 +-
- .../ProjectInstructions/backlog/BACKLOG_MASTER.md  |   12 +
- dev/reports/codex_changed_files.txt                |   46 +-
- dev/reports/codex_review.diff                      | 1085 +++++++-------------
- 5 files changed, 430 insertions(+), 719 deletions(-)
-
-# merge-base
-b3a2b30f51a1050596bbad2d7db211e1cba45b66
+dev/local-runtime/.gitkeep
+dev/reports/PR_26180_OWNER_005-repository-layout-scaffold_branch-validation.md
+dev/reports/PR_26180_OWNER_005-repository-layout-scaffold_manual-validation-notes.md
+dev/reports/PR_26180_OWNER_005-repository-layout-scaffold_report.md
+dev/reports/PR_26180_OWNER_005-repository-layout-scaffold_requirement-checklist.md
+dev/reports/PR_26180_OWNER_005-repository-layout-scaffold_validation-report.md
+dev/reports/codex_changed_files.txt
+dev/reports/codex_review.diff
+www/.gitkeep
