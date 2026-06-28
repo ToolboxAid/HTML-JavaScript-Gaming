@@ -172,15 +172,15 @@ test("bootstrap option parser maps npm script modes to server startup plan", () 
   );
 });
 
-test("bootstrap environment applies resolved team and role ports for browser API routing", () => {
+test("bootstrap environment overrides legacy env URLs with resolved team and role ports", () => {
   const env = {
+    GAMEFOUNDRY_LOCAL_API_HOST: "0.0.0.0",
     GAMEFOUNDRY_API_URL: "http://127.0.0.1:5501/api",
     GAMEFOUNDRY_LOCAL_API_PORT: "5501",
     GAMEFOUNDRY_SITE_URL: "http://127.0.0.1:5500",
   };
   applyBootstrapEnvironment({
     env,
-    host: "127.0.0.1",
     ports: resolveTeamPortConfig({ role: "codex", team: "alfa" }),
   });
 
@@ -238,6 +238,11 @@ test("runtime env loader applies .env values without overriding existing process
 
 test("browser launch targets team index after API and web servers are ready for owner role", async () => {
   const events = [];
+  const env = {
+    GAMEFOUNDRY_LOCAL_API_HOST: "0.0.0.0",
+    GAMEFOUNDRY_API_URL: "http://127.0.0.1:5501/api",
+    GAMEFOUNDRY_SITE_URL: "http://127.0.0.1:5500",
+  };
   const runtime = await startBootstrapRuntime(
     parseBootstrapOptions(["--mode=bootstrap", "--team=alfa"]),
     {
@@ -254,7 +259,7 @@ test("browser launch targets team index after API and web servers are ready for 
           url,
         };
       },
-      env: {},
+      env,
       loadEnv: () => ({
         loaded: false,
         loadedKeys: 0,
@@ -273,6 +278,9 @@ test("browser launch targets team index after API and web servers are ready for 
     "web:5510",
     "browser:http://127.0.0.1:5510/index.html",
   ]);
+  assert.equal(env.GAMEFOUNDRY_LOCAL_API_HOST, "127.0.0.1");
+  assert.equal(env.GAMEFOUNDRY_API_URL, "http://127.0.0.1:5511/api");
+  assert.equal(env.GAMEFOUNDRY_SITE_URL, "http://127.0.0.1:5510");
   assert.equal(runtime.diagnostics.includes("Browser launch: http://127.0.0.1:5510/index.html"), true);
   await runtime.close();
   assert.deepEqual(events.slice(-2), ["api:closed", "web:closed"]);

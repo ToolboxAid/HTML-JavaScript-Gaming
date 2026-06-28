@@ -18,7 +18,7 @@
 | Validate unknown role names | PASS | `reviewer` fails clearly with supported role list. |
 | Support `--team` argument forwarding | PASS | `npm run dev:bootstrap -- --team charlie` resolves Charlie ports. |
 | Support positional team forwarding | PASS | `npm run dev:bootstrap -- charlie` resolves Charlie ports. |
-| Prevent `.env` port override | PASS | Unit test confirms computed team/role ports overwrite loaded API/site port values. |
+| Prevent `.env` and process URL port override | PASS | Unit and live startup tests confirm computed team/role ports overwrite loaded or inherited API/site URL port values. |
 | Load environment | PASS | Orchestrator loads `.env` values without overriding existing environment values. |
 | Resolve team ports | PASS | Unit tests cover all teams and both roles. |
 | Start Local API | PASS | `dev:bootstrap` starts the existing Local API server on resolved API port. |

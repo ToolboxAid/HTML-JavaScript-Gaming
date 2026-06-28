@@ -4,18 +4,16 @@ M dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_manual-validation-notes.md
  M dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_requirement-checklist.md
  M dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_validation-report.md
  M dev/scripts/start-dev.mjs
- M dev/scripts/team-port-config.mjs
  M dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs
 
 # git ls-files --others --exclude-standard
 (no output)
 
 # git diff --stat
-...team-aware-bootstrap_manual-validation-notes.md |  8 ++++++
- ...R_26171_ALFA_009-team-aware-bootstrap_report.md |  3 ++
- ...9-team-aware-bootstrap_requirement-checklist.md |  3 ++
- ...A_009-team-aware-bootstrap_validation-report.md |  5 +++-
- dev/scripts/start-dev.mjs                          |  2 +-
- dev/scripts/team-port-config.mjs                   | 29 +++++++++++++++++++-
- dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs  | 32 +++++++++++++++++++++-
- 7 files changed, 78 insertions(+), 4 deletions(-)
+...LFA_009-team-aware-bootstrap_manual-validation-notes.md |  4 +++-
+ .../PR_26171_ALFA_009-team-aware-bootstrap_report.md       |  4 +++-
+ ..._ALFA_009-team-aware-bootstrap_requirement-checklist.md |  2 +-
+ ...6171_ALFA_009-team-aware-bootstrap_validation-report.md |  6 +++---
+ dev/scripts/start-dev.mjs                                  |  6 +++---
+ dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs          | 14 +++++++++++---
+ 6 files changed, 24 insertions(+), 12 deletions(-)

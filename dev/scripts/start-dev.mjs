@@ -179,7 +179,7 @@ export function applyBootstrapEnvironment({
   host = DEFAULT_HOST,
   ports,
 }) {
-  env.GAMEFOUNDRY_LOCAL_API_HOST = env.GAMEFOUNDRY_LOCAL_API_HOST || host;
+  env.GAMEFOUNDRY_LOCAL_API_HOST = host;
   env.GAMEFOUNDRY_LOCAL_API_PORT = String(ports.apiPort);
   env.GAMEFOUNDRY_API_URL = apiUrl(host, ports.apiPort);
   env.GAMEFOUNDRY_SITE_URL = localUrl(host, ports.webPort);
@@ -345,10 +345,10 @@ export async function startBootstrapRuntime(
   } = {},
 ) {
   const runtimeEnv = loadEnv();
-  const host = env.GAMEFOUNDRY_LOCAL_API_HOST || DEFAULT_HOST;
+  const host = DEFAULT_HOST;
   applyBootstrapEnvironment({ env, host, ports: options.ports });
   const apiBaseUrl = localUrl(host, options.ports.apiPort);
-  const webBaseUrl = localUrl(host, options.ports.webPort);
+  const webBaseUrl = env.GAMEFOUNDRY_SITE_URL;
   const servers = [];
 
   if (options.api) {

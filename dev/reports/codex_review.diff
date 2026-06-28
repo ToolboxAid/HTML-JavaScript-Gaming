@@ -1,200 +1,160 @@
 diff --git a/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_manual-validation-notes.md b/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_manual-validation-notes.md
-index c40377fb2..eba870a8b 100644
+index eba870a8b..de2ee4a6b 100644
 --- a/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_manual-validation-notes.md
 +++ b/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_manual-validation-notes.md
-@@ -45,6 +45,7 @@ Expected result:
- npm run dev:bootstrap -- --team owner
- npm run dev:bootstrap -- --team bravo
- npm run dev:bootstrap -- --team charlie
-+npm run dev:bootstrap -- charlie
- npm run dev:bootstrap -- --team delta
- npm run dev:bootstrap -- --team echo
- npm run dev:bootstrap -- --team foxtrot
-@@ -52,6 +53,13 @@ npm run dev:bootstrap -- --team golf
- npm run dev:bootstrap -- --team hotel
- ```
+@@ -12,7 +12,7 @@ Expected diagnostics:
+ - `Role: owner`
+ - `Web URL: http://127.0.0.1:5510`
+ - `API URL: http://127.0.0.1:5511/api`
+-- `Browser launch: opened http://127.0.0.1:5510/index.html`
++- `Browser launch: http://127.0.0.1:5510/index.html`
  
-+For Charlie, both forms should show:
-+
-+- `Team: charlie`
-+- `Web URL: http://127.0.0.1:5530`
-+- `API URL: http://127.0.0.1:5531/api`
-+- `Browser launch: http://127.0.0.1:5530/index.html`
+ ## Primary Alfa Codex Command
+ 
+@@ -60,6 +60,8 @@ For Charlie, both forms should show:
+ - `API URL: http://127.0.0.1:5531/api`
+ - `Browser launch: http://127.0.0.1:5530/index.html`
+ 
++If `.env` or the current shell already has `GAMEFOUNDRY_SITE_URL` or `GAMEFOUNDRY_API_URL`, bootstrap should still show the resolved team/role ports in diagnostics and launch the browser from the computed `GAMEFOUNDRY_SITE_URL`.
 +
  ## Failure Checks
  
  ```powershell
 diff --git a/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_report.md b/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_report.md
-index 1690a93ec..95d02d5a3 100644
+index 95d02d5a3..e0279d948 100644
 --- a/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_report.md
 +++ b/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_report.md
-@@ -30,6 +30,7 @@ Per OWNER instruction, those uncommitted changes were discarded with `git reset
- - Added focused node tests for team resolution, role offsets, invalid team/role validation, script wiring, `.env` loading behavior, and bootstrap diagnostics.
+@@ -31,6 +31,7 @@ Per OWNER instruction, those uncommitted changes were discarded with `git reset
  - Added automatic browser launch for owner-role `dev:bootstrap` after the API and web servers are both ready.
  - Suppressed automatic browser launch for the `codex` role.
-+- Fixed npm argument forwarding/parsing so both `--team charlie` and positional `charlie` select the same team after the package script's `--mode bootstrap` argument.
+ - Fixed npm argument forwarding/parsing so both `--team charlie` and positional `charlie` select the same team after the package script's `--mode bootstrap` argument.
++- Treats `.env` `GAMEFOUNDRY_SITE_URL` and `GAMEFOUNDRY_API_URL` as legacy/default local values for bootstrap mode, then overwrites runtime URLs from the resolved team/role ports.
  
  ## Supported Teams
  
-@@ -96,6 +97,8 @@ npm run dev:bootstrap -- --team alfa --role codex
- - Browser launch happens only after both API and web servers are ready.
+@@ -98,7 +99,8 @@ npm run dev:bootstrap -- --team alfa --role codex
  - The Alfa owner launch target is `http://127.0.0.1:5510/index.html`.
  - The Alfa codex launch target is suppressed while using web `5512` and API `5513`.
-+- The Charlie launch target is `http://127.0.0.1:5530/index.html` for both `npm run dev:bootstrap -- --team charlie` and `npm run dev:bootstrap -- charlie`.
-+- Computed team/role ports override any `.env` port values loaded before bootstrap startup.
+ - The Charlie launch target is `http://127.0.0.1:5530/index.html` for both `npm run dev:bootstrap -- --team charlie` and `npm run dev:bootstrap -- charlie`.
+-- Computed team/role ports override any `.env` port values loaded before bootstrap startup.
++- Computed team/role ports override any `.env` or inherited process `GAMEFOUNDRY_SITE_URL` / `GAMEFOUNDRY_API_URL` values loaded before bootstrap startup.
++- Bootstrap runtime sets `GAMEFOUNDRY_SITE_URL=http://127.0.0.1:<webPort>` and `GAMEFOUNDRY_API_URL=http://127.0.0.1:<apiPort>/api` after team/role resolution.
  
  ## Files Changed
  
 diff --git a/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_requirement-checklist.md b/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_requirement-checklist.md
-index 4600ad790..a6c478735 100644
+index a6c478735..fc4b68f78 100644
 --- a/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_requirement-checklist.md
 +++ b/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_requirement-checklist.md
-@@ -16,6 +16,9 @@
- | Do not use single-letter public team commands | PASS | Scan returned no matches in new bootstrap files. |
- | Validate unknown team names | PASS | `omega` fails clearly with supported team list. |
+@@ -18,7 +18,7 @@
  | Validate unknown role names | PASS | `reviewer` fails clearly with supported role list. |
-+| Support `--team` argument forwarding | PASS | `npm run dev:bootstrap -- --team charlie` resolves Charlie ports. |
-+| Support positional team forwarding | PASS | `npm run dev:bootstrap -- charlie` resolves Charlie ports. |
-+| Prevent `.env` port override | PASS | Unit test confirms computed team/role ports overwrite loaded API/site port values. |
+ | Support `--team` argument forwarding | PASS | `npm run dev:bootstrap -- --team charlie` resolves Charlie ports. |
+ | Support positional team forwarding | PASS | `npm run dev:bootstrap -- charlie` resolves Charlie ports. |
+-| Prevent `.env` port override | PASS | Unit test confirms computed team/role ports overwrite loaded API/site port values. |
++| Prevent `.env` and process URL port override | PASS | Unit and live startup tests confirm computed team/role ports overwrite loaded or inherited API/site URL port values. |
  | Load environment | PASS | Orchestrator loads `.env` values without overriding existing environment values. |
  | Resolve team ports | PASS | Unit tests cover all teams and both roles. |
  | Start Local API | PASS | `dev:bootstrap` starts the existing Local API server on resolved API port. |
 diff --git a/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_validation-report.md b/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_validation-report.md
-index ea82082a8..5ca1cd0d0 100644
+index 5ca1cd0d0..370accd63 100644
 --- a/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_validation-report.md
 +++ b/dev/reports/PR_26171_ALFA_009-team-aware-bootstrap_validation-report.md
-@@ -13,10 +13,13 @@
+@@ -9,11 +9,11 @@
+ | `node --check dev/scripts/start-local-api-server.mjs` | PASS | Legacy startup entrypoint remains valid. |
+ | `node --check dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs` | PASS | Test syntax valid. |
+ | `node ./dev/scripts/run-node-test-files.mjs dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs dev/tests/dev-runtime/LocalApiStartupLogging.test.mjs` | PASS | 2 targeted files passed; 14 subtests passed. |
+-| Unsupported team token scan in new bootstrap files | PASS | No unsupported old team names or single-letter public team commands found. |
++| Unsupported team token scan in new bootstrap files | PASS | No unsupported old team names or single-letter public team commands found in package scripts, bootstrap scripts, or targeted bootstrap tests. |
  | `npm run validate:canonical-structure` | PASS | Canonical repository structure guardrail passed. |
  | `npm run dev:bootstrap -- --team alfa` | PASS | Started with team `alfa`, role `owner`, web `5510`, API `5511`, launched browser to `http://127.0.0.1:5510/index.html`, then process tree was stopped. |
  | `npm run dev:bootstrap -- --team alfa --role codex` | PASS | Started with team `alfa`, role `codex`, web `5512`, API `5513`, suppressed browser launch, then process tree was stopped. |
-+| `npm run dev:bootstrap -- --team charlie` | PASS | Started with team `charlie`, role `owner`, web `5530`, API `5531`, launched browser to `http://127.0.0.1:5530/index.html`, then process tree was stopped. |
-+| `npm run dev:bootstrap -- charlie` | PASS | Positional team forwarding selected team `charlie`, web `5530`, API `5531`, and browser target `http://127.0.0.1:5530/index.html`. |
-+| `npm run dev:bootstrap -- --team bravo` | PASS | Started with team `bravo`, role `owner`, web `5520`, API `5521`, and browser target `http://127.0.0.1:5520/index.html`. |
+-| `npm run dev:bootstrap -- --team charlie` | PASS | Started with team `charlie`, role `owner`, web `5530`, API `5531`, launched browser to `http://127.0.0.1:5530/index.html`, then process tree was stopped. |
++| `npm run dev:bootstrap -- --team charlie` with inherited stale URL env values | PASS | Started with team `charlie`, role `owner`, web `5530`, API `5531`, launched browser to `http://127.0.0.1:5530/index.html`, and ignored inherited `GAMEFOUNDRY_SITE_URL` / `GAMEFOUNDRY_API_URL` port values before process cleanup. |
+ | `npm run dev:bootstrap -- charlie` | PASS | Positional team forwarding selected team `charlie`, web `5530`, API `5531`, and browser target `http://127.0.0.1:5530/index.html`. |
+ | `npm run dev:bootstrap -- --team bravo` | PASS | Started with team `bravo`, role `owner`, web `5520`, API `5521`, and browser target `http://127.0.0.1:5520/index.html`. |
  | `npm run dev:bootstrap -- --team omega` | PASS | Failed clearly with supported team list. |
- | `npm run dev:bootstrap -- --team alfa --role reviewer` | PASS | Failed clearly with supported role list. |
- | `npm run dev:local-api` | PASS | Legacy command started and printed legacy startup diagnostics, then process tree was stopped. |
+@@ -22,4 +22,4 @@
  
  ## Notes
  
--The startup-command validations used short-lived process launches and `taskkill /T /F` cleanup after expected diagnostics appeared, so no dev servers were left running. The owner-role validation opened the configured browser target after both server diagnostics were available.
-+The startup-command validations used short-lived process launches and `taskkill /T /F` cleanup after expected diagnostics appeared, so no dev servers were left running. Owner-role validations opened the configured browser target after both server diagnostics were available. Unit coverage verifies loaded `.env` port values are overwritten by computed team/role ports.
+-The startup-command validations used short-lived process launches and `taskkill /T /F` cleanup after expected diagnostics appeared, so no dev servers were left running. Owner-role validations opened the configured browser target after both server diagnostics were available. Unit coverage verifies loaded `.env` port values are overwritten by computed team/role ports.
++The startup-command validations used short-lived process launches and `taskkill /T /F` cleanup after expected diagnostics appeared, so no dev servers were left running. Owner-role validations opened the configured browser target after both server diagnostics were available. Unit coverage verifies loaded `.env` and inherited process URL values are overwritten by computed team/role ports.
 diff --git a/dev/scripts/start-dev.mjs b/dev/scripts/start-dev.mjs
-index 15d3ac1fa..ac3d6242b 100644
+index ac3d6242b..e1b58491a 100644
 --- a/dev/scripts/start-dev.mjs
 +++ b/dev/scripts/start-dev.mjs
-@@ -203,7 +203,7 @@ export function formatBootstrapDiagnostics({
-     `Web URL: ${webBaseUrl}`,
-     `API URL: ${apiBaseUrl}/api`,
-     browserLaunch?.enabled
--      ? `Browser launch: opened ${browserLaunch.url}`
-+      ? `Browser launch: ${browserLaunch.url}`
-       : `Browser launch: ${browserLaunch?.reason || "not requested"}`,
-     "Environment source: .env + process environment",
-     `.env loaded: ${runtimeEnv.loaded ? `yes (${runtimeEnv.loadedKeys} new key(s))` : "no"}`,
-diff --git a/dev/scripts/team-port-config.mjs b/dev/scripts/team-port-config.mjs
-index 2dfa98fc3..9d11f9b7f 100644
---- a/dev/scripts/team-port-config.mjs
-+++ b/dev/scripts/team-port-config.mjs
-@@ -80,10 +80,37 @@ function parseNamedArgument(args, name, fallback, supportedLabel) {
-   return fallback;
- }
+@@ -179,7 +179,7 @@ export function applyBootstrapEnvironment({
+   host = DEFAULT_HOST,
+   ports,
+ }) {
+-  env.GAMEFOUNDRY_LOCAL_API_HOST = env.GAMEFOUNDRY_LOCAL_API_HOST || host;
++  env.GAMEFOUNDRY_LOCAL_API_HOST = host;
+   env.GAMEFOUNDRY_LOCAL_API_PORT = String(ports.apiPort);
+   env.GAMEFOUNDRY_API_URL = apiUrl(host, ports.apiPort);
+   env.GAMEFOUNDRY_SITE_URL = localUrl(host, ports.webPort);
+@@ -345,10 +345,10 @@ export async function startBootstrapRuntime(
+   } = {},
+ ) {
+   const runtimeEnv = loadEnv();
+-  const host = env.GAMEFOUNDRY_LOCAL_API_HOST || DEFAULT_HOST;
++  const host = DEFAULT_HOST;
+   applyBootstrapEnvironment({ env, host, ports: options.ports });
+   const apiBaseUrl = localUrl(host, options.ports.apiPort);
+-  const webBaseUrl = localUrl(host, options.ports.webPort);
++  const webBaseUrl = env.GAMEFOUNDRY_SITE_URL;
+   const servers = [];
  
-+function firstPositionalArgument(args = []) {
-+  const values = Array.from(args);
-+  const optionsWithValues = new Set(["mode", "role", "team"]);
-+  for (let index = 0; index < values.length; index += 1) {
-+    const argument = values[index];
-+    if (!argument) {
-+      continue;
-+    }
-+    if (argument.startsWith("--")) {
-+      if (argument.includes("=")) {
-+        continue;
-+      }
-+      const optionName = argument.slice(2);
-+      if (optionsWithValues.has(optionName) && values[index + 1] && !values[index + 1].startsWith("--")) {
-+        index += 1;
-+      }
-+      continue;
-+    }
-+    return argument;
-+  }
-+  return "";
-+}
-+
- export function parseRoleArgument(args = []) {
-   return parseNamedArgument(args, "role", DEFAULT_BOOTSTRAP_ROLE, supportedBootstrapRolesLabel);
- }
- 
- export function parseTeamArgument(args = []) {
--  return parseNamedArgument(args, "team", DEFAULT_BOOTSTRAP_TEAM, supportedBootstrapTeamsLabel);
-+  const explicitTeam = parseNamedArgument(args, "team", "", supportedBootstrapTeamsLabel);
-+  if (explicitTeam) {
-+    return explicitTeam;
-+  }
-+  return normalizeToken(firstPositionalArgument(args), DEFAULT_BOOTSTRAP_TEAM);
- }
+   if (options.api) {
 diff --git a/dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs b/dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs
-index 2a4e16fe6..226a7461a 100644
+index 226a7461a..c746f1b3b 100644
 --- a/dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs
 +++ b/dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs
-@@ -60,6 +60,9 @@ test("team and role parsers accept canonical argument forms", () => {
-   assert.equal(parseTeamArgument([]), "owner");
-   assert.equal(parseTeamArgument(["--team", "alfa"]), "alfa");
-   assert.equal(parseTeamArgument(["--team=bravo"]), "bravo");
-+  assert.equal(parseTeamArgument(["--mode", "bootstrap", "charlie"]), "charlie");
-+  assert.equal(parseTeamArgument(["--mode=bootstrap", "charlie"]), "charlie");
-+  assert.equal(parseTeamArgument(["charlie", "--role", "codex"]), "charlie");
-   assert.equal(parseRoleArgument([]), "owner");
-   assert.equal(parseRoleArgument(["--role", "codex"]), "codex");
-   assert.equal(parseRoleArgument(["--role=owner"]), "owner");
-@@ -124,6 +127,32 @@ test("bootstrap option parser maps npm script modes to server startup plan", ()
-     team: "charlie",
-     web: false,
-   });
-+  assert.deepEqual(parseBootstrapOptions(["--mode", "bootstrap", "charlie"]), {
-+    api: true,
-+    mode: "bootstrap",
-+    ports: {
-+      apiPort: 5531,
-+      role: "owner",
-+      team: "charlie",
-+      webPort: 5530,
-+    },
-+    role: "owner",
-+    team: "charlie",
-+    web: true,
-+  });
-+  assert.deepEqual(parseBootstrapOptions(["--mode", "bootstrap", "--team", "bravo"]), {
-+    api: true,
-+    mode: "bootstrap",
-+    ports: {
-+      apiPort: 5521,
-+      role: "owner",
-+      team: "bravo",
-+      webPort: 5520,
-+    },
-+    role: "owner",
-+    team: "bravo",
-+    web: true,
-+  });
-   assert.deepEqual(parseBootstrapOptions(["--mode=web", "--team=owner"]), {
-     api: false,
-     mode: "web",
-@@ -146,6 +175,7 @@ test("bootstrap option parser maps npm script modes to server startup plan", ()
- test("bootstrap environment applies resolved team and role ports for browser API routing", () => {
+@@ -172,15 +172,15 @@ test("bootstrap option parser maps npm script modes to server startup plan", ()
+   );
+ });
+ 
+-test("bootstrap environment applies resolved team and role ports for browser API routing", () => {
++test("bootstrap environment overrides legacy env URLs with resolved team and role ports", () => {
    const env = {
++    GAMEFOUNDRY_LOCAL_API_HOST: "0.0.0.0",
      GAMEFOUNDRY_API_URL: "http://127.0.0.1:5501/api",
-+    GAMEFOUNDRY_LOCAL_API_PORT: "5501",
+     GAMEFOUNDRY_LOCAL_API_PORT: "5501",
      GAMEFOUNDRY_SITE_URL: "http://127.0.0.1:5500",
    };
    applyBootstrapEnvironment({
-@@ -243,7 +273,7 @@ test("browser launch targets team index after API and web servers are ready for
+     env,
+-    host: "127.0.0.1",
+     ports: resolveTeamPortConfig({ role: "codex", team: "alfa" }),
+   });
+ 
+@@ -238,6 +238,11 @@ test("runtime env loader applies .env values without overriding existing process
+ 
+ test("browser launch targets team index after API and web servers are ready for owner role", async () => {
+   const events = [];
++  const env = {
++    GAMEFOUNDRY_LOCAL_API_HOST: "0.0.0.0",
++    GAMEFOUNDRY_API_URL: "http://127.0.0.1:5501/api",
++    GAMEFOUNDRY_SITE_URL: "http://127.0.0.1:5500",
++  };
+   const runtime = await startBootstrapRuntime(
+     parseBootstrapOptions(["--mode=bootstrap", "--team=alfa"]),
+     {
+@@ -254,7 +259,7 @@ test("browser launch targets team index after API and web servers are ready for
+           url,
+         };
+       },
+-      env: {},
++      env,
+       loadEnv: () => ({
+         loaded: false,
+         loadedKeys: 0,
+@@ -273,6 +278,9 @@ test("browser launch targets team index after API and web servers are ready for
      "web:5510",
      "browser:http://127.0.0.1:5510/index.html",
    ]);
--  assert.equal(runtime.diagnostics.includes("Browser launch: opened http://127.0.0.1:5510/index.html"), true);
-+  assert.equal(runtime.diagnostics.includes("Browser launch: http://127.0.0.1:5510/index.html"), true);
++  assert.equal(env.GAMEFOUNDRY_LOCAL_API_HOST, "127.0.0.1");
++  assert.equal(env.GAMEFOUNDRY_API_URL, "http://127.0.0.1:5511/api");
++  assert.equal(env.GAMEFOUNDRY_SITE_URL, "http://127.0.0.1:5510");
+   assert.equal(runtime.diagnostics.includes("Browser launch: http://127.0.0.1:5510/index.html"), true);
    await runtime.close();
    assert.deepEqual(events.slice(-2), ["api:closed", "web:closed"]);
- });

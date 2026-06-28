@@ -12,7 +12,7 @@ Expected diagnostics:
 - `Role: owner`
 - `Web URL: http://127.0.0.1:5510`
 - `API URL: http://127.0.0.1:5511/api`
-- `Browser launch: opened http://127.0.0.1:5510/index.html`
+- `Browser launch: http://127.0.0.1:5510/index.html`
 
 ## Primary Alfa Codex Command
 
@@ -59,6 +59,8 @@ For Charlie, both forms should show:
 - `Web URL: http://127.0.0.1:5530`
 - `API URL: http://127.0.0.1:5531/api`
 - `Browser launch: http://127.0.0.1:5530/index.html`
+
+If `.env` or the current shell already has `GAMEFOUNDRY_SITE_URL` or `GAMEFOUNDRY_API_URL`, bootstrap should still show the resolved team/role ports in diagnostics and launch the browser from the computed `GAMEFOUNDRY_SITE_URL`.
 
 ## Failure Checks
 
