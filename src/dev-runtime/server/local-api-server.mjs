@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { handleAdminNotesDirectoryRequest } from "../admin/admin-notes-directory.mjs";
 import { localAdminNotesHeaderPartialPath } from "../admin/admin-notes-menu.mjs";
 import { createLocalApiRouter } from "./local-api-router.mjs";
+import { resolveStaticRouteTarget } from "./static-web-root.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -34,26 +35,10 @@ function contentTypeForPath(filePath) {
   return "application/octet-stream";
 }
 
-function isInsideRepoRoot(absolutePath) {
-  const relativePath = path.relative(repoRoot, absolutePath);
-  return relativePath === "" || (!relativePath.startsWith("..") && !path.isAbsolute(relativePath));
-}
-
-function resolveBrowserRoutePath(decodedPath) {
-  const normalizedPath = path.normalize(decodedPath).replace(/^(\.\.[/\\])+/, "");
-  const webPath = normalizedPath.replace(/\\/g, "/");
-  if (webPath === "/tools" || webPath.startsWith("/tools/")) {
-    return `/toolbox${webPath.slice("/tools".length)}`;
-  }
-  if (webPath === "/admin/admin-notes.html") {
-    return "/src/dev-runtime/admin/notes.html";
-  }
-  return normalizedPath;
-}
-
 export async function startLocalApiServer({
   host = "127.0.0.1",
   port = 5501,
+  webRoot,
 } = {}) {
   const handleApiRuntimeRequest = createLocalApiRouter({ repoRoot });
   const server = http.createServer(async (request, response) => {
@@ -66,19 +51,13 @@ export async function startLocalApiServer({
         return;
       }
       const decodedPath = decodeURIComponent(requestUrl.pathname);
-      const normalizedPath = resolveBrowserRoutePath(decodedPath);
-      const absolutePath = path.resolve(repoRoot, `.${normalizedPath}`);
-      if (!isInsideRepoRoot(absolutePath)) {
-        response.statusCode = 403;
-        response.end("Forbidden");
+      const routeTarget = await resolveStaticRouteTarget({ decodedPath, repoRoot, webRoot });
+      if (!routeTarget.targetPath) {
+        response.statusCode = 404;
+        response.end("Not Found");
         return;
       }
-      let targetPath = absolutePath;
-      const stat = await fs.stat(targetPath).catch(() => null);
-      if (stat && stat.isDirectory()) {
-        targetPath = path.join(targetPath, "index.html");
-      }
-      targetPath = localAdminNotesHeaderPartialPath(repoRoot, targetPath);
+      const targetPath = localAdminNotesHeaderPartialPath(repoRoot, routeTarget.targetPath);
       const responseContents = await fs.readFile(targetPath);
       response.statusCode = 200;
       response.setHeader("Content-Type", contentTypeForPath(targetPath));

@@ -7,6 +7,7 @@ import process from "node:process";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { localAdminNotesHeaderPartialPath } from "../../src/dev-runtime/admin/admin-notes-menu.mjs";
 import { startLocalApiServer } from "../../src/dev-runtime/server/local-api-server.mjs";
+import { resolveStaticRouteTarget } from "../../src/dev-runtime/server/static-web-root.mjs";
 import {
   parseRoleArgument,
   parseTeamArgument,
@@ -96,26 +97,6 @@ function contentTypeForPath(filePath) {
   if (extension === ".csv") return "text/csv; charset=utf-8";
   if (extension === ".txt") return "text/plain; charset=utf-8";
   return "application/octet-stream";
-}
-
-function isInsideRepoRoot(absolutePath) {
-  const relativePath = path.relative(repoRoot, absolutePath);
-  return relativePath === "" || (!relativePath.startsWith("..") && !path.isAbsolute(relativePath));
-}
-
-function resolveBrowserRoutePath(decodedPath) {
-  const normalizedPath = path.normalize(decodedPath).replace(/^(\.\.[/\\])+/, "");
-  const webPath = normalizedPath.replace(/\\/g, "/");
-  if (webPath === "/") {
-    return "/index.html";
-  }
-  if (webPath === "/tools" || webPath.startsWith("/tools/")) {
-    return `/toolbox${webPath.slice("/tools".length)}`;
-  }
-  if (webPath === "/admin/admin-notes.html") {
-    return "/src/dev-runtime/admin/notes.html";
-  }
-  return normalizedPath;
 }
 
 function parseModeArgument(args = []) {
@@ -280,6 +261,7 @@ export async function startStaticWebServer({
   apiBaseUrl,
   host = DEFAULT_HOST,
   port,
+  webRoot,
 } = {}) {
   if (!apiBaseUrl) {
     throw new Error("startStaticWebServer requires apiBaseUrl.");
@@ -292,19 +274,13 @@ export async function startStaticWebServer({
         return;
       }
       const decodedPath = decodeURIComponent(requestUrl.pathname);
-      const normalizedPath = resolveBrowserRoutePath(decodedPath);
-      const absolutePath = path.resolve(repoRoot, `.${normalizedPath}`);
-      if (!isInsideRepoRoot(absolutePath)) {
-        response.statusCode = 403;
-        response.end("Forbidden");
+      const routeTarget = await resolveStaticRouteTarget({ decodedPath, repoRoot, webRoot });
+      if (!routeTarget.targetPath) {
+        response.statusCode = 404;
+        response.end("Not Found");
         return;
       }
-      let targetPath = absolutePath;
-      const stat = await fs.stat(targetPath).catch(() => null);
-      if (stat && stat.isDirectory()) {
-        targetPath = path.join(targetPath, "index.html");
-      }
-      targetPath = localAdminNotesHeaderPartialPath(repoRoot, targetPath);
+      const targetPath = localAdminNotesHeaderPartialPath(repoRoot, routeTarget.targetPath);
       const responseContents = await fs.readFile(targetPath);
       response.statusCode = 200;
       response.setHeader("Content-Type", contentTypeForPath(targetPath));
@@ -321,7 +297,7 @@ export async function startStaticWebServer({
   });
 
   return {
-    baseUrl: localUrl(host, port),
+    baseUrl: localUrl(host, server.address()?.port || port),
     close: async () => {
       await new Promise((resolve, reject) => {
         server.close((error) => {
