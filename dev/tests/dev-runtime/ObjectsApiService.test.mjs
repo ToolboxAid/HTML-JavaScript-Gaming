@@ -113,9 +113,18 @@ test("Objects API service lists and replaces objects through the database adapte
   const saved = await service.replaceObjects([
     {
       behavior: "Moves with player input.",
+      details: {
+        active: true,
+        audioReference: "audio/hero-hop.wav",
+        defaultValues: "speed=8",
+        description: "Player-controlled hero used for review.",
+        spriteReference: "sprite-hero",
+        tags: ["hero", "playable"],
+        visible: true,
+      },
       interaction: "Can collect keys.",
       name: "Persistent Hero",
-      render: { type: "None" },
+      render: { assetKey: "sprite-hero", type: "Sprite" },
       role: "Hero",
       state: "Active",
       traits: ["playerControlled", "movable"],
@@ -130,14 +139,32 @@ test("Objects API service lists and replaces objects through the database adapte
   assert.equal(adapter.tables.object_definition_records[0].createdBy, SEED_DB_KEYS.users.user1);
   assert.equal(adapter.tables.object_definition_records[0].updatedBy, SEED_DB_KEYS.users.user1);
   assert.deepEqual(adapter.tables.object_definition_records[0].capabilities, ["playerControlled", "movable"]);
+  assert.deepEqual(adapter.tables.object_definition_records[0].interaction.details, {
+    active: true,
+    audioReference: "audio/hero-hop.wav",
+    defaultValues: "speed=8",
+    description: "Player-controlled hero used for review.",
+    spriteReference: "sprite-hero",
+    tags: ["hero", "playable"],
+    visible: true,
+  });
   assert.equal(adapter.tables.game_workspace_games[0].key, gameKey);
   assert.deepEqual(await service.listObjects(), [
     {
       behavior: "Moves with player input.",
+      details: {
+        active: true,
+        audioReference: "audio/hero-hop.wav",
+        defaultValues: "speed=8",
+        description: "Player-controlled hero used for review.",
+        spriteReference: "sprite-hero",
+        tags: ["hero", "playable"],
+        visible: true,
+      },
       id: "persistent-hero",
       interaction: "Can collect keys.",
       name: "Persistent Hero",
-      render: { type: "None" },
+      render: { assetKey: "sprite-hero", previewPath: "", type: "Sprite" },
       role: "Hero",
       state: "Active",
       traits: ["playerControlled", "movable"],

@@ -523,10 +523,42 @@ function objectTextField(value) {
   return "";
 }
 
+function parseObjectTags(value) {
+  const values = Array.isArray(value)
+    ? value
+    : normalizeText(value).split(",");
+  return [...new Set(values.map(normalizeText).filter(Boolean))];
+}
+
+function objectBooleanField(value, fallback) {
+  if (value === true || value === "true" || value === "1") {
+    return true;
+  }
+  if (value === false || value === "false" || value === "0") {
+    return false;
+  }
+  return fallback;
+}
+
+function objectDetailsFromSource(source = {}, render = normalizeObjectRender(source)) {
+  const details = source.details && typeof source.details === "object" ? source.details : {};
+  return {
+    active: objectBooleanField(details.active ?? source.active, true),
+    audioReference: normalizeText(details.audioReference ?? source.audioReference),
+    defaultValues: normalizeText(details.defaultValues ?? source.defaultValues),
+    description: normalizeText(details.description ?? source.description),
+    spriteReference: normalizeText(details.spriteReference ?? source.spriteReference) || normalizeText(render.assetKey),
+    tags: parseObjectTags(details.tags ?? source.tags),
+    visible: objectBooleanField(details.visible ?? source.visible, true),
+  };
+}
+
 function objectFromRecord(record = {}) {
   const render = normalizeObjectRender(record);
+  const interaction = record.interaction && typeof record.interaction === "object" ? record.interaction : {};
   return {
     behavior: objectTextField(record.behavior),
+    details: objectDetailsFromSource(interaction.details || interaction, render),
     id: objectKeyFromText(record.id || record.name),
     interaction: objectTextField(record.interaction),
     name: normalizeText(record.name),
@@ -556,9 +588,11 @@ function normalizeObjectInput(input = {}) {
   const template = objectTemplateForRole(role);
   const id = objectKeyFromText(input.id || input.name);
   const render = normalizeObjectRender(input);
+  const details = objectDetailsFromSource(input, render);
   return {
     behavior: normalizeText(input.behavior),
     capabilities: parseObjectCapabilities(input.traits || input.capabilities),
+    details,
     id,
     interaction: normalizeText(input.interaction),
     modelType: normalizeText(input.type) || template?.modelType || "",
@@ -585,7 +619,10 @@ function objectRecordFromInput(input, {
     createdBy: existing?.createdBy || userKey,
     gameId: gameKey,
     id: object.id,
-    interaction: object.interaction ? { text: object.interaction } : {},
+    interaction: {
+      ...(object.interaction ? { text: object.interaction } : {}),
+      details: object.details,
+    },
     key: existing?.key || adapter.createRecordKey(),
     modelType: object.modelType,
     name: object.name,

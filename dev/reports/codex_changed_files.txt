@@ -1,13 +1,15 @@
-﻿M	assets/toolbox/objects/js/index.js
-A	dev/reports/PR_26179_ALFA_011-objects-manager-mvp_branch-validation.md
-A	dev/reports/PR_26179_ALFA_011-objects-manager-mvp_manual-validation-notes.md
-A	dev/reports/PR_26179_ALFA_011-objects-manager-mvp_report.md
-A	dev/reports/PR_26179_ALFA_011-objects-manager-mvp_requirement-checklist.md
-A	dev/reports/PR_26179_ALFA_011-objects-manager-mvp_validation-lane.md
-A	dev/reports/PR_26179_ALFA_011-objects-manager-mvp_validation-report.md
-M	dev/reports/codex_changed_files.txt
-M	dev/reports/codex_review.diff
-A	dev/tests/dev-runtime/ObjectsApiService.test.mjs
-M	dev/tests/playwright/tools/ObjectsTool.spec.mjs
-M	src/dev-runtime/server/local-api-router.mjs
-M	src/dev-runtime/toolbox-api/alfa-tool-services.mjs
+﻿assets/toolbox/objects/js/index.js
+dev/reports/codex_changed_files.txt
+dev/reports/codex_review.diff
+dev/reports/coverage_changed_js_guardrail.txt
+dev/reports/playwright_v8_coverage_report.txt
+dev/reports/PR_26179_ALFA_012-objects-properties-mvp_branch_validation.md
+dev/reports/PR_26179_ALFA_012-objects-properties-mvp_manual_validation_notes.md
+dev/reports/PR_26179_ALFA_012-objects-properties-mvp_report.md
+dev/reports/PR_26179_ALFA_012-objects-properties-mvp_requirement_checklist.md
+dev/reports/PR_26179_ALFA_012-objects-properties-mvp_validation_lane.md
+dev/reports/PR_26179_ALFA_012-objects-properties-mvp_validation_report.md
+dev/tests/dev-runtime/ObjectsApiService.test.mjs
+dev/tests/playwright/tools/ObjectsTool.spec.mjs
+src/dev-runtime/toolbox-api/alfa-tool-services.mjs
+toolbox/objects/index.html

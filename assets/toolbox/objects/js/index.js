@@ -51,11 +51,28 @@ let objectsRepository = createObjectsToolApiRepository();
 let draftedObjects = [];
 let editingRow = null;
 let storageIssue = null;
+let selectedObjectKey = "";
+let detailDraftBaseline = null;
 
 const elements = {
   addRow: document.querySelector("[data-objects-add-row]"),
   assetStatus: document.querySelector("[data-objects-asset-status]"),
   count: document.querySelector("[data-objects-count]"),
+  detailActive: document.querySelector("[data-objects-detail-active]"),
+  detailAudio: document.querySelector("[data-objects-detail-audio]"),
+  detailCancel: document.querySelector("[data-objects-detail-cancel]"),
+  detailDefaults: document.querySelector("[data-objects-detail-defaults]"),
+  detailDescription: document.querySelector("[data-objects-detail-description]"),
+  detailEmpty: document.querySelector("[data-objects-details-empty]"),
+  detailForm: document.querySelector("[data-objects-details-form]"),
+  detailName: document.querySelector("[data-objects-detail-name]"),
+  detailSave: document.querySelector("[data-objects-detail-save]"),
+  detailSelected: document.querySelector("[data-objects-detail-selected]"),
+  detailSprite: document.querySelector("[data-objects-detail-sprite]"),
+  detailTags: document.querySelector("[data-objects-detail-tags]"),
+  detailType: document.querySelector("[data-objects-detail-type]"),
+  detailUnsaved: document.querySelector("[data-objects-detail-unsaved]"),
+  detailVisible: document.querySelector("[data-objects-detail-visible]"),
   editSprite: document.querySelector("[data-objects-edit-sprite]"),
   list: document.querySelector("[data-objects-list]"),
   log: document.querySelector("[data-objects-log]"),
@@ -102,6 +119,43 @@ function normalizeRenderConfig(source = {}) {
     assetKey: normalizeText(render.assetKey),
     previewPath: normalizeText(render.previewPath),
     type: "Sprite",
+  });
+}
+
+function normalizeBoolean(value, fallback) {
+  if (value === true || value === "true" || value === "1") {
+    return true;
+  }
+  if (value === false || value === "false" || value === "0") {
+    return false;
+  }
+  return fallback;
+}
+
+function parseTags(value) {
+  const values = Array.isArray(value)
+    ? value
+    : normalizeText(value).split(",");
+  const tags = values
+    .map(normalizeText)
+    .filter(Boolean);
+  return [...new Set(tags)];
+}
+
+function formatTags(tags) {
+  return parseTags(tags).join(", ");
+}
+
+function normalizeObjectDetails(source = {}) {
+  const details = source.details && typeof source.details === "object" ? source.details : {};
+  return Object.freeze({
+    active: normalizeBoolean(details.active ?? source.active, true),
+    audioReference: normalizeText(details.audioReference ?? source.audioReference),
+    defaultValues: normalizeText(details.defaultValues ?? source.defaultValues),
+    description: normalizeText(details.description ?? source.description),
+    spriteReference: normalizeText(details.spriteReference ?? source.spriteReference) || normalizeText(source.render?.assetKey),
+    tags: Object.freeze(parseTags(details.tags ?? source.tags)),
+    visible: normalizeBoolean(details.visible ?? source.visible, true),
   });
 }
 
@@ -268,6 +322,7 @@ function cloneObject(source = {}) {
 
   return {
     ...object,
+    details: normalizeObjectDetails(source),
     traits: traitsForObject(source, object),
   };
 }
@@ -304,8 +359,13 @@ function issueLabel(issue) {
   return "Object Definition";
 }
 
+function engineDefinitionForValidation(object = {}) {
+  const { details, ...definition } = object;
+  return definition;
+}
+
 function objectDefinitionFindings(object, labelPrefix) {
-  return validateObjectDefinition(object).issues
+  return validateObjectDefinition(engineDefinitionForValidation(object)).issues
     .filter((issue) => !(issue.path.endsWith(".type") && !object.role))
     .map((issue) => ({
       action: issue.path.endsWith(".type")
@@ -413,6 +473,276 @@ function renderValidation(findings) {
     elements.validationList.append(listItem(`${finding.label}: ${finding.action}`));
   });
   elements.validationOverlay.hidden = false;
+}
+
+function detailFieldElements() {
+  return [
+    elements.detailActive,
+    elements.detailAudio,
+    elements.detailDefaults,
+    elements.detailDescription,
+    elements.detailName,
+    elements.detailSprite,
+    elements.detailTags,
+    elements.detailType,
+    elements.detailVisible,
+  ].filter(Boolean);
+}
+
+function detailsForObject(object = {}) {
+  return normalizeObjectDetails({
+    ...object,
+    spriteReference: object.details?.spriteReference || object.render?.assetKey,
+  });
+}
+
+function detailSnapshotForObject(object = {}) {
+  const details = detailsForObject(object);
+  return {
+    active: details.active,
+    audioReference: details.audioReference,
+    defaultValues: details.defaultValues,
+    description: details.description,
+    name: normalizeText(object.name),
+    spriteReference: details.spriteReference,
+    tags: [...details.tags],
+    type: normalizeText(object.role),
+    visible: details.visible,
+  };
+}
+
+function detailSnapshotFromForm() {
+  return {
+    active: elements.detailActive?.checked === true,
+    audioReference: normalizeText(elements.detailAudio?.value),
+    defaultValues: normalizeText(elements.detailDefaults?.value),
+    description: normalizeText(elements.detailDescription?.value),
+    name: normalizeText(elements.detailName?.value),
+    spriteReference: normalizeText(elements.detailSprite?.value),
+    tags: parseTags(elements.detailTags?.value),
+    type: normalizeText(elements.detailType?.value),
+    visible: elements.detailVisible?.checked === true,
+  };
+}
+
+function detailSnapshotKey(snapshot) {
+  return JSON.stringify({
+    ...snapshot,
+    tags: [...(snapshot.tags || [])].sort(),
+  });
+}
+
+function selectedObject() {
+  if (!draftedObjects.length) {
+    selectedObjectKey = "";
+    return null;
+  }
+  const selected = draftedObjects.find((object) => objectId(object) === selectedObjectKey);
+  if (selected) {
+    return selected;
+  }
+  selectedObjectKey = objectId(draftedObjects[0]);
+  return draftedObjects[0];
+}
+
+function hasUnsavedDetailChanges() {
+  if (!detailDraftBaseline || !selectedObject()) {
+    return false;
+  }
+  return detailSnapshotKey(detailSnapshotFromForm()) !== detailSnapshotKey(detailDraftBaseline);
+}
+
+function renderDetailDirtyState() {
+  const object = selectedObject();
+  const dirty = hasUnsavedDetailChanges();
+  setText(
+    elements.detailUnsaved,
+    object
+      ? dirty
+        ? "Unsaved changes: yes"
+        : "Unsaved changes: none"
+      : "Unsaved changes: none"
+  );
+  if (elements.detailSave) {
+    elements.detailSave.disabled = !object || !dirty;
+  }
+  if (elements.detailCancel) {
+    elements.detailCancel.disabled = !object || !dirty;
+  }
+}
+
+function populateDetailTypeOptions(selectedType = "") {
+  if (!elements.detailType) {
+    return;
+  }
+  elements.detailType.replaceChildren(optionElement("", "Select type"));
+  typeOptions().forEach((option) => {
+    elements.detailType.append(optionElement(option.value, option.label));
+  });
+  elements.detailType.value = selectedType;
+}
+
+function populateDetailForm(object) {
+  const snapshot = detailSnapshotForObject(object);
+  if (elements.detailName) {
+    elements.detailName.value = snapshot.name;
+  }
+  if (elements.detailDescription) {
+    elements.detailDescription.value = snapshot.description;
+  }
+  populateDetailTypeOptions(snapshot.type);
+  if (elements.detailTags) {
+    elements.detailTags.value = formatTags(snapshot.tags);
+  }
+  if (elements.detailActive) {
+    elements.detailActive.checked = snapshot.active;
+  }
+  if (elements.detailVisible) {
+    elements.detailVisible.checked = snapshot.visible;
+  }
+  if (elements.detailSprite) {
+    elements.detailSprite.value = snapshot.spriteReference;
+  }
+  if (elements.detailAudio) {
+    elements.detailAudio.value = snapshot.audioReference;
+  }
+  if (elements.detailDefaults) {
+    elements.detailDefaults.value = snapshot.defaultValues;
+  }
+  detailDraftBaseline = snapshot;
+}
+
+function renderDetailsPanel({ preserveDirty = false } = {}) {
+  const object = selectedObject();
+  if (elements.detailEmpty) {
+    elements.detailEmpty.hidden = Boolean(object);
+  }
+  if (elements.detailForm) {
+    elements.detailForm.hidden = !object;
+  }
+  if (!object) {
+    detailDraftBaseline = null;
+    renderDetailDirtyState();
+    return;
+  }
+  setText(elements.detailSelected, object.name || "Unnamed object");
+  if (preserveDirty && hasUnsavedDetailChanges()) {
+    renderDetailDirtyState();
+    return;
+  }
+  populateDetailForm(object);
+  renderDetailDirtyState();
+}
+
+function objectDetailFindings(snapshot, originalId = "") {
+  const findings = [];
+  if (!snapshot.name) {
+    findings.push({
+      action: "Enter a name before saving Object Details.",
+      label: "Name",
+    });
+  }
+  if (!snapshot.type) {
+    findings.push({
+      action: "Choose a type before saving Object Details.",
+      label: "Type",
+    });
+  }
+  const nextId = objectKeyFromText(snapshot.name);
+  if (nextId && draftedObjects.some((object) => objectId(object) === nextId && objectId(object) !== originalId)) {
+    findings.push({
+      action: "Use a unique name before saving Object Details.",
+      label: "Duplicate Object",
+    });
+  }
+  if (snapshot.spriteReference && !linkedSpriteAsset(snapshot.spriteReference)) {
+    findings.push({
+      action: "Use an existing sprite asset reference, or clear the Sprite reference before saving Object Details.",
+      label: "Sprite reference",
+    });
+  }
+  return findings;
+}
+
+function objectFromDetailSnapshot(object, snapshot) {
+  const template = templateForType(snapshot.type);
+  const render = snapshot.spriteReference
+    ? {
+        assetKey: snapshot.spriteReference,
+        previewPath: normalizeText(object.render?.previewPath),
+        type: "Sprite",
+      }
+    : { type: "None" };
+  return cloneObject({
+    ...object,
+    details: {
+      active: snapshot.active,
+      audioReference: snapshot.audioReference,
+      defaultValues: snapshot.defaultValues,
+      description: snapshot.description,
+      spriteReference: snapshot.spriteReference,
+      tags: snapshot.tags,
+      visible: snapshot.visible,
+    },
+    id: objectKeyFromText(snapshot.name),
+    name: snapshot.name,
+    render,
+    role: snapshot.type,
+    state: snapshot.active ? "Active" : "Disabled",
+    traits: template ? [...template.capabilities] : object.traits,
+  });
+}
+
+function selectDetails(objectKey) {
+  if (editingRow) {
+    setText(elements.log, "Details selection blocked: save or cancel the active row first.");
+    return;
+  }
+  if (hasUnsavedDetailChanges()) {
+    setText(elements.log, "Save or cancel Object Details before selecting another object.");
+    return;
+  }
+  selectedObjectKey = objectKey;
+  renderDetailsPanel();
+  const object = selectedObject();
+  setText(elements.log, object ? `Reviewing Object Details for ${object.name}.` : "No object selected.");
+}
+
+function saveDetails() {
+  const object = selectedObject();
+  if (!object) {
+    setText(elements.log, "Add an object before saving Object Details.");
+    return;
+  }
+  const originalId = objectId(object);
+  const snapshot = detailSnapshotFromForm();
+  const findings = objectDetailFindings(snapshot, originalId);
+  if (findings.length > 0) {
+    renderValidation(findings);
+    setText(elements.log, `Object Details blocked: ${findings.length} validation action${findings.length === 1 ? "" : "s"}.`);
+    renderDetailDirtyState();
+    return;
+  }
+  const nextObject = objectFromDetailSnapshot(object, snapshot);
+  const savedObjects = persistDraftedObjects(draftedObjects.map((savedObject) => (
+    objectId(savedObject) === originalId ? nextObject : savedObject
+  )));
+  if (!savedObjects) {
+    return;
+  }
+  draftedObjects = savedObjects;
+  selectedObjectKey = objectId(nextObject);
+  detailDraftBaseline = null;
+  setText(elements.log, `Saved Object Details for ${nextObject.name}.`);
+  render();
+}
+
+function cancelDetails() {
+  if (!selectedObject()) {
+    return;
+  }
+  renderDetailsPanel();
+  setText(elements.log, "Canceled Object Details changes.");
 }
 
 function capabilityLabel(traitId) {
@@ -623,6 +953,7 @@ function persistDraftedObjects(nextObjects) {
 }
 
 function editingObjectFromRow(row) {
+  const existingObject = draftedObjects.find((object) => objectId(object) === editingRow?.originalId) || {};
   const renderType = row.querySelector("[data-objects-row-render-type]")?.value || "None";
   const render = renderType === "Sprite"
     ? {
@@ -633,6 +964,8 @@ function editingObjectFromRow(row) {
     : { type: "None" };
 
   return cloneObject({
+    ...existingObject,
+    id: objectKeyFromText(row.querySelector("[data-objects-row-name]")?.value),
     name: row.querySelector("[data-objects-row-name]")?.value,
     render,
     role: row.querySelector("[data-objects-row-type]")?.value,
@@ -753,6 +1086,7 @@ function renderSavedRow(object) {
   const id = objectId(object);
   const actions = actionCell([
     actionButton("Edit", "objectsEditRow", id),
+    actionButton("Details", "objectsDetailsRow", id),
     ...rowConfigurationActions(object),
     actionButton("Trash", "objectsTrashRow", id),
   ]);
@@ -862,6 +1196,8 @@ function renderTemplateCatalog() {
       elements.templateSelect.append(optionElement(template.type, template.type));
     });
   }
+
+  populateDetailTypeOptions(elements.detailType?.value || "");
 }
 
 function renderRegistryBasics() {
@@ -892,6 +1228,7 @@ function render() {
   renderObjectList(draftedObjects);
   renderOutput(draftedObjects, findings);
   renderValidation(findings);
+  renderDetailsPanel({ preserveDirty: true });
   if (elements.addRow) {
     elements.addRow.disabled = Boolean(editingRow);
   }
@@ -1015,6 +1352,8 @@ function saveRow() {
     return;
   }
   draftedObjects = savedObjects;
+  selectedObjectKey = objectId(object);
+  detailDraftBaseline = null;
   setText(
     elements.log,
     editingRow.mode === "edit"
@@ -1035,6 +1374,10 @@ function trashRow(objectKey) {
       return;
     }
     draftedObjects = savedObjects;
+    if (selectedObjectKey === objectKey) {
+      selectedObjectKey = objectId(draftedObjects[0] || {});
+      detailDraftBaseline = null;
+    }
   }
   setText(elements.log, removed ? "Trashed object row." : "Trash skipped: object row was already absent.");
   render();
@@ -1050,6 +1393,8 @@ function seedStarterObjects() {
     return;
   }
   draftedObjects = savedObjects;
+  selectedObjectKey = objectId(draftedObjects[0] || {});
+  detailDraftBaseline = null;
   setText(elements.log, "Seeded starter objects: Hero, Projectile, and Wall.");
   render();
 }
@@ -1076,6 +1421,8 @@ function resetTable() {
   }
   draftedObjects = savedObjects;
   editingRow = null;
+  selectedObjectKey = "";
+  detailDraftBaseline = null;
   setText(elements.log, "Reset the Objects table.");
   render();
 }
@@ -1094,6 +1441,12 @@ function refreshLinkedRenderAssetDisplay() {
 }
 
 elements.addRow?.addEventListener("click", addRow);
+elements.detailCancel?.addEventListener("click", cancelDetails);
+elements.detailSave?.addEventListener("click", saveDetails);
+detailFieldElements().forEach((field) => {
+  field.addEventListener("input", renderDetailDirtyState);
+  field.addEventListener("change", renderDetailDirtyState);
+});
 elements.seedStarter?.addEventListener("click", seedStarterObjects);
 elements.validate?.addEventListener("click", validateObjects);
 elements.resetTable?.addEventListener("click", resetTable);
@@ -1121,6 +1474,8 @@ elements.list?.addEventListener("click", (event) => {
     cancelRow();
   } else if (button.dataset.objectsEditRow !== undefined) {
     editRow(button.dataset.objectsEditRow || "");
+  } else if (button.dataset.objectsDetailsRow !== undefined) {
+    selectDetails(button.dataset.objectsDetailsRow || "");
   } else if (button.dataset.objectsTrashRow !== undefined) {
     trashRow(button.dataset.objectsTrashRow || "");
   }
