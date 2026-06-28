@@ -1,20 +1,30 @@
 # git status --short
-A  dev/build/ProjectInstructions/PROJECT_BRANCHING_POLICY.md
-M  dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-M  dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
-M  dev/build/ProjectInstructions/addendums/pr_workflow.md
-A  dev/reports/PR_26179_OWNER_013-project-branching-policy-document_branch-validation.md
-A  dev/reports/PR_26179_OWNER_013-project-branching-policy-document_manual-validation-notes.md
-A  dev/reports/PR_26179_OWNER_013-project-branching-policy-document_report.md
-A  dev/reports/PR_26179_OWNER_013-project-branching-policy-document_requirement-checklist.md
-A  dev/reports/PR_26179_OWNER_013-project-branching-policy-document_validation-report.md
- M dev/reports/codex_changed_files.txt
+M dev/reports/codex_changed_files.txt
  M dev/reports/codex_review.diff
+?? dev/reports/PR_26180_OWNER_001-tile-overlay-status-review_branch-validation.md
+?? dev/reports/PR_26180_OWNER_001-tile-overlay-status-review_manual-validation-notes.md
+?? dev/reports/PR_26180_OWNER_001-tile-overlay-status-review_report.md
+?? dev/reports/PR_26180_OWNER_001-tile-overlay-status-review_requirement-checklist.md
+?? dev/reports/PR_26180_OWNER_001-tile-overlay-status-review_validation-report.md
+?? dev/reports/owner-pr-governance-current-state_branch-validation.md
+?? dev/reports/owner-pr-governance-current-state_manual-validation-notes.md
+?? dev/reports/owner-pr-governance-current-state_report.md
+?? dev/reports/owner-pr-governance-current-state_requirement-checklist.md
+?? dev/reports/owner-pr-governance-current-state_validation-report.md
 
 # git ls-files --others --exclude-standard
-(no output)
+dev/reports/PR_26180_OWNER_001-tile-overlay-status-review_branch-validation.md
+dev/reports/PR_26180_OWNER_001-tile-overlay-status-review_manual-validation-notes.md
+dev/reports/PR_26180_OWNER_001-tile-overlay-status-review_report.md
+dev/reports/PR_26180_OWNER_001-tile-overlay-status-review_requirement-checklist.md
+dev/reports/PR_26180_OWNER_001-tile-overlay-status-review_validation-report.md
+dev/reports/owner-pr-governance-current-state_branch-validation.md
+dev/reports/owner-pr-governance-current-state_manual-validation-notes.md
+dev/reports/owner-pr-governance-current-state_report.md
+dev/reports/owner-pr-governance-current-state_requirement-checklist.md
+dev/reports/owner-pr-governance-current-state_validation-report.md
 
 # git diff --stat
-dev/reports/codex_changed_files.txt |  11 +-
- dev/reports/codex_review.diff       | 523 +++++++++++++++++++++++++++++-------
- 2 files changed, 434 insertions(+), 100 deletions(-)
+dev/reports/codex_changed_files.txt |  26 +-
+ dev/reports/codex_review.diff       | 547 ++++++++++--------------------------
+ 2 files changed, 154 insertions(+), 419 deletions(-)
