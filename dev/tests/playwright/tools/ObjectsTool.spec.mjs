@@ -280,11 +280,13 @@ test("Objects exposes production copy, setup status, and broad table input", asy
     await expect(firstActionGroup).toHaveClass(/action-group--tight/);
     await expect(firstActionGroup.locator("button, a")).toHaveText([
       "Edit",
+      "Details",
       "Open Hitboxes",
       "Open Events",
       "Trash",
     ]);
     await expect(firstActionCell.locator("[data-objects-edit-row='hero']")).toBeVisible();
+    await expect(firstActionCell.locator("[data-objects-details-row='hero']")).toBeVisible();
     await expect(firstActionCell.locator("[data-objects-row-open-hitboxes]")).toBeVisible();
     await expect(firstActionCell.locator("[data-objects-row-open-events]")).toBeVisible();
     await expect(firstActionCell.locator("[data-objects-trash-row='hero']")).toBeVisible();
@@ -343,6 +345,7 @@ test("Objects table add disables while active row can cancel, save, edit, and tr
     await expect(page.locator("[data-objects-list]")).toContainText("None");
     await expect(page.locator("[data-objects-validation-list]")).not.toContainText("Render Asset");
     await expect(page.locator("[data-objects-edit-row='hero']")).toBeVisible();
+    await expect(page.locator("[data-objects-details-row='hero']")).toBeVisible();
     await expect(page.locator("[data-objects-trash-row='hero']")).toBeVisible();
     const savedActionCell = page.locator("[data-objects-list] tr").first().locator("td").last();
     const savedActionGroup = savedActionCell.locator(".action-group");
@@ -350,6 +353,7 @@ test("Objects table add disables while active row can cancel, save, edit, and tr
     await expect(savedActionGroup).toHaveClass(/action-group--tight/);
     await expect(savedActionGroup.locator("button, a")).toHaveText([
       "Edit",
+      "Details",
       "Open Hitboxes",
       "Open Events",
       "Trash",
@@ -484,6 +488,99 @@ test("Objects persists added, edited, deleted, and sprite-linked rows through sh
   }
 });
 
+test("Object Details panel saves reviewable properties through shared DB", async ({ page }) => {
+  const failures = await openObjectsPage(page);
+
+  try {
+    await page.getByRole("button", { name: "Add Object" }).click();
+    await fillActiveRow(page, {
+      name: "Review Hero",
+      renderType: "Sprite",
+      type: "Hero",
+    });
+    await page.locator("[data-objects-save-row]").click();
+    await expect(page.locator("[data-objects-log]")).toContainText("Added Review Hero.");
+    await expect(page.locator("[data-objects-log]")).toContainText("Created editable default sprite asset sprite_review_hero for Review Hero.");
+
+    await page.locator("[data-objects-details-row='review-hero']").click();
+    await expect(page.locator("[data-objects-detail-selected]")).toHaveText("Review Hero");
+    await expect(page.locator("[data-objects-detail-name]")).toHaveValue("Review Hero");
+    await expect(page.locator("[data-objects-detail-type] option")).toHaveText(["Select type", ...TYPE_OPTIONS]);
+    await expect(page.locator("[data-objects-detail-type]")).toHaveValue("Hero");
+    await expect(page.locator("[data-objects-detail-active]")).toBeChecked();
+    await expect(page.locator("[data-objects-detail-visible]")).toBeChecked();
+    await expect(page.locator("[data-objects-detail-sprite]")).toHaveValue("sprite_review_hero");
+    await expect(page.locator("[data-objects-detail-unsaved]")).toHaveText("Unsaved changes: none");
+    await expect(page.locator("[data-objects-detail-save]")).toBeDisabled();
+    await expect(page.locator("[data-objects-details-form]")).not.toContainText(/\bBehavior\b|\bRules\b|\bWorlds\b/);
+
+    await page.locator("[data-objects-detail-description]").fill("Hero object used by Product Owner review.");
+    await expect(page.locator("[data-objects-detail-unsaved]")).toHaveText("Unsaved changes: yes");
+    await expect(page.locator("[data-objects-detail-save]")).toBeEnabled();
+    await page.locator("[data-objects-detail-cancel]").click();
+    await expect(page.locator("[data-objects-detail-description]")).toHaveValue("");
+    await expect(page.locator("[data-objects-detail-unsaved]")).toHaveText("Unsaved changes: none");
+    await expect(page.locator("[data-objects-log]")).toHaveText("Canceled Object Details changes.");
+
+    await page.locator("[data-objects-detail-name]").fill("");
+    await page.locator("[data-objects-detail-save]").click();
+    await expect(page.locator("[data-objects-validation-list]")).toContainText("Name: Enter a name before saving Object Details.");
+    await expect(page.locator("[data-objects-log]")).toHaveText("Object Details blocked: 1 validation action.");
+
+    await page.locator("[data-objects-detail-name]").fill("Review Hero Prime");
+    await page.locator("[data-objects-detail-description]").fill("Hero object used by Product Owner review.");
+    await page.locator("[data-objects-detail-type]").selectOption("Enemy");
+    await page.locator("[data-objects-detail-tags]").fill("hero, review, boss-fight");
+    await page.locator("[data-objects-detail-active]").uncheck();
+    await page.locator("[data-objects-detail-visible]").uncheck();
+    await page.locator("[data-objects-detail-sprite]").fill("sprite_review_hero");
+    await page.locator("[data-objects-detail-audio]").fill("audio/review-hero.wav");
+    await page.locator("[data-objects-detail-defaults]").fill("speed=8\nhealth=3");
+    await page.locator("[data-objects-detail-save]").click();
+    await expect(page.locator("[data-objects-log]")).toHaveText("Saved Object Details for Review Hero Prime.");
+    await expect(page.locator("[data-objects-list]")).toContainText("Review Hero Prime");
+    await expect(page.locator("[data-objects-list] tr").first().locator("td").nth(1)).toHaveText("Enemy");
+    await expect(page.locator("[data-objects-list] tr").first().locator("td").nth(2)).toHaveText("Disabled");
+    await expect(page.locator("[data-objects-detail-unsaved]")).toHaveText("Unsaved changes: none");
+
+    const rows = await objectDefinitionRecords(page);
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toEqual(expect.objectContaining({
+      name: "Review Hero Prime",
+      renderAssetKey: "sprite_review_hero",
+      renderType: "Sprite",
+      state: "Disabled",
+      type: "Enemy",
+    }));
+    expect(rows[0].interaction.details).toEqual({
+      active: false,
+      audioReference: "audio/review-hero.wav",
+      defaultValues: "speed=8\nhealth=3",
+      description: "Hero object used by Product Owner review.",
+      spriteReference: "sprite_review_hero",
+      tags: ["hero", "review", "boss-fight"],
+      visible: false,
+    });
+
+    await page.reload({ waitUntil: "networkidle" });
+    await expect(page.locator("[data-objects-list]")).toContainText("Review Hero Prime");
+    await expect(page.locator("[data-objects-detail-selected]")).toHaveText("Review Hero Prime");
+    await expect(page.locator("[data-objects-detail-description]")).toHaveValue("Hero object used by Product Owner review.");
+    await expect(page.locator("[data-objects-detail-type]")).toHaveValue("Enemy");
+    await expect(page.locator("[data-objects-detail-tags]")).toHaveValue("hero, review, boss-fight");
+    await expect(page.locator("[data-objects-detail-active]")).not.toBeChecked();
+    await expect(page.locator("[data-objects-detail-visible]")).not.toBeChecked();
+    await expect(page.locator("[data-objects-detail-sprite]")).toHaveValue("sprite_review_hero");
+    await expect(page.locator("[data-objects-detail-audio]")).toHaveValue("audio/review-hero.wav");
+    await expect(page.locator("[data-objects-detail-defaults]")).toHaveValue("speed=8\nhealth=3");
+
+    await expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
 test("Object Type Catalog selection prefills active table rows", async ({ page }) => {
   const failures = await openObjectsPage(page);
 
@@ -548,6 +645,7 @@ test("Object Type Catalog selection prefills active table rows", async ({ page }
     await expect(catalogActionGroup).toHaveClass(/action-group--tight/);
     await expect(catalogActionGroup.locator("button, a")).toHaveText([
       "Edit",
+      "Details",
       "Edit Sprite",
       "Open Hitboxes",
       "Open Events",

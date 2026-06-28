@@ -123,6 +123,49 @@
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
+                                <summary>Object Details</summary>
+                                <div class="accordion-body content-stack" data-objects-details-panel>
+                                    <p data-objects-details-empty>Add or select an object to review details.</p>
+                                    <div class="content-stack" data-objects-details-form hidden>
+                                        <p>Selected object: <strong data-objects-detail-selected>None</strong></p>
+                                        <div class="grid cols-2" aria-label="Object Details properties">
+                                            <label>Name
+                                                <input type="text" autocomplete="off" data-objects-detail-name>
+                                            </label>
+                                            <label>Type
+                                                <select data-objects-detail-type></select>
+                                            </label>
+                                            <label>Tags
+                                                <input type="text" autocomplete="off" data-objects-detail-tags>
+                                            </label>
+                                            <label>Sprite reference
+                                                <input type="text" autocomplete="off" data-objects-detail-sprite>
+                                            </label>
+                                            <label>Audio reference
+                                                <input type="text" autocomplete="off" data-objects-detail-audio>
+                                            </label>
+                                            <label>Active
+                                                <input type="checkbox" data-objects-detail-active>
+                                            </label>
+                                            <label>Visible
+                                                <input type="checkbox" data-objects-detail-visible>
+                                            </label>
+                                        </div>
+                                        <label>Description
+                                            <textarea rows="3" data-objects-detail-description></textarea>
+                                        </label>
+                                        <label>Default values
+                                            <textarea rows="4" data-objects-detail-defaults></textarea>
+                                        </label>
+                                        <div class="content-cluster" aria-label="Object Details actions">
+                                            <button class="btn" type="button" data-objects-detail-save disabled>Save Details</button>
+                                            <button class="btn" type="button" data-objects-detail-cancel disabled>Cancel</button>
+                                        </div>
+                                        <div class="status" role="status" data-objects-detail-unsaved>Unsaved changes: none</div>
+                                    </div>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
                                 <summary>Validation</summary>
                                 <div class="accordion-body content-stack">
                                     <article class="card" role="dialog" aria-labelledby="objects-validation-title" data-objects-validation-overlay>
