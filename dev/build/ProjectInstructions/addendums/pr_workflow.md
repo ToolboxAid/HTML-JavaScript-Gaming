@@ -105,7 +105,7 @@ Closed gates:
 - PR merged and changes pushed.
 - Current branch is `main`.
 - `main` includes the merge commit or recorded final commit.
-- Worktree clean.
+- Worktree clean, including intended `dev/reports/` updates committed and merged.
 - Local/origin sync is `0/0`.
 - No untracked files.
 - Branch disposition is recorded as `retained`.
@@ -132,6 +132,7 @@ Closed gates:
 - If OWNER decision is required, stop and report.
 - Every PR lifecycle state must satisfy the Codex Completion Contract when Codex executes work for that state.
 - ZIP artifacts belong under `dev/workspace/zips/` and must not replace required reports under `dev/reports/`.
+- Reports generated during a PR are expected to be committed as part of that PR. Do not delete report files solely to obtain a clean worktree, and do not add `dev/reports/` to `.gitignore`.
 - Stacked PR chains produce one final outcome ZIP per attempted PR and stop before later PRs after failure or hard stop.
 
 ## Batch Governance Mode

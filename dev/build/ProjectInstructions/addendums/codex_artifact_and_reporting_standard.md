@@ -97,6 +97,16 @@ Optional:
 
 Generated non-report artifacts must live under `dev/workspace/`.
 
+## Codex Reports
+
+- `dev/reports/` contains the authoritative Codex reports for the repository.
+- Reports committed to `main` are the official record.
+- Reports generated during a PR are expected to be committed as part of that PR.
+- Once merged into `main`, those report versions become the canonical repository history.
+- Do not delete report files solely to obtain a clean worktree.
+- Do not add `dev/reports/` to `.gitignore`.
+- Continue storing ZIPs under `dev/workspace/zips/`.
+
 ## Completion Reporting
 
 Codex responses must include:

@@ -1,37 +1,19 @@
-# git diff --name-status merge-base(origin/main, HEAD)..working-tree
-M	dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-M	dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
-M	dev/build/ProjectInstructions/TEAM_START_COMMANDS.md
-M	dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
-M	dev/build/ProjectInstructions/addendums/team_start_and_release.md
-M	dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
-M	dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md
-M	dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
-A	dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_branch-validation.md
-A	dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_manual-validation-notes.md
-A	dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_report.md
-A	dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_requirement-checklist.md
-A	dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_validation-report.md
+M	dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
+M	dev/build/ProjectInstructions/addendums/pr_workflow.md
+M	dev/build/ProjectInstructions/repository/canonical_repository_structure.md
+A	dev/reports/PR277-post-merge-closeout_branch-validation.md
+A	dev/reports/PR277-post-merge-closeout_manual-validation-notes.md
+A	dev/reports/PR277-post-merge-closeout_report.md
+A	dev/reports/PR277-post-merge-closeout_requirement-checklist.md
+A	dev/reports/PR277-post-merge-closeout_validation-report.md
+A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_branch-validation.md
+A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_eod-report.md
+A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_manual-validation-notes.md
+A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_report.md
+A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_requirement-checklist.md
+A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_validation-report.md
 M	dev/reports/codex_changed_files.txt
 M	dev/reports/codex_review.diff
-
-# git diff --stat merge-base(origin/main, HEAD)..working-tree
-.../ProjectInstructions/PROJECT_INSTRUCTIONS.md    |    4 +-
- .../PROJECT_INSTRUCTIONS_VERSION.md                |    3 +-
- .../ProjectInstructions/TEAM_START_COMMANDS.md     |   17 +
- .../addendums/team_backlog_sod_eod_standard.md     |   69 +
- .../addendums/team_start_and_release.md            |   28 +-
- .../ProjectInstructions/backlog/BACKLOG_MASTER.md  |   39 +-
- .../bootstrap/codex_start_of_day_bootstrap.md      |   27 +
- .../standards/CODEX_WORKFLOW_COMMANDS.md           |    9 +
- ...-startup-assignment-policy_branch-validation.md |   13 +
- ...up-assignment-policy_manual-validation-notes.md |   14 +
- ...003-backlog-startup-assignment-policy_report.md |  105 ++
- ...rtup-assignment-policy_requirement-checklist.md |   29 +
- ...-startup-assignment-policy_validation-report.md |   39 +
- dev/reports/codex_changed_files.txt                |   47 +-
- dev/reports/codex_review.diff                      | 1555 +++++++++-----------
- 15 files changed, 1105 insertions(+), 893 deletions(-)
-
-# merge-base
-8c332fc82aeeed6508170363f04e04beaf67db28
+M	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_branch-validation.md
+M	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_eod-report.md
+M	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_validation-report.md
