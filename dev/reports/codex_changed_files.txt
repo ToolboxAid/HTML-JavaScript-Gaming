@@ -1,23 +1,25 @@
-dev/reports/PR_26179_CHARLIE_022-sprites-tool-shell.md
-dev/reports/PR_26179_CHARLIE_023-sprites-toolbar-placeholders.md
-dev/reports/PR_26179_CHARLIE_024-sprites-canvas-grid.md
-dev/reports/PR_26179_CHARLIE_025-sprites-basic-drawing.md
-dev/reports/PR_26179_CHARLIE_026-sprites-palette-panel.md
-dev/reports/PR_26179_CHARLIE_027-sprites-preview-export.md
-dev/reports/PR_26179_CHARLIE_028-sprites-editor-polish.md
-dev/reports/PR_26179_CHARLIE_029-sprites-clear-reset-controls.md
-dev/reports/PR_26179_CHARLIE_030-sprites-undo-redo.md
-dev/reports/PR_26179_CHARLIE_031-sprites-picker-zoom.md
-dev/reports/PR_26179_CHARLIE_032-sprites-shape-tools.md
-dev/reports/PR_26179_CHARLIE_033-sprites-canvas-preview-sync.md
-dev/reports/PR_26179_CHARLIE_034-sprites-frame-strip.md
-dev/reports/PR_26179_CHARLIE_035-sprites-frame-editing.md
-dev/reports/PR_26179_CHARLIE_036-sprites-animation-preview.md
-dev/reports/PR_26179_CHARLIE_037-sprites-animation-export.md
-dev/reports/PR_26179_CHARLIE_038-sprites-grid-dimension-fix.md
-dev/reports/PR_26179_CHARLIE_039-sprites-color-and-zoom-fix.md
-dev/reports/PR_26179_CHARLIE_040-dev-artifact-location-cleanup.md
-dev/reports/codex_changed_files.txt
-dev/reports/codex_review.diff
-docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/codex_review.diff
+# git diff --name-status merge-base(origin/main, HEAD)..working-tree
+M	dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+M	dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
+M	dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
+M	dev/reports/codex_changed_files.txt
+M	dev/reports/codex_review.diff
+
+# git ls-files --others --exclude-standard
+dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
+dev/reports/PR_26180_OWNER_004-repository-layout-architecture-plan_branch-validation.md
+dev/reports/PR_26180_OWNER_004-repository-layout-architecture-plan_manual-validation-notes.md
+dev/reports/PR_26180_OWNER_004-repository-layout-architecture-plan_report.md
+dev/reports/PR_26180_OWNER_004-repository-layout-architecture-plan_requirement-checklist.md
+dev/reports/PR_26180_OWNER_004-repository-layout-architecture-plan_validation-report.md
+
+# git diff --stat merge-base(origin/main, HEAD)..working-tree
+.../ProjectInstructions/PROJECT_INSTRUCTIONS.md    |    3 +-
+ .../PROJECT_INSTRUCTIONS_VERSION.md                |    3 +-
+ .../ProjectInstructions/backlog/BACKLOG_MASTER.md  |   12 +
+ dev/reports/codex_changed_files.txt                |   46 +-
+ dev/reports/codex_review.diff                      | 1085 +++++++-------------
+ 5 files changed, 430 insertions(+), 719 deletions(-)
+
+# merge-base
+b3a2b30f51a1050596bbad2d7db211e1cba45b66
