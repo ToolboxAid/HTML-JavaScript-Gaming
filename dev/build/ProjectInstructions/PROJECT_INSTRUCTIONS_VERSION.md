@@ -1,6 +1,6 @@
 # Project Instructions Version
 
-Current Project Instructions Version: 2026.06.28.005
+Current Project Instructions Version: 2026.06.28.006
 
 Last Updated: 2026-06-28
 
@@ -13,6 +13,7 @@ Last Updated: 2026-06-28
 - Added backlog startup assignment policy requiring `BACKLOG_MASTER.md` and Tool Votes/Admin Owner priority signal review during team startup.
 - Added proposed repository layout architecture plan for future `www/`, `api/`, and `dev/` separation.
 - Added repository layout scaffold governance for `www/`, `api/`, and `dev/local-runtime/`.
+- Added `www/` migration map for safe browser-served application movement planning.
 - Codex must read this version file and the latest repository copy of `PROJECT_INSTRUCTIONS.md` before performing work.
 - Codex must discard previously remembered Project Instructions and treat the repository copy as authoritative.
 - Codex must validate canonical report and ZIP paths, branching model, and legacy path avoidance before work proceeds.
