@@ -97,6 +97,7 @@ Canonical active teams:
 - Alfa
 - Bravo
 - Charlie
+- Delta
 - Golf
 
 Official NATO spellings:
