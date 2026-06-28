@@ -612,3 +612,71 @@ test("Messages API requires sign-in for Text To Speech profile and emotion write
   assert.equal(authenticated.ttsProfile.name, "Authenticated TTS Profile");
   service.close();
 });
+
+test("Messages API requires sign-in for Message and sentence writes", async () => {
+  const { service } = createServiceHarness();
+  const voice = await createWorkingTtsProfile(service, { name: "Authenticated Message Profile" });
+  const emotion = voice.emotionSettings.find((setting) => setting.emotionLabel === "Calm");
+  assert.ok(emotion);
+
+  const messagePayload = {
+    emotionProfileKey: emotion.key,
+    messageText: "Authenticated message text.",
+    name: "Authenticated Message",
+    speaker: "Guide",
+    trigger: "quest.start",
+    typewriterSpeed: 22,
+    voiceProfileKey: voice.key,
+  };
+
+  await assert.rejects(
+    () => handleMessagesApiContract({
+      body: messagePayload,
+      method: "POST",
+      parts: ["messages"],
+      service,
+    }),
+    /Sign in required to save Messages through the API/,
+  );
+
+  const created = await handleMessagesApiContract({
+    actorKey: "test-author",
+    body: messagePayload,
+    method: "POST",
+    parts: ["messages"],
+    service,
+  });
+  assert.equal(created.message.name, "Authenticated Message");
+  assert.equal(created.message.messageText, "Authenticated message text.");
+  assert.equal(created.message.speaker, "Guide");
+  assert.equal(created.message.trigger, "quest.start");
+  assert.equal(created.message.typewriterSpeed, 22);
+
+  const segmentPayload = {
+    displayOrder: 1,
+    emotionProfileKey: emotion.key,
+    messageKey: created.message.key,
+    segmentText: "Authenticated sentence text.",
+    voiceProfileKey: voice.key,
+  };
+
+  await assert.rejects(
+    () => handleMessagesApiContract({
+      body: segmentPayload,
+      method: "POST",
+      parts: ["segments"],
+      service,
+    }),
+    /Sign in required to save Messages through the API/,
+  );
+
+  const segment = await handleMessagesApiContract({
+    actorKey: "test-author",
+    body: segmentPayload,
+    method: "POST",
+    parts: ["segments"],
+    service,
+  });
+  assert.equal(segment.segment.segmentText, "Authenticated sentence text.");
+  service.close();
+});

@@ -51,6 +51,15 @@ const SUPPORTED_TTS_SSML_LIKE_PRESETS = Object.freeze([
 const ACTIVE_PUBLISH_TTS_PROVIDER_KEYS = Object.freeze([
   "browser-speech",
 ]);
+const DEFAULT_TYPEWRITER_SPEED = 30;
+const AUTHENTICATED_MESSAGES_WRITE_RESOURCES = Object.freeze([
+  "categories",
+  "emotion-profiles",
+  "event-actions",
+  "messages",
+  "segments",
+  "tts-profiles",
+]);
 const MESSAGE_EVENT_ACTION_TYPES = Object.freeze([
   Object.freeze({ key: "show-message", label: "Show Message", requiresMessage: true }),
   Object.freeze({ key: "speak-message", label: "Speak Message", requiresMessage: true }),
@@ -125,6 +134,9 @@ CREATE TABLE IF NOT EXISTS messages_records (
   "emotionProfileKey" text NOT NULL REFERENCES messages_emotion_profiles(key),
   "voiceProfileKey" text NOT NULL REFERENCES messages_tts_profiles(key),
   "messageText" text NOT NULL,
+  "speaker" text NOT NULL DEFAULT '',
+  "trigger" text NOT NULL DEFAULT '',
+  "typewriterSpeed" numeric NOT NULL DEFAULT ${DEFAULT_TYPEWRITER_SPEED},
   "notes" text NOT NULL DEFAULT '',
   "active" boolean NOT NULL DEFAULT true,
   "createdAt" timestamptz NOT NULL DEFAULT now(),
@@ -160,6 +172,9 @@ CREATE TABLE IF NOT EXISTS messages_event_actions (
 );
 
 ALTER TABLE messages_records ADD COLUMN IF NOT EXISTS "voiceProfileKey" text REFERENCES messages_tts_profiles(key);
+ALTER TABLE messages_records ADD COLUMN IF NOT EXISTS "speaker" text NOT NULL DEFAULT '';
+ALTER TABLE messages_records ADD COLUMN IF NOT EXISTS "trigger" text NOT NULL DEFAULT '';
+ALTER TABLE messages_records ADD COLUMN IF NOT EXISTS "typewriterSpeed" numeric NOT NULL DEFAULT ${DEFAULT_TYPEWRITER_SPEED};
 ALTER TABLE messages_segments ADD COLUMN IF NOT EXISTS "voiceProfileKey" text REFERENCES messages_tts_profiles(key);
 
 CREATE INDEX IF NOT EXISTS idx_messages_records_categorykey ON messages_records ("categoryKey");
@@ -301,7 +316,14 @@ function normalizeActorKey(actorKey) {
 
 function messagesWriteRequiresAuthenticatedActor(resource, method) {
   return String(method || "GET").toUpperCase() === "POST"
-    && ["emotion-profiles", "tts-profiles"].includes(resource);
+    && AUTHENTICATED_MESSAGES_WRITE_RESOURCES.includes(resource);
+}
+
+function messagesWriteAuthenticationMessage(resource) {
+  if (["emotion-profiles", "tts-profiles"].includes(resource)) {
+    return "Sign in required to save Text To Speech profiles and emotions.";
+  }
+  return "Sign in required to save Messages through the API.";
 }
 
 function activeFromDatabase(value) {
@@ -340,6 +362,9 @@ function messageRecordFromRow(row, { categoryName = "", emotionProfileName = "",
     messageText: row.messageText,
     name: row.name,
     notes: row.notes || "",
+    speaker: row.speaker || "",
+    trigger: row.trigger || "",
+    typewriterSpeed: normalizeNumber(row.typewriterSpeed, DEFAULT_TYPEWRITER_SPEED),
     updatedAt: row.updatedAt,
     updatedBy: row.updatedBy,
     voiceProfileKey: row.voiceProfileKey || "",
@@ -1413,6 +1438,13 @@ export class MessagesPostgresService {
     const emotionProfileKey = normalizeText(input.emotionProfileKey === undefined && existing ? existing.emotionProfileKey : input.emotionProfileKey).trim();
     const voiceProfileKey = normalizeText(input.voiceProfileKey === undefined && existing ? existing.voiceProfileKey : input.voiceProfileKey).trim();
     const messageText = input.messageText === undefined && existing ? existing.messageText : normalizeText(input.messageText);
+    const speaker = input.speaker === undefined && existing ? existing.speaker : normalizeText(input.speaker);
+    const trigger = input.trigger === undefined && existing ? existing.trigger : normalizeText(input.trigger);
+    const typewriterSpeed = normalizeEditableNumber(
+      input.typewriterSpeed === undefined && existing ? existing.typewriterSpeed : input.typewriterSpeed,
+      DEFAULT_TYPEWRITER_SPEED,
+      "Typewriter speed",
+    );
     if (!emotionProfileKey) {
       throw httpError("Emotion profile is required.");
     }
@@ -1421,6 +1453,9 @@ export class MessagesPostgresService {
     }
     if (!messageText.trim()) {
       throw httpError("Message text is required.");
+    }
+    if (typewriterSpeed < 0) {
+      throw httpError("Typewriter speed must be 0 or greater.");
     }
     await this.assertActiveCategory(categoryKey);
     await this.assertActiveEmotionProfile(emotionProfileKey);
@@ -1433,6 +1468,9 @@ export class MessagesPostgresService {
       messageText,
       name,
       notes: input.notes === undefined && existing ? existing.notes : normalizeText(input.notes),
+      speaker,
+      trigger,
+      typewriterSpeed,
       voiceProfileKey,
     };
   }
@@ -1453,6 +1491,9 @@ export class MessagesPostgresService {
       messageText: values.messageText,
       name: values.name,
       notes: values.notes,
+      speaker: values.speaker,
+      trigger: values.trigger,
+      typewriterSpeed: values.typewriterSpeed,
       updatedAt: now,
       updatedBy: actor,
       voiceProfileKey: values.voiceProfileKey,
@@ -1470,6 +1511,9 @@ export class MessagesPostgresService {
       messageText: values.messageText,
       name: values.name,
       notes: values.notes,
+      speaker: values.speaker,
+      trigger: values.trigger,
+      typewriterSpeed: values.typewriterSpeed,
       updatedAt: timestamp(),
       updatedBy: normalizeActorKey(actorKey),
       voiceProfileKey: values.voiceProfileKey,
@@ -1815,6 +1859,17 @@ export class MessagesPostgresService {
           targetType: "message",
         });
       }
+      const typewriterSpeed = Number(message.typewriterSpeed);
+      if (!Number.isFinite(typewriterSpeed) || typewriterSpeed < 0) {
+        addIssue({
+          code: "invalid-typewriter-speed",
+          field: "typewriterSpeed",
+          message: "Use a Typewriter Speed of 0 or greater before publishing.",
+          targetKey: message.key,
+          targetName,
+          targetType: "message",
+        });
+      }
       const validEmotion = validateEmotionReference(message, "message", targetName);
       const validVoice = validateVoiceReference(message, "message", targetName);
       if (validEmotion && validVoice) {
@@ -1931,7 +1986,7 @@ export async function handleMessagesApiContract({
   const key = parts[1] || "";
   const action = parts[2] || "";
   if (messagesWriteRequiresAuthenticatedActor(resource, normalizedMethod) && !normalizeText(actorKey).trim()) {
-    throw httpError("Sign in required to save Text To Speech profiles and emotions.", 401);
+    throw httpError(messagesWriteAuthenticationMessage(resource), 401);
   }
 
   if (resource === "publish-validation" && normalizedMethod === "GET" && !key) {

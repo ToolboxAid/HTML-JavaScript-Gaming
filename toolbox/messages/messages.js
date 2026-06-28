@@ -11,9 +11,12 @@ import {
   updateMessageSegment,
   validatePublishConfiguration,
 } from "./messages-api-client.js";
+import { getSessionCurrent } from "../../src/api/session-api-client.js";
 
 const NEW_ROW_KEY = "__new__";
-const MESSAGE_TABLE_COLSPAN = 4;
+const MESSAGE_TABLE_COLSPAN = 8;
+const SIGN_IN_ROUTE = "account/sign-in.html";
+const TYPEWRITER_SPEED_DEFAULT = 30;
 const TTS_PROVIDER_REGISTRY = Object.freeze({
   "azure": Object.freeze({ activeRuntime: false, label: "Azure", requiresConfig: true }),
   "browser-speech": Object.freeze({ activeRuntime: true, label: "Browser Speech API", requiresConfig: false }),
@@ -35,9 +38,12 @@ const elements = {
   referencedCount: document.querySelector("[data-messages-referenced-count]"),
   selectedEmotion: document.querySelector("[data-messages-selected-emotion]"),
   selectedName: document.querySelector("[data-messages-selected-name]"),
+  selectedSpeaker: document.querySelector("[data-messages-selected-speaker]"),
   selectedSegment: document.querySelector("[data-messages-selected-segment]"),
   selectedStatus: document.querySelector("[data-messages-selected-status]"),
   selectedText: document.querySelector("[data-messages-selected-text]"),
+  selectedTrigger: document.querySelector("[data-messages-selected-trigger]"),
+  selectedTypewriterSpeed: document.querySelector("[data-messages-selected-typewriter-speed]"),
   segmentCount: document.querySelector("[data-messages-segment-count]"),
   speechStatus: document.querySelector("[data-messages-speech-status]"),
   stopSpeech: document.querySelector("[data-messages-stop-speech]"),
@@ -190,6 +196,43 @@ function showCreatorSafeFailure(message) {
   setText(elements.log, safeMessage);
 }
 
+function signInUrl() {
+  if (typeof document === "undefined" || typeof window === "undefined") {
+    return SIGN_IN_ROUTE;
+  }
+  return new URL(SIGN_IN_ROUTE, document.baseURI || window.location.href).href;
+}
+
+function currentSessionState() {
+  try {
+    const session = getSessionCurrent();
+    return {
+      apiAvailable: true,
+      authenticated: Boolean(session?.authenticated && session.userKey),
+    };
+  } catch (error) {
+    console.warn("Message Studio could not verify the current session.", error instanceof Error ? error.message : String(error || ""));
+    return {
+      apiAvailable: false,
+      authenticated: false,
+    };
+  }
+}
+
+function requireAuthenticatedWrite(action) {
+  const sessionState = currentSessionState();
+  if (!sessionState.apiAvailable) {
+    showCreatorSafeFailure("Session status could not be verified. Try again shortly.");
+    return false;
+  }
+  if (!sessionState.authenticated) {
+    setText(elements.log, `Sign in before ${action}.`);
+    window.location.href = signInUrl();
+    return false;
+  }
+  return true;
+}
+
 function activeVoiceProfiles() {
   return state.voiceProfiles.filter((profile) => profile.active);
 }
@@ -278,6 +321,11 @@ function tagsForMessage(message) {
   return message?.categoryName || "No tags";
 }
 
+function formatTypewriterSpeed(value) {
+  const speed = Number(value);
+  return Number.isFinite(speed) ? `${speed} cps` : `${TYPEWRITER_SPEED_DEFAULT} cps`;
+}
+
 function formatUpdated(value) {
   const date = new Date(value || "");
   if (Number.isNaN(date.getTime())) {
@@ -308,9 +356,12 @@ function renderSelectedMessage() {
   const selected = selectedMessage();
   const segment = selectedSegment();
   setText(elements.selectedName, selected?.name || "None");
+  setText(elements.selectedSpeaker, selected?.speaker || "None");
   setText(elements.selectedEmotion, segment?.emotionProfileName || selected?.emotionProfileName || "None");
   setText(elements.selectedSegment, segment ? `Sentence ${segment.displayOrder}` : selected ? `${messageReferenceCount(selected.key)} sentence${messageReferenceCount(selected.key) === 1 ? "" : "s"}` : "None");
   setText(elements.selectedStatus, selected ? `${selected.active === false ? "Archived" : "Active"} / ${isMessageReferenced(selected.key) ? "Referenced" : "Unreferenced"}` : "None");
+  setText(elements.selectedTrigger, selected?.trigger || "None");
+  setText(elements.selectedTypewriterSpeed, selected ? formatTypewriterSpeed(selected.typewriterSpeed) : "None");
   setText(elements.selectedText, segment?.segmentText || selected?.messageText || "No message selected.");
 }
 
@@ -652,6 +703,23 @@ function createMessageEditRow(message = null) {
   const messageCell = document.createElement("td");
   messageCell.append(createInput(message?.name || "", "messageName", "Message"));
 
+  const speakerCell = document.createElement("td");
+  speakerCell.append(createInput(message?.speaker || "", "messageSpeaker", "Speaker"));
+
+  const textCell = document.createElement("td");
+  textCell.append(createTextarea(message?.messageText || "", "messageText", "Message text"));
+
+  const triggerCell = document.createElement("td");
+  triggerCell.append(createInput(message?.trigger || "", "messageTrigger", "Trigger"));
+
+  const typewriterSpeedCell = document.createElement("td");
+  typewriterSpeedCell.append(createNumberInput(
+    message?.typewriterSpeed ?? TYPEWRITER_SPEED_DEFAULT,
+    "messageTypewriterSpeed",
+    "Typewriter speed",
+    { min: 0, step: 1 },
+  ));
+
   const profileCell = document.createElement("td");
   profileCell.append(createSelect(
     message?.voiceProfileKey || "",
@@ -669,6 +737,10 @@ function createMessageEditRow(message = null) {
 
   row.append(
     messageCell,
+    speakerCell,
+    textCell,
+    triggerCell,
+    typewriterSpeedCell,
     profileCell,
     createCell(message ? formatUpdated(message.updatedAt) : "New"),
     actions,
@@ -838,6 +910,10 @@ function createMessageRow(message) {
 
   row.append(
     createRowHeader(message.active === false ? `${message.name} (Archived)` : message.name),
+    createCell(message.speaker || "No speaker"),
+    createCell(message.messageText || "No text"),
+    createCell(message.trigger || "No trigger"),
+    createCell(formatTypewriterSpeed(message.typewriterSpeed)),
     createCell(message.voiceProfileName || "No TTS profile"),
     createCell(formatUpdated(message.updatedAt)),
     actions,
@@ -887,14 +963,21 @@ function messageValues(key) {
   const root = elements.table?.querySelector(`[data-messages-row-editor="${key}"]`);
   const existing = state.messages.find((message) => message.key === key) || null;
   const name = editorValue(root, "[data-message-name]");
+  const messageText = editorValue(root, "[data-message-text]");
+  const speaker = editorValue(root, "[data-message-speaker]");
+  const trigger = editorValue(root, "[data-message-trigger]");
+  const typewriterSpeed = editorValue(root, "[data-message-typewriter-speed]");
   const voiceProfileKey = editorValue(root, "[data-message-tts-profile]");
   const emotionProfileKey = profileEmotionKeyOrDefault(voiceProfileKey, existing?.emotionProfileKey || "");
   return {
     active: existing ? existing.active : true,
     emotionProfileKey,
-    messageText: existing?.messageText || name,
+    messageText,
     name,
     notes: existing?.notes || "",
+    speaker,
+    trigger,
+    typewriterSpeed,
     voiceProfileKey,
   };
 }
@@ -903,6 +986,13 @@ function validateMessage(values) {
   const errors = [];
   if (!values.name.trim()) {
     errors.push("Message is required.");
+  }
+  if (!values.messageText.trim()) {
+    errors.push("Message text is required.");
+  }
+  const typewriterSpeed = Number(values.typewriterSpeed);
+  if (!Number.isFinite(typewriterSpeed) || typewriterSpeed < 0) {
+    errors.push("Typewriter speed must be 0 or greater.");
   }
   if (!values.voiceProfileKey) {
     errors.push("TTS Profile is required.");
@@ -995,6 +1085,9 @@ async function reloadAfterChange(messageKey = state.selectedMessageKey) {
 }
 
 async function commitMessage(key) {
+  if (!requireAuthenticatedWrite("saving Messages")) {
+    return;
+  }
   const values = messageValues(key);
   const errors = validateMessage(values);
   if (errors.length) {
@@ -1004,9 +1097,13 @@ async function commitMessage(key) {
   }
   clearValidation();
   try {
+    const payload = {
+      ...values,
+      typewriterSpeed: Number(values.typewriterSpeed),
+    };
     const result = key === NEW_ROW_KEY
-      ? createMessage(values)
-      : updateMessage(key, values);
+      ? createMessage(payload)
+      : updateMessage(key, payload);
     state.editingMessageKey = "";
     await reloadAfterChange(result.message.key);
     setText(elements.log, `Saved message ${result.message.name}.`);
@@ -1016,6 +1113,9 @@ async function commitMessage(key) {
 }
 
 async function deleteMessageRecord(key) {
+  if (!requireAuthenticatedWrite("deleting Messages")) {
+    return;
+  }
   const message = state.messages.find((candidate) => candidate.key === key);
   if (!message) {
     return;
@@ -1042,6 +1142,9 @@ async function deleteMessageRecord(key) {
 }
 
 async function archiveMessageRecord(key) {
+  if (!requireAuthenticatedWrite("updating Messages")) {
+    return;
+  }
   const message = state.messages.find((candidate) => candidate.key === key);
   if (!message) {
     return;
@@ -1057,6 +1160,9 @@ async function archiveMessageRecord(key) {
 }
 
 async function commitSegment(key) {
+  if (!requireAuthenticatedWrite("saving Message sentences")) {
+    return;
+  }
   const values = segmentValues(key);
   const errors = validateSegment(values);
   if (errors.length) {
@@ -1085,6 +1191,9 @@ async function commitSegment(key) {
 }
 
 async function deleteSegmentRecord(key) {
+  if (!requireAuthenticatedWrite("deleting Message sentences")) {
+    return;
+  }
   const segment = state.segments.find((candidate) => candidate.key === key);
   if (!segment) {
     return;
@@ -1103,6 +1212,9 @@ async function deleteSegmentRecord(key) {
 }
 
 async function archiveSegmentRecord(key) {
+  if (!requireAuthenticatedWrite("updating Message sentences")) {
+    return;
+  }
   const segment = state.segments.find((candidate) => candidate.key === key);
   if (!segment) {
     return;

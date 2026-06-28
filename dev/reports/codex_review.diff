@@ -1,18 +1,903 @@
-diff --git a/dev/reports/PR_26179_OWNER_009-pr-stack-realignment_manual-validation-notes.md b/dev/reports/PR_26179_OWNER_009-pr-stack-realignment_manual-validation-notes.md
-index 9e58e9340..1552e7096 100644
---- a/dev/reports/PR_26179_OWNER_009-pr-stack-realignment_manual-validation-notes.md
-+++ b/dev/reports/PR_26179_OWNER_009-pr-stack-realignment_manual-validation-notes.md
-@@ -18,4 +18,3 @@ Reviewed the focused open PR set and produced recommendations without changing P
- - No API files changed.
- - No database files changed.
- - No GitHub PRs were merged or closed.
--
-diff --git a/dev/reports/PR_26179_OWNER_009-pr-stack-realignment_requirement-checklist.md b/dev/reports/PR_26179_OWNER_009-pr-stack-realignment_requirement-checklist.md
-index f7b11b506..f5b8efdfa 100644
---- a/dev/reports/PR_26179_OWNER_009-pr-stack-realignment_requirement-checklist.md
-+++ b/dev/reports/PR_26179_OWNER_009-pr-stack-realignment_requirement-checklist.md
-@@ -11,4 +11,3 @@
- | Produce recommendation report only | PASS | Report-only governance deliverable. |
- | Use canonical report location | PASS | Reports are under `dev/reports/`. |
- | Produce outcome ZIP | PASS | ZIP to be generated under `dev/workspace/zips/`. |
--
+﻿diff --git a/dev/build/database/ddl/messages.sql b/dev/build/database/ddl/messages.sql
+index ca7127905..2999e73fe 100644
+--- a/dev/build/database/ddl/messages.sql
++++ b/dev/build/database/ddl/messages.sql
+@@ -72,6 +72,9 @@ CREATE TABLE IF NOT EXISTS messages_records (
+     "emotionProfileKey" text NOT NULL REFERENCES messages_emotion_profiles(key),
+     "voiceProfileKey" text NOT NULL REFERENCES messages_tts_profiles(key),
+     "messageText" text NOT NULL,
++    "speaker" text NOT NULL DEFAULT '',
++    "trigger" text NOT NULL DEFAULT '',
++    "typewriterSpeed" numeric NOT NULL DEFAULT 30,
+     "notes" text NOT NULL DEFAULT '',
+     "active" boolean NOT NULL DEFAULT true,
+     "createdAt" timestamptz NOT NULL DEFAULT now(),
+@@ -106,6 +109,10 @@ CREATE TABLE IF NOT EXISTS messages_event_actions (
+     "updatedBy" text NOT NULL REFERENCES users(key)
+ );
+
++ALTER TABLE messages_records ADD COLUMN IF NOT EXISTS "speaker" text NOT NULL DEFAULT '';
++ALTER TABLE messages_records ADD COLUMN IF NOT EXISTS "trigger" text NOT NULL DEFAULT '';
++ALTER TABLE messages_records ADD COLUMN IF NOT EXISTS "typewriterSpeed" numeric NOT NULL DEFAULT 30;
++
+ CREATE INDEX IF NOT EXISTS idx_messages_records_categorykey ON messages_records ("categoryKey");
+ CREATE INDEX IF NOT EXISTS idx_messages_records_emotionprofilekey ON messages_records ("emotionProfileKey");
+ CREATE INDEX IF NOT EXISTS idx_messages_records_voiceprofilekey ON messages_records ("voiceProfileKey");
+diff --git a/dev/reports/codex_changed_files.txt b/dev/reports/codex_changed_files.txt
+index 5de14f86d..7dfb366dc 100644
+--- a/dev/reports/codex_changed_files.txt
++++ b/dev/reports/codex_changed_files.txt
+@@ -1,7 +1,10 @@
+-dev/reports/PR_26179_OWNER_009-pr-stack-realignment_branch-validation.md
+-dev/reports/PR_26179_OWNER_009-pr-stack-realignment_manual-validation-notes.md
+-dev/reports/PR_26179_OWNER_009-pr-stack-realignment_report.md
+-dev/reports/PR_26179_OWNER_009-pr-stack-realignment_requirement-checklist.md
+-dev/reports/PR_26179_OWNER_009-pr-stack-realignment_validation-report.md
++﻿dev/build/database/ddl/messages.sql
+ dev/reports/codex_changed_files.txt
+ dev/reports/codex_review.diff
++dev/reports/PR_26180_BRAVO_002-complete-messages-creator-tool.md
++dev/tests/dev-runtime/MessagesPublishValidation.test.mjs
++dev/tests/helpers/playwrightRepoServer.mjs
++dev/tests/playwright/tools/MessagesTool.spec.mjs
++src/dev-runtime/messages/messages-postgres-service.mjs
++toolbox/messages/index.html
++toolbox/messages/messages.js
+diff --git a/dev/tests/dev-runtime/MessagesPublishValidation.test.mjs b/dev/tests/dev-runtime/MessagesPublishValidation.test.mjs
+index 533dfa1f8..b8c4b2c2a 100644
+--- a/dev/tests/dev-runtime/MessagesPublishValidation.test.mjs
++++ b/dev/tests/dev-runtime/MessagesPublishValidation.test.mjs
+@@ -612,3 +612,71 @@ test("Messages API requires sign-in for Text To Speech profile and emotion write
+   assert.equal(authenticated.ttsProfile.name, "Authenticated TTS Profile");
+   service.close();
+ });
++
++test("Messages API requires sign-in for Message and sentence writes", async () => {
++  const { service } = createServiceHarness();
++  const voice = await createWorkingTtsProfile(service, { name: "Authenticated Message Profile" });
++  const emotion = voice.emotionSettings.find((setting) => setting.emotionLabel === "Calm");
++  assert.ok(emotion);
++
++  const messagePayload = {
++    emotionProfileKey: emotion.key,
++    messageText: "Authenticated message text.",
++    name: "Authenticated Message",
++    speaker: "Guide",
++    trigger: "quest.start",
++    typewriterSpeed: 22,
++    voiceProfileKey: voice.key,
++  };
++
++  await assert.rejects(
++    () => handleMessagesApiContract({
++      body: messagePayload,
++      method: "POST",
++      parts: ["messages"],
++      service,
++    }),
++    /Sign in required to save Messages through the API/,
++  );
++
++  const created = await handleMessagesApiContract({
++    actorKey: "test-author",
++    body: messagePayload,
++    method: "POST",
++    parts: ["messages"],
++    service,
++  });
++  assert.equal(created.message.name, "Authenticated Message");
++  assert.equal(created.message.messageText, "Authenticated message text.");
++  assert.equal(created.message.speaker, "Guide");
++  assert.equal(created.message.trigger, "quest.start");
++  assert.equal(created.message.typewriterSpeed, 22);
++
++  const segmentPayload = {
++    displayOrder: 1,
++    emotionProfileKey: emotion.key,
++    messageKey: created.message.key,
++    segmentText: "Authenticated sentence text.",
++    voiceProfileKey: voice.key,
++  };
++
++  await assert.rejects(
++    () => handleMessagesApiContract({
++      body: segmentPayload,
++      method: "POST",
++      parts: ["segments"],
++      service,
++    }),
++    /Sign in required to save Messages through the API/,
++  );
++
++  const segment = await handleMessagesApiContract({
++    actorKey: "test-author",
++    body: segmentPayload,
++    method: "POST",
++    parts: ["segments"],
++    service,
++  });
++  assert.equal(segment.segment.segmentText, "Authenticated sentence text.");
++  service.close();
++});
+diff --git a/dev/tests/helpers/playwrightRepoServer.mjs b/dev/tests/helpers/playwrightRepoServer.mjs
+index 9f479c8a1..6a8f0e059 100644
+--- a/dev/tests/helpers/playwrightRepoServer.mjs
++++ b/dev/tests/helpers/playwrightRepoServer.mjs
+@@ -8,7 +8,7 @@ import { createLocalApiRouter } from "../../../src/dev-runtime/server/local-api-
+
+ const __filename = fileURLToPath(import.meta.url);
+ const __dirname = path.dirname(__filename);
+-const repoRoot = path.resolve(__dirname, "..", "..");
++const repoRoot = path.resolve(__dirname, "..", "..", "..");
+ let runtimeEnvLoaded = false;
+
+ function parseEnvValue(value) {
+diff --git a/dev/tests/playwright/tools/MessagesTool.spec.mjs b/dev/tests/playwright/tools/MessagesTool.spec.mjs
+index 5bb31055d..3484467a8 100644
+--- a/dev/tests/playwright/tools/MessagesTool.spec.mjs
++++ b/dev/tests/playwright/tools/MessagesTool.spec.mjs
+@@ -166,6 +166,14 @@ async function openMessagesPage(page, options = {}) {
+   if (options.seedMessageTtsProfile !== false) {
+     await ensureMessageTestTtsProfile(server);
+   }
++  if (options.authenticated === false) {
++    const session = await jsonRequest(`${server.baseUrl}/api/session/user`, {
++      body: JSON.stringify({ userKey: "" }),
++      method: "POST",
++    });
++    expect(session.response.ok).toBe(true);
++    expect(session.payload.ok).toBe(true);
++  }
+   await workspaceV2CoverageReporter.start(page);
+   await page.goto(`${server.baseUrl}/tools/messages/index.html`, { waitUntil: "networkidle" });
+   return failures;
+@@ -179,6 +187,10 @@ async function closeMessagesRun(failures, page) {
+ async function addMessage(page, values) {
+   await page.getByRole("button", { name: "Add Message" }).click();
+   await page.locator("[data-messages-row-editor='__new__'] [data-message-name]").fill(values.name);
++  await page.locator("[data-messages-row-editor='__new__'] [data-message-speaker]").fill(values.speaker || "Narrator");
++  await page.locator("[data-messages-row-editor='__new__'] [data-message-text]").fill(values.text || `${values.name} message text.`);
++  await page.locator("[data-messages-row-editor='__new__'] [data-message-trigger]").fill(values.trigger || "manual");
++  await page.locator("[data-messages-row-editor='__new__'] [data-message-typewriter-speed]").fill(String(values.typewriterSpeed ?? 30));
+   await page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile]").selectOption({ label: values.ttsProfile });
+   await page.locator("[data-messages-commit='__new__']").click();
+ }
+@@ -292,8 +304,9 @@ test("Message Studio uses the approved table-first Messages structure", async ({
+     await expect(page.locator("[data-messages-publish-issues]")).toContainText("Run validation before publishing.");
+     await expect(page.locator("[data-messages-table]")).toContainText("No messages yet. Add your first message when you are ready.");
+
+-    const expectedHeaders = ["Message", "TTS Profile", "Updated", "Actions"];
+-    await expect(page.getByLabel("Messages").getByRole("columnheader")).toHaveText(expectedHeaders);
++    const expectedHeaders = ["Message", "Speaker", "Text", "Trigger", "Typewriter Speed", "TTS Profile", "Updated", "Actions"];
++    const messagesTable = page.getByLabel("Messages");
++    await expect(messagesTable.getByRole("columnheader")).toHaveText(expectedHeaders);
+     await expect(page.getByText("Reusable Assets", { exact: true })).toHaveCount(0);
+     await expect(page.getByRole("heading", { name: "Emotion Profiles" })).toHaveCount(0);
+     await expect(page.getByRole("heading", { name: "Voice Profiles" })).toHaveCount(0);
+@@ -304,17 +317,21 @@ test("Message Studio uses the approved table-first Messages structure", async ({
+     await expect(page.getByText("Message Parts", { exact: true })).toHaveCount(0);
+     await expect(page.getByRole("button", { name: "Add Emotion" })).toHaveCount(0);
+     await expect(page.getByRole("button", { name: "Add Voice" })).toHaveCount(0);
+-    await expect(page.getByRole("columnheader", { name: "Type" })).toHaveCount(0);
+-    await expect(page.getByRole("columnheader", { name: "Status" })).toHaveCount(0);
+-    await expect(page.getByRole("columnheader", { name: "Parts" })).toHaveCount(0);
+-    await expect(page.getByRole("columnheader", { name: "Emotion", exact: true })).toHaveCount(0);
+-    await expect(page.getByRole("columnheader", { name: "Voice", exact: true })).toHaveCount(0);
++    await expect(messagesTable.getByRole("columnheader", { exact: true, name: "Type" })).toHaveCount(0);
++    await expect(messagesTable.getByRole("columnheader", { exact: true, name: "Status" })).toHaveCount(0);
++    await expect(messagesTable.getByRole("columnheader", { exact: true, name: "Parts" })).toHaveCount(0);
++    await expect(messagesTable.getByRole("columnheader", { name: "Emotion", exact: true })).toHaveCount(0);
++    await expect(messagesTable.getByRole("columnheader", { name: "Voice", exact: true })).toHaveCount(0);
+     await expect(page.getByRole("button", { name: "Stop Playback" })).toHaveCount(0);
+     await expect(page.locator("[data-message-default-tts-profile], [data-segment-tts-profile]")).toHaveCount(0);
+
+     await page.getByRole("button", { name: "Add Message" }).click();
+     await expect(page.locator("[data-messages-row-editor='__new__']")).toBeVisible();
+-    await expect(page.locator("[data-messages-row-editor='__new__'] td")).toHaveCount(4);
++    await expect(page.locator("[data-messages-row-editor='__new__'] td")).toHaveCount(8);
++    await expect(page.locator("[data-messages-row-editor='__new__'] [data-message-speaker]")).toBeVisible();
++    await expect(page.locator("[data-messages-row-editor='__new__'] [data-message-text]")).toBeVisible();
++    await expect(page.locator("[data-messages-row-editor='__new__'] [data-message-trigger]")).toBeVisible();
++    await expect(page.locator("[data-messages-row-editor='__new__'] [data-message-typewriter-speed]")).toHaveValue("30");
+     await expect(page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile]")).toBeVisible();
+     await expect(page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile] option")).toHaveText([
+       "Select TTS profile",
+@@ -326,15 +343,24 @@ test("Message Studio uses the approved table-first Messages structure", async ({
+     await page.locator("[data-messages-commit='__new__']").click();
+     await expect(page.locator("[data-messages-validation-card]")).toBeVisible();
+     await expect(page.locator("[data-messages-validation-errors]")).toContainText("Message is required.");
++    await expect(page.locator("[data-messages-validation-errors]")).toContainText("Message text is required.");
+     await expect(page.locator("[data-messages-validation-errors]")).toContainText("TTS Profile is required.");
+     await page.locator("[data-messages-cancel='__new__']").click();
+
+     await addMessage(page, {
+       name: "Bat Encounter",
++      speaker: "Scout",
++      text: "Bats are stirring in the rafters.",
+       ttsProfile: TEST_TTS_PROFILE_NAME,
++      trigger: "enter.cavern",
++      typewriterSpeed: 24,
+     });
+     await expect(page.locator("[data-messages-log]")).toHaveText("Saved message Bat Encounter.");
+     const messageRow = page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" });
++    await expect(messageRow).toContainText("Scout");
++    await expect(messageRow).toContainText("Bats are stirring in the rafters.");
++    await expect(messageRow).toContainText("enter.cavern");
++    await expect(messageRow).toContainText("24 cps");
+     await expect(messageRow).toContainText(TEST_TTS_PROFILE_NAME);
+     await expect(messageRow.getByRole("button", { name: "Sentences" })).toBeVisible();
+     await expect(messageRow.getByRole("button", { name: "Edit" })).toBeVisible();
+@@ -537,20 +563,37 @@ test("Message Studio uses the approved table-first Messages structure", async ({
+     await expect(page.locator("[data-messages-row-editor]").getByRole("button", { name: "Save" })).toBeVisible();
+     await expect(page.locator("[data-messages-row-editor]").getByRole("button", { name: "Cancel" })).toBeVisible();
+     await page.locator("[data-messages-row-editor] [data-message-name]").fill("Temporary Message Edit");
++    await page.locator("[data-messages-row-editor] [data-message-speaker]").fill("Temporary Speaker");
++    await page.locator("[data-messages-row-editor] [data-message-text]").fill("Temporary text edit");
++    await page.locator("[data-messages-row-editor] [data-message-trigger]").fill("temporary.trigger");
++    await page.locator("[data-messages-row-editor] [data-message-typewriter-speed]").fill("99");
+     await page.locator("[data-messages-row-editor] [data-messages-cancel]").click();
+     await expect(page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" })).toBeVisible();
+     await expect(page.locator("[data-messages-row]").filter({ hasText: "Temporary Message Edit" })).toHaveCount(0);
++    await expect(page.locator("[data-messages-row]").filter({ hasText: "Temporary Speaker" })).toHaveCount(0);
+
+     await messageRow.getByRole("button", { name: "Edit" }).click();
+     await page.locator("[data-messages-row-editor] [data-message-name]").fill("Bat Encounter Updated");
++    await page.locator("[data-messages-row-editor] [data-message-speaker]").fill("Guide");
++    await page.locator("[data-messages-row-editor] [data-message-text]").fill("Updated bats are dropping from the rafters.");
++    await page.locator("[data-messages-row-editor] [data-message-trigger]").fill("combat.bats.updated");
++    await page.locator("[data-messages-row-editor] [data-message-typewriter-speed]").fill("18");
+     await page.locator("[data-messages-row-editor] [data-messages-commit]").click();
+     await expect(page.locator("[data-messages-log]")).toHaveText("Saved message Bat Encounter Updated.");
+     await expect(page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter Updated" })).toContainText(TEST_TTS_PROFILE_NAME);
++    await expect(page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter Updated" })).toContainText("Guide");
++    await expect(page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter Updated" })).toContainText("Updated bats are dropping from the rafters.");
++    await expect(page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter Updated" })).toContainText("combat.bats.updated");
++    await expect(page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter Updated" })).toContainText("18 cps");
+
+     const updatedMessage = await createdMessage(failures.server, "Bat Encounter Updated");
+     expect(updatedMessage).toEqual(expect.objectContaining({
+       active: true,
+       categoryName: "Dialog",
++      messageText: "Updated bats are dropping from the rafters.",
++      speaker: "Guide",
++      trigger: "combat.bats.updated",
++      typewriterSpeed: 18,
+       voiceProfileName: TEST_TTS_PROFILE_NAME,
+     }));
+     expect(updatedMessage.key).toMatch(ULID_PATTERN);
+@@ -614,6 +657,10 @@ test("Message Studio consumes active Local API Text To Speech profiles", async (
+     await page.getByRole("button", { name: "Add Message" }).click();
+     await expect(page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile]")).toContainText("Quest Profile Active");
+     await page.locator("[data-messages-row-editor='__new__'] [data-message-name]").fill("Quest Profile Message");
++    await page.locator("[data-messages-row-editor='__new__'] [data-message-speaker]").fill("Quest Giver");
++    await page.locator("[data-messages-row-editor='__new__'] [data-message-text]").fill("The quest door opens.");
++    await page.locator("[data-messages-row-editor='__new__'] [data-message-trigger]").fill("quest.door");
++    await page.locator("[data-messages-row-editor='__new__'] [data-message-typewriter-speed]").fill("28");
+     await page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile]").selectOption({ label: "Quest Profile Active" });
+     await page.locator("[data-messages-commit='__new__']").click();
+     await expect(page.locator("[data-messages-log]")).toHaveText("Saved message Quest Profile Message.");
+@@ -679,6 +726,10 @@ test("Message Studio loads Text To Speech profiles and filters sentence emotions
+       TEST_TTS_PROFILE_NAME,
+     ]);
+     await page.locator("[data-messages-row-editor='__new__'] [data-message-name]").fill("Profile Filter Test");
++    await page.locator("[data-messages-row-editor='__new__'] [data-message-speaker]").fill("Narrator");
++    await page.locator("[data-messages-row-editor='__new__'] [data-message-text]").fill("Urgent profile filter check.");
++    await page.locator("[data-messages-row-editor='__new__'] [data-message-trigger]").fill("profile.filter");
++    await page.locator("[data-messages-row-editor='__new__'] [data-message-typewriter-speed]").fill("32");
+     await page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile]").selectOption({ label: TEST_TTS_PROFILE_NAME });
+     await page.locator("[data-messages-commit='__new__']").click();
+     await expect(page.locator("[data-messages-log]")).toHaveText("Saved message Profile Filter Test.");
+@@ -755,7 +806,7 @@ test("Message Studio disables Delete when a message is referenced", async ({ pag
+
+     await page.reload({ waitUntil: "networkidle" });
+     const messageRow = page.locator("[data-messages-row]").filter({ hasText: "Referenced Encounter" });
+-    await messageRow.getByText("Referenced Encounter").click();
++    await messageRow.getByRole("rowheader", { name: "Referenced Encounter" }).click();
+     const deleteButton = messageRow.getByRole("button", { name: "Delete" });
+     await expect(deleteButton).toBeDisabled();
+     await expect(deleteButton).toHaveAttribute("title", "Delete disabled: this message has sentences.");
+@@ -784,6 +835,29 @@ test("Message Studio disables Delete when a message is referenced", async ({ pag
+   }
+ });
+
++test("Message Studio guest message save redirects to sign in", async ({ page }) => {
++  const failures = await openMessagesPage(page, { authenticated: false });
++
++  try {
++    await page.getByRole("button", { name: "Add Message" }).click();
++    await page.locator("[data-messages-row-editor='__new__'] [data-message-name]").fill("Guest Message");
++    await page.locator("[data-messages-row-editor='__new__'] [data-message-speaker]").fill("Guest");
++    await page.locator("[data-messages-row-editor='__new__'] [data-message-text]").fill("Guest save attempt.");
++    await page.locator("[data-messages-row-editor='__new__'] [data-message-trigger]").fill("guest.save");
++    await page.locator("[data-messages-row-editor='__new__'] [data-message-typewriter-speed]").fill("20");
++    await page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile]").selectOption({ label: TEST_TTS_PROFILE_NAME });
++    await page.locator("[data-messages-commit='__new__']").click();
++    await page.waitForURL(/\/account\/sign-in\.html$/);
++    await page.waitForLoadState("networkidle");
++
++    expect(failures.failedRequests.filter((request) => /^\d/.test(request) && !request.includes("/account/sign-in.html"))).toEqual([]);
++    expect(failures.pageErrors).toEqual([]);
++    expect(failures.consoleErrors).toEqual([]);
++  } finally {
++    await closeMessagesRun(failures, page);
++  }
++});
++
+ test("Message Studio shows Creator-safe load failures", async ({ page }) => {
+   const failures = await openMessagesPage(page, { apiUrl: "http://127.0.0.1:9/api" });
+
+diff --git a/src/dev-runtime/messages/messages-postgres-service.mjs b/src/dev-runtime/messages/messages-postgres-service.mjs
+index b56023c2a..481212e4f 100644
+--- a/src/dev-runtime/messages/messages-postgres-service.mjs
++++ b/src/dev-runtime/messages/messages-postgres-service.mjs
+@@ -51,6 +51,15 @@ const SUPPORTED_TTS_SSML_LIKE_PRESETS = Object.freeze([
+ const ACTIVE_PUBLISH_TTS_PROVIDER_KEYS = Object.freeze([
+   "browser-speech",
+ ]);
++const DEFAULT_TYPEWRITER_SPEED = 30;
++const AUTHENTICATED_MESSAGES_WRITE_RESOURCES = Object.freeze([
++  "categories",
++  "emotion-profiles",
++  "event-actions",
++  "messages",
++  "segments",
++  "tts-profiles",
++]);
+ const MESSAGE_EVENT_ACTION_TYPES = Object.freeze([
+   Object.freeze({ key: "show-message", label: "Show Message", requiresMessage: true }),
+   Object.freeze({ key: "speak-message", label: "Speak Message", requiresMessage: true }),
+@@ -125,6 +134,9 @@ CREATE TABLE IF NOT EXISTS messages_records (
+   "emotionProfileKey" text NOT NULL REFERENCES messages_emotion_profiles(key),
+   "voiceProfileKey" text NOT NULL REFERENCES messages_tts_profiles(key),
+   "messageText" text NOT NULL,
++  "speaker" text NOT NULL DEFAULT '',
++  "trigger" text NOT NULL DEFAULT '',
++  "typewriterSpeed" numeric NOT NULL DEFAULT ${DEFAULT_TYPEWRITER_SPEED},
+   "notes" text NOT NULL DEFAULT '',
+   "active" boolean NOT NULL DEFAULT true,
+   "createdAt" timestamptz NOT NULL DEFAULT now(),
+@@ -160,6 +172,9 @@ CREATE TABLE IF NOT EXISTS messages_event_actions (
+ );
+
+ ALTER TABLE messages_records ADD COLUMN IF NOT EXISTS "voiceProfileKey" text REFERENCES messages_tts_profiles(key);
++ALTER TABLE messages_records ADD COLUMN IF NOT EXISTS "speaker" text NOT NULL DEFAULT '';
++ALTER TABLE messages_records ADD COLUMN IF NOT EXISTS "trigger" text NOT NULL DEFAULT '';
++ALTER TABLE messages_records ADD COLUMN IF NOT EXISTS "typewriterSpeed" numeric NOT NULL DEFAULT ${DEFAULT_TYPEWRITER_SPEED};
+ ALTER TABLE messages_segments ADD COLUMN IF NOT EXISTS "voiceProfileKey" text REFERENCES messages_tts_profiles(key);
+
+ CREATE INDEX IF NOT EXISTS idx_messages_records_categorykey ON messages_records ("categoryKey");
+@@ -301,7 +316,14 @@ function normalizeActorKey(actorKey) {
+
+ function messagesWriteRequiresAuthenticatedActor(resource, method) {
+   return String(method || "GET").toUpperCase() === "POST"
+-    && ["emotion-profiles", "tts-profiles"].includes(resource);
++    && AUTHENTICATED_MESSAGES_WRITE_RESOURCES.includes(resource);
++}
++
++function messagesWriteAuthenticationMessage(resource) {
++  if (["emotion-profiles", "tts-profiles"].includes(resource)) {
++    return "Sign in required to save Text To Speech profiles and emotions.";
++  }
++  return "Sign in required to save Messages through the API.";
+ }
+
+ function activeFromDatabase(value) {
+@@ -340,6 +362,9 @@ function messageRecordFromRow(row, { categoryName = "", emotionProfileName = "",
+     messageText: row.messageText,
+     name: row.name,
+     notes: row.notes || "",
++    speaker: row.speaker || "",
++    trigger: row.trigger || "",
++    typewriterSpeed: normalizeNumber(row.typewriterSpeed, DEFAULT_TYPEWRITER_SPEED),
+     updatedAt: row.updatedAt,
+     updatedBy: row.updatedBy,
+     voiceProfileKey: row.voiceProfileKey || "",
+@@ -1413,6 +1438,13 @@ export class MessagesPostgresService {
+     const emotionProfileKey = normalizeText(input.emotionProfileKey === undefined && existing ? existing.emotionProfileKey : input.emotionProfileKey).trim();
+     const voiceProfileKey = normalizeText(input.voiceProfileKey === undefined && existing ? existing.voiceProfileKey : input.voiceProfileKey).trim();
+     const messageText = input.messageText === undefined && existing ? existing.messageText : normalizeText(input.messageText);
++    const speaker = input.speaker === undefined && existing ? existing.speaker : normalizeText(input.speaker);
++    const trigger = input.trigger === undefined && existing ? existing.trigger : normalizeText(input.trigger);
++    const typewriterSpeed = normalizeEditableNumber(
++      input.typewriterSpeed === undefined && existing ? existing.typewriterSpeed : input.typewriterSpeed,
++      DEFAULT_TYPEWRITER_SPEED,
++      "Typewriter speed",
++    );
+     if (!emotionProfileKey) {
+       throw httpError("Emotion profile is required.");
+     }
+@@ -1422,6 +1454,9 @@ export class MessagesPostgresService {
+     if (!messageText.trim()) {
+       throw httpError("Message text is required.");
+     }
++    if (typewriterSpeed < 0) {
++      throw httpError("Typewriter speed must be 0 or greater.");
++    }
+     await this.assertActiveCategory(categoryKey);
+     await this.assertActiveEmotionProfile(emotionProfileKey);
+     await this.assertActiveVoiceProfile(voiceProfileKey);
+@@ -1433,6 +1468,9 @@ export class MessagesPostgresService {
+       messageText,
+       name,
+       notes: input.notes === undefined && existing ? existing.notes : normalizeText(input.notes),
++      speaker,
++      trigger,
++      typewriterSpeed,
+       voiceProfileKey,
+     };
+   }
+@@ -1453,6 +1491,9 @@ export class MessagesPostgresService {
+       messageText: values.messageText,
+       name: values.name,
+       notes: values.notes,
++      speaker: values.speaker,
++      trigger: values.trigger,
++      typewriterSpeed: values.typewriterSpeed,
+       updatedAt: now,
+       updatedBy: actor,
+       voiceProfileKey: values.voiceProfileKey,
+@@ -1470,6 +1511,9 @@ export class MessagesPostgresService {
+       messageText: values.messageText,
+       name: values.name,
+       notes: values.notes,
++      speaker: values.speaker,
++      trigger: values.trigger,
++      typewriterSpeed: values.typewriterSpeed,
+       updatedAt: timestamp(),
+       updatedBy: normalizeActorKey(actorKey),
+       voiceProfileKey: values.voiceProfileKey,
+@@ -1815,6 +1859,17 @@ export class MessagesPostgresService {
+           targetType: "message",
+         });
+       }
++      const typewriterSpeed = Number(message.typewriterSpeed);
++      if (!Number.isFinite(typewriterSpeed) || typewriterSpeed < 0) {
++        addIssue({
++          code: "invalid-typewriter-speed",
++          field: "typewriterSpeed",
++          message: "Use a Typewriter Speed of 0 or greater before publishing.",
++          targetKey: message.key,
++          targetName,
++          targetType: "message",
++        });
++      }
+       const validEmotion = validateEmotionReference(message, "message", targetName);
+       const validVoice = validateVoiceReference(message, "message", targetName);
+       if (validEmotion && validVoice) {
+@@ -1931,7 +1986,7 @@ export async function handleMessagesApiContract({
+   const key = parts[1] || "";
+   const action = parts[2] || "";
+   if (messagesWriteRequiresAuthenticatedActor(resource, normalizedMethod) && !normalizeText(actorKey).trim()) {
+-    throw httpError("Sign in required to save Text To Speech profiles and emotions.", 401);
++    throw httpError(messagesWriteAuthenticationMessage(resource), 401);
+   }
+
+   if (resource === "publish-validation" && normalizedMethod === "GET" && !key) {
+diff --git a/toolbox/messages/index.html b/toolbox/messages/index.html
+index 252654778..c5c67802c 100644
+--- a/toolbox/messages/index.html
++++ b/toolbox/messages/index.html
+@@ -70,13 +70,17 @@
+                                         <thead>
+                                             <tr>
+                                                 <th scope="col">Message</th>
++                                                <th scope="col">Speaker</th>
++                                                <th scope="col">Text</th>
++                                                <th scope="col">Trigger</th>
++                                                <th scope="col">Typewriter Speed</th>
+                                                 <th scope="col">TTS Profile</th>
+                                                 <th scope="col">Updated</th>
+                                                 <th scope="col">Actions</th>
+                                             </tr>
+                                         </thead>
+                                         <tbody data-messages-table>
+-                                            <tr><td colspan="4">Loading message rows.</td></tr>
++                                            <tr><td colspan="8">Loading message rows.</td></tr>
+                                         </tbody>
+                                     </table>
+                                 </div>
+@@ -96,8 +100,11 @@
+                                 <summary>Selected Message</summary>
+                                 <div class="accordion-body content-stack">
+                                     <p>Name: <span data-messages-selected-name>None</span></p>
++                                    <p>Speaker: <span data-messages-selected-speaker>None</span></p>
+                                     <p>Emotion: <span data-messages-selected-emotion>None</span></p>
+                                     <p>Sentence: <span data-messages-selected-segment>None</span></p>
++                                    <p>Trigger: <span data-messages-selected-trigger>None</span></p>
++                                    <p>Typewriter Speed: <span data-messages-selected-typewriter-speed>None</span></p>
+                                     <p>Status: <span data-messages-selected-status>None</span></p>
+                                     <p>Text:</p>
+                                     <pre data-messages-selected-text>No message selected.</pre>
+diff --git a/toolbox/messages/messages.js b/toolbox/messages/messages.js
+index 8029abc2f..d4c6cd532 100644
+--- a/toolbox/messages/messages.js
++++ b/toolbox/messages/messages.js
+@@ -11,9 +11,12 @@ import {
+   updateMessageSegment,
+   validatePublishConfiguration,
+ } from "./messages-api-client.js";
++import { getSessionCurrent } from "../../src/api/session-api-client.js";
+
+ const NEW_ROW_KEY = "__new__";
+-const MESSAGE_TABLE_COLSPAN = 4;
++const MESSAGE_TABLE_COLSPAN = 8;
++const SIGN_IN_ROUTE = "account/sign-in.html";
++const TYPEWRITER_SPEED_DEFAULT = 30;
+ const TTS_PROVIDER_REGISTRY = Object.freeze({
+   "azure": Object.freeze({ activeRuntime: false, label: "Azure", requiresConfig: true }),
+   "browser-speech": Object.freeze({ activeRuntime: true, label: "Browser Speech API", requiresConfig: false }),
+@@ -35,9 +38,12 @@ const elements = {
+   referencedCount: document.querySelector("[data-messages-referenced-count]"),
+   selectedEmotion: document.querySelector("[data-messages-selected-emotion]"),
+   selectedName: document.querySelector("[data-messages-selected-name]"),
++  selectedSpeaker: document.querySelector("[data-messages-selected-speaker]"),
+   selectedSegment: document.querySelector("[data-messages-selected-segment]"),
+   selectedStatus: document.querySelector("[data-messages-selected-status]"),
+   selectedText: document.querySelector("[data-messages-selected-text]"),
++  selectedTrigger: document.querySelector("[data-messages-selected-trigger]"),
++  selectedTypewriterSpeed: document.querySelector("[data-messages-selected-typewriter-speed]"),
+   segmentCount: document.querySelector("[data-messages-segment-count]"),
+   speechStatus: document.querySelector("[data-messages-speech-status]"),
+   stopSpeech: document.querySelector("[data-messages-stop-speech]"),
+@@ -190,6 +196,43 @@ function showCreatorSafeFailure(message) {
+   setText(elements.log, safeMessage);
+ }
+
++function signInUrl() {
++  if (typeof document === "undefined" || typeof window === "undefined") {
++    return SIGN_IN_ROUTE;
++  }
++  return new URL(SIGN_IN_ROUTE, document.baseURI || window.location.href).href;
++}
++
++function currentSessionState() {
++  try {
++    const session = getSessionCurrent();
++    return {
++      apiAvailable: true,
++      authenticated: Boolean(session?.authenticated && session.userKey),
++    };
++  } catch (error) {
++    console.warn("Message Studio could not verify the current session.", error instanceof Error ? error.message : String(error || ""));
++    return {
++      apiAvailable: false,
++      authenticated: false,
++    };
++  }
++}
++
++function requireAuthenticatedWrite(action) {
++  const sessionState = currentSessionState();
++  if (!sessionState.apiAvailable) {
++    showCreatorSafeFailure("Session status could not be verified. Try again shortly.");
++    return false;
++  }
++  if (!sessionState.authenticated) {
++    setText(elements.log, `Sign in before ${action}.`);
++    window.location.href = signInUrl();
++    return false;
++  }
++  return true;
++}
++
+ function activeVoiceProfiles() {
+   return state.voiceProfiles.filter((profile) => profile.active);
+ }
+@@ -278,6 +321,11 @@ function tagsForMessage(message) {
+   return message?.categoryName || "No tags";
+ }
+
++function formatTypewriterSpeed(value) {
++  const speed = Number(value);
++  return Number.isFinite(speed) ? `${speed} cps` : `${TYPEWRITER_SPEED_DEFAULT} cps`;
++}
++
+ function formatUpdated(value) {
+   const date = new Date(value || "");
+   if (Number.isNaN(date.getTime())) {
+@@ -308,9 +356,12 @@ function renderSelectedMessage() {
+   const selected = selectedMessage();
+   const segment = selectedSegment();
+   setText(elements.selectedName, selected?.name || "None");
++  setText(elements.selectedSpeaker, selected?.speaker || "None");
+   setText(elements.selectedEmotion, segment?.emotionProfileName || selected?.emotionProfileName || "None");
+   setText(elements.selectedSegment, segment ? `Sentence ${segment.displayOrder}` : selected ? `${messageReferenceCount(selected.key)} sentence${messageReferenceCount(selected.key) === 1 ? "" : "s"}` : "None");
+   setText(elements.selectedStatus, selected ? `${selected.active === false ? "Archived" : "Active"} / ${isMessageReferenced(selected.key) ? "Referenced" : "Unreferenced"}` : "None");
++  setText(elements.selectedTrigger, selected?.trigger || "None");
++  setText(elements.selectedTypewriterSpeed, selected ? formatTypewriterSpeed(selected.typewriterSpeed) : "None");
+   setText(elements.selectedText, segment?.segmentText || selected?.messageText || "No message selected.");
+ }
+
+@@ -652,6 +703,23 @@ function createMessageEditRow(message = null) {
+   const messageCell = document.createElement("td");
+   messageCell.append(createInput(message?.name || "", "messageName", "Message"));
+
++  const speakerCell = document.createElement("td");
++  speakerCell.append(createInput(message?.speaker || "", "messageSpeaker", "Speaker"));
++
++  const textCell = document.createElement("td");
++  textCell.append(createTextarea(message?.messageText || "", "messageText", "Message text"));
++
++  const triggerCell = document.createElement("td");
++  triggerCell.append(createInput(message?.trigger || "", "messageTrigger", "Trigger"));
++
++  const typewriterSpeedCell = document.createElement("td");
++  typewriterSpeedCell.append(createNumberInput(
++    message?.typewriterSpeed ?? TYPEWRITER_SPEED_DEFAULT,
++    "messageTypewriterSpeed",
++    "Typewriter speed",
++    { min: 0, step: 1 },
++  ));
++
+   const profileCell = document.createElement("td");
+   profileCell.append(createSelect(
+     message?.voiceProfileKey || "",
+@@ -669,6 +737,10 @@ function createMessageEditRow(message = null) {
+
+   row.append(
+     messageCell,
++    speakerCell,
++    textCell,
++    triggerCell,
++    typewriterSpeedCell,
+     profileCell,
+     createCell(message ? formatUpdated(message.updatedAt) : "New"),
+     actions,
+@@ -838,6 +910,10 @@ function createMessageRow(message) {
+
+   row.append(
+     createRowHeader(message.active === false ? `${message.name} (Archived)` : message.name),
++    createCell(message.speaker || "No speaker"),
++    createCell(message.messageText || "No text"),
++    createCell(message.trigger || "No trigger"),
++    createCell(formatTypewriterSpeed(message.typewriterSpeed)),
+     createCell(message.voiceProfileName || "No TTS profile"),
+     createCell(formatUpdated(message.updatedAt)),
+     actions,
+@@ -887,14 +963,21 @@ function messageValues(key) {
+   const root = elements.table?.querySelector(`[data-messages-row-editor="${key}"]`);
+   const existing = state.messages.find((message) => message.key === key) || null;
+   const name = editorValue(root, "[data-message-name]");
++  const messageText = editorValue(root, "[data-message-text]");
++  const speaker = editorValue(root, "[data-message-speaker]");
++  const trigger = editorValue(root, "[data-message-trigger]");
++  const typewriterSpeed = editorValue(root, "[data-message-typewriter-speed]");
+   const voiceProfileKey = editorValue(root, "[data-message-tts-profile]");
+   const emotionProfileKey = profileEmotionKeyOrDefault(voiceProfileKey, existing?.emotionProfileKey || "");
+   return {
+     active: existing ? existing.active : true,
+     emotionProfileKey,
+-    messageText: existing?.messageText || name,
++    messageText,
+     name,
+     notes: existing?.notes || "",
++    speaker,
++    trigger,
++    typewriterSpeed,
+     voiceProfileKey,
+   };
+ }
+@@ -904,6 +987,13 @@ function validateMessage(values) {
+   if (!values.name.trim()) {
+     errors.push("Message is required.");
+   }
++  if (!values.messageText.trim()) {
++    errors.push("Message text is required.");
++  }
++  const typewriterSpeed = Number(values.typewriterSpeed);
++  if (!Number.isFinite(typewriterSpeed) || typewriterSpeed < 0) {
++    errors.push("Typewriter speed must be 0 or greater.");
++  }
+   if (!values.voiceProfileKey) {
+     errors.push("TTS Profile is required.");
+   }
+@@ -995,6 +1085,9 @@ async function reloadAfterChange(messageKey = state.selectedMessageKey) {
+ }
+
+ async function commitMessage(key) {
++  if (!requireAuthenticatedWrite("saving Messages")) {
++    return;
++  }
+   const values = messageValues(key);
+   const errors = validateMessage(values);
+   if (errors.length) {
+@@ -1004,9 +1097,13 @@ async function commitMessage(key) {
+   }
+   clearValidation();
+   try {
++    const payload = {
++      ...values,
++      typewriterSpeed: Number(values.typewriterSpeed),
++    };
+     const result = key === NEW_ROW_KEY
+-      ? createMessage(values)
+-      : updateMessage(key, values);
++      ? createMessage(payload)
++      : updateMessage(key, payload);
+     state.editingMessageKey = "";
+     await reloadAfterChange(result.message.key);
+     setText(elements.log, `Saved message ${result.message.name}.`);
+@@ -1016,6 +1113,9 @@ async function commitMessage(key) {
+ }
+
+ async function deleteMessageRecord(key) {
++  if (!requireAuthenticatedWrite("deleting Messages")) {
++    return;
++  }
+   const message = state.messages.find((candidate) => candidate.key === key);
+   if (!message) {
+     return;
+@@ -1042,6 +1142,9 @@ async function deleteMessageRecord(key) {
+ }
+
+ async function archiveMessageRecord(key) {
++  if (!requireAuthenticatedWrite("updating Messages")) {
++    return;
++  }
+   const message = state.messages.find((candidate) => candidate.key === key);
+   if (!message) {
+     return;
+@@ -1057,6 +1160,9 @@ async function archiveMessageRecord(key) {
+ }
+
+ async function commitSegment(key) {
++  if (!requireAuthenticatedWrite("saving Message sentences")) {
++    return;
++  }
+   const values = segmentValues(key);
+   const errors = validateSegment(values);
+   if (errors.length) {
+@@ -1085,6 +1191,9 @@ async function commitSegment(key) {
+ }
+
+ async function deleteSegmentRecord(key) {
++  if (!requireAuthenticatedWrite("deleting Message sentences")) {
++    return;
++  }
+   const segment = state.segments.find((candidate) => candidate.key === key);
+   if (!segment) {
+     return;
+@@ -1103,6 +1212,9 @@ async function deleteSegmentRecord(key) {
+ }
+
+ async function archiveSegmentRecord(key) {
++  if (!requireAuthenticatedWrite("updating Message sentences")) {
++    return;
++  }
+   const segment = state.segments.find((candidate) => candidate.key === key);
+   if (!segment) {
+     return;
+diff --git a/dev/reports/PR_26180_BRAVO_002-complete-messages-creator-tool.md b/dev/reports/PR_26180_BRAVO_002-complete-messages-creator-tool.md
+new file mode 100644
+index 000000000..fcef20b08
+--- /dev/null
++++ b/dev/reports/PR_26180_BRAVO_002-complete-messages-creator-tool.md
+@@ -0,0 +1,128 @@
++# PR_26180_BRAVO_002-complete-messages-creator-tool
++
++## Branch Validation
++
++PASS - Current branch is `PR_26180_BRAVO_002-complete-messages-creator-tool`.
++PASS - Scoped PR_002 Messages Creator Tool changes were preserved.
++PASS - Artifact paths use `dev/reports` and `dev/workspace/zips`.
++PASS - `dev/build/database/seed/guest/game-crew.json` was not modified.
++PASS - `dev/tests/dev-runtime/DbSeedIntegrity.test.mjs` was not modified for Game Crew.
++PASS - PR_003+ Game Crew cleanup was not started from this dirty branch.
++
++## Product Owner Testable Outcome
++
++After applying this PR, the Product Owner can test the API-backed Message Studio MVP workflow:
++
++- Create, edit, save, archive, and delete Messages.
++- Use creator-facing `Speaker`, `Text`, `Trigger`, `Typewriter Speed`, and `TTS Profile` fields.
++- Preview Message and sentence playback through existing Text To Speech behavior.
++- Add sentences with emotions scoped by the selected TTS Profile.
++- Confirm guest browsing is allowed while guest saves redirect to `account/sign-in.html`.
++- Confirm referenced Messages cannot be deleted while they have sentence usage.
++
++This PR is not part of the Game Crew cleanup batch. Previous dependency: none for PR_002. Next dependency: resolve the separate Game Crew guest seed ownership cleanup before running full seed integrity as a required gate.
++
++## Requirement Checklist
++
++PASS - Preserve current PR_002 Messages Creator Tool changes.
++PASS - Do not modify guest `game-crew` seed files.
++PASS - Do not modify `DbSeedIntegrity` for Game Crew in this PR.
++PASS - Do not run or plan PR_003+ from this dirty branch.
++PASS - Document Game Crew seed integrity failure as unrelated/out-of-scope.
++PASS - Run only in-scope Messages validation and impacted Playwright.
++PASS - Produce PR_002 artifacts.
++PASS - Browser-owned product data was not introduced.
++PASS - No silent JSON fallback was introduced.
++PASS - No MEM DB/local-mem was introduced.
++PASS - No unrelated cleanup.
++
++## Changed File Inventory
++
++- `dev/build/database/ddl/messages.sql`
++- `dev/tests/dev-runtime/MessagesPublishValidation.test.mjs`
++- `dev/tests/helpers/playwrightRepoServer.mjs`
++- `dev/tests/playwright/tools/MessagesTool.spec.mjs`
++- `src/dev-runtime/messages/messages-postgres-service.mjs`
++- `toolbox/messages/index.html`
++- `toolbox/messages/messages.js`
++- `dev/reports/codex_changed_files.txt`
++- `dev/reports/codex_review.diff`
++- `dev/reports/PR_26180_BRAVO_002-complete-messages-creator-tool.md`
++
++## DB/API Inventory
++
++- `messages_records` DDL includes `speaker`, `trigger`, and `typewriterSpeed`.
++- Messages Postgres service normalizes, validates, serializes, creates, and updates `speaker`, `trigger`, and `typewriterSpeed`.
++- `typewriterSpeed` must be a number of 0 or greater.
++- Messages write resources require authenticated API actors.
++- Existing Text To Speech profile and Emotion Profile service contracts remain API-backed.
++- Guest writes redirect to `account/sign-in.html` through the existing account route.
++
++## Validation Lane Report
++
++PASS - Scoped Node/API Messages validation:
++
++```powershell
++node --test dev/tests/tools/Text2SpeechShell.test.mjs dev/tests/tools/MessagesPlaybackSource.test.mjs dev/tests/dev-runtime/MessagesPublishValidation.test.mjs
++```
++
++Result: PASS, 21/21 tests.
++
++PASS - Messages Playwright validation:
++
++```powershell
++npx playwright test --config dev/workspace/tmp/pr_26180_bravo_002.playwright.headless.config.cjs dev/tests/playwright/tools/MessagesTool.spec.mjs --project=playwright
++```
++
++Result: PASS, 6/6 tests.
++
++PASS - Text To Speech Playwright validation:
++
++```powershell
++npx playwright test --config dev/workspace/tmp/pr_26180_bravo_002.playwright.headless.config.cjs dev/tests/playwright/tools/TextToSpeechFunctional.spec.mjs --project=playwright
++```
++
++Result: PASS, 4/4 tests.
++
++INFO - A temporary ignored Playwright config under `dev/workspace/tmp` was used to run the repo's `playwright` project headlessly in this environment. The product/test delta does not depend on that generated file.
++
++## Playwright Impacted Assessment
++
++PASS - `dev/tests/playwright/tools/MessagesTool.spec.mjs` validates:
++
++- table-first Message Studio structure
++- Speaker, Text, Trigger, Typewriter Speed fields
++- TTS Profile selection
++- API-backed profile consumption
++- sentence emotion filtering by selected profile
++- referenced Message delete protection
++- guest save redirect
++- Creator-safe load failures
++
++PASS - `dev/tests/playwright/tools/TextToSpeechFunctional.spec.mjs` validates existing Text To Speech behavior remains intact.
++
++The Playwright repo helper was fixed so static files are served from the repository root instead of `dev/`.
++
++## Manual Validation Notes
++
++Recommended Product Owner manual validation:
++
++1. Open Message Studio as an authenticated Creator.
++2. Add a message with Speaker, Text, Trigger, Typewriter Speed, and TTS Profile.
++3. Save and reload to confirm API/Postgres persistence.
++4. Edit the same fields and confirm changes persist.
++5. Add a sentence with a profile-scoped emotion and confirm playback.
++6. Confirm guest can browse but Save redirects to `account/sign-in.html`.
++7. Confirm referenced Message Delete remains blocked.
++
++## Known Issues
++
++- Full `DbSeedIntegrity` remains blocked outside PR_002 because `dev/build/database/seed/guest/game-crew.json` publishes `game-crew` while canonical inventory expects Game Crew under `users`.
++- This PR intentionally does not clean up Game Crew guest seed JSON ownership.
++- The Game Crew cleanup should be planned from clean `main` as a separate batch after PR_002 is clean, committed, and opened.
++
++## ZIP Outcome
++
++DELTA artifact:
++
++`dev/workspace/zips/PR_26180_BRAVO_002-complete-messages-creator-tool_delta.zip`

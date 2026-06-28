@@ -1,7 +1,10 @@
-dev/reports/PR_26179_OWNER_009-pr-stack-realignment_branch-validation.md
-dev/reports/PR_26179_OWNER_009-pr-stack-realignment_manual-validation-notes.md
-dev/reports/PR_26179_OWNER_009-pr-stack-realignment_report.md
-dev/reports/PR_26179_OWNER_009-pr-stack-realignment_requirement-checklist.md
-dev/reports/PR_26179_OWNER_009-pr-stack-realignment_validation-report.md
+﻿dev/build/database/ddl/messages.sql
 dev/reports/codex_changed_files.txt
 dev/reports/codex_review.diff
+dev/reports/PR_26180_BRAVO_002-complete-messages-creator-tool.md
+dev/tests/dev-runtime/MessagesPublishValidation.test.mjs
+dev/tests/helpers/playwrightRepoServer.mjs
+dev/tests/playwright/tools/MessagesTool.spec.mjs
+src/dev-runtime/messages/messages-postgres-service.mjs
+toolbox/messages/index.html
+toolbox/messages/messages.js
