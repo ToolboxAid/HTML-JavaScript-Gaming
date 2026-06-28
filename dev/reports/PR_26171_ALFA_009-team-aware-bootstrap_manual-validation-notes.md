@@ -45,12 +45,20 @@ Expected result:
 npm run dev:bootstrap -- --team owner
 npm run dev:bootstrap -- --team bravo
 npm run dev:bootstrap -- --team charlie
+npm run dev:bootstrap -- charlie
 npm run dev:bootstrap -- --team delta
 npm run dev:bootstrap -- --team echo
 npm run dev:bootstrap -- --team foxtrot
 npm run dev:bootstrap -- --team golf
 npm run dev:bootstrap -- --team hotel
 ```
+
+For Charlie, both forms should show:
+
+- `Team: charlie`
+- `Web URL: http://127.0.0.1:5530`
+- `API URL: http://127.0.0.1:5531/api`
+- `Browser launch: http://127.0.0.1:5530/index.html`
 
 ## Failure Checks
 

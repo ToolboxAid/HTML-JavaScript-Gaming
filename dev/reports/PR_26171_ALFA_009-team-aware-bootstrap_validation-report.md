@@ -13,10 +13,13 @@
 | `npm run validate:canonical-structure` | PASS | Canonical repository structure guardrail passed. |
 | `npm run dev:bootstrap -- --team alfa` | PASS | Started with team `alfa`, role `owner`, web `5510`, API `5511`, launched browser to `http://127.0.0.1:5510/index.html`, then process tree was stopped. |
 | `npm run dev:bootstrap -- --team alfa --role codex` | PASS | Started with team `alfa`, role `codex`, web `5512`, API `5513`, suppressed browser launch, then process tree was stopped. |
+| `npm run dev:bootstrap -- --team charlie` | PASS | Started with team `charlie`, role `owner`, web `5530`, API `5531`, launched browser to `http://127.0.0.1:5530/index.html`, then process tree was stopped. |
+| `npm run dev:bootstrap -- charlie` | PASS | Positional team forwarding selected team `charlie`, web `5530`, API `5531`, and browser target `http://127.0.0.1:5530/index.html`. |
+| `npm run dev:bootstrap -- --team bravo` | PASS | Started with team `bravo`, role `owner`, web `5520`, API `5521`, and browser target `http://127.0.0.1:5520/index.html`. |
 | `npm run dev:bootstrap -- --team omega` | PASS | Failed clearly with supported team list. |
 | `npm run dev:bootstrap -- --team alfa --role reviewer` | PASS | Failed clearly with supported role list. |
 | `npm run dev:local-api` | PASS | Legacy command started and printed legacy startup diagnostics, then process tree was stopped. |
 
 ## Notes
 
-The startup-command validations used short-lived process launches and `taskkill /T /F` cleanup after expected diagnostics appeared, so no dev servers were left running. The owner-role validation opened the configured browser target after both server diagnostics were available.
+The startup-command validations used short-lived process launches and `taskkill /T /F` cleanup after expected diagnostics appeared, so no dev servers were left running. Owner-role validations opened the configured browser target after both server diagnostics were available. Unit coverage verifies loaded `.env` port values are overwritten by computed team/role ports.

@@ -60,6 +60,9 @@ test("team and role parsers accept canonical argument forms", () => {
   assert.equal(parseTeamArgument([]), "owner");
   assert.equal(parseTeamArgument(["--team", "alfa"]), "alfa");
   assert.equal(parseTeamArgument(["--team=bravo"]), "bravo");
+  assert.equal(parseTeamArgument(["--mode", "bootstrap", "charlie"]), "charlie");
+  assert.equal(parseTeamArgument(["--mode=bootstrap", "charlie"]), "charlie");
+  assert.equal(parseTeamArgument(["charlie", "--role", "codex"]), "charlie");
   assert.equal(parseRoleArgument([]), "owner");
   assert.equal(parseRoleArgument(["--role", "codex"]), "codex");
   assert.equal(parseRoleArgument(["--role=owner"]), "owner");
@@ -124,6 +127,32 @@ test("bootstrap option parser maps npm script modes to server startup plan", () 
     team: "charlie",
     web: false,
   });
+  assert.deepEqual(parseBootstrapOptions(["--mode", "bootstrap", "charlie"]), {
+    api: true,
+    mode: "bootstrap",
+    ports: {
+      apiPort: 5531,
+      role: "owner",
+      team: "charlie",
+      webPort: 5530,
+    },
+    role: "owner",
+    team: "charlie",
+    web: true,
+  });
+  assert.deepEqual(parseBootstrapOptions(["--mode", "bootstrap", "--team", "bravo"]), {
+    api: true,
+    mode: "bootstrap",
+    ports: {
+      apiPort: 5521,
+      role: "owner",
+      team: "bravo",
+      webPort: 5520,
+    },
+    role: "owner",
+    team: "bravo",
+    web: true,
+  });
   assert.deepEqual(parseBootstrapOptions(["--mode=web", "--team=owner"]), {
     api: false,
     mode: "web",
@@ -146,6 +175,7 @@ test("bootstrap option parser maps npm script modes to server startup plan", () 
 test("bootstrap environment applies resolved team and role ports for browser API routing", () => {
   const env = {
     GAMEFOUNDRY_API_URL: "http://127.0.0.1:5501/api",
+    GAMEFOUNDRY_LOCAL_API_PORT: "5501",
     GAMEFOUNDRY_SITE_URL: "http://127.0.0.1:5500",
   };
   applyBootstrapEnvironment({
@@ -243,7 +273,7 @@ test("browser launch targets team index after API and web servers are ready for 
     "web:5510",
     "browser:http://127.0.0.1:5510/index.html",
   ]);
-  assert.equal(runtime.diagnostics.includes("Browser launch: opened http://127.0.0.1:5510/index.html"), true);
+  assert.equal(runtime.diagnostics.includes("Browser launch: http://127.0.0.1:5510/index.html"), true);
   await runtime.close();
   assert.deepEqual(events.slice(-2), ["api:closed", "web:closed"]);
 });

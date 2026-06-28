@@ -80,10 +80,37 @@ function parseNamedArgument(args, name, fallback, supportedLabel) {
   return fallback;
 }
 
+function firstPositionalArgument(args = []) {
+  const values = Array.from(args);
+  const optionsWithValues = new Set(["mode", "role", "team"]);
+  for (let index = 0; index < values.length; index += 1) {
+    const argument = values[index];
+    if (!argument) {
+      continue;
+    }
+    if (argument.startsWith("--")) {
+      if (argument.includes("=")) {
+        continue;
+      }
+      const optionName = argument.slice(2);
+      if (optionsWithValues.has(optionName) && values[index + 1] && !values[index + 1].startsWith("--")) {
+        index += 1;
+      }
+      continue;
+    }
+    return argument;
+  }
+  return "";
+}
+
 export function parseRoleArgument(args = []) {
   return parseNamedArgument(args, "role", DEFAULT_BOOTSTRAP_ROLE, supportedBootstrapRolesLabel);
 }
 
 export function parseTeamArgument(args = []) {
-  return parseNamedArgument(args, "team", DEFAULT_BOOTSTRAP_TEAM, supportedBootstrapTeamsLabel);
+  const explicitTeam = parseNamedArgument(args, "team", "", supportedBootstrapTeamsLabel);
+  if (explicitTeam) {
+    return explicitTeam;
+  }
+  return normalizeToken(firstPositionalArgument(args), DEFAULT_BOOTSTRAP_TEAM);
 }

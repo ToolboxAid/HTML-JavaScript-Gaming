@@ -203,7 +203,7 @@ export function formatBootstrapDiagnostics({
     `Web URL: ${webBaseUrl}`,
     `API URL: ${apiBaseUrl}/api`,
     browserLaunch?.enabled
-      ? `Browser launch: opened ${browserLaunch.url}`
+      ? `Browser launch: ${browserLaunch.url}`
       : `Browser launch: ${browserLaunch?.reason || "not requested"}`,
     "Environment source: .env + process environment",
     `.env loaded: ${runtimeEnv.loaded ? `yes (${runtimeEnv.loadedKeys} new key(s))` : "no"}`,
