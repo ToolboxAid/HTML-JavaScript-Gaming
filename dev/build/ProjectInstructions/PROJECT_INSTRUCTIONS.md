@@ -6,9 +6,42 @@
 
 Codex and future wrappers must request this file directly. All other Project Instructions documents are loaded indirectly through the references below.
 
+## Canonical Source Rule
+
+The repository is the canonical source of truth for project rules.
+
+Codex, ChatGPT, wrappers, and team operators must use the current repository documentation under `dev/build/ProjectInstructions/` as authority for active rules. Prior chat history, remembered conversation context, generated reports, archived documents, local notes, or stale external instructions must not override repository documentation.
+
+If current chat instructions conflict with repository documentation, Codex must follow the active repository documentation or HARD STOP and request OWNER direction.
+
+## Canonical Team Naming
+
+Canonical active teams:
+
+- Owner
+- Alfa
+- Bravo
+- Charlie
+- Golf
+
+Official NATO spellings:
+
+```text
+Alfa, Bravo, Charlie, Delta, Echo, Foxtrot, Golf, Hotel, India, Juliett, Kilo, Lima, Mike, November, Oscar, Papa, Quebec, Romeo, Sierra, Tango, Uniform, Victor, Whiskey, Xray, Yankee, Zulu.
+```
+
+Rules:
+
+- Use official NATO spelling for all team names.
+- Do not use `Alpha`, `Beta`, or `Gamma` for active teams.
+- Deprecated or historical names must not be used for active team routing, new work ownership, or current governance.
+- Historical PR names, branch names, and references may remain unchanged when they are already merged or clearly referenced as history.
+- New branches, PRs, reports, and documentation must use canonical team names.
+- Repository documentation overrides prior conversations.
+
 ## Current Version/Date
 
-- Project Instructions Version: 2026-06-28.PR_26179_OWNER_010
+- Project Instructions Version: 2026-06-28.PR_26172_OWNER_034
 - Date: 2026-06-28
 - Owner: OWNER
 

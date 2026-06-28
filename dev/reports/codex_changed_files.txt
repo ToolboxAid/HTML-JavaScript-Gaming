@@ -1,6 +1,1 @@
-PR_26179_OWNER_012-gitignore-env-simplification
-Updated: 2026-06-28T03:47:16Z
-Branch: PR_26179_OWNER_012-gitignore-env-simplification
-
-Changed files:
-M	.gitignore
+﻿dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
