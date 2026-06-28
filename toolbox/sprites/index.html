@@ -33,7 +33,7 @@
                             <details class="vertical-accordion" open>
                                 <summary>Drawing Tools</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Choose the creation action that will shape the sprite canvas in a later editor slice.</p>
+                                    <p>Choose a drawing action for the current unsaved sprite draft.</p>
                                     <div class="action-group action-group--tight" aria-label="Sprite Creator toolbar placeholders" data-sprites-toolbar>
                                         <button class="btn btn--compact primary" type="button" data-sprite-tool-button="pencil" aria-label="Pencil tool" aria-pressed="true">Pencil</button>
                                         <button class="btn btn--compact" type="button" data-sprite-tool-button="eraser" aria-label="Eraser tool" aria-pressed="false">Eraser</button>
@@ -64,7 +64,7 @@
                                                 </tr>
                                                 <tr>
                                                     <th scope="row">Mode</th>
-                                                    <td>Draft canvas shell</td>
+                                                    <td>Unsaved editor canvas</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -90,11 +90,11 @@
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="sprites" data-tool-icon-src="assets/theme-v2/images/badges/sprites.png" data-tool-character-src="assets/theme-v2/images/tools/sprites.png"></div>
                     <section class="tool-center-panel" data-sprites-work-area>
                         <h2>Pixel Work Area</h2>
-                        <p>Use this canvas space to compose sprite art once drawing and save/load contracts are added.</p>
+                        <p>Compose sprite pixels in the unsaved editor workspace. Saving to the sprite library remains deferred to a future API-backed PR.</p>
                         <div class="grid cols-3" aria-label="Sprite Creator shell summary">
-                            <article class="mini-stat"><strong>Draft</strong>Canvas</article>
-                            <article class="mini-stat"><strong>Ready</strong>Workspace</article>
-                            <article class="mini-stat"><strong>Pending</strong>Save/Load</article>
+                            <article class="mini-stat"><strong>Unsaved</strong>Draft</article>
+                            <article class="mini-stat"><strong>Ready</strong>Editor</article>
+                            <article class="mini-stat"><strong>Local</strong>PNG Export</article>
                         </div>
                         <article class="card">
                             <div class="card-body content-stack">
@@ -144,7 +144,7 @@
                                                 </tr>
                                                 <tr>
                                                     <th scope="row">Storage</th>
-                                                    <td>Not connected in this shell</td>
+                                                    <td>Library save is not connected in this editor stack</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -154,7 +154,7 @@
                             <details class="vertical-accordion" open>
                                 <summary>Animation</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Frame planning is visible here so animation support can attach without changing the shell layout.</p>
+                                    <p>Frame planning is visible here so animation support can attach later without changing the editor layout.</p>
                                     <div class="table-wrapper">
                                         <table class="data-table" aria-label="Sprite animation placeholder">
                                             <thead>
@@ -183,7 +183,7 @@
                             <details class="vertical-accordion" open>
                                 <summary>Readiness</summary>
                                 <div class="accordion-body content-stack">
-                                    <p class="status" role="status">Creator shell visible.</p>
+                                    <p class="status" role="status">Sprite Creator editor visible.</p>
                                     <p class="status" role="status">No browser-owned sprite data is stored by this page.</p>
                                     <p class="status" role="status">No Local DB schema or API endpoint is introduced in this PR.</p>
                                 </div>

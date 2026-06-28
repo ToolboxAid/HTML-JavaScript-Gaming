@@ -219,6 +219,8 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status 
     await expect(page.locator("[data-sprites-work-area]")).toBeVisible();
     await expect(page.locator("[data-sprites-details-panel]")).toBeVisible();
     await expect(page.locator("[data-sprites-footer-status]")).toBeVisible();
+    await expect(page.locator("main")).toContainText("Choose a drawing action for the current unsaved sprite draft.");
+    await expect(page.locator("main")).toContainText("Saving to the sprite library remains deferred");
     await expect(page.locator("[data-sprites-tools-panel]")).toContainText("Sprite Tools");
     await expect(page.getByText("Drawing Tools", { exact: true })).toBeVisible();
     await expect(page.getByText("Canvas Setup", { exact: true })).toBeVisible();
@@ -274,7 +276,7 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status 
     await expect(page.locator("[data-sprites-export-status]")).toContainText("PNG downloaded");
     await expect(page.locator("[data-sprites-shell-status]")).toContainText("Editor ready");
     await expect(page.locator("main")).toContainText("Palette/Colors remains the reusable color source");
-    await expect(page.locator("main")).not.toContainText(/Not implemented yet|future rebuild work|Static wireframe only|Plan sprite creation/i);
+    await expect(page.locator("main")).not.toContainText(/Not implemented yet|future rebuild work|Static wireframe only|Plan sprite creation|later editor slice/i);
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
 
     expect(failures.failedRequests).toEqual([]);

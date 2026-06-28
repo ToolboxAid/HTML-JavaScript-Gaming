@@ -1,7 +1,5 @@
-﻿toolbox/sprites/index.html
-assets/toolbox/sprites/js/index.js
-assets/theme-v2/css/gamefoundrystudio.css
+toolbox/sprites/index.html
 dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-docs_build/dev/reports/PR_26179_CHARLIE_027-sprites-preview-export.md
+docs_build/dev/reports/PR_26179_CHARLIE_028-sprites-editor-polish.md
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
