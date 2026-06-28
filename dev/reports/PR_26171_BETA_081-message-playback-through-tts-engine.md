@@ -1,9 +1,9 @@
 # PR_26171_BETA_081-message-playback-through-tts-engine
 
 ## Team Ownership
-- TEAM: BETA
+- TEAM: Bravo
 - Ownership source: docs_build/dev/PROJECT_MULTI_PC.txt
-- Scope confirmed: Audio, Messages, Text To Speech, and TTS are owned by Team BETA.
+- Scope confirmed: Audio, Messages, Text To Speech, and TTS are owned by Team Bravo.
 
 ## Summary
 - Added server-owned Emotion Settings to Messages TTS profile API responses without changing database schema.

@@ -1,7 +1,7 @@
 # PR_26171_BETA_071-tts-profile-emotion-table
 
 Generated: 2026-06-20T22:26:42.301Z
-Team ownership: BETA
+Team ownership: Bravo
 Branch: pr/26171-BETA-071-tts-profile-emotion-table
 Base HEAD: 78b642f70cf5698b611f2f8e1f6c6e18f9d73961
 origin/main: 78b642f70cf5698b611f2f8e1f6c6e18f9d73961

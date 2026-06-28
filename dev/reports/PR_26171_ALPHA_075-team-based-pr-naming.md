@@ -30,7 +30,7 @@ Authoritative branch format:
 
 `pr/<YYJJJ>-<TEAM>-<###>-<description>`
 
-Required examples are documented for ALPHA, BETA, and GAMMA.
+Required examples are documented for Alpha, Bravo, and Golf.
 
 ## Instruction Compliance
 

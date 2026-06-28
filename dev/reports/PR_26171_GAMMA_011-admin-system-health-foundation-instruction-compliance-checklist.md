@@ -2,7 +2,7 @@
 
 - PR has one purpose only: PASS
 - Exact PR name provided: PASS
-- PR name includes TEAM token `GAMMA`: PASS
+- Current canonical team is Golf; historical PR token remains `GAMMA`: PASS
 - Exact branch name provided by user: PASS
 - Branch started from latest `main`: PASS
 - `docs_build/dev/PROJECT_INSTRUCTIONS.md` read before changes: PASS
@@ -10,7 +10,7 @@
 - Instruction enforcement start gate run before changes: PASS
 - Repository clean before branch creation: PASS
 - `main` local/origin sync verified before branch creation: PASS
-- TEAM ownership verified as Gamma diagnostics/admin foundation work: PASS
+- TEAM ownership verified as Golf diagnostics/admin foundation work: PASS
 - Theme V2 only: PASS
 - Postgres only: PASS
 - No new persistence: PASS

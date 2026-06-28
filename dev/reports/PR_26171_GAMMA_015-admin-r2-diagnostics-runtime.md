@@ -40,7 +40,7 @@ This queued scope wires Admin System Health Cloudflare R2 diagnostics to existin
 - Current branch: `team/GAMMA/admin`
 - Clean status before PR015 edits: PASS
 - Local/origin sync before PR015 edits: PASS (`0 0`)
-- TEAM token: `GAMMA`
+- Current canonical team: Golf (historical PR token: `GAMMA`)
 - TEAM ownership: PASS by explicit Master Control/user assignment for diagnostics/admin workstream
 - Implementation path: `admin/system-health.html`, `assets/theme-v2/js/admin-system-health.js`, `tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
 - Existing draft PR target: PR #36

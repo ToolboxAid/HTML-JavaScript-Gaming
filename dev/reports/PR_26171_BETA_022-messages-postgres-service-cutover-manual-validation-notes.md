@@ -1,6 +1,6 @@
 # PR_26171_BETA_022 Manual Validation Notes
 
-TEAM ownership: BETA.
+TEAM ownership: Bravo.
 
 Manual validation performed:
 - Confirmed the Messages page loads through the repo Playwright server with the injected Postgres client stub.

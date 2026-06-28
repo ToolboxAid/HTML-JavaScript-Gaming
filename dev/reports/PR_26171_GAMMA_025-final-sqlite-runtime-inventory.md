@@ -1,6 +1,6 @@
 # PR_26171_GAMMA_025-final-sqlite-runtime-inventory
 
-TEAM ownership: GAMMA.
+TEAM ownership: Golf.
 
 ## Dependency Closeout
 

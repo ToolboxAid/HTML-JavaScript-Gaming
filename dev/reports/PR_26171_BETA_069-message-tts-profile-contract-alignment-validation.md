@@ -4,7 +4,7 @@ Generated: 2026-06-20T22:03:35.223Z
 
 ## TEAM Ownership
 
-- TEAM owner: BETA
+- TEAM owner: Bravo
 
 ## Commands Run
 

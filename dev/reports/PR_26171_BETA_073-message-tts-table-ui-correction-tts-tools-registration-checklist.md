@@ -1,7 +1,7 @@
 # PR_26171_BETA_073-message-tts-table-ui-correction TTS Tools Registration Checklist
 
 Generated: 2026-06-20T23:06:25.711Z
-Team ownership: BETA
+Team ownership: Bravo
 
 - PASS: Text To Speech metadata uses `path: text-to-speech`.
 - PASS: Text To Speech metadata uses `entryPoint: text-to-speech/index.html`.

@@ -1,6 +1,6 @@
 # PR_26171_BETA_075 Manual Validation Notes
 
-Team: BETA
+Team: Bravo
 
 - Reviewed `toolbox/text-to-speech/index.html` and confirmed no Named Sentence, Queue, or Output Summary surface remains.
 - Reviewed `toolbox/text-to-speech/text2speech.js` and confirmed preview playback uses TTS Profile plus Emotion Settings instead of a named-sentence queue.

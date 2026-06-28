@@ -1,7 +1,7 @@
 # PR_26171_BETA_073-message-tts-table-ui-correction Message Parent-Child Table Checklist
 
 Generated: 2026-06-20T23:06:25.711Z
-Team ownership: BETA
+Team ownership: Bravo
 
 - PASS: Parent table remains `Messages`.
 - PASS: Message name cell owns expand/collapse and exposes `aria-expanded`.

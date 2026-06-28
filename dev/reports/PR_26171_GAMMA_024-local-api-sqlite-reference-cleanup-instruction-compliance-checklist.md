@@ -4,8 +4,8 @@
 
 - PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
 - PASS: Read `docs_build/dev/PROJECT_MULTI_PC.txt`.
-- PASS: PR name includes TEAM token `GAMMA`.
-- PASS: Branch name mirrors TEAM token: `pr/26171-GAMMA-024-local-api-sqlite-reference-cleanup`.
+- PASS: Current canonical team is Golf; historical PR token remains `GAMMA`.
+- PASS: Branch name preserves historical PR token: `pr/26171-GAMMA-024-local-api-sqlite-reference-cleanup`.
 - PASS: Started from `main`.
 - PASS: Pulled latest `main`.
 - PASS: Verified clean/synced `main` before branch creation.

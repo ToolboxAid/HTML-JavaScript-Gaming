@@ -2,7 +2,7 @@
 
 ## Summary
 
-TEAM ownership: BETA.
+TEAM ownership: Bravo.
 
 Branch: `team/BETA/messages`.
 

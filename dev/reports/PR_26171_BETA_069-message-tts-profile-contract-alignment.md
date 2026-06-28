@@ -4,18 +4,18 @@ Generated: 2026-06-20T22:03:35.223Z
 
 ## TEAM Ownership
 
-- TEAM owner: BETA
+- TEAM owner: Bravo
 - Ownership source: docs_build/dev/PROJECT_MULTI_PC.txt
-- Message Studio maps to BETA-owned Messages.
-- TTS Studio maps to BETA-owned Text To Speech / TTS.
-- TextToSpeechEngine-adjacent playback maps to BETA-owned Audio / TTS, with src/engine/audio retaining playback code ownership.
+- Message Studio maps to Bravo-owned Messages.
+- TTS Studio maps to Bravo-owned Text To Speech / TTS.
+- TextToSpeechEngine-adjacent playback maps to Bravo-owned Audio / TTS, with src/engine/audio retaining playback code ownership.
 
 ## Instruction Compliance
 
 - Read docs_build/dev/PROJECT_INSTRUCTIONS.md: PASS
 - Read docs_build/dev/PROJECT_MULTI_PC.txt: PASS
 - Confirm TEAM token in PR name: PASS
-- Confirm BETA ownership for Message Studio, TTS Studio, and TextToSpeechEngine-adjacent playback: PASS
+- Confirm Bravo ownership for Message Studio, TTS Studio, and TextToSpeechEngine-adjacent playback: PASS
 - Started from clean synced main before branch creation: PASS
 - Branch created: pr/26171-BETA-069-message-tts-profile-contract-alignment
 
