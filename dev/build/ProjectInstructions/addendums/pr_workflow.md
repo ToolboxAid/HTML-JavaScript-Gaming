@@ -19,22 +19,69 @@ This file owns PR lifecycle governance. It must not duplicate command phase rule
 
 ## Standard Flow
 
-1. Start from main.
-2. Pull latest origin/main.
-3. Verify clean worktree.
-4. Create a PR branch and PR identity.
-5. Mark lifecycle state as PR Open.
-6. Plan on the same PR branch.
-7. Build on the same PR branch.
-8. Validate the change.
-9. Commit with a clear OWNER/team message.
-10. Push the branch.
-11. Open or update the draft PR.
-12. Review the PR.
-13. OWNER approves merge.
-14. Merge to main.
-15. Pull latest main before starting the next unrelated workstream, or before a new PR when the work is not an OWNER-approved stacked/sequential workstream.
-16. Verify Main Verified and Closed gates.
+1. Identify the PR branching model: Independent PR or Stacked PR.
+2. Start from the required branch for that model.
+3. Pull or confirm the required base branch is current.
+4. Verify clean worktree.
+5. Create a PR branch and PR identity.
+6. Mark lifecycle state as PR Open.
+7. Plan on the same PR branch.
+8. Build on the same PR branch.
+9. Validate the change.
+10. Commit with a clear OWNER/team message.
+11. Push the branch.
+12. Open or update the draft PR.
+13. Review the PR.
+14. OWNER approves merge.
+15. Merge to main in the valid order for the PR model.
+16. Pull latest main before starting the next unrelated workstream, or before a new PR when the work is not an OWNER-approved stacked/sequential workstream.
+17. Verify Main Verified and Closed gates.
+
+## PR Branching Models
+
+Every PR must declare one branching model before branch creation or branch continuation.
+
+### Independent PR
+
+Use an Independent PR when the change has no direct dependency on another open PR.
+
+Rules:
+- Independent PRs must start from synchronized `main`.
+- Independent PRs must target `main`.
+- Independent PRs must not reuse another feature branch as their starting point.
+- Codex must HARD STOP if the requested Independent PR starts from any branch other than `main`.
+- Codex must return to synchronized `main` before starting the next unrelated Independent PR.
+
+### Stacked PR
+
+Use a Stacked PR only when the PR has a direct dependency on the previous PR branch.
+
+Rules:
+- Stacked PRs may start from the previous PR branch when there is a direct dependency.
+- Stacked PRs must document the dependency order before BUILD begins.
+- Stacked PR reports must name:
+  - the stack order
+  - the previous PR dependency
+  - the next PR dependency, if known
+  - the starting branch
+  - the intended merge order
+- Stacked PRs must be reviewed in dependency order.
+- Stacked PRs must be merged in dependency order.
+- A later stacked PR must not merge before every prior dependency PR is merged.
+- Codex must HARD STOP if the requested Stacked PR starts from a branch that is not the documented previous PR branch.
+- Codex must HARD STOP if a Stacked PR lacks a documented dependency order.
+
+### Model Mismatch Hard Stop
+
+Codex must verify the requested PR model before changing files.
+
+HARD STOP when:
+- an Independent PR is requested but the current/start branch is not `main`
+- a Stacked PR is requested but the current/start branch is not the documented previous PR branch
+- the request does not say whether the PR is Independent or Stacked and the start branch is not clearly valid
+- a PR is described as stacked but no direct dependency or merge order is documented
+
+When the model is unclear, Codex must report the current branch, expected starting branch, and the missing model/dependency information before making changes.
 
 ## Daily Branch Workflow
 
@@ -109,7 +156,7 @@ Closed gates:
 - Plan, Build, validation, reports, ZIP packaging, and closeout must stay tied to the same PR identity and source branch.
 - Source branches are retained by default after merge and closeout.
 - Do not mix unrelated scopes.
-- Do not start dependent PRs until the required base PR is merged.
+- Do not start dependent PRs until the required base PR is merged unless the work is an explicitly documented Stacked PR with a direct dependency on the previous PR branch.
 - Return to `main` before starting an unrelated PR or new workstream.
 - Do not return to `main` between PRs in the same OWNER-approved stacked/sequential workstream unless OWNER approves an EOD or intermediate merge checkpoint.
 - A team must not begin another PR if its previous PR is not Closed.
