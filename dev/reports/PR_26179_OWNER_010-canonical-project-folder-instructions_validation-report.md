@@ -1,10 +1,9 @@
 # PR_26179_OWNER_010-canonical-project-folder-instructions Validation Report
 
-Updated: 2026-06-28T01:09:47Z
+Updated: 2026-06-28T01:49:46Z
 
-- npm run validate:canonical-structure: PASS
+- Documentation review: PASS
 - git diff --check: PASS
-- node ./dev/scripts/run-platform-validation-suite.mjs: PASS, 8/8 scenarios
-- Project Instructions duplicate folder ownership search: PASS; SSoT-only active folder-placement lists remain.
-- Runtime/product files changed: NO
+- Runtime code changed: NO
+- Wrapper scripts changed: NO
 - Production pages changed: NO

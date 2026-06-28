@@ -1,4 +1,6 @@
-Read this file first.
+Supporting context for `PROJECT_INSTRUCTIONS.md`.
+
+Codex Start-of-Day wrappers request `PROJECT_INSTRUCTIONS.md` directly. This README is loaded indirectly through that entry point.
 
 Folder purpose:
 This folder is the only active Project Instructions source for Game Foundry Studio. It organizes active governance, backlog, team assignment, standards, deprecation, and history material under `dev/build/ProjectInstructions/`.
@@ -32,7 +34,7 @@ Do not rewrite history snapshots after creation unless the owner explicitly appr
 
 READ THIS FIRST
 
-1. Read `dev/build/ProjectInstructions/README.txt` before making changes.
+1. Use `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md` as the only direct bootstrap entry point.
 2. Treat `dev/build/ProjectInstructions/` as the only active Project Instructions source.
 3. Historical Project Instructions files outside this folder are deprecated references only and must not be used as active sources.
 4. Team ownership must be respected.
@@ -49,6 +51,7 @@ Addendum index:
 - Documentation Ownership: dev/build/ProjectInstructions/addendums/documentation_ownership.md
 - Canonical Repository Structure: dev/build/ProjectInstructions/addendums/canonical_repository_structure.md
 - Repository Directory Standard (superseded pointer): dev/build/ProjectInstructions/addendums/repository_directory_standard.md
+- Codex Start-of-Day Bootstrap: dev/build/ProjectInstructions/addendums/codex_start_of_day_bootstrap.md
 - Team Backlog, SOD, And EOD Standard: dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
 - Single Source and EOD Main Lock: dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
 - Test Structure Standardization: dev/build/ProjectInstructions/addendums/test_structure_standardization.md

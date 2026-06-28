@@ -6,11 +6,13 @@ Ensure Codex uses the current approved governance before making repository chang
 
 ## Startup Requirement
 
-Before performing work, Codex must review and use:
+Before performing work, Codex must request the latest Project Instructions through the single direct entry point:
 
 ```text
-dev/build/ProjectInstructions/
+dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 ```
+
+All other Project Instructions documents are loaded indirectly through references from `PROJECT_INSTRUCTIONS.md`.
 
 Codex must use this as the only active source of truth for:
 - Governance rules
@@ -20,6 +22,12 @@ Codex must use this as the only active source of truth for:
 - Addendums
 - Execution modes
 - Artifact requirements
+
+The Codex Start-of-Day bootstrap architecture is defined in:
+
+```text
+dev/build/ProjectInstructions/addendums/codex_start_of_day_bootstrap.md
+```
 
 ## Branch Lifecycle Start Gate
 

@@ -1,6 +1,8 @@
 # Project Instructions Operating System
 
-Read `README.txt` first.
+Bootstrap entry point: request this `PROJECT_INSTRUCTIONS.md` file directly.
+
+`README.txt` is supporting context loaded through this index; wrappers must not require users to specify it separately.
 
 This file is the root index for the append-first Project Instructions operating system under `dev/build/ProjectInstructions/`.
 
@@ -10,10 +12,24 @@ This file is the root index for the append-first Project Instructions operating 
 
 Historical Project Instructions material outside this folder is deprecated reference material only and must not be used as an active source of governance.
 
+## Required Bootstrap Entry
+
+Only this file, `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md`, is requested directly by the Codex Start-of-Day bootstrap.
+
+All other active documents are loaded indirectly through references from this file.
+
+Required indirect sources:
+- Project state: `dev/build/ProjectInstructions/PROJECT_STATE.md`
+- Repository folder placement SSoT: `dev/build/ProjectInstructions/addendums/canonical_repository_structure.md`
+- Codex bootstrap architecture: `dev/build/ProjectInstructions/addendums/codex_start_of_day_bootstrap.md`
+- Team instructions and backlog: `dev/build/ProjectInstructions/team_assignments/` and `dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md`
+
 ## Purpose
 
 The Project Instructions operating system provides additive governance for:
 
+- Codex start-of-day bootstrap loading
+- project state ownership
 - backlog ownership
 - team assignments
 - multi-team branch and scope rules
@@ -42,6 +58,12 @@ Existing Project Instructions outside `dev/build/ProjectInstructions/` remain pr
 - Retained reference material belongs under the repository root `dev/archive/` tree, not under `dev/build/dev/`.
 - History snapshots belong under `dev/archive/legacy-docs-build/ProjectInstructions/history/`.
 
+## Single Source Of Truth Files
+
+- `PROJECT_INSTRUCTIONS.md` owns the active Project Instructions entry point, index, and referenced load graph.
+- `PROJECT_STATE.md` owns current repository/team state metadata used by bootstrap summaries.
+- `addendums/canonical_repository_structure.md` owns repository folder placement and file-placement rules.
+
 ## Recognized Project Reference Files
 
 `dev/build/ProjectInstructions/addendums/project_reference_files.md` defines additional valid project instruction/reference files that must be included in future Project Instructions reviews when present in `ProjectInstructions.zip`, the active project instruction directory, or the root archive reference tree.
@@ -64,6 +86,7 @@ Existing Project Instructions outside `dev/build/ProjectInstructions/` remain pr
 
 When active guidance overlaps, use these canonical owner documents:
 
+- Codex Start-of-Day bootstrap architecture and loading rules: `dev/build/ProjectInstructions/addendums/codex_start_of_day_bootstrap.md`
 - Workflow and Product Owner testable completion: `dev/build/ProjectInstructions/addendums/pr_workflow.md`
 - START / WORK / END lifecycle, branch gates, mandatory hard stops, and EOD main lock: `dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`
 - Repository folder placement, directory ownership, final root standard, final `src/` layer standard, final `dev/` workspace standard, and restructure boundaries: `dev/build/ProjectInstructions/addendums/canonical_repository_structure.md`
@@ -92,6 +115,10 @@ Other active addendums may summarize these rules, but they must point back to th
 `dev/build/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md` defines the Creator-facing stacked PR standard for tool MVP work.
 
 `dev/build/ProjectInstructions/addendums/no_mock_repository_runtime_source.md` defines the Browser → API → Database product-data rule and mock repository technical debt boundary.
+
+## Codex Bootstrap Governance
+
+`dev/build/ProjectInstructions/addendums/codex_start_of_day_bootstrap.md` defines Bootstrap Phrases, Bootstrap Responsibilities, Wrapper Responsibilities, Standard Bootstrap Report, loading rules, SSoT ownership, and the future wrapper direction for the phrase `Use Latest Project Instructions`.
 
 ## Standards
 

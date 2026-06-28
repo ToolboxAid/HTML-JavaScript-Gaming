@@ -1,224 +1,307 @@
 diff --git a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-index 540303d34..076cbb499 100644
+index 076cbb499..67df9ea4b 100644
 --- a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 +++ b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-@@ -66,7 +66,7 @@ When active guidance overlaps, use these canonical owner documents:
+@@ -1,6 +1,8 @@
+ # Project Instructions Operating System
 
+-Read `README.txt` first.
++Bootstrap entry point: request this `PROJECT_INSTRUCTIONS.md` file directly.
++
++`README.txt` is supporting context loaded through this index; wrappers must not require users to specify it separately.
+
+ This file is the root index for the append-first Project Instructions operating system under `dev/build/ProjectInstructions/`.
+
+@@ -10,10 +12,24 @@ This file is the root index for the append-first Project Instructions operating
+
+ Historical Project Instructions material outside this folder is deprecated reference material only and must not be used as an active source of governance.
+
++## Required Bootstrap Entry
++
++Only this file, `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md`, is requested directly by the Codex Start-of-Day bootstrap.
++
++All other active documents are loaded indirectly through references from this file.
++
++Required indirect sources:
++- Project state: `dev/build/ProjectInstructions/PROJECT_STATE.md`
++- Repository folder placement SSoT: `dev/build/ProjectInstructions/addendums/canonical_repository_structure.md`
++- Codex bootstrap architecture: `dev/build/ProjectInstructions/addendums/codex_start_of_day_bootstrap.md`
++- Team instructions and backlog: `dev/build/ProjectInstructions/team_assignments/` and `dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md`
++
+ ## Purpose
+
+ The Project Instructions operating system provides additive governance for:
+
++- Codex start-of-day bootstrap loading
++- project state ownership
+ - backlog ownership
+ - team assignments
+ - multi-team branch and scope rules
+@@ -42,6 +58,12 @@ Existing Project Instructions outside `dev/build/ProjectInstructions/` remain pr
+ - Retained reference material belongs under the repository root `dev/archive/` tree, not under `dev/build/dev/`.
+ - History snapshots belong under `dev/archive/legacy-docs-build/ProjectInstructions/history/`.
+
++## Single Source Of Truth Files
++
++- `PROJECT_INSTRUCTIONS.md` owns the active Project Instructions entry point, index, and referenced load graph.
++- `PROJECT_STATE.md` owns current repository/team state metadata used by bootstrap summaries.
++- `addendums/canonical_repository_structure.md` owns repository folder placement and file-placement rules.
++
+ ## Recognized Project Reference Files
+
+ `dev/build/ProjectInstructions/addendums/project_reference_files.md` defines additional valid project instruction/reference files that must be included in future Project Instructions reviews when present in `ProjectInstructions.zip`, the active project instruction directory, or the root archive reference tree.
+@@ -64,6 +86,7 @@ Existing Project Instructions outside `dev/build/ProjectInstructions/` remain pr
+
+ When active guidance overlaps, use these canonical owner documents:
+
++- Codex Start-of-Day bootstrap architecture and loading rules: `dev/build/ProjectInstructions/addendums/codex_start_of_day_bootstrap.md`
  - Workflow and Product Owner testable completion: `dev/build/ProjectInstructions/addendums/pr_workflow.md`
  - START / WORK / END lifecycle, branch gates, mandatory hard stops, and EOD main lock: `dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`
--- Repository directory ownership, final root standard, final `src/` layer standard, final `dev/` workspace standard, and restructure boundaries: `dev/build/ProjectInstructions/addendums/repository_directory_standard.md`
-+- Repository folder placement, directory ownership, final root standard, final `src/` layer standard, final `dev/` workspace standard, and restructure boundaries: `dev/build/ProjectInstructions/addendums/canonical_repository_structure.md`
- - Page-level Playwright organization and completion coverage: `dev/build/ProjectInstructions/addendums/test_structure_standardization.md`
- - API/environment model and `Browser -> API -> Database` rule: `dev/build/ProjectInstructions/addendums/environment_governance_model.md`
- - Environment variable, URL, R2 prefix, and feature flag configuration: `dev/build/ProjectInstructions/addendums/environment_configuration_standards.md`
+ - Repository folder placement, directory ownership, final root standard, final `src/` layer standard, final `dev/` workspace standard, and restructure boundaries: `dev/build/ProjectInstructions/addendums/canonical_repository_structure.md`
+@@ -93,6 +116,10 @@ Other active addendums may summarize these rules, but they must point back to th
+
+ `dev/build/ProjectInstructions/addendums/no_mock_repository_runtime_source.md` defines the Browser → API → Database product-data rule and mock repository technical debt boundary.
+
++## Codex Bootstrap Governance
++
++`dev/build/ProjectInstructions/addendums/codex_start_of_day_bootstrap.md` defines Bootstrap Phrases, Bootstrap Responsibilities, Wrapper Responsibilities, Standard Bootstrap Report, loading rules, SSoT ownership, and the future wrapper direction for the phrase `Use Latest Project Instructions`.
++
+ ## Standards
+
+ Active contract, model, and platform standards live under:
+diff --git a/dev/build/ProjectInstructions/PROJECT_STATE.md b/dev/build/ProjectInstructions/PROJECT_STATE.md
+new file mode 100644
+index 000000000..608a9fcc5
+--- /dev/null
++++ b/dev/build/ProjectInstructions/PROJECT_STATE.md
+@@ -0,0 +1,32 @@
++# Project State
++
++Status: Active
++
++Owner: OWNER
++
++Version: 2026-06-27.PR_26179_OWNER_010
++
++## Purpose
++
++`PROJECT_STATE.md` is the single source of truth for current repository and team state metadata used by Codex Start-of-Day bootstrap summaries.
++
++## Ownership
++
++- `PROJECT_INSTRUCTIONS.md` owns the Project Instructions entry point and referenced load graph.
++- `PROJECT_STATE.md` owns current project state metadata.
++- `addendums/canonical_repository_structure.md` owns repository folder placement and file-placement rules.
++
++## Current State Fields
++
++Wrappers and Codex bootstrap summaries may report:
++
++- Project State Version
++- Repository Version
++- Team
++- Branch
++- Worktree
++- Backlog Loaded
++- Additional Documents Loaded
++- Next Recommended PR
++
++This file documents the state contract only. It does not implement wrapper behavior.
 diff --git a/dev/build/ProjectInstructions/README.txt b/dev/build/ProjectInstructions/README.txt
-index b77e90252..9f842adfd 100644
+index 9f842adfd..99c71a4bf 100644
 --- a/dev/build/ProjectInstructions/README.txt
 +++ b/dev/build/ProjectInstructions/README.txt
-@@ -47,10 +47,10 @@ READ THIS FIRST
+@@ -1,4 +1,6 @@
+-Read this file first.
++Supporting context for `PROJECT_INSTRUCTIONS.md`.
++
++Codex Start-of-Day wrappers request `PROJECT_INSTRUCTIONS.md` directly. This README is loaded indirectly through that entry point.
 
- Addendum index:
+ Folder purpose:
+ This folder is the only active Project Instructions source for Game Foundry Studio. It organizes active governance, backlog, team assignment, standards, deprecation, and history material under `dev/build/ProjectInstructions/`.
+@@ -32,7 +34,7 @@ Do not rewrite history snapshots after creation unless the owner explicitly appr
+
+ READ THIS FIRST
+
+-1. Read `dev/build/ProjectInstructions/README.txt` before making changes.
++1. Use `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md` as the only direct bootstrap entry point.
+ 2. Treat `dev/build/ProjectInstructions/` as the only active Project Instructions source.
+ 3. Historical Project Instructions files outside this folder are deprecated references only and must not be used as active sources.
+ 4. Team ownership must be respected.
+@@ -49,6 +51,7 @@ Addendum index:
  - Documentation Ownership: dev/build/ProjectInstructions/addendums/documentation_ownership.md
--- Repository Directory Standard: dev/build/ProjectInstructions/addendums/repository_directory_standard.md
-+- Canonical Repository Structure: dev/build/ProjectInstructions/addendums/canonical_repository_structure.md
-+- Repository Directory Standard (superseded pointer): dev/build/ProjectInstructions/addendums/repository_directory_standard.md
+ - Canonical Repository Structure: dev/build/ProjectInstructions/addendums/canonical_repository_structure.md
+ - Repository Directory Standard (superseded pointer): dev/build/ProjectInstructions/addendums/repository_directory_standard.md
++- Codex Start-of-Day Bootstrap: dev/build/ProjectInstructions/addendums/codex_start_of_day_bootstrap.md
  - Team Backlog, SOD, And EOD Standard: dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
  - Single Source and EOD Main Lock: dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
--- Canonical Repository Structure: dev/build/ProjectInstructions/addendums/canonical_repository_structure.md
  - Test Structure Standardization: dev/build/ProjectInstructions/addendums/test_structure_standardization.md
- - Legacy Migration Policy: dev/build/ProjectInstructions/addendums/legacy_migration_policy.md
- - Assistant Execution Modes: dev/build/ProjectInstructions/addendums/assistant_execution_modes.md
-diff --git a/dev/build/ProjectInstructions/TEAM_START_COMMANDS.md b/dev/build/ProjectInstructions/TEAM_START_COMMANDS.md
-index 23b5cf9c2..ce205726c 100644
---- a/dev/build/ProjectInstructions/TEAM_START_COMMANDS.md
-+++ b/dev/build/ProjectInstructions/TEAM_START_COMMANDS.md
-@@ -17,9 +17,11 @@ Branch Lifecycle (Canonical):
+diff --git a/dev/build/ProjectInstructions/addendums/codex_project_instructions_startup.md b/dev/build/ProjectInstructions/addendums/codex_project_instructions_startup.md
+index 8b46c2bfe..5280ffb74 100644
+--- a/dev/build/ProjectInstructions/addendums/codex_project_instructions_startup.md
++++ b/dev/build/ProjectInstructions/addendums/codex_project_instructions_startup.md
+@@ -6,12 +6,14 @@ Ensure Codex uses the current approved governance before making repository chang
 
- ## Team Migration Note
+ ## Startup Requirement
 
--Team Alfa, Team Bravo, Team Charlie, and historical Team Gamma lanes must update from current `main` before starting work and use the canonical folders documented in `dev/build/ProjectInstructions/addendums/canonical_repository_structure.md`.
-+Team Alfa, Team Bravo, Team Charlie, and historical Team Gamma lanes must update from current `main` before starting work and use the folder-placement SSoT:
+-Before performing work, Codex must review and use:
++Before performing work, Codex must request the latest Project Instructions through the single direct entry point:
 
--Do not create or reuse legacy folders such as `docs_build/`, `tmp/`, `projects/`, `scripts/`, `tests/`, `archive/`, `project-instructions/`, `dev/docs_build/`, `dev/project-instructions/`, `dev/workspace/artifacts/`, or `dev/build/dev/`.
-+`dev/build/ProjectInstructions/addendums/canonical_repository_structure.md`
+ ```text
+-dev/build/ProjectInstructions/
++dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+ ```
+
++All other Project Instructions documents are loaded indirectly through references from `PROJECT_INSTRUCTIONS.md`.
 +
-+Do not create or reuse invalid legacy folders. Use the SSoT invalid legacy path list.
+ Codex must use this as the only active source of truth for:
+ - Governance rules
+ - Repository standards
+@@ -21,6 +23,12 @@ Codex must use this as the only active source of truth for:
+ - Execution modes
+ - Artifact requirements
 
- If a proposed file does not clearly belong in a canonical folder, HARD STOP and report the proposed path.
++The Codex Start-of-Day bootstrap architecture is defined in:
++
++```text
++dev/build/ProjectInstructions/addendums/codex_start_of_day_bootstrap.md
++```
++
+ ## Branch Lifecycle Start Gate
 
-diff --git a/dev/build/ProjectInstructions/addendums/canonical_repository_structure.md b/dev/build/ProjectInstructions/addendums/canonical_repository_structure.md
-index 040d938fb..7cf74694e 100644
---- a/dev/build/ProjectInstructions/addendums/canonical_repository_structure.md
-+++ b/dev/build/ProjectInstructions/addendums/canonical_repository_structure.md
-@@ -39,6 +39,14 @@ Deployable application source:
- - src/api-runtime/{feature-name}/
- - src/runtime/{feature-name}/
-
-+Final src layer ownership:
-+- src/web/ owns browser-facing deployable application modules used by public pages, account/admin surfaces, and Creator tools.
-+- src/api-runtime/ owns deployable API/runtime service modules that back the shared Browser -> API -> Postgres/R2 contract.
-+- src/runtime/ owns deployable game, tool, engine, and shared runtime capabilities.
-+- Existing top-level src/advanced/, src/api/, src/dev-runtime/, src/engine/, src/shared/, and src/tools/ directories are legacy transition buckets until explicit migration PRs move them.
-+- Do not add new top-level src/ layer names outside src/web/, src/api-runtime/, or src/runtime/ without OWNER approval.
-+- Do not use team names in runtime source filenames.
+ Codex must follow the canonical lifecycle in:
+diff --git a/dev/build/ProjectInstructions/addendums/codex_start_of_day_bootstrap.md b/dev/build/ProjectInstructions/addendums/codex_start_of_day_bootstrap.md
+new file mode 100644
+index 000000000..a79f6ccde
+--- /dev/null
++++ b/dev/build/ProjectInstructions/addendums/codex_start_of_day_bootstrap.md
+@@ -0,0 +1,129 @@
++# Codex Start-of-Day Bootstrap
 +
- Valid dev workspace folders:
- - dev/archive/
- - dev/build/
-@@ -105,6 +113,26 @@ These legacy transition buckets may remain until explicit migration PRs move the
- - Required reports belong under flat `dev/reports/`.
- - Required ZIPs belong under `dev/workspace/zips/`; generated temporary artifacts belong under `dev/workspace/tmp/`.
-
-+## Creator Data Boundary
++Status: Approved
 +
-+- Creator data must not write to repository folders.
-+- Creator metadata must go through the API to Postgres.
-+- Creator assets must go through the API to Cloudflare R2.
-+- Repo folders may contain fixtures, templates, governance, and development artifacts only when they are not Creator-owned production data.
++Owner: OWNER
 +
-+## Environment And Runtime Rules
++## Purpose
 +
-+- Postgres is the only active runtime database.
-+- The same application code path must run across LOCAL, DEV, IST, UAT, and PROD.
-+- Environment differences must come from `.env` values or environment-managed secrets.
-+- Runtime source filenames must not use team names.
++Define the Codex Start-of-Day bootstrap architecture for loading the latest Project Instructions, project state, team context, and branch/worktree status before implementation begins.
 +
-+## PR Chain Boundary
++This document is documentation and wrapper/bootstrap design only. It does not implement wrapper behavior.
 +
-+The development workspace restructure must proceed through sequential scoped PRs. A PR may only move or update the paths named in its purpose.
++## Bootstrap Phrase
 +
-+Final path-governance PRs may document target paths and legacy exceptions, but they must not move deployable application code unless explicitly scoped.
++A Bootstrap Phrase is a short user-facing phrase that asks the wrapper to resolve the latest Project Instructions and team state before launching Codex.
 +
- ## Invalid Legacy Paths
-
- These paths are not active repository ownership locations:
-diff --git a/dev/build/ProjectInstructions/addendums/repository_directory_standard.md b/dev/build/ProjectInstructions/addendums/repository_directory_standard.md
-index a6527fd23..7a1cffa06 100644
---- a/dev/build/ProjectInstructions/addendums/repository_directory_standard.md
-+++ b/dev/build/ProjectInstructions/addendums/repository_directory_standard.md
-@@ -1,122 +1,7 @@
- # Repository Directory Standard
-
--Status: Approved
--Owner: OWNER
-+Status: Superseded
-
--## Purpose
-+SSoT: `dev/build/ProjectInstructions/addendums/canonical_repository_structure.md`
-
--Define the target repository directory ownership model for the post-restructure repository.
--
--This document is governance only. It does not move runtime, UI, API, tests, or production files by itself.
--
--## Directory Ownership
--
--- Repository root contains production/public product sections and standard repository configuration only.
--- `src/` contains deployable application code.
--- `dev/` contains non-deployable build, test, bootstrap, governance, report, and local workspace items.
--- `deploy/` contains deployment configuration.
--- `docs/` remains at root because it is production Docs & Help.
--- `games/` remains at root because it is public game discovery.
--- `toolbox/` remains at root because it is the Creator toolbox/workspace.
--- Other public product roots such as `account/`, `admin/`, `assets/`, `community/`, `company/`, `learn/`, `legal/`, `marketplace/`, `memberships/`, and `owner/` remain root-level product sections when present.
--
--Valid top-level folders are:
--
--- account/
--- admin/
--- assets/
--- community/
--- company/
--- deploy/
--- dev/
--- docs/
--- games/
--- learn/
--- legal/
--- marketplace/
--- memberships/
--- owner/
--- src/
--- toolbox/
--
--## Final Src Layer Standard
--
--The final `src/` ownership model is:
--
--- `src/web/` for browser-facing deployable application modules used by public pages, account/admin surfaces, and Creator tools.
--- `src/api-runtime/` for deployable API/runtime service modules that back the shared Browser -> API -> Postgres/R2 contract.
--- `src/runtime/` for deployable game, tool, engine, and shared runtime capabilities.
--
--Transition rule:
--
--- Existing top-level `src/advanced/`, `src/api/`, `src/dev-runtime/`, `src/engine/`, `src/shared/`, and `src/tools/` directories are legacy transition buckets until explicit migration PRs move them.
--- Do not add new top-level `src/` layer names outside `src/web/`, `src/api-runtime/`, or `src/runtime/` without OWNER approval.
--- Do not use team names in runtime source filenames.
--
--## Development Workspace Paths
--
--- `dev/archive/` owns historical development reference material that is not active governance.
--- `dev/build/` owns active development governance, Project Instructions, and PR workflow material.
--- `dev/build/` also owns architecture, database DDL/DML/seed docs, standards, backlog, PR planning, and governance.
--- `dev/config/` owns development-only runner and tooling configuration.
--- `dev/reports/` owns generated reports using flat filenames.
--- `dev/scripts/` owns development-only scripts and runners.
--- `dev/templates/` owns reusable development templates.
--- `dev/tests/` owns non-deployable test suites.
--- `dev/tools/` owns development-only tooling.
--- `dev/workspace/` owns generated non-report artifacts and ignored local temporary workspace output.
--- `dev/workspace/` generated output includes tmp, zips, logs, generated files, and test-results.
--- `dev/build/ProjectInstructions/` is the only active Project Instructions source.
--- Root `docs_build/`, root `tests/`, root `archive/`, root `tmp/`, root `projects/`, root `scripts/`, and root `project-instructions/` are not active workspace locations after the restructure.
--- Root `tmp/` may remain ignored as legacy local scratch only; required Codex ZIPs belong under `dev/workspace/zips/`, and generated temporary artifacts belong under `dev/workspace/tmp/`.
--
--## Legacy Reference Exceptions
--
--Invalid legacy paths:
--
--- docs_build/
--- tmp/
--- projects/
--- scripts/
--- tests/
--- archive/
--- project-instructions/
--- dev/docs_build/
--- dev/project-instructions/
--- dev/workspace/artifacts/
--- dev/build/dev/
--
--Path references to invalid legacy locations are allowed only when they are:
--
--- historical/reference content under `dev/archive/` or `dev/build/pr/reference/`
--- explicit legacy exception notes in active governance
--- ignore rules that keep obsolete local scratch from entering commits
--- migration reports documenting the old path and its replacement
--
--Active commands, templates, and Project Instructions must use the final `dev/`, `dev/reports/`, and `dev/workspace/` paths.
--
--## Codex Folder Creation Rule
--
--Codex must not create new folders unless they fit the documented canonical structure.
--
--If a requested or generated path does not clearly fit the canonical structure, Codex must HARD STOP and report the proposed path before writing files.
--
--## Creator Data Boundary
--
--- Creator data must not write to repository folders.
--- Creator metadata must go through the API to Postgres.
--- Creator assets must go through the API to Cloudflare R2.
--- Repo folders may contain fixtures, templates, governance, and development artifacts only when they are not Creator-owned production data.
--
--## Environment And Runtime Rules
--
--- Postgres is the only active runtime database.
--- The same application code path must run across LOCAL, DEV, IST, UAT, and PROD.
--- Environment differences must come from `.env` values or environment-managed secrets.
--- Runtime source filenames must not use team names.
--
--## PR Chain Boundary
--
--The development workspace restructure must proceed through sequential scoped PRs. A PR may only move or update the paths named in its purpose.
--
--Final path-governance PRs may document target paths and legacy exceptions, but they must not move deployable application code unless explicitly scoped.
-+Do not duplicate folder rules here.
++Examples:
++
++- Owner Start of Day
++- Team Alpha Start of Day
++- Team Bravo Start of Day
++- Team Charlie Start of Day
++- Team Gamma Start of Day
++
++Team name note:
++- `Team Alpha Start of Day` is accepted as a user phrase alias for the canonical Team Alfa lane.
++- Historical Team Gamma phrases may be understood for archived/historical context, but active assignment routing follows the current team registry.
++
++## Bootstrap Responsibilities
++
++The bootstrap loads:
++
++- Latest Project Instructions SSoT
++- `PROJECT_STATE.md`
++- Canonical Repository Structure
++- Team instructions
++- Team backlog
++- Current team status
++- Current branch
++- Worktree status
++
++The bootstrap must not create branches, commit files, move files, or run implementation work by itself.
++
++## Wrapper Responsibilities
++
++The wrapper performs:
++
++- Branch verification
++- Worktree verification
++- Bootstrap loading
++- Version reporting
++- Start-of-day summary
++- Launch Codex with the resolved instruction set
++
++The wrapper must not modify runtime code, production pages, or existing wrapper scripts as part of this architecture definition.
++
++## Standard Bootstrap Report
++
++```text
++Bootstrap
++----------
++Project Instructions Version:
++Project State Version:
++Repository Version:
++Team:
++Branch:
++Worktree:
++Backlog Loaded:
++Additional Documents Loaded:
++Next Recommended PR:
++```
++
++## Loading Rules
++
++Only `PROJECT_INSTRUCTIONS.md` is requested directly.
++
++All other documents are loaded indirectly through references from `PROJECT_INSTRUCTIONS.md`.
++
++`PROJECT_INSTRUCTIONS.md` is the only required entry point for Codex Start-of-Day bootstrap loading.
++
++The bootstrap load graph begins at:
++
++```text
++dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
++```
++
++## Single Source Of Truth
++
++`PROJECT_INSTRUCTIONS.md` owns:
++
++- Active Project Instructions entry point
++- Project Instructions index
++- Referenced load graph
++- Canonical governance owner links
++
++`PROJECT_STATE.md` owns:
++
++- Current project state metadata
++- Project State Version
++- Repository/team summary fields used by bootstrap reporting
++
++`canonical_repository_structure.md` owns:
++
++- Repository folder placement
++- Valid top-level folders
++- Valid dev workspace folders
++- File-placement rules
++- Invalid legacy path rules
++
++## Future Direction
++
++Future wrappers should understand:
++
++```text
++Use Latest Project Instructions
++```
++
++without requiring users to specify file paths.
++
++When this phrase is used, the wrapper should resolve `PROJECT_INSTRUCTIONS.md`, follow its references, load current project state and team context, report versions, verify branch/worktree status, and launch Codex with the resolved instruction set.
++
++## Validation
++
++Bootstrap architecture changes are documentation-governance changes unless explicitly scoped otherwise.
++
++Required validation for this design-only layer:
++
++- Documentation review
++- `git diff --check`
