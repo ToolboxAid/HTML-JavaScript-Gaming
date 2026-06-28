@@ -8,8 +8,8 @@ Codex and future wrappers must request this file directly. All other Project Ins
 
 ## Current Version/Date
 
-- Project Instructions Version: 2026-06-27.PR_26179_OWNER_010
-- Date: 2026-06-27
+- Project Instructions Version: 2026-06-28.PR_26179_OWNER_010
+- Date: 2026-06-28
 - Owner: OWNER
 
 ## Required Read Order
@@ -17,8 +17,9 @@ Codex and future wrappers must request this file directly. All other Project Ins
 1. Always read `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md`.
 2. Always read `dev/build/ProjectInstructions/PROJECT_STATE.md`.
 3. Always read `dev/build/ProjectInstructions/repository/canonical_repository_structure.md`.
-4. For Start of Day, read `dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md`.
-5. Load team, backlog, database, runtime, theme, or other specialist documents only when the current task requires them.
+4. For Codex workflow command interpretation, read `dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`.
+5. For Start of Day, read `dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md`.
+6. Load team, backlog, database, runtime, theme, or other specialist documents only when the current task requires them.
 
 ## Load Graph
 
@@ -26,6 +27,8 @@ Codex and future wrappers must request this file directly. All other Project Ins
 PROJECT_INSTRUCTIONS.md
 |-- PROJECT_STATE.md
 |-- repository/canonical_repository_structure.md
+|-- standards/CODEX_WORKFLOW_COMMANDS.md
+|   `-- Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, or command interpretation
 |-- bootstrap/codex_start_of_day_bootstrap.md
 |   `-- Start of Day only
 |-- team/backlog docs
@@ -43,6 +46,7 @@ PROJECT_INSTRUCTIONS.md
 - `PROJECT_INSTRUCTIONS.md`: always.
 - `PROJECT_STATE.md`: always.
 - `repository/canonical_repository_structure.md`: always.
+- `standards/CODEX_WORKFLOW_COMMANDS.md`: Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, invalid command, or command interpretation tasks.
 - `bootstrap/codex_start_of_day_bootstrap.md`: Start of Day only.
 - Backlog docs: Start of Day or planning only.
 - Database docs: DB, DDL, DML, seed, or API persistence changes only.
@@ -64,19 +68,17 @@ Stop before changing files when:
 
 ## Execution Modes
 
-- Owner: decisions, governance direction, standards.
-- Build PR: execute one scoped PR purpose, validate, report, package.
-- Continue: continue the current scoped branch or PR without expanding scope.
-- Review: findings, risks, recommendations only unless implementation is explicitly requested.
-- Challenge: identify contradictions, risks, or better alternatives.
-- Stop Gate: stop and report the reason and required correction.
+Official Codex workflow command governance lives in:
 
-For detailed execution-mode wording, load `dev/build/ProjectInstructions/addendums/assistant_execution_modes.md` only when mode interpretation is unclear.
+`dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`
+
+That file owns Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, and invalid command behavior.
 
 ## Referenced Documents
 
 - Project state: `dev/build/ProjectInstructions/PROJECT_STATE.md`
 - Repository folder placement SSoT: `dev/build/ProjectInstructions/repository/canonical_repository_structure.md`
+- Codex workflow commands: `dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`
 - Codex Start-of-Day bootstrap: `dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md`
 - Branch lifecycle: `dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`
 - PR workflow: `dev/build/ProjectInstructions/addendums/pr_workflow.md`
@@ -98,4 +100,5 @@ For detailed execution-mode wording, load `dev/build/ProjectInstructions/addendu
 - `PROJECT_INSTRUCTIONS.md` owns the manual entry point, required read order, load graph, stop gates, execution modes, and pointers.
 - `PROJECT_STATE.md` owns machine-friendly project state metadata.
 - `repository/canonical_repository_structure.md` owns all folder placement and file-placement rules.
+- `standards/CODEX_WORKFLOW_COMMANDS.md` owns Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, and invalid command behavior.
 - `bootstrap/codex_start_of_day_bootstrap.md` owns Start-of-Day bootstrap architecture.

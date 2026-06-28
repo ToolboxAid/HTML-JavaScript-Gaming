@@ -2,6 +2,12 @@
 
 ## Required Main Reset Gate For Every Team
 
+Official Start of Day command format lives in:
+
+`dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`
+
+The ready-to-copy team assignment commands below are OWNER assignment helpers, not Start of Day bootstrap commands.
+
 No team creates a PR branch until all checks pass:
 
 - Current branch: `main`

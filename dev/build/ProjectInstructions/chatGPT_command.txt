@@ -1,9 +1,5 @@
-| Command          | Mode                | Expected Output                                                   | Do Not Output                              |
-| ---------------- | ------------------- | ----------------------------------------------------------------- | ------------------------------------------ |
-| Review           | Analysis            | Findings, risks, recommendations                                  | PRs, implementation plans                  |
-| Owner            | Governance          | Decision, direction, standards                                    | Detailed implementation                    |
-| Build PR         | Execution           | **Single Codex work order containing one or more sequential PRs** | Design discussion, alternatives, rationale |
-| Continue         | Execution           | Next sequential executable PR or next sequential work order       | Additional analysis, brainstorming         |
-| Challenge        | Architecture Review | Why proposal may be wrong, alternatives, risks                    | Immediate implementation                   |
-| Stop Gate        | Blocker Review      | Why work should stop, required fixes                              | PR generation                              |
-| Build Work Order | Execution           | Copy/paste-ready Codex instructions                               | Governance discussion                      |
+Status: Superseded
+
+SSoT: dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
+
+This file is retained as a compatibility pointer only. Do not duplicate command tables here.

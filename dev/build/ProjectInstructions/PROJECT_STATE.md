@@ -1,15 +1,15 @@
 # Project State
 
 ```yaml
-project_state_version: "2026-06-27.PR_26179_OWNER_010"
-last_updated: "2026-06-27"
+project_state_version: "2026-06-28.PR_26179_OWNER_010"
+last_updated: "2026-06-28"
 current_main_commit: "40de767476d70cadfd1292c916844c2f31b6f185"
 repository_status:
   state: "active-owner-pr"
   current_pr: "PR_26179_OWNER_010-canonical-project-folder-instructions"
   required_start_branch: "main"
   required_start_sync: "main...origin/main == 0 0"
-project_instructions_version: "2026-06-27.PR_26179_OWNER_010"
+project_instructions_version: "2026-06-28.PR_26179_OWNER_010"
 canonical_layout_version: "2026-06-27.PR_26179_OWNER_010"
 active_teams:
   - "Team OWNER"

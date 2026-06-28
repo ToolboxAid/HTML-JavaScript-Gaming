@@ -7,6 +7,12 @@ Owner: OWNER
 
 Define the standard pull request workflow for Game Foundry Studio.
 
+Official PLAN_PR, BUILD_PR, APPLY_PR, Start of Day, and invalid command behavior lives in:
+
+`dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`
+
+This file owns PR lifecycle governance. It must not duplicate command phase rules.
+
 ## Standard Flow
 
 1. Start from main.

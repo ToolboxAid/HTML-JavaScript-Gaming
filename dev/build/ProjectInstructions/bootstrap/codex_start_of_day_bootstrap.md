@@ -14,17 +14,11 @@ This document is documentation and wrapper/bootstrap design only. It does not im
 
 A Bootstrap Phrase is a short user-facing phrase that asks the wrapper to resolve the latest Project Instructions and team state before launching Codex.
 
-Examples:
+Official Start of Day command format and invalid command behavior live in:
 
-- Owner Start of Day
-- Team Alpha Start of Day
-- Team Bravo Start of Day
-- Team Charlie Start of Day
-- Team Gamma Start of Day
+`dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`
 
-Team name note:
-- `Team Alpha Start of Day` is accepted as a user phrase alias for the canonical Team Alfa lane.
-- Historical Team Gamma phrases may be understood for archived/historical context, but active assignment routing follows the current team registry.
+This bootstrap document owns the loading architecture only. It must not duplicate the command vocabulary.
 
 ## Bootstrap Responsibilities
 
@@ -101,14 +95,19 @@ If a chat instruction conflicts with Project Instructions:
 
 When a request contains:
 
-- Build PR
+- Start of Day
+- PLAN_PR
+- BUILD_PR
+- APPLY_PR
 - Continue
 - Follow Project Instructions
 - Next PR
 
-Codex must treat the request as Execution Mode.
+Codex must resolve command behavior through:
 
-Execution Mode means:
+`dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`
+
+Execution Mode still means:
 
 - Execute the requested work order.
 - Do not redesign the process.
