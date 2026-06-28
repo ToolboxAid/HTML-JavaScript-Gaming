@@ -285,7 +285,7 @@ index 3c660f598..021f2d0be 100644
  ## Team Command Examples
 
 diff --git a/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md b/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
-index a7d317ed2..3d1fa9ace 100644
+index a7d317ed2..26913927e 100644
 --- a/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
 +++ b/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
 @@ -4,16 +4,29 @@
@@ -318,6 +318,49 @@ index a7d317ed2..3d1fa9ace 100644
 
  Completion percentages are updated at SOD, after every accepted PR, and at EOD.
 
+@@ -181,6 +194,29 @@ The backlog is the authoritative source for determining the next logical PRs.
+   - OWNER merge approval and EOD merge governance verified.
+   - Team ownership governance verified through the authoritative ownership map.
+
++- [x] Alfa - Team-aware local dev bootstrap runtime complete
++
++  Notes:
++  - Completion reference: PR #250 / `PR_26171_ALFA_009-team-aware-bootstrap`.
++  - `npm run dev:bootstrap` is the primary team-aware local bootstrap command.
++  - `npm run dev:local-api` remains as the legacy API alias.
++  - `npm run dev:api` supports API-only startup.
++  - `npm run dev:web` supports web-only startup.
++  - `dev/bootstrap/start-dev.mjs` owns bootstrap orchestration.
++  - `dev/bootstrap/team-port-config.mjs` owns team port resolution.
++  - Team-aware `--team` runtime support is implemented.
++  - Bootstrap orchestration, browser launch reporting, and port resolution are implemented.
++  - Verified command: `npm run dev:bootstrap -- --team bravo`.
++  - Observed verified output includes:
++    - `GameFoundry team-aware dev bootstrap`
++    - `Mode: bootstrap`
++    - `Team: bravo`
++    - `Web URL: http://127.0.0.1:5520`
++    - `API URL: http://127.0.0.1:5521/api`
++    - `Browser launch: http://127.0.0.1:5520/index.html`
++    - `Supported teams: owner, alfa, bravo, charlie, delta, echo, foxtrot, golf, hotel`
++  - Do not assign team-aware dev bootstrap, `dev:bootstrap`, team-port config, browser launch, bootstrap orchestration, or port resolution as remaining backlog work unless OWNER opens a new enhancement request.
++
+ - [x] OWNER - Repository hygiene governance complete
+
+   Notes:
+@@ -195,11 +231,10 @@ The backlog is the authoritative source for determining the next logical PRs.
+ Status: CANCELLED / NOT DOING
+
+ Items removed from backlog:
+-- Multi-port workspace framework
+ - Alfa/Beta/User isolation framework
+-- Runtime port management initiative
+
+ Replacement governance:
++- Multi-port workspace framework and runtime port management are no longer cancelled/not doing; they are implemented by the team-aware local dev bootstrap runtime item above.
+ - System Health remains one page per deployed environment.
+ - Each deployment actively checks only itself.
+ - Environment Summary, Database Health, Storage Health, Runtime Health, and Health Check History are Charlie System Health ownership.
 diff --git a/dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md b/dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md
 index f2eb2787d..c6b440fd5 100644
 --- a/dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md
@@ -408,10 +451,10 @@ index 000000000..dff7c5ede
 +| Scope | PASS | Governance/documentation only |
 diff --git a/dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_manual-validation-notes.md b/dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_manual-validation-notes.md
 new file mode 100644
-index 000000000..fdf4b0610
+index 000000000..c1471cccc
 --- /dev/null
 +++ b/dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_manual-validation-notes.md
-@@ -0,0 +1,10 @@
+@@ -0,0 +1,12 @@
 +# PR_26180_OWNER_003 Manual Validation Notes
 +
 +- Confirmed `dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md` exists and is referenced as the authoritative assigned-work source.
@@ -419,15 +462,17 @@ index 000000000..fdf4b0610
 +- Confirmed the required Team Assignment startup output section appears in active startup governance.
 +- Confirmed Project Instructions version is updated to `2026.06.28.003`.
 +- Confirmed rebase onto current `origin/main`; conflict resolution touched generated report artifacts only.
++- Confirmed `BACKLOG_MASTER.md` now treats team-aware local dev bootstrap runtime as implemented, not remaining work.
++- Confirmed correction used OWNER-provided verification for `npm run dev:bootstrap -- --team bravo`.
 +- Confirmed Tool Votes UI/page files were not modified.
 +- Confirmed this PR does not implement Tile, Tool Votes, runtime, API, database, or UI behavior.
 +- Playwright was not run because this is governance/documentation-only and no runtime or UI files changed.
 diff --git a/dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_report.md b/dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_report.md
 new file mode 100644
-index 000000000..9db4096a9
+index 000000000..c4caa075d
 --- /dev/null
 +++ b/dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_report.md
-@@ -0,0 +1,64 @@
+@@ -0,0 +1,94 @@
 +# PR_26180_OWNER_003 Backlog Startup Assignment Policy Report
 +
 +## Executive Summary
@@ -462,8 +507,37 @@ index 000000000..9db4096a9
 +- Added the required Team Assignment startup output table.
 +- Added hard-stop behavior for missing backlog, missing assigned team, missing product-area representation, and missing Tool Votes priority source.
 +- Updated `BACKLOG_MASTER.md` header to state assigned-work ownership, status update expectations, Team/Product Area grouping, and required product-area status/percent complete.
++- Corrected `BACKLOG_MASTER.md` to mark team-aware local dev bootstrap runtime as complete, including `dev:bootstrap`, `team-port-config.mjs`, `--team` support, bootstrap orchestration, browser launch reporting, and port resolution.
 +- Updated Start of Day command/bootstrap docs to require the Team Assignment section.
 +- Added top-level `PROJECT_INSTRUCTIONS.md` pointers for the team backlog/startup assignment standard and Tool Votes priority source.
++
++## Bootstrap Status Correction
++
++Team-aware dev bootstrap is implemented and must not be assigned as remaining backlog work.
++
++Owner-provided verification:
++
++```text
++npm run dev:bootstrap -- --team bravo
++GameFoundry team-aware dev bootstrap
++Mode: bootstrap
++Team: bravo
++Web URL: http://127.0.0.1:5520
++API URL: http://127.0.0.1:5521/api
++Browser launch: http://127.0.0.1:5520/index.html
++Supported teams: owner, alfa, bravo, charlie, delta, echo, foxtrot, golf, hotel
++Legacy API alias remains: npm run dev:local-api
++```
++
++Corrected implemented items:
++
++- `npm run dev:bootstrap`
++- `dev/bootstrap/team-port-config.mjs`
++- team-aware `--team` runtime support
++- bootstrap orchestration
++- browser launch reporting
++- port resolution
++- legacy `npm run dev:local-api` alias
 +
 +## Rebase Notes
 +
@@ -484,6 +558,7 @@ index 000000000..9db4096a9
 +| `git diff --check` | PASS |
 +| `npm run validate:canonical-structure` | PASS |
 +| Runtime/UI/API/DB implementation files changed | PASS - none changed |
++| Bootstrap/runtime implementation recreated | PASS - not recreated; backlog status only |
 +
 +## Artifact
 +
@@ -494,10 +569,10 @@ index 000000000..9db4096a9
 +```
 diff --git a/dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_requirement-checklist.md b/dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_requirement-checklist.md
 new file mode 100644
-index 000000000..30487b71a
+index 000000000..c5af1228d
 --- /dev/null
 +++ b/dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_requirement-checklist.md
-@@ -0,0 +1,25 @@
+@@ -0,0 +1,28 @@
 +# PR_26180_OWNER_003 Requirement Checklist
 +
 +| Requirement | Result | Notes |
@@ -522,13 +597,16 @@ index 000000000..30487b71a
 +| Update Tool Votes page header if needed | PASS | Not needed; UI/tool page left untouched due governance-only scope. |
 +| Preserve startup validation, branching policy, ZIP/report contract, canonical paths, Batch Governance Mode, and no legacy paths | PASS | No conflicting edits made. |
 +| Bump Project Instructions version | PASS | `PROJECT_INSTRUCTIONS_VERSION.md` and `PROJECT_INSTRUCTIONS.md` now use `2026.06.28.003`. |
++| Mark bootstrap/team-aware dev runtime as implemented | PASS | `BACKLOG_MASTER.md` now records team-aware local dev bootstrap as complete. |
++| Do not recreate bootstrap work | PASS | No runtime/bootstrap source files were modified. |
++| Do not assign bootstrap as remaining work | PASS | Backlog notes explicitly prohibit assigning `dev:bootstrap`, team-port config, browser launch, bootstrap orchestration, or port resolution as remaining backlog work unless OWNER opens a new enhancement. |
 +| No runtime/UI/API/database/tool implementation changes | PASS | Only Project Instructions and reports changed. |
 diff --git a/dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_validation-report.md b/dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_validation-report.md
 new file mode 100644
-index 000000000..ac7269150
+index 000000000..52287f5af
 --- /dev/null
 +++ b/dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_validation-report.md
-@@ -0,0 +1,32 @@
+@@ -0,0 +1,38 @@
 +# PR_26180_OWNER_003 Validation Report
 +
 +## Validation Commands
@@ -561,6 +639,12 @@ index 000000000..ac7269150
 +- `dev/reports/*`
 +
 +No runtime, UI, API, database, or tool implementation files were changed.
++
++## Bootstrap Status Correction Validation
++
++- `BACKLOG_MASTER.md` marks team-aware local dev bootstrap runtime as complete.
++- `dev:bootstrap`, `team-port-config.mjs`, `--team` runtime support, bootstrap orchestration, browser launch reporting, and port resolution are not listed as remaining backlog work.
++- No `dev/bootstrap/`, `package.json`, runtime, UI, API, or database files were modified by this correction.
 diff --git a/dev/reports/codex_changed_files.txt b/dev/reports/codex_changed_files.txt
-index 952a0ad68..45b203879 100644
+index 952a0ad68..b7a959aab 100644
 Binary files a/dev/reports/codex_changed_files.txt and b/dev/reports/codex_changed_files.txt differ

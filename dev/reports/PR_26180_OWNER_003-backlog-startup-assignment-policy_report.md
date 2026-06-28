@@ -32,8 +32,37 @@ Updated active Project Instructions and the backlog header only.
 - Added the required Team Assignment startup output table.
 - Added hard-stop behavior for missing backlog, missing assigned team, missing product-area representation, and missing Tool Votes priority source.
 - Updated `BACKLOG_MASTER.md` header to state assigned-work ownership, status update expectations, Team/Product Area grouping, and required product-area status/percent complete.
+- Corrected `BACKLOG_MASTER.md` to mark team-aware local dev bootstrap runtime as complete, including `dev:bootstrap`, `team-port-config.mjs`, `--team` support, bootstrap orchestration, browser launch reporting, and port resolution.
 - Updated Start of Day command/bootstrap docs to require the Team Assignment section.
 - Added top-level `PROJECT_INSTRUCTIONS.md` pointers for the team backlog/startup assignment standard and Tool Votes priority source.
+
+## Bootstrap Status Correction
+
+Team-aware dev bootstrap is implemented and must not be assigned as remaining backlog work.
+
+Owner-provided verification:
+
+```text
+npm run dev:bootstrap -- --team bravo
+GameFoundry team-aware dev bootstrap
+Mode: bootstrap
+Team: bravo
+Web URL: http://127.0.0.1:5520
+API URL: http://127.0.0.1:5521/api
+Browser launch: http://127.0.0.1:5520/index.html
+Supported teams: owner, alfa, bravo, charlie, delta, echo, foxtrot, golf, hotel
+Legacy API alias remains: npm run dev:local-api
+```
+
+Corrected implemented items:
+
+- `npm run dev:bootstrap`
+- `dev/bootstrap/team-port-config.mjs`
+- team-aware `--team` runtime support
+- bootstrap orchestration
+- browser launch reporting
+- port resolution
+- legacy `npm run dev:local-api` alias
 
 ## Rebase Notes
 
@@ -54,6 +83,7 @@ Use `dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md` as the required as
 | `git diff --check` | PASS |
 | `npm run validate:canonical-structure` | PASS |
 | Runtime/UI/API/DB implementation files changed | PASS - none changed |
+| Bootstrap/runtime implementation recreated | PASS - not recreated; backlog status only |
 
 ## Artifact
 

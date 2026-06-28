@@ -22,4 +22,7 @@
 | Update Tool Votes page header if needed | PASS | Not needed; UI/tool page left untouched due governance-only scope. |
 | Preserve startup validation, branching policy, ZIP/report contract, canonical paths, Batch Governance Mode, and no legacy paths | PASS | No conflicting edits made. |
 | Bump Project Instructions version | PASS | `PROJECT_INSTRUCTIONS_VERSION.md` and `PROJECT_INSTRUCTIONS.md` now use `2026.06.28.003`. |
+| Mark bootstrap/team-aware dev runtime as implemented | PASS | `BACKLOG_MASTER.md` now records team-aware local dev bootstrap as complete. |
+| Do not recreate bootstrap work | PASS | No runtime/bootstrap source files were modified. |
+| Do not assign bootstrap as remaining work | PASS | Backlog notes explicitly prohibit assigning `dev:bootstrap`, team-port config, browser launch, bootstrap orchestration, or port resolution as remaining backlog work unless OWNER opens a new enhancement. |
 | No runtime/UI/API/database/tool implementation changes | PASS | Only Project Instructions and reports changed. |

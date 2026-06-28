@@ -18,20 +18,20 @@ M	dev/reports/codex_review.diff
 # git diff --stat merge-base(origin/main, HEAD)..working-tree
 .../ProjectInstructions/PROJECT_INSTRUCTIONS.md    |   4 +-
  .../PROJECT_INSTRUCTIONS_VERSION.md                |   3 +-
- .../ProjectInstructions/TEAM_START_COMMANDS.md     |  17 +++++
- .../addendums/team_backlog_sod_eod_standard.md     |  69 +++++++++++++++++++++
- .../addendums/team_start_and_release.md            |  28 +++++----
- .../ProjectInstructions/backlog/BACKLOG_MASTER.md  |  13 ++++
- .../bootstrap/codex_start_of_day_bootstrap.md      |  27 ++++++++
- .../standards/CODEX_WORKFLOW_COMMANDS.md           |   9 +++
- ...-startup-assignment-policy_branch-validation.md |  13 ++++
- ...up-assignment-policy_manual-validation-notes.md |  10 +++
- ...003-backlog-startup-assignment-policy_report.md |  64 +++++++++++++++++++
- ...rtup-assignment-policy_requirement-checklist.md |  25 ++++++++
- ...-startup-assignment-policy_validation-report.md |  32 ++++++++++
- dev/reports/codex_changed_files.txt                | Bin 2004 -> 2208 bytes
- dev/reports/codex_review.diff                      | Bin 133302 -> 29405 bytes
- 15 files changed, 300 insertions(+), 14 deletions(-)
+ .../ProjectInstructions/TEAM_START_COMMANDS.md     |  17 ++++
+ .../addendums/team_backlog_sod_eod_standard.md     |  69 +++++++++++++++
+ .../addendums/team_start_and_release.md            |  28 +++---
+ .../ProjectInstructions/backlog/BACKLOG_MASTER.md  |  39 ++++++++-
+ .../bootstrap/codex_start_of_day_bootstrap.md      |  27 ++++++
+ .../standards/CODEX_WORKFLOW_COMMANDS.md           |   9 ++
+ ...-startup-assignment-policy_branch-validation.md |  13 +++
+ ...up-assignment-policy_manual-validation-notes.md |  12 +++
+ ...003-backlog-startup-assignment-policy_report.md |  94 +++++++++++++++++++++
+ ...rtup-assignment-policy_requirement-checklist.md |  28 ++++++
+ ...-startup-assignment-policy_validation-report.md |  38 +++++++++
+ dev/reports/codex_changed_files.txt                | Bin 2004 -> 2290 bytes
+ dev/reports/codex_review.diff                      | Bin 133302 -> 33998 bytes
+ 15 files changed, 365 insertions(+), 16 deletions(-)
 
 # merge-base
 994b844cb6f5ddae29239962a751da997e207d9e
