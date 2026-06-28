@@ -1,194 +1,394 @@
-﻿diff --git a/assets/toolbox/sprites/js/index.js b/assets/toolbox/sprites/js/index.js
-index 9db241a60..3ed671948 100644
+diff --git a/assets/toolbox/sprites/js/index.js b/assets/toolbox/sprites/js/index.js
+index 3ed671948..788ba41c1 100644
 --- a/assets/toolbox/sprites/js/index.js
 +++ b/assets/toolbox/sprites/js/index.js
-@@ -42,6 +42,7 @@ function normalizeColorKey(colorKey) {
+@@ -16,6 +16,10 @@ const editorState = {
+   gridSize: DEFAULT_GRID_SIZE,
+   paintedPixels: new Map(),
+ };
++const editorHistory = {
++  redoStack: [],
++  undoStack: [],
++};
+
+ function gridLabel(size) {
+   return `Sprite Creator ${size} by ${size} pixel canvas`;
+@@ -29,6 +33,49 @@ function pixelKey(row, column) {
+   return `${row}:${column}`;
  }
- 
- function clearCellColor(cell) {
-+  cell.classList.remove("is-painted");
-   cell.classList.remove(...EDITOR_COLOR_KEYS.map((colorKey) => `sprite-canvas-cell--${colorKey}`));
-   delete cell.dataset.spriteColorKey;
+
++function stateSnapshot() {
++  return {
++    gridSize: editorState.gridSize,
++    paintedPixels: Array.from(editorState.paintedPixels.entries()),
++  };
++}
++
++function sameSnapshot(left, right) {
++  return JSON.stringify(left) === JSON.stringify(right);
++}
++
++function pushUndoSnapshot() {
++  const snapshot = stateSnapshot();
++  const lastSnapshot = editorHistory.undoStack[editorHistory.undoStack.length - 1];
++  if (!lastSnapshot || !sameSnapshot(snapshot, lastSnapshot)) {
++    editorHistory.undoStack.push(snapshot);
++  }
++  editorHistory.redoStack = [];
++  updateHistoryControls();
++}
++
++function historyStatusText() {
++  if (editorHistory.undoStack.length === 0 && editorHistory.redoStack.length === 0) {
++    return "Undo history is empty.";
++  }
++  return `Undo steps: ${editorHistory.undoStack.length}. Redo steps: ${editorHistory.redoStack.length}.`;
++}
++
++function updateHistoryControls() {
++  const undoButton = document.querySelector("[data-sprites-undo]");
++  const redoButton = document.querySelector("[data-sprites-redo]");
++  const status = document.querySelector("[data-sprites-history-status]");
++  if (undoButton) {
++    undoButton.disabled = editorHistory.undoStack.length === 0;
++  }
++  if (redoButton) {
++    redoButton.disabled = editorHistory.redoStack.length === 0;
++  }
++  if (status) {
++    status.textContent = historyStatusText();
++  }
++}
++
+ function draftStatusText() {
+   const count = editorState.paintedPixels.size;
+   if (count === 0) {
+@@ -54,6 +101,30 @@ function setCellColor(cell, colorKey) {
+   cell.dataset.spriteColorKey = normalizedColorKey;
  }
-@@ -99,7 +100,6 @@ function paintCell(cell) {
+
++function applyPaintedPixelsToGrid() {
++  const grid = document.querySelector("[data-sprites-pixel-grid]");
++  if (!grid) {
++    return;
++  }
++  grid.querySelectorAll("[data-sprite-pixel-row]").forEach((cell) => {
++    const key = pixelKey(cell.dataset.spritePixelRow, cell.dataset.spritePixelColumn);
++    const colorKey = editorState.paintedPixels.get(key);
++    if (colorKey) {
++      setCellColor(cell, colorKey);
++    } else {
++      clearCellColor(cell);
++    }
++  });
++}
++
++function applySnapshot(snapshot) {
++  setGridSize(snapshot.gridSize, { recordHistory: false });
++  editorState.paintedPixels = new Map(snapshot.paintedPixels);
++  applyPaintedPixelsToGrid();
++  updateDraftStatus();
++  updateHistoryControls();
++}
++
+ function updateDraftStatus() {
+   const status = document.querySelector("[data-sprites-draft-status]");
+   if (status) {
+@@ -99,9 +170,17 @@ function setActiveTool(toolName) {
+ function paintCell(cell) {
    const key = pixelKey(cell.dataset.spritePixelRow, cell.dataset.spritePixelColumn);
    if (editorState.activeTool === "eraser") {
++    if (!editorState.paintedPixels.has(key)) {
++      return;
++    }
++    pushUndoSnapshot();
      editorState.paintedPixels.delete(key);
--    cell.classList.remove("is-painted");
      clearCellColor(cell);
    } else {
++    if (editorState.paintedPixels.get(key) === editorState.activeColor) {
++      return;
++    }
++    pushUndoSnapshot();
      editorState.paintedPixels.set(key, editorState.activeColor);
-@@ -122,6 +122,20 @@ function fillGrid() {
+     setCellColor(cell, editorState.activeColor);
+   }
+@@ -113,6 +192,7 @@ function fillGrid() {
+   if (!grid) {
+     return;
+   }
++  pushUndoSnapshot();
+   editorState.paintedPixels.clear();
+   grid.querySelectorAll("[data-sprite-pixel-row]").forEach((cell) => {
+     const key = pixelKey(cell.dataset.spritePixelRow, cell.dataset.spritePixelColumn);
+@@ -122,8 +202,11 @@ function fillGrid() {
    updateDraftStatus();
  }
- 
-+function clearCanvas() {
-+  const grid = document.querySelector("[data-sprites-pixel-grid]");
-+  editorState.paintedPixels.clear();
-+  if (grid) {
-+    grid.querySelectorAll("[data-sprite-pixel-row]").forEach(clearCellColor);
+
+-function clearCanvas() {
++function clearCanvas(options = {}) {
+   const grid = document.querySelector("[data-sprites-pixel-grid]");
++  if (options.recordHistory !== false && editorState.paintedPixels.size > 0) {
++    pushUndoSnapshot();
 +  }
-+  updateDraftStatus();
-+}
-+
-+function resetGridToDefault() {
-+  setGridSize(DEFAULT_GRID_SIZE);
-+  clearCanvas();
-+}
-+
+   editorState.paintedPixels.clear();
+   if (grid) {
+     grid.querySelectorAll("[data-sprite-pixel-row]").forEach(clearCellColor);
+@@ -132,8 +215,9 @@ function clearCanvas() {
+ }
+
+ function resetGridToDefault() {
+-  setGridSize(DEFAULT_GRID_SIZE);
+-  clearCanvas();
++  pushUndoSnapshot();
++  setGridSize(DEFAULT_GRID_SIZE, { recordHistory: false });
++  clearCanvas({ recordHistory: false });
+ }
+
  function editorColorValue(colorKey) {
-   const variableName = EDITOR_COLOR_CSS_VARIABLES[normalizeColorKey(colorKey)];
-   const value = getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
-@@ -252,6 +266,18 @@ function wirePaletteButtons() {
+@@ -194,13 +278,17 @@ function exportPreviewPng() {
+   }, "image/png");
+ }
+
+-function setGridSize(size) {
++function setGridSize(size, options = {}) {
+   const grid = document.querySelector("[data-sprites-pixel-grid]");
+   const status = document.querySelector("[data-sprites-grid-status]");
+   if (!grid || !SUPPORTED_GRID_SIZES.includes(size)) {
+     return;
+   }
+
++  if (options.recordHistory && (editorState.gridSize !== size || editorState.paintedPixels.size > 0)) {
++    pushUndoSnapshot();
++  }
++
+   grid.replaceChildren();
+   editorState.gridSize = size;
+   editorState.paintedPixels.clear();
+@@ -239,7 +327,7 @@ function wireGridControls() {
+     if (!button) {
+       return;
+     }
+-    button.addEventListener("click", () => setGridSize(size));
++    button.addEventListener("click", () => setGridSize(size, { recordHistory: true }));
    });
  }
- 
-+function wireCanvasActions() {
-+  const clearButton = document.querySelector("[data-sprites-clear-canvas]");
-+  if (clearButton) {
-+    clearButton.addEventListener("click", clearCanvas);
+
+@@ -278,6 +366,34 @@ function wireCanvasActions() {
+   }
+ }
+
++function wireHistoryActions() {
++  const undoButton = document.querySelector("[data-sprites-undo]");
++  if (undoButton) {
++    undoButton.addEventListener("click", () => {
++      const snapshot = editorHistory.undoStack.pop();
++      if (!snapshot) {
++        updateHistoryControls();
++        return;
++      }
++      editorHistory.redoStack.push(stateSnapshot());
++      applySnapshot(snapshot);
++    });
 +  }
 +
-+  const resetButton = document.querySelector("[data-sprites-reset-grid]");
-+  if (resetButton) {
-+    resetButton.addEventListener("click", resetGridToDefault);
++  const redoButton = document.querySelector("[data-sprites-redo]");
++  if (redoButton) {
++    redoButton.addEventListener("click", () => {
++      const snapshot = editorHistory.redoStack.pop();
++      if (!snapshot) {
++        updateHistoryControls();
++        return;
++      }
++      editorHistory.undoStack.push(stateSnapshot());
++      applySnapshot(snapshot);
++    });
 +  }
 +}
 +
  function wireExportButton() {
    const button = document.querySelector("[data-sprites-export-png]");
    if (button) {
-@@ -262,6 +288,7 @@ function wireExportButton() {
- wireGridControls();
+@@ -289,8 +405,10 @@ wireGridControls();
  wireDrawingTools();
  wirePaletteButtons();
-+wireCanvasActions();
+ wireCanvasActions();
++wireHistoryActions();
  wireExportButton();
  setGridSize(DEFAULT_GRID_SIZE);
  setActiveTool(editorState.activeTool);
+ setActiveColor(editorState.activeColor);
++updateHistoryControls();
+ renderPreview();
 diff --git a/dev/tests/playwright/tools/SpritesToolShell.spec.mjs b/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-index 9b6aefb61..b3f86a2e6 100644
+index b3f86a2e6..8a1f5da74 100644
 --- a/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
 +++ b/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-@@ -262,6 +262,19 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status
+@@ -244,14 +244,25 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status
+     await expect(page.locator("[data-sprites-pixel-grid] [role='gridcell']")).toHaveCount(1024);
+     await expect(page.locator("[data-sprites-grid-status]")).toContainText("Canvas display mode: 32x32");
+     await expect(page.getByRole("button", { name: "32x32" })).toHaveAttribute("aria-pressed", "true");
++    await expect(page.getByRole("button", { name: "Undo" })).toBeEnabled();
++    await expect(page.getByRole("button", { name: "Redo" })).toBeDisabled();
+     const firstPixel = page.locator("[data-sprites-pixel-grid] [role='gridcell']").first();
+     await firstPixel.click();
+     await expect(firstPixel).toHaveClass(/is-painted/);
+     await expect(page.locator("[data-sprites-draft-status]")).toContainText("1 draft pixel painted");
++    await page.getByRole("button", { name: "Undo" }).click();
++    await expect(firstPixel).not.toHaveClass(/is-painted/);
++    await expect(page.getByRole("button", { name: "Redo" })).toBeEnabled();
++    await page.getByRole("button", { name: "Redo" }).click();
++    await expect(firstPixel).toHaveClass(/is-painted/);
+     await page.getByRole("button", { name: "Eraser tool" }).click();
+     await firstPixel.click();
+     await expect(firstPixel).not.toHaveClass(/is-painted/);
+     await expect(page.locator("[data-sprites-draft-status]")).toContainText("empty draft");
++    await page.getByRole("button", { name: "Undo" }).click();
++    await expect(firstPixel).toHaveClass(/is-painted/);
++    await page.getByRole("button", { name: "Redo" }).click();
++    await expect(firstPixel).not.toHaveClass(/is-painted/);
+     await page.getByRole("button", { name: "Gold editor color" }).click();
+     await expect(page.locator("[data-sprites-palette-status]")).toContainText("Active editor color: Gold");
+     await page.getByRole("button", { name: "Pencil tool" }).click();
+@@ -262,9 +273,17 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status
      await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(1024);
      await expect(page.locator("[data-sprites-pixel-grid] .sprite-canvas-cell--blue")).toHaveCount(1024);
      await expect(page.locator("[data-sprites-draft-status]")).toContainText("1024 draft pixels painted");
-+    await page.getByRole("button", { name: "Clear Canvas" }).click();
-+    await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(0);
-+    await expect(page.locator("[data-sprites-draft-status]")).toContainText("empty draft");
-+    await page.getByRole("button", { name: "Fill tool" }).click();
++    await page.getByRole("button", { name: "Undo" }).click();
++    await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(1);
++    await page.getByRole("button", { name: "Redo" }).click();
 +    await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(1024);
-+    await page.getByRole("button", { name: "Reset to 16x16" }).click();
-+    await expect(page.locator("[data-sprites-pixel-grid]")).toHaveAttribute("aria-label", "Sprite Creator 16 by 16 pixel canvas");
-+    await expect(page.locator("[data-sprites-pixel-grid] [role='gridcell']")).toHaveCount(256);
+     await page.getByRole("button", { name: "Clear Canvas" }).click();
+     await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(0);
+     await expect(page.locator("[data-sprites-draft-status]")).toContainText("empty draft");
++    await page.getByRole("button", { name: "Undo" }).click();
++    await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(1024);
++    await page.getByRole("button", { name: "Redo" }).click();
 +    await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(0);
-+    await expect(page.locator("[data-sprites-draft-status]")).toContainText("empty draft");
-+    await page.getByRole("button", { name: "Blue editor color" }).click();
-+    await page.getByRole("button", { name: "Fill tool" }).click();
-+    await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(256);
-     await expect(page.locator("[data-sprites-preview-canvas]")).toBeVisible();
-     const previewHasPaint = await page.locator("[data-sprites-preview-canvas]").evaluate((canvas) => {
-       const context = canvas.getContext("2d");
-diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_029-sprites-clear-reset-controls.md b/docs_build/dev/reports/PR_26179_CHARLIE_029-sprites-clear-reset-controls.md
+     await page.getByRole("button", { name: "Fill tool" }).click();
+     await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(1024);
+     await page.getByRole("button", { name: "Reset to 16x16" }).click();
+@@ -272,6 +291,12 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status
+     await expect(page.locator("[data-sprites-pixel-grid] [role='gridcell']")).toHaveCount(256);
+     await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(0);
+     await expect(page.locator("[data-sprites-draft-status]")).toContainText("empty draft");
++    await page.getByRole("button", { name: "Undo" }).click();
++    await expect(page.locator("[data-sprites-pixel-grid]")).toHaveAttribute("aria-label", "Sprite Creator 32 by 32 pixel canvas");
++    await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(1024);
++    await page.getByRole("button", { name: "Redo" }).click();
++    await expect(page.locator("[data-sprites-pixel-grid]")).toHaveAttribute("aria-label", "Sprite Creator 16 by 16 pixel canvas");
++    await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(0);
+     await page.getByRole("button", { name: "Blue editor color" }).click();
+     await page.getByRole("button", { name: "Fill tool" }).click();
+     await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(256);
+diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_030-sprites-undo-redo.md b/docs_build/dev/reports/PR_26179_CHARLIE_030-sprites-undo-redo.md
 new file mode 100644
-index 000000000..3f62e1528
+index 000000000..62593187a
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26179_CHARLIE_029-sprites-clear-reset-controls.md
-@@ -0,0 +1,71 @@
-+# PR_26179_CHARLIE_029-sprites-clear-reset-controls
++++ b/docs_build/dev/reports/PR_26179_CHARLIE_030-sprites-undo-redo.md
+@@ -0,0 +1,73 @@
++# PR_26179_CHARLIE_030-sprites-undo-redo
 +
 +Team: CHARLIE
-+Workflow: stacked feature workflow
-+Base branch: PR_26179_CHARLIE_028-sprites-editor-polish
-+Canonical ZIP path for this batch: dev/workspace/zip/PR_26179_CHARLIE_029-sprites-clear-reset-controls_delta.zip
++
++Mode: Batch governance stacked feature workflow
++
++Base branch: PR_26179_CHARLIE_029-sprites-clear-reset-controls
++
++Branch: PR_26179_CHARLIE_030-sprites-undo-redo
 +
 +## Summary
 +
-+Added Clear Canvas and Reset to 16x16 controls. Both operate only on unsaved page-session editor state and do not persist product data.
-+
-+## Product Owner Testable Outcome
-+
-+The Product Owner can fill or draw on the Sprite Creator canvas, clear the draft, and reset back to the 16x16 display mode.
++Added undo and redo controls for Sprite Creator page-session editor actions. Undo/redo covers pencil, eraser, fill, clear canvas, and grid reset actions while preserving the unsaved editor-state-only model. No persistence, database, API, schema, or start_of_day files were changed.
 +
 +## Branch Validation
 +
 +PASS
 +
-+- Current branch: PR_26179_CHARLIE_029-sprites-clear-reset-controls
-+- Based on: PR_26179_CHARLIE_028-sprites-editor-polish
-+- No start_of_day files changed
-+- No DB/API/schema files changed
-+- No stale PR #219-#228 code copied
++- Started from the prior stacked Sprite branch.
++- Scope stayed limited to Sprite Creator undo/redo.
++- No DB/API/schema/runtime ownership changes.
++- No browser-owned authoritative product data was introduced.
++- No start_of_day files were changed.
++- ZIP package created at the user-requested batch path.
 +
 +## Requirement Checklist
 +
-+| Requirement | Status | Notes |
-+| --- | --- | --- |
-+| Add Clear Canvas | PASS | Clears painted draft pixels. |
-+| Add Reset to 16x16 | PASS | Resets grid to default display and clears draft. |
-+| State remains unsaved page-session editor state | PASS | Module memory only; no browser storage. |
-+| No DB/API/schema changes | PASS | None changed. |
++PASS - Add undo/redo for drawing.
 +
-+## Validation Lane Report
++PASS - Add undo/redo for erase.
 +
-+Commands:
++PASS - Add undo/redo for fill.
 +
-+```text
-+node --check assets/toolbox/sprites/js/index.js
-+node --check dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-+git diff --check -- toolbox/sprites/index.html assets/toolbox/sprites/js/index.js dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-+rg --pcre2 -n -i "localStorage|sessionStorage|indexedDB|imageDataUrl|toDataURL|<style|style=|<script(?![^>]+src=)|on(click|change|submit|input|load|error)=|local-mem|fake-login|MEM DB" toolbox/sprites/index.html assets/toolbox/sprites/js/index.js dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-+npx playwright test dev/tests/playwright/tools/SpritesToolShell.spec.mjs --workers=1 --reporter=list --output=<temp>
-+```
++PASS - Add undo/redo for clear canvas.
 +
-+Results:
++PASS - Add undo/redo for grid reset.
 +
-+- Node syntax checks: PASS
-+- `git diff --check`: PASS
-+- Guard scan: PASS, no matches
-+- Targeted Playwright: PASS, 1 test passed
++PASS - Keep state as unsaved page-session editor state only.
++
++PASS - No persistence added.
++
++PASS - No DB/API/schema changes.
++
++PASS - No stale PR #219-#228 code copied.
++
++PASS - Targeted Playwright test updated.
++
++## Validation Lane
++
++PASS - `node --check assets/toolbox/sprites/js/index.js`
++
++PASS - `node --check dev/tests/playwright/tools/SpritesToolShell.spec.mjs`
++
++PASS - `git diff --check -- toolbox/sprites/index.html assets/toolbox/sprites/js/index.js dev/tests/playwright/tools/SpritesToolShell.spec.mjs`
++
++PASS - Guard scan found no prohibited inline style/script/event-handler or stale placeholder text in touched runtime files.
++
++PASS - `npx playwright test dev/tests/playwright/tools/SpritesToolShell.spec.mjs --workers=1 --reporter=list`
 +
 +## Manual Validation Notes
 +
-+1. Open `/toolbox/sprites/index.html`.
-+2. Use Fill, then click Clear Canvas and confirm the grid clears.
-+3. Switch to 32x32, draw or fill, then click Reset to 16x16.
-+4. Confirm the grid is 16x16 and the draft is empty.
++1. Open `toolbox/sprites/index.html`.
++2. Confirm Undo and Redo controls are visible and disabled before edits.
++3. Switch to 32x32 and confirm Undo becomes available.
++4. Paint a pixel, undo it, then redo it.
++5. Erase a pixel, undo it, then redo it.
++6. Fill the canvas, undo to the prior draft, then redo the fill.
++7. Clear the canvas, undo to restore the filled draft, then redo the clear.
++8. Reset to 16x16, undo to restore the prior 32x32 draft, then redo the reset.
 +
-+## Previous PR Dependency
++## ZIP
 +
-+PR_26179_CHARLIE_028-sprites-editor-polish
-+
-+## Next PR Dependency
-+
-+PR_26179_CHARLIE_030-sprites-undo-redo
-+
-+## ZIP Path
-+
-+`dev/workspace/zip/PR_26179_CHARLIE_029-sprites-clear-reset-controls_delta.zip`
++`dev/workspace/zip/PR_26179_CHARLIE_030-sprites-undo-redo_delta.zip`
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index a1c1d52c9..bcbb75975 100644
+index bcbb75975..0ae35c274 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,5 +1,6 @@
- toolbox/sprites/index.html
-+assets/toolbox/sprites/js/index.js
+@@ -1,6 +1,6 @@
+-toolbox/sprites/index.html
+ assets/toolbox/sprites/js/index.js
  dev/tests/playwright/tools/SpritesToolShell.spec.mjs
--docs_build/dev/reports/PR_26179_CHARLIE_028-sprites-editor-polish.md
-+docs_build/dev/reports/PR_26179_CHARLIE_029-sprites-clear-reset-controls.md
+-docs_build/dev/reports/PR_26179_CHARLIE_029-sprites-clear-reset-controls.md
++docs_build/dev/reports/PR_26179_CHARLIE_030-sprites-undo-redo.md
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
++toolbox/sprites/index.html
 diff --git a/toolbox/sprites/index.html b/toolbox/sprites/index.html
-index 8c40cc255..c0b9ee284 100644
+index c0b9ee284..fced926d7 100644
 --- a/toolbox/sprites/index.html
 +++ b/toolbox/sprites/index.html
-@@ -105,6 +105,8 @@
-                                 <div class="action-group action-group--tight" aria-label="Sprite canvas display modes" data-sprites-grid-size-controls>
-                                     <button class="btn btn--compact primary" type="button" data-sprites-grid-size="16" aria-pressed="true">16x16</button>
+@@ -107,12 +107,15 @@
                                      <button class="btn btn--compact" type="button" data-sprites-grid-size="32" aria-pressed="false">32x32</button>
-+                                    <button class="btn btn--compact" type="button" data-sprites-clear-canvas>Clear Canvas</button>
-+                                    <button class="btn btn--compact" type="button" data-sprites-reset-grid>Reset to 16x16</button>
+                                     <button class="btn btn--compact" type="button" data-sprites-clear-canvas>Clear Canvas</button>
+                                     <button class="btn btn--compact" type="button" data-sprites-reset-grid>Reset to 16x16</button>
++                                    <button class="btn btn--compact" type="button" data-sprites-undo disabled>Undo</button>
++                                    <button class="btn btn--compact" type="button" data-sprites-redo disabled>Redo</button>
                                  </div>
                                  <div class="sprite-canvas-shell" data-sprites-grid-shell>
                                      <div class="sprite-canvas-grid" role="grid" aria-label="Sprite Creator 16 by 16 pixel canvas" data-sprites-pixel-grid></div>
+                                 </div>
+                                 <p class="status" role="status" data-sprites-grid-status>Canvas display mode: 16x16. No pixel data is saved.</p>
+                                 <p class="status" role="status" data-sprites-draft-status>Unsaved editor state: empty draft.</p>
++                                <p class="status" role="status" data-sprites-history-status>Undo history is empty.</p>
+                             </div>
+                         </article>
+                         <article class="card" data-sprites-footer-status>
