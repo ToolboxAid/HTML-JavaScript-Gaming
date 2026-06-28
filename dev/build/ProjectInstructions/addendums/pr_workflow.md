@@ -41,6 +41,14 @@ This file owns PR lifecycle governance. It must not duplicate command phase rule
 
 Every PR must declare one branching model before branch creation or branch continuation.
 
+### Ownership Defaults
+
+OWNER may create an Independent PR from synchronized `main` when the PR has no direct dependency.
+
+Non-Owner team PRs use Stacked PR workstreams by default. A non-Owner team PR may start from `main` only when OWNER explicitly marks that PR as `standalone/no-dependency` before branch creation.
+
+If a non-Owner team PR is not explicitly marked `standalone/no-dependency`, Codex must treat it as Stacked and verify the active team workstream branch or documented previous PR branch before changing files.
+
 ### Independent PR
 
 Use an Independent PR when the change has no direct dependency on another open PR.
@@ -49,7 +57,10 @@ Rules:
 - Independent PRs must start from synchronized `main`.
 - Independent PRs must target `main`.
 - Independent PRs must not reuse another feature branch as their starting point.
+- OWNER PRs may use the Independent PR model when the PR has no direct dependency.
+- Non-Owner team PRs may use the Independent PR model only when OWNER explicitly marks the PR as `standalone/no-dependency`.
 - Codex must HARD STOP if the requested Independent PR starts from any branch other than `main`.
+- Codex must HARD STOP if a non-Owner team PR starts from `main` without an explicit OWNER `standalone/no-dependency` marker.
 - Codex must return to synchronized `main` before starting the next unrelated Independent PR.
 
 ### Stacked PR
@@ -58,6 +69,8 @@ Use a Stacked PR only when the PR has a direct dependency on the previous PR bra
 
 Rules:
 - Stacked PRs may start from the previous PR branch when there is a direct dependency.
+- Non-Owner team PRs should use Stacked PR workstreams by default.
+- A Stacked PR belongs under the active team workstream and must use the documented previous PR branch or active workstream branch as its starting point.
 - Stacked PRs must document the dependency order before BUILD begins.
 - Stacked PR reports must name:
   - the stack order
@@ -77,11 +90,14 @@ Codex must verify the requested PR model before changing files.
 
 HARD STOP when:
 - an Independent PR is requested but the current/start branch is not `main`
+- a non-Owner team PR starts from `main` without explicit OWNER `standalone/no-dependency` approval
 - a Stacked PR is requested but the current/start branch is not the documented previous PR branch
 - the request does not say whether the PR is Independent or Stacked and the start branch is not clearly valid
 - a PR is described as stacked but no direct dependency or merge order is documented
 
 When the model is unclear, Codex must report the current branch, expected starting branch, and the missing model/dependency information before making changes.
+
+All PR branching models remain subject to the Codex Completion Contract. Missing required ZIP output means the Codex run is incomplete.
 
 ## Daily Branch Workflow
 
