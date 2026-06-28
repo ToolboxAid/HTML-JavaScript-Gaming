@@ -70,13 +70,17 @@
                                         <thead>
                                             <tr>
                                                 <th scope="col">Message</th>
+                                                <th scope="col">Speaker</th>
+                                                <th scope="col">Text</th>
+                                                <th scope="col">Trigger</th>
+                                                <th scope="col">Typewriter Speed</th>
                                                 <th scope="col">TTS Profile</th>
                                                 <th scope="col">Updated</th>
                                                 <th scope="col">Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody data-messages-table>
-                                            <tr><td colspan="4">Loading message rows.</td></tr>
+                                            <tr><td colspan="8">Loading message rows.</td></tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -96,8 +100,11 @@
                                 <summary>Selected Message</summary>
                                 <div class="accordion-body content-stack">
                                     <p>Name: <span data-messages-selected-name>None</span></p>
+                                    <p>Speaker: <span data-messages-selected-speaker>None</span></p>
                                     <p>Emotion: <span data-messages-selected-emotion>None</span></p>
                                     <p>Sentence: <span data-messages-selected-segment>None</span></p>
+                                    <p>Trigger: <span data-messages-selected-trigger>None</span></p>
+                                    <p>Typewriter Speed: <span data-messages-selected-typewriter-speed>None</span></p>
                                     <p>Status: <span data-messages-selected-status>None</span></p>
                                     <p>Text:</p>
                                     <pre data-messages-selected-text>No message selected.</pre>

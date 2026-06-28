@@ -72,6 +72,9 @@ CREATE TABLE IF NOT EXISTS messages_records (
     "emotionProfileKey" text NOT NULL REFERENCES messages_emotion_profiles(key),
     "voiceProfileKey" text NOT NULL REFERENCES messages_tts_profiles(key),
     "messageText" text NOT NULL,
+    "speaker" text NOT NULL DEFAULT '',
+    "trigger" text NOT NULL DEFAULT '',
+    "typewriterSpeed" numeric NOT NULL DEFAULT 30,
     "notes" text NOT NULL DEFAULT '',
     "active" boolean NOT NULL DEFAULT true,
     "createdAt" timestamptz NOT NULL DEFAULT now(),
@@ -105,6 +108,10 @@ CREATE TABLE IF NOT EXISTS messages_event_actions (
     "createdBy" text NOT NULL REFERENCES users(key),
     "updatedBy" text NOT NULL REFERENCES users(key)
 );
+
+ALTER TABLE messages_records ADD COLUMN IF NOT EXISTS "speaker" text NOT NULL DEFAULT '';
+ALTER TABLE messages_records ADD COLUMN IF NOT EXISTS "trigger" text NOT NULL DEFAULT '';
+ALTER TABLE messages_records ADD COLUMN IF NOT EXISTS "typewriterSpeed" numeric NOT NULL DEFAULT 30;
 
 CREATE INDEX IF NOT EXISTS idx_messages_records_categorykey ON messages_records ("categoryKey");
 CREATE INDEX IF NOT EXISTS idx_messages_records_emotionprofilekey ON messages_records ("emotionProfileKey");

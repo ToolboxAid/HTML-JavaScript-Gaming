@@ -166,6 +166,14 @@ async function openMessagesPage(page, options = {}) {
   if (options.seedMessageTtsProfile !== false) {
     await ensureMessageTestTtsProfile(server);
   }
+  if (options.authenticated === false) {
+    const session = await jsonRequest(`${server.baseUrl}/api/session/user`, {
+      body: JSON.stringify({ userKey: "" }),
+      method: "POST",
+    });
+    expect(session.response.ok).toBe(true);
+    expect(session.payload.ok).toBe(true);
+  }
   await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}/tools/messages/index.html`, { waitUntil: "networkidle" });
   return failures;
@@ -179,6 +187,10 @@ async function closeMessagesRun(failures, page) {
 async function addMessage(page, values) {
   await page.getByRole("button", { name: "Add Message" }).click();
   await page.locator("[data-messages-row-editor='__new__'] [data-message-name]").fill(values.name);
+  await page.locator("[data-messages-row-editor='__new__'] [data-message-speaker]").fill(values.speaker || "Narrator");
+  await page.locator("[data-messages-row-editor='__new__'] [data-message-text]").fill(values.text || `${values.name} message text.`);
+  await page.locator("[data-messages-row-editor='__new__'] [data-message-trigger]").fill(values.trigger || "manual");
+  await page.locator("[data-messages-row-editor='__new__'] [data-message-typewriter-speed]").fill(String(values.typewriterSpeed ?? 30));
   await page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile]").selectOption({ label: values.ttsProfile });
   await page.locator("[data-messages-commit='__new__']").click();
 }
@@ -292,8 +304,9 @@ test("Message Studio uses the approved table-first Messages structure", async ({
     await expect(page.locator("[data-messages-publish-issues]")).toContainText("Run validation before publishing.");
     await expect(page.locator("[data-messages-table]")).toContainText("No messages yet. Add your first message when you are ready.");
 
-    const expectedHeaders = ["Message", "TTS Profile", "Updated", "Actions"];
-    await expect(page.getByLabel("Messages").getByRole("columnheader")).toHaveText(expectedHeaders);
+    const expectedHeaders = ["Message", "Speaker", "Text", "Trigger", "Typewriter Speed", "TTS Profile", "Updated", "Actions"];
+    const messagesTable = page.getByLabel("Messages");
+    await expect(messagesTable.getByRole("columnheader")).toHaveText(expectedHeaders);
     await expect(page.getByText("Reusable Assets", { exact: true })).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "Emotion Profiles" })).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "Voice Profiles" })).toHaveCount(0);
@@ -304,17 +317,21 @@ test("Message Studio uses the approved table-first Messages structure", async ({
     await expect(page.getByText("Message Parts", { exact: true })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Add Emotion" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Add Voice" })).toHaveCount(0);
-    await expect(page.getByRole("columnheader", { name: "Type" })).toHaveCount(0);
-    await expect(page.getByRole("columnheader", { name: "Status" })).toHaveCount(0);
-    await expect(page.getByRole("columnheader", { name: "Parts" })).toHaveCount(0);
-    await expect(page.getByRole("columnheader", { name: "Emotion", exact: true })).toHaveCount(0);
-    await expect(page.getByRole("columnheader", { name: "Voice", exact: true })).toHaveCount(0);
+    await expect(messagesTable.getByRole("columnheader", { exact: true, name: "Type" })).toHaveCount(0);
+    await expect(messagesTable.getByRole("columnheader", { exact: true, name: "Status" })).toHaveCount(0);
+    await expect(messagesTable.getByRole("columnheader", { exact: true, name: "Parts" })).toHaveCount(0);
+    await expect(messagesTable.getByRole("columnheader", { name: "Emotion", exact: true })).toHaveCount(0);
+    await expect(messagesTable.getByRole("columnheader", { name: "Voice", exact: true })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Stop Playback" })).toHaveCount(0);
     await expect(page.locator("[data-message-default-tts-profile], [data-segment-tts-profile]")).toHaveCount(0);
 
     await page.getByRole("button", { name: "Add Message" }).click();
     await expect(page.locator("[data-messages-row-editor='__new__']")).toBeVisible();
-    await expect(page.locator("[data-messages-row-editor='__new__'] td")).toHaveCount(4);
+    await expect(page.locator("[data-messages-row-editor='__new__'] td")).toHaveCount(8);
+    await expect(page.locator("[data-messages-row-editor='__new__'] [data-message-speaker]")).toBeVisible();
+    await expect(page.locator("[data-messages-row-editor='__new__'] [data-message-text]")).toBeVisible();
+    await expect(page.locator("[data-messages-row-editor='__new__'] [data-message-trigger]")).toBeVisible();
+    await expect(page.locator("[data-messages-row-editor='__new__'] [data-message-typewriter-speed]")).toHaveValue("30");
     await expect(page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile]")).toBeVisible();
     await expect(page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile] option")).toHaveText([
       "Select TTS profile",
@@ -326,15 +343,24 @@ test("Message Studio uses the approved table-first Messages structure", async ({
     await page.locator("[data-messages-commit='__new__']").click();
     await expect(page.locator("[data-messages-validation-card]")).toBeVisible();
     await expect(page.locator("[data-messages-validation-errors]")).toContainText("Message is required.");
+    await expect(page.locator("[data-messages-validation-errors]")).toContainText("Message text is required.");
     await expect(page.locator("[data-messages-validation-errors]")).toContainText("TTS Profile is required.");
     await page.locator("[data-messages-cancel='__new__']").click();
 
     await addMessage(page, {
       name: "Bat Encounter",
+      speaker: "Scout",
+      text: "Bats are stirring in the rafters.",
       ttsProfile: TEST_TTS_PROFILE_NAME,
+      trigger: "enter.cavern",
+      typewriterSpeed: 24,
     });
     await expect(page.locator("[data-messages-log]")).toHaveText("Saved message Bat Encounter.");
     const messageRow = page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" });
+    await expect(messageRow).toContainText("Scout");
+    await expect(messageRow).toContainText("Bats are stirring in the rafters.");
+    await expect(messageRow).toContainText("enter.cavern");
+    await expect(messageRow).toContainText("24 cps");
     await expect(messageRow).toContainText(TEST_TTS_PROFILE_NAME);
     await expect(messageRow.getByRole("button", { name: "Sentences" })).toBeVisible();
     await expect(messageRow.getByRole("button", { name: "Edit" })).toBeVisible();
@@ -537,20 +563,37 @@ test("Message Studio uses the approved table-first Messages structure", async ({
     await expect(page.locator("[data-messages-row-editor]").getByRole("button", { name: "Save" })).toBeVisible();
     await expect(page.locator("[data-messages-row-editor]").getByRole("button", { name: "Cancel" })).toBeVisible();
     await page.locator("[data-messages-row-editor] [data-message-name]").fill("Temporary Message Edit");
+    await page.locator("[data-messages-row-editor] [data-message-speaker]").fill("Temporary Speaker");
+    await page.locator("[data-messages-row-editor] [data-message-text]").fill("Temporary text edit");
+    await page.locator("[data-messages-row-editor] [data-message-trigger]").fill("temporary.trigger");
+    await page.locator("[data-messages-row-editor] [data-message-typewriter-speed]").fill("99");
     await page.locator("[data-messages-row-editor] [data-messages-cancel]").click();
     await expect(page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" })).toBeVisible();
     await expect(page.locator("[data-messages-row]").filter({ hasText: "Temporary Message Edit" })).toHaveCount(0);
+    await expect(page.locator("[data-messages-row]").filter({ hasText: "Temporary Speaker" })).toHaveCount(0);
 
     await messageRow.getByRole("button", { name: "Edit" }).click();
     await page.locator("[data-messages-row-editor] [data-message-name]").fill("Bat Encounter Updated");
+    await page.locator("[data-messages-row-editor] [data-message-speaker]").fill("Guide");
+    await page.locator("[data-messages-row-editor] [data-message-text]").fill("Updated bats are dropping from the rafters.");
+    await page.locator("[data-messages-row-editor] [data-message-trigger]").fill("combat.bats.updated");
+    await page.locator("[data-messages-row-editor] [data-message-typewriter-speed]").fill("18");
     await page.locator("[data-messages-row-editor] [data-messages-commit]").click();
     await expect(page.locator("[data-messages-log]")).toHaveText("Saved message Bat Encounter Updated.");
     await expect(page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter Updated" })).toContainText(TEST_TTS_PROFILE_NAME);
+    await expect(page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter Updated" })).toContainText("Guide");
+    await expect(page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter Updated" })).toContainText("Updated bats are dropping from the rafters.");
+    await expect(page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter Updated" })).toContainText("combat.bats.updated");
+    await expect(page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter Updated" })).toContainText("18 cps");
 
     const updatedMessage = await createdMessage(failures.server, "Bat Encounter Updated");
     expect(updatedMessage).toEqual(expect.objectContaining({
       active: true,
       categoryName: "Dialog",
+      messageText: "Updated bats are dropping from the rafters.",
+      speaker: "Guide",
+      trigger: "combat.bats.updated",
+      typewriterSpeed: 18,
       voiceProfileName: TEST_TTS_PROFILE_NAME,
     }));
     expect(updatedMessage.key).toMatch(ULID_PATTERN);
@@ -614,6 +657,10 @@ test("Message Studio consumes active Local API Text To Speech profiles", async (
     await page.getByRole("button", { name: "Add Message" }).click();
     await expect(page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile]")).toContainText("Quest Profile Active");
     await page.locator("[data-messages-row-editor='__new__'] [data-message-name]").fill("Quest Profile Message");
+    await page.locator("[data-messages-row-editor='__new__'] [data-message-speaker]").fill("Quest Giver");
+    await page.locator("[data-messages-row-editor='__new__'] [data-message-text]").fill("The quest door opens.");
+    await page.locator("[data-messages-row-editor='__new__'] [data-message-trigger]").fill("quest.door");
+    await page.locator("[data-messages-row-editor='__new__'] [data-message-typewriter-speed]").fill("28");
     await page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile]").selectOption({ label: "Quest Profile Active" });
     await page.locator("[data-messages-commit='__new__']").click();
     await expect(page.locator("[data-messages-log]")).toHaveText("Saved message Quest Profile Message.");
@@ -679,6 +726,10 @@ test("Message Studio loads Text To Speech profiles and filters sentence emotions
       TEST_TTS_PROFILE_NAME,
     ]);
     await page.locator("[data-messages-row-editor='__new__'] [data-message-name]").fill("Profile Filter Test");
+    await page.locator("[data-messages-row-editor='__new__'] [data-message-speaker]").fill("Narrator");
+    await page.locator("[data-messages-row-editor='__new__'] [data-message-text]").fill("Urgent profile filter check.");
+    await page.locator("[data-messages-row-editor='__new__'] [data-message-trigger]").fill("profile.filter");
+    await page.locator("[data-messages-row-editor='__new__'] [data-message-typewriter-speed]").fill("32");
     await page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile]").selectOption({ label: TEST_TTS_PROFILE_NAME });
     await page.locator("[data-messages-commit='__new__']").click();
     await expect(page.locator("[data-messages-log]")).toHaveText("Saved message Profile Filter Test.");
@@ -755,7 +806,7 @@ test("Message Studio disables Delete when a message is referenced", async ({ pag
 
     await page.reload({ waitUntil: "networkidle" });
     const messageRow = page.locator("[data-messages-row]").filter({ hasText: "Referenced Encounter" });
-    await messageRow.getByText("Referenced Encounter").click();
+    await messageRow.getByRole("rowheader", { name: "Referenced Encounter" }).click();
     const deleteButton = messageRow.getByRole("button", { name: "Delete" });
     await expect(deleteButton).toBeDisabled();
     await expect(deleteButton).toHaveAttribute("title", "Delete disabled: this message has sentences.");
@@ -777,6 +828,29 @@ test("Message Studio disables Delete when a message is referenced", async ({ pag
     expect(deleteResult.payload.ok).toBe(false);
 
     expect(failures.failedRequests).toEqual([]);
+    expect(failures.pageErrors).toEqual([]);
+    expect(failures.consoleErrors).toEqual([]);
+  } finally {
+    await closeMessagesRun(failures, page);
+  }
+});
+
+test("Message Studio guest message save redirects to sign in", async ({ page }) => {
+  const failures = await openMessagesPage(page, { authenticated: false });
+
+  try {
+    await page.getByRole("button", { name: "Add Message" }).click();
+    await page.locator("[data-messages-row-editor='__new__'] [data-message-name]").fill("Guest Message");
+    await page.locator("[data-messages-row-editor='__new__'] [data-message-speaker]").fill("Guest");
+    await page.locator("[data-messages-row-editor='__new__'] [data-message-text]").fill("Guest save attempt.");
+    await page.locator("[data-messages-row-editor='__new__'] [data-message-trigger]").fill("guest.save");
+    await page.locator("[data-messages-row-editor='__new__'] [data-message-typewriter-speed]").fill("20");
+    await page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile]").selectOption({ label: TEST_TTS_PROFILE_NAME });
+    await page.locator("[data-messages-commit='__new__']").click();
+    await page.waitForURL(/\/account\/sign-in\.html$/);
+    await page.waitForLoadState("networkidle");
+
+    expect(failures.failedRequests.filter((request) => /^\d/.test(request) && !request.includes("/account/sign-in.html"))).toEqual([]);
     expect(failures.pageErrors).toEqual([]);
     expect(failures.consoleErrors).toEqual([]);
   } finally {
