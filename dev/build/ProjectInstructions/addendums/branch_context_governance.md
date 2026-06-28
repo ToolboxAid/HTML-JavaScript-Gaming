@@ -23,6 +23,9 @@ At the start of work, report or validate:
 - active team
 - active assignment
 - active PR number/name or explicit `PLAN_ONLY`
+- requested PR branching model: Independent PR or Stacked PR
+- expected starting branch for the requested PR branching model
+- whether a non-Owner team PR has OWNER `standalone/no-dependency` approval when starting from `main`
 - previous PR Closed status unless this is an explicitly documented stacked PR chain
 
 Session start must follow the canonical START phase in `dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`.
@@ -32,12 +35,15 @@ Session start must follow the canonical START phase in `dev/build/ProjectInstruc
 Stop and report before changing files when:
 
 - current branch does not match the expected branch
+- requested PR branching model does not match the current/start branch
+- a non-Owner team PR starts from `main` without OWNER `standalone/no-dependency` approval
 - local branch is behind or ahead unexpectedly
 - worktree has unrelated changes
 - active assignment is missing or unclear
 - active team does not match the branch or OWNER instruction
 - BUILD_PR work has no PR name and active branch/PR identity, unless explicitly marked `PLAN_ONLY`
 - the team's previous PR is not Closed and no stacked PR chain is documented
+- the request describes a Stacked PR but does not document the dependency order
 - the requested work would modify files outside the approved scope
 
 ## Continuation Rule

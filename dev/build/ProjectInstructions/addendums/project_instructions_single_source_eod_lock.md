@@ -47,13 +47,19 @@ git rev-parse HEAD
 
 ## Team Branch Creation Gate
 
-No team creates a PR branch until:
+For Independent PRs and for the first PR in a new stacked workstream, no team creates a PR branch until:
 - Current branch: `main`
 - Worktree: clean
 - `main...origin/main`: `0 0`
 - `HEAD` SHA matches published EOD SHA
 
-If any check fails, stop before branch creation and restore main to the published EOD state or request OWNER direction.
+For dependent Stacked PRs, the start branch may be the documented previous PR branch only when `dev/build/ProjectInstructions/addendums/pr_workflow.md` identifies a direct dependency and dependency order.
+
+OWNER PRs may start from synchronized `main` when marked Independent and no direct dependency exists.
+
+A non-Owner team PR may start from `main` only when OWNER explicitly marks the PR as `standalone/no-dependency`. Otherwise, non-Owner team PRs use Stacked PR workstreams by default and must start from the active team workstream branch or documented previous PR branch.
+
+If any required check fails, or if the current branch does not match the requested PR model, stop before branch creation and restore the expected branch state or request OWNER direction.
 
 ## Branch Lifecycle (Canonical)
 
@@ -90,7 +96,7 @@ main...origin/main
 HEAD equals published EOD SHA
 ```
 
-Only after ALL four pass may a branch be created or the active team branch/workstream be updated.
+Only after ALL required checks for the requested PR branching model pass may a branch be created or the active team branch/workstream be updated.
 
 Create the PR branch:
 

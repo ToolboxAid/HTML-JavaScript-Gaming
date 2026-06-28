@@ -81,6 +81,9 @@ async function openRepoPage(page, pathName, options = {}) {
     headers: { "content-type": "application/json" },
     method: "POST",
   });
+  if (typeof options.beforeGoto === "function") {
+    await options.beforeGoto({ server, sessionUserKey });
+  }
   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
   return {
     consoleErrors,
@@ -102,6 +105,22 @@ async function fetchApiData(server, pathName, options = {}) {
   expect(response.ok, JSON.stringify(payload)).toBe(true);
   expect(payload.ok).toBe(true);
   return payload.data;
+}
+
+async function replaceObjectsForActiveGame(server, objects) {
+  const repositoryData = await fetchApiData(server, "/api/toolbox/objects/repositories", {
+    body: JSON.stringify({ options: {} }),
+    method: "POST",
+  });
+  const resultData = await fetchApiData(
+    server,
+    `/api/toolbox/objects/repositories/${repositoryData.repositoryId}/methods/replaceObjects`,
+    {
+      body: JSON.stringify({ args: [objects] }),
+      method: "POST",
+    },
+  );
+  return resultData.result;
 }
 
 function expectNoPageFailures(failures) {
@@ -306,6 +325,7 @@ test("Game Journey progress dashboard summarizes completion metrics", async ({ p
       headers: { "content-type": "application/json" },
       method: "POST",
     });
+    await replaceObjectsForActiveGame(server, []);
     await page.goto(`${server.baseUrl}/toolbox/game-journey/index.html?game=demo-game`, { waitUntil: "networkidle" });
 
     await expect(page.locator("[data-journey-active-game]")).toHaveText("Active game: Demo Game.");
@@ -425,6 +445,80 @@ test("Game Journey progress dashboard summarizes completion metrics", async ({ p
     restoreEnvValue("GAMEFOUNDRY_LOCAL_DB_PATH", previousLocalDbPath);
     restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
     restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
+  }
+});
+
+test("Game Journey reflects meaningful Objects readiness in Journey progress", async ({ page }) => {
+  const reviewReadyObject = {
+    details: {
+      defaultValues: "speed=8",
+      description: "Primary playable object for Product Owner review.",
+      spriteReference: "sprite_journey_hero",
+      tags: ["hero", "review"],
+    },
+    name: "Journey Hero",
+    render: {
+      assetKey: "sprite_journey_hero",
+      previewPath: "projects/demo-game/sprites/journey-hero.png",
+      type: "Sprite",
+    },
+    role: "Hero",
+    state: "Active",
+    traits: ["playerControlled", "movable"],
+  };
+  const failures = await openRepoPage(page, "/toolbox/game-journey/index.html?game=demo-game", {
+    beforeGoto: async ({ server }) => {
+      await replaceObjectsForActiveGame(server, [reviewReadyObject]);
+    },
+  });
+
+  try {
+    await expect(page.locator("[data-journey-active-game]")).toHaveText("Active game: Demo Game.");
+    await expect(page.locator("details > summary", { hasText: /^Objects Stage Readiness$/ })).toHaveCount(1);
+    await expect(page.locator("[data-journey-objects-readiness-status]")).toHaveText(
+      "Objects readiness: 5 of 5 criteria complete. Product Owner review can start.",
+    );
+    await expect(page.locator("[data-journey-objects-readiness] tr")).toHaveCount(5);
+    await expect(page.locator("[data-journey-objects-readiness] tr td:nth-child(2)")).toHaveText([
+      "PASS",
+      "PASS",
+      "PASS",
+      "PASS",
+      "PASS",
+    ]);
+    await expect(page.locator("[data-journey-objects-review-checklist] li")).toHaveText([
+      "Confirm the object list matches the current Game Hub game.",
+      "Confirm each object name and type is understandable to a Creator.",
+      "Confirm sprite, audio, and message references are resolved or intentionally empty.",
+      "Confirm at least one meaningful player-facing object exists.",
+      "Confirm Objects validation is clean before expanding later gameplay work.",
+    ]);
+    await expect(page.locator("[data-journey-completion-metrics]")).toContainText(
+      "Journey progress: 5 of 66 planned items done (8%). 10 sections are active focus areas; 4 are planning context.",
+    );
+    await expect(page.locator("[data-journey-completion-bucket='006-objects'] td")).toHaveText([
+      "Objects",
+      "5",
+      "5",
+      "100%",
+      "Active focus",
+    ]);
+
+    await page.reload({ waitUntil: "networkidle" });
+    await expect(page.locator("[data-journey-objects-readiness-status]")).toHaveText(
+      "Objects readiness: 5 of 5 criteria complete. Product Owner review can start.",
+    );
+    await expect(page.locator("[data-journey-completion-bucket='006-objects'] td")).toHaveText([
+      "Objects",
+      "5",
+      "5",
+      "100%",
+      "Active focus",
+    ]);
+    await expectNoPageFailures(failures);
+  } finally {
+    await replaceObjectsForActiveGame(failures.server, []);
+    await closeWithCoverage(page, failures);
   }
 });
 

@@ -23,26 +23,163 @@ index ca7127905..2999e73fe 100644
  CREATE INDEX IF NOT EXISTS idx_messages_records_categorykey ON messages_records ("categoryKey");
  CREATE INDEX IF NOT EXISTS idx_messages_records_emotionprofilekey ON messages_records ("emotionProfileKey");
  CREATE INDEX IF NOT EXISTS idx_messages_records_voiceprofilekey ON messages_records ("voiceProfileKey");
+diff --git a/dev/reports/PR_26180_BRAVO_002-complete-messages-creator-tool.md b/dev/reports/PR_26180_BRAVO_002-complete-messages-creator-tool.md
+new file mode 100644
+index 000000000..5e6ec07bb
+--- /dev/null
++++ b/dev/reports/PR_26180_BRAVO_002-complete-messages-creator-tool.md
+@@ -0,0 +1,129 @@
++# PR_26180_BRAVO_002-complete-messages-creator-tool
++
++## Branch Validation
++
++PASS - Current branch is `PR_26180_BRAVO_002-complete-messages-creator-tool`.
++PASS - Scoped PR_002 Messages Creator Tool changes were preserved.
++PASS - Artifact paths use `dev/reports` and `dev/workspace/zips`.
++PASS - `dev/build/database/seed/guest/game-crew.json` was not modified.
++PASS - `dev/tests/dev-runtime/DbSeedIntegrity.test.mjs` was not modified for Game Crew.
++PASS - PR_003+ Game Crew cleanup was not started from this dirty branch.
++PASS - Branch was refreshed with current `origin/main` to restore PR mergeability.
++
++## Product Owner Testable Outcome
++
++After applying this PR, the Product Owner can test the API-backed Message Studio MVP workflow:
++
++- Create, edit, save, archive, and delete Messages.
++- Use creator-facing `Speaker`, `Text`, `Trigger`, `Typewriter Speed`, and `TTS Profile` fields.
++- Preview Message and sentence playback through existing Text To Speech behavior.
++- Add sentences with emotions scoped by the selected TTS Profile.
++- Confirm guest browsing is allowed while guest saves redirect to `account/sign-in.html`.
++- Confirm referenced Messages cannot be deleted while they have sentence usage.
++
++This PR is not part of the Game Crew cleanup batch. Previous dependency: none for PR_002. Next dependency: resolve the separate Game Crew guest seed ownership cleanup before running full seed integrity as a required gate.
++
++## Requirement Checklist
++
++PASS - Preserve current PR_002 Messages Creator Tool changes.
++PASS - Do not modify guest `game-crew` seed files.
++PASS - Do not modify `DbSeedIntegrity` for Game Crew in this PR.
++PASS - Do not run or plan PR_003+ from this dirty branch.
++PASS - Document Game Crew seed integrity failure as unrelated/out-of-scope.
++PASS - Run only in-scope Messages validation and impacted Playwright.
++PASS - Produce PR_002 artifacts.
++PASS - Browser-owned product data was not introduced.
++PASS - No silent JSON fallback was introduced.
++PASS - No MEM DB/local-mem was introduced.
++PASS - No unrelated cleanup.
++
++## Changed File Inventory
++
++- `dev/build/database/ddl/messages.sql`
++- `dev/tests/dev-runtime/MessagesPublishValidation.test.mjs`
++- `dev/tests/helpers/playwrightRepoServer.mjs`
++- `dev/tests/playwright/tools/MessagesTool.spec.mjs`
++- `src/dev-runtime/messages/messages-postgres-service.mjs`
++- `toolbox/messages/index.html`
++- `toolbox/messages/messages.js`
++- `dev/reports/codex_changed_files.txt`
++- `dev/reports/codex_review.diff`
++- `dev/reports/PR_26180_BRAVO_002-complete-messages-creator-tool.md`
++
++## DB/API Inventory
++
++- `messages_records` DDL includes `speaker`, `trigger`, and `typewriterSpeed`.
++- Messages Postgres service normalizes, validates, serializes, creates, and updates `speaker`, `trigger`, and `typewriterSpeed`.
++- `typewriterSpeed` must be a number of 0 or greater.
++- Messages write resources require authenticated API actors.
++- Existing Text To Speech profile and Emotion Profile service contracts remain API-backed.
++- Guest writes redirect to `account/sign-in.html` through the existing account route.
++
++## Validation Lane Report
++
++PASS - Scoped Node/API Messages validation:
++
++```powershell
++node --test dev/tests/tools/Text2SpeechShell.test.mjs dev/tests/tools/MessagesPlaybackSource.test.mjs dev/tests/dev-runtime/MessagesPublishValidation.test.mjs
++```
++
++Result: PASS, 21/21 tests.
++
++PASS - Messages Playwright validation:
++
++```powershell
++npx playwright test --config dev/workspace/tmp/pr_26180_bravo_002.playwright.headless.config.cjs dev/tests/playwright/tools/MessagesTool.spec.mjs --project=playwright
++```
++
++Result: PASS, 6/6 tests.
++
++PASS - Text To Speech Playwright validation:
++
++```powershell
++npx playwright test --config dev/workspace/tmp/pr_26180_bravo_002.playwright.headless.config.cjs dev/tests/playwright/tools/TextToSpeechFunctional.spec.mjs --project=playwright
++```
++
++Result: PASS, 4/4 tests.
++
++INFO - A temporary ignored Playwright config under `dev/workspace/tmp` was used to run the repo's `playwright` project headlessly in this environment. The product/test delta does not depend on that generated file.
++
++## Playwright Impacted Assessment
++
++PASS - `dev/tests/playwright/tools/MessagesTool.spec.mjs` validates:
++
++- table-first Message Studio structure
++- Speaker, Text, Trigger, Typewriter Speed fields
++- TTS Profile selection
++- API-backed profile consumption
++- sentence emotion filtering by selected profile
++- referenced Message delete protection
++- guest save redirect
++- Creator-safe load failures
++
++PASS - `dev/tests/playwright/tools/TextToSpeechFunctional.spec.mjs` validates existing Text To Speech behavior remains intact.
++
++The Playwright repo helper was fixed so static files are served from the repository root instead of `dev/`.
++
++## Manual Validation Notes
++
++Recommended Product Owner manual validation:
++
++1. Open Message Studio as an authenticated Creator.
++2. Add a message with Speaker, Text, Trigger, Typewriter Speed, and TTS Profile.
++3. Save and reload to confirm API/Postgres persistence.
++4. Edit the same fields and confirm changes persist.
++5. Add a sentence with a profile-scoped emotion and confirm playback.
++6. Confirm guest can browse but Save redirects to `account/sign-in.html`.
++7. Confirm referenced Message Delete remains blocked.
++
++## Known Issues
++
++- Full `DbSeedIntegrity` remains blocked outside PR_002 because `dev/build/database/seed/guest/game-crew.json` publishes `game-crew` while canonical inventory expects Game Crew under `users`.
++- This PR intentionally does not clean up Game Crew guest seed JSON ownership.
++- The Game Crew cleanup should be planned from clean `main` as a separate batch after PR_002 is clean, committed, and opened.
++
++## ZIP Outcome
++
++DELTA artifact:
++
++`dev/workspace/zips/PR_26180_BRAVO_002-complete-messages-creator-tool_delta.zip`
 diff --git a/dev/reports/codex_changed_files.txt b/dev/reports/codex_changed_files.txt
-index 5de14f86d..7dfb366dc 100644
---- a/dev/reports/codex_changed_files.txt
-+++ b/dev/reports/codex_changed_files.txt
-@@ -1,7 +1,10 @@
--dev/reports/PR_26179_OWNER_009-pr-stack-realignment_branch-validation.md
--dev/reports/PR_26179_OWNER_009-pr-stack-realignment_manual-validation-notes.md
--dev/reports/PR_26179_OWNER_009-pr-stack-realignment_report.md
--dev/reports/PR_26179_OWNER_009-pr-stack-realignment_requirement-checklist.md
--dev/reports/PR_26179_OWNER_009-pr-stack-realignment_validation-report.md
-+﻿dev/build/database/ddl/messages.sql
- dev/reports/codex_changed_files.txt
- dev/reports/codex_review.diff
-+dev/reports/PR_26180_BRAVO_002-complete-messages-creator-tool.md
-+dev/tests/dev-runtime/MessagesPublishValidation.test.mjs
-+dev/tests/helpers/playwrightRepoServer.mjs
-+dev/tests/playwright/tools/MessagesTool.spec.mjs
-+src/dev-runtime/messages/messages-postgres-service.mjs
-+toolbox/messages/index.html
-+toolbox/messages/messages.js
+index 952a0ad68613d82b87fbe1153d77bdda99b517b7..bc37b31a4fecac5d0400b2370ad161ffed4f2b57 100644
+GIT binary patch
+literal 431
+zcmZvY%~FFf5XbL*mn7JO)2rScJLvSvgk*s@35mN4rO)QUNAeX6jG$G|`~Ujw$J@Jw
+zQPqR<R$0xu)&$C0uL2P17D&>o-_06?6p=|C%W8jnb116&^6vCl6~$hd7?KADv6_TI
+z&>T^4j9vzN6=0%;sWP4JTd-B*d@kXM|Ir|f4$jiLrdh5Gln3N70*9Vm0QK;-@;KDq
+zQFqebWeOL2IcsHjp&!N$d;%nuyuO^#wH=q4=?QQI{3ZRCs2PE_qURZi5}3t6Xs+h0
+m{M+|Lio`7f3CcCjz+#&t>o{#H<@)>**>Ui@KeshgW|mJ*QKX6h
+
+literal 2004
+zcmd6oPfsH;48`9Sr2QyEVG$sXXyLF276eEft7#`KU0Mb@nL@uj@Uznq1r?Tm(pDoS
+zPA0aW?HA|aeoreZ6f{vwW9Dm>%uyBVW1Xn2pW4=jcC?Fpq;vhzf$y(tQ(MYr+L?0I
+z=v}Z=qaCo4>5_TsXF80{3G*=E>=cU~<Xl(kqS*#Tt|9*l=Ez*~XH6s4KeVd<jdkQm
+zYsa`4Ya6^J$O9Qz9^CVFT`p8NaAg1k0yPfgF2Vt0LSVdfCRFS#59USuY=hGn9KgPu
+znO=-~G1kL3`au_NTd%mARmr06vo2WosN)dXcpo_t{l>o6nqiq>A?OzU0;$JmcYfYN
+z1uLv`Tw~q(Q$+`{&XFP2?B;Zn965N$F^idN1a_nMwG3^Gz?fzo$ULT-`j`2ozjTk2
+zuhb(m{MR#WV{A*OFFfzFJJBy^LgV%KGoMp*0$;(L@LR?VM`HSSAvp#^=~*@GV=!4a
+zjYv6JiFl7-?|8kw?)?m_ePY<74g-&H?7qABem%YlG+nazT6WVrGI9JZ_*HV+UI=?j
+z%#YQhBnr#l7(XM;XYXIuo2(DWOW*nQITqOqXGpE4CN)+4D4LR3hE$~F{xlJ`Jl-B-
+PMwID9^7fS9=L~)XkUVLc
+
 diff --git a/dev/tests/dev-runtime/MessagesPublishValidation.test.mjs b/dev/tests/dev-runtime/MessagesPublishValidation.test.mjs
 index 533dfa1f8..b8c4b2c2a 100644
 --- a/dev/tests/dev-runtime/MessagesPublishValidation.test.mjs
@@ -119,19 +256,6 @@ index 533dfa1f8..b8c4b2c2a 100644
 +  assert.equal(segment.segment.segmentText, "Authenticated sentence text.");
 +  service.close();
 +});
-diff --git a/dev/tests/helpers/playwrightRepoServer.mjs b/dev/tests/helpers/playwrightRepoServer.mjs
-index 9f479c8a1..6a8f0e059 100644
---- a/dev/tests/helpers/playwrightRepoServer.mjs
-+++ b/dev/tests/helpers/playwrightRepoServer.mjs
-@@ -8,7 +8,7 @@ import { createLocalApiRouter } from "../../../src/dev-runtime/server/local-api-
-
- const __filename = fileURLToPath(import.meta.url);
- const __dirname = path.dirname(__filename);
--const repoRoot = path.resolve(__dirname, "..", "..");
-+const repoRoot = path.resolve(__dirname, "..", "..", "..");
- let runtimeEnvLoaded = false;
-
- function parseEnvValue(value) {
 diff --git a/dev/tests/playwright/tools/MessagesTool.spec.mjs b/dev/tests/playwright/tools/MessagesTool.spec.mjs
 index 5bb31055d..3484467a8 100644
 --- a/dev/tests/playwright/tools/MessagesTool.spec.mjs
@@ -767,137 +891,3 @@ index 8029abc2f..d4c6cd532 100644
    const segment = state.segments.find((candidate) => candidate.key === key);
    if (!segment) {
      return;
-diff --git a/dev/reports/PR_26180_BRAVO_002-complete-messages-creator-tool.md b/dev/reports/PR_26180_BRAVO_002-complete-messages-creator-tool.md
-new file mode 100644
-index 000000000..fcef20b08
---- /dev/null
-+++ b/dev/reports/PR_26180_BRAVO_002-complete-messages-creator-tool.md
-@@ -0,0 +1,128 @@
-+# PR_26180_BRAVO_002-complete-messages-creator-tool
-+
-+## Branch Validation
-+
-+PASS - Current branch is `PR_26180_BRAVO_002-complete-messages-creator-tool`.
-+PASS - Scoped PR_002 Messages Creator Tool changes were preserved.
-+PASS - Artifact paths use `dev/reports` and `dev/workspace/zips`.
-+PASS - `dev/build/database/seed/guest/game-crew.json` was not modified.
-+PASS - `dev/tests/dev-runtime/DbSeedIntegrity.test.mjs` was not modified for Game Crew.
-+PASS - PR_003+ Game Crew cleanup was not started from this dirty branch.
-+
-+## Product Owner Testable Outcome
-+
-+After applying this PR, the Product Owner can test the API-backed Message Studio MVP workflow:
-+
-+- Create, edit, save, archive, and delete Messages.
-+- Use creator-facing `Speaker`, `Text`, `Trigger`, `Typewriter Speed`, and `TTS Profile` fields.
-+- Preview Message and sentence playback through existing Text To Speech behavior.
-+- Add sentences with emotions scoped by the selected TTS Profile.
-+- Confirm guest browsing is allowed while guest saves redirect to `account/sign-in.html`.
-+- Confirm referenced Messages cannot be deleted while they have sentence usage.
-+
-+This PR is not part of the Game Crew cleanup batch. Previous dependency: none for PR_002. Next dependency: resolve the separate Game Crew guest seed ownership cleanup before running full seed integrity as a required gate.
-+
-+## Requirement Checklist
-+
-+PASS - Preserve current PR_002 Messages Creator Tool changes.
-+PASS - Do not modify guest `game-crew` seed files.
-+PASS - Do not modify `DbSeedIntegrity` for Game Crew in this PR.
-+PASS - Do not run or plan PR_003+ from this dirty branch.
-+PASS - Document Game Crew seed integrity failure as unrelated/out-of-scope.
-+PASS - Run only in-scope Messages validation and impacted Playwright.
-+PASS - Produce PR_002 artifacts.
-+PASS - Browser-owned product data was not introduced.
-+PASS - No silent JSON fallback was introduced.
-+PASS - No MEM DB/local-mem was introduced.
-+PASS - No unrelated cleanup.
-+
-+## Changed File Inventory
-+
-+- `dev/build/database/ddl/messages.sql`
-+- `dev/tests/dev-runtime/MessagesPublishValidation.test.mjs`
-+- `dev/tests/helpers/playwrightRepoServer.mjs`
-+- `dev/tests/playwright/tools/MessagesTool.spec.mjs`
-+- `src/dev-runtime/messages/messages-postgres-service.mjs`
-+- `toolbox/messages/index.html`
-+- `toolbox/messages/messages.js`
-+- `dev/reports/codex_changed_files.txt`
-+- `dev/reports/codex_review.diff`
-+- `dev/reports/PR_26180_BRAVO_002-complete-messages-creator-tool.md`
-+
-+## DB/API Inventory
-+
-+- `messages_records` DDL includes `speaker`, `trigger`, and `typewriterSpeed`.
-+- Messages Postgres service normalizes, validates, serializes, creates, and updates `speaker`, `trigger`, and `typewriterSpeed`.
-+- `typewriterSpeed` must be a number of 0 or greater.
-+- Messages write resources require authenticated API actors.
-+- Existing Text To Speech profile and Emotion Profile service contracts remain API-backed.
-+- Guest writes redirect to `account/sign-in.html` through the existing account route.
-+
-+## Validation Lane Report
-+
-+PASS - Scoped Node/API Messages validation:
-+
-+```powershell
-+node --test dev/tests/tools/Text2SpeechShell.test.mjs dev/tests/tools/MessagesPlaybackSource.test.mjs dev/tests/dev-runtime/MessagesPublishValidation.test.mjs
-+```
-+
-+Result: PASS, 21/21 tests.
-+
-+PASS - Messages Playwright validation:
-+
-+```powershell
-+npx playwright test --config dev/workspace/tmp/pr_26180_bravo_002.playwright.headless.config.cjs dev/tests/playwright/tools/MessagesTool.spec.mjs --project=playwright
-+```
-+
-+Result: PASS, 6/6 tests.
-+
-+PASS - Text To Speech Playwright validation:
-+
-+```powershell
-+npx playwright test --config dev/workspace/tmp/pr_26180_bravo_002.playwright.headless.config.cjs dev/tests/playwright/tools/TextToSpeechFunctional.spec.mjs --project=playwright
-+```
-+
-+Result: PASS, 4/4 tests.
-+
-+INFO - A temporary ignored Playwright config under `dev/workspace/tmp` was used to run the repo's `playwright` project headlessly in this environment. The product/test delta does not depend on that generated file.
-+
-+## Playwright Impacted Assessment
-+
-+PASS - `dev/tests/playwright/tools/MessagesTool.spec.mjs` validates:
-+
-+- table-first Message Studio structure
-+- Speaker, Text, Trigger, Typewriter Speed fields
-+- TTS Profile selection
-+- API-backed profile consumption
-+- sentence emotion filtering by selected profile
-+- referenced Message delete protection
-+- guest save redirect
-+- Creator-safe load failures
-+
-+PASS - `dev/tests/playwright/tools/TextToSpeechFunctional.spec.mjs` validates existing Text To Speech behavior remains intact.
-+
-+The Playwright repo helper was fixed so static files are served from the repository root instead of `dev/`.
-+
-+## Manual Validation Notes
-+
-+Recommended Product Owner manual validation:
-+
-+1. Open Message Studio as an authenticated Creator.
-+2. Add a message with Speaker, Text, Trigger, Typewriter Speed, and TTS Profile.
-+3. Save and reload to confirm API/Postgres persistence.
-+4. Edit the same fields and confirm changes persist.
-+5. Add a sentence with a profile-scoped emotion and confirm playback.
-+6. Confirm guest can browse but Save redirects to `account/sign-in.html`.
-+7. Confirm referenced Message Delete remains blocked.
-+
-+## Known Issues
-+
-+- Full `DbSeedIntegrity` remains blocked outside PR_002 because `dev/build/database/seed/guest/game-crew.json` publishes `game-crew` while canonical inventory expects Game Crew under `users`.
-+- This PR intentionally does not clean up Game Crew guest seed JSON ownership.
-+- The Game Crew cleanup should be planned from clean `main` as a separate batch after PR_002 is clean, committed, and opened.
-+
-+## ZIP Outcome
-+
-+DELTA artifact:
-+
-+`dev/workspace/zips/PR_26180_BRAVO_002-complete-messages-creator-tool_delta.zip`

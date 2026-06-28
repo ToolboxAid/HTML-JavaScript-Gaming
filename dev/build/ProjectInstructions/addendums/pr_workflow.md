@@ -19,22 +19,35 @@ This file owns PR lifecycle governance. It must not duplicate command phase rule
 
 ## Standard Flow
 
-1. Start from main.
-2. Pull latest origin/main.
-3. Verify clean worktree.
-4. Create a PR branch and PR identity.
-5. Mark lifecycle state as PR Open.
-6. Plan on the same PR branch.
-7. Build on the same PR branch.
-8. Validate the change.
-9. Commit with a clear OWNER/team message.
-10. Push the branch.
-11. Open or update the draft PR.
-12. Review the PR.
-13. OWNER approves merge.
-14. Merge to main.
-15. Pull latest main before starting the next unrelated workstream, or before a new PR when the work is not an OWNER-approved stacked/sequential workstream.
-16. Verify Main Verified and Closed gates.
+1. Identify the PR branching model: Independent PR or Stacked PR.
+2. Start from the required branch for that model.
+3. Pull or confirm the required base branch is current.
+4. Verify clean worktree.
+5. Create a PR branch and PR identity.
+6. Mark lifecycle state as PR Open.
+7. Plan on the same PR branch.
+8. Build on the same PR branch.
+9. Validate the change.
+10. Commit with a clear OWNER/team message.
+11. Push the branch.
+12. Open or update the draft PR.
+13. Review the PR.
+14. OWNER approves merge.
+15. Merge to main in the valid order for the PR model.
+16. Pull latest main before starting the next unrelated workstream, or before a new PR when the work is not an OWNER-approved stacked/sequential workstream.
+17. Verify Main Verified and Closed gates.
+
+## PR Branching Models
+
+Canonical PR branching policy lives in:
+
+`dev/build/ProjectInstructions/PROJECT_BRANCHING_POLICY.md`
+
+That document owns Independent PR, Stacked PR, Owner branching, non-Owner team branching, explicit Owner standalone/no-dependency exceptions, dependency documentation, review order, merge order, hard-stop validation rules, and examples.
+
+This PR workflow document must load and follow that policy, but it must not duplicate the full policy text.
+
+All PR branching models remain subject to the Codex Completion Contract. Missing required ZIP output means the Codex run is incomplete.
 
 ## Daily Branch Workflow
 
@@ -109,7 +122,7 @@ Closed gates:
 - Plan, Build, validation, reports, ZIP packaging, and closeout must stay tied to the same PR identity and source branch.
 - Source branches are retained by default after merge and closeout.
 - Do not mix unrelated scopes.
-- Do not start dependent PRs until the required base PR is merged.
+- Do not start dependent PRs until the required base PR is merged unless the work is an explicitly documented Stacked PR with a direct dependency on the previous PR branch.
 - Return to `main` before starting an unrelated PR or new workstream.
 - Do not return to `main` between PRs in the same OWNER-approved stacked/sequential workstream unless OWNER approves an EOD or intermediate merge checkpoint.
 - A team must not begin another PR if its previous PR is not Closed.

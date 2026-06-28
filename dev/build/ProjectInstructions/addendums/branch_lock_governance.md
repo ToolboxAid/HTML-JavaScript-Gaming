@@ -26,9 +26,16 @@ This file owns branch lock enforcement and OWNER override handling; it must not 
 
 ## Branch Rules
 
-- Start from current `main`.
-- Pull latest `origin/main` before creating a work branch.
-- Do not create a PR branch unless current branch is `main`, worktree is clean, `main...origin/main` is `0 0`, and `HEAD` SHA matches the published EOD SHA.
+- Identify the PR branching model before creating or continuing a PR branch.
+- Independent PRs and new stacked workstreams start from current `main`.
+- Dependent Stacked PRs may start from the documented previous PR branch only when a direct dependency and dependency order are documented in `dev/build/ProjectInstructions/addendums/pr_workflow.md`.
+- OWNER PRs may start from `main` when marked Independent and no direct dependency exists.
+- Non-Owner team PRs use Stacked PR workstreams by default.
+- A non-Owner team PR may start from `main` only when OWNER explicitly marks the PR as `standalone/no-dependency`.
+- Pull latest `origin/main` before creating an Independent PR branch or the first branch in a new stack.
+- Do not create an Independent PR branch unless current branch is `main`, worktree is clean, `main...origin/main` is `0 0`, and `HEAD` SHA matches the published EOD SHA.
+- HARD STOP if the current branch does not match the requested PR branching model.
+- HARD STOP if a non-Owner team PR starts from `main` without OWNER `standalone/no-dependency` approval.
 - Follow the canonical START / WORK / END lifecycle in `dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`.
 - Keep work on the active branch until the PR is merged, the branch is retired, EOD closeout begins, or OWNER says to return to `main`.
 - For OWNER-approved stacked/sequential workstreams, PR branches/commits stay on the active team branch/workstream during the day and do not return to `main` between PRs.

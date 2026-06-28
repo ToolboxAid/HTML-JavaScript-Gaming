@@ -1,7 +1,6 @@
 import { expect, test } from "@playwright/test";
 import {
   TOOL_REGISTRY,
-  getToolNavigationTargets,
   getToolRoute,
 } from "../../../../toolbox/toolRegistry.js";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
@@ -13,7 +12,7 @@ const registryToolsByDisplayName = new Map(TOOL_REGISTRY.map((tool) => [tool.dis
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
     lane: "tool-navigation",
-    surface: "Toolbox card links and Tool Display Mode navigation"
+    surface: "Toolbox route links and group fallback routing",
   });
 });
 
@@ -25,8 +24,26 @@ test.afterAll(async () => {
   await workspaceV2CoverageReporter.writeReport();
 });
 
+function restoreEnvValue(key, value) {
+  if (value === undefined) {
+    delete process.env[key];
+    return;
+  }
+  process.env[key] = value;
+}
+
 async function openRepoPage(page, pathName) {
   const server = await startRepoServer();
+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
+  const closeServer = server.close.bind(server);
+  server.close = async () => {
+    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
+    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
+    await closeServer();
+  };
   const failedRequests = [];
   const pageErrors = [];
   const consoleErrors = [];
@@ -59,18 +76,6 @@ function expectNoPageFailures(failures) {
   expect(failures.consoleErrors).toEqual([]);
 }
 
-async function expectNavigationTarget(locator, prefix, target) {
-  await expect(locator).toHaveText(`${prefix}: ${target.label}`);
-  if (target.disabled) {
-    await expect(locator).not.toHaveAttribute("href");
-    return;
-  }
-  await expect(locator).toHaveAttribute("href", target.href);
-  if (target.kind === "group") {
-    await expect(locator).toHaveAttribute("data-tool-nav-group", target.group);
-  }
-}
-
 test("Toolbox card names link to registered tool routes without duplicating launch actions", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/index.html");
 
@@ -96,67 +101,31 @@ test("Toolbox card names link to registered tool routes without duplicating laun
     }
 
     const gameDesignCard = cards.filter({
-      has: page.getByRole("heading", { exact: true, name: "Game Design" })
+      has: page.getByRole("heading", { exact: true, name: "Game Design" }),
     }).first();
     await expect(gameDesignCard.locator(".card-media-link")).toHaveAttribute("href", "../toolbox/game-design/index.html");
     await expect(gameDesignCard.locator("[data-toolbox-tile-action-row] a.btn")).toHaveAttribute("href", "../toolbox/game-design/index.html");
     await gameDesignCard.locator("h3 > a[data-toolbox-tool-name-link]").click();
     await page.waitForURL(/\/toolbox\/game-design\/index\.html$/);
     await expect(page.locator(".page-title h1")).toHaveText("Game Design");
-    await expectNoPageFailures(failures);
+    expectNoPageFailures(failures);
   } finally {
     await workspaceV2CoverageReporter.stop(page);
     await failures.server.close();
   }
 });
 
-test("Tool Display Mode renders build-order previous and next controls", async ({ page }) => {
+test("Tool Display Mode no longer renders deprecated previous and next controls", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/game-design/index.html");
-  const navigation = getToolNavigationTargets("game-design");
 
   try {
-    await expectNavigationTarget(page.locator("[data-tool-nav-previous]"), "Previous", navigation.previous);
-    await expectNavigationTarget(page.locator("[data-tool-nav-next]"), "Next", navigation.next);
-    await expectNoPageFailures(failures);
-  } finally {
-    await workspaceV2CoverageReporter.stop(page);
-    await failures.server.close();
-  }
-});
-
-test("Game Hub Tool Display Mode follows registry route targets", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/game-hub/index.html");
-  const navigation = getToolNavigationTargets("game-hub");
-
-  try {
-    await expectNavigationTarget(page.locator("[data-tool-nav-previous]"), "Previous", navigation.previous);
-    await expectNavigationTarget(page.locator("[data-tool-nav-next]"), "Next", navigation.next);
-    await expectNoPageFailures(failures);
-  } finally {
-    await workspaceV2CoverageReporter.stop(page);
-    await failures.server.close();
-  }
-});
-
-test("multi-path next control routes to Toolbox Group view and preserves role", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/game-configuration/index.html");
-  const navigation = getToolNavigationTargets("game-configuration");
-
-  try {
-    const nextControl = page.locator("[data-tool-nav-next]");
-    expect(navigation.next.kind).toBe("group");
-    await expectNavigationTarget(nextControl, "Next", navigation.next);
-
-    await nextControl.click();
-    await page.waitForURL(new RegExp(`${navigation.next.href.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`));
-    await page.waitForLoadState("networkidle");
-    await expect(page.getByRole("button", { name: "Group" })).toHaveAttribute("aria-pressed", "true");
-
-    const openGroups = await page.locator("[data-tools-accordion]").evaluateAll((groups) => (
-      groups.filter((group) => group.open).map((group) => group.dataset.toolsAccordion)
-    ));
-    expect(openGroups).toEqual(["Design"]);
-    await expectNoPageFailures(failures);
+    const displayMode = page.locator("#toolDisplayMode");
+    await expect(displayMode).toBeVisible();
+    await expect(displayMode.locator("[data-tool-nav-previous]")).toHaveCount(0);
+    await expect(displayMode.locator("[data-tool-nav-next]")).toHaveCount(0);
+    await expect(displayMode.locator(".tool-display-mode__navigation-row")).toHaveCount(0);
+    await expect(displayMode.locator("summary > .tool-display-mode__tool-name")).toHaveText("Game Design");
+    expectNoPageFailures(failures);
   } finally {
     await workspaceV2CoverageReporter.stop(page);
     await failures.server.close();
@@ -171,12 +140,12 @@ test("Toolbox Group view can be selected directly with only the requested group 
     const groups = await page.locator("[data-tools-accordion]").evaluateAll((accordionGroups) => (
       accordionGroups.map((group) => ({
         name: group.dataset.toolsAccordion,
-        open: group.open
+        open: group.open,
       }))
     ));
     expect(groups.filter((group) => group.open).map((group) => group.name)).toEqual(["Design"]);
     expect(groups.filter((group) => group.name !== "Design").every((group) => group.open === false)).toBe(true);
-    await expectNoPageFailures(failures);
+    expectNoPageFailures(failures);
   } finally {
     await workspaceV2CoverageReporter.stop(page);
     await failures.server.close();

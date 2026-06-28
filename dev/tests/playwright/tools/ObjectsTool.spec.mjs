@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
+import { SEED_DB_KEYS } from "../../../../src/dev-runtime/seed/seed-db-keys.mjs";
 
 const TYPE_OPTIONS = ["Collectible", "Custom", "Decoration", "Enemy", "Goal", "Hazard", "Hero", "Platform", "Projectile", "Spawn Point", "Wall"];
 const OLD_SAMPLE_PATH_PATTERN = new RegExp(["M" + "VP", "Padd" + "le", "Ba" + "ll"].join("|"), "i");
@@ -74,9 +75,72 @@ function collectPageFailures(page) {
   return { consoleErrors, failedRequests, pageErrors };
 }
 
-async function openObjectsPage(page) {
+async function postApiPayload(baseUrl, path, body = {}) {
+  const response = await fetch(`${baseUrl}${path}`, {
+    body: JSON.stringify(body),
+    headers: { "content-type": "application/json" },
+    method: "POST",
+  });
+  const payload = await response.json();
+  return { payload, response };
+}
+
+async function signInCreator(baseUrl) {
+  const { response } = await postApiPayload(baseUrl, "/api/session/user", {
+    userKey: SEED_DB_KEYS.users.user1,
+  });
+  expect(response.ok).toBe(true);
+}
+
+async function clearObjectsForActiveGame(baseUrl) {
+  const repository = await postApiPayload(baseUrl, "/api/toolbox/objects/repositories", { options: {} });
+  expect(repository.response.ok).toBe(true);
+  const repositoryId = repository.payload.data.repositoryId;
+  const cleared = await postApiPayload(baseUrl, `/api/toolbox/objects/repositories/${repositoryId}/methods/replaceObjects`, {
+    args: [[]],
+  });
+  expect(cleared.response.ok).toBe(true);
+}
+
+async function createReviewMessage(baseUrl) {
+  const suffix = Date.now().toString(36);
+  const profile = await postApiPayload(baseUrl, "/api/messages/tts-profiles", {
+    emotionSettings: [{
+      emotion: "calm",
+      emotionLabel: "Calm",
+      pitch: 1,
+      rate: 1,
+      volume: 1,
+    }],
+    language: "en-US",
+    name: `Objects Review Voice ${suffix}`,
+    pitch: 1,
+    providerKey: "browser-speech",
+    rate: 1,
+    voiceName: "Default browser voice",
+    volume: 1,
+  });
+  expect(profile.response.ok).toBe(true);
+  const message = await postApiPayload(baseUrl, "/api/messages/messages", {
+    active: true,
+    emotionProfileKey: profile.payload.data.ttsProfile.emotionSettings[0].key,
+    messageText: "Review hero is ready.",
+    name: `Objects Review Message ${suffix}`,
+    voiceProfileKey: profile.payload.data.ttsProfile.key,
+  });
+  expect(message.response.ok).toBe(true);
+  return message.payload.data.message;
+}
+
+async function openObjectsPage(page, { signedIn = true } = {}) {
   const server = await startRepoServer();
   const failures = collectPageFailures(page);
+  await signInCreator(server.baseUrl);
+  await clearObjectsForActiveGame(server.baseUrl);
+  if (!signedIn) {
+    const { response } = await postApiPayload(server.baseUrl, "/api/session/logout", {});
+    expect(response.ok).toBe(true);
+  }
   await page.addInitScript(({ apiUrl, siteUrl }) => {
     window.GameFoundryPublicConfig = {
       apiUrl,
@@ -246,11 +310,13 @@ test("Objects exposes production copy, setup status, and broad table input", asy
     await expect(firstActionGroup).toHaveClass(/action-group--tight/);
     await expect(firstActionGroup.locator("button, a")).toHaveText([
       "Edit",
+      "Details",
       "Open Hitboxes",
       "Open Events",
       "Trash",
     ]);
     await expect(firstActionCell.locator("[data-objects-edit-row='hero']")).toBeVisible();
+    await expect(firstActionCell.locator("[data-objects-details-row='hero']")).toBeVisible();
     await expect(firstActionCell.locator("[data-objects-row-open-hitboxes]")).toBeVisible();
     await expect(firstActionCell.locator("[data-objects-row-open-events]")).toBeVisible();
     await expect(firstActionCell.locator("[data-objects-trash-row='hero']")).toBeVisible();
@@ -309,6 +375,7 @@ test("Objects table add disables while active row can cancel, save, edit, and tr
     await expect(page.locator("[data-objects-list]")).toContainText("None");
     await expect(page.locator("[data-objects-validation-list]")).not.toContainText("Render Asset");
     await expect(page.locator("[data-objects-edit-row='hero']")).toBeVisible();
+    await expect(page.locator("[data-objects-details-row='hero']")).toBeVisible();
     await expect(page.locator("[data-objects-trash-row='hero']")).toBeVisible();
     const savedActionCell = page.locator("[data-objects-list] tr").first().locator("td").last();
     const savedActionGroup = savedActionCell.locator(".action-group");
@@ -316,6 +383,7 @@ test("Objects table add disables while active row can cancel, save, edit, and tr
     await expect(savedActionGroup).toHaveClass(/action-group--tight/);
     await expect(savedActionGroup.locator("button, a")).toHaveText([
       "Edit",
+      "Details",
       "Open Hitboxes",
       "Open Events",
       "Trash",
@@ -337,6 +405,26 @@ test("Objects table add disables while active row can cancel, save, edit, and tr
     await expect(addButton).toBeEnabled();
 
     await expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
+test("Guest save redirects to sign-in", async ({ page }) => {
+  const failures = await openObjectsPage(page, { signedIn: false });
+
+  try {
+    await page.getByRole("button", { name: "Add Object" }).click();
+    await fillActiveRow(page, {
+      name: "Guest Object",
+      type: "Hero",
+    });
+    await page.locator("[data-objects-save-row]").click();
+    await page.waitForURL(/\/account\/sign-in\.html$/);
+    expect(failures.failedRequests.filter((request) => /^\d/.test(request) && !request.includes("/account/sign-in.html"))).toEqual([]);
+    expect(failures.pageErrors).toEqual([]);
+    expect(failures.consoleErrors).toEqual([]);
   } finally {
     await workspaceV2CoverageReporter.stop(page);
     await failures.server.close();
@@ -430,6 +518,126 @@ test("Objects persists added, edited, deleted, and sprite-linked rows through sh
   }
 });
 
+test("Object Details panel saves reviewable properties through shared DB", async ({ page }) => {
+  const failures = await openObjectsPage(page);
+
+  try {
+    const message = await createReviewMessage(failures.server.baseUrl);
+
+    await page.getByRole("button", { name: "Add Object" }).click();
+    await fillActiveRow(page, {
+      name: "Review Hero",
+      renderType: "Sprite",
+      type: "Hero",
+    });
+    await page.locator("[data-objects-save-row]").click();
+    await expect(page.locator("[data-objects-log]")).toContainText("Added Review Hero.");
+    await expect(page.locator("[data-objects-log]")).toContainText("Created editable default sprite asset sprite_review_hero for Review Hero.");
+
+    await page.locator("[data-objects-details-row='review-hero']").click();
+    await expect(page.locator("[data-objects-detail-selected]")).toHaveText("Review Hero");
+    await expect(page.locator("[data-objects-detail-name]")).toHaveValue("Review Hero");
+    await expect(page.locator("[data-objects-detail-type] option")).toHaveText(["Select type", ...TYPE_OPTIONS]);
+    await expect(page.locator("[data-objects-detail-type]")).toHaveValue("Hero");
+    await expect(page.locator("[data-objects-detail-active]")).toBeChecked();
+    await expect(page.locator("[data-objects-detail-visible]")).toBeChecked();
+    await expect(page.locator("[data-objects-detail-sprite]")).toHaveValue("sprite_review_hero");
+    await expect(page.locator("[data-objects-detail-unsaved]")).toHaveText("Unsaved changes: none");
+    await expect(page.locator("[data-objects-detail-save]")).toBeDisabled();
+    await expect(page.locator("[data-objects-asset-links]")).toContainText("Sprite:");
+    await expect(page.locator("[data-objects-asset-links]")).toContainText("sprite_review_hero");
+    await expect(page.locator("[data-objects-asset-links]")).toContainText("Audio: No reference set.");
+    await expect(page.locator("[data-objects-asset-links]")).toContainText("Message: No reference set.");
+    await expect(page.locator("[data-objects-details-form]")).not.toContainText(/\bBehavior\b|\bRules\b|\bWorlds\b/);
+
+    await page.locator("[data-objects-detail-description]").fill("Hero object used by Product Owner review.");
+    await expect(page.locator("[data-objects-detail-unsaved]")).toHaveText("Unsaved changes: yes");
+    await expect(page.locator("[data-objects-detail-save]")).toBeEnabled();
+    await page.locator("[data-objects-detail-cancel]").click();
+    await expect(page.locator("[data-objects-detail-description]")).toHaveValue("");
+    await expect(page.locator("[data-objects-detail-unsaved]")).toHaveText("Unsaved changes: none");
+    await expect(page.locator("[data-objects-log]")).toHaveText("Canceled Object Details changes.");
+
+    await page.locator("[data-objects-detail-name]").fill("");
+    await page.locator("[data-objects-detail-save]").click();
+    await expect(page.locator("[data-objects-validation-list]")).toContainText("Name: Enter a name before saving Object Details.");
+    await expect(page.locator("[data-objects-log]")).toHaveText("Object Details blocked: 1 validation action.");
+
+    await page.locator("[data-objects-detail-name]").fill("Review Hero Prime");
+    await page.locator("[data-objects-detail-description]").fill("Hero object used by Product Owner review.");
+    await page.locator("[data-objects-detail-type]").selectOption("Enemy");
+    await page.locator("[data-objects-detail-tags]").fill("hero, review, boss-fight");
+    await page.locator("[data-objects-detail-active]").uncheck();
+    await page.locator("[data-objects-detail-visible]").uncheck();
+    await page.locator("[data-objects-detail-sprite]").fill("sprite_review_hero");
+    await page.locator("[data-objects-detail-audio]").fill("missing-review-hero.wav");
+    await page.locator("[data-objects-detail-message]").fill("missing-message-key");
+    await page.locator("[data-objects-detail-defaults]").fill("speed=8\nhealth=3");
+    await page.locator("[data-objects-detail-save]").click();
+    await expect(page.locator("[data-objects-validation-list]")).toContainText("Audio reference: Use an existing audio asset reference");
+    await expect(page.locator("[data-objects-validation-list]")).toContainText("Message reference: Use an existing message reference");
+    await expect(page.locator("[data-objects-log]")).toHaveText("Object Details blocked: 2 validation actions.");
+
+    await page.locator("[data-objects-detail-audio]").fill("");
+    await page.locator("[data-objects-detail-message]").fill(message.key);
+    await page.locator("[data-objects-detail-save]").click();
+    await expect(page.locator("[data-objects-log]")).toHaveText("Saved Object Details for Review Hero Prime.");
+    await expect(page.locator("[data-objects-list]")).toContainText("Review Hero Prime");
+    await expect(page.locator("[data-objects-list] tr").first().locator("td").nth(1)).toHaveText("Enemy");
+    await expect(page.locator("[data-objects-list] tr").first().locator("td").nth(2)).toHaveText("Disabled");
+    await expect(page.locator("[data-objects-detail-unsaved]")).toHaveText("Unsaved changes: none");
+    await expect(page.locator("[data-objects-asset-links]")).toContainText("Audio: No reference set.");
+    await expect(page.locator("[data-objects-asset-links]")).toContainText(message.name);
+    await expect(page.locator("[data-objects-asset-link-sprite]")).toHaveAttribute(
+      "href",
+      "/toolbox/sprites/index.html?assetKey=sprite_review_hero&objectKey=review-hero-prime&sourceTool=objects"
+    );
+    await expect(page.locator("[data-objects-asset-link-audio]")).toHaveCount(0);
+    await expect(page.locator("[data-objects-message-link]")).toHaveAttribute("href", "/toolbox/messages/index.html");
+    await expect(page.locator("[data-objects-reference-warning]")).toHaveCount(0);
+
+    const rows = await objectDefinitionRecords(page);
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toEqual(expect.objectContaining({
+      name: "Review Hero Prime",
+      renderAssetKey: "sprite_review_hero",
+      renderType: "Sprite",
+      state: "Disabled",
+      type: "Enemy",
+    }));
+    expect(rows[0].interaction.details).toEqual({
+      active: false,
+      audioReference: "",
+      defaultValues: "speed=8\nhealth=3",
+      description: "Hero object used by Product Owner review.",
+      messageReference: message.key,
+      spriteReference: "sprite_review_hero",
+      tags: ["hero", "review", "boss-fight"],
+      visible: false,
+    });
+
+    await page.reload({ waitUntil: "networkidle" });
+    await expect(page.locator("[data-objects-list]")).toContainText("Review Hero Prime");
+    await expect(page.locator("[data-objects-detail-selected]")).toHaveText("Review Hero Prime");
+    await expect(page.locator("[data-objects-detail-description]")).toHaveValue("Hero object used by Product Owner review.");
+    await expect(page.locator("[data-objects-detail-type]")).toHaveValue("Enemy");
+    await expect(page.locator("[data-objects-detail-tags]")).toHaveValue("hero, review, boss-fight");
+    await expect(page.locator("[data-objects-detail-active]")).not.toBeChecked();
+    await expect(page.locator("[data-objects-detail-visible]")).not.toBeChecked();
+    await expect(page.locator("[data-objects-detail-sprite]")).toHaveValue("sprite_review_hero");
+    await expect(page.locator("[data-objects-detail-audio]")).toHaveValue("");
+    await expect(page.locator("[data-objects-detail-message]")).toHaveValue(message.key);
+    await expect(page.locator("[data-objects-detail-defaults]")).toHaveValue("speed=8\nhealth=3");
+    await expect(page.locator("[data-objects-asset-links]")).toContainText("Audio: No reference set.");
+    await expect(page.locator("[data-objects-asset-links]")).toContainText(message.name);
+
+    await expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
 test("Object Type Catalog selection prefills active table rows", async ({ page }) => {
   const failures = await openObjectsPage(page);
 
@@ -494,6 +702,7 @@ test("Object Type Catalog selection prefills active table rows", async ({ page }
     await expect(catalogActionGroup).toHaveClass(/action-group--tight/);
     await expect(catalogActionGroup.locator("button, a")).toHaveText([
       "Edit",
+      "Details",
       "Edit Sprite",
       "Open Hitboxes",
       "Open Events",

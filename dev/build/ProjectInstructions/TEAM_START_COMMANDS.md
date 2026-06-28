@@ -8,12 +8,18 @@ Official Start of Day command format lives in:
 
 The ready-to-copy team assignment commands below are OWNER assignment helpers, not Start of Day bootstrap commands.
 
-No team creates a PR branch until all checks pass:
+For Independent PRs and for the first PR in a new stacked workstream, no team creates a PR branch until all checks pass:
 
 - Current branch: `main`
 - Worktree: clean
 - `main...origin/main`: `0 0`
 - `HEAD` SHA matches the published EOD SHA
+
+Dependent Stacked PRs may start from the documented previous PR branch only when `dev/build/ProjectInstructions/addendums/pr_workflow.md` defines the direct dependency and merge order.
+
+OWNER PRs may start from synchronized `main` when independent.
+
+Non-Owner team PRs use Stacked PR workstreams by default. A non-Owner team PR may start from `main` only when OWNER explicitly marks it `standalone/no-dependency`.
 
 Use `dev/build/ProjectInstructions/` as the only active Project Instructions source.
 Read `dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md` before implementation.

@@ -10,7 +10,7 @@ Every Codex execution must produce at least one repository-structured ZIP artifa
 
 Each PR attempted by Codex must produce exactly one ZIP artifact representing that PR's final outcome.
 
-Missing ZIP means the Codex run did not complete correctly.
+Missing ZIP means the Codex run is incomplete and did not complete correctly.
 
 Canonical ZIP location:
 

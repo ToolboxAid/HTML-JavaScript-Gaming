@@ -1,4 +1,3 @@
-import { SEED_DB_KEYS } from "../seed/seed-db-keys.mjs";
 import {
   SUPABASE_AUTH_PROVIDER_ID,
   SupabaseAuthProviderAdapter,
@@ -10,31 +9,27 @@ export const DEV_CREATOR_IDENTITIES = Object.freeze([
   Object.freeze({
     displayName: "User 1",
     email: "user1@example.invalid",
-    key: SEED_DB_KEYS.users.user1,
     passwordSuffix: "1!!",
   }),
   Object.freeze({
     displayName: "User 2",
     email: "user2@example.invalid",
-    key: SEED_DB_KEYS.users.user2,
     passwordSuffix: "2!!",
   }),
   Object.freeze({
     displayName: "User 3",
     email: "user3@example.invalid",
-    key: SEED_DB_KEYS.users.user3,
     passwordSuffix: "3!!",
   }),
   Object.freeze({
     displayName: "DavidQ",
     email: "qbytes.dq@gmail.com",
-    key: SEED_DB_KEYS.users.admin,
     passwordSuffix: "$2026",
   }),
 ]);
 
 const CANONICAL_EMAILS = new Set(DEV_CREATOR_IDENTITIES.map((identity) => identity.email.toLowerCase()));
-const CANONICAL_KEYS = new Set(DEV_CREATOR_IDENTITIES.map((identity) => identity.key));
+const DAVIDQ_DEV_EMAIL = "qbytes.dq@gmail.com";
 const DEV_PASSWORD_PREFIX = ["GF", "S"].join("");
 const LEGACY_DEV_AUTH_USER_IDS = new Set(["user-1", "user-2", "user-3", "davidq", "davidq-admin"]);
 const KNOWN_STALE_ROLE_KEYS = Object.freeze(["01KV6FVP0ASR2RRR9WXCBKTV6C"]);
@@ -125,8 +120,7 @@ export function isManagedExtraDevIdentityEmail(email) {
 
 function isManagedExtraPublicUser(user = {}) {
   const email = normalizedEmail(user.email);
-  const key = normalizedId(user.key);
-  if (CANONICAL_KEYS.has(key) || isCanonicalDevIdentityEmail(email)) {
+  if (isCanonicalDevIdentityEmail(email)) {
     return false;
   }
   if (isManagedExtraDevIdentityEmail(email)) {
@@ -191,25 +185,55 @@ function roleBySlug(roles, roleSlug) {
   return roles.find((role) => normalizedId(role.roleSlug) === roleSlug && role.isActive !== false) || null;
 }
 
-function canonicalDesiredUserRolePairs(roles) {
+function canonicalUserKeys(canonicalUsers = []) {
+  return new Set(canonicalUsers.map((user) => normalizedId(user.key)).filter(Boolean));
+}
+
+function davidqUserFromCanonicalUsers(canonicalUsers = []) {
+  return canonicalUsers.find((user) => normalizedEmail(user.email) === DAVIDQ_DEV_EMAIL) || null;
+}
+
+function canonicalUserRoleRequests(canonicalUsers = []) {
+  const davidq = davidqUserFromCanonicalUsers(canonicalUsers);
+  return [
+    ...canonicalUsers
+      .filter((user) => normalizedId(user.key))
+      .map((user) => ({
+        roleSlug: "creator",
+        userKey: normalizedId(user.key),
+      })),
+    davidq ? {
+      roleSlug: "admin",
+      userKey: normalizedId(davidq.key),
+    } : null,
+    davidq ? {
+      roleSlug: "owner",
+      userKey: normalizedId(davidq.key),
+    } : null,
+  ].filter(Boolean);
+}
+
+function canonicalDesiredUserRolePairs(roles, canonicalUsers = []) {
   const creatorRole = roleBySlug(roles, "creator");
   const adminRole = roleBySlug(roles, "admin");
   const ownerRole = roleBySlug(roles, "owner");
+  const davidq = davidqUserFromCanonicalUsers(canonicalUsers);
   return new Set([
-    ...DEV_CREATOR_IDENTITIES
+    ...canonicalUsers
       .filter(() => creatorRole)
-      .map((identity) => `${identity.key}\u0000${creatorRole.key}`),
-    adminRole ? `${SEED_DB_KEYS.users.admin}\u0000${adminRole.key}` : "",
-    ownerRole ? `${SEED_DB_KEYS.users.admin}\u0000${ownerRole.key}` : "",
+      .map((user) => `${normalizedId(user.key)}\u0000${creatorRole.key}`),
+    adminRole && davidq ? `${normalizedId(davidq.key)}\u0000${adminRole.key}` : "",
+    ownerRole && davidq ? `${normalizedId(davidq.key)}\u0000${ownerRole.key}` : "",
   ].filter(Boolean));
 }
 
-function staleCanonicalUserRoleRecords({ roles, userRoles }) {
+function staleCanonicalUserRoleRecords({ canonicalUsers, roles, userRoles }) {
   const validRoleKeys = new Set(roles.map((role) => normalizedId(role.key)).filter(Boolean));
-  const desiredPairs = canonicalDesiredUserRolePairs(roles);
+  const desiredPairs = canonicalDesiredUserRolePairs(roles, canonicalUsers);
+  const canonicalKeys = canonicalUserKeys(canonicalUsers);
   const staleRoleKeys = new Set(KNOWN_STALE_ROLE_KEYS);
   return userRoles
-    .filter((row) => CANONICAL_KEYS.has(normalizedId(row.userKey)))
+    .filter((row) => canonicalKeys.has(normalizedId(row.userKey)))
     .filter((row) => {
       const roleKey = normalizedId(row.roleKey);
       return staleRoleKeys.has(roleKey) ||
@@ -229,8 +253,8 @@ function staleCanonicalUserRoleRecords({ roles, userRoles }) {
     .filter((row) => row.key);
 }
 
-async function repairCanonicalUserRoles({ databaseProvider, dryRun, roles, userRoles }) {
-  const staleRecords = staleCanonicalUserRoleRecords({ roles, userRoles });
+async function repairCanonicalUserRoles({ canonicalUsers, databaseProvider, dryRun, roles, userRoles }) {
+  const staleRecords = staleCanonicalUserRoleRecords({ canonicalUsers, roles, userRoles });
   const deletedRecords = [];
   for (const record of staleRecords) {
     if (dryRun) {
@@ -306,20 +330,21 @@ async function deleteDeprecatedRoleArtifacts({ databaseProvider, dryRun, roles, 
   };
 }
 
-async function upsertAuthIdentity(authProvider, identity, existingByEmail, dryRun) {
+async function upsertAuthIdentity(authProvider, identity, existingByEmail, dryRun, { updatePasswords = false } = {}) {
   const existingUser = existingByEmail.get(identity.email.toLowerCase());
   if (dryRun) {
     return {
       action: existingUser ? "would-update" : "would-create",
       authProviderUserId: maskId(authUserId(existingUser)),
       email: identity.email,
+      passwordUpdated: false,
     };
   }
   if (existingUser) {
     const payload = await authProvider.updateAccount({
       authProviderUserId: authUserId(existingUser),
       email: identity.email,
-      password: requestedDevPassword(identity),
+      password: updatePasswords ? requestedDevPassword(identity) : "",
       userMetadata: {
         display_name: identity.displayName,
         name: identity.displayName,
@@ -329,6 +354,7 @@ async function upsertAuthIdentity(authProvider, identity, existingByEmail, dryRu
       action: "updated",
       authProviderUserId: maskId(authUserId(payload) || authUserId(existingUser)),
       email: identity.email,
+      passwordUpdated: updatePasswords,
     };
   }
   const created = await authProvider.createAccount({
@@ -339,7 +365,7 @@ async function upsertAuthIdentity(authProvider, identity, existingByEmail, dryRu
   const updated = await authProvider.updateAccount({
     authProviderUserId: createdUserId,
     email: identity.email,
-    password: requestedDevPassword(identity),
+    password: updatePasswords ? requestedDevPassword(identity) : "",
     userMetadata: {
       display_name: identity.displayName,
       name: identity.displayName,
@@ -349,23 +375,61 @@ async function upsertAuthIdentity(authProvider, identity, existingByEmail, dryRu
     action: "created",
     authProviderUserId: maskId(authUserId(updated) || createdUserId),
     email: identity.email,
+    passwordUpdated: true,
   };
 }
 
-function canonicalUserRows(authUsers) {
+function canonicalPublicUsersByEmail(publicUsers = []) {
+  const byEmail = new Map();
+  const duplicates = [];
+  publicUsers.forEach((user) => {
+    const email = normalizedEmail(user.email);
+    if (!isCanonicalDevIdentityEmail(email)) {
+      return;
+    }
+    if (byEmail.has(email)) {
+      duplicates.push(email);
+      return;
+    }
+    byEmail.set(email, user);
+  });
+  if (duplicates.length) {
+    throw new Error(`Supabase DEV identity sync found duplicate database users rows for: ${Array.from(new Set(duplicates)).join(", ")}.`);
+  }
+  const missing = DEV_CREATOR_IDENTITIES
+    .map((identity) => identity.email)
+    .filter((email) => !byEmail.has(normalizedEmail(email)));
+  if (missing.length) {
+    throw new Error(`Supabase DEV identity sync requires existing database users rows for: ${missing.join(", ")}.`);
+  }
+  return byEmail;
+}
+
+function canonicalUsersFromPublicRows(publicUsersByEmail) {
+  return DEV_CREATOR_IDENTITIES.map((identity) => publicUsersByEmail.get(normalizedEmail(identity.email)));
+}
+
+function canonicalUserRows(authUsers, publicUsersByEmail) {
   const byEmail = authUsersByEmail(authUsers);
   return DEV_CREATOR_IDENTITIES.map((identity) => {
-    const authId = authUserId(byEmail.get(identity.email.toLowerCase()));
+    const email = normalizedEmail(identity.email);
+    const publicUser = publicUsersByEmail.get(email);
+    const authId = authUserId(byEmail.get(email));
+    const userKey = normalizedId(publicUser?.key);
+    if (!userKey) {
+      throw new Error(`Supabase DEV identity sync could not resolve database users.key for ${identity.email}.`);
+    }
     if (!authId) {
       throw new Error(`Supabase DEV identity sync could not resolve Auth user id for ${identity.email}.`);
     }
     return {
+      ...publicUser,
       authProvider: SUPABASE_AUTH_PROVIDER_ID,
       authProviderUserId: authId,
-      displayName: identity.displayName,
-      email: identity.email,
-      isActive: true,
-      key: identity.key,
+      displayName: publicUser.displayName || identity.displayName,
+      email: publicUser.email || identity.email,
+      isActive: publicUser.isActive !== false,
+      key: userKey,
     };
   });
 }
@@ -479,7 +543,6 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
     .filter((role) => String(role.roleSlug || "") === "user")
     .map((role) => normalizedId(role.key))
     .filter(Boolean));
-  const desiredPairs = canonicalDesiredUserRolePairs(afterRoles);
   const identityEvidence = DEV_CREATOR_IDENTITIES.map((identity) => {
     const auth = authByEmail.get(identity.email.toLowerCase());
     const appUser = publicByEmail.get(identity.email.toLowerCase());
@@ -496,6 +559,11 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
         appUser.authProviderUserId === authUserId(auth),
     };
   });
+  const canonicalUsers = identityEvidence
+    .map((record) => publicByEmail.get(normalizedEmail(record.email)))
+    .filter(Boolean);
+  const canonicalKeys = canonicalUserKeys(canonicalUsers);
+  const desiredPairs = canonicalDesiredUserRolePairs(afterRoles, canonicalUsers);
   const creatorAssignments = DEV_CREATOR_IDENTITIES.map((identity) => {
     const appUser = publicByEmail.get(identity.email.toLowerCase());
     return {
@@ -504,12 +572,12 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
       roleSlug: "creator",
     };
   });
-  const davidq = publicByEmail.get("qbytes.dq@gmail.com");
+  const davidq = publicByEmail.get(DAVIDQ_DEV_EMAIL);
   const davidqAdminAssignment = Boolean(davidq && adminRole && userRolePairs.has(`${davidq.key}\u0000${adminRole.key}`));
   const davidqOwnerAssignment = Boolean(davidq && ownerRole && userRolePairs.has(`${davidq.key}\u0000${ownerRole.key}`));
   const roleEvidence = {
     davidqAdmin: davidqAdminAssignment,
-    davidqCreator: creatorAssignments.find((record) => record.email === "qbytes.dq@gmail.com")?.assigned === true,
+    davidqCreator: creatorAssignments.find((record) => record.email === DAVIDQ_DEV_EMAIL)?.assigned === true,
     davidqOwner: davidqOwnerAssignment,
     user1Creator: creatorAssignments.find((record) => record.email === "user1@example.invalid")?.assigned === true,
     user2Creator: creatorAssignments.find((record) => record.email === "user2@example.invalid")?.assigned === true,
@@ -539,7 +607,7 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
       userRoleKey: normalizedId(row.key),
     }));
   const unexpectedCanonicalAssignments = afterUserRoles
-    .filter((row) => CANONICAL_KEYS.has(normalizedId(row.userKey)))
+    .filter((row) => canonicalKeys.has(normalizedId(row.userKey)))
     .filter((row) => !desiredPairs.has(`${normalizedId(row.userKey)}\u0000${normalizedId(row.roleKey)}`))
     .map((row) => ({
       roleKey: normalizedId(row.roleKey),
@@ -617,26 +685,35 @@ export async function syncSupabaseDevCreatorIdentities({
   databaseProvider = new SupabasePostgresProviderAdapter(),
   dryRun = false,
   env = process.env,
+  updatePasswords = false,
 } = {}) {
   assertDevOnlyAuthTestCleanupEnvironment(env);
   const beforeAuthUsers = await authProvider.listAllAdminUsers();
   const beforePublicUsers = await databaseProvider.getUsers();
+  const publicUsersByEmail = canonicalPublicUsersByEmail(beforePublicUsers);
+  const canonicalPublicUsers = canonicalUsersFromPublicRows(publicUsersByEmail);
+  const davidqPublicUser = davidqUserFromCanonicalUsers(canonicalPublicUsers);
+  if (!davidqPublicUser) {
+    throw new Error(`Supabase DEV identity sync requires existing database users row for ${DAVIDQ_DEV_EMAIL}.`);
+  }
   const beforeCounts = identityCounts({ authUsers: beforeAuthUsers, publicUsers: beforePublicUsers });
 
   const existingByEmail = authUsersByEmail(beforeAuthUsers);
   const authUpsertRecords = [];
   for (const identity of DEV_CREATOR_IDENTITIES) {
-    authUpsertRecords.push(await upsertAuthIdentity(authProvider, identity, existingByEmail, dryRun));
+    authUpsertRecords.push(await upsertAuthIdentity(authProvider, identity, existingByEmail, dryRun, { updatePasswords }));
   }
 
   const authUsersForIdentity = dryRun ? beforeAuthUsers : await authProvider.listAllAdminUsers();
+  const canonicalUsers = canonicalUserRows(authUsersForIdentity, publicUsersByEmail);
+  const userRoleRequests = canonicalUserRoleRequests(canonicalUsers);
   const initialized = dryRun
     ? {
       dryRun: true,
       initialized: {
         roles: DEV_ROLE_DEFINITIONS.length,
-        user_roles: DEV_CREATOR_IDENTITIES.length + 2,
-        users: DEV_CREATOR_IDENTITIES.length,
+        user_roles: userRoleRequests.length,
+        users: canonicalUsers.length,
       },
       written: {
         roles: 0,
@@ -645,29 +722,17 @@ export async function syncSupabaseDevCreatorIdentities({
       },
     }
     : await databaseProvider.initializeIdentity({
-      actorKey: SEED_DB_KEYS.users.admin,
+      actorKey: davidqPublicUser.key,
       roles: DEV_ROLE_DEFINITIONS,
-      userRoles: [
-        ...DEV_CREATOR_IDENTITIES.map((identity) => ({
-          roleSlug: "creator",
-          userKey: identity.key,
-        })),
-        {
-          roleSlug: "admin",
-          userKey: SEED_DB_KEYS.users.admin,
-        },
-        {
-          roleSlug: "owner",
-          userKey: SEED_DB_KEYS.users.admin,
-        },
-      ],
-      users: canonicalUserRows(authUsersForIdentity),
+      userRoles: userRoleRequests,
+      users: canonicalUsers,
     });
 
   const usersForCleanup = await databaseProvider.getUsers();
   const rolesForCleanup = await databaseProvider.getRoles();
   const userRolesForCleanup = await databaseProvider.getUserRoles();
   const userRoleRepair = await repairCanonicalUserRoles({
+    canonicalUsers,
     databaseProvider,
     dryRun,
     roles: rolesForCleanup,
@@ -685,7 +750,7 @@ export async function syncSupabaseDevCreatorIdentities({
   const userRolesForPublicCleanup = dryRun ? userRolesForCleanup : await databaseProvider.getUserRoles();
   const publicCleanupCandidates = usersForCleanup.filter(isManagedExtraPublicUser);
   const publicCleanup = await deleteManagedPublicUsers({
-    auditUserKey: SEED_DB_KEYS.users.admin,
+    auditUserKey: davidqPublicUser.key,
     authProvider,
     candidates: publicCleanupCandidates,
     databaseProvider,

@@ -1,7 +1,7 @@
 ﻿dev/build/database/ddl/messages.sql
+dev/reports/PR_26180_BRAVO_002-complete-messages-creator-tool.md
 dev/reports/codex_changed_files.txt
 dev/reports/codex_review.diff
-dev/reports/PR_26180_BRAVO_002-complete-messages-creator-tool.md
 dev/tests/dev-runtime/MessagesPublishValidation.test.mjs
 dev/tests/helpers/playwrightRepoServer.mjs
 dev/tests/playwright/tools/MessagesTool.spec.mjs

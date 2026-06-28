@@ -38,8 +38,8 @@ function withEnv(nextEnv, callback) {
     });
 }
 
-function startApiServer() {
-  const handleRequest = createLocalApiRouter();
+function startApiServer(routerOptions = {}) {
+  const handleRequest = createLocalApiRouter(routerOptions);
   const server = http.createServer((request, response) => {
     const address = server.address();
     const port = address && typeof address !== "string" ? address.port : 0;
@@ -310,6 +310,12 @@ function fakeSupabaseIdentityTables(overrides = {}) {
         ...audit,
       },
     ],
+  };
+}
+
+function fakePostgresIdentityClient(identityTables = {}) {
+  return {
+    requestTable: async (tableName) => (identityTables[tableName] || []).map((row) => ({ ...row })),
   };
 }
 
@@ -874,6 +880,134 @@ test("Create account provisions Supabase identity user default role and user_rol
       assert.equal(fakeSupabase.calls
         .filter((call) => call.path.startsWith("/rest/v1/"))
         .every((call) => call.headers.apikey === "test-service-role-key"), true);
+    } finally {
+      await server.close();
+    }
+  });
+  await fakeSupabase.close();
+});
+
+test("Supabase sign-in resolves the session from database users.key matched by Auth id", async () => {
+  const databaseOwnedUserKey = "01J00000000000000000000001";
+  const timestamp = "2026-06-15T00:00:00.000Z";
+  const audit = {
+    createdAt: timestamp,
+    createdBy: SEED_DB_KEYS.users.admin,
+    updatedAt: timestamp,
+    updatedBy: SEED_DB_KEYS.users.admin,
+  };
+  const identityTables = fakeSupabaseIdentityTables({
+    user_roles: [
+      {
+        key: SEED_DB_KEYS.userRoles.user1User,
+        userKey: databaseOwnedUserKey,
+        roleKey: SEED_DB_KEYS.roles.creator,
+        ...audit,
+      },
+    ],
+    users: [
+      {
+        key: databaseOwnedUserKey,
+        displayName: "Database Creator",
+        email: "user1@example.invalid",
+        authProvider: "supabase-auth",
+        authProviderUserId: "supabase-user-1",
+        isActive: true,
+        ...audit,
+      },
+    ],
+  });
+  const fakeSupabase = await startFakeSupabaseAuthServer({ identityTables });
+  await withEnv({
+    GAMEFOUNDRY_DATABASE_SSL: "disable",
+    GAMEFOUNDRY_DATABASE_URL: "postgres://contract_user:contract_password@supabase-provider.example.test/gamefoundry",
+    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
+    GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
+    GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
+    GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
+  }, async () => {
+    const server = await startApiServer({
+      supabasePostgresClient: fakePostgresIdentityClient(identityTables),
+    });
+    try {
+      const signIn = await postApiPayload(server.baseUrl, "/api/auth/sign-in", {
+        email: "user1@example.invalid",
+        password: "not-stored-locally",
+      });
+      assert.equal(signIn.status, 200);
+      assert.equal(signIn.payload.data.sessionResolved, true);
+      assert.equal(signIn.payload.data.userKey, databaseOwnedUserKey);
+      assert.equal(Object.values(SEED_DB_KEYS.users).includes(signIn.payload.data.userKey), false);
+
+      const current = await apiJson(server.baseUrl, "/api/session/current");
+      assert.equal(current.authenticated, true);
+      assert.equal(current.userKey, databaseOwnedUserKey);
+      assert.equal(current.displayName, "Database Creator");
+    } finally {
+      await server.close();
+    }
+  });
+  await fakeSupabase.close();
+});
+
+test("Supabase sign-in does not resolve a session from email when authProviderUserId is stale", async () => {
+  const databaseOwnedUserKey = "01J00000000000000000000002";
+  const timestamp = "2026-06-15T00:00:00.000Z";
+  const audit = {
+    createdAt: timestamp,
+    createdBy: SEED_DB_KEYS.users.admin,
+    updatedAt: timestamp,
+    updatedBy: SEED_DB_KEYS.users.admin,
+  };
+  const identityTables = fakeSupabaseIdentityTables({
+    user_roles: [
+      {
+        key: SEED_DB_KEYS.userRoles.user1User,
+        userKey: databaseOwnedUserKey,
+        roleKey: SEED_DB_KEYS.roles.creator,
+        ...audit,
+      },
+    ],
+    users: [
+      {
+        key: databaseOwnedUserKey,
+        displayName: "Database Creator",
+        email: "user1@example.invalid",
+        authProvider: "supabase-auth",
+        authProviderUserId: "stale-supabase-user-1",
+        isActive: true,
+        ...audit,
+      },
+    ],
+  });
+  const fakeSupabase = await startFakeSupabaseAuthServer({ identityTables });
+  await withEnv({
+    GAMEFOUNDRY_DATABASE_SSL: "disable",
+    GAMEFOUNDRY_DATABASE_URL: "postgres://contract_user:contract_password@supabase-provider.example.test/gamefoundry",
+    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
+    GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
+    GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
+    GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
+  }, async () => {
+    const server = await startApiServer({
+      supabasePostgresClient: fakePostgresIdentityClient(identityTables),
+    });
+    try {
+      const signIn = await postApiPayload(server.baseUrl, "/api/auth/sign-in", {
+        email: "user1@example.invalid",
+        password: "not-stored-locally",
+      });
+      assert.equal(signIn.status, 503);
+      assert.equal(signIn.payload.ok, false);
+      assert.equal(signIn.payload.error, "Account identity setup is incomplete. Please contact support.");
+      assert.equal(JSON.stringify(signIn.payload).includes("stale-supabase-user-1"), false);
+      assert.equal(JSON.stringify(signIn.payload).includes(databaseOwnedUserKey), false);
+
+      const current = await apiJson(server.baseUrl, "/api/session/current");
+      assert.equal(current.authenticated, false);
+      assert.equal(current.userKey, null);
     } finally {
       await server.close();
     }

@@ -8,9 +8,6 @@ import {
   pickerDiagnosticForRole,
 } from "../persistence/tool-repositories/assets-mock-repository.js";
 import {
-  createObjectsToolMockRepository,
-} from "../persistence/tool-repositories/objects-mock-repository.js";
-import {
   createHitboxesToolMockRepository,
 } from "../persistence/tool-repositories/hitboxes-mock-repository.js";
 import {
@@ -66,6 +63,7 @@ import {
   TAGS_TOOL_TABLES,
   createGameConfigurationApiService,
   createGameDesignApiService,
+  createObjectsApiService,
   createTagsApiService,
 } from "../toolbox-api/alfa-tool-services.mjs";
 import {
@@ -3787,9 +3785,11 @@ class ApiRuntimeDataSource {
     messagesPostgresClient = null,
     messagesService = null,
     repoRoot = process.cwd(),
+    supabasePostgresClient = null,
   } = {}) {
     this.messagesService = messagesService || createMessagesPostgresService({ postgresClient: messagesPostgresClient });
     this.gameJourneyCompletionMetricsPostgresClient = gameJourneyCompletionMetricsPostgresClient;
+    this.supabasePostgresClient = supabasePostgresClient;
     this.repositoryCounter = 1;
     this.repositoryById = new Map();
     this.sessionModeId = FIXED_ACCOUNT_SESSION_MODE.id;
@@ -3826,7 +3826,7 @@ class ApiRuntimeDataSource {
 
   supabaseDatabaseAdapter(action) {
     this.assertSupabaseDatabaseProvider(action);
-    const adapter = new SupabasePostgresProviderAdapter();
+    const adapter = new SupabasePostgresProviderAdapter({ postgresClient: this.supabasePostgresClient });
     adapter.connect();
     return adapter;
   }
@@ -3837,8 +3837,7 @@ class ApiRuntimeDataSource {
   }
 
   async readSupabaseIdentityTablesUnchecked(action) {
-    this.assertSupabaseDatabaseProvider(action);
-    const adapter = new SupabasePostgresProviderAdapter();
+    const adapter = this.supabaseDatabaseAdapter(action);
     const [users, roles, userRoles] = await Promise.all([
       adapter.getUsers(),
       adapter.getRoles(),
@@ -4077,13 +4076,15 @@ class ApiRuntimeDataSource {
       ...this.sharedOptions,
       sessionUserKey: () => this.sessionUserKey,
     });
-    this.objectsRepository = createObjectsToolMockRepository({
-      gameWorkspaceRepository: this.gameWorkspaceRepository,
-      ...this.sharedOptions,
+    this.objectsRepository = createObjectsApiService({
+      ...alfaServiceOptions,
+      sessionUserKey: () => this.sessionUserKey,
     });
     this.hitboxesRepository = createHitboxesToolMockRepository({
       gameWorkspaceRepository: this.gameWorkspaceRepository,
-      objectsRepository: this.objectsRepository,
+      objectsRepository: {
+        listObjects: (gameId = "") => this.objectsRepository.listCachedObjects(gameId),
+      },
       ...this.sharedOptions,
       sessionUserKey: () => this.sessionUserKey,
     });
@@ -6202,15 +6203,20 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
       throw authUnavailableError(action, "Supabase Auth did not return an account identity to resolve.");
     }
     const tables = await this.readSupabaseIdentityTables(`${action} session resolution`);
-    const matchingUser = (tables.users || []).find((user) => {
+    const activeSupabaseUsers = (tables.users || []).filter((user) => {
       if (user.isActive === false || user.authProvider !== SUPABASE_AUTH_PROVIDER_ID) {
         return false;
       }
-      return (authUserId && String(user.authProviderUserId || "") === authUserId) ||
-        (authEmail && normalizedAuthEmail(user.email).toLowerCase() === authEmail.toLowerCase());
+      return true;
     });
+    const matchingUser = activeSupabaseUsers.find((user) => authUserId && String(user.authProviderUserId || "") === authUserId);
     if (!matchingUser) {
-      throw authIdentitySetupError(action, "Account authentication succeeded, but no matching users record exists for this account.");
+      const matchingEmailUser = activeSupabaseUsers.find((user) =>
+        authEmail && normalizedAuthEmail(user.email).toLowerCase() === authEmail.toLowerCase());
+      const diagnostic = matchingEmailUser
+        ? "Account authentication succeeded, but the users record is not linked to this account identity. Run the approved DEV identity sync before signing in."
+        : "Account authentication succeeded, but no matching users record exists for this account.";
+      throw authIdentitySetupError(action, diagnostic);
     }
     const session = sessionUserFromIdentityTables(tables, matchingUser.key, this.sessionModeId, "Supabase identity");
     if (!session.authenticated) {
@@ -6230,7 +6236,7 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
       throw authIdentitySetupError(action, "Supabase Auth did not return the user id and email required for identity provisioning.");
     }
 
-    const adapter = new SupabasePostgresProviderAdapter();
+    const adapter = this.supabaseDatabaseAdapter(`${action} identity provisioning`);
     const tables = await this.readSupabaseIdentityTablesUnchecked(`${action} identity provisioning`);
     const users = tables.users || [];
     const roles = tables.roles || [];
@@ -7415,12 +7421,14 @@ export function createLocalApiRouter({
   messagesPostgresClient = null,
   messagesService = null,
   repoRoot = process.cwd(),
+  supabasePostgresClient = null,
 } = {}) {
   const dataSource = new ApiRuntimeDataSource({
     gameJourneyCompletionMetricsPostgresClient,
     messagesPostgresClient,
     messagesService,
     repoRoot,
+    supabasePostgresClient,
   });
 
   async function handleApiRuntimeRequest(request, response, requestUrl) {

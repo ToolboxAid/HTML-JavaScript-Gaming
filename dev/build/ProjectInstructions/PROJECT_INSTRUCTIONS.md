@@ -1,3 +1,78 @@
+# Startup Contract
+
+Before performing ANY task, Codex must:
+
+- Read `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md`.
+- Read the latest `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md` from the repository.
+- Treat repository Project Instructions as the only authoritative source.
+- Discard previously remembered Project Instructions before every Codex task.
+- Never allow conversation memory to override repository instructions.
+- Load all referenced instruction documents required by this file and the task.
+- Validate canonical paths.
+- Load and validate `dev/build/ProjectInstructions/PROJECT_BRANCHING_POLICY.md`.
+- Validate ZIP and report locations.
+
+Every Codex response must begin with:
+
+```text
+Startup Validation
+==================
+
+Reading latest (v<version>) Project Instructions... PASS
+
+Instruction Source
+------------------
+Repository ........ PASS
+Cached Memory ..... DISCARDED
+
+Canonical paths
+---------------
+Reports .......... dev/reports
+ZIPs ............. dev/workspace/zips
+
+Branching Policy
+----------------
+Source ............ PROJECT_BRANCHING_POLICY.md
+Version ........... <version>
+Status ............ PASS
+
+Legacy path check
+-----------------
+tmp/ ............. PASS (not used)
+docs_build/ ...... PASS (not used)
+
+Project Instructions loaded successfully.
+```
+
+If Codex cannot determine the current version or cannot validate canonical paths, it must STOP before performing any work.
+
+Failure response example:
+
+```text
+Startup Validation
+==================
+
+Unable to determine Project Instructions version.
+
+STOP
+
+Project Instructions were not successfully loaded.
+```
+
+This startup validation applies to every Codex task and outcome:
+
+- PLAN
+- BUILD
+- APPLY
+- Review
+- Audit
+- Governance
+- Validation
+- Read-only
+- Hard stop
+- No-op
+- Partial completion
+
 # Project Instructions
 
 ## Purpose
@@ -22,6 +97,7 @@ Canonical active teams:
 - Alfa
 - Bravo
 - Charlie
+- Delta
 - Golf
 
 Official NATO spellings:
@@ -41,23 +117,27 @@ Rules:
 
 ## Current Version/Date
 
-- Project Instructions Version: 2026-06-28.PR_26172_OWNER_034
+- Project Instructions Version: 2026.06.28.002
 - Date: 2026-06-28
 - Owner: OWNER
 
 ## Required Read Order
 
-1. Always read `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md`.
-2. Always read `dev/build/ProjectInstructions/PROJECT_STATE.md`.
-3. Always read `dev/build/ProjectInstructions/repository/canonical_repository_structure.md`.
-4. For Codex workflow command interpretation, read `dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`.
-5. For Start of Day, read `dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md`.
-6. Load team, backlog, database, runtime, theme, or other specialist documents only when the current task requires them.
+1. Always read `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md`.
+2. Always read `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md`.
+3. Always read `dev/build/ProjectInstructions/PROJECT_BRANCHING_POLICY.md`.
+4. Always read `dev/build/ProjectInstructions/PROJECT_STATE.md`.
+5. Always read `dev/build/ProjectInstructions/repository/canonical_repository_structure.md`.
+6. For Codex workflow command interpretation, read `dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`.
+7. For Start of Day, read `dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md`.
+8. Load team, backlog, database, runtime, theme, or other specialist documents only when the current task requires them.
 
 ## Load Graph
 
 ```text
 PROJECT_INSTRUCTIONS.md
+|-- PROJECT_INSTRUCTIONS_VERSION.md
+|-- PROJECT_BRANCHING_POLICY.md
 |-- PROJECT_STATE.md
 |-- repository/canonical_repository_structure.md
 |-- standards/CODEX_WORKFLOW_COMMANDS.md
@@ -76,7 +156,9 @@ PROJECT_INSTRUCTIONS.md
 
 ## When-To-Load Rules
 
+- `PROJECT_INSTRUCTIONS_VERSION.md`: always.
 - `PROJECT_INSTRUCTIONS.md`: always.
+- `PROJECT_BRANCHING_POLICY.md`: always.
 - `PROJECT_STATE.md`: always.
 - `repository/canonical_repository_structure.md`: always.
 - `standards/CODEX_WORKFLOW_COMMANDS.md`: Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, invalid command, or command interpretation tasks.
@@ -109,6 +191,8 @@ That file owns Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, and invalid command be
 
 ## Referenced Documents
 
+- Project Instructions version: `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md`
+- Project branching policy: `dev/build/ProjectInstructions/PROJECT_BRANCHING_POLICY.md`
 - Project state: `dev/build/ProjectInstructions/PROJECT_STATE.md`
 - Repository folder placement SSoT: `dev/build/ProjectInstructions/repository/canonical_repository_structure.md`
 - Codex workflow commands: `dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`
@@ -130,7 +214,9 @@ That file owns Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, and invalid command be
 
 ## Single Source Of Truth Decisions
 
-- `PROJECT_INSTRUCTIONS.md` owns the manual entry point, required read order, load graph, stop gates, execution modes, and pointers.
+- `PROJECT_INSTRUCTIONS_VERSION.md` owns the current Project Instructions version and startup version proof.
+- `PROJECT_INSTRUCTIONS.md` owns the manual entry point, startup contract, required read order, load graph, stop gates, execution modes, and pointers.
+- `PROJECT_BRANCHING_POLICY.md` owns Independent PR, Stacked PR, Owner branching, non-Owner team branching, exception, dependency, review, merge, and hard-stop rules.
 - `PROJECT_STATE.md` owns machine-friendly project state metadata.
 - `repository/canonical_repository_structure.md` owns all folder placement and file-placement rules.
 - `standards/CODEX_WORKFLOW_COMMANDS.md` owns Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, and invalid command behavior.

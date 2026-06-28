@@ -73,12 +73,6 @@
         document.querySelectorAll("details.vertical-accordion").forEach(wireVerticalAccordionChevron);
     }
 
-    function updateToolDisplayModeChevron() {
-        const iconName = displayMode.open ? "chevron-up" : "chevron-down";
-        const shell = createChevronShell(iconName, "tool-display-mode__chevron", "tool-display-mode__chevron-icon");
-        replaceIconNode(summary, ":scope > .tool-display-mode__chevron", shell);
-    }
-
     function updateToolDisplayModeModeIcon() {
         const iconName = document.body.classList.contains("tool-focus-mode") || document.fullscreenElement
             ? "exit-fullscreen"
@@ -107,7 +101,6 @@
     function refreshThemeIcons() {
         refreshVerticalAccordionChevrons();
         updateToolDisplayModeModeIcon();
-        updateToolDisplayModeChevron();
         refreshHorizontalToggleIcons();
     }
 
@@ -146,7 +139,6 @@
     const summary = document.createElement("summary");
     summary.setAttribute("aria-label", "Tool Display Mode");
     summary.title = "Tool Display Mode";
-    summary.appendChild(createThemeIconNode("fullscreen", "layout-icon tool-display-mode__mode-icon"));
 
     const badge = document.createElement("img");
     badge.className = "tool-display-mode__badge";
@@ -154,59 +146,20 @@
     badge.alt = toolName + " badge";
     summary.appendChild(badge);
 
-    const fullscreenName = document.createElement("span");
-    fullscreenName.className = "tool-display-mode__fullscreen-name";
-    fullscreenName.textContent = toolName;
-    summary.appendChild(fullscreenName);
-    displayMode.appendChild(summary);
-    displayMode.addEventListener("toggle", updateToolDisplayModeChevron);
-
-    const body = document.createElement("div");
-    body.className = "tool-display-mode__body";
-
-    const identityRow = document.createElement("div");
-    identityRow.className = "tool-display-mode__identity-row content-cluster";
-    identityRow.dataset.toolDisplayModeRow = "identity";
+    const toolNameLabel = document.createElement("span");
+    toolNameLabel.className = "tool-display-mode__tool-name";
+    toolNameLabel.textContent = toolName;
+    summary.appendChild(toolNameLabel);
 
     const character = document.createElement("img");
     character.className = "tool-display-mode__character";
     character.src = publicImageSource(slot.dataset.toolCharacterSrc, "characters");
     character.alt = toolName + " character";
-    identityRow.appendChild(character);
+    summary.appendChild(character);
 
-    const description = document.createElement("span");
-    description.className = "tool-display-mode__description";
-    description.textContent = toolName;
-    identityRow.appendChild(description);
-    body.appendChild(identityRow);
-    displayMode.appendChild(body);
+    summary.appendChild(createThemeIconNode("fullscreen", "layout-icon tool-display-mode__mode-icon"));
+    displayMode.appendChild(summary);
     slot.replaceWith(displayMode);
-
-    function createNavigationControl(direction, target) {
-        const controlLabel = direction === "previous" ? "Previous" : "Next";
-        const dataAttribute = direction === "previous" ? "toolNavPrevious" : "toolNavNext";
-        const iconName = direction === "previous" ? "chevron-left" : "chevron-right";
-        const icon = createThemeIconNode(iconName, "layout-icon tool-display-mode__navigation-icon");
-        const label = document.createTextNode(controlLabel + ": " + (target?.label || "Unavailable"));
-
-        if (!target || target.disabled) {
-            const disabledText = document.createElement("span");
-            disabledText.className = "pill tool-display-mode__navigation-link tool-display-mode__navigation-link--disabled";
-            disabledText.dataset[dataAttribute] = "disabled";
-            disabledText.append(icon, label);
-            return disabledText;
-        }
-
-        const link = document.createElement("a");
-        link.className = "tool-display-mode__navigation-link";
-        link.href = target.href;
-        link.dataset[dataAttribute] = target.kind;
-        if (target.group) {
-            link.dataset.toolNavGroup = target.group;
-        }
-        link.append(icon, label);
-        return link;
-    }
 
     function applyRegistryImages(registry) {
         const registryTool = registry.getToolBySlug(toolSlug);
@@ -238,37 +191,26 @@
             leftColumnTitle.textContent = registryName;
         }
         badge.alt = registryName + " badge";
-        fullscreenName.textContent = registryName;
+        toolNameLabel.textContent = registryName;
         character.alt = registryName + " character";
-        description.textContent = registryName;
         badge.src = registry.getToolImageSource(registryTool, "badge");
         character.src = registry.getToolImageSource(registryTool, "tool");
     }
 
-    async function renderToolNavigation() {
+    async function applyRegistryDisplayData() {
         try {
             const registry = await import("/toolbox/tool-registry-api-client.js");
             const registryDiagnostic = registry.getToolRegistryApiDiagnostic();
             if (registryDiagnostic) {
                 throw new Error(registryDiagnostic);
             }
-            const navigation = registry.getToolNavigationTargets(toolSlug);
             applyRegistryImages(registry);
-            const navigationRow = document.createElement("nav");
-            navigationRow.className = "tool-display-mode__navigation-row content-cluster";
-            navigationRow.dataset.toolDisplayModeRow = "navigation";
-            navigationRow.setAttribute("aria-label", "Tool build-order navigation");
-            navigationRow.append(
-                createNavigationControl("previous", navigation.previous),
-                createNavigationControl("next", navigation.next)
-            );
-            body.appendChild(navigationRow);
         } catch (error) {
-            console.warn("Tool navigation could not be loaded.", error);
+            console.warn("Tool display mode registry metadata could not be loaded.", error);
         }
     }
 
-    renderToolNavigation();
+    applyRegistryDisplayData();
 
     async function enterToolMode() {
         document.body.classList.add("tool-focus-mode");
@@ -317,7 +259,6 @@
     });
 
     refreshVerticalAccordionChevrons();
-    updateToolDisplayModeChevron();
 
     document.querySelectorAll(".tool-workspace").forEach(function (workspace) {
         const columns = workspace.querySelectorAll(":scope > .tool-column");

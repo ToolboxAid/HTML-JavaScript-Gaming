@@ -101,6 +101,9 @@ PLAN_PR is planning only.
 Rules:
 - Do not change files unless the user explicitly requests a planning artifact update.
 - Identify the correct branch or start point.
+- Identify whether the PR is Independent or Stacked.
+- For Stacked PRs, identify the previous PR branch and dependency order.
+- For non-Owner team PRs that start from `main`, identify the explicit OWNER `standalone/no-dependency` approval.
 - Identify the intended PR name, purpose, and scope.
 - Identify required validation and reporting.
 - Identify the required ZIP outcome path from the Codex Completion Contract.
@@ -113,12 +116,16 @@ BUILD_PR is the implementation phase.
 
 Rules:
 - Verify branch and worktree rules for the PR before changing files.
+- Verify the requested PR branching model before changing files.
+- Verify non-Owner team PRs are stacked by default unless OWNER marked the PR `standalone/no-dependency`.
 - Use the latest Project Instructions.
 - Stay inside the approved PR purpose.
 - Create required reports.
 - Create the required repo-structured ZIP artifact for the attempted PR according to the Codex Completion Contract.
 - Run scoped validation required by the PR and Project Instructions.
 - HARD STOP on wrong branch.
+- HARD STOP when the current/start branch does not match the requested Independent or Stacked PR model.
+- HARD STOP when a non-Owner team PR starts from `main` without OWNER `standalone/no-dependency` approval.
 - HARD STOP on dirty worktree when the PR requires a clean start.
 - HARD STOP on scope conflict.
 - HARD STOP on missing required Project Instructions.
