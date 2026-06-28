@@ -271,6 +271,7 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status 
     await expect(page.getByRole("heading", { level: 2, name: "Sprite Details" })).toBeVisible();
     await expect(page.locator("[data-sprites-frame-strip]")).toBeVisible();
     await expect(page.locator("[data-sprites-frame-status]")).toContainText("1 unsaved frame");
+    await expect(page.locator("[data-sprites-animation-status]")).toContainText("Animation preview is stopped");
     await expect(page.locator("[data-sprites-toolbar]")).toBeVisible();
     await expect(page.getByRole("button", { name: "Pencil tool" })).toBeEnabled();
     await expect(page.getByRole("button", { name: "Eraser tool" })).toBeEnabled();
@@ -527,6 +528,36 @@ test("Sprite Creator edits unsaved frame strip frames", async ({ page }) => {
     await expect(page.locator("[data-sprites-frame-card]")).toHaveCount(2);
     await expect(page.locator("[data-sprites-frame-status]")).toContainText("Frame 2 is selected");
     await expectCenterAndPreviewPainted(page, 2, 2, "sprite-canvas-cell--blue");
+
+    expect(failures.failedRequests).toEqual([]);
+    expect(failures.pageErrors).toEqual([]);
+    expect(failures.consoleErrors).toEqual([]);
+  } finally {
+    await server.close();
+  }
+});
+
+test("Sprite Creator previews unsaved animation frames", async ({ page }) => {
+  const server = await startSpriteShellTestServer();
+  const failures = collectPageFailures(page);
+
+  try {
+    await page.goto(`${server.baseUrl}/toolbox/sprites/index.html`, { waitUntil: "networkidle" });
+
+    await page.getByRole("button", { name: "Gold editor color" }).click();
+    await spriteCell(page, 1, 1).click();
+    await page.getByRole("button", { name: "Add Frame" }).click();
+    await page.getByRole("button", { name: "Blue editor color" }).click();
+    await spriteCell(page, 1, 1).click();
+
+    await page.getByRole("button", { name: "Play Preview" }).click();
+    await expect(page.getByRole("button", { name: "Stop Preview" })).toBeEnabled();
+    await expect(page.locator("[data-sprites-animation-status]")).toContainText("Playing Frame 1");
+    await expect(page.locator("[data-sprites-animation-status]")).toContainText("Playing Frame 2", { timeout: 1500 });
+
+    await page.getByRole("button", { name: "Stop Preview" }).click();
+    await expect(page.locator("[data-sprites-animation-status]")).toContainText("Selected Frame 2 is shown");
+    await expectCenterAndPreviewPainted(page, 1, 1, "sprite-canvas-cell--blue");
 
     expect(failures.failedRequests).toEqual([]);
     expect(failures.pageErrors).toEqual([]);

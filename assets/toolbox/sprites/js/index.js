@@ -36,6 +36,10 @@ const editorHistory = {
   redoStack: [],
   undoStack: [],
 };
+const animationPreview = {
+  frameIndex: 0,
+  timerId: null,
+};
 
 function gridLabel(size) {
   return `Sprite Creator ${size} by ${size} pixel canvas`;
@@ -467,12 +471,12 @@ function renderPixelsToCanvas(canvas, paintedPixels, gridSize) {
   }
 }
 
-function renderPreview() {
+function renderPreview(frame = currentFrame()) {
   const canvas = document.querySelector("[data-sprites-preview-canvas]");
   if (!canvas) {
     return;
   }
-  renderPixelsToCanvas(canvas, editorState.paintedPixels, editorState.gridSize);
+  renderPixelsToCanvas(canvas, frame.paintedPixels, editorState.gridSize);
 }
 
 function renderFrameStrip() {
@@ -556,6 +560,63 @@ function deleteFrame() {
   applyPaintedPixelsToGrid();
   updateDraftStatus();
   updateHistoryControls();
+}
+
+function updateAnimationControls(isPlaying) {
+  const playButton = document.querySelector("[data-sprites-play-animation]");
+  const stopButton = document.querySelector("[data-sprites-stop-animation]");
+  if (playButton) {
+    playButton.disabled = isPlaying;
+  }
+  if (stopButton) {
+    stopButton.disabled = !isPlaying;
+  }
+}
+
+function animationStatusText(prefix, frameIndex = editorState.activeFrameIndex) {
+  return `${prefix} Frame ${frameIndex + 1} of ${editorState.frames.length}. Unsaved preview only.`;
+}
+
+function showAnimationFrame(frameIndex) {
+  const normalizedIndex = frameIndex % editorState.frames.length;
+  animationPreview.frameIndex = normalizedIndex;
+  renderPreview(editorState.frames[normalizedIndex]);
+  const status = document.querySelector("[data-sprites-animation-status]");
+  if (status) {
+    status.textContent = animationStatusText("Playing", normalizedIndex);
+  }
+}
+
+function stopAnimationPreview(message = "Animation preview stopped.") {
+  if (animationPreview.timerId) {
+    clearInterval(animationPreview.timerId);
+    animationPreview.timerId = null;
+  }
+  renderPreview(currentFrame());
+  updateAnimationControls(false);
+  const status = document.querySelector("[data-sprites-animation-status]");
+  if (status) {
+    status.textContent = `${message} Selected Frame ${currentFrame().frameNumber} is shown.`;
+  }
+}
+
+function playAnimationPreview() {
+  const status = document.querySelector("[data-sprites-animation-status]");
+  if (editorState.frames.length < 2) {
+    if (status) {
+      status.textContent = "Animation preview needs at least two unsaved frames.";
+    }
+    return;
+  }
+  if (animationPreview.timerId) {
+    clearInterval(animationPreview.timerId);
+  }
+  animationPreview.frameIndex = 0;
+  updateAnimationControls(true);
+  showAnimationFrame(animationPreview.frameIndex);
+  animationPreview.timerId = setInterval(() => {
+    showAnimationFrame((animationPreview.frameIndex + 1) % editorState.frames.length);
+  }, DEFAULT_FRAME_DURATION_MS);
 }
 
 function exportPreviewPng() {
@@ -701,6 +762,18 @@ function wireFrameActions() {
   }
 }
 
+function wireAnimationActions() {
+  const playButton = document.querySelector("[data-sprites-play-animation]");
+  if (playButton) {
+    playButton.addEventListener("click", playAnimationPreview);
+  }
+
+  const stopButton = document.querySelector("[data-sprites-stop-animation]");
+  if (stopButton) {
+    stopButton.addEventListener("click", () => stopAnimationPreview());
+  }
+}
+
 function wireHistoryActions() {
   const undoButton = document.querySelector("[data-sprites-undo]");
   if (undoButton) {
@@ -741,6 +814,7 @@ wireDrawingTools();
 wirePaletteButtons();
 wireCanvasActions();
 wireFrameActions();
+wireAnimationActions();
 wireHistoryActions();
 wireZoomControls();
 wireExportButton();
@@ -751,3 +825,4 @@ setZoomLevel(editorState.zoomLevel);
 updateHistoryControls();
 renderPreview();
 renderFrameStrip();
+updateAnimationControls(false);
