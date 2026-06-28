@@ -1,3 +1,4 @@
+import { getSessionCurrent } from "../../../../src/api/session-api-client.js";
 import {
   createServerRepositoryClient,
   readServerToolConstants,
@@ -108,6 +109,23 @@ function setText(element, value) {
   if (element) {
     element.textContent = value;
   }
+}
+
+function currentSession() {
+  try {
+    return getSessionCurrent();
+  } catch {
+    return { authenticated: false };
+  }
+}
+
+function redirectGuestWriteAction() {
+  if (currentSession()?.authenticated === true) {
+    return false;
+  }
+  setText(elements.log, "Sign in before saving Objects.");
+  window.location.href = new URL("/account/sign-in.html", window.location.href).href;
+  return true;
 }
 
 function listItem(text) {
@@ -585,6 +603,9 @@ function readPersistedObjects() {
 }
 
 function persistDraftedObjects(nextObjects) {
+  if (redirectGuestWriteAction()) {
+    return null;
+  }
   const normalizedObjects = nextObjects.map(cloneObject);
   let result = objectsRepository.replaceObjects(normalizedObjects);
   if (result?.error) {

@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
+import { SEED_DB_KEYS } from "../../../../src/dev-runtime/seed/seed-db-keys.mjs";
 
 const TYPE_OPTIONS = ["Collectible", "Custom", "Decoration", "Enemy", "Goal", "Hazard", "Hero", "Platform", "Projectile", "Spawn Point", "Wall"];
 const OLD_SAMPLE_PATH_PATTERN = new RegExp(["M" + "VP", "Padd" + "le", "Ba" + "ll"].join("|"), "i");
@@ -74,9 +75,42 @@ function collectPageFailures(page) {
   return { consoleErrors, failedRequests, pageErrors };
 }
 
-async function openObjectsPage(page) {
+async function postApiPayload(baseUrl, path, body = {}) {
+  const response = await fetch(`${baseUrl}${path}`, {
+    body: JSON.stringify(body),
+    headers: { "content-type": "application/json" },
+    method: "POST",
+  });
+  const payload = await response.json();
+  return { payload, response };
+}
+
+async function signInCreator(baseUrl) {
+  const { response } = await postApiPayload(baseUrl, "/api/session/user", {
+    userKey: SEED_DB_KEYS.users.user1,
+  });
+  expect(response.ok).toBe(true);
+}
+
+async function clearObjectsForActiveGame(baseUrl) {
+  const repository = await postApiPayload(baseUrl, "/api/toolbox/objects/repositories", { options: {} });
+  expect(repository.response.ok).toBe(true);
+  const repositoryId = repository.payload.data.repositoryId;
+  const cleared = await postApiPayload(baseUrl, `/api/toolbox/objects/repositories/${repositoryId}/methods/replaceObjects`, {
+    args: [[]],
+  });
+  expect(cleared.response.ok).toBe(true);
+}
+
+async function openObjectsPage(page, { signedIn = true } = {}) {
   const server = await startRepoServer();
   const failures = collectPageFailures(page);
+  await signInCreator(server.baseUrl);
+  await clearObjectsForActiveGame(server.baseUrl);
+  if (!signedIn) {
+    const { response } = await postApiPayload(server.baseUrl, "/api/session/logout", {});
+    expect(response.ok).toBe(true);
+  }
   await page.addInitScript(({ apiUrl, siteUrl }) => {
     window.GameFoundryPublicConfig = {
       apiUrl,
@@ -337,6 +371,26 @@ test("Objects table add disables while active row can cancel, save, edit, and tr
     await expect(addButton).toBeEnabled();
 
     await expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
+test("Guest save redirects to sign-in", async ({ page }) => {
+  const failures = await openObjectsPage(page, { signedIn: false });
+
+  try {
+    await page.getByRole("button", { name: "Add Object" }).click();
+    await fillActiveRow(page, {
+      name: "Guest Object",
+      type: "Hero",
+    });
+    await page.locator("[data-objects-save-row]").click();
+    await page.waitForURL(/\/account\/sign-in\.html$/);
+    expect(failures.failedRequests.filter((request) => /^\d/.test(request) && !request.includes("/account/sign-in.html"))).toEqual([]);
+    expect(failures.pageErrors).toEqual([]);
+    expect(failures.consoleErrors).toEqual([]);
   } finally {
     await workspaceV2CoverageReporter.stop(page);
     await failures.server.close();

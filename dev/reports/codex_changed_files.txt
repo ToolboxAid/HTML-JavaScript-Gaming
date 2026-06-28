@@ -1,6 +1,13 @@
-dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-dev/reports/PR_26180_OWNER_002-add-delta-to-canonical-active-teams_report.md
-dev/reports/PR_26180_OWNER_002-add-delta-to-canonical-active-teams_validation-checklist.md
-dev/reports/PR_26180_OWNER_002-add-delta-to-canonical-active-teams_manual-validation-notes.md
-dev/reports/codex_changed_files.txt
-dev/reports/codex_review.diff
+﻿M	assets/toolbox/objects/js/index.js
+A	dev/reports/PR_26179_ALFA_011-objects-manager-mvp_branch-validation.md
+A	dev/reports/PR_26179_ALFA_011-objects-manager-mvp_manual-validation-notes.md
+A	dev/reports/PR_26179_ALFA_011-objects-manager-mvp_report.md
+A	dev/reports/PR_26179_ALFA_011-objects-manager-mvp_requirement-checklist.md
+A	dev/reports/PR_26179_ALFA_011-objects-manager-mvp_validation-lane.md
+A	dev/reports/PR_26179_ALFA_011-objects-manager-mvp_validation-report.md
+M	dev/reports/codex_changed_files.txt
+M	dev/reports/codex_review.diff
+A	dev/tests/dev-runtime/ObjectsApiService.test.mjs
+M	dev/tests/playwright/tools/ObjectsTool.spec.mjs
+M	src/dev-runtime/server/local-api-router.mjs
+M	src/dev-runtime/toolbox-api/alfa-tool-services.mjs
