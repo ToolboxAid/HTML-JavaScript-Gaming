@@ -1,52 +1,122 @@
-﻿diff --git a/dev/tests/playwright/tools/SpritesToolShell.spec.mjs b/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-index af9c022c7..9b6aefb61 100644
+﻿diff --git a/assets/toolbox/sprites/js/index.js b/assets/toolbox/sprites/js/index.js
+index 9db241a60..3ed671948 100644
+--- a/assets/toolbox/sprites/js/index.js
++++ b/assets/toolbox/sprites/js/index.js
+@@ -42,6 +42,7 @@ function normalizeColorKey(colorKey) {
+ }
+ 
+ function clearCellColor(cell) {
++  cell.classList.remove("is-painted");
+   cell.classList.remove(...EDITOR_COLOR_KEYS.map((colorKey) => `sprite-canvas-cell--${colorKey}`));
+   delete cell.dataset.spriteColorKey;
+ }
+@@ -99,7 +100,6 @@ function paintCell(cell) {
+   const key = pixelKey(cell.dataset.spritePixelRow, cell.dataset.spritePixelColumn);
+   if (editorState.activeTool === "eraser") {
+     editorState.paintedPixels.delete(key);
+-    cell.classList.remove("is-painted");
+     clearCellColor(cell);
+   } else {
+     editorState.paintedPixels.set(key, editorState.activeColor);
+@@ -122,6 +122,20 @@ function fillGrid() {
+   updateDraftStatus();
+ }
+ 
++function clearCanvas() {
++  const grid = document.querySelector("[data-sprites-pixel-grid]");
++  editorState.paintedPixels.clear();
++  if (grid) {
++    grid.querySelectorAll("[data-sprite-pixel-row]").forEach(clearCellColor);
++  }
++  updateDraftStatus();
++}
++
++function resetGridToDefault() {
++  setGridSize(DEFAULT_GRID_SIZE);
++  clearCanvas();
++}
++
+ function editorColorValue(colorKey) {
+   const variableName = EDITOR_COLOR_CSS_VARIABLES[normalizeColorKey(colorKey)];
+   const value = getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
+@@ -252,6 +266,18 @@ function wirePaletteButtons() {
+   });
+ }
+ 
++function wireCanvasActions() {
++  const clearButton = document.querySelector("[data-sprites-clear-canvas]");
++  if (clearButton) {
++    clearButton.addEventListener("click", clearCanvas);
++  }
++
++  const resetButton = document.querySelector("[data-sprites-reset-grid]");
++  if (resetButton) {
++    resetButton.addEventListener("click", resetGridToDefault);
++  }
++}
++
+ function wireExportButton() {
+   const button = document.querySelector("[data-sprites-export-png]");
+   if (button) {
+@@ -262,6 +288,7 @@ function wireExportButton() {
+ wireGridControls();
+ wireDrawingTools();
+ wirePaletteButtons();
++wireCanvasActions();
+ wireExportButton();
+ setGridSize(DEFAULT_GRID_SIZE);
+ setActiveTool(editorState.activeTool);
+diff --git a/dev/tests/playwright/tools/SpritesToolShell.spec.mjs b/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
+index 9b6aefb61..b3f86a2e6 100644
 --- a/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
 +++ b/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-@@ -219,6 +219,8 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status
-     await expect(page.locator("[data-sprites-work-area]")).toBeVisible();
-     await expect(page.locator("[data-sprites-details-panel]")).toBeVisible();
-     await expect(page.locator("[data-sprites-footer-status]")).toBeVisible();
-+    await expect(page.locator("main")).toContainText("Choose a drawing action for the current unsaved sprite draft.");
-+    await expect(page.locator("main")).toContainText("Saving to the sprite library remains deferred");
-     await expect(page.locator("[data-sprites-tools-panel]")).toContainText("Sprite Tools");
-     await expect(page.getByText("Drawing Tools", { exact: true })).toBeVisible();
-     await expect(page.getByText("Canvas Setup", { exact: true })).toBeVisible();
-@@ -274,7 +276,7 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status
-     await expect(page.locator("[data-sprites-export-status]")).toContainText("PNG downloaded");
-     await expect(page.locator("[data-sprites-shell-status]")).toContainText("Editor ready");
-     await expect(page.locator("main")).toContainText("Palette/Colors remains the reusable color source");
--    await expect(page.locator("main")).not.toContainText(/Not implemented yet|future rebuild work|Static wireframe only|Plan sprite creation/i);
-+    await expect(page.locator("main")).not.toContainText(/Not implemented yet|future rebuild work|Static wireframe only|Plan sprite creation|later editor slice/i);
-     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
- 
-     expect(failures.failedRequests).toEqual([]);
-diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_028-sprites-editor-polish.md b/docs_build/dev/reports/PR_26179_CHARLIE_028-sprites-editor-polish.md
+@@ -262,6 +262,19 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status
+     await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(1024);
+     await expect(page.locator("[data-sprites-pixel-grid] .sprite-canvas-cell--blue")).toHaveCount(1024);
+     await expect(page.locator("[data-sprites-draft-status]")).toContainText("1024 draft pixels painted");
++    await page.getByRole("button", { name: "Clear Canvas" }).click();
++    await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(0);
++    await expect(page.locator("[data-sprites-draft-status]")).toContainText("empty draft");
++    await page.getByRole("button", { name: "Fill tool" }).click();
++    await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(1024);
++    await page.getByRole("button", { name: "Reset to 16x16" }).click();
++    await expect(page.locator("[data-sprites-pixel-grid]")).toHaveAttribute("aria-label", "Sprite Creator 16 by 16 pixel canvas");
++    await expect(page.locator("[data-sprites-pixel-grid] [role='gridcell']")).toHaveCount(256);
++    await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(0);
++    await expect(page.locator("[data-sprites-draft-status]")).toContainText("empty draft");
++    await page.getByRole("button", { name: "Blue editor color" }).click();
++    await page.getByRole("button", { name: "Fill tool" }).click();
++    await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(256);
+     await expect(page.locator("[data-sprites-preview-canvas]")).toBeVisible();
+     const previewHasPaint = await page.locator("[data-sprites-preview-canvas]").evaluate((canvas) => {
+       const context = canvas.getContext("2d");
+diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_029-sprites-clear-reset-controls.md b/docs_build/dev/reports/PR_26179_CHARLIE_029-sprites-clear-reset-controls.md
 new file mode 100644
-index 000000000..43a4c0b56
+index 000000000..3f62e1528
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26179_CHARLIE_028-sprites-editor-polish.md
-@@ -0,0 +1,72 @@
-+# PR_26179_CHARLIE_028-sprites-editor-polish
++++ b/docs_build/dev/reports/PR_26179_CHARLIE_029-sprites-clear-reset-controls.md
+@@ -0,0 +1,71 @@
++# PR_26179_CHARLIE_029-sprites-clear-reset-controls
 +
 +Team: CHARLIE
 +Workflow: stacked feature workflow
-+Base branch: PR_26179_CHARLIE_027-sprites-preview-export
-+Canonical ZIP path for this batch: dev/workspace/zip/PR_26179_CHARLIE_028-sprites-editor-polish_delta.zip
++Base branch: PR_26179_CHARLIE_028-sprites-editor-polish
++Canonical ZIP path for this batch: dev/workspace/zip/PR_26179_CHARLIE_029-sprites-clear-reset-controls_delta.zip
 +
 +## Summary
 +
-+Polished Sprite Creator editor copy and status text. Removed stale wording such as "later editor slice" and improved manual validation clarity. Behavior is intentionally unchanged.
++Added Clear Canvas and Reset to 16x16 controls. Both operate only on unsaved page-session editor state and do not persist product data.
 +
 +## Product Owner Testable Outcome
 +
-+The Product Owner can open Sprite Creator and verify the editor communicates its current unsaved-draft behavior clearly while all existing editor interactions still work.
++The Product Owner can fill or draw on the Sprite Creator canvas, clear the draft, and reset back to the 16x16 display mode.
 +
 +## Branch Validation
 +
 +PASS
 +
-+- Current branch: PR_26179_CHARLIE_028-sprites-editor-polish
-+- Based on: PR_26179_CHARLIE_027-sprites-preview-export
++- Current branch: PR_26179_CHARLIE_029-sprites-clear-reset-controls
++- Based on: PR_26179_CHARLIE_028-sprites-editor-polish
 +- No start_of_day files changed
 +- No DB/API/schema files changed
 +- No stale PR #219-#228 code copied
@@ -55,11 +125,10 @@ index 000000000..43a4c0b56
 +
 +| Requirement | Status | Notes |
 +| --- | --- | --- |
-+| Fix outdated copy | PASS | Removed "later editor slice" wording. |
-+| Improve status/manual validation clarity | PASS | Copy now explains unsaved editor workspace and deferred API-backed library save. |
-+| Keep behavior unchanged | PASS | Only HTML copy and Playwright assertions changed. |
++| Add Clear Canvas | PASS | Clears painted draft pixels. |
++| Add Reset to 16x16 | PASS | Resets grid to default display and clears draft. |
++| State remains unsaved page-session editor state | PASS | Module memory only; no browser storage. |
 +| No DB/API/schema changes | PASS | None changed. |
-+| No browser-owned authoritative product data | PASS | No persistence added. |
 +
 +## Validation Lane Report
 +
@@ -68,8 +137,8 @@ index 000000000..43a4c0b56
 +```text
 +node --check assets/toolbox/sprites/js/index.js
 +node --check dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-+git diff --check -- toolbox/sprites/index.html dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-+rg --pcre2 -n -i "later editor slice|Not implemented yet|future rebuild work|Static wireframe only|Plan sprite creation|localStorage|sessionStorage|indexedDB|imageDataUrl|toDataURL|<style|style=|<script(?![^>]+src=)|on(click|change|submit|input|load|error)=|local-mem|fake-login|MEM DB" toolbox/sprites/index.html assets/toolbox/sprites/js/index.js
++git diff --check -- toolbox/sprites/index.html assets/toolbox/sprites/js/index.js dev/tests/playwright/tools/SpritesToolShell.spec.mjs
++rg --pcre2 -n -i "localStorage|sessionStorage|indexedDB|imageDataUrl|toDataURL|<style|style=|<script(?![^>]+src=)|on(click|change|submit|input|load|error)=|local-mem|fake-login|MEM DB" toolbox/sprites/index.html assets/toolbox/sprites/js/index.js dev/tests/playwright/tools/SpritesToolShell.spec.mjs
 +npx playwright test dev/tests/playwright/tools/SpritesToolShell.spec.mjs --workers=1 --reporter=list --output=<temp>
 +```
 +
@@ -77,103 +146,49 @@ index 000000000..43a4c0b56
 +
 +- Node syntax checks: PASS
 +- `git diff --check`: PASS
-+- Guard scan: PASS, no matches in page/runtime files
++- Guard scan: PASS, no matches
 +- Targeted Playwright: PASS, 1 test passed
 +
 +## Manual Validation Notes
 +
 +1. Open `/toolbox/sprites/index.html`.
-+2. Confirm the tools panel says "Choose a drawing action for the current unsaved sprite draft."
-+3. Confirm the work area explains the sprite library save remains deferred to a future API-backed PR.
-+4. Confirm Pencil/Eraser/Fill, palette, preview, and PNG export still work.
++2. Use Fill, then click Clear Canvas and confirm the grid clears.
++3. Switch to 32x32, draw or fill, then click Reset to 16x16.
++4. Confirm the grid is 16x16 and the draft is empty.
 +
 +## Previous PR Dependency
 +
-+PR_26179_CHARLIE_027-sprites-preview-export
++PR_26179_CHARLIE_028-sprites-editor-polish
 +
 +## Next PR Dependency
 +
-+PR_26179_CHARLIE_029-sprites-clear-reset-controls
++PR_26179_CHARLIE_030-sprites-undo-redo
 +
 +## ZIP Path
 +
-+`dev/workspace/zip/PR_26179_CHARLIE_028-sprites-editor-polish_delta.zip`
++`dev/workspace/zip/PR_26179_CHARLIE_029-sprites-clear-reset-controls_delta.zip`
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 2a0f79d1d..a1c1d52c9 100644
+index a1c1d52c9..bcbb75975 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,7 +1,5 @@
--﻿toolbox/sprites/index.html
--assets/toolbox/sprites/js/index.js
--assets/theme-v2/css/gamefoundrystudio.css
-+toolbox/sprites/index.html
+@@ -1,5 +1,6 @@
+ toolbox/sprites/index.html
++assets/toolbox/sprites/js/index.js
  dev/tests/playwright/tools/SpritesToolShell.spec.mjs
--docs_build/dev/reports/PR_26179_CHARLIE_027-sprites-preview-export.md
-+docs_build/dev/reports/PR_26179_CHARLIE_028-sprites-editor-polish.md
+-docs_build/dev/reports/PR_26179_CHARLIE_028-sprites-editor-polish.md
++docs_build/dev/reports/PR_26179_CHARLIE_029-sprites-clear-reset-controls.md
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
 diff --git a/toolbox/sprites/index.html b/toolbox/sprites/index.html
-index 330824b43..8c40cc255 100644
+index 8c40cc255..c0b9ee284 100644
 --- a/toolbox/sprites/index.html
 +++ b/toolbox/sprites/index.html
-@@ -33,7 +33,7 @@
-                             <details class="vertical-accordion" open>
-                                 <summary>Drawing Tools</summary>
-                                 <div class="accordion-body content-stack">
--                                    <p>Choose the creation action that will shape the sprite canvas in a later editor slice.</p>
-+                                    <p>Choose a drawing action for the current unsaved sprite draft.</p>
-                                     <div class="action-group action-group--tight" aria-label="Sprite Creator toolbar placeholders" data-sprites-toolbar>
-                                         <button class="btn btn--compact primary" type="button" data-sprite-tool-button="pencil" aria-label="Pencil tool" aria-pressed="true">Pencil</button>
-                                         <button class="btn btn--compact" type="button" data-sprite-tool-button="eraser" aria-label="Eraser tool" aria-pressed="false">Eraser</button>
-@@ -64,7 +64,7 @@
-                                                 </tr>
-                                                 <tr>
-                                                     <th scope="row">Mode</th>
--                                                    <td>Draft canvas shell</td>
-+                                                    <td>Unsaved editor canvas</td>
-                                                 </tr>
-                                             </tbody>
-                                         </table>
-@@ -90,11 +90,11 @@
-                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="sprites" data-tool-icon-src="assets/theme-v2/images/badges/sprites.png" data-tool-character-src="assets/theme-v2/images/tools/sprites.png"></div>
-                     <section class="tool-center-panel" data-sprites-work-area>
-                         <h2>Pixel Work Area</h2>
--                        <p>Use this canvas space to compose sprite art once drawing and save/load contracts are added.</p>
-+                        <p>Compose sprite pixels in the unsaved editor workspace. Saving to the sprite library remains deferred to a future API-backed PR.</p>
-                         <div class="grid cols-3" aria-label="Sprite Creator shell summary">
--                            <article class="mini-stat"><strong>Draft</strong>Canvas</article>
--                            <article class="mini-stat"><strong>Ready</strong>Workspace</article>
--                            <article class="mini-stat"><strong>Pending</strong>Save/Load</article>
-+                            <article class="mini-stat"><strong>Unsaved</strong>Draft</article>
-+                            <article class="mini-stat"><strong>Ready</strong>Editor</article>
-+                            <article class="mini-stat"><strong>Local</strong>PNG Export</article>
-                         </div>
-                         <article class="card">
-                             <div class="card-body content-stack">
-@@ -144,7 +144,7 @@
-                                                 </tr>
-                                                 <tr>
-                                                     <th scope="row">Storage</th>
--                                                    <td>Not connected in this shell</td>
-+                                                    <td>Library save is not connected in this editor stack</td>
-                                                 </tr>
-                                             </tbody>
-                                         </table>
-@@ -154,7 +154,7 @@
-                             <details class="vertical-accordion" open>
-                                 <summary>Animation</summary>
-                                 <div class="accordion-body content-stack">
--                                    <p>Frame planning is visible here so animation support can attach without changing the shell layout.</p>
-+                                    <p>Frame planning is visible here so animation support can attach later without changing the editor layout.</p>
-                                     <div class="table-wrapper">
-                                         <table class="data-table" aria-label="Sprite animation placeholder">
-                                             <thead>
-@@ -183,7 +183,7 @@
-                             <details class="vertical-accordion" open>
-                                 <summary>Readiness</summary>
-                                 <div class="accordion-body content-stack">
--                                    <p class="status" role="status">Creator shell visible.</p>
-+                                    <p class="status" role="status">Sprite Creator editor visible.</p>
-                                     <p class="status" role="status">No browser-owned sprite data is stored by this page.</p>
-                                     <p class="status" role="status">No Local DB schema or API endpoint is introduced in this PR.</p>
+@@ -105,6 +105,8 @@
+                                 <div class="action-group action-group--tight" aria-label="Sprite canvas display modes" data-sprites-grid-size-controls>
+                                     <button class="btn btn--compact primary" type="button" data-sprites-grid-size="16" aria-pressed="true">16x16</button>
+                                     <button class="btn btn--compact" type="button" data-sprites-grid-size="32" aria-pressed="false">32x32</button>
++                                    <button class="btn btn--compact" type="button" data-sprites-clear-canvas>Clear Canvas</button>
++                                    <button class="btn btn--compact" type="button" data-sprites-reset-grid>Reset to 16x16</button>
                                  </div>
+                                 <div class="sprite-canvas-shell" data-sprites-grid-shell>
+                                     <div class="sprite-canvas-grid" role="grid" aria-label="Sprite Creator 16 by 16 pixel canvas" data-sprites-pixel-grid></div>

@@ -262,6 +262,19 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status 
     await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(1024);
     await expect(page.locator("[data-sprites-pixel-grid] .sprite-canvas-cell--blue")).toHaveCount(1024);
     await expect(page.locator("[data-sprites-draft-status]")).toContainText("1024 draft pixels painted");
+    await page.getByRole("button", { name: "Clear Canvas" }).click();
+    await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(0);
+    await expect(page.locator("[data-sprites-draft-status]")).toContainText("empty draft");
+    await page.getByRole("button", { name: "Fill tool" }).click();
+    await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(1024);
+    await page.getByRole("button", { name: "Reset to 16x16" }).click();
+    await expect(page.locator("[data-sprites-pixel-grid]")).toHaveAttribute("aria-label", "Sprite Creator 16 by 16 pixel canvas");
+    await expect(page.locator("[data-sprites-pixel-grid] [role='gridcell']")).toHaveCount(256);
+    await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(0);
+    await expect(page.locator("[data-sprites-draft-status]")).toContainText("empty draft");
+    await page.getByRole("button", { name: "Blue editor color" }).click();
+    await page.getByRole("button", { name: "Fill tool" }).click();
+    await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(256);
     await expect(page.locator("[data-sprites-preview-canvas]")).toBeVisible();
     const previewHasPaint = await page.locator("[data-sprites-preview-canvas]").evaluate((canvas) => {
       const context = canvas.getContext("2d");
