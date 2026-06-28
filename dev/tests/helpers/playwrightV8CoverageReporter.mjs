@@ -328,7 +328,7 @@ export class PlaywrightV8CoverageReporter {
   formatToolEntryPoints(coverageByPath) {
     const toolEntryPoints = [
       { name: "Toolbox Index", prefix: "toolbox/" },
-      { name: "Tool Template V2", prefix: "toolbox/_tool_template-v2/" },
+      { name: "Tool Template V2", prefix: "dev/templates/tool-template-v2/" },
       { name: "Theme V2 Shared JS", prefix: "assets/theme-v2/js/" }
     ];
     return toolEntryPoints.map(({ name, prefix }) => {

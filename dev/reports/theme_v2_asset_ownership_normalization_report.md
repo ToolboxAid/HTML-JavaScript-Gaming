@@ -29,7 +29,7 @@ Updated affected public/root pages, tool pages, templates, and scripts so image 
 Notable runtime/helper updates:
 
 - `assets/theme/v2/js/tool-display-mode.js` uses `/assets/theme/v2/images` as its badge and character root.
-- `retired Theme V2 tool template` and `toolbox/_tool_template-v2/index.html` use `data-asset-root="assets/theme/v2/images"`.
+- `retired Theme V2 tool template` and `dev/templates/tool-template-v2.html` use `data-asset-root="assets/theme/v2/images"`.
 - `toolbox/tools-page-accordions.js` points generated tool-card and badge images at `../assets/theme/v2/images/...`.
 
 No layout, CSS, ToolDisplayMode behavior, Storage Inspector runtime, or unrelated tool implementation work was changed.
@@ -52,7 +52,7 @@ Remaining `assets/` surface:
 
 Remaining template surface:
 
-- `_page_template_v2.html`
+- `dev/templates/page-template-v2.html`
 - `retired Theme V2 tool template`
 
 The folder was not deleted because these Theme V2 CSS, JS, partial, template, and placeholder files remain active.

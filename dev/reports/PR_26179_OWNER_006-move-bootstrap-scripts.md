@@ -59,4 +59,4 @@ Documentation/dev-runner/config only. No product UI, API, database, `src/`, `doc
 
 ## Changed Files
 
-`dev/docs_build/dev/reports/codex_changed_files.txt` contains the full name-status list.
+`dev/reports/codex_changed_files.txt` contains the full name-status list.

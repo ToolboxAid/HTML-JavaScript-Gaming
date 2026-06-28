@@ -35,7 +35,7 @@ Post-move checks:
 - Kept `tests/results/` ignored as a defensive legacy output guard.
 - Confirmed `node_modules/` remains ignored by git and was not moved.
 - Did not move root `package.json`.
-- Did not modify `scripts/untracked/`.
+- Did not modify `dev/scripts/untracked/`.
 
 Existing generated output moved:
 

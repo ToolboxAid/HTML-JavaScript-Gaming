@@ -1,6 +1,6 @@
 # PR_26154_022 Template Consistency Audit
 
-Sources compared: `/_page_template_v2.html` for public/root pages and `toolbox/_tool_template-v2/index.html` for active toolbox pages.
+Sources compared: `/dev/templates/page-template-v2.html` for public/root pages and `dev/templates/tool-template-v2.html` for active toolbox pages.
 Audit scope was limited to CSS wiring, shared partial labels/slots, shared IDs, header/nav/footer presence, ToolDisplayMode host wiring, left/center/right shell markers, and consistency-critical attributes.
 
 ## Fixes Applied

@@ -5,7 +5,7 @@ await runDatabaseMigrationLane({
   laneLabel: "database DML",
   migrationDirs: [
     {
-      directory: "dev/docs_build/database/dml",
+      directory: "dev/build/database/dml",
       type: "DML",
     },
   ],

@@ -192,7 +192,7 @@ test("server Local DB seed includes runtime timestamps, read-only guest packages
 
     assert.deepEqual(guestToolKeys, GUEST_SEED_GROUP_KEYS, "guest seed data should include every required grouped seed file");
     assert.equal(guestSeed.readOnly, true);
-    assert.equal(guestSeed.source, "dev/docs_build/database/seed/guest/");
+    assert.equal(guestSeed.source, "dev/build/database/seed/guest/");
     assert.equal((guestSeed.packages || []).every((sample) => sample.loadablePath && sample.sampleKind === "toolSeed"), true);
     assert.equal((guestSeed.packages || []).every((sample) => sample.readOnly === true && sample.writableByGuest === false), true);
     assert.equal(samples.some((sample) => sample.audience === "guest"), false);

@@ -2,7 +2,7 @@
 
 Updated: 2026-06-27T20:36:34.395Z
 Branch: PR_26179_OWNER_008-update-path-governance-final
-ZIP: dev/workspace/artifacts/tmp/PR_26179_OWNER_008-update-path-governance-final_delta.zip
+ZIP: dev/workspace/tmp/PR_26179_OWNER_008-update-path-governance-final_delta.zip
 
 ## Purpose
 

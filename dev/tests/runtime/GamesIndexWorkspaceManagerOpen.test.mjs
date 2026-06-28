@@ -40,19 +40,19 @@ async function ensureIsolatedWsDependency() {
 
   const wsWrapperPath = path.join(isolatedNodeModulesRoot, "ws", "wrapper.mjs");
   if (!fs.existsSync(wsWrapperPath)) {
-    log("installing isolated dependency: ws -> <project>/dev/workspace/artifacts/tmp/node_modules");
+    log("installing isolated dependency: ws -> <project>/dev/workspace/tmp/node_modules");
     execFileSync("npm", ["install", "--prefix", tmpRoot, "ws"], {
       cwd: repoRoot,
       stdio: "inherit",
       shell: process.platform === "win32"
     });
   } else {
-    log("isolated dependency present: <project>/dev/workspace/artifacts/tmp/node_modules/ws");
+    log("isolated dependency present: <project>/dev/workspace/tmp/node_modules/ws");
   }
 
   const wsModule = await import(pathToFileURL(wsWrapperPath).href);
   WebSocketCtor = wsModule.WebSocket;
-  assert.ok(WebSocketCtor, "Failed to load WebSocket from <project>/dev/workspace/artifacts/tmp/node_modules/ws");
+  assert.ok(WebSocketCtor, "Failed to load WebSocket from <project>/dev/workspace/tmp/node_modules/ws");
 }
 
 function createStaticServer(rootDir) {

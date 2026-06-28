@@ -3,7 +3,7 @@
 ## Scope
 
 - Updated `retired Theme V2 tool template`.
-- Kept `_page_template_v2.html` unchanged.
+- Kept `dev/templates/page-template-v2.html` unchanged.
 - Did not rebuild Storage Inspector.
 - Did not touch samples.
 - Did not add CSS, copied CSS, inline style, inline script, or inline event handlers.

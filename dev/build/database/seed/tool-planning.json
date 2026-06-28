@@ -1,0 +1,11 @@
+{
+  "group": "Tool Planning",
+  "groupKey": "tool-planning",
+  "owner": "dev/build/database/seed",
+  "serverSideSeedRequired": true,
+  "browserAuthoritativeKeyGenerationAllowed": false,
+  "tables": {
+    "toolbox_tool_planning": []
+  },
+  "note": "Seed records for this group are intentionally empty until an Admin-owned server API seeds them."
+}

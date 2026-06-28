@@ -3,7 +3,7 @@
 ## Scope
 
 - Corrected `retired Theme V2 tool template`.
-- Corrected `/_page_template_v2.html`.
+- Corrected `/dev/templates/page-template-v2.html`.
 - Removed standalone/demo-looking header and footer markup from both templates.
 - Rewired both templates to the shared reusable page chrome pattern.
 - Kept Storage Inspector, samples, and all tools untouched.

@@ -26,10 +26,10 @@ HTML favicon links:
 - `/favicon.ico` -> `/favicon.svg`
 
 Updated surfaces:
-- Root page/template: `index.html`, `_page_template_v2.html`
+- Root page/template: `index.html`, `dev/templates/page-template-v2.html`
 - Root groups: `account/`, `admin/`, `community/`, `company/`, `docs/`, `learn/`, `legal/`, `marketplace/`
 - Games pages: `games/index.html`, `games/action/index.html`, `games/adventure/index.html`, `games/arcade/index.html`, `games/puzzle/index.html`, `games/racing/index.html`, `games/retro/index.html`, `games/strategy/index.html`
-- Tool pages: `toolbox/index.html`, active tool `index.html` files, `toolbox/_tool_template-v2/index.html`
+- Tool pages: `toolbox/index.html`, active tool `index.html` files, `dev/templates/tool-template-v2.html`
 - Deprecated old tool reference touched only for favicon normalization: `archive/v1-v2/tools/old_localization-studio/index.html`
 
 Theme V2 references:

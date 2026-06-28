@@ -41,8 +41,8 @@ The audit excludes:
 
 ## Template Sources
 
-- `_page_template_v2.html` references `assets/theme-v2`.
-- `toolbox/_tool_template-v2/index.html` references `assets/theme-v2`.
+- `dev/templates/page-template-v2.html` references `assets/theme-v2`.
+- `dev/templates/tool-template-v2.html` references `assets/theme-v2`.
 
 ## Result
 

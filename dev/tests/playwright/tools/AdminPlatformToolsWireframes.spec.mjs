@@ -128,7 +128,7 @@ async function startAdminPage(page, pathName, options = {}) {
       { area: "Environment configuration", field: "GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX", status: "PASS", value: "valid lane match" },
       { area: "Secrets status", field: "Storage secret key", status: "PASS", value: "configured; value hidden" },
       { area: "Migration status", field: "Migration counts", status: "PASS", value: "DDL=15; DML=15" },
-      { area: "Project package readiness", field: ".gfsp decision", status: "PASS", value: "dev/docs_build/codex/decisions/project-packages.md" },
+      { area: "Project package readiness", field: ".gfsp decision", status: "PASS", value: "dev/build/codex/decisions/project-packages.md" },
       { area: "Promotion/package safety", field: "Import overwrite", status: "PASS", value: "fail-visible-until-explicit-confirmation" },
     ],
     limits: [

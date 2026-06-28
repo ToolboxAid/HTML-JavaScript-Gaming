@@ -48,7 +48,7 @@ Baseline used: `PR_26154_034-toolbox-inventory-convergence`.
 | Asset | Status | Notes |
 | --- | --- | --- |
 | `assets/theme-v2/js/gamefoundry-partials.js` | Active | Loaded by public/root pages, games index/type pages, active toolbox pages, and templates. |
-| `assets/theme-v2/js/tool-display-mode.js` | Active | Loaded by active toolbox pages and `toolbox/_tool_template-v2/index.html`. |
+| `assets/theme-v2/js/tool-display-mode.js` | Active | Loaded by active toolbox pages and `dev/templates/tool-template-v2.html`. |
 | `assets/theme-v2/js/account-controls.js` | Active | Loaded by `admin/controls.html`. |
 
 ## Partials

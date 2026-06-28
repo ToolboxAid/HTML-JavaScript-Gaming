@@ -9,10 +9,10 @@ Status: PASS
 - `node --check` on changed JS/MJS files - PASS
 - `python -m py_compile scripts/engine_usage_audit.py` - PASS
 - `node --test tests/dev-runtime/AdminNotesBoundary.test.mjs tests/tools/DevConsoleIntegration.test.mjs` - PASS, 9 tests passed
-- `node dev/docs_build/dev/toolbox/checkSharedExtractionGuard.selftest.mjs` - PASS
+- `node dev/build/dev/toolbox/checkSharedExtractionGuard.selftest.mjs` - PASS
 - `npm run check:shared-extraction-guard` - PASS against refreshed moved-path baseline
-- `node dev/docs_build/dev/toolbox/checkDocsStructureGuard.mjs` - PASS
-- `node dev/docs_build/dev/toolbox/checkPhase24CloseoutExecutionGuard.mjs` - PASS
+- `node dev/build/dev/toolbox/checkDocsStructureGuard.mjs` - PASS
+- `node dev/build/dev/toolbox/checkPhase24CloseoutExecutionGuard.mjs` - PASS
 - `node scripts/validate-asset-ownership-strategy.mjs` - PASS
 
 ## Playwright

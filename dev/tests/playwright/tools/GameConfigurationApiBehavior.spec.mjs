@@ -38,10 +38,10 @@ async function ensureGameConfigurationDatabaseSchema() {
     gameConfigurationSchemaReadyPromise = (async () => {
       const client = createPostgresConnectionClient();
       const ddlFiles = [
-        "dev/docs_build/database/ddl/account.sql",
-        "dev/docs_build/database/ddl/game-workspace.sql",
-        "dev/docs_build/database/ddl/game-design.sql",
-        "dev/docs_build/database/ddl/game-configuration.sql"
+        "dev/build/database/ddl/account.sql",
+        "dev/build/database/ddl/game-workspace.sql",
+        "dev/build/database/ddl/game-design.sql",
+        "dev/build/database/ddl/game-configuration.sql"
       ];
       for (const ddlFile of ddlFiles) {
         const ddl = await readFile(path.resolve(ddlFile), "utf8");

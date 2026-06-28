@@ -1,7 +1,7 @@
 {
   "type": "module",
   "scripts": {
-    "pretest": "node dev/docs_build/dev/toolbox/checkSharedExtractionGuard.mjs",
+    "pretest": "node dev/tools/toolbox-dev/checkSharedExtractionGuard.mjs",
     "test": "node ./dev/scripts/run-node-tests.mjs",
     "test:service:api": "node ./dev/scripts/run-node-test-files.mjs dev/tests/dev-runtime/ServerApiClientStandardization.test.mjs dev/tests/dev-runtime/PublicApiUrlClient.test.mjs",
     "test:audit:locations": "node ./dev/scripts/audit-playwright-test-locations.mjs",
@@ -35,11 +35,11 @@
     "apply:database-dml": "node ./dev/scripts/apply-database-dml.mjs",
     "seed:database-dev": "node --use-system-ca ./dev/scripts/apply-database-seed.mjs",
     "cleanup:supabase-dev-auth-test-users": "node --use-system-ca ./dev/scripts/cleanup-supabase-dev-auth-test-users.mjs",
-    "check:shared-extraction-guard": "node dev/docs_build/dev/toolbox/checkSharedExtractionGuard.mjs",
-    "check:phase24-closeout-guard": "node dev/docs_build/dev/toolbox/checkPhase24CloseoutExecutionGuard.mjs",
-    "check:style-system-guard": "node dev/docs_build/dev/toolbox/checkStyleSystemGuard.mjs",
-    "check:intentional-alias-ledger": "node dev/docs_build/dev/toolbox/checkIntentionalAliasLedgerGuard.mjs",
-    "check:internal-barrel-guard": "node dev/docs_build/dev/toolbox/checkInternalBarrelGuard.mjs",
+    "check:shared-extraction-guard": "node dev/tools/toolbox-dev/checkSharedExtractionGuard.mjs",
+    "check:phase24-closeout-guard": "node dev/tools/toolbox-dev/checkPhase24CloseoutExecutionGuard.mjs",
+    "check:style-system-guard": "node dev/tools/toolbox-dev/checkStyleSystemGuard.mjs",
+    "check:intentional-alias-ledger": "node dev/tools/toolbox-dev/checkIntentionalAliasLedgerGuard.mjs",
+    "check:internal-barrel-guard": "node dev/tools/toolbox-dev/checkInternalBarrelGuard.mjs",
     "codex:review-artifacts": "node ./dev/scripts/write-codex-review-artifacts.mjs",
     "test:workspace-v2": "node ./dev/scripts/run-targeted-test-lanes.mjs --lane workspace-contract",
     "test:launch-smoke": "node ./dev/tests/runtime/LaunchSmokeAllEntries.test.mjs"

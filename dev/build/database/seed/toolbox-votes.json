@@ -1,0 +1,11 @@
+{
+  "group": "Toolbox Votes",
+  "groupKey": "toolbox-votes",
+  "owner": "dev/build/database/seed",
+  "serverSideSeedRequired": true,
+  "browserAuthoritativeKeyGenerationAllowed": false,
+  "tables": {
+    "toolbox_votes": []
+  },
+  "note": "Seed records for this group are intentionally empty until an Admin-owned server API seeds them."
+}

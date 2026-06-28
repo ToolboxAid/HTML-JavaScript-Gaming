@@ -504,7 +504,7 @@
       "classification": "runtime-or-source-duplicate",
       "cleanupRisk": "high",
       "rationale": "Duplicate content touches runtime/source surfaces and could affect behavior if consolidated incorrectly.",
-      "files": ["docs/design/gdd/Nameco/Galaga/gdd.txt", "games/Pacman/rules/.gitkeep", "games/SpaceDuel/rules/.gitkeep", "samples/phase-15/1505/assets/audio/menu.mp3"]
+      "files": ["docs/design/gdd/Namco/Galaga/gdd.txt", "games/Pacman/rules/.gitkeep", "games/SpaceDuel/rules/.gitkeep", "samples/phase-15/1505/assets/audio/menu.mp3"]
     }
   ]
 }

@@ -75,7 +75,7 @@ Removed dead duplicate grouping CSS files:
 
 Template corrected:
 
-- `toolbox/_tool_template-v2/index.html`: `tool-group-ai-learning` -> `tool-group-ai`
+- `dev/templates/tool-template-v2.html`: `tool-group-ai-learning` -> `tool-group-ai`
 
 ## Tools Already Compliant
 

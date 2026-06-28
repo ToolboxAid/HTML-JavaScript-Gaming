@@ -22,7 +22,7 @@ After this PR:
 - 41 active first-class Toolbox tool pages use the wide layout pattern.
 - `toolbox/project-workspace/index.html` was already compliant before this PR.
 - 40 additional active Toolbox tool pages were updated in this PR.
-- `toolbox/_tool_template-v2/index.html` was also updated so future copied tool shells inherit the approved wide layout.
+- `dev/templates/tool-template-v2.html` was also updated so future copied tool shells inherit the approved wide layout.
 - `toolbox/index.html` was skipped because it is the Toolbox listing surface, not a first-class tool shell.
 
 The page-level change is intentionally limited to:

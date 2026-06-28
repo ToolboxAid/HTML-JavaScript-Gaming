@@ -29,8 +29,8 @@ Updated active references from `assets/theme/v2` to `assets/theme-v2` across:
 
 - public/root HTML pages
 - active toolbox HTML pages
-- `_page_template_v2.html`
-- `toolbox/_tool_template-v2/index.html`
+- `dev/templates/page-template-v2.html`
+- `dev/templates/tool-template-v2.html`
 - `assets/theme-v2/js/gamefoundry-partials.js`
 - `assets/theme-v2/js/tool-display-mode.js`
 - `assets/theme-v2/partials/header-nav.html`

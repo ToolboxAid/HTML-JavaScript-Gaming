@@ -1,0 +1,30 @@
+{
+  "group": "Admin",
+  "groupKey": "admin",
+  "owner": "dev/build/database/seed",
+  "serverSideSeedRequired": true,
+  "browserAuthoritativeKeyGenerationAllowed": false,
+  "tables": {
+    "platform_settings": {
+      "mode": "server-api-generated-keys",
+      "starterRows": [
+        {
+          "settingKey": "platform.banner.enabled",
+          "settingType": "boolean",
+          "settingValue": "false"
+        },
+        {
+          "settingKey": "platform.banner.message",
+          "settingType": "string",
+          "settingValue": ""
+        },
+        {
+          "settingKey": "platform.banner.tone",
+          "settingType": "string",
+          "settingValue": "info"
+        }
+      ]
+    }
+  },
+  "note": "Platform settings seed rows are runtime banner settings keyed by settingKey. Owner Operations owns setup/reseed planning."
+}

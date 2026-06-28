@@ -5,4 +5,4 @@
 - Confirmed old tracked report tree is empty.
 - Confirmed tracked `dev/reports/` tree is flat.
 - Confirmed Playwright full execution was not run; only config discovery/listing was run because this PR changes dev/report/artifact paths.
-- Repo-structured ZIP path: `dev/workspace/artifacts/tmp/PR_26179_OWNER_007-move-reports-artifacts_delta.zip`
+- Repo-structured ZIP path: `dev/workspace/tmp/PR_26179_OWNER_007-move-reports-artifacts_delta.zip`

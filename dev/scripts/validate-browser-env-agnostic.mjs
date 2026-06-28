@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 const repoRoot = process.cwd();
-const reportPath = path.join(repoRoot, "dev", "docs_build", "dev", "reports", "environment_agnostic_browser_gate_report.md");
+const reportPath = path.join(repoRoot, "dev", "reports", "environment_agnostic_browser_gate_report.md");
 const browserScanRoots = [
   "account",
   "admin",
@@ -14,7 +14,7 @@ const environmentScanRoots = [
   ...browserScanRoots,
   "src",
   "dev/scripts",
-  "dev/docs_build/database",
+  "dev/build/database",
 ];
 const environmentScanFiles = [
   ".env.example",
@@ -25,7 +25,6 @@ const excludedSegments = new Set([
   ".git",
   "archive",
   "node_modules",
-  "start_of_day",
   "tests",
   "tmp",
 ]);
@@ -102,7 +101,7 @@ function repoPath(absolutePath) {
 
 function isExcluded(absolutePath) {
   const normalizedPath = repoPath(absolutePath);
-  if (normalizedPath.startsWith("dev/docs_build/database/")) {
+  if (normalizedPath.startsWith("dev/build/database/")) {
     return false;
   }
   return normalizedPath
@@ -388,7 +387,8 @@ const report = [
   `- Scanned active browser/page/server/runtime roots: ${environmentScanRoots.map((root) => `\`${root}\``).join(", ")}`,
   `- Scanned active runtime example files: ${environmentScanFiles.map((filePath) => `\`${filePath}\``).join(", ")}`,
   `- Files scanned: ${files.length}`,
-  "- Excluded test/archive/report/temp roots: `.git`, `archive`, `node_modules`, `start_of_day`, `dev/tests`, `tmp`.",
+  "- Excluded test/archive/report/temp roots: `.git`, `archive`, `node_modules`, `dev/tests`, `tmp`.",
+  "- Active team/start governance is sourced from `dev/build/ProjectInstructions/`.",
   "- Tests and validation scripts are excluded only from deployment-label branching failures; their non-branching mentions may still appear for review.",
   "",
   "## Deployment-Label Branching Findings",

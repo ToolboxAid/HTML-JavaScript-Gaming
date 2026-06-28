@@ -6,7 +6,7 @@ Task: PR_26152_276-tool-template-baseline-copy
 
 | File | Reference | Original | Updated | Reason |
 | --- | --- | --- | --- | --- |
-| `toolbox/_tool_template-v2/index.html` | `<base href>` | `../GameFoundryStudio/` | `../../GameFoundryStudio/` | The copied page moved from `toolbox/ai-assistant.html` to `toolbox/_tool_template-v2/index.html`, one directory deeper than the original source page. |
+| `dev/templates/tool-template-v2.html` | `<base href>` | `../GameFoundryStudio/` | `../../GameFoundryStudio/` | The copied page moved from `toolbox/ai-assistant.html` to `dev/templates/tool-template-v2.html`, one directory deeper than the original source page. |
 
 ## Unchanged References
 

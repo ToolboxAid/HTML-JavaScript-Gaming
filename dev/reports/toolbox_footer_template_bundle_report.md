@@ -29,7 +29,7 @@ Completed:
 - `docs_build/dev/PROJECT_INSTRUCTIONS.md` now names `toolbox/_tool_template-v2` as the required first-class tool template source.
 
 Validation:
-- PASS: `toolbox/_tool_template-v2/index.html` exists.
+- PASS: `dev/templates/tool-template-v2.html` exists.
 - PASS: `toolbox/_templates-v2/` does not exist.
 - PASS: no active reference remains to `tools/_templates-v2` or `_templates-v2`.
 

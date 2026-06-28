@@ -10,7 +10,6 @@ const toolboxRoot = path.join(repoRoot, "toolbox");
 const reportPath = path.join(repoRoot, "dev", "reports", "tool_registry_validation.txt");
 
 const IGNORED_DIRECTORIES = new Set([
-  "_tool_template-v2",
   "learn",
   "users",
   "environments",

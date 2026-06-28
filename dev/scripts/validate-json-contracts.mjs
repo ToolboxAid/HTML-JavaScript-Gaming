@@ -72,7 +72,7 @@ function walkFiles(baseDir, matcher) {
     for (const entry of entries) {
       const full = path.join(current, entry.name);
       if (entry.isDirectory()) {
-        if ([".git", "node_modules", "tmp", "dist", "build", "coverage", ".cache", ".next", "start_of_day"].includes(entry.name)) {
+        if ([".git", "node_modules", "tmp", "dist", "build", "coverage", ".cache", ".next"].includes(entry.name)) {
           continue;
         }
         walk(full);

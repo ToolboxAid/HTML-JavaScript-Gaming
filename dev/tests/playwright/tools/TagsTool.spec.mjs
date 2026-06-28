@@ -14,9 +14,9 @@ async function ensureTagsDatabaseSchema() {
     tagsSchemaReadyPromise = (async () => {
       const client = createPostgresConnectionClient();
       const ddlFiles = [
-        "dev/docs_build/database/ddl/account.sql",
-        "dev/docs_build/database/ddl/game-workspace.sql",
-        "dev/docs_build/database/ddl/tags.sql",
+        "dev/build/database/ddl/account.sql",
+        "dev/build/database/ddl/game-workspace.sql",
+        "dev/build/database/ddl/tags.sql",
       ];
       for (const ddlFile of ddlFiles) {
         const ddl = await readFile(path.resolve(ddlFile), "utf8");

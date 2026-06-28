@@ -22,7 +22,7 @@ Stack:
 
 ## PR_26155_007 - Project Workspace Wireframe
 - Created `toolbox/project-workspace/index.html`.
-- Based the page on `toolbox/_tool_template-v2/index.html`.
+- Based the page on `dev/templates/tool-template-v2.html`.
 - Preserved template-critical structure:
   - shared header and footer partials
   - Theme V2 CSS wiring
@@ -49,7 +49,7 @@ Stack:
 
 ## PR_26155_009 - Game Configuration Wireframe
 - Created `toolbox/game-configuration/index.html`.
-- Based the page on `toolbox/_tool_template-v2/index.html`.
+- Based the page on `dev/templates/tool-template-v2.html`.
 - Preserved template-critical structure and shared bootstrapping.
 - Added wireframe content for:
   - release profile

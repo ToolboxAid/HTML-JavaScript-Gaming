@@ -111,6 +111,6 @@ Full samples smoke test was skipped per request. This PR changes root IA, deprec
 ## Manual Validation Notes
 
 1. Open `toolbox/index.html` and confirm each root tool card opens its `toolbox/<toolname>/index.html` destination.
-2. Open `toolbox/_tool_template-v2/index.html` and confirm Theme V2 CSS, partials, favicon, and scripts load from root paths.
+2. Open `dev/templates/tool-template-v2.html` and confirm Theme V2 CSS, partials, favicon, and scripts load from root paths.
 3. Open `archive/v1-v2/games/index.html` and confirm the deprecated games index remains reachable.
 4. Open `docs/index.html`, `docs/faq.html`, `docs/reference.html`, and `docs/support.html` and confirm `/docs/` remains user-facing only.

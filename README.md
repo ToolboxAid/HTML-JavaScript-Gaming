@@ -29,11 +29,11 @@ This repository follows a docs-first game/runtime model, combining a stable engi
 ## ▶️ Start Here
 
 1. Review the repo model in [docs/README.md](docs/README.md)
-2. Explore active development governance in [dev/docs_build/dev/ProjectInstructions/](dev/docs_build/dev/ProjectInstructions/)
+2. Explore active development governance in [dev/build/ProjectInstructions/](dev/build/ProjectInstructions/)
 3. Browse archived reference samples from [dev/archive/v1-v2/samples/index.html](dev/archive/v1-v2/samples/index.html)
 4. Explore tools under [toolbox/](toolbox/)
 5. Review engine and architecture boundaries in [docs/architecture/](docs/architecture/)
-6. Follow the workflow in [dev/docs_build/dev/](dev/docs_build/dev/) and [dev/docs_build/dev/PR/](dev/docs_build/dev/PR/)
+6. Follow the workflow in [dev/build/ProjectInstructions/](dev/build/ProjectInstructions/) and [dev/build/pr/](dev/build/pr/)
 
 ---
 
@@ -107,7 +107,7 @@ PLAN_PR → BUILD_PR → APPLY_PR
 - One PR per purpose
 - Small, surgical changes
 - Docs-first implementation planning
-- Delta ZIP outputs stored under `<project folder>/dev/workspace/artifacts/tmp/`
+- Delta ZIP outputs stored under `<project folder>/dev/workspace/zips/`
 
 ---
 
@@ -115,8 +115,8 @@ PLAN_PR → BUILD_PR → APPLY_PR
 
 - [docs/README.md](docs/README.md) → top-level documentation index
 - [docs/architecture/](docs/architecture/) → durable architecture and boundary contracts
-- [dev/docs_build/dev/PR/](dev/docs_build/dev/PR/) → preserved PR history and architecture evolution
-- [dev/docs_build/dev/](dev/docs_build/dev/) → active workflow controls and implementation planning
+- [dev/build/pr/](dev/build/pr/) → preserved PR history and architecture evolution
+- [dev/build/ProjectInstructions/](dev/build/ProjectInstructions/) → active governance and workflow controls
 - [dev/reports/](dev/reports/) → active report artifacts
 - [dev/archive/](dev/archive/) → archived dev-ops notes and generated reports
 

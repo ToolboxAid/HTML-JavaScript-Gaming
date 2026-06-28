@@ -8,7 +8,7 @@ Stacked PR bundle:
 
 Checked 43 `toolbox/**/*.html` pages:
 
-- `toolbox/_tool_template-v2/index.html`
+- `dev/templates/tool-template-v2.html`
 - `toolbox/achievements/index.html`
 - `toolbox/ai-assistant/index.html`
 - `toolbox/animations/index.html`
@@ -99,7 +99,7 @@ Updated active Toolbox tool pages:
 
 Updated template source:
 
-- `toolbox/_tool_template-v2/index.html`
+- `dev/templates/tool-template-v2.html`
 
 Already compliant before this PR:
 

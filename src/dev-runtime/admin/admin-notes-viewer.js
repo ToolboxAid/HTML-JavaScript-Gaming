@@ -1,7 +1,7 @@
 import { resolveServerApiFetchUrl } from "../../api/public-config-client.js";
 
 // Dev-runtime only: do not import this viewer from production bundles.
-const NOTES_DIRECTORY = "dev/archive/docs_build/dev/admin-notes";
+const NOTES_DIRECTORY = "dev/archive/legacy-docs-build/admin-notes";
 const DEFAULT_NOTE = "index";
 const VIEWER_PATH = "/admin/admin-notes.html";
 const LINK_CLASS = "btn btn--compact primary";
@@ -335,7 +335,7 @@ class AdminNotesViewer {
     if (!safeFolderPath) {
       return {
         entries: [],
-        error: "Current Folder listing is restricted to dev/archive/docs_build/dev/admin-notes/."
+        error: "Current Folder listing is restricted to dev/archive/legacy-docs-build/admin-notes/."
       };
     }
     try {

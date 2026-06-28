@@ -9,7 +9,7 @@ Current audit result:
 
 No remaining template-critical mismatches were found for:
 
-- `_page_template_v2.html` public/root page checks.
+- `dev/templates/page-template-v2.html` public/root page checks.
 - `toolbox/_tool_template-v2` active toolbox checks.
 - `theme.css` entry wiring.
 - `ToolDisplayMode` host presence.

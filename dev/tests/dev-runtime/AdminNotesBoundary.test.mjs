@@ -24,14 +24,14 @@ const productionRoots = [
 ];
 
 const expectedDevNotes = [
-  "dev/archive/docs_build/dev/admin-notes/BusinessPlan.txt",
-  "dev/archive/docs_build/dev/admin-notes/index.txt",
-  "dev/archive/docs_build/dev/admin-notes/notes/index.txt",
-  "dev/archive/docs_build/dev/admin-notes/other/index.txt",
-  "dev/archive/docs_build/dev/admin-notes/PS_commands.txt",
-  "dev/archive/docs_build/dev/admin-notes/roadmap2MVP.txt",
-  "dev/archive/docs_build/dev/admin-notes/sample.txt",
-  "dev/archive/docs_build/dev/admin-notes/tools/index.txt",
+  "dev/archive/legacy-docs-build/admin-notes/BusinessPlan.txt",
+  "dev/archive/legacy-docs-build/admin-notes/index.txt",
+  "dev/archive/legacy-docs-build/admin-notes/notes/index.txt",
+  "dev/archive/legacy-docs-build/admin-notes/other/index.txt",
+  "dev/archive/legacy-docs-build/admin-notes/PS_commands.txt",
+  "dev/archive/legacy-docs-build/admin-notes/roadmap2MVP.txt",
+  "dev/archive/legacy-docs-build/admin-notes/sample.txt",
+  "dev/archive/legacy-docs-build/admin-notes/tools/index.txt",
   "src/dev-runtime/admin/notes.html",
 ];
 
@@ -40,7 +40,7 @@ const retiredProductionFiles = [
   "src/dev-runtime/admin/admin-notes.html",
   "admin/notes/index.txt",
   "admin/notes/other/index.txt",
-  "dev/archive/docs_build/dev/admin-notes/notes/Other/index.txt",
+  "dev/archive/legacy-docs-build/admin-notes/notes/Other/index.txt",
 ];
 
 const devOnlyAdminLabels = [
@@ -220,16 +220,16 @@ test("production-facing paths only expose Admin Notes through Owner Notes", () =
   assert.deepEqual(violations, [], "production-facing paths must not expose Admin Notes");
 });
 
-test("Admin Notes directory API is read-only, sorted, and restricted to dev/archive/docs_build/dev/admin-notes", async () => {
-  assert.equal(fs.existsSync(repoPath("dev/archive/docs_build/dev/admin-notes")), true, "Admin Notes source directory exists");
+test("Admin Notes directory API is read-only, sorted, and restricted to dev/archive/legacy-docs-build/admin-notes", async () => {
+  assert.equal(fs.existsSync(repoPath("dev/archive/legacy-docs-build/admin-notes")), true, "Admin Notes source directory exists");
 
-  const rootListing = await adminNotesDirectoryPayload("dev/archive/docs_build/dev/admin-notes");
+  const rootListing = await adminNotesDirectoryPayload("dev/archive/legacy-docs-build/admin-notes");
   assert.equal(rootListing.statusCode, 200);
   assert.equal(rootListing.payload.ok, true);
-  assert.equal(rootListing.payload.folderPath, "dev/archive/docs_build/dev/admin-notes");
+  assert.equal(rootListing.payload.folderPath, "dev/archive/legacy-docs-build/admin-notes");
   assert.ok(rootListing.payload.entries.length > 0, "Admin Notes directory has entries");
   assert.ok(
-    rootListing.payload.entries.every((entry) => entry.path.startsWith("dev/archive/docs_build/dev/admin-notes/")),
+    rootListing.payload.entries.every((entry) => entry.path.startsWith("dev/archive/legacy-docs-build/admin-notes/")),
     "Admin Notes entries stay under the source folder",
   );
   assert.deepEqual(
@@ -238,22 +238,22 @@ test("Admin Notes directory API is read-only, sorted, and restricted to dev/arch
     "Admin Notes entries are sorted alphabetically",
   );
   assert.ok(
-    rootListing.payload.entries.some((entry) => entry.path === "dev/archive/docs_build/dev/admin-notes/sample.txt"),
+    rootListing.payload.entries.some((entry) => entry.path === "dev/archive/legacy-docs-build/admin-notes/sample.txt"),
     "Admin Notes list includes an existing text file from the source folder",
   );
   assert.ok(
-    rootListing.payload.entries.some((entry) => entry.path === "dev/archive/docs_build/dev/admin-notes/notes/index.txt"),
+    rootListing.payload.entries.some((entry) => entry.path === "dev/archive/legacy-docs-build/admin-notes/notes/index.txt"),
     "Admin Notes list includes a folder index from the source folder",
   );
 
-  const traversal = await adminNotesDirectoryPayload("dev/archive/docs_build/dev/admin-notes/../../reports");
+  const traversal = await adminNotesDirectoryPayload("dev/archive/legacy-docs-build/admin-notes/../../reports");
   assert.equal(traversal.statusCode, 403);
   assert.equal(traversal.payload.ok, false);
-  assert.match(traversal.payload.error, /restricted to dev\/archive\/docs_build\/dev\/admin-notes/);
+  assert.match(traversal.payload.error, /restricted to dev\/archive\/legacy-docs-build\/admin-notes/);
 
   const missingRoot = makeTempRepoRoot();
   try {
-    const missing = await adminNotesDirectoryPayload("dev/archive/docs_build/dev/admin-notes", missingRoot);
+    const missing = await adminNotesDirectoryPayload("dev/archive/legacy-docs-build/admin-notes", missingRoot);
     assert.equal(missing.statusCode, 404);
     assert.equal(missing.payload.ok, false);
     assert.match(missing.payload.error, /folder not found/i);
@@ -263,8 +263,8 @@ test("Admin Notes directory API is read-only, sorted, and restricted to dev/arch
 
   const emptyRoot = makeTempRepoRoot();
   try {
-    fs.mkdirSync(path.join(emptyRoot, "dev/archive/docs_build/dev/admin-notes"), { recursive: true });
-    const empty = await adminNotesDirectoryPayload("dev/archive/docs_build/dev/admin-notes", emptyRoot);
+    fs.mkdirSync(path.join(emptyRoot, "dev/archive/legacy-docs-build/admin-notes"), { recursive: true });
+    const empty = await adminNotesDirectoryPayload("dev/archive/legacy-docs-build/admin-notes", emptyRoot);
     assert.equal(empty.statusCode, 200);
     assert.equal(empty.payload.ok, true);
     assert.deepEqual(empty.payload.entries, []);

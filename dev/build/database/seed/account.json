@@ -1,0 +1,53 @@
+{
+  "group": "Account",
+  "groupKey": "account",
+  "owner": "dev/build/database/seed",
+  "serverSideSeedRequired": true,
+  "browserAuthoritativeKeyGenerationAllowed": false,
+  "seedMode": "server-api-template",
+  "temporaryDevOnlyException": {
+    "reason": "DEV seed users need stable keys so local PowerShell sign-in scripts can target predictable users.",
+    "staticUserKeysAllowedOnlyFor": [
+      {
+        "displayName": "User 1",
+        "key": "01K2GFSJ0Y0000000000000051"
+      },
+      {
+        "displayName": "User 2",
+        "key": "01K2GFSJ0Y0000000000000052"
+      },
+      {
+        "displayName": "User 3",
+        "key": "01K2GFSJ0Y0000000000000053"
+      },
+      {
+        "displayName": "DavidQ",
+        "key": "01K2GFSJ0Y0000000000000054"
+      }
+    ],
+    "staticUserRoleKeysAllowedOnlyFor": [
+      "01K2GFSJ0Y0000000000000082",
+      "01K2GFSJ0Y0000000000000083",
+      "01K2GFSJ0Y0000000000000084",
+      "01K2GFSJ0Y0000000000000085",
+      "01K2GFSJ0Y0000000000000086",
+      "01K2GFSJ0Y0000000000000089"
+    ]
+  },
+  "tables": {
+    "users": {
+      "mode": "server-side-upsert",
+      "authProvider": "supabase-auth",
+      "passwordStorage": "none"
+    },
+    "roles": {
+      "mode": "server-api-generated-keys",
+      "requiredRoleSlugs": ["admin", "creator", "guest", "owner"]
+    },
+    "user_roles": {
+      "mode": "server-side-upsert",
+      "roleResolution": "Resolve roleKey from server-generated roles by roleSlug."
+    }
+  },
+  "note": "This file is a grouped seed instruction template. The server-side DEV seed API creates authoritative rows and generates all non-user keys."
+}

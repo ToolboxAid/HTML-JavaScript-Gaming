@@ -537,7 +537,7 @@ function expectSeedIntegrity(seedData) {
   expect(guestToolKeys).toEqual(GUEST_SEED_GROUP_KEYS);
   expect(seedData.samples.some((sample) => sample.audience === "guest")).toBe(false);
   expect(seedData.guestPackages.every((sample) => sample.readOnly === true && sample.writableByGuest === false)).toBe(true);
-  expect(seedData.guestPackages.every((sample) => sample.source.startsWith("dev/docs_build/database/seed/guest/"))).toBe(true);
+  expect(seedData.guestPackages.every((sample) => sample.source.startsWith("dev/build/database/seed/guest/"))).toBe(true);
   expect(userKeys).toEqual([
     MOCK_DB_KEYS.users.admin,
     MOCK_DB_KEYS.users.user1,

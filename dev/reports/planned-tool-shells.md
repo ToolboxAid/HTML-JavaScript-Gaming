@@ -2,7 +2,7 @@
 
 ## Scope
 
-- Added planned Toolbox shell pages from `toolbox/_tool_template-v2/index.html`.
+- Added planned Toolbox shell pages from `dev/templates/tool-template-v2.html`.
 - Preserved the copied template structure:
   - shared header partial
   - shared footer partial
