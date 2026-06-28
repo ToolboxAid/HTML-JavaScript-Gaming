@@ -12,42 +12,29 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(62%) Toolbox Index - exercised 4 runtime JS files
+(44%) Toolbox Index - exercised 1 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
-(70%) Theme V2 Shared JS - exercised 6 runtime JS files
+(72%) Theme V2 Shared JS - exercised 4 runtime JS files
 
 Changed runtime JS files covered:
-(0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(100%) none changed - no changed runtime JS files
 
 Files with executed line/function counts where available:
-(12%) toolbox/messages/messages-api-client.js - executed lines 87/87; executed functions 3/25
-(25%) src/api/session-api-client.js - executed lines 67/67; executed functions 3/12
-(33%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
 (36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2044/2044; executed functions 12/33
-(50%) src/api/public-config-client.js - executed lines 209/209; executed functions 13/26
-(50%) toolbox/game-hub/game-hub-api-client.js - executed lines 26/26; executed functions 2/4
+(44%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 11/25
 (53%) src/api/server-api-client.js - executed lines 168/168; executed functions 10/19
-(57%) assets/theme-v2/js/account-auth-service.js - executed lines 64/64; executed functions 4/7
-(57%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 55/97
-(60%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 15/25
-(67%) assets/js/shared/assets-api-client.js - executed lines 19/19; executed functions 2/3
+(64%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 63/98
+(65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
 (67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
-(67%) src/engine/object-model/objectModelRegistry.js - executed lines 139/139; executed functions 4/6
-(70%) assets/theme-v2/js/login-session.js - executed lines 113/113; executed functions 7/10
-(70%) src/engine/object-model/objectDefinitionValidator.js - executed lines 360/360; executed functions 16/23
-(74%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 80/108
 (75%) assets/theme-v2/js/tool-display-mode.js - executed lines 251/251; executed functions 21/28
-(75%) src/engine/object-model/objectDefinitionSchema.js - executed lines 58/58; executed functions 3/4
+(75%) assets/toolbox/game-journey/js/index.js - executed lines 1913/1913; executed functions 132/177
 (80%) assets/theme-v2/js/theme-icons.js - executed lines 69/69; executed functions 4/5
-(95%) assets/toolbox/objects/js/index.js - executed lines 1574/1574; executed functions 146/153
-(100%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 37/37
-(100%) src/engine/object-model/index.js - executed lines 29/29; executed functions 1/1
+(89%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 32/36
+(100%) assets/js/shared/game-journey-api-client.js - executed lines 19/19; executed functions 2/2
 
 Uncovered or low-coverage changed JS files:
-(0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: uncovered changed runtime JS file; advisory only
+(100%) none changed - no changed runtime JS files
 
 Changed JS files considered:
-(0%) dev/tests/dev-runtime/ObjectsApiService.test.mjs - changed JS file not collected as browser runtime coverage
-(0%) dev/tests/playwright/tools/ObjectsTool.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - changed JS file not collected as browser runtime coverage
-(95%) assets/toolbox/objects/js/index.js - changed JS file with browser V8 coverage
+(0%) dev/tests/playwright/tools/GameJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
+(75%) assets/toolbox/game-journey/js/index.js - changed JS file with browser V8 coverage

@@ -11,8 +11,10 @@ import {
   getActiveToolRegistry,
   getToolRegistryApiDiagnostic,
 } from "../../../../toolbox/tool-registry-api-client.js";
+import { createServerRepositoryClient } from "../../../../src/api/server-api-client.js";
 
 const repository = createGameJourneyApiRepository();
+const objectsRepository = createServerRepositoryClient("objects");
 const registryDiagnostic = getToolRegistryApiDiagnostic();
 const registryTools = getActiveToolRegistry();
 const params = new URLSearchParams(window.location.search);
@@ -51,6 +53,9 @@ const diagnostics = document.querySelector("[data-journey-diagnostics]");
 const searchInput = document.querySelector("[data-journey-search-input]");
 const searchStatus = document.querySelector("[data-journey-search-status]");
 const completionMetrics = document.querySelector("[data-journey-completion-metrics]");
+const objectsReadinessTable = document.querySelector("[data-journey-objects-readiness]");
+const objectsReadinessStatus = document.querySelector("[data-journey-objects-readiness-status]");
+const objectsReviewChecklist = document.querySelector("[data-journey-objects-review-checklist]");
 const recommendedTargets = document.querySelector("[data-journey-recommended-targets]");
 const recommendedTargetStatus = document.querySelector("[data-journey-target-status]");
 const SUMMARY_TABLE_COLUMN_COUNT = 13;
@@ -88,6 +93,54 @@ let routeForcesNoActiveGame = false;
 const recommendedTargetValues = new Map(
   GAME_JOURNEY_RECOMMENDED_TARGETS.map((target) => [target.key, target.suggestedCount]),
 );
+const OBJECTS_COMPLETION_BUCKET_KEY = "006-objects";
+const OBJECTS_STAGE_CRITERIA = Object.freeze([
+  Object.freeze({
+    key: "saved-objects",
+    label: "At least one object is saved for the current game.",
+  }),
+  Object.freeze({
+    key: "named-typed",
+    label: "Every saved object has a name, type, and starting state.",
+  }),
+  Object.freeze({
+    key: "interactive-object",
+    label: "At least one object represents something the player can use, collect, avoid, or reach.",
+  }),
+  Object.freeze({
+    key: "render-links",
+    label: "Sprite-rendered objects have a sprite asset reference.",
+  }),
+  Object.freeze({
+    key: "owner-review-details",
+    label: "Object Details include Product Owner review context such as description, tags, or defaults.",
+  }),
+]);
+const OBJECTS_REVIEW_CHECKLIST = Object.freeze([
+  "Confirm the object list matches the current Game Hub game.",
+  "Confirm each object name and type is understandable to a Creator.",
+  "Confirm sprite, audio, and message references are resolved or intentionally empty.",
+  "Confirm at least one meaningful player-facing object exists.",
+  "Confirm Objects validation is clean before expanding later gameplay work.",
+]);
+const INTERACTIVE_OBJECT_ROLES = Object.freeze([
+  "collectible",
+  "enemy",
+  "goal",
+  "hazard",
+  "hero",
+  "projectile",
+]);
+const INTERACTIVE_OBJECT_TRAITS = Object.freeze([
+  "collectible",
+  "goal",
+  "hazard",
+  "movable",
+  "playerControlled",
+  "scores",
+]);
+let objectsReadinessSnapshot = null;
+let objectsReadinessDiagnostic = "";
 
 function currentRecommendedTargets() {
   const result = repository.listRecommendedTargets();
@@ -135,6 +188,10 @@ function routedNotes(filterId) {
   return routeForcesNoActiveGame ? [] : repository.listNotes(filterId);
 }
 
+function normalizeText(value) {
+  return String(value || "").trim();
+}
+
 function createElement(tagName, options = {}) {
   const element = document.createElement(tagName);
   if (options.className) {
@@ -144,6 +201,120 @@ function createElement(tagName, options = {}) {
     element.textContent = options.text;
   }
   return element;
+}
+
+function objectDetails(object = {}) {
+  return object.details && typeof object.details === "object" ? object.details : {};
+}
+
+function objectHasNameTypeAndState(object = {}) {
+  return Boolean(normalizeText(object.name) && normalizeText(object.role || object.type) && normalizeText(object.state));
+}
+
+function normalizedObjectRole(object = {}) {
+  return normalizeText(object.role || object.type).toLowerCase();
+}
+
+function normalizedObjectTraits(object = {}) {
+  return Array.isArray(object.traits)
+    ? object.traits.map(normalizeText).filter(Boolean)
+    : [];
+}
+
+function objectIsInteractive(object = {}) {
+  const role = normalizedObjectRole(object);
+  if (INTERACTIVE_OBJECT_ROLES.includes(role)) {
+    return true;
+  }
+  const traits = normalizedObjectTraits(object);
+  return traits.some((trait) => INTERACTIVE_OBJECT_TRAITS.includes(trait));
+}
+
+function objectSpriteReference(object = {}) {
+  const details = objectDetails(object);
+  return normalizeText(object.render?.assetKey || details.spriteReference);
+}
+
+function objectHasRenderReference(object = {}) {
+  return normalizeText(object.render?.type) !== "Sprite" || Boolean(objectSpriteReference(object));
+}
+
+function objectHasOwnerReviewDetails(object = {}) {
+  const details = objectDetails(object);
+  return Boolean(
+    normalizeText(details.description) ||
+    normalizeText(details.defaultValues) ||
+    normalizeText(details.spriteReference) ||
+    normalizeText(details.audioReference) ||
+    normalizeText(details.messageReference) ||
+    (Array.isArray(details.tags) && details.tags.length > 0)
+  );
+}
+
+function evaluateObjectsStageReadiness(objects = []) {
+  const savedObjects = Array.isArray(objects) ? objects : [];
+  const hasObjects = savedObjects.length > 0;
+  const criteriaByKey = {
+    "saved-objects": hasObjects,
+    "named-typed": hasObjects && savedObjects.every(objectHasNameTypeAndState),
+    "interactive-object": savedObjects.some(objectIsInteractive),
+    "render-links": hasObjects && savedObjects.every(objectHasRenderReference),
+    "owner-review-details": savedObjects.some(objectHasOwnerReviewDetails),
+  };
+  const criteria = OBJECTS_STAGE_CRITERIA.map((criterion) => ({
+    ...criterion,
+    complete: Boolean(criteriaByKey[criterion.key]),
+  }));
+  const completedCriteria = criteria.filter((criterion) => criterion.complete).length;
+  return {
+    available: true,
+    completedCriteria,
+    criteria,
+    meaningful: completedCriteria >= 3,
+    objectCount: savedObjects.length,
+    ready: completedCriteria === criteria.length,
+    totalCriteria: criteria.length,
+  };
+}
+
+function unavailableObjectsStageReadiness(message) {
+  return {
+    available: false,
+    completedCriteria: 0,
+    criteria: OBJECTS_STAGE_CRITERIA.map((criterion) => ({
+      ...criterion,
+      complete: false,
+    })),
+    meaningful: false,
+    objectCount: 0,
+    ready: false,
+    totalCriteria: OBJECTS_STAGE_CRITERIA.length,
+    unavailableMessage: message,
+  };
+}
+
+function objectRepositoryErrorMessage(result) {
+  if (result?.error || objectsRepository.__apiDiagnostic?.()) {
+    return "Objects readiness is temporarily unavailable. Continue building while the API refreshes.";
+  }
+  return "Objects readiness is temporarily unavailable. Continue building while the API refreshes.";
+}
+
+function refreshObjectsReadinessSnapshot() {
+  const activeGame = routedActiveGame();
+  if (!activeGame) {
+    objectsReadinessDiagnostic = "Open a game in Game Hub before checking Objects readiness.";
+    objectsReadinessSnapshot = unavailableObjectsStageReadiness(objectsReadinessDiagnostic);
+    return;
+  }
+  const result = objectsRepository.listObjects(activeGame.id || activeGame.key);
+  if (Array.isArray(result)) {
+    objectsReadinessDiagnostic = "";
+    objectsReadinessSnapshot = evaluateObjectsStageReadiness(result);
+    return;
+  }
+  objectsReadinessDiagnostic = objectRepositoryErrorMessage(result);
+  objectsReadinessSnapshot = unavailableObjectsStageReadiness(objectsReadinessDiagnostic);
 }
 
 function formatDate(value) {
@@ -952,6 +1123,52 @@ function formatCompletionFocusStatus(metric) {
   return metric.active ? "Active focus" : "Planning context";
 }
 
+function metricPercentComplete(completedCount, plannedCount) {
+  if (!plannedCount) {
+    return 0;
+  }
+  return Math.round((completedCount / plannedCount) * 100);
+}
+
+function recalculateCompletionSnapshot(snapshot, records) {
+  const plannedCount = records.reduce((total, metric) => total + metric.plannedCount, 0);
+  const completedCount = records.reduce((total, metric) => total + metric.completedCount, 0);
+  const activeCount = records.filter((metric) => metric.active).length;
+  return {
+    ...snapshot,
+    activeCount,
+    completedCount,
+    inactiveCount: records.length - activeCount,
+    percentComplete: metricPercentComplete(completedCount, plannedCount),
+    plannedCount,
+    records,
+  };
+}
+
+function completionSnapshotWithObjectsReadiness(snapshot) {
+  if (!snapshot?.records || !objectsReadinessSnapshot?.available || objectsReadinessSnapshot.completedCriteria <= 0) {
+    return snapshot;
+  }
+  const records = snapshot.records.map((metric) => {
+    if (metric.bucketKey !== OBJECTS_COMPLETION_BUCKET_KEY) {
+      return metric;
+    }
+    const plannedCount = metric.plannedCount || objectsReadinessSnapshot.totalCriteria;
+    const completedCount = Math.min(
+      plannedCount,
+      Math.max(metric.completedCount, objectsReadinessSnapshot.completedCriteria),
+    );
+    return {
+      ...metric,
+      completedCount,
+      percentComplete: metricPercentComplete(completedCount, plannedCount),
+      plannedCount,
+      status: metric.active ? "active" : metric.status,
+    };
+  });
+  return recalculateCompletionSnapshot(snapshot, records);
+}
+
 function renderCompletionMetrics() {
   if (!completionMetrics) {
     return;
@@ -967,7 +1184,8 @@ function renderCompletionMetrics() {
     return;
   }
 
-  const records = completionMetricsSnapshot?.records || [];
+  const snapshot = completionSnapshotWithObjectsReadiness(completionMetricsSnapshot);
+  const records = snapshot?.records || [];
   if (!records.length) {
     completionMetrics.append(createElement("p", { text: "No Journey progress targets are set yet. Add suggested targets to start tracking progress." }));
     return;
@@ -977,16 +1195,16 @@ function renderCompletionMetrics() {
   dashboard.dataset.journeyProgressDashboard = "";
   const summary = createElement("p", {
     className: "status",
-    text: `Journey progress: ${completionMetricsSnapshot.completedCount} of ${completionMetricsSnapshot.plannedCount} planned items done (${completionMetricsSnapshot.percentComplete}%). ${completionMetricsSnapshot.activeCount} sections are active focus areas; ${completionMetricsSnapshot.inactiveCount} are planning context.`,
+    text: `Journey progress: ${snapshot.completedCount} of ${snapshot.plannedCount} planned items done (${snapshot.percentComplete}%). ${snapshot.activeCount} sections are active focus areas; ${snapshot.inactiveCount} are planning context.`,
   });
   const overallHeading = createElement("h3", { text: "Overall Progress" });
   const overallGrid = createElement("div", { className: "grid cols-2" });
   overallGrid.dataset.journeyOverallProgress = "";
   [
-    ["Overall", `${completionMetricsSnapshot.percentComplete}%`],
-    ["Done", String(completionMetricsSnapshot.completedCount)],
-    ["Planned", String(completionMetricsSnapshot.plannedCount)],
-    ["Active Focus", String(completionMetricsSnapshot.activeCount)],
+    ["Overall", `${snapshot.percentComplete}%`],
+    ["Done", String(snapshot.completedCount)],
+    ["Planned", String(snapshot.plannedCount)],
+    ["Active Focus", String(snapshot.activeCount)],
   ].forEach(([label, value]) => {
     const stat = createElement("article", { className: "mini-stat mini-stat--inline" });
     stat.append(
@@ -1062,7 +1280,7 @@ function renderCompletionMetrics() {
   const insightHeading = createElement("h3", { text: "What To Do Next" });
   const insightList = createElement("ul");
   insightList.dataset.journeyCompletionInsights = "";
-  completionInsightMessages(completionMetricsSnapshot, records, mostComplete, leastComplete).forEach((message) => {
+  completionInsightMessages(snapshot, records, mostComplete, leastComplete).forEach((message) => {
     insightList.append(createElement("li", { text: message }));
   });
 
@@ -1080,6 +1298,47 @@ function renderCompletionMetrics() {
     insightList,
   );
   completionMetrics.append(dashboard);
+}
+
+function objectsReadinessStatusText(snapshot) {
+  if (!snapshot?.available) {
+    return snapshot?.unavailableMessage || "Objects readiness is temporarily unavailable.";
+  }
+  if (snapshot.objectCount === 0) {
+    return "Objects readiness: no saved objects for this game yet.";
+  }
+  if (snapshot.ready) {
+    return `Objects readiness: ${snapshot.completedCriteria} of ${snapshot.totalCriteria} criteria complete. Product Owner review can start.`;
+  }
+  if (snapshot.meaningful) {
+    return `Objects readiness: ${snapshot.completedCriteria} of ${snapshot.totalCriteria} criteria complete. Journey progress now reflects meaningful Objects work.`;
+  }
+  return `Objects readiness: ${snapshot.completedCriteria} of ${snapshot.totalCriteria} criteria complete. Continue Objects before treating this stage as ready.`;
+}
+
+function renderObjectsReadiness() {
+  const snapshot = objectsReadinessSnapshot || unavailableObjectsStageReadiness("Objects readiness is waiting for API data.");
+  if (objectsReadinessStatus) {
+    objectsReadinessStatus.textContent = objectsReadinessStatusText(snapshot);
+  }
+  if (objectsReadinessTable) {
+    objectsReadinessTable.replaceChildren();
+    snapshot.criteria.forEach((criterion) => {
+      const row = createElement("tr");
+      row.dataset.journeyObjectsCriterion = criterion.key;
+      row.append(
+        createElement("td", { text: criterion.label }),
+        createElement("td", { text: criterion.complete ? "PASS" : "Needs work" }),
+      );
+      objectsReadinessTable.append(row);
+    });
+  }
+  if (objectsReviewChecklist) {
+    objectsReviewChecklist.replaceChildren();
+    OBJECTS_REVIEW_CHECKLIST.forEach((item) => {
+      objectsReviewChecklist.append(createElement("li", { text: item }));
+    });
+  }
 }
 
 function normalizeTargetCount(value) {
@@ -1474,6 +1733,7 @@ function render() {
   renderStatScope(selectedStatsNote, notes);
   renderStats(statCounts);
   renderCompletionMetrics();
+  renderObjectsReadiness();
   renderRecommendedTargets();
   renderSuggestedTools(displayNote);
   renderRecentActivity();
@@ -1788,6 +2048,16 @@ recommendedTargets?.addEventListener("input", (event) => {
   }
 });
 
+window.addEventListener("focus", () => {
+  refreshObjectsReadinessSnapshot();
+  render();
+});
+
+window.addEventListener("pageshow", () => {
+  refreshObjectsReadinessSnapshot();
+  render();
+});
+
 addNoteButton?.addEventListener("click", () => {
   if (redirectGuestWriteAction(noteStatus)) {
     return;
@@ -1821,4 +2091,5 @@ addTypeButton?.addEventListener("click", () => {
 renderStatusOptions();
 refreshCompletionMetricsSnapshot();
 applyInitialGameRoute();
+refreshObjectsReadinessSnapshot();
 render();

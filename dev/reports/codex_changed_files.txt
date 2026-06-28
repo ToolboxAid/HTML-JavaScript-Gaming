@@ -1,15 +1,49 @@
-assets/toolbox/objects/js/index.js
-dev/reports/codex_changed_files.txt
-dev/reports/codex_review.diff
-dev/reports/coverage_changed_js_guardrail.txt
-dev/reports/playwright_v8_coverage_report.txt
-dev/reports/PR_26179_ALFA_013-objects-asset-links_branch_validation.md
-dev/reports/PR_26179_ALFA_013-objects-asset-links_manual_validation_notes.md
-dev/reports/PR_26179_ALFA_013-objects-asset-links_report.md
-dev/reports/PR_26179_ALFA_013-objects-asset-links_requirement_checklist.md
-dev/reports/PR_26179_ALFA_013-objects-asset-links_validation_lane.md
-dev/reports/PR_26179_ALFA_013-objects-asset-links_validation_report.md
-dev/tests/dev-runtime/ObjectsApiService.test.mjs
-dev/tests/playwright/tools/ObjectsTool.spec.mjs
-src/dev-runtime/toolbox-api/alfa-tool-services.mjs
-toolbox/objects/index.html
+# PR014 artifact base
+Base ref: PR_26179_ALFA_013-objects-asset-links
+Merge base: 8a75ce77275576f96ab4bb6db1ba8dc4669c10c7
+Head: f34da790f38942aa048a8794b7947c450b7e4659
+
+# git status --short
+M dev/reports/codex_review.diff
+ M dev/reports/coverage_changed_js_guardrail.txt
+ M dev/reports/playwright_v8_coverage_report.txt
+?? dev/reports/PR_26179_ALFA_014-objects-journey-readiness_eod_report.md
+?? dev/reports/PR_26179_ALFA_objects-stack_product-owner-review-notes.md
+
+# git diff --name-status PR_26179_ALFA_013-objects-asset-links...HEAD
+M	assets/toolbox/game-journey/js/index.js
+A	dev/reports/PR_26179_ALFA_014-objects-journey-readiness_branch_validation.md
+A	dev/reports/PR_26179_ALFA_014-objects-journey-readiness_manual_validation_notes.md
+A	dev/reports/PR_26179_ALFA_014-objects-journey-readiness_report.md
+A	dev/reports/PR_26179_ALFA_014-objects-journey-readiness_requirement_checklist.md
+A	dev/reports/PR_26179_ALFA_014-objects-journey-readiness_validation_lane.md
+A	dev/reports/PR_26179_ALFA_014-objects-journey-readiness_validation_report.md
+M	dev/reports/codex_changed_files.txt
+M	dev/reports/codex_review.diff
+M	dev/reports/playwright_v8_coverage_report.txt
+M	dev/tests/playwright/tools/GameJourneyTool.spec.mjs
+M	toolbox/game-journey/index.html
+
+# git diff --name-status
+M	dev/reports/codex_review.diff
+M	dev/reports/coverage_changed_js_guardrail.txt
+M	dev/reports/playwright_v8_coverage_report.txt
+
+# git ls-files --others --exclude-standard
+dev/reports/PR_26179_ALFA_014-objects-journey-readiness_eod_report.md
+dev/reports/PR_26179_ALFA_objects-stack_product-owner-review-notes.md
+
+# git diff --stat PR_26179_ALFA_013-objects-asset-links...HEAD
+assets/toolbox/game-journey/js/index.js            |  285 +-
+ ...-objects-journey-readiness_branch_validation.md |   24 +
+ ...ts-journey-readiness_manual_validation_notes.md |   14 +
+ ...79_ALFA_014-objects-journey-readiness_report.md |   34 +
+ ...ects-journey-readiness_requirement_checklist.md |   17 +
+ ...14-objects-journey-readiness_validation_lane.md |   20 +
+ ...-objects-journey-readiness_validation_report.md |   19 +
+ dev/reports/codex_changed_files.txt                |   45 +-
+ dev/reports/codex_review.diff                      | 2710 +++++++++++++++-----
+ dev/reports/playwright_v8_coverage_report.txt      |   31 +-
+ .../playwright/tools/GameJourneyTool.spec.mjs      |   94 +
+ toolbox/game-journey/index.html                    |   21 +
+ 12 files changed, 2585 insertions(+), 729 deletions(-)
