@@ -117,7 +117,7 @@ From branch creation until merge:
 - Open/update the PR from the PR branch.
 - For OWNER-approved stacked/sequential workstreams, PR branches/commits stay on the active team branch/workstream between sequential PRs during the day.
 - Do not return to `main` between sequential PRs in the same active workstream unless OWNER explicitly approves an EOD or intermediate merge checkpoint.
-- This rule applies to all teams: OWNER, Team Alfa, Team Bravo, Team Charlie, Team Delta, and any future team.
+- This rule applies to all canonical teams: Owner, Alfa, Bravo, Charlie, Delta, and Golf.
 
 Hard Stops:
 

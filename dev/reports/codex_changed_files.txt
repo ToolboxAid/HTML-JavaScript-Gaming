@@ -1,23 +1,39 @@
 PR_26179_OWNER_010-canonical-project-folder-instructions
-Updated: 2026-06-28T02:17:01Z
+Updated: 2026-06-28T02:32:48Z
 Branch: PR_26179_OWNER_010-canonical-project-folder-instructions
 
 Changed files staged for this update:
-M	dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 M	dev/build/ProjectInstructions/PROJECT_STATE.md
 M	dev/build/ProjectInstructions/TEAM_START_COMMANDS.md
-M	dev/build/ProjectInstructions/addendums/assistant_execution_modes.md
+M	dev/build/ProjectInstructions/addendums/branch_lock_governance.md
+M	dev/build/ProjectInstructions/addendums/multi_team.md
+M	dev/build/ProjectInstructions/addendums/naming_registry.md
 M	dev/build/ProjectInstructions/addendums/pr_workflow.md
-M	dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md
-M	dev/build/ProjectInstructions/chatGPT_command.txt
-A	dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
+M	dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
+M	dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
+M	dev/build/ProjectInstructions/addendums/team_release_readiness.md
+M	dev/build/ProjectInstructions/addendums/team_start_and_release.md
+M	dev/build/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md
+M	dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
+M	dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
+M	dev/build/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
+M	dev/build/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
+M	dev/build/ProjectInstructions/team_assignments/team_ownership.md
 
 Working tree status at report generation:
-M  dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 M  dev/build/ProjectInstructions/PROJECT_STATE.md
 M  dev/build/ProjectInstructions/TEAM_START_COMMANDS.md
-M  dev/build/ProjectInstructions/addendums/assistant_execution_modes.md
+M  dev/build/ProjectInstructions/addendums/branch_lock_governance.md
+M  dev/build/ProjectInstructions/addendums/multi_team.md
+M  dev/build/ProjectInstructions/addendums/naming_registry.md
 M  dev/build/ProjectInstructions/addendums/pr_workflow.md
-M  dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md
-M  dev/build/ProjectInstructions/chatGPT_command.txt
-A  dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
+M  dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
+M  dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
+M  dev/build/ProjectInstructions/addendums/team_release_readiness.md
+M  dev/build/ProjectInstructions/addendums/team_start_and_release.md
+M  dev/build/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md
+M  dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
+M  dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
+M  dev/build/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
+M  dev/build/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
+M  dev/build/ProjectInstructions/team_assignments/team_ownership.md

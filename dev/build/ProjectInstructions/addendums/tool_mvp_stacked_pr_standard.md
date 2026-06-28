@@ -89,6 +89,6 @@ When OWNER gives one large Codex command for a tool MVP stack, Codex may continu
 
 During an OWNER-approved day workstream, PR branches/commits stay on the active team branch/workstream and do not return to `main` between PRs.
 
-This rule applies to all teams: OWNER, Team Alfa, Team Bravo, Team Charlie, Team Delta, and any future team.
+This rule applies to all canonical teams: Owner, Alfa, Bravo, Charlie, Delta, and Golf.
 
 The final PR in the stack must perform normal EOD closeout or OWNER-approved merge-checkpoint closeout and stop all work after returning to synchronized main.

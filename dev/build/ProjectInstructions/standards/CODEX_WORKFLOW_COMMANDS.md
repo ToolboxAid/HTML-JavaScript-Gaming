@@ -16,17 +16,16 @@ Valid Start of Day command format:
 
 ```text
 Start of Day Owner
-Start of Day Alpha
+Start of Day Alfa
 Start of Day Bravo
 Start of Day Charlie
-Start of Day Gamma
+Start of Day Delta
+Start of Day Golf
 ```
 
-Team note:
-- `Start of Day Alpha` maps to the current Team Alfa lane where active Project Instructions use the Alfa spelling.
-- Historical Team Gamma context may be reported when present, but active assignments follow the current team registry.
+Commands using non-canonical team names are invalid because active team names are Owner, Alfa, Bravo, Charlie, Delta, and Golf.
 
-Start of Day is read-only.
+Start of Day is read-only discovery only.
 
 Start of Day must not require the current branch to be `main`.
 
@@ -49,7 +48,11 @@ Start of Day reports:
 - recommended next action
 - blockers
 
+Start of Day may recommend the next execution phase, but it must not execute that phase.
+
 ## Execution Phases
+
+PLAN_PR, BUILD_PR, and APPLY_PR are Codex PR execution phases after Start of Day. They are not part of Start of Day.
 
 Valid PR execution phase commands:
 
@@ -57,6 +60,19 @@ Valid PR execution phase commands:
 PLAN_PR
 BUILD_PR
 APPLY_PR
+```
+
+Lifecycle:
+
+```text
+Start of Day {Team}
+    -> returns status/recommendation only
+PLAN_PR
+    -> creates PR plan/instructions
+BUILD_PR
+    -> implements scoped PR
+APPLY_PR
+    -> validates/merges/closes out PR
 ```
 
 ### PLAN_PR

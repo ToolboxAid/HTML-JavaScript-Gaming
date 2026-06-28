@@ -1,6 +1,6 @@
 # PR Workflow Governance
 
-Status: Approved  
+Status: Approved
 Owner: OWNER
 
 ## Purpose
@@ -46,7 +46,7 @@ Team-neutral daily workflow:
   - current branch is `main`
   - worktree clean
   - local/origin sync is `0 0`
-- This rule applies to all teams: OWNER, Team Alfa, Team Bravo, Team Charlie, Team Delta, and any future team.
+- This rule applies to all canonical teams: Owner, Alfa, Bravo, Charlie, Delta, and Golf.
 
 This section supersedes older active wording that implies returning to `main` between every PR inside an OWNER-approved stacked/sequential workstream.
 
@@ -198,13 +198,12 @@ Meaning:
 Generate the complete stacked sequential Codex PR chain required to finish the current workstream.
 
 Applies to:
-- OWNER
-- Team Alfa
-- Team Bravo
-- Team Charlie
-- Team Delta
-- Team Golf
-- Any future NATO-named team
+- Owner
+- Alfa
+- Bravo
+- Charlie
+- Delta
+- Golf
 
 Behavior:
 - Determine completed work.

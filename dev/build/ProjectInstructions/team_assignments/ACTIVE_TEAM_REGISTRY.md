@@ -28,23 +28,23 @@ If a team has no assignment, no active branch, and no active PR, it is inactive 
 
 | Team | Active Assignment | Branch | PR | Status | OWNER Decision |
 |------|-------------------|--------|----|--------|----------------|
-| Team Alfa | none | none | none | Available | Active ownership lane |
-| Team Bravo | none | none | none | Available | Active ownership lane |
-| Team Charlie | none | none | none | Available | Active ownership lane |
-| Team Delta | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | Active | OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_056-shared-validation-assertions |
-| Team Golf | none | none | none | Available | Replacement active ownership lane for retired Team Gamma |
-| Team OWNER | none | none | none | Available | Governance Phase 1 complete |
+| Alfa | none | none | none | Available | Active ownership lane |
+| Bravo | none | none | none | Available | Active ownership lane |
+| Charlie | none | none | none | Available | Active ownership lane |
+| Delta | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | Active | OWNER override approved: Continue Delta random utility stack with PR_26177_DELTA_056-shared-validation-assertions |
+| Golf | none | none | none | Available | Replacement active ownership lane for the retired prior lane |
+| Owner | none | none | none | Available | Governance Phase 1 complete |
 
 ## Current Active Ownership Lanes
 
 OWNER override approved.
 
-The current active ownership lanes are Team Alfa, Team Bravo, Team Charlie, Team Delta, Team Golf, and Team OWNER.
+The current active ownership lanes are Alfa, Bravo, Charlie, Delta, Golf, and Owner.
 
 Migration note:
-Team Gamma is retired. Team Golf is the replacement active ownership lane.
+Golf is the only active replacement for the retired prior lane.
 
-Historical Gamma PR references and branch names remain unchanged for traceability.
+Historical PR references and branch names for retired non-canonical lanes remain unchanged for traceability.
 
 ## Update Rules
 

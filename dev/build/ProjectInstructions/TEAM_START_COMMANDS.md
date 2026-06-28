@@ -23,7 +23,7 @@ Branch Lifecycle (Canonical):
 
 ## Team Migration Note
 
-Team Alfa, Team Bravo, Team Charlie, and historical Team Gamma lanes must update from current `main` before starting work and use the folder-placement SSoT:
+Alfa, Bravo, Charlie, and historical retired non-canonical lanes must update from current `main` before starting work and use the folder-placement SSoT:
 
 `dev/build/ProjectInstructions/repository/canonical_repository_structure.md`
 
@@ -31,115 +31,115 @@ Do not create or reuse invalid legacy folders. Use the SSoT invalid legacy path 
 
 If a proposed file does not clearly belong in a canonical folder, HARD STOP and report the proposed path.
 
-## Start Team Alfa
+## Start Alfa
 
 Ready-to-copy command:
 
 ```text
-OWNER override approved: Start Team Alfa from the ProjectInstructions release gate.
+OWNER override approved: Start Alfa from the ProjectInstructions release gate.
 
 Read dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md first.
 Read dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md.
 Read dev/build/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
 
-Pull one [ ] item for Team Alfa from BACKLOG_MASTER.md.
-Stop if Team Alfa already has an active branch.
-Stop if Team Alfa already has an active assignment.
-Stop if no [ ] Team Alfa backlog item is available.
+Pull one [ ] item for Alfa from BACKLOG_MASTER.md.
+Stop if Alfa already has an active branch.
+Stop if Alfa already has an active assignment.
+Stop if no [ ] Alfa backlog item is available.
 
 Change the selected backlog item from [ ] to [.].
-Add the selected assignment under Team Alfa in TEAM_ASSIGNMENTS.md.
-Create one Team Alfa branch for the selected assignment.
+Add the selected assignment under Alfa in TEAM_ASSIGNMENTS.md.
+Create one Alfa branch for the selected assignment.
 Work only that assignment.
 ```
 
-## Start Team Bravo
+## Start Bravo
 
 Ready-to-copy command:
 
 ```text
-OWNER override approved: Start Team Bravo from the ProjectInstructions release gate.
+OWNER override approved: Start Bravo from the ProjectInstructions release gate.
 
 Read dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md first.
 Read dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md.
 Read dev/build/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
 
-Pull one [ ] item for Team Bravo from BACKLOG_MASTER.md.
-Stop if Team Bravo already has an active branch.
-Stop if Team Bravo already has an active assignment.
-Stop if no [ ] Team Bravo backlog item is available.
+Pull one [ ] item for Bravo from BACKLOG_MASTER.md.
+Stop if Bravo already has an active branch.
+Stop if Bravo already has an active assignment.
+Stop if no [ ] Bravo backlog item is available.
 
 Change the selected backlog item from [ ] to [.].
-Add the selected assignment under Team Bravo in TEAM_ASSIGNMENTS.md.
-Create one Team Bravo branch for the selected assignment.
+Add the selected assignment under Bravo in TEAM_ASSIGNMENTS.md.
+Create one Bravo branch for the selected assignment.
 Work only that assignment.
 ```
 
-## Start Team Charlie
+## Start Charlie
 
 Ready-to-copy command:
 
 ```text
-OWNER override approved: Start Team Charlie from the ProjectInstructions release gate.
+OWNER override approved: Start Charlie from the ProjectInstructions release gate.
 
 Read dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md first.
 Read dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md.
 Read dev/build/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
 
-Pull one [ ] item for Team Charlie from BACKLOG_MASTER.md.
-Stop if Team Charlie already has an active branch.
-Stop if Team Charlie already has an active assignment.
-Stop if no [ ] Team Charlie backlog item is available.
+Pull one [ ] item for Charlie from BACKLOG_MASTER.md.
+Stop if Charlie already has an active branch.
+Stop if Charlie already has an active assignment.
+Stop if no [ ] Charlie backlog item is available.
 
 Change the selected backlog item from [ ] to [.].
-Add the selected assignment under Team Charlie in TEAM_ASSIGNMENTS.md.
-Create one Team Charlie branch for the selected assignment.
+Add the selected assignment under Charlie in TEAM_ASSIGNMENTS.md.
+Create one Charlie branch for the selected assignment.
 Work only that assignment.
 ```
 
-## Start Team Delta
+## Start Delta
 
 Ready-to-copy command:
 
 ```text
-OWNER override approved: Start Team Delta from the ProjectInstructions release gate.
+OWNER override approved: Start Delta from the ProjectInstructions release gate.
 
 Read dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md first.
 Read dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md.
 Read dev/build/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
 Read dev/build/ProjectInstructions/team_assignments/team_ownership.md.
 
-Pull one [ ] item for Team Delta from BACKLOG_MASTER.md.
-Stop if Team Delta already has an active branch.
-Stop if Team Delta already has an active assignment.
-Stop if no [ ] Team Delta backlog item is available.
-Stop if the selected item is outside Team Delta ownership.
+Pull one [ ] item for Delta from BACKLOG_MASTER.md.
+Stop if Delta already has an active branch.
+Stop if Delta already has an active assignment.
+Stop if no [ ] Delta backlog item is available.
+Stop if the selected item is outside Delta ownership.
 
 Change the selected backlog item from [ ] to [.].
-Add the selected assignment under Team Delta in TEAM_ASSIGNMENTS.md.
-Create one Team Delta branch for the selected assignment.
+Add the selected assignment under Delta in TEAM_ASSIGNMENTS.md.
+Create one Delta branch for the selected assignment.
 Work only that assignment.
 ```
 
-## Start Team Golf
+## Start Golf
 
 Ready-to-copy command:
 
 ```text
-OWNER override approved: Start Team Golf from the ProjectInstructions release gate.
+OWNER override approved: Start Golf from the ProjectInstructions release gate.
 
 Read dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md first.
 Read dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md.
 Read dev/build/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
 Read dev/build/ProjectInstructions/team_assignments/team_ownership.md.
 
-Stop if Team Golf already has an active branch.
-Stop if Team Golf already has an active assignment.
-Stop if OWNER has not explicitly assigned Team Golf work.
+Stop if Golf already has an active branch.
+Stop if Golf already has an active assignment.
+Stop if OWNER has not explicitly assigned Golf work.
 Stop if the selected work conflicts with current Alfa, Bravo, Charlie, or Delta ownership.
 
-Record the selected assignment under Team Golf in TEAM_ASSIGNMENTS.md.
-Create or use one Team Golf branch for the selected assignment.
+Record the selected assignment under Golf in TEAM_ASSIGNMENTS.md.
+Create or use one Golf branch for the selected assignment.
 Work only that assignment.
 ```
 

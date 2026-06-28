@@ -1,455 +1,994 @@
-diff --git a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-index e77dad08b..3b916dc17 100644
---- a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-+++ b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-@@ -8,8 +8,8 @@ Codex and future wrappers must request this file directly. All other Project Ins
-
- ## Current Version/Date
-
--- Project Instructions Version: 2026-06-27.PR_26179_OWNER_010
--- Date: 2026-06-27
-+- Project Instructions Version: 2026-06-28.PR_26179_OWNER_010
-+- Date: 2026-06-28
- - Owner: OWNER
-
- ## Required Read Order
-@@ -17,8 +17,9 @@ Codex and future wrappers must request this file directly. All other Project Ins
- 1. Always read `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md`.
- 2. Always read `dev/build/ProjectInstructions/PROJECT_STATE.md`.
- 3. Always read `dev/build/ProjectInstructions/repository/canonical_repository_structure.md`.
--4. For Start of Day, read `dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md`.
--5. Load team, backlog, database, runtime, theme, or other specialist documents only when the current task requires them.
-+4. For Codex workflow command interpretation, read `dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`.
-+5. For Start of Day, read `dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md`.
-+6. Load team, backlog, database, runtime, theme, or other specialist documents only when the current task requires them.
-
- ## Load Graph
-
-@@ -26,6 +27,8 @@ Codex and future wrappers must request this file directly. All other Project Ins
- PROJECT_INSTRUCTIONS.md
- |-- PROJECT_STATE.md
- |-- repository/canonical_repository_structure.md
-+|-- standards/CODEX_WORKFLOW_COMMANDS.md
-+|   `-- Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, or command interpretation
- |-- bootstrap/codex_start_of_day_bootstrap.md
- |   `-- Start of Day only
- |-- team/backlog docs
-@@ -43,6 +46,7 @@ PROJECT_INSTRUCTIONS.md
- - `PROJECT_INSTRUCTIONS.md`: always.
- - `PROJECT_STATE.md`: always.
- - `repository/canonical_repository_structure.md`: always.
-+- `standards/CODEX_WORKFLOW_COMMANDS.md`: Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, invalid command, or command interpretation tasks.
- - `bootstrap/codex_start_of_day_bootstrap.md`: Start of Day only.
- - Backlog docs: Start of Day or planning only.
- - Database docs: DB, DDL, DML, seed, or API persistence changes only.
-@@ -64,19 +68,17 @@ Stop before changing files when:
-
- ## Execution Modes
-
--- Owner: decisions, governance direction, standards.
--- Build PR: execute one scoped PR purpose, validate, report, package.
--- Continue: continue the current scoped branch or PR without expanding scope.
--- Review: findings, risks, recommendations only unless implementation is explicitly requested.
--- Challenge: identify contradictions, risks, or better alternatives.
--- Stop Gate: stop and report the reason and required correction.
-+Official Codex workflow command governance lives in:
-
--For detailed execution-mode wording, load `dev/build/ProjectInstructions/addendums/assistant_execution_modes.md` only when mode interpretation is unclear.
-+`dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`
-+
-+That file owns Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, and invalid command behavior.
-
- ## Referenced Documents
-
- - Project state: `dev/build/ProjectInstructions/PROJECT_STATE.md`
- - Repository folder placement SSoT: `dev/build/ProjectInstructions/repository/canonical_repository_structure.md`
-+- Codex workflow commands: `dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`
- - Codex Start-of-Day bootstrap: `dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md`
- - Branch lifecycle: `dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`
- - PR workflow: `dev/build/ProjectInstructions/addendums/pr_workflow.md`
-@@ -98,4 +100,5 @@ For detailed execution-mode wording, load `dev/build/ProjectInstructions/addendu
- - `PROJECT_INSTRUCTIONS.md` owns the manual entry point, required read order, load graph, stop gates, execution modes, and pointers.
- - `PROJECT_STATE.md` owns machine-friendly project state metadata.
- - `repository/canonical_repository_structure.md` owns all folder placement and file-placement rules.
-+- `standards/CODEX_WORKFLOW_COMMANDS.md` owns Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, and invalid command behavior.
- - `bootstrap/codex_start_of_day_bootstrap.md` owns Start-of-Day bootstrap architecture.
 diff --git a/dev/build/ProjectInstructions/PROJECT_STATE.md b/dev/build/ProjectInstructions/PROJECT_STATE.md
-index 5def1af34..967729077 100644
+index 967729077..145a9f088 100644
 --- a/dev/build/ProjectInstructions/PROJECT_STATE.md
 +++ b/dev/build/ProjectInstructions/PROJECT_STATE.md
-@@ -1,15 +1,15 @@
- # Project State
-
- ```yaml
--project_state_version: "2026-06-27.PR_26179_OWNER_010"
--last_updated: "2026-06-27"
-+project_state_version: "2026-06-28.PR_26179_OWNER_010"
-+last_updated: "2026-06-28"
+@@ -5,22 +5,24 @@ project_state_version: "2026-06-28.PR_26179_OWNER_010"
+ last_updated: "2026-06-28"
  current_main_commit: "40de767476d70cadfd1292c916844c2f31b6f185"
  repository_status:
-   state: "active-owner-pr"
-   current_pr: "PR_26179_OWNER_010-canonical-project-folder-instructions"
-   required_start_branch: "main"
-   required_start_sync: "main...origin/main == 0 0"
--project_instructions_version: "2026-06-27.PR_26179_OWNER_010"
-+project_instructions_version: "2026-06-28.PR_26179_OWNER_010"
- canonical_layout_version: "2026-06-27.PR_26179_OWNER_010"
+-  state: "active-owner-pr"
+-  current_pr: "PR_26179_OWNER_010-canonical-project-folder-instructions"
+-  required_start_branch: "main"
+-  required_start_sync: "main...origin/main == 0 0"
++  state: "active"
++  governance_source: "dev/build/ProjectInstructions/"
++  runtime_database: "Postgres"
++  creator_metadata: "API to Postgres"
++  creator_assets: "API to R2"
+ project_instructions_version: "2026-06-28.PR_26179_OWNER_010"
+-canonical_layout_version: "2026-06-27.PR_26179_OWNER_010"
++repository_structure_version: "2026-06-28.PR_26179_OWNER_010"
++canonical_layout_version: "2026-06-28.PR_26179_OWNER_010"
  active_teams:
-   - "Team OWNER"
+-  - "Team OWNER"
+-  - "Team Alfa"
+-  - "Team Bravo"
+-  - "Team Charlie"
+-  - "Team Delta"
+-  - "Team Golf"
++  - "Owner"
++  - "Alfa"
++  - "Bravo"
++  - "Charlie"
++  - "Delta"
++  - "Golf"
+ latest_owner_pr: "PR_26179_OWNER_010-canonical-project-folder-instructions"
+ latest_structure_pr: "PR_26179_OWNER_010-canonical-project-folder-instructions"
+-current_valid_top_level_folders:
++valid_top_level_folders:
+   - "account/"
+   - "admin/"
+   - "assets/"
+@@ -37,7 +39,7 @@ current_valid_top_level_folders:
+   - "owner/"
+   - "src/"
+   - "toolbox/"
+-current_valid_dev_folders:
++valid_dev_folders:
+   - "dev/archive/"
+   - "dev/build/"
+   - "dev/config/"
 diff --git a/dev/build/ProjectInstructions/TEAM_START_COMMANDS.md b/dev/build/ProjectInstructions/TEAM_START_COMMANDS.md
-index dbfed7ad0..9ccb0580d 100644
+index 9ccb0580d..76a830bc9 100644
 --- a/dev/build/ProjectInstructions/TEAM_START_COMMANDS.md
 +++ b/dev/build/ProjectInstructions/TEAM_START_COMMANDS.md
-@@ -2,6 +2,12 @@
+@@ -23,7 +23,7 @@ Branch Lifecycle (Canonical):
 
- ## Required Main Reset Gate For Every Team
+ ## Team Migration Note
 
-+Official Start of Day command format lives in:
-+
-+`dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`
-+
-+The ready-to-copy team assignment commands below are OWNER assignment helpers, not Start of Day bootstrap commands.
-+
- No team creates a PR branch until all checks pass:
+-Team Alfa, Team Bravo, Team Charlie, and historical Team Gamma lanes must update from current `main` before starting work and use the folder-placement SSoT:
++Alfa, Bravo, Charlie, and historical retired non-canonical lanes must update from current `main` before starting work and use the folder-placement SSoT:
 
- - Current branch: `main`
-diff --git a/dev/build/ProjectInstructions/addendums/assistant_execution_modes.md b/dev/build/ProjectInstructions/addendums/assistant_execution_modes.md
-index 6d7928669..7f787e4eb 100644
---- a/dev/build/ProjectInstructions/addendums/assistant_execution_modes.md
-+++ b/dev/build/ProjectInstructions/addendums/assistant_execution_modes.md
-@@ -1,120 +1,7 @@
- # Assistant Execution Modes
+ `dev/build/ProjectInstructions/repository/canonical_repository_structure.md`
 
--## Purpose
-+Status: Superseded
+@@ -31,115 +31,115 @@ Do not create or reuse invalid legacy folders. Use the SSoT invalid legacy path
 
--Standardize request interpretation and expected outputs for Review, Owner, Build PR, Continue, Challenge, and Stop Gate workflows.
-+SSoT: `dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`
+ If a proposed file does not clearly belong in a canonical folder, HARD STOP and report the proposed path.
 
--## Command Modes
--
--### Review
--
--Expected Output:
--- Findings
--- Risks
--- Recommendations
--
--Do Not Output:
--- PRs
--- Implementation plans
--
--### Owner
--
--Expected Output:
--- Decisions
--- Governance direction
--- Standards
--
--Do Not Output:
--- Detailed implementation
--
--### Build PR
--
--Expected Output:
--- Single Codex work order
--- May contain multiple sequential PRs belonging to the same workstream
--- Copy/paste ready for execution
--
--Should Include:
--- Start gates
--- Changes
--- Validation
--- Commit names
--- Stop point
--
--Do Not Output:
--- Design discussion
--- Alternatives
--- Rationale
--- Architecture brainstorming
--
--### Continue
--
--Expected Output:
--- Next sequential executable PR
--- Next sequential work order
--
--Do Not Output:
--- New ideas
--- Re-analysis
--- Additional brainstorming
--
--### Challenge
--
--Expected Output:
--- Risks
--- Contradictions
--- Better alternatives
--
--Do Not Output:
--- Immediate implementation
--
--### Stop Gate
--
--Expected Output:
--- Why work should stop
--- Required corrections
--
--Allowed Reasons:
--- Governance conflict
--- Architecture conflict
--- Security risk
--- Data loss risk
--- Major technical debt increase
--
--## Additional Definitions
--
--### Follow Project Instructions
--
--Meaning:
--- Use existing governance
--- Do not redesign process
--
--### Build the PR
--
--Meaning:
--- Produce Codex executable work order immediately
--
--### Continue
--
--Meaning:
--- Produce next sequential work item
--
--### No zip file
--
--Meaning:
--- Generate instructions only
--- Do not expect artifact review
--
--### You are owner
--
--Meaning:
--- Make decisions
--- Do not ask for direction unless blocked
--
--### Done for the day
--
--Meaning:
--- Finish commits
--- Merge
--- Push
--- Create next-day start document
-+This file is retained as a compatibility pointer only. Do not duplicate command mode tables or phase rules here.
+-## Start Team Alfa
++## Start Alfa
+
+ Ready-to-copy command:
+
+ ```text
+-OWNER override approved: Start Team Alfa from the ProjectInstructions release gate.
++OWNER override approved: Start Alfa from the ProjectInstructions release gate.
+
+ Read dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md first.
+ Read dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md.
+ Read dev/build/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
+
+-Pull one [ ] item for Team Alfa from BACKLOG_MASTER.md.
+-Stop if Team Alfa already has an active branch.
+-Stop if Team Alfa already has an active assignment.
+-Stop if no [ ] Team Alfa backlog item is available.
++Pull one [ ] item for Alfa from BACKLOG_MASTER.md.
++Stop if Alfa already has an active branch.
++Stop if Alfa already has an active assignment.
++Stop if no [ ] Alfa backlog item is available.
+
+ Change the selected backlog item from [ ] to [.].
+-Add the selected assignment under Team Alfa in TEAM_ASSIGNMENTS.md.
+-Create one Team Alfa branch for the selected assignment.
++Add the selected assignment under Alfa in TEAM_ASSIGNMENTS.md.
++Create one Alfa branch for the selected assignment.
+ Work only that assignment.
+ ```
+
+-## Start Team Bravo
++## Start Bravo
+
+ Ready-to-copy command:
+
+ ```text
+-OWNER override approved: Start Team Bravo from the ProjectInstructions release gate.
++OWNER override approved: Start Bravo from the ProjectInstructions release gate.
+
+ Read dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md first.
+ Read dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md.
+ Read dev/build/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
+
+-Pull one [ ] item for Team Bravo from BACKLOG_MASTER.md.
+-Stop if Team Bravo already has an active branch.
+-Stop if Team Bravo already has an active assignment.
+-Stop if no [ ] Team Bravo backlog item is available.
++Pull one [ ] item for Bravo from BACKLOG_MASTER.md.
++Stop if Bravo already has an active branch.
++Stop if Bravo already has an active assignment.
++Stop if no [ ] Bravo backlog item is available.
+
+ Change the selected backlog item from [ ] to [.].
+-Add the selected assignment under Team Bravo in TEAM_ASSIGNMENTS.md.
+-Create one Team Bravo branch for the selected assignment.
++Add the selected assignment under Bravo in TEAM_ASSIGNMENTS.md.
++Create one Bravo branch for the selected assignment.
+ Work only that assignment.
+ ```
+
+-## Start Team Charlie
++## Start Charlie
+
+ Ready-to-copy command:
+
+ ```text
+-OWNER override approved: Start Team Charlie from the ProjectInstructions release gate.
++OWNER override approved: Start Charlie from the ProjectInstructions release gate.
+
+ Read dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md first.
+ Read dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md.
+ Read dev/build/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
+
+-Pull one [ ] item for Team Charlie from BACKLOG_MASTER.md.
+-Stop if Team Charlie already has an active branch.
+-Stop if Team Charlie already has an active assignment.
+-Stop if no [ ] Team Charlie backlog item is available.
++Pull one [ ] item for Charlie from BACKLOG_MASTER.md.
++Stop if Charlie already has an active branch.
++Stop if Charlie already has an active assignment.
++Stop if no [ ] Charlie backlog item is available.
+
+ Change the selected backlog item from [ ] to [.].
+-Add the selected assignment under Team Charlie in TEAM_ASSIGNMENTS.md.
+-Create one Team Charlie branch for the selected assignment.
++Add the selected assignment under Charlie in TEAM_ASSIGNMENTS.md.
++Create one Charlie branch for the selected assignment.
+ Work only that assignment.
+ ```
+
+-## Start Team Delta
++## Start Delta
+
+ Ready-to-copy command:
+
+ ```text
+-OWNER override approved: Start Team Delta from the ProjectInstructions release gate.
++OWNER override approved: Start Delta from the ProjectInstructions release gate.
+
+ Read dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md first.
+ Read dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md.
+ Read dev/build/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
+ Read dev/build/ProjectInstructions/team_assignments/team_ownership.md.
+
+-Pull one [ ] item for Team Delta from BACKLOG_MASTER.md.
+-Stop if Team Delta already has an active branch.
+-Stop if Team Delta already has an active assignment.
+-Stop if no [ ] Team Delta backlog item is available.
+-Stop if the selected item is outside Team Delta ownership.
++Pull one [ ] item for Delta from BACKLOG_MASTER.md.
++Stop if Delta already has an active branch.
++Stop if Delta already has an active assignment.
++Stop if no [ ] Delta backlog item is available.
++Stop if the selected item is outside Delta ownership.
+
+ Change the selected backlog item from [ ] to [.].
+-Add the selected assignment under Team Delta in TEAM_ASSIGNMENTS.md.
+-Create one Team Delta branch for the selected assignment.
++Add the selected assignment under Delta in TEAM_ASSIGNMENTS.md.
++Create one Delta branch for the selected assignment.
+ Work only that assignment.
+ ```
+
+-## Start Team Golf
++## Start Golf
+
+ Ready-to-copy command:
+
+ ```text
+-OWNER override approved: Start Team Golf from the ProjectInstructions release gate.
++OWNER override approved: Start Golf from the ProjectInstructions release gate.
+
+ Read dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md first.
+ Read dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md.
+ Read dev/build/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
+ Read dev/build/ProjectInstructions/team_assignments/team_ownership.md.
+
+-Stop if Team Golf already has an active branch.
+-Stop if Team Golf already has an active assignment.
+-Stop if OWNER has not explicitly assigned Team Golf work.
++Stop if Golf already has an active branch.
++Stop if Golf already has an active assignment.
++Stop if OWNER has not explicitly assigned Golf work.
+ Stop if the selected work conflicts with current Alfa, Bravo, Charlie, or Delta ownership.
+
+-Record the selected assignment under Team Golf in TEAM_ASSIGNMENTS.md.
+-Create or use one Team Golf branch for the selected assignment.
++Record the selected assignment under Golf in TEAM_ASSIGNMENTS.md.
++Create or use one Golf branch for the selected assignment.
+ Work only that assignment.
+ ```
+
+diff --git a/dev/build/ProjectInstructions/addendums/branch_lock_governance.md b/dev/build/ProjectInstructions/addendums/branch_lock_governance.md
+index 65bb0e038..e3eff6660 100644
+--- a/dev/build/ProjectInstructions/addendums/branch_lock_governance.md
++++ b/dev/build/ProjectInstructions/addendums/branch_lock_governance.md
+@@ -14,7 +14,7 @@ This file owns branch lock enforcement and OWNER override handling; it must not
+ ## Active Work Lock
+
+ - Work must occur on the active team branch.
+-- This rule applies to all teams: OWNER, Team Alfa, Team Bravo, Team Charlie, Team Delta, and any future team.
++- This rule applies to all canonical teams: Owner, Alfa, Bravo, Charlie, Delta, and Golf.
+ - An assigned work item keeps its owner of record until complete or OWNER reassignment.
+ - Work must not move to another team, branch, or PR without OWNER approval.
+ - A team with no active assignment, active branch, or active PR is inactive.
+diff --git a/dev/build/ProjectInstructions/addendums/multi_team.md b/dev/build/ProjectInstructions/addendums/multi_team.md
+index e005e9b3d..d77288491 100644
+--- a/dev/build/ProjectInstructions/addendums/multi_team.md
++++ b/dev/build/ProjectInstructions/addendums/multi_team.md
+@@ -25,21 +25,21 @@ OWNER override approved.
+
+ The current active ownership lanes are:
+
+-- Team Alfa
+-- Team Bravo
+-- Team Charlie
+-- Team Delta
+-- Team Golf
+-- Team OWNER
++- Alfa
++- Bravo
++- Charlie
++- Delta
++- Golf
++- Owner
+
+ Migration note:
+-Team Gamma is retired. Team Golf is the replacement active ownership lane.
++Golf is the only active replacement for the retired prior lane.
+
+ Rules:
+-- Historical PR references and branch names that mention Gamma remain unchanged for traceability.
+-- New active work that would previously have used Team Gamma routes to Team Golf.
+-- Team Golf work requires OWNER assignment, an active branch, an active draft/open PR, or active release/cleanup responsibility.
+-- If Team Golf work touches Alfa, Bravo, Charlie, or Delta ownership areas, the PR must document the OWNER cross-team decision.
++- Historical PR references and branch names that mention retired non-canonical lane remain unchanged for traceability.
++- New active work that would previously have used a retired non-canonical lane routes to Golf.
++- Golf work requires OWNER assignment, an active branch, an active draft/open PR, or active release/cleanup responsibility.
++- If Golf work touches Alfa, Bravo, Charlie, or Delta ownership areas, the PR must document the OWNER cross-team decision.
+
+ ## All-Team Preferred Codex Execution Method
+
+@@ -47,8 +47,7 @@ Preferred execution model:
+ Single Codex session with multiple sequential PRs.
+
+ Applies to:
+-- Team Alfa through Team Zulu
+-- Team OWNER
++- Owner, Alfa, Bravo, Charlie, Delta, and Golf
+
+ Purpose:
+ Reduce back-and-forth between owner and Codex while keeping PRs reviewable and scoped.
+diff --git a/dev/build/ProjectInstructions/addendums/naming_registry.md b/dev/build/ProjectInstructions/addendums/naming_registry.md
+index b08863149..a9c239b8e 100644
+--- a/dev/build/ProjectInstructions/addendums/naming_registry.md
++++ b/dev/build/ProjectInstructions/addendums/naming_registry.md
+@@ -1,6 +1,6 @@
+ # Naming Registry Governance
+
+-Status: Approved
++Status: Approved
+ Owner: OWNER
+
+ ## Purpose
+@@ -41,28 +41,28 @@ Capture approved Game Foundry Studio names to reduce rename churn.
+
+ ## Approved Team Naming
+
+-Teams must use NATO phonetic naming.
++Teams must use the canonical Owner plus military team-name set.
+
+ Official active team codes:
+
+-- OWNER
+-- ALFA
+-- BRAVO
+-- CHARLIE
+-- DELTA
++- Owner
++- Alfa
++- Bravo
++- Charlie
++- Delta
++- Golf
+
+ Examples:
+-- Team OWNER
+-- Team Alfa
+-- Team Bravo
+-- Team Charlie
+-- Team Delta
+-- Team Echo
+-- Team Foxtrot
++- Owner
++- Alfa
++- Bravo
++- Charlie
++- Delta
++- Golf
+
+ Rule:
+-- Use `Alfa` spelling when referring to Team Alfa.
+-- Do not rewrite historical snapshots, archived references, or non-team phrases such as `Alpha/Beta/User isolation framework` unless OWNER explicitly scopes that work.
++- Use `Alfa` spelling when referring to Alfa.
++- Do not rewrite historical snapshots, archived references, or non-team phrases such as `Alfa/Beta/User isolation framework` unless OWNER explicitly scopes that work.
+
+ ## Rule
+
 diff --git a/dev/build/ProjectInstructions/addendums/pr_workflow.md b/dev/build/ProjectInstructions/addendums/pr_workflow.md
-index 2c3d85a27..f85132bc2 100644
+index f85132bc2..8461c07c7 100644
 --- a/dev/build/ProjectInstructions/addendums/pr_workflow.md
 +++ b/dev/build/ProjectInstructions/addendums/pr_workflow.md
-@@ -7,6 +7,12 @@ Owner: OWNER
+@@ -1,6 +1,6 @@
+ # PR Workflow Governance
 
- Define the standard pull request workflow for Game Foundry Studio.
-
-+Official PLAN_PR, BUILD_PR, APPLY_PR, Start of Day, and invalid command behavior lives in:
-+
-+`dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`
-+
-+This file owns PR lifecycle governance. It must not duplicate command phase rules.
-+
- ## Standard Flow
-
- 1. Start from main.
-diff --git a/dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md b/dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md
-index 9c5fa6511..9de8f576a 100644
---- a/dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md
-+++ b/dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md
-@@ -14,17 +14,11 @@ This document is documentation and wrapper/bootstrap design only. It does not im
-
- A Bootstrap Phrase is a short user-facing phrase that asks the wrapper to resolve the latest Project Instructions and team state before launching Codex.
-
--Examples:
-+Official Start of Day command format and invalid command behavior live in:
-
--- Owner Start of Day
--- Team Alpha Start of Day
--- Team Bravo Start of Day
--- Team Charlie Start of Day
--- Team Gamma Start of Day
-+`dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`
-
--Team name note:
--- `Team Alpha Start of Day` is accepted as a user phrase alias for the canonical Team Alfa lane.
--- Historical Team Gamma phrases may be understood for archived/historical context, but active assignment routing follows the current team registry.
-+This bootstrap document owns the loading architecture only. It must not duplicate the command vocabulary.
-
- ## Bootstrap Responsibilities
-
-@@ -101,14 +95,19 @@ If a chat instruction conflicts with Project Instructions:
-
- When a request contains:
-
--- Build PR
-+- Start of Day
-+- PLAN_PR
-+- BUILD_PR
-+- APPLY_PR
- - Continue
- - Follow Project Instructions
- - Next PR
-
--Codex must treat the request as Execution Mode.
-+Codex must resolve command behavior through:
-
--Execution Mode means:
-+`dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`
-+
-+Execution Mode still means:
-
- - Execute the requested work order.
- - Do not redesign the process.
-diff --git a/dev/build/ProjectInstructions/chatGPT_command.txt b/dev/build/ProjectInstructions/chatGPT_command.txt
-index 050df2a52..1eb9989b0 100644
---- a/dev/build/ProjectInstructions/chatGPT_command.txt
-+++ b/dev/build/ProjectInstructions/chatGPT_command.txt
-@@ -1,9 +1,5 @@
--| Command          | Mode                | Expected Output                                                   | Do Not Output                              |
--| ---------------- | ------------------- | ----------------------------------------------------------------- | ------------------------------------------ |
--| Review           | Analysis            | Findings, risks, recommendations                                  | PRs, implementation plans                  |
--| Owner            | Governance          | Decision, direction, standards                                    | Detailed implementation                    |
--| Build PR         | Execution           | **Single Codex work order containing one or more sequential PRs** | Design discussion, alternatives, rationale |
--| Continue         | Execution           | Next sequential executable PR or next sequential work order       | Additional analysis, brainstorming         |
--| Challenge        | Architecture Review | Why proposal may be wrong, alternatives, risks                    | Immediate implementation                   |
--| Stop Gate        | Blocker Review      | Why work should stop, required fixes                              | PR generation                              |
--| Build Work Order | Execution           | Copy/paste-ready Codex instructions                               | Governance discussion                      |
-+Status: Superseded
-+
-+SSoT: dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
-+
-+This file is retained as a compatibility pointer only. Do not duplicate command tables here.
-diff --git a/dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md b/dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
-new file mode 100644
-index 000000000..1d2f8b45e
---- /dev/null
-+++ b/dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
-@@ -0,0 +1,122 @@
-+# Codex Workflow Commands
-+
+-Status: Approved
 +Status: Approved
+ Owner: OWNER
+
+ ## Purpose
+@@ -46,7 +46,7 @@ Team-neutral daily workflow:
+   - current branch is `main`
+   - worktree clean
+   - local/origin sync is `0 0`
+-- This rule applies to all teams: OWNER, Team Alfa, Team Bravo, Team Charlie, Team Delta, and any future team.
++- This rule applies to all canonical teams: Owner, Alfa, Bravo, Charlie, Delta, and Golf.
+
+ This section supersedes older active wording that implies returning to `main` between every PR inside an OWNER-approved stacked/sequential workstream.
+
+@@ -198,13 +198,12 @@ Meaning:
+ Generate the complete stacked sequential Codex PR chain required to finish the current workstream.
+
+ Applies to:
+-- OWNER
+-- Team Alfa
+-- Team Bravo
+-- Team Charlie
+-- Team Delta
+-- Team Golf
+-- Any future NATO-named team
++- Owner
++- Alfa
++- Bravo
++- Charlie
++- Delta
++- Golf
+
+ Behavior:
+ - Determine completed work.
+diff --git a/dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md b/dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
+index ecfe4768f..ea047d563 100644
+--- a/dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
++++ b/dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
+@@ -117,7 +117,7 @@ From branch creation until merge:
+ - Open/update the PR from the PR branch.
+ - For OWNER-approved stacked/sequential workstreams, PR branches/commits stay on the active team branch/workstream between sequential PRs during the day.
+ - Do not return to `main` between sequential PRs in the same active workstream unless OWNER explicitly approves an EOD or intermediate merge checkpoint.
+-- This rule applies to all teams: OWNER, Team Alfa, Team Bravo, Team Charlie, Team Delta, and any future team.
++- This rule applies to all canonical teams: Owner, Alfa, Bravo, Charlie, Delta, and Golf.
+
+ Hard Stops:
+
+diff --git a/dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md b/dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
+index e6d6c7ce8..e191f9d7f 100644
+--- a/dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
++++ b/dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
+@@ -13,23 +13,16 @@ This standard is governance/documentation only. It does not change runtime behav
+
+ Use military phonetic spelling for active team names:
+
+-- OWNER
+-- ALFA
+-- BRAVO
+-- CHARLIE
+-- DELTA
++- Owner
++- Alfa
++- Bravo
++- Charlie
++- Delta
++- Golf
+
+-Display labels may use title case:
++Do not substitute Greek spelling for team names. Use `Alfa` spelling when referring to Alfa.
+
+-- Team OWNER
+-- Team Alfa
+-- Team Bravo
+-- Team Charlie
+-- Team Delta
+-
+-Do not substitute Greek spelling for team names. Use `Alfa` spelling when referring to Team Alfa.
+-
+-Historical snapshots, archived references, and non-team phrases such as `Alpha/Beta/User isolation framework` must not be rewritten unless OWNER explicitly scopes that work.
++Historical snapshots, archived references, and non-team phrases such as `Alfa/Beta/User isolation framework` must not be rewritten unless OWNER explicitly scopes that work.
+
+ ## Team Backlog Ownership
+
+diff --git a/dev/build/ProjectInstructions/addendums/team_release_readiness.md b/dev/build/ProjectInstructions/addendums/team_release_readiness.md
+index 5be1b6975..f2c0deb00 100644
+--- a/dev/build/ProjectInstructions/addendums/team_release_readiness.md
++++ b/dev/build/ProjectInstructions/addendums/team_release_readiness.md
+@@ -2,11 +2,11 @@
+
+ ## Purpose
+
+-This gate prevents Team Alfa, Team Bravo, Team Charlie, or Team OWNER from starting regular assigned work before the ProjectInstructions operating system is ready.
++This gate prevents Alfa, Bravo, Charlie, or Owner from starting regular assigned work before the ProjectInstructions operating system is ready.
+
+ Current OWNER clarification:
+-- This gate also applies to Team Delta and Team Golf.
+-- Team Gamma is retired. Team Golf is the replacement active ownership lane.
++- This gate also applies to Delta and Golf.
++- Golf is the only active replacement for the retired prior lane.
+ - Historical wording that listed fewer teams remains traceable, but it must not exclude Delta or Golf from current active ownership governance.
+
+ ## Release Rule
+diff --git a/dev/build/ProjectInstructions/addendums/team_start_and_release.md b/dev/build/ProjectInstructions/addendums/team_start_and_release.md
+index 1b50aa1ab..3c660f598 100644
+--- a/dev/build/ProjectInstructions/addendums/team_start_and_release.md
++++ b/dev/build/ProjectInstructions/addendums/team_start_and_release.md
+@@ -19,7 +19,7 @@ Before a team starts, validate:
+ - `main...origin/main` is `0 0`
+ - `HEAD` SHA matches published EOD SHA
+ - active assignment is selected or confirmed by OWNER
+-- assigned team uses NATO phonetic naming
++- assigned team uses the canonical Owner plus military team-name set
+ - work remains with the assigned team until complete or OWNER reassignment
+ - the team's previous PR is Closed, unless OWNER documented an explicit stacked PR chain
+
+@@ -29,10 +29,10 @@ Before implementation begins, ChatGPT/Codex must provide the SOD briefing define
+
+ The current active delivery teams for backlog start commands are:
+
+-- Team Alfa
+-- Team Bravo
+-- Team Charlie
+-- Team Delta
++- Alfa
++- Bravo
++- Charlie
++- Delta
+
+ Each team start must confirm the selected backlog item is inside that team's ownership area.
+
+@@ -42,20 +42,20 @@ OWNER override approved.
+
+ The current active ownership start map includes:
+
+-- Team Alfa
+-- Team Bravo
+-- Team Charlie
+-- Team Delta
+-- Team Golf
+-- Team OWNER
++- Alfa
++- Bravo
++- Charlie
++- Delta
++- Golf
++- Owner
+
+ Migration note:
+-Team Gamma is retired. Team Golf is the replacement active ownership lane.
++Golf is the only active replacement for the retired prior lane.
+
+ Clarification:
+ - The four-team start set remains the backlog ownership start set for Alfa, Bravo, Charlie, and Delta.
+-- Team Golf is valid for OWNER-assigned, branch-backed, PR-backed, release, review packet, or cleanup work.
+-- Historical Gamma references and branch names must remain unchanged.
++- Golf is valid for OWNER-assigned, branch-backed, PR-backed, release, review packet, or cleanup work.
++- Historical branch and PR references for retired non-canonical lanes must remain unchanged.
+ - Golf work must not silently take ownership from Alfa, Bravo, Charlie, or Delta; cross-team work requires OWNER approval.
+
+ ## Assignment Flow
+@@ -79,12 +79,11 @@ For backlog-driven work:
+
+ Use these as naming examples, not as a permanent roster:
+
+-- Start Team Alfa
+-- Start Team Bravo
+-- Start Team Charlie
+-- Start Team Delta
+-- Start Team Echo
+-- Start Team Foxtrot
++- Start Alfa
++- Start Bravo
++- Start Charlie
++- Start Delta
++- Start Golf
+
+ ## Release Readiness
+
+diff --git a/dev/build/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md b/dev/build/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md
+index e0856c95e..c96853d0c 100644
+--- a/dev/build/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md
++++ b/dev/build/ProjectInstructions/addendums/tool_mvp_stacked_pr_standard.md
+@@ -89,6 +89,6 @@ When OWNER gives one large Codex command for a tool MVP stack, Codex may continu
+
+ During an OWNER-approved day workstream, PR branches/commits stay on the active team branch/workstream and do not return to `main` between PRs.
+
+-This rule applies to all teams: OWNER, Team Alfa, Team Bravo, Team Charlie, Team Delta, and any future team.
++This rule applies to all canonical teams: Owner, Alfa, Bravo, Charlie, Delta, and Golf.
+
+ The final PR in the stack must perform normal EOD closeout or OWNER-approved merge-checkpoint closeout and stop all work after returning to synchronized main.
+diff --git a/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md b/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
+index 847217b8d..a7d317ed2 100644
+--- a/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
++++ b/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
+@@ -155,7 +155,7 @@ The backlog is the authoritative source for determining the next logical PRs.
+   - Preservation and archive governance installed.
+   - Backlog governance installed.
+   - Team assignment governance installed.
+-  - NATO team naming installed.
++  - Canonical Owner/Alfa/Bravo/Charlie/Delta/Golf team naming installed.
+   - OWNER override governance installed.
+   - Branch persistence governance installed.
+   - Day Work / EOD Merge governance installed.
+@@ -196,25 +196,25 @@ Status: CANCELLED / NOT DOING
+
+ Items removed from backlog:
+ - Multi-port workspace framework
+-- Alpha/Beta/User isolation framework
++- Alfa/Beta/User isolation framework
+ - Runtime port management initiative
+
+ Replacement governance:
+ - System Health remains one page per deployed environment.
+ - Each deployment actively checks only itself.
+-- Environment Summary, Database Health, Storage Health, Runtime Health, and Health Check History are Team Charlie System Health ownership.
++- Environment Summary, Database Health, Storage Health, Runtime Health, and Health Check History are Charlie System Health ownership.
+ - Environment governance follows the approved GFS infrastructure and System Health v1 documentation.
+
+ ## Four-Team Backlog Alignment
+
+ Current OWNER clarification:
+ - The backlog alignment below preserves the current Alfa, Bravo, Charlie, and Delta ownership model.
+-- Team Gamma is retired. Team Golf is the replacement active ownership lane.
+-- Team Golf has no standing backlog ownership area in this file unless OWNER assigns one.
++- Golf is the only active replacement for the retired prior lane.
++- Golf has no standing backlog ownership area in this file unless OWNER assigns one.
+ - Golf work may be OWNER-assigned, branch-backed, PR-backed, release, review packet, or cleanup work and must not silently replace Alfa, Bravo, Charlie, or Delta ownership.
+-- Historical Gamma PR references and branch names are not renamed by this clarification.
++- Historical PR references and branch names for retired non-canonical lanes are not renamed by this clarification.
+
+-### Team Alfa
++### Alfa
+
+ - [ ] Alfa - Game Hub polish
+ - [ ] Alfa - Game Journey completion tracking
+@@ -222,7 +222,7 @@ Current OWNER clarification:
+ - [ ] Alfa - Creator onboarding flow
+ - [ ] Alfa - Game Hub image integration
+
+-### Team Bravo
++### Bravo
+
+ - [ ] Bravo - Audio tool improvements
+ - [ ] Bravo - Audio Effects tool
+@@ -233,7 +233,7 @@ Current OWNER clarification:
+ - [ ] Bravo - Vector Art improvements
+ - [ ] Bravo - MIDI Studio improvements
+
+-### Team Charlie
++### Charlie
+
+ - Active ownership: Runtime, System Health, Environment Management, Palette / Colors, Sprites, Objects.
+ - Runtime: 100% Complete.
+@@ -283,7 +283,7 @@ Current OWNER clarification:
+   - Current completion percentage: 0%.
+   - Scope: object library, object editor, Sprite assignment, object properties, collision configuration, runtime object metadata, Object API/database contracts, and Product Owner testable workflow.
+
+-### Team Delta
++### Delta
+
+ - [x] Delta - Shared JS consolidation
+   - Completion reference: PR_26175_DELTA_002_Shared_Runtime_Consolidation.
+diff --git a/dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md b/dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
+index 1d2f8b45e..de48a748c 100644
+--- a/dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
++++ b/dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
+@@ -16,17 +16,16 @@ Valid Start of Day command format:
+
+ ```text
+ Start of Day Owner
+-Start of Day Alpha
++Start of Day Alfa
+ Start of Day Bravo
+ Start of Day Charlie
+-Start of Day Gamma
++Start of Day Delta
++Start of Day Golf
+ ```
+
+-Team note:
+-- `Start of Day Alpha` maps to the current Team Alfa lane where active Project Instructions use the Alfa spelling.
+-- Historical Team Gamma context may be reported when present, but active assignments follow the current team registry.
++Commands using non-canonical team names are invalid because active team names are Owner, Alfa, Bravo, Charlie, Delta, and Golf.
+
+-Start of Day is read-only.
++Start of Day is read-only discovery only.
+
+ Start of Day must not require the current branch to be `main`.
+
+@@ -49,8 +48,12 @@ Start of Day reports:
+ - recommended next action
+ - blockers
+
++Start of Day may recommend the next execution phase, but it must not execute that phase.
 +
-+Owner: OWNER
+ ## Execution Phases
+
++PLAN_PR, BUILD_PR, and APPLY_PR are Codex PR execution phases after Start of Day. They are not part of Start of Day.
 +
-+## Purpose
-+
-+Define the official Codex workflow command vocabulary for Start of Day, PR planning, PR implementation, and PR closeout.
-+
-+This file is the single source of truth for Codex workflow command interpretation. Other Project Instructions documents may point here, but must not duplicate these command rules.
-+
-+## Start Of Day Commands
-+
-+Valid Start of Day command format:
+ Valid PR execution phase commands:
+
+ ```text
+@@ -59,6 +62,19 @@ BUILD_PR
+ APPLY_PR
+ ```
+
++Lifecycle:
 +
 +```text
-+Start of Day Owner
-+Start of Day Alpha
-+Start of Day Bravo
-+Start of Day Charlie
-+Start of Day Gamma
-+```
-+
-+Team note:
-+- `Start of Day Alpha` maps to the current Team Alfa lane where active Project Instructions use the Alfa spelling.
-+- Historical Team Gamma context may be reported when present, but active assignments follow the current team registry.
-+
-+Start of Day is read-only.
-+
-+Start of Day must not require the current branch to be `main`.
-+
-+Start of Day must not:
-+- create a branch
-+- switch branches
-+- stage files
-+- commit files
-+- push branches
-+- merge PRs
-+- modify repository files
-+- partially execute a PR phase
-+
-+Start of Day reports:
-+- team
-+- current branch
-+- worktree status
-+- latest main status
-+- active PR, if any
-+- recommended next action
-+- blockers
-+
-+## Execution Phases
-+
-+Valid PR execution phase commands:
-+
-+```text
++Start of Day {Team}
++    -> returns status/recommendation only
 +PLAN_PR
++    -> creates PR plan/instructions
 +BUILD_PR
++    -> implements scoped PR
 +APPLY_PR
++    -> validates/merges/closes out PR
 +```
 +
-+### PLAN_PR
+ ### PLAN_PR
+
+ PLAN_PR is planning only.
+diff --git a/dev/build/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md b/dev/build/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
+index 6341fdf34..03192f697 100644
+--- a/dev/build/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
++++ b/dev/build/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
+@@ -28,23 +28,23 @@ If a team has no assignment, no active branch, and no active PR, it is inactive
+
+ | Team | Active Assignment | Branch | PR | Status | OWNER Decision |
+ |------|-------------------|--------|----|--------|----------------|
+-| Team Alfa | none | none | none | Available | Active ownership lane |
+-| Team Bravo | none | none | none | Available | Active ownership lane |
+-| Team Charlie | none | none | none | Available | Active ownership lane |
+-| Team Delta | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | Active | OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_056-shared-validation-assertions |
+-| Team Golf | none | none | none | Available | Replacement active ownership lane for retired Team Gamma |
+-| Team OWNER | none | none | none | Available | Governance Phase 1 complete |
++| Alfa | none | none | none | Available | Active ownership lane |
++| Bravo | none | none | none | Available | Active ownership lane |
++| Charlie | none | none | none | Available | Active ownership lane |
++| Delta | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | Active | OWNER override approved: Continue Delta random utility stack with PR_26177_DELTA_056-shared-validation-assertions |
++| Golf | none | none | none | Available | Replacement active ownership lane for the retired prior lane |
++| Owner | none | none | none | Available | Governance Phase 1 complete |
+
+ ## Current Active Ownership Lanes
+
+ OWNER override approved.
+
+-The current active ownership lanes are Team Alfa, Team Bravo, Team Charlie, Team Delta, Team Golf, and Team OWNER.
++The current active ownership lanes are Alfa, Bravo, Charlie, Delta, Golf, and Owner.
+
+ Migration note:
+-Team Gamma is retired. Team Golf is the replacement active ownership lane.
++Golf is the only active replacement for the retired prior lane.
+
+-Historical Gamma PR references and branch names remain unchanged for traceability.
++Historical PR references and branch names for retired non-canonical lanes remain unchanged for traceability.
+
+ ## Update Rules
+
+diff --git a/dev/build/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md b/dev/build/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
+index e8f3dc6c0..ed35fd231 100644
+--- a/dev/build/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
++++ b/dev/build/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
+@@ -10,12 +10,12 @@ This file records active assignments and registry state. Workflow summaries here
+
+ | Team | Assignment | Branch | PR | Status |
+ |------|------------|--------|----|--------|
+-| Team Alfa | none | none | none | Available |
+-| Team Bravo | none | none | none | Available |
+-| Team Charlie | none | none | none | Available |
+-| Team Delta | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | Active |
+-| Team Golf | none | none | none | Available |
+-| Team OWNER | none | none | none | Available |
++| Alfa | none | none | none | Available |
++| Bravo | none | none | none | Available |
++| Charlie | none | none | none | Available |
++| Delta | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | Active |
++| Golf | none | none | none | Available |
++| Owner | none | none | none | Available |
+
+ Rules:
+ - Registry is the authoritative active-work view.
+@@ -41,10 +41,10 @@ If a team is missing from Active Team Registry:
+ it is currently inactive.
+
+ Current OWNER clarification:
+-- The active ownership lanes are Team Alfa, Team Bravo, Team Charlie, Team Delta, Team Golf, and Team OWNER.
+-- Team Gamma is retired. Team Golf is the replacement active ownership lane.
+-- Do not rewrite historical PR references that mention Team Gamma.
+-- Do not rename historical branches that contain Gamma.
++- The active ownership lanes are Alfa, Bravo, Charlie, Delta, Golf, and Owner.
++- Golf is the only active replacement for the retired prior lane.
++- Do not rewrite historical PR references for retired non-canonical lanes.
++- Do not rename historical branches for retired non-canonical lanes.
+
+ ## Assignment Status Legend
+
+@@ -52,7 +52,7 @@ Current OWNER clarification:
+ - Active: team has one assignment in progress.
+ - Blocked: team cannot pull work until blocker is cleared.
+
+-## Team Alfa
++## Alfa
+
+ Status: Available
+
+@@ -60,7 +60,7 @@ Active assignment: none.
+
+ Active branch: none.
+
+-## Team Bravo
++## Bravo
+
+ Status: Available
+
+@@ -68,7 +68,7 @@ Active assignment: none.
+
+ Active branch: none.
+
+-## Team Charlie
++## Charlie
+
+ Status: Available
+
+@@ -76,7 +76,7 @@ Active assignment: none.
+
+ Active branch: none.
+
+-## Team Delta
++## Delta
+
+ Status: Active
+
+@@ -86,9 +86,9 @@ Active branch: PR_26177_DELTA_056-shared-validation-assertions.
+
+ Active PR: PR_26177_DELTA_056-shared-validation-assertions.
+
+-OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_056-shared-validation-assertions.
++OWNER override approved: Continue Delta random utility stack with PR_26177_DELTA_056-shared-validation-assertions.
+
+-## Team Golf
++## Golf
+
+ Status: Available
+
+@@ -96,9 +96,9 @@ Active assignment: none.
+
+ Active branch: none.
+
+-OWNER decision: Replacement active ownership lane for retired Team Gamma.
++OWNER decision: Replacement active ownership lane for the retired prior lane.
+
+-## Team OWNER
++## Owner
+
+ Status: Available
+
+@@ -108,33 +108,12 @@ Active branch: none.
+
+ ## Team Name Registry
+
+-- Team Alfa
+-- Team Bravo
+-- Team Charlie
+-- Team Delta
+-- Team Echo
+-- Team Foxtrot
+-- Team Golf
+-- Team Hotel
+-- Team India
+-- Team Juliett
+-- Team Kilo
+-- Team Lima
+-- Team Mike
+-- Team November
+-- Team Oscar
+-- Team Papa
+-- Team Quebec
+-- Team Romeo
+-- Team Sierra
+-- Team Tango
+-- Team Uniform
+-- Team Victor
+-- Team Whiskey
+-- Team X-ray
+-- Team Yankee
+-- Team Zulu
+-- Team OWNER
++- Alfa
++- Bravo
++- Charlie
++- Delta
++- Golf
++- Owner
+
+ ## Preferred Codex Execution Method
+
+@@ -169,8 +148,7 @@ Preferred execution model:
+ Single Codex session with multiple sequential PRs.
+
+ Applies to:
+-- Team Alfa through Team Zulu
+-- Team OWNER
++- Owner, Alfa, Bravo, Charlie, Delta, and Golf
+
+ Purpose:
+ Reduce back-and-forth between owner and Codex while keeping PRs reviewable and scoped.
+diff --git a/dev/build/ProjectInstructions/team_assignments/team_ownership.md b/dev/build/ProjectInstructions/team_assignments/team_ownership.md
+index 0655d6a95..c886b4c1a 100644
+--- a/dev/build/ProjectInstructions/team_assignments/team_ownership.md
++++ b/dev/build/ProjectInstructions/team_assignments/team_ownership.md
+@@ -4,7 +4,7 @@
+
+ This section is the current OWNER-approved active ownership alignment.
+
+-## Team Alfa
++## Alfa
+
+ - Game Hub
+ - Game Journey
+@@ -13,7 +13,7 @@ This section is the current OWNER-approved active ownership alignment.
+ - Creator onboarding
+ - UX flow
+
+-## Team Bravo
++## Bravo
+
+ - Audio
+ - Audio Effects
+@@ -25,7 +25,7 @@ This section is the current OWNER-approved active ownership alignment.
+ - MIDI Studio
+ - Creator content tools
+
+-## Team Charlie
++## Charlie
+
+ - Repository compliance
+ - Validation
+@@ -39,26 +39,26 @@ This section is the current OWNER-approved active ownership alignment.
+ - Sprites canvas editor MVP
+ - Objects
+
+-Team Charlie System Health owns:
++Charlie System Health owns:
+ - Environment Summary
+ - Database Health
+ - Storage Health
+ - Runtime Health
+ - Health Check History
+
+-Team Charlie Sprites ownership:
++Charlie Sprites ownership:
+ - Sprites is a creator tool, not only an asset metadata library.
+ - Sprites MVP requires canvas/grid editor behavior, width/height controls, Palette/Colors-only color selection, pixel painting, save/load sprite grid data through API/database, and a Product Owner testable workflow.
+ - Sprites must not own reusable color definitions.
+
+-Team Charlie Palette / Colors ownership:
++Charlie Palette / Colors ownership:
+ - Color management
+ - API/database integration
+ - Reusable color source of truth
+ - Palette references for Sprites and Objects
+ - Product Owner testable workflow
+
+-Team Charlie Objects ownership:
++Charlie Objects ownership:
+ - Object library
+ - Object editor
+ - Sprite assignment
+@@ -67,7 +67,7 @@ Team Charlie Objects ownership:
+ - Runtime object metadata
+ - Object API/database contracts
+
+-## Team Delta
++## Delta
+
+ - Engine
+ - Runtime
+@@ -91,22 +91,22 @@ OWNER override approved.
+
+ The current active ownership lanes are:
+
+-- Team Alfa
+-- Team Bravo
+-- Team Charlie
+-- Team Delta
+-- Team Golf
+-- Team OWNER
++- Alfa
++- Bravo
++- Charlie
++- Delta
++- Golf
++- Owner
+
+ Migration note:
+-Team Gamma is retired. Team Golf is the replacement active ownership lane.
++Golf is the only active replacement for the retired prior lane.
+
+ Clarification:
+ - The four-team rule remains the current backlog ownership model for Alfa, Bravo, Charlie, and Delta.
+-- Team Golf does not receive a standing backlog ownership area in this file.
+-- Team Golf work requires OWNER assignment, an active branch, an active draft/open PR, or active release/review/cleanup responsibility.
++- Golf does not receive a standing backlog ownership area in this file.
++- Golf work requires OWNER assignment, an active branch, an active draft/open PR, or active release/review/cleanup responsibility.
+ - Golf work that touches Alfa, Bravo, Charlie, or Delta areas must document the OWNER cross-team decision.
+-- Historical Gamma PR references and branch names remain unchanged for traceability.
++- Historical PR references and branch names for retired non-canonical lanes remain unchanged for traceability.
+
+ ## Rule
+
+@@ -118,26 +118,26 @@ This current rule supersedes any prior permanent discipline ownership assumption
+
+ ## Team Naming
+
+-Team names must use NATO phonetic naming.
++Team names must use the canonical Owner plus military team-name set.
+
+ Official active team codes:
+
+-- OWNER
+-- ALFA
+-- BRAVO
+-- CHARLIE
+-- DELTA
++- Owner
++- Alfa
++- Bravo
++- Charlie
++- Delta
++- Golf
+
+ Examples:
+-- Team OWNER
+-- Team Alfa
+-- Team Bravo
+-- Team Charlie
+-- Team Delta
+-- Team Echo
+-- Team Foxtrot
+-
+-Use `Alfa` spelling when referring to Team Alfa.
++- Owner
++- Alfa
++- Bravo
++- Charlie
++- Delta
++- Golf
 +
-+PLAN_PR is planning only.
-+
-+Rules:
-+- Do not change files unless the user explicitly requests a planning artifact update.
-+- Identify the correct branch or start point.
-+- Identify the intended PR name, purpose, and scope.
-+- Identify required validation and reporting.
-+- HARD STOP on unclear scope.
-+- HARD STOP if Project Instructions conflict with the requested plan.
-+
-+### BUILD_PR
-+
-+BUILD_PR is the implementation phase.
-+
-+Rules:
-+- Verify branch and worktree rules for the PR before changing files.
-+- Use the latest Project Instructions.
-+- Stay inside the approved PR purpose.
-+- Create required reports.
-+- Create the required repo-structured ZIP artifact when the active artifact rules require one.
-+- Run scoped validation required by the PR and Project Instructions.
-+- HARD STOP on wrong branch.
-+- HARD STOP on dirty worktree when the PR requires a clean start.
-+- HARD STOP on scope conflict.
-+- HARD STOP on missing required Project Instructions.
-+- HARD STOP on failed required validation unless the task is explicitly a failure-report closeout.
-+
-+### APPLY_PR
-+
-+APPLY_PR is the merge and closeout phase.
-+
-+Rules:
-+- Verify CI status, validation status, and mergeability before merge.
-+- Verify the PR merge state is clean.
-+- Verify required reports and ZIP artifacts exist.
-+- Merge only when Project Instructions and OWNER direction allow the merge.
-+- Update local `main` after merge.
-+- Report final branch, worktree status, local/origin sync status, final commit, and blockers.
-+- HARD STOP if checks fail.
-+- HARD STOP if the merge state is not clean.
-+- HARD STOP if closeout would require unrelated changes.
-+
-+## Invalid Command Behavior
-+
-+If a command is invalid, ambiguous, or uses the wrong phase name:
-+
-+- HARD STOP.
-+- Return the correct command format.
-+- Do not guess the intended command.
-+- Do not partially execute.
-+- Do not create, change, stage, commit, push, merge, or delete files as part of invalid command recovery.
-+
-+## Command Ownership
-+
-+- `PROJECT_INSTRUCTIONS.md` is the only manual Project Instructions entry point.
-+- This file owns command vocabulary and phase behavior.
-+- `bootstrap/codex_start_of_day_bootstrap.md` owns Start-of-Day bootstrap architecture.
-+- `addendums/pr_workflow.md` owns PR lifecycle governance.
-+- `addendums/project_instructions_single_source_eod_lock.md` owns START / WORK / END branch lifecycle governance.
++Use `Alfa` spelling when referring to Alfa.
+
+ ## Assignment Rule

@@ -10,12 +10,12 @@ This file records active assignments and registry state. Workflow summaries here
 
 | Team | Assignment | Branch | PR | Status |
 |------|------------|--------|----|--------|
-| Team Alfa | none | none | none | Available |
-| Team Bravo | none | none | none | Available |
-| Team Charlie | none | none | none | Available |
-| Team Delta | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | Active |
-| Team Golf | none | none | none | Available |
-| Team OWNER | none | none | none | Available |
+| Alfa | none | none | none | Available |
+| Bravo | none | none | none | Available |
+| Charlie | none | none | none | Available |
+| Delta | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | Active |
+| Golf | none | none | none | Available |
+| Owner | none | none | none | Available |
 
 Rules:
 - Registry is the authoritative active-work view.
@@ -41,10 +41,10 @@ If a team is missing from Active Team Registry:
 it is currently inactive.
 
 Current OWNER clarification:
-- The active ownership lanes are Team Alfa, Team Bravo, Team Charlie, Team Delta, Team Golf, and Team OWNER.
-- Team Gamma is retired. Team Golf is the replacement active ownership lane.
-- Do not rewrite historical PR references that mention Team Gamma.
-- Do not rename historical branches that contain Gamma.
+- The active ownership lanes are Alfa, Bravo, Charlie, Delta, Golf, and Owner.
+- Golf is the only active replacement for the retired prior lane.
+- Do not rewrite historical PR references for retired non-canonical lanes.
+- Do not rename historical branches for retired non-canonical lanes.
 
 ## Assignment Status Legend
 
@@ -52,7 +52,7 @@ Current OWNER clarification:
 - Active: team has one assignment in progress.
 - Blocked: team cannot pull work until blocker is cleared.
 
-## Team Alfa
+## Alfa
 
 Status: Available
 
@@ -60,7 +60,7 @@ Active assignment: none.
 
 Active branch: none.
 
-## Team Bravo
+## Bravo
 
 Status: Available
 
@@ -68,7 +68,7 @@ Active assignment: none.
 
 Active branch: none.
 
-## Team Charlie
+## Charlie
 
 Status: Available
 
@@ -76,7 +76,7 @@ Active assignment: none.
 
 Active branch: none.
 
-## Team Delta
+## Delta
 
 Status: Active
 
@@ -86,9 +86,9 @@ Active branch: PR_26177_DELTA_056-shared-validation-assertions.
 
 Active PR: PR_26177_DELTA_056-shared-validation-assertions.
 
-OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_056-shared-validation-assertions.
+OWNER override approved: Continue Delta random utility stack with PR_26177_DELTA_056-shared-validation-assertions.
 
-## Team Golf
+## Golf
 
 Status: Available
 
@@ -96,9 +96,9 @@ Active assignment: none.
 
 Active branch: none.
 
-OWNER decision: Replacement active ownership lane for retired Team Gamma.
+OWNER decision: Replacement active ownership lane for the retired prior lane.
 
-## Team OWNER
+## Owner
 
 Status: Available
 
@@ -108,33 +108,12 @@ Active branch: none.
 
 ## Team Name Registry
 
-- Team Alfa
-- Team Bravo
-- Team Charlie
-- Team Delta
-- Team Echo
-- Team Foxtrot
-- Team Golf
-- Team Hotel
-- Team India
-- Team Juliett
-- Team Kilo
-- Team Lima
-- Team Mike
-- Team November
-- Team Oscar
-- Team Papa
-- Team Quebec
-- Team Romeo
-- Team Sierra
-- Team Tango
-- Team Uniform
-- Team Victor
-- Team Whiskey
-- Team X-ray
-- Team Yankee
-- Team Zulu
-- Team OWNER
+- Alfa
+- Bravo
+- Charlie
+- Delta
+- Golf
+- Owner
 
 ## Preferred Codex Execution Method
 
@@ -169,8 +148,7 @@ Preferred execution model:
 Single Codex session with multiple sequential PRs.
 
 Applies to:
-- Team Alfa through Team Zulu
-- Team OWNER
+- Owner, Alfa, Bravo, Charlie, Delta, and Golf
 
 Purpose:
 Reduce back-and-forth between owner and Codex while keeping PRs reviewable and scoped.
