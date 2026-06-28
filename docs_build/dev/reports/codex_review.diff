@@ -1,278 +1,329 @@
-diff --git a/assets/theme-v2/css/gamefoundrystudio.css b/assets/theme-v2/css/gamefoundrystudio.css
-index 82dff717c..105b24073 100644
---- a/assets/theme-v2/css/gamefoundrystudio.css
-+++ b/assets/theme-v2/css/gamefoundrystudio.css
-@@ -1156,6 +1156,7 @@ body.tool-focus-mode .tool-column:last-of-type {
- .sprite-canvas-shell {
-   display: flex;
-   justify-content: center;
-+  overflow: auto;
-   padding: 16px;
-   border: 1px solid var(--line);
-   border-radius: var(--radius-md);
-@@ -1180,6 +1181,14 @@ body.tool-focus-mode .tool-column:last-of-type {
-   --sprite-grid-size: 32
- }
-
-+.sprite-canvas-shell[data-sprites-zoom-level="2"] .sprite-canvas-grid {
-+  width: min(720px, 160%)
-+}
-+
-+.sprite-canvas-shell[data-sprites-zoom-level="4"] .sprite-canvas-grid {
-+  width: min(960px, 220%)
-+}
-+
- .sprite-canvas-cell {
-   min-width: 0;
-   min-height: 0;
 diff --git a/assets/toolbox/sprites/js/index.js b/assets/toolbox/sprites/js/index.js
-index 788ba41c1..594a91d85 100644
+index 594a91d85..7f92105d7 100644
 --- a/assets/toolbox/sprites/js/index.js
 +++ b/assets/toolbox/sprites/js/index.js
-@@ -1,6 +1,7 @@
+@@ -1,7 +1,8 @@
  const DEFAULT_GRID_SIZE = 16;
  const SUPPORTED_GRID_SIZES = Object.freeze([16, 32]);
--const DRAWING_TOOLS = Object.freeze(["pencil", "eraser", "fill"]);
-+const SUPPORTED_ZOOM_LEVELS = Object.freeze([1, 2, 4]);
-+const EDITOR_TOOLS = Object.freeze(["pencil", "eraser", "fill", "picker", "zoom"]);
+ const SUPPORTED_ZOOM_LEVELS = Object.freeze([1, 2, 4]);
+-const EDITOR_TOOLS = Object.freeze(["pencil", "eraser", "fill", "picker", "zoom"]);
++const SHAPE_TOOLS = Object.freeze(["line", "rectangle", "circle"]);
++const EDITOR_TOOLS = Object.freeze(["pencil", "eraser", "fill", "picker", "zoom", ...SHAPE_TOOLS]);
  const EDITOR_COLOR_KEYS = Object.freeze(["ink", "orange", "gold", "green", "blue"]);
  const EDITOR_COLOR_CSS_VARIABLES = Object.freeze({
    blue: "--electric-blue",
-@@ -15,6 +16,7 @@ const editorState = {
+@@ -16,6 +17,7 @@ const editorState = {
    activeColor: "ink",
    gridSize: DEFAULT_GRID_SIZE,
    paintedPixels: new Map(),
-+  zoomLevel: 1,
++  shapeAnchor: null,
+   zoomLevel: 1,
  };
  const editorHistory = {
-   redoStack: [],
-@@ -88,6 +90,16 @@ function normalizeColorKey(colorKey) {
-   return EDITOR_COLOR_KEYS.includes(colorKey) ? colorKey : "ink";
+@@ -35,6 +37,17 @@ function pixelKey(row, column) {
+   return `${row}:${column}`;
  }
 
-+function colorLabel(colorKey) {
-+  const normalizedColorKey = normalizeColorKey(colorKey);
-+  return `${normalizedColorKey[0].toUpperCase()}${normalizedColorKey.slice(1)}`;
++function cellCoordinates(cell) {
++  return {
++    column: Number(cell.dataset.spritePixelColumn),
++    row: Number(cell.dataset.spritePixelRow),
++  };
 +}
 +
-+function normalizeZoomLevel(zoomLevel) {
-+  const value = Number(zoomLevel);
-+  return SUPPORTED_ZOOM_LEVELS.includes(value) ? value : 1;
++function isInsideGrid(row, column) {
++  return row >= 1 && row <= editorState.gridSize && column >= 1 && column <= editorState.gridSize;
 +}
 +
- function clearCellColor(cell) {
-   cell.classList.remove("is-painted");
-   cell.classList.remove(...EDITOR_COLOR_KEYS.map((colorKey) => `sprite-canvas-cell--${colorKey}`));
-@@ -136,7 +148,7 @@ function updateDraftStatus() {
- function updatePaletteStatus() {
-   const status = document.querySelector("[data-sprites-palette-status]");
-   if (status) {
--    status.textContent = `Active editor color: ${editorState.activeColor[0].toUpperCase()}${editorState.activeColor.slice(1)}. Palette/Colors remains the reusable color source for future saved sprite records.`;
-+    status.textContent = `Active editor color: ${colorLabel(editorState.activeColor)}. Palette/Colors remains the reusable color source for future saved sprite records.`;
-   }
- }
-
-@@ -152,7 +164,7 @@ function setActiveColor(colorKey) {
- }
-
- function setActiveTool(toolName) {
--  if (!DRAWING_TOOLS.includes(toolName)) {
-+  if (!EDITOR_TOOLS.includes(toolName)) {
+ function stateSnapshot() {
+   return {
+     gridSize: editorState.gridSize,
+@@ -132,6 +145,7 @@ function applyPaintedPixelsToGrid() {
+ function applySnapshot(snapshot) {
+   setGridSize(snapshot.gridSize, { recordHistory: false });
+   editorState.paintedPixels = new Map(snapshot.paintedPixels);
++  editorState.shapeAnchor = null;
+   applyPaintedPixelsToGrid();
+   updateDraftStatus();
+   updateHistoryControls();
+@@ -168,6 +182,7 @@ function setActiveTool(toolName) {
      return;
    }
    editorState.activeTool = toolName;
-@@ -167,8 +179,51 @@ function setActiveTool(toolName) {
++  editorState.shapeAnchor = null;
+   document.querySelectorAll("[data-sprite-tool-button]").forEach((button) => {
+     const isActive = button.dataset.spriteToolButton === toolName;
+     button.classList.toggle("primary", isActive);
+@@ -175,7 +190,11 @@ function setActiveTool(toolName) {
+   });
+   const status = document.querySelector("[data-sprites-tool-status]");
+   if (status) {
+-    status.textContent = `${toolName[0].toUpperCase()}${toolName.slice(1)} is active. Drawing stays in unsaved editor state for this page session only.`;
++    if (SHAPE_TOOLS.includes(toolName)) {
++      status.textContent = `${toolName[0].toUpperCase()}${toolName.slice(1)} is active. Choose a start pixel, then an end pixel. Drawing stays in unsaved editor state for this page session only.`;
++    } else {
++      status.textContent = `${toolName[0].toUpperCase()}${toolName.slice(1)} is active. Drawing stays in unsaved editor state for this page session only.`;
++    }
    }
  }
 
-+function setZoomLevel(zoomLevel) {
-+  const normalizedZoomLevel = normalizeZoomLevel(zoomLevel);
-+  const shell = document.querySelector("[data-sprites-grid-shell]");
-+  const status = document.querySelector("[data-sprites-zoom-status]");
-+  editorState.zoomLevel = normalizedZoomLevel;
-+
-+  if (shell) {
-+    shell.dataset.spritesZoomLevel = String(normalizedZoomLevel);
+@@ -215,6 +234,109 @@ function pickCellColor(cell) {
+   }
+ }
+
++function setPixel(row, column, colorKey) {
++  if (!isInsideGrid(row, column)) {
++    return;
 +  }
-+
-+  document.querySelectorAll("[data-sprites-zoom-level]").forEach((button) => {
-+    const isActive = button.dataset.spritesZoomLevel === String(normalizedZoomLevel);
-+    button.classList.toggle("primary", isActive);
-+    button.setAttribute("aria-pressed", String(isActive));
-+  });
-+
-+  if (status) {
-+    status.textContent = `Canvas zoom display: ${normalizedZoomLevel * 100}%.`;
++  const key = pixelKey(row, column);
++  const normalizedColorKey = normalizeColorKey(colorKey);
++  const cell = document.querySelector(`[data-sprite-pixel-row="${row}"][data-sprite-pixel-column="${column}"]`);
++  editorState.paintedPixels.set(key, normalizedColorKey);
++  if (cell) {
++    setCellColor(cell, normalizedColorKey);
 +  }
 +}
 +
-+function pickCellColor(cell) {
-+  const colorKey = cell.dataset.spriteColorKey;
++function drawLine(start, end) {
++  let row = start.row;
++  let column = start.column;
++  const rowStep = Math.sign(end.row - start.row);
++  const columnStep = Math.sign(end.column - start.column);
++  const rowDistance = Math.abs(end.row - start.row);
++  const columnDistance = Math.abs(end.column - start.column);
++  let error = columnDistance - rowDistance;
++
++  while (true) {
++    setPixel(row, column, editorState.activeColor);
++    if (row === end.row && column === end.column) {
++      break;
++    }
++    const doubledError = error * 2;
++    if (doubledError > -rowDistance) {
++      error -= rowDistance;
++      column += columnStep;
++    }
++    if (doubledError < columnDistance) {
++      error += columnDistance;
++      row += rowStep;
++    }
++  }
++}
++
++function drawRectangle(start, end) {
++  const minRow = Math.min(start.row, end.row);
++  const maxRow = Math.max(start.row, end.row);
++  const minColumn = Math.min(start.column, end.column);
++  const maxColumn = Math.max(start.column, end.column);
++  for (let column = minColumn; column <= maxColumn; column += 1) {
++    setPixel(minRow, column, editorState.activeColor);
++    setPixel(maxRow, column, editorState.activeColor);
++  }
++  for (let row = minRow; row <= maxRow; row += 1) {
++    setPixel(row, minColumn, editorState.activeColor);
++    setPixel(row, maxColumn, editorState.activeColor);
++  }
++}
++
++function drawCircle(start, end) {
++  const radius = Math.max(Math.abs(end.row - start.row), Math.abs(end.column - start.column));
++  if (radius === 0) {
++    setPixel(start.row, start.column, editorState.activeColor);
++    return;
++  }
++  for (let rowOffset = -radius; rowOffset <= radius; rowOffset += 1) {
++    for (let columnOffset = -radius; columnOffset <= radius; columnOffset += 1) {
++      const distance = Math.sqrt(rowOffset * rowOffset + columnOffset * columnOffset);
++      if (Math.abs(distance - radius) <= 0.6) {
++        setPixel(start.row + rowOffset, start.column + columnOffset, editorState.activeColor);
++      }
++    }
++  }
++}
++
++function drawShape(start, end, toolName) {
++  if (toolName === "line") {
++    drawLine(start, end);
++  } else if (toolName === "rectangle") {
++    drawRectangle(start, end);
++  } else if (toolName === "circle") {
++    drawCircle(start, end);
++  }
++}
++
++function useShapeTool(cell) {
++  const coordinates = cellCoordinates(cell);
 +  const status = document.querySelector("[data-sprites-tool-status]");
-+  if (!colorKey) {
++  if (!Number.isFinite(coordinates.row) || !Number.isFinite(coordinates.column)) {
++    return;
++  }
++  if (!editorState.shapeAnchor || editorState.shapeAnchor.toolName !== editorState.activeTool) {
++    editorState.shapeAnchor = { ...coordinates, toolName: editorState.activeTool };
 +    if (status) {
-+      status.textContent = "Picker found an empty pixel. Active color was not changed.";
++      status.textContent = `${editorState.activeTool[0].toUpperCase()}${editorState.activeTool.slice(1)} start selected at row ${coordinates.row}, column ${coordinates.column}. Choose an end pixel.`;
 +    }
 +    return;
 +  }
-+  setActiveColor(colorKey);
++
++  pushUndoSnapshot();
++  drawShape(editorState.shapeAnchor, coordinates, editorState.activeTool);
 +  if (status) {
-+    status.textContent = `Picker selected ${colorLabel(colorKey)} from the unsaved editor canvas.`;
++    status.textContent = `${editorState.activeTool[0].toUpperCase()}${editorState.activeTool.slice(1)} added to the unsaved editor draft.`;
 +  }
++  editorState.shapeAnchor = null;
++  updateDraftStatus();
 +}
 +
  function paintCell(cell) {
    const key = pixelKey(cell.dataset.spritePixelRow, cell.dataset.spritePixelColumn);
-+  if (editorState.activeTool === "picker") {
-+    pickCellColor(cell);
-+    return;
-+  }
-+  if (editorState.activeTool === "zoom") {
+   if (editorState.activeTool === "picker") {
+@@ -224,6 +346,10 @@ function paintCell(cell) {
+   if (editorState.activeTool === "zoom") {
+     return;
+   }
++  if (SHAPE_TOOLS.includes(editorState.activeTool)) {
++    useShapeTool(cell);
 +    return;
 +  }
    if (editorState.activeTool === "eraser") {
      if (!editorState.paintedPixels.has(key)) {
        return;
-@@ -334,7 +389,7 @@ function wireGridControls() {
- function wireDrawingTools() {
-   document.querySelectorAll("[data-sprite-tool-button]").forEach((button) => {
-     const toolName = button.dataset.spriteToolButton;
--    if (!DRAWING_TOOLS.includes(toolName) || button.disabled) {
-+    if (!EDITOR_TOOLS.includes(toolName) || button.disabled) {
-       return;
-     }
-     button.addEventListener("click", () => {
-@@ -346,6 +401,12 @@ function wireDrawingTools() {
-   });
- }
+@@ -247,6 +373,7 @@ function fillGrid() {
+   if (!grid) {
+     return;
+   }
++  editorState.shapeAnchor = null;
+   pushUndoSnapshot();
+   editorState.paintedPixels.clear();
+   grid.querySelectorAll("[data-sprite-pixel-row]").forEach((cell) => {
+@@ -259,6 +386,7 @@ function fillGrid() {
 
-+function wireZoomControls() {
-+  document.querySelectorAll("[data-sprites-zoom-level]").forEach((button) => {
-+    button.addEventListener("click", () => setZoomLevel(button.dataset.spritesZoomLevel));
-+  });
-+}
-+
- function wirePaletteButtons() {
-   document.querySelectorAll("[data-sprite-color-button]").forEach((button) => {
-     button.addEventListener("click", () => {
-@@ -406,9 +467,11 @@ wireDrawingTools();
- wirePaletteButtons();
- wireCanvasActions();
- wireHistoryActions();
-+wireZoomControls();
- wireExportButton();
- setGridSize(DEFAULT_GRID_SIZE);
- setActiveTool(editorState.activeTool);
- setActiveColor(editorState.activeColor);
-+setZoomLevel(editorState.zoomLevel);
- updateHistoryControls();
- renderPreview();
+ function clearCanvas(options = {}) {
+   const grid = document.querySelector("[data-sprites-pixel-grid]");
++  editorState.shapeAnchor = null;
+   if (options.recordHistory !== false && editorState.paintedPixels.size > 0) {
+     pushUndoSnapshot();
+   }
+@@ -347,6 +475,7 @@ function setGridSize(size, options = {}) {
+   grid.replaceChildren();
+   editorState.gridSize = size;
+   editorState.paintedPixels.clear();
++  editorState.shapeAnchor = null;
+   grid.dataset.spritesGridSize = String(size);
+   grid.setAttribute("aria-label", gridLabel(size));
+
 diff --git a/dev/tests/playwright/tools/SpritesToolShell.spec.mjs b/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-index 8a1f5da74..40812b4af 100644
+index 40812b4af..e1539d1c1 100644
 --- a/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
 +++ b/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-@@ -13,9 +13,7 @@ const SPRITE_TOOLBAR_PLACEHOLDERS = [
-   "Line",
-   "Rectangle",
-   "Circle",
--  "Picker",
+@@ -10,9 +10,6 @@ const __filename = fileURLToPath(import.meta.url);
+ const __dirname = path.dirname(__filename);
+ const repoRoot = path.resolve(__dirname, "..", "..", "..", "..");
+ const SPRITE_TOOLBAR_PLACEHOLDERS = [
+-  "Line",
+-  "Rectangle",
+-  "Circle",
    "Move",
--  "Zoom",
  ];
 
- function contentTypeForPath(filePath) {
-@@ -230,6 +228,8 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status
+@@ -228,6 +225,9 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status
      await expect(page.getByRole("button", { name: "Pencil tool" })).toBeEnabled();
      await expect(page.getByRole("button", { name: "Eraser tool" })).toBeEnabled();
      await expect(page.getByRole("button", { name: "Fill tool" })).toBeEnabled();
-+    await expect(page.getByRole("button", { name: "Picker tool" })).toBeEnabled();
-+    await expect(page.getByRole("button", { name: "Zoom tool" })).toBeEnabled();
++    await expect(page.getByRole("button", { name: "Line tool" })).toBeEnabled();
++    await expect(page.getByRole("button", { name: "Rectangle tool" })).toBeEnabled();
++    await expect(page.getByRole("button", { name: "Circle tool" })).toBeEnabled();
+     await expect(page.getByRole("button", { name: "Picker tool" })).toBeEnabled();
+     await expect(page.getByRole("button", { name: "Zoom tool" })).toBeEnabled();
      for (const toolName of SPRITE_TOOLBAR_PLACEHOLDERS) {
-       await expect(page.getByRole("button", { name: `${toolName} tool placeholder` })).toBeDisabled();
-     }
-@@ -239,6 +239,7 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status
-     await expect(page.locator("[data-sprites-pixel-grid]")).toBeVisible();
-     await expect(page.locator("[data-sprites-pixel-grid] [role='gridcell']")).toHaveCount(256);
-     await expect(page.locator("[data-sprites-grid-status]")).toContainText("Canvas display mode: 16x16");
-+    await expect(page.locator("[data-sprites-zoom-status]")).toContainText("100%");
-     await page.getByRole("button", { name: "32x32" }).click();
-     await expect(page.locator("[data-sprites-pixel-grid]")).toHaveAttribute("aria-label", "Sprite Creator 32 by 32 pixel canvas");
-     await expect(page.locator("[data-sprites-pixel-grid] [role='gridcell']")).toHaveCount(1024);
-@@ -269,6 +270,11 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status
-     await firstPixel.click();
-     await expect(firstPixel).toHaveClass(/sprite-canvas-cell--gold/);
-     await page.getByRole("button", { name: "Blue editor color" }).click();
-+    await page.getByRole("button", { name: "Picker tool" }).click();
-+    await firstPixel.click();
-+    await expect(page.locator("[data-sprites-palette-status]")).toContainText("Active editor color: Gold");
-+    await expect(page.locator("[data-sprites-tool-status]")).toContainText("Picker selected Gold");
-+    await page.getByRole("button", { name: "Blue editor color" }).click();
-     await page.getByRole("button", { name: "Fill tool" }).click();
-     await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(1024);
-     await expect(page.locator("[data-sprites-pixel-grid] .sprite-canvas-cell--blue")).toHaveCount(1024);
-@@ -300,6 +306,15 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status
-     await page.getByRole("button", { name: "Blue editor color" }).click();
-     await page.getByRole("button", { name: "Fill tool" }).click();
-     await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(256);
-+    await page.getByRole("button", { name: "Zoom tool" }).click();
-+    await page.getByRole("button", { name: "200%" }).click();
-+    await expect(page.locator("[data-sprites-grid-shell]")).toHaveAttribute("data-sprites-zoom-level", "2");
-+    await expect(page.locator("[data-sprites-zoom-status]")).toContainText("200%");
-+    await page.getByRole("button", { name: "400%" }).click();
-+    await expect(page.locator("[data-sprites-grid-shell]")).toHaveAttribute("data-sprites-zoom-level", "4");
-+    await expect(page.locator("[data-sprites-zoom-status]")).toContainText("400%");
-+    await page.getByRole("button", { name: "100%" }).click();
-+    await expect(page.locator("[data-sprites-grid-shell]")).toHaveAttribute("data-sprites-zoom-level", "1");
+@@ -315,11 +315,38 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status
+     await expect(page.locator("[data-sprites-zoom-status]")).toContainText("400%");
+     await page.getByRole("button", { name: "100%" }).click();
+     await expect(page.locator("[data-sprites-grid-shell]")).toHaveAttribute("data-sprites-zoom-level", "1");
++    const gridCells = page.locator("[data-sprites-pixel-grid] [role='gridcell']");
++    await page.getByRole("button", { name: "Clear Canvas" }).click();
++    await page.getByRole("button", { name: "Green editor color" }).click();
++    await page.getByRole("button", { name: "Line tool" }).click();
++    await gridCells.nth(0).click();
++    await expect(page.locator("[data-sprites-tool-status]")).toContainText("Line start selected");
++    await gridCells.nth(5).click();
++    await expect(page.locator("[data-sprites-tool-status]")).toContainText("Line added");
++    await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(6);
++    await page.getByRole("button", { name: "Clear Canvas" }).click();
++    await page.getByRole("button", { name: "Rectangle tool" }).click();
++    await gridCells.nth(0).click();
++    await gridCells.nth(34).click();
++    await expect(page.locator("[data-sprites-tool-status]")).toContainText("Rectangle added");
++    await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(8);
++    await page.getByRole("button", { name: "Clear Canvas" }).click();
++    await page.getByRole("button", { name: "Circle tool" }).click();
++    await gridCells.nth(68).click();
++    await gridCells.nth(71).click();
++    await expect(page.locator("[data-sprites-tool-status]")).toContainText("Circle added");
++    const circlePaintedCount = await page.locator("[data-sprites-pixel-grid] .is-painted").count();
++    expect(circlePaintedCount).toBeGreaterThan(8);
      await expect(page.locator("[data-sprites-preview-canvas]")).toBeVisible();
      const previewHasPaint = await page.locator("[data-sprites-preview-canvas]").evaluate((canvas) => {
        const context = canvas.getContext("2d");
-diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_031-sprites-picker-zoom.md b/docs_build/dev/reports/PR_26179_CHARLIE_031-sprites-picker-zoom.md
+-      const pixel = context.getImageData(1, 1, 1, 1).data;
+-      return pixel[3] > 0;
++      const imageData = context.getImageData(0, 0, canvas.width, canvas.height).data;
++      for (let index = 3; index < imageData.length; index += 4) {
++        if (imageData[index] > 0) {
++          return true;
++        }
++      }
++      return false;
+     });
+     expect(previewHasPaint).toBe(true);
+     const downloadPromise = page.waitForEvent("download");
+diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_032-sprites-shape-tools.md b/docs_build/dev/reports/PR_26179_CHARLIE_032-sprites-shape-tools.md
 new file mode 100644
-index 000000000..4e61c7b6d
+index 000000000..200ac1ce8
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26179_CHARLIE_031-sprites-picker-zoom.md
-@@ -0,0 +1,69 @@
-+# PR_26179_CHARLIE_031-sprites-picker-zoom
++++ b/docs_build/dev/reports/PR_26179_CHARLIE_032-sprites-shape-tools.md
+@@ -0,0 +1,71 @@
++# PR_26179_CHARLIE_032-sprites-shape-tools
 +
 +Team: CHARLIE
 +
 +Mode: Batch governance stacked feature workflow
 +
-+Base branch: PR_26179_CHARLIE_030-sprites-undo-redo
++Base branch: PR_26179_CHARLIE_031-sprites-picker-zoom
 +
-+Branch: PR_26179_CHARLIE_031-sprites-picker-zoom
++Branch: PR_26179_CHARLIE_032-sprites-shape-tools
 +
 +## Summary
 +
-+Implemented Sprite Creator picker and zoom display controls. Picker reads an existing unsaved draft pixel color and updates the active editor color. Zoom changes only the canvas display scale through Theme V2 CSS and page-session UI state. No persistence, database, API, schema, browser-owned authoritative product data, or start_of_day files were changed.
++Implemented simple pixel-art shape tools for Sprite Creator. Line, Rectangle, and Circle now use a two-click start/end interaction and write only to the unsaved page-session editor draft. Move remains disabled/deferred. No persistence, database, API, schema, browser-owned authoritative product data, or start_of_day files were changed.
 +
 +## Branch Validation
 +
 +PASS
 +
 +- Built on the previous stacked Sprite branch.
-+- Scope stayed limited to Picker and Zoom display controls.
++- Scope stayed limited to shape tools.
 +- Move remains disabled/deferred.
 +- No DB/API/schema changes.
-+- No product data persistence was added.
++- No product save/load or authoritative browser-owned product data was added.
 +- No stale PR #219-#228 code was copied.
 +- ZIP package created at the user-requested batch path.
 +
 +## Requirement Checklist
 +
-+PASS - Picker implemented for existing painted pixels.
++PASS - Line tool implemented with simple pixel-art behavior.
 +
-+PASS - Picker updates the active editor color without mutating the canvas.
++PASS - Rectangle tool implemented with outline behavior.
 +
-+PASS - Zoom display controls added for 100%, 200%, and 400%.
++PASS - Circle tool implemented with outline behavior.
 +
-+PASS - Zoom is display-only and does not persist data.
++PASS - Shape tools use unsaved page-session editor state only.
 +
-+PASS - Move remains disabled/deferred.
++PASS - No persistence added.
 +
-+PASS - Theme V2 CSS used for zoom sizing.
++PASS - No DB/API/schema changes.
 +
-+PASS - No inline CSS, script blocks, style blocks, or inline event handlers added.
++PASS - No start_of_day changes.
 +
 +PASS - Targeted Playwright coverage updated.
 +
@@ -282,7 +333,7 @@ index 000000000..4e61c7b6d
 +
 +PASS - `node --check dev/tests/playwright/tools/SpritesToolShell.spec.mjs`
 +
-+PASS - `git diff --check -- toolbox/sprites/index.html assets/toolbox/sprites/js/index.js assets/theme-v2/css/gamefoundrystudio.css dev/tests/playwright/tools/SpritesToolShell.spec.mjs`
++PASS - `git diff --check -- toolbox/sprites/index.html assets/toolbox/sprites/js/index.js dev/tests/playwright/tools/SpritesToolShell.spec.mjs`
 +
 +PASS - Runtime guard scan found no prohibited inline style/script/event-handler or stale placeholder text in touched runtime files.
 +
@@ -291,60 +342,45 @@ index 000000000..4e61c7b6d
 +## Manual Validation Notes
 +
 +1. Open `toolbox/sprites/index.html`.
-+2. Paint a pixel with Gold.
-+3. Change the active editor color to Blue.
-+4. Select Picker and click the Gold pixel.
-+5. Confirm the active editor color returns to Gold and the canvas does not change.
-+6. Select Zoom and click 200%, 400%, and 100%.
-+7. Confirm the canvas display scale updates and no sprite data is saved.
++2. Select Line, click a start pixel, then click an end pixel.
++3. Confirm a straight pixel-art line appears in the unsaved draft.
++4. Clear the canvas.
++5. Select Rectangle, click opposite corners, and confirm an outline appears.
++6. Clear the canvas.
++7. Select Circle, click a center pixel, then click a radius pixel.
++8. Confirm a simple pixel-art circle outline appears.
++9. Confirm no save, API, database, or product persistence workflow is introduced.
 +
 +## ZIP
 +
-+`dev/workspace/zip/PR_26179_CHARLIE_031-sprites-picker-zoom_delta.zip`
++`dev/workspace/zip/PR_26179_CHARLIE_032-sprites-shape-tools_delta.zip`
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 0ae35c274..9947f86b8 100644
+index 9947f86b8..c90cf54c4 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,6 +1,7 @@
-+assets/theme-v2/css/gamefoundrystudio.css
+@@ -1,7 +1,6 @@
+-assets/theme-v2/css/gamefoundrystudio.css
  assets/toolbox/sprites/js/index.js
  dev/tests/playwright/tools/SpritesToolShell.spec.mjs
--docs_build/dev/reports/PR_26179_CHARLIE_030-sprites-undo-redo.md
-+docs_build/dev/reports/PR_26179_CHARLIE_031-sprites-picker-zoom.md
+-docs_build/dev/reports/PR_26179_CHARLIE_031-sprites-picker-zoom.md
++docs_build/dev/reports/PR_26179_CHARLIE_032-sprites-shape-tools.md
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
  toolbox/sprites/index.html
 diff --git a/toolbox/sprites/index.html b/toolbox/sprites/index.html
-index fced926d7..e4d4bfe59 100644
+index e4d4bfe59..3605cce9b 100644
 --- a/toolbox/sprites/index.html
 +++ b/toolbox/sprites/index.html
-@@ -41,9 +41,9 @@
-                                         <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="line" aria-label="Line tool placeholder">Line</button>
-                                         <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="rectangle" aria-label="Rectangle tool placeholder">Rectangle</button>
-                                         <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="circle" aria-label="Circle tool placeholder">Circle</button>
--                                        <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="picker" aria-label="Picker tool placeholder">Picker</button>
-+                                        <button class="btn btn--compact" type="button" data-sprite-tool-button="picker" aria-label="Picker tool" aria-pressed="false">Picker</button>
+@@ -38,9 +38,9 @@
+                                         <button class="btn btn--compact primary" type="button" data-sprite-tool-button="pencil" aria-label="Pencil tool" aria-pressed="true">Pencil</button>
+                                         <button class="btn btn--compact" type="button" data-sprite-tool-button="eraser" aria-label="Eraser tool" aria-pressed="false">Eraser</button>
+                                         <button class="btn btn--compact" type="button" data-sprite-tool-button="fill" aria-label="Fill tool" aria-pressed="false">Fill</button>
+-                                        <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="line" aria-label="Line tool placeholder">Line</button>
+-                                        <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="rectangle" aria-label="Rectangle tool placeholder">Rectangle</button>
+-                                        <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="circle" aria-label="Circle tool placeholder">Circle</button>
++                                        <button class="btn btn--compact" type="button" data-sprite-tool-button="line" aria-label="Line tool" aria-pressed="false">Line</button>
++                                        <button class="btn btn--compact" type="button" data-sprite-tool-button="rectangle" aria-label="Rectangle tool" aria-pressed="false">Rectangle</button>
++                                        <button class="btn btn--compact" type="button" data-sprite-tool-button="circle" aria-label="Circle tool" aria-pressed="false">Circle</button>
+                                         <button class="btn btn--compact" type="button" data-sprite-tool-button="picker" aria-label="Picker tool" aria-pressed="false">Picker</button>
                                          <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="move" aria-label="Move tool placeholder">Move</button>
--                                        <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="zoom" aria-label="Zoom tool placeholder">Zoom</button>
-+                                        <button class="btn btn--compact" type="button" data-sprite-tool-button="zoom" aria-label="Zoom tool" aria-pressed="false">Zoom</button>
-                                     </div>
-                                     <p class="status" role="status" data-sprites-tool-status>Pencil is active. Drawing stays in unsaved editor state for this page session only.</p>
-                                 </div>
-@@ -110,10 +110,16 @@
-                                     <button class="btn btn--compact" type="button" data-sprites-undo disabled>Undo</button>
-                                     <button class="btn btn--compact" type="button" data-sprites-redo disabled>Redo</button>
-                                 </div>
--                                <div class="sprite-canvas-shell" data-sprites-grid-shell>
-+                                <div class="action-group action-group--tight" aria-label="Sprite zoom display controls" data-sprites-zoom-controls>
-+                                    <button class="btn btn--compact primary" type="button" data-sprites-zoom-level="1" aria-pressed="true">100%</button>
-+                                    <button class="btn btn--compact" type="button" data-sprites-zoom-level="2" aria-pressed="false">200%</button>
-+                                    <button class="btn btn--compact" type="button" data-sprites-zoom-level="4" aria-pressed="false">400%</button>
-+                                </div>
-+                                <div class="sprite-canvas-shell" data-sprites-grid-shell data-sprites-zoom-level="1">
-                                     <div class="sprite-canvas-grid" role="grid" aria-label="Sprite Creator 16 by 16 pixel canvas" data-sprites-pixel-grid></div>
-                                 </div>
-                                 <p class="status" role="status" data-sprites-grid-status>Canvas display mode: 16x16. No pixel data is saved.</p>
-+                                <p class="status" role="status" data-sprites-zoom-status>Canvas zoom display: 100%.</p>
-                                 <p class="status" role="status" data-sprites-draft-status>Unsaved editor state: empty draft.</p>
-                                 <p class="status" role="status" data-sprites-history-status>Undo history is empty.</p>
-                             </div>
+                                         <button class="btn btn--compact" type="button" data-sprite-tool-button="zoom" aria-label="Zoom tool" aria-pressed="false">Zoom</button>

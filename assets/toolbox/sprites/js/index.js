@@ -1,7 +1,8 @@
 const DEFAULT_GRID_SIZE = 16;
 const SUPPORTED_GRID_SIZES = Object.freeze([16, 32]);
 const SUPPORTED_ZOOM_LEVELS = Object.freeze([1, 2, 4]);
-const EDITOR_TOOLS = Object.freeze(["pencil", "eraser", "fill", "picker", "zoom"]);
+const SHAPE_TOOLS = Object.freeze(["line", "rectangle", "circle"]);
+const EDITOR_TOOLS = Object.freeze(["pencil", "eraser", "fill", "picker", "zoom", ...SHAPE_TOOLS]);
 const EDITOR_COLOR_KEYS = Object.freeze(["ink", "orange", "gold", "green", "blue"]);
 const EDITOR_COLOR_CSS_VARIABLES = Object.freeze({
   blue: "--electric-blue",
@@ -16,6 +17,7 @@ const editorState = {
   activeColor: "ink",
   gridSize: DEFAULT_GRID_SIZE,
   paintedPixels: new Map(),
+  shapeAnchor: null,
   zoomLevel: 1,
 };
 const editorHistory = {
@@ -33,6 +35,17 @@ function buttonForSize(size) {
 
 function pixelKey(row, column) {
   return `${row}:${column}`;
+}
+
+function cellCoordinates(cell) {
+  return {
+    column: Number(cell.dataset.spritePixelColumn),
+    row: Number(cell.dataset.spritePixelRow),
+  };
+}
+
+function isInsideGrid(row, column) {
+  return row >= 1 && row <= editorState.gridSize && column >= 1 && column <= editorState.gridSize;
 }
 
 function stateSnapshot() {
@@ -132,6 +145,7 @@ function applyPaintedPixelsToGrid() {
 function applySnapshot(snapshot) {
   setGridSize(snapshot.gridSize, { recordHistory: false });
   editorState.paintedPixels = new Map(snapshot.paintedPixels);
+  editorState.shapeAnchor = null;
   applyPaintedPixelsToGrid();
   updateDraftStatus();
   updateHistoryControls();
@@ -168,6 +182,7 @@ function setActiveTool(toolName) {
     return;
   }
   editorState.activeTool = toolName;
+  editorState.shapeAnchor = null;
   document.querySelectorAll("[data-sprite-tool-button]").forEach((button) => {
     const isActive = button.dataset.spriteToolButton === toolName;
     button.classList.toggle("primary", isActive);
@@ -175,7 +190,11 @@ function setActiveTool(toolName) {
   });
   const status = document.querySelector("[data-sprites-tool-status]");
   if (status) {
-    status.textContent = `${toolName[0].toUpperCase()}${toolName.slice(1)} is active. Drawing stays in unsaved editor state for this page session only.`;
+    if (SHAPE_TOOLS.includes(toolName)) {
+      status.textContent = `${toolName[0].toUpperCase()}${toolName.slice(1)} is active. Choose a start pixel, then an end pixel. Drawing stays in unsaved editor state for this page session only.`;
+    } else {
+      status.textContent = `${toolName[0].toUpperCase()}${toolName.slice(1)} is active. Drawing stays in unsaved editor state for this page session only.`;
+    }
   }
 }
 
@@ -215,6 +234,109 @@ function pickCellColor(cell) {
   }
 }
 
+function setPixel(row, column, colorKey) {
+  if (!isInsideGrid(row, column)) {
+    return;
+  }
+  const key = pixelKey(row, column);
+  const normalizedColorKey = normalizeColorKey(colorKey);
+  const cell = document.querySelector(`[data-sprite-pixel-row="${row}"][data-sprite-pixel-column="${column}"]`);
+  editorState.paintedPixels.set(key, normalizedColorKey);
+  if (cell) {
+    setCellColor(cell, normalizedColorKey);
+  }
+}
+
+function drawLine(start, end) {
+  let row = start.row;
+  let column = start.column;
+  const rowStep = Math.sign(end.row - start.row);
+  const columnStep = Math.sign(end.column - start.column);
+  const rowDistance = Math.abs(end.row - start.row);
+  const columnDistance = Math.abs(end.column - start.column);
+  let error = columnDistance - rowDistance;
+
+  while (true) {
+    setPixel(row, column, editorState.activeColor);
+    if (row === end.row && column === end.column) {
+      break;
+    }
+    const doubledError = error * 2;
+    if (doubledError > -rowDistance) {
+      error -= rowDistance;
+      column += columnStep;
+    }
+    if (doubledError < columnDistance) {
+      error += columnDistance;
+      row += rowStep;
+    }
+  }
+}
+
+function drawRectangle(start, end) {
+  const minRow = Math.min(start.row, end.row);
+  const maxRow = Math.max(start.row, end.row);
+  const minColumn = Math.min(start.column, end.column);
+  const maxColumn = Math.max(start.column, end.column);
+  for (let column = minColumn; column <= maxColumn; column += 1) {
+    setPixel(minRow, column, editorState.activeColor);
+    setPixel(maxRow, column, editorState.activeColor);
+  }
+  for (let row = minRow; row <= maxRow; row += 1) {
+    setPixel(row, minColumn, editorState.activeColor);
+    setPixel(row, maxColumn, editorState.activeColor);
+  }
+}
+
+function drawCircle(start, end) {
+  const radius = Math.max(Math.abs(end.row - start.row), Math.abs(end.column - start.column));
+  if (radius === 0) {
+    setPixel(start.row, start.column, editorState.activeColor);
+    return;
+  }
+  for (let rowOffset = -radius; rowOffset <= radius; rowOffset += 1) {
+    for (let columnOffset = -radius; columnOffset <= radius; columnOffset += 1) {
+      const distance = Math.sqrt(rowOffset * rowOffset + columnOffset * columnOffset);
+      if (Math.abs(distance - radius) <= 0.6) {
+        setPixel(start.row + rowOffset, start.column + columnOffset, editorState.activeColor);
+      }
+    }
+  }
+}
+
+function drawShape(start, end, toolName) {
+  if (toolName === "line") {
+    drawLine(start, end);
+  } else if (toolName === "rectangle") {
+    drawRectangle(start, end);
+  } else if (toolName === "circle") {
+    drawCircle(start, end);
+  }
+}
+
+function useShapeTool(cell) {
+  const coordinates = cellCoordinates(cell);
+  const status = document.querySelector("[data-sprites-tool-status]");
+  if (!Number.isFinite(coordinates.row) || !Number.isFinite(coordinates.column)) {
+    return;
+  }
+  if (!editorState.shapeAnchor || editorState.shapeAnchor.toolName !== editorState.activeTool) {
+    editorState.shapeAnchor = { ...coordinates, toolName: editorState.activeTool };
+    if (status) {
+      status.textContent = `${editorState.activeTool[0].toUpperCase()}${editorState.activeTool.slice(1)} start selected at row ${coordinates.row}, column ${coordinates.column}. Choose an end pixel.`;
+    }
+    return;
+  }
+
+  pushUndoSnapshot();
+  drawShape(editorState.shapeAnchor, coordinates, editorState.activeTool);
+  if (status) {
+    status.textContent = `${editorState.activeTool[0].toUpperCase()}${editorState.activeTool.slice(1)} added to the unsaved editor draft.`;
+  }
+  editorState.shapeAnchor = null;
+  updateDraftStatus();
+}
+
 function paintCell(cell) {
   const key = pixelKey(cell.dataset.spritePixelRow, cell.dataset.spritePixelColumn);
   if (editorState.activeTool === "picker") {
@@ -222,6 +344,10 @@ function paintCell(cell) {
     return;
   }
   if (editorState.activeTool === "zoom") {
+    return;
+  }
+  if (SHAPE_TOOLS.includes(editorState.activeTool)) {
+    useShapeTool(cell);
     return;
   }
   if (editorState.activeTool === "eraser") {
@@ -247,6 +373,7 @@ function fillGrid() {
   if (!grid) {
     return;
   }
+  editorState.shapeAnchor = null;
   pushUndoSnapshot();
   editorState.paintedPixels.clear();
   grid.querySelectorAll("[data-sprite-pixel-row]").forEach((cell) => {
@@ -259,6 +386,7 @@ function fillGrid() {
 
 function clearCanvas(options = {}) {
   const grid = document.querySelector("[data-sprites-pixel-grid]");
+  editorState.shapeAnchor = null;
   if (options.recordHistory !== false && editorState.paintedPixels.size > 0) {
     pushUndoSnapshot();
   }
@@ -347,6 +475,7 @@ function setGridSize(size, options = {}) {
   grid.replaceChildren();
   editorState.gridSize = size;
   editorState.paintedPixels.clear();
+  editorState.shapeAnchor = null;
   grid.dataset.spritesGridSize = String(size);
   grid.setAttribute("aria-label", gridLabel(size));
 
