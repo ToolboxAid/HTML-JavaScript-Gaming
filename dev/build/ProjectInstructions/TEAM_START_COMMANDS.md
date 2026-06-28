@@ -15,6 +15,14 @@ Read `dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md` 
 Branch Lifecycle (Canonical):
 - Follow `dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md` for START / WORK / END lifecycle, branch gates, mandatory hard stops, and EOD main lock.
 
+## Team Migration Note
+
+Team Alfa, Team Bravo, Team Charlie, and historical Team Gamma lanes must update from current `main` before starting work and use the canonical folders documented in `dev/build/ProjectInstructions/addendums/canonical_repository_structure.md`.
+
+Do not create or reuse legacy folders such as `docs_build/`, `tmp/`, `projects/`, `scripts/`, `tests/`, `archive/`, `project-instructions/`, `dev/docs_build/`, `dev/project-instructions/`, `dev/workspace/artifacts/`, or `dev/build/dev/`.
+
+If a proposed file does not clearly belong in a canonical folder, HARD STOP and report the proposed path.
+
 ## Start Team Alfa
 
 Ready-to-copy command:

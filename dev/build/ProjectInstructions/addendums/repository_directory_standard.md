@@ -14,10 +14,30 @@ This document is governance only. It does not move runtime, UI, API, tests, or p
 - Repository root contains production/public product sections and standard repository configuration only.
 - `src/` contains deployable application code.
 - `dev/` contains non-deployable build, test, bootstrap, governance, report, and local workspace items.
+- `deploy/` contains deployment configuration.
 - `docs/` remains at root because it is production Docs & Help.
 - `games/` remains at root because it is public game discovery.
 - `toolbox/` remains at root because it is the Creator toolbox/workspace.
-- Other public product roots such as `account/`, `admin/`, `legal/`, and `assets/` remain root-level product sections when present.
+- Other public product roots such as `account/`, `admin/`, `assets/`, `community/`, `company/`, `learn/`, `legal/`, `marketplace/`, `memberships/`, and `owner/` remain root-level product sections when present.
+
+Valid top-level folders are:
+
+- account/
+- admin/
+- assets/
+- community/
+- company/
+- deploy/
+- dev/
+- docs/
+- games/
+- learn/
+- legal/
+- marketplace/
+- memberships/
+- owner/
+- src/
+- toolbox/
 
 ## Final Src Layer Standard
 
@@ -35,21 +55,38 @@ Transition rule:
 
 ## Development Workspace Paths
 
-- `dev/build/` owns active development governance, Project Instructions, and PR workflow material.
-- `dev/reports/` owns generated reports using flat filenames.
-- `dev/tests/` owns non-deployable test suites.
-- `dev/scripts/` owns development-only scripts and runners.
-- `dev/config/` owns development-only runner and tooling configuration.
-- `dev/deploy/` owns development-only deployment assets and local deployment configuration.
-- `dev/workspace/` owns generated non-report artifacts and ignored local temporary workspace output.
 - `dev/archive/` owns historical development reference material that is not active governance.
+- `dev/build/` owns active development governance, Project Instructions, and PR workflow material.
+- `dev/build/` also owns architecture, database DDL/DML/seed docs, standards, backlog, PR planning, and governance.
+- `dev/config/` owns development-only runner and tooling configuration.
+- `dev/reports/` owns generated reports using flat filenames.
+- `dev/scripts/` owns development-only scripts and runners.
+- `dev/templates/` owns reusable development templates.
+- `dev/tests/` owns non-deployable test suites.
+- `dev/tools/` owns development-only tooling.
+- `dev/workspace/` owns generated non-report artifacts and ignored local temporary workspace output.
+- `dev/workspace/` generated output includes tmp, zips, logs, generated files, and test-results.
 - `dev/build/ProjectInstructions/` is the only active Project Instructions source.
-- Root `docs_build/`, root `tests/`, root `archive/`, root `tmp/`, and root `project-instructions/` are not active workspace locations after the restructure.
+- Root `docs_build/`, root `tests/`, root `archive/`, root `tmp/`, root `projects/`, root `scripts/`, and root `project-instructions/` are not active workspace locations after the restructure.
 - Root `tmp/` may remain ignored as legacy local scratch only; required Codex ZIPs belong under `dev/workspace/zips/`, and generated temporary artifacts belong under `dev/workspace/tmp/`.
 
 ## Legacy Reference Exceptions
 
-Path references to old root `docs_build/`, `tests/`, `archive/`, or `tmp/` locations are allowed only when they are:
+Invalid legacy paths:
+
+- docs_build/
+- tmp/
+- projects/
+- scripts/
+- tests/
+- archive/
+- project-instructions/
+- dev/docs_build/
+- dev/project-instructions/
+- dev/workspace/artifacts/
+- dev/build/dev/
+
+Path references to invalid legacy locations are allowed only when they are:
 
 - historical/reference content under `dev/archive/` or `dev/build/pr/reference/`
 - explicit legacy exception notes in active governance
@@ -57,6 +94,12 @@ Path references to old root `docs_build/`, `tests/`, `archive/`, or `tmp/` locat
 - migration reports documenting the old path and its replacement
 
 Active commands, templates, and Project Instructions must use the final `dev/`, `dev/reports/`, and `dev/workspace/` paths.
+
+## Codex Folder Creation Rule
+
+Codex must not create new folders unless they fit the documented canonical structure.
+
+If a requested or generated path does not clearly fit the canonical structure, Codex must HARD STOP and report the proposed path before writing files.
 
 ## Creator Data Boundary
 
