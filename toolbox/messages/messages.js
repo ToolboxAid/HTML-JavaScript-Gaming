@@ -12,6 +12,7 @@ import {
   validatePublishConfiguration,
 } from "./messages-api-client.js";
 import { getSessionCurrent } from "../../src/api/session-api-client.js";
+import { isFiniteNumber } from "../../src/shared/number/numbers.js";
 
 const NEW_ROW_KEY = "__new__";
 const MESSAGE_TABLE_COLSPAN = 8;
@@ -323,7 +324,7 @@ function tagsForMessage(message) {
 
 function formatTypewriterSpeed(value) {
   const speed = Number(value);
-  return Number.isFinite(speed) ? `${speed} cps` : `${TYPEWRITER_SPEED_DEFAULT} cps`;
+  return isFiniteNumber(speed) ? `${speed} cps` : `${TYPEWRITER_SPEED_DEFAULT} cps`;
 }
 
 function formatUpdated(value) {
@@ -991,7 +992,7 @@ function validateMessage(values) {
     errors.push("Message text is required.");
   }
   const typewriterSpeed = Number(values.typewriterSpeed);
-  if (!Number.isFinite(typewriterSpeed) || typewriterSpeed < 0) {
+  if (!isFiniteNumber(typewriterSpeed) || typewriterSpeed < 0) {
     errors.push("Typewriter speed must be 0 or greater.");
   }
   if (!values.voiceProfileKey) {
