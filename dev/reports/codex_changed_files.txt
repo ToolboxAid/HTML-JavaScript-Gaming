@@ -2,21 +2,18 @@
 M  dev/build/ProjectInstructions/TEAM_START_COMMANDS.md
 M  dev/build/ProjectInstructions/addendums/branch_context_governance.md
 M  dev/build/ProjectInstructions/addendums/branch_lock_governance.md
+M  dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
 M  dev/build/ProjectInstructions/addendums/pr_workflow.md
 M  dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
 M  dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
-A  dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_branch-validation.md
-A  dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_manual-validation-notes.md
-A  dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_report.md
-A  dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_requirement-checklist.md
-A  dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_validation-report.md
- M dev/reports/codex_changed_files.txt
- M dev/reports/codex_review.diff
+A  dev/reports/PR_26179_OWNER_011-team-stacked-pr-policy_branch-validation.md
+A  dev/reports/PR_26179_OWNER_011-team-stacked-pr-policy_manual-validation-notes.md
+A  dev/reports/PR_26179_OWNER_011-team-stacked-pr-policy_report.md
+A  dev/reports/PR_26179_OWNER_011-team-stacked-pr-policy_requirement-checklist.md
+A  dev/reports/PR_26179_OWNER_011-team-stacked-pr-policy_validation-report.md
 
 # git ls-files --others --exclude-standard
 (no output)
 
 # git diff --stat
-dev/reports/codex_changed_files.txt |  22 ++-
- dev/reports/codex_review.diff       | 377 ++++++++++++++++++++++++++++--------
- 2 files changed, 310 insertions(+), 89 deletions(-)
+(no output)

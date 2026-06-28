@@ -1,237 +1,174 @@
 diff --git a/dev/build/ProjectInstructions/TEAM_START_COMMANDS.md b/dev/build/ProjectInstructions/TEAM_START_COMMANDS.md
-index 76a830bc9..8f54dda30 100644
+index 8f54dda30..90f244e8e 100644
 --- a/dev/build/ProjectInstructions/TEAM_START_COMMANDS.md
 +++ b/dev/build/ProjectInstructions/TEAM_START_COMMANDS.md
-@@ -8,13 +8,15 @@ Official Start of Day command format lives in:
+@@ -17,6 +17,10 @@ For Independent PRs and for the first PR in a new stacked workstream, no team cr
 
- The ready-to-copy team assignment commands below are OWNER assignment helpers, not Start of Day bootstrap commands.
+ Dependent Stacked PRs may start from the documented previous PR branch only when `dev/build/ProjectInstructions/addendums/pr_workflow.md` defines the direct dependency and merge order.
 
--No team creates a PR branch until all checks pass:
-+For Independent PRs and for the first PR in a new stacked workstream, no team creates a PR branch until all checks pass:
-
- - Current branch: `main`
- - Worktree: clean
- - `main...origin/main`: `0 0`
- - `HEAD` SHA matches the published EOD SHA
-
-+Dependent Stacked PRs may start from the documented previous PR branch only when `dev/build/ProjectInstructions/addendums/pr_workflow.md` defines the direct dependency and merge order.
++OWNER PRs may start from synchronized `main` when independent.
++
++Non-Owner team PRs use Stacked PR workstreams by default. A non-Owner team PR may start from `main` only when OWNER explicitly marks it `standalone/no-dependency`.
 +
  Use `dev/build/ProjectInstructions/` as the only active Project Instructions source.
  Read `dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md` before implementation.
 
 diff --git a/dev/build/ProjectInstructions/addendums/branch_context_governance.md b/dev/build/ProjectInstructions/addendums/branch_context_governance.md
-index 066793bb0..dbcd890ca 100644
+index dbcd890ca..9708191de 100644
 --- a/dev/build/ProjectInstructions/addendums/branch_context_governance.md
 +++ b/dev/build/ProjectInstructions/addendums/branch_context_governance.md
-@@ -23,6 +23,8 @@ At the start of work, report or validate:
- - active team
- - active assignment
+@@ -25,6 +25,7 @@ At the start of work, report or validate:
  - active PR number/name or explicit `PLAN_ONLY`
-+- requested PR branching model: Independent PR or Stacked PR
-+- expected starting branch for the requested PR branching model
+ - requested PR branching model: Independent PR or Stacked PR
+ - expected starting branch for the requested PR branching model
++- whether a non-Owner team PR has OWNER `standalone/no-dependency` approval when starting from `main`
  - previous PR Closed status unless this is an explicitly documented stacked PR chain
 
  Session start must follow the canonical START phase in `dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`.
-@@ -32,12 +34,14 @@ Session start must follow the canonical START phase in `dev/build/ProjectInstruc
- Stop and report before changing files when:
+@@ -35,6 +36,7 @@ Stop and report before changing files when:
 
  - current branch does not match the expected branch
-+- requested PR branching model does not match the current/start branch
+ - requested PR branching model does not match the current/start branch
++- a non-Owner team PR starts from `main` without OWNER `standalone/no-dependency` approval
  - local branch is behind or ahead unexpectedly
  - worktree has unrelated changes
  - active assignment is missing or unclear
- - active team does not match the branch or OWNER instruction
- - BUILD_PR work has no PR name and active branch/PR identity, unless explicitly marked `PLAN_ONLY`
- - the team's previous PR is not Closed and no stacked PR chain is documented
-+- the request describes a Stacked PR but does not document the dependency order
- - the requested work would modify files outside the approved scope
-
- ## Continuation Rule
 diff --git a/dev/build/ProjectInstructions/addendums/branch_lock_governance.md b/dev/build/ProjectInstructions/addendums/branch_lock_governance.md
-index e3eff6660..c37b34ffd 100644
+index c37b34ffd..484080698 100644
 --- a/dev/build/ProjectInstructions/addendums/branch_lock_governance.md
 +++ b/dev/build/ProjectInstructions/addendums/branch_lock_governance.md
-@@ -26,9 +26,12 @@ This file owns branch lock enforcement and OWNER override handling; it must not
-
- ## Branch Rules
-
--- Start from current `main`.
--- Pull latest `origin/main` before creating a work branch.
--- Do not create a PR branch unless current branch is `main`, worktree is clean, `main...origin/main` is `0 0`, and `HEAD` SHA matches the published EOD SHA.
-+- Identify the PR branching model before creating or continuing a PR branch.
-+- Independent PRs and new stacked workstreams start from current `main`.
-+- Dependent Stacked PRs may start from the documented previous PR branch only when a direct dependency and dependency order are documented in `dev/build/ProjectInstructions/addendums/pr_workflow.md`.
-+- Pull latest `origin/main` before creating an Independent PR branch or the first branch in a new stack.
-+- Do not create an Independent PR branch unless current branch is `main`, worktree is clean, `main...origin/main` is `0 0`, and `HEAD` SHA matches the published EOD SHA.
-+- HARD STOP if the current branch does not match the requested PR branching model.
+@@ -29,9 +29,13 @@ This file owns branch lock enforcement and OWNER override handling; it must not
+ - Identify the PR branching model before creating or continuing a PR branch.
+ - Independent PRs and new stacked workstreams start from current `main`.
+ - Dependent Stacked PRs may start from the documented previous PR branch only when a direct dependency and dependency order are documented in `dev/build/ProjectInstructions/addendums/pr_workflow.md`.
++- OWNER PRs may start from `main` when marked Independent and no direct dependency exists.
++- Non-Owner team PRs use Stacked PR workstreams by default.
++- A non-Owner team PR may start from `main` only when OWNER explicitly marks the PR as `standalone/no-dependency`.
+ - Pull latest `origin/main` before creating an Independent PR branch or the first branch in a new stack.
+ - Do not create an Independent PR branch unless current branch is `main`, worktree is clean, `main...origin/main` is `0 0`, and `HEAD` SHA matches the published EOD SHA.
+ - HARD STOP if the current branch does not match the requested PR branching model.
++- HARD STOP if a non-Owner team PR starts from `main` without OWNER `standalone/no-dependency` approval.
  - Follow the canonical START / WORK / END lifecycle in `dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`.
  - Keep work on the active branch until the PR is merged, the branch is retired, EOD closeout begins, or OWNER says to return to `main`.
  - For OWNER-approved stacked/sequential workstreams, PR branches/commits stay on the active team branch/workstream during the day and do not return to `main` between PRs.
+diff --git a/dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md b/dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
+index b35ebe90f..52e772df0 100644
+--- a/dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
++++ b/dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
+@@ -10,7 +10,7 @@ Every Codex execution must produce at least one repository-structured ZIP artifa
+
+ Each PR attempted by Codex must produce exactly one ZIP artifact representing that PR's final outcome.
+
+-Missing ZIP means the Codex run did not complete correctly.
++Missing ZIP means the Codex run is incomplete and did not complete correctly.
+
+ Canonical ZIP location:
+
 diff --git a/dev/build/ProjectInstructions/addendums/pr_workflow.md b/dev/build/ProjectInstructions/addendums/pr_workflow.md
-index 6fadd0789..459ac0b73 100644
+index 459ac0b73..ee5eb9520 100644
 --- a/dev/build/ProjectInstructions/addendums/pr_workflow.md
 +++ b/dev/build/ProjectInstructions/addendums/pr_workflow.md
-@@ -19,22 +19,69 @@ This file owns PR lifecycle governance. It must not duplicate command phase rule
+@@ -41,6 +41,14 @@ This file owns PR lifecycle governance. It must not duplicate command phase rule
 
- ## Standard Flow
+ Every PR must declare one branching model before branch creation or branch continuation.
 
--1. Start from main.
--2. Pull latest origin/main.
--3. Verify clean worktree.
--4. Create a PR branch and PR identity.
--5. Mark lifecycle state as PR Open.
--6. Plan on the same PR branch.
--7. Build on the same PR branch.
--8. Validate the change.
--9. Commit with a clear OWNER/team message.
--10. Push the branch.
--11. Open or update the draft PR.
--12. Review the PR.
--13. OWNER approves merge.
--14. Merge to main.
--15. Pull latest main before starting the next unrelated workstream, or before a new PR when the work is not an OWNER-approved stacked/sequential workstream.
--16. Verify Main Verified and Closed gates.
-+1. Identify the PR branching model: Independent PR or Stacked PR.
-+2. Start from the required branch for that model.
-+3. Pull or confirm the required base branch is current.
-+4. Verify clean worktree.
-+5. Create a PR branch and PR identity.
-+6. Mark lifecycle state as PR Open.
-+7. Plan on the same PR branch.
-+8. Build on the same PR branch.
-+9. Validate the change.
-+10. Commit with a clear OWNER/team message.
-+11. Push the branch.
-+12. Open or update the draft PR.
-+13. Review the PR.
-+14. OWNER approves merge.
-+15. Merge to main in the valid order for the PR model.
-+16. Pull latest main before starting the next unrelated workstream, or before a new PR when the work is not an OWNER-approved stacked/sequential workstream.
-+17. Verify Main Verified and Closed gates.
++### Ownership Defaults
 +
-+## PR Branching Models
++OWNER may create an Independent PR from synchronized `main` when the PR has no direct dependency.
 +
-+Every PR must declare one branching model before branch creation or branch continuation.
++Non-Owner team PRs use Stacked PR workstreams by default. A non-Owner team PR may start from `main` only when OWNER explicitly marks that PR as `standalone/no-dependency` before branch creation.
 +
-+### Independent PR
++If a non-Owner team PR is not explicitly marked `standalone/no-dependency`, Codex must treat it as Stacked and verify the active team workstream branch or documented previous PR branch before changing files.
 +
-+Use an Independent PR when the change has no direct dependency on another open PR.
-+
-+Rules:
-+- Independent PRs must start from synchronized `main`.
-+- Independent PRs must target `main`.
-+- Independent PRs must not reuse another feature branch as their starting point.
-+- Codex must HARD STOP if the requested Independent PR starts from any branch other than `main`.
-+- Codex must return to synchronized `main` before starting the next unrelated Independent PR.
-+
-+### Stacked PR
-+
-+Use a Stacked PR only when the PR has a direct dependency on the previous PR branch.
-+
-+Rules:
-+- Stacked PRs may start from the previous PR branch when there is a direct dependency.
-+- Stacked PRs must document the dependency order before BUILD begins.
-+- Stacked PR reports must name:
-+  - the stack order
-+  - the previous PR dependency
-+  - the next PR dependency, if known
-+  - the starting branch
-+  - the intended merge order
-+- Stacked PRs must be reviewed in dependency order.
-+- Stacked PRs must be merged in dependency order.
-+- A later stacked PR must not merge before every prior dependency PR is merged.
-+- Codex must HARD STOP if the requested Stacked PR starts from a branch that is not the documented previous PR branch.
-+- Codex must HARD STOP if a Stacked PR lacks a documented dependency order.
-+
-+### Model Mismatch Hard Stop
-+
-+Codex must verify the requested PR model before changing files.
-+
-+HARD STOP when:
-+- an Independent PR is requested but the current/start branch is not `main`
-+- a Stacked PR is requested but the current/start branch is not the documented previous PR branch
-+- the request does not say whether the PR is Independent or Stacked and the start branch is not clearly valid
-+- a PR is described as stacked but no direct dependency or merge order is documented
-+
-+When the model is unclear, Codex must report the current branch, expected starting branch, and the missing model/dependency information before making changes.
+ ### Independent PR
 
+ Use an Independent PR when the change has no direct dependency on another open PR.
+@@ -49,7 +57,10 @@ Rules:
+ - Independent PRs must start from synchronized `main`.
+ - Independent PRs must target `main`.
+ - Independent PRs must not reuse another feature branch as their starting point.
++- OWNER PRs may use the Independent PR model when the PR has no direct dependency.
++- Non-Owner team PRs may use the Independent PR model only when OWNER explicitly marks the PR as `standalone/no-dependency`.
+ - Codex must HARD STOP if the requested Independent PR starts from any branch other than `main`.
++- Codex must HARD STOP if a non-Owner team PR starts from `main` without an explicit OWNER `standalone/no-dependency` marker.
+ - Codex must return to synchronized `main` before starting the next unrelated Independent PR.
+
+ ### Stacked PR
+@@ -58,6 +69,8 @@ Use a Stacked PR only when the PR has a direct dependency on the previous PR bra
+
+ Rules:
+ - Stacked PRs may start from the previous PR branch when there is a direct dependency.
++- Non-Owner team PRs should use Stacked PR workstreams by default.
++- A Stacked PR belongs under the active team workstream and must use the documented previous PR branch or active workstream branch as its starting point.
+ - Stacked PRs must document the dependency order before BUILD begins.
+ - Stacked PR reports must name:
+   - the stack order
+@@ -77,12 +90,15 @@ Codex must verify the requested PR model before changing files.
+
+ HARD STOP when:
+ - an Independent PR is requested but the current/start branch is not `main`
++- a non-Owner team PR starts from `main` without explicit OWNER `standalone/no-dependency` approval
+ - a Stacked PR is requested but the current/start branch is not the documented previous PR branch
+ - the request does not say whether the PR is Independent or Stacked and the start branch is not clearly valid
+ - a PR is described as stacked but no direct dependency or merge order is documented
+
+ When the model is unclear, Codex must report the current branch, expected starting branch, and the missing model/dependency information before making changes.
+
++All PR branching models remain subject to the Codex Completion Contract. Missing required ZIP output means the Codex run is incomplete.
++
  ## Daily Branch Workflow
 
-@@ -109,7 +156,7 @@ Closed gates:
- - Plan, Build, validation, reports, ZIP packaging, and closeout must stay tied to the same PR identity and source branch.
- - Source branches are retained by default after merge and closeout.
- - Do not mix unrelated scopes.
--- Do not start dependent PRs until the required base PR is merged.
-+- Do not start dependent PRs until the required base PR is merged unless the work is an explicitly documented Stacked PR with a direct dependency on the previous PR branch.
- - Return to `main` before starting an unrelated PR or new workstream.
- - Do not return to `main` between PRs in the same OWNER-approved stacked/sequential workstream unless OWNER approves an EOD or intermediate merge checkpoint.
- - A team must not begin another PR if its previous PR is not Closed.
+ Team-neutral daily workflow:
 diff --git a/dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md b/dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
-index ea047d563..3fd3524a6 100644
+index 3fd3524a6..47cff5758 100644
 --- a/dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
 +++ b/dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
-@@ -47,13 +47,15 @@ git rev-parse HEAD
+@@ -55,6 +55,10 @@ For Independent PRs and for the first PR in a new stacked workstream, no team cr
 
- ## Team Branch Creation Gate
+ For dependent Stacked PRs, the start branch may be the documented previous PR branch only when `dev/build/ProjectInstructions/addendums/pr_workflow.md` identifies a direct dependency and dependency order.
 
--No team creates a PR branch until:
-+For Independent PRs and for the first PR in a new stacked workstream, no team creates a PR branch until:
- - Current branch: `main`
- - Worktree: clean
- - `main...origin/main`: `0 0`
- - `HEAD` SHA matches published EOD SHA
-
--If any check fails, stop before branch creation and restore main to the published EOD state or request OWNER direction.
-+For dependent Stacked PRs, the start branch may be the documented previous PR branch only when `dev/build/ProjectInstructions/addendums/pr_workflow.md` identifies a direct dependency and dependency order.
++OWNER PRs may start from synchronized `main` when marked Independent and no direct dependency exists.
 +
-+If any required check fails, or if the current branch does not match the requested PR model, stop before branch creation and restore the expected branch state or request OWNER direction.
++A non-Owner team PR may start from `main` only when OWNER explicitly marks the PR as `standalone/no-dependency`. Otherwise, non-Owner team PRs use Stacked PR workstreams by default and must start from the active team workstream branch or documented previous PR branch.
++
+ If any required check fails, or if the current branch does not match the requested PR model, stop before branch creation and restore the expected branch state or request OWNER direction.
 
  ## Branch Lifecycle (Canonical)
-
-@@ -90,7 +92,7 @@ main...origin/main
- HEAD equals published EOD SHA
- ```
-
--Only after ALL four pass may a branch be created or the active team branch/workstream be updated.
-+Only after ALL required checks for the requested PR branching model pass may a branch be created or the active team branch/workstream be updated.
-
- Create the PR branch:
-
 diff --git a/dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md b/dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
-index c0066966e..8adaa8385 100644
+index 8adaa8385..c2021eef3 100644
 --- a/dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
 +++ b/dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
-@@ -101,6 +101,8 @@ PLAN_PR is planning only.
- Rules:
- - Do not change files unless the user explicitly requests a planning artifact update.
+@@ -103,6 +103,7 @@ Rules:
  - Identify the correct branch or start point.
-+- Identify whether the PR is Independent or Stacked.
-+- For Stacked PRs, identify the previous PR branch and dependency order.
+ - Identify whether the PR is Independent or Stacked.
+ - For Stacked PRs, identify the previous PR branch and dependency order.
++- For non-Owner team PRs that start from `main`, identify the explicit OWNER `standalone/no-dependency` approval.
  - Identify the intended PR name, purpose, and scope.
  - Identify required validation and reporting.
  - Identify the required ZIP outcome path from the Codex Completion Contract.
-@@ -113,12 +115,14 @@ BUILD_PR is the implementation phase.
-
+@@ -116,6 +117,7 @@ BUILD_PR is the implementation phase.
  Rules:
  - Verify branch and worktree rules for the PR before changing files.
-+- Verify the requested PR branching model before changing files.
+ - Verify the requested PR branching model before changing files.
++- Verify non-Owner team PRs are stacked by default unless OWNER marked the PR `standalone/no-dependency`.
  - Use the latest Project Instructions.
  - Stay inside the approved PR purpose.
  - Create required reports.
- - Create the required repo-structured ZIP artifact for the attempted PR according to the Codex Completion Contract.
+@@ -123,6 +125,7 @@ Rules:
  - Run scoped validation required by the PR and Project Instructions.
  - HARD STOP on wrong branch.
-+- HARD STOP when the current/start branch does not match the requested Independent or Stacked PR model.
+ - HARD STOP when the current/start branch does not match the requested Independent or Stacked PR model.
++- HARD STOP when a non-Owner team PR starts from `main` without OWNER `standalone/no-dependency` approval.
  - HARD STOP on dirty worktree when the PR requires a clean start.
  - HARD STOP on scope conflict.
  - HARD STOP on missing required Project Instructions.
-diff --git a/dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_branch-validation.md b/dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_branch-validation.md
+diff --git a/dev/reports/PR_26179_OWNER_011-team-stacked-pr-policy_branch-validation.md b/dev/reports/PR_26179_OWNER_011-team-stacked-pr-policy_branch-validation.md
 new file mode 100644
-index 000000000..c21e58d54
+index 000000000..64ca0e360
 --- /dev/null
-+++ b/dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_branch-validation.md
-@@ -0,0 +1,15 @@
-+# PR_26179_OWNER_011-pr-branching-model-docs Branch Validation
++++ b/dev/reports/PR_26179_OWNER_011-team-stacked-pr-policy_branch-validation.md
+@@ -0,0 +1,16 @@
++# PR_26179_OWNER_011-team-stacked-pr-policy Branch Validation
 +
 +## Result
 +
@@ -241,49 +178,53 @@ index 000000000..c21e58d54
 +
 +| Check | Result | Notes |
 +| --- | --- | --- |
-+| Started from `main` | PASS | `main...origin/main` was `0 0`. |
++| Stacked PR model identified | PASS | This PR depends on PR #255. |
++| Started from documented previous PR branch | PASS | Started from `PR_26179_OWNER_011-pr-branching-model-docs`. |
 +| Worktree clean before branch creation | PASS | Verified before branch creation. |
-+| PR branch created | PASS | `PR_26179_OWNER_011-pr-branching-model-docs`. |
++| PR branch created | PASS | `PR_26179_OWNER_011-team-stacked-pr-policy`. |
 +| Work stayed on PR branch | PASS | No direct commit to `main`. |
 +| Documentation/governance scope | PASS | Only Project Instructions and reports changed. |
-diff --git a/dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_manual-validation-notes.md b/dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_manual-validation-notes.md
+diff --git a/dev/reports/PR_26179_OWNER_011-team-stacked-pr-policy_manual-validation-notes.md b/dev/reports/PR_26179_OWNER_011-team-stacked-pr-policy_manual-validation-notes.md
 new file mode 100644
-index 000000000..89aafd49c
+index 000000000..0054f2a57
 --- /dev/null
-+++ b/dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_manual-validation-notes.md
++++ b/dev/reports/PR_26179_OWNER_011-team-stacked-pr-policy_manual-validation-notes.md
 @@ -0,0 +1,8 @@
-+# PR_26179_OWNER_011-pr-branching-model-docs Manual Validation Notes
++# PR_26179_OWNER_011-team-stacked-pr-policy Manual Validation Notes
 +
 +## Notes
 +
-+- Reviewed active Project Instructions for existing stacked/sequential branch wording.
-+- Added the canonical Independent PR vs Stacked PR model in `pr_workflow.md`.
-+- Updated adjacent branch and command governance documents to point enforcement at the requested PR model.
-+- Confirmed the old dependent-PR rule now allows the explicitly documented Stacked PR exception.
-diff --git a/dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_report.md b/dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_report.md
++- Confirmed this policy PR is stacked on PR #255 because it refines the Independent PR vs Stacked PR model introduced there.
++- Confirmed the new text does not weaken dependency-order, review-order, or merge-order requirements.
++- Confirmed the Codex Completion Contract still requires ZIP output for all outcomes.
++- Confirmed missing ZIP output is now explicitly described as an incomplete Codex run.
+diff --git a/dev/reports/PR_26179_OWNER_011-team-stacked-pr-policy_report.md b/dev/reports/PR_26179_OWNER_011-team-stacked-pr-policy_report.md
 new file mode 100644
-index 000000000..eed3b5df1
+index 000000000..b0b13bc8d
 --- /dev/null
-+++ b/dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_report.md
-@@ -0,0 +1,31 @@
-+# PR_26179_OWNER_011-pr-branching-model-docs Report
++++ b/dev/reports/PR_26179_OWNER_011-team-stacked-pr-policy_report.md
+@@ -0,0 +1,39 @@
++# PR_26179_OWNER_011-team-stacked-pr-policy Report
 +
 +## Purpose
 +
-+Define Independent PRs and Stacked PRs in active Project Instructions.
++Update active Project Instructions so OWNER may create independent PRs from `main`, while non-Owner teams use stacked PR workstreams by default.
 +
-+## Scope
++## Branching Model
 +
-+Documentation/governance only. No implementation code, runtime files, API files, database files, or product pages changed.
++- Model: Stacked PR
++- Previous PR dependency: `PR_26179_OWNER_011-pr-branching-model-docs` / PR #255
++- Starting branch: `PR_26179_OWNER_011-pr-branching-model-docs`
++- Merge order: PR #255 first, then this PR
 +
 +## Governance Outcome
 +
-+- `pr_workflow.md` now owns the canonical Independent PR vs Stacked PR model.
-+- Independent PRs must start from synchronized `main`.
-+- Stacked PRs may start from the documented previous PR branch only when there is a direct dependency.
-+- Stacked PRs must document stack order, previous dependency, next dependency when known, starting branch, and merge order.
-+- Stacked PRs must be reviewed and merged in dependency order.
-+- Codex must HARD STOP when the requested PR model does not match the current/start branch.
++- OWNER PRs may start from synchronized `main` when independent and no direct dependency exists.
++- Non-Owner team PRs use Stacked PR workstreams by default.
++- Non-Owner team PRs may start from `main` only when OWNER explicitly marks the PR as `standalone/no-dependency`.
++- Stacked PRs still must document dependency order, review order, and merge order.
++- Codex must hard-stop when a branch/model mismatch is detected.
++- Missing ZIP output is clarified as an incomplete Codex run.
 +
 +## Updated Documents
 +
@@ -293,41 +234,47 @@ index 000000000..eed3b5df1
 +- `dev/build/ProjectInstructions/addendums/branch_context_governance.md`
 +- `dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`
 +- `dev/build/ProjectInstructions/TEAM_START_COMMANDS.md`
++- `dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md`
++
++## Runtime Impact
++
++None. This PR changes documentation/governance only.
 +
 +## ZIP
 +
-+- `dev/workspace/zips/PR_26179_OWNER_011-pr-branching-model-docs_delta.zip`
-diff --git a/dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_requirement-checklist.md b/dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_requirement-checklist.md
++- `dev/workspace/zips/PR_26179_OWNER_011-team-stacked-pr-policy_delta.zip`
+diff --git a/dev/reports/PR_26179_OWNER_011-team-stacked-pr-policy_requirement-checklist.md b/dev/reports/PR_26179_OWNER_011-team-stacked-pr-policy_requirement-checklist.md
 new file mode 100644
-index 000000000..7b3923464
+index 000000000..c2c8adff0
 --- /dev/null
-+++ b/dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_requirement-checklist.md
-@@ -0,0 +1,11 @@
-+# PR_26179_OWNER_011-pr-branching-model-docs Requirement Checklist
++++ b/dev/reports/PR_26179_OWNER_011-team-stacked-pr-policy_requirement-checklist.md
+@@ -0,0 +1,12 @@
++# PR_26179_OWNER_011-team-stacked-pr-policy Requirement Checklist
 +
 +| Requirement | Result | Notes |
 +| --- | --- | --- |
-+| Define Independent PRs vs Stacked PRs | PASS | Added canonical model in `pr_workflow.md`. |
-+| Independent PRs must start from `main` | PASS | Documented in Independent PR rules. |
-+| Stacked PRs may start from previous PR branch with direct dependency | PASS | Documented in Stacked PR rules and branch gates. |
-+| Stacked PRs must document dependency order | PASS | Required before BUILD begins and in reports. |
-+| Stacked PRs must be reviewed and merged in order | PASS | Required in Stacked PR rules. |
-+| Codex hard-stops on starting branch/model mismatch | PASS | Added to PR workflow, branch context, branch lock, and command docs. |
-+| Do not change implementation code | PASS | Documentation/governance only. |
-diff --git a/dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_validation-report.md b/dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_validation-report.md
++| OWNER PRs may start from main when independent | PASS | Added to PR workflow, branch lock, EOD lock, and team start docs. |
++| Non-Owner team PRs stacked by default | PASS | Added to PR workflow and branch governance docs. |
++| Stacked PRs must document dependency order | PASS | Preserved and reinforced from prior model. |
++| Stacked PRs reviewed and merged in order | PASS | Preserved in `pr_workflow.md`. |
++| Non-Owner team may start from main only when OWNER marks standalone/no-dependency | PASS | Added explicit hard-stop rules. |
++| Preserve Codex Completion Contract ZIP output | PASS | Existing contract preserved. |
++| Clarify missing ZIP means incomplete | PASS | Updated artifact standard language. |
++| Do not modify runtime code | PASS | Documentation/governance only. |
+diff --git a/dev/reports/PR_26179_OWNER_011-team-stacked-pr-policy_validation-report.md b/dev/reports/PR_26179_OWNER_011-team-stacked-pr-policy_validation-report.md
 new file mode 100644
-index 000000000..03bbceab3
+index 000000000..b2d1c067a
 --- /dev/null
-+++ b/dev/reports/PR_26179_OWNER_011-pr-branching-model-docs_validation-report.md
++++ b/dev/reports/PR_26179_OWNER_011-team-stacked-pr-policy_validation-report.md
 @@ -0,0 +1,11 @@
-+# PR_26179_OWNER_011-pr-branching-model-docs Validation Report
++# PR_26179_OWNER_011-team-stacked-pr-policy Validation Report
 +
 +## Validation
 +
 +- `git diff --check`: PASS
 +- `npm run validate:canonical-structure`: PASS
-+- Project Instructions grep for Independent/Stacked PR rules: PASS
++- Project Instructions grep for team stacked policy and ZIP completion language: PASS
 +
-+## Runtime Impact
++## Playwright
 +
-+No runtime, API, database, or product page files changed. Playwright was not impacted.
++Not impacted. No runtime, UI, API, database, or product page files changed.

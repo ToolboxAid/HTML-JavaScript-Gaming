@@ -55,6 +55,10 @@ For Independent PRs and for the first PR in a new stacked workstream, no team cr
 
 For dependent Stacked PRs, the start branch may be the documented previous PR branch only when `dev/build/ProjectInstructions/addendums/pr_workflow.md` identifies a direct dependency and dependency order.
 
+OWNER PRs may start from synchronized `main` when marked Independent and no direct dependency exists.
+
+A non-Owner team PR may start from `main` only when OWNER explicitly marks the PR as `standalone/no-dependency`. Otherwise, non-Owner team PRs use Stacked PR workstreams by default and must start from the active team workstream branch or documented previous PR branch.
+
 If any required check fails, or if the current branch does not match the requested PR model, stop before branch creation and restore the expected branch state or request OWNER direction.
 
 ## Branch Lifecycle (Canonical)
