@@ -26,7 +26,9 @@ No browser, API, server, test, script, or runtime files move in the scaffold or 
 
 `PR_26180_OWNER_008-move-www-application` moved browser-served application files under `www/` and made local static serving prefer `www/` while preserving public URLs.
 
-`PR_26180_OWNER_009-move-api-application` moves server/API application runtime under `api/` while preserving `/api/*` route behavior. Browser API client modules remain outside `api/`, and developer-only local startup orchestration remains under `dev/` until the local-runtime migration PR.
+`PR_26180_OWNER_009-move-api-application` moves server/API application runtime under `api/` while preserving `/api/*` route behavior. Browser API client modules remain outside `api/`.
+
+`PR_26180_OWNER_010-move-dev-local-runtime` moves developer-only local runtime/bootstrap entrypoints under `dev/local-runtime/` while preserving `npm run dev:bootstrap`, `npm run dev:api`, `npm run dev:web`, and `npm run dev:local-api`.
 
 ## Proposed Future Layout
 
@@ -95,7 +97,7 @@ Local development may use the team-aware developer bootstrap and local runtime s
 Developer command -> dev bootstrap -> local www server + local api server -> Postgres/R2 or approved local provider
 ```
 
-Current local bootstrap commands remain unchanged by this plan. This PR does not modify `package.json` commands.
+Current local bootstrap command names remain stable. `PR_26180_OWNER_010-move-dev-local-runtime` updates the command targets to `dev/local-runtime/` without changing the user-facing command names.
 
 The local developer workflow must continue to prove the same browser/API/database contract that deployed environments use.
 

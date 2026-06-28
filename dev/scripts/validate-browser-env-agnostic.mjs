@@ -339,8 +339,8 @@ async function validateProductServiceContract() {
   rejectPattern(router, "api/server/local-api-router.mjs", /selectedDatabaseProviderId|selectedAuthProvider|selectedProvidersCanServeRuntime/, findings, "Runtime router must not contain active provider-selection helpers.");
   rejectPattern(router, "api/server/local-api-router.mjs", routerRetiredStoragePattern, findings, "Runtime router must not contain retired file-DB startup/opening code, provider-selection environment variables, or retired local-db/mock-db routes.");
 
-  const startup = await readRequiredRepoFile("dev/scripts/start-local-api-server.mjs", findings, "Local API startup script is missing");
-  rejectPattern(startup, "dev/scripts/start-local-api-server.mjs", /GAMEFOUNDRY_AUTH_PROVIDER|GAMEFOUNDRY_DB_PROVIDER|auth provider|product data provider|provider selection/i, findings, "Local API startup must describe configured connections without provider-selection environment variables.");
+  const startup = await readRequiredRepoFile("dev/local-runtime/start-local-api-server.mjs", findings, "Local API startup script is missing");
+  rejectPattern(startup, "dev/local-runtime/start-local-api-server.mjs", /GAMEFOUNDRY_AUTH_PROVIDER|GAMEFOUNDRY_DB_PROVIDER|auth provider|product data provider|provider selection/i, findings, "Local API startup must describe configured connections without provider-selection environment variables.");
 
   return findings;
 }

@@ -1,5 +1,12 @@
-﻿dev/reports/PR_26180_OWNER_009-move-api-application_branch-validation.md
-dev/reports/PR_26180_OWNER_009-move-api-application_manual-validation-notes.md
-dev/reports/PR_26180_OWNER_009-move-api-application_report.md
-dev/reports/PR_26180_OWNER_009-move-api-application_requirement-checklist.md
-dev/reports/PR_26180_OWNER_009-move-api-application_validation-report.md
+﻿dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
+dev/build/ProjectInstructions/PROJECT_STATE.md
+dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
+dev/build/ProjectInstructions/repository/canonical_repository_structure.md
+dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
+dev/build/ProjectInstructions/repository/www_migration_map.md
+dev/scripts/validate-browser-env-agnostic.mjs
+dev/tests/dev-runtime/LocalApiStartupLogging.test.mjs
+dev/tests/dev-runtime/StaticWebRootCompatibility.test.mjs
+dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs
+package.json

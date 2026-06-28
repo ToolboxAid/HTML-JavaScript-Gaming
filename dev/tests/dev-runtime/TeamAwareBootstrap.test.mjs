@@ -11,14 +11,14 @@ import {
   shouldLaunchBrowser,
   startBootstrapRuntime,
   teamIndexUrl,
-} from "../../scripts/start-dev.mjs";
+} from "../../local-runtime/start-dev.mjs";
 import {
   parseRoleArgument,
   parseTeamArgument,
   resolveTeamPortConfig,
   supportedBootstrapRolesLabel,
   supportedBootstrapTeamsLabel,
-} from "../../scripts/team-port-config.mjs";
+} from "../../local-runtime/team-port-config.mjs";
 
 const repoRoot = fileURLToPath(new URL("../../..", import.meta.url));
 
@@ -247,10 +247,10 @@ test("startup diagnostics and package scripts expose team-aware bootstrap comman
   assert.equal(lines.includes(`Supported roles: ${supportedBootstrapRolesLabel()}`), true);
 
   const packageJson = JSON.parse(readFileSync(`${repoRoot}/package.json`, "utf8"));
-  assert.equal(packageJson.scripts["dev:bootstrap"], "node --use-system-ca ./dev/scripts/start-dev.mjs --mode bootstrap");
-  assert.equal(packageJson.scripts["dev:api"], "node --use-system-ca ./dev/scripts/start-dev.mjs --mode api");
-  assert.equal(packageJson.scripts["dev:web"], "node ./dev/scripts/start-dev.mjs --mode web");
-  assert.equal(packageJson.scripts["dev:local-api"], "node --use-system-ca ./dev/scripts/start-local-api-server.mjs");
+  assert.equal(packageJson.scripts["dev:bootstrap"], "node --use-system-ca ./dev/local-runtime/start-dev.mjs --mode bootstrap");
+  assert.equal(packageJson.scripts["dev:api"], "node --use-system-ca ./dev/local-runtime/start-dev.mjs --mode api");
+  assert.equal(packageJson.scripts["dev:web"], "node ./dev/local-runtime/start-dev.mjs --mode web");
+  assert.equal(packageJson.scripts["dev:local-api"], "node --use-system-ca ./dev/local-runtime/start-local-api-server.mjs");
 });
 
 test("runtime env loader applies .env values without overriding existing process values", () => {

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { formatStartupLogLines } from "../../scripts/start-local-api-server.mjs";
+import { formatStartupLogLines } from "../../local-runtime/start-local-api-server.mjs";
 
 const CONFIGURED_CONNECTION = Object.freeze({
   missingKeys: [],
