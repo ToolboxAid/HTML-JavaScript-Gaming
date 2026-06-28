@@ -1,11 +1,13 @@
 const DEFAULT_GRID_SIZE = 16;
 const SUPPORTED_GRID_SIZES = Object.freeze([16, 32]);
 const DRAWING_TOOLS = Object.freeze(["pencil", "eraser", "fill"]);
+const EDITOR_COLOR_KEYS = Object.freeze(["ink", "orange", "gold", "green", "blue"]);
 
 const editorState = {
   activeTool: "pencil",
+  activeColor: "ink",
   gridSize: DEFAULT_GRID_SIZE,
-  paintedPixels: new Set(),
+  paintedPixels: new Map(),
 };
 
 function gridLabel(size) {
@@ -28,11 +30,45 @@ function draftStatusText() {
   return `Unsaved editor state: ${count} draft pixel${count === 1 ? "" : "s"} painted.`;
 }
 
+function normalizeColorKey(colorKey) {
+  return EDITOR_COLOR_KEYS.includes(colorKey) ? colorKey : "ink";
+}
+
+function clearCellColor(cell) {
+  cell.classList.remove(...EDITOR_COLOR_KEYS.map((colorKey) => `sprite-canvas-cell--${colorKey}`));
+  delete cell.dataset.spriteColorKey;
+}
+
+function setCellColor(cell, colorKey) {
+  const normalizedColorKey = normalizeColorKey(colorKey);
+  clearCellColor(cell);
+  cell.classList.add("is-painted", `sprite-canvas-cell--${normalizedColorKey}`);
+  cell.dataset.spriteColorKey = normalizedColorKey;
+}
+
 function updateDraftStatus() {
   const status = document.querySelector("[data-sprites-draft-status]");
   if (status) {
     status.textContent = draftStatusText();
   }
+}
+
+function updatePaletteStatus() {
+  const status = document.querySelector("[data-sprites-palette-status]");
+  if (status) {
+    status.textContent = `Active editor color: ${editorState.activeColor[0].toUpperCase()}${editorState.activeColor.slice(1)}. Palette/Colors remains the reusable color source for future saved sprite records.`;
+  }
+}
+
+function setActiveColor(colorKey) {
+  const normalizedColorKey = normalizeColorKey(colorKey);
+  editorState.activeColor = normalizedColorKey;
+  document.querySelectorAll("[data-sprite-color-button]").forEach((button) => {
+    const isActive = button.dataset.spriteColorButton === normalizedColorKey;
+    button.classList.toggle("primary", isActive);
+    button.setAttribute("aria-pressed", String(isActive));
+  });
+  updatePaletteStatus();
 }
 
 function setActiveTool(toolName) {
@@ -56,9 +92,10 @@ function paintCell(cell) {
   if (editorState.activeTool === "eraser") {
     editorState.paintedPixels.delete(key);
     cell.classList.remove("is-painted");
+    clearCellColor(cell);
   } else {
-    editorState.paintedPixels.add(key);
-    cell.classList.add("is-painted");
+    editorState.paintedPixels.set(key, editorState.activeColor);
+    setCellColor(cell, editorState.activeColor);
   }
   updateDraftStatus();
 }
@@ -71,8 +108,8 @@ function fillGrid() {
   editorState.paintedPixels.clear();
   grid.querySelectorAll("[data-sprite-pixel-row]").forEach((cell) => {
     const key = pixelKey(cell.dataset.spritePixelRow, cell.dataset.spritePixelColumn);
-    editorState.paintedPixels.add(key);
-    cell.classList.add("is-painted");
+    editorState.paintedPixels.set(key, editorState.activeColor);
+    setCellColor(cell, editorState.activeColor);
   });
   updateDraftStatus();
 }
@@ -141,7 +178,17 @@ function wireDrawingTools() {
   });
 }
 
+function wirePaletteButtons() {
+  document.querySelectorAll("[data-sprite-color-button]").forEach((button) => {
+    button.addEventListener("click", () => {
+      setActiveColor(button.dataset.spriteColorButton);
+    });
+  });
+}
+
 wireGridControls();
 wireDrawingTools();
+wirePaletteButtons();
 setGridSize(DEFAULT_GRID_SIZE);
 setActiveTool(editorState.activeTool);
+setActiveColor(editorState.activeColor);
