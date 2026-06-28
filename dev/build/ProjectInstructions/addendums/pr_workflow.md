@@ -11,6 +11,10 @@ Official PLAN_PR, BUILD_PR, APPLY_PR, Start of Day, and invalid command behavior
 
 `dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`
 
+The Codex Completion Contract for ZIP artifacts lives in:
+
+`dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md`
+
 This file owns PR lifecycle governance. It must not duplicate command phase rules.
 
 ## Standard Flow
@@ -112,11 +116,9 @@ Closed gates:
 - If validation fails, stop and report.
 - If conflict occurs, stop and report.
 - If OWNER decision is required, stop and report.
-- Every Codex execution must produce a repo-structured ZIP under `dev/workspace/zips/`.
-- The ZIP rule applies to implementation, audit, report-only, validation-only, governance, cleanup, hard-stop, blocked, validation-failure, partial-completion, new-information, and no-change runs.
-- The ZIP must include all changed or preserved repo files from the run and must not replace required reports under `dev/reports/`.
-- If no repo files changed, Codex must still create a ZIP containing the report that proves the no-change, hard-stop, blocked, validation-failure, or partial-completion result.
-- No exceptions.
+- Every PR lifecycle state must satisfy the Codex Completion Contract when Codex executes work for that state.
+- ZIP artifacts belong under `dev/workspace/zips/` and must not replace required reports under `dev/reports/`.
+- Stacked PR chains produce one final outcome ZIP per attempted PR and stop before later PRs after failure or hard stop.
 
 ## Batch Governance Mode
 

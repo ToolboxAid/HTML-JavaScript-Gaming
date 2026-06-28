@@ -35,6 +35,8 @@ The bootstrap loads:
 
 The bootstrap must not create branches, commit files, move files, or run implementation work by itself.
 
+Start-of-Day bootstrap must satisfy the Codex Completion Contract in `dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md` with a review-only ZIP unless a hard stop occurs.
+
 ## Wrapper Responsibilities
 
 The wrapper performs:
@@ -87,7 +89,7 @@ If a chat instruction conflicts with Project Instructions:
 
 - Stop.
 - Do not continue the PR.
-- Produce the required ZIP artifact when the active artifact rules require one.
+- Produce the required ZIP artifact according to the Codex Completion Contract.
 - Document the conflict in the run summary or PR report.
 - Ask for OWNER direction.
 

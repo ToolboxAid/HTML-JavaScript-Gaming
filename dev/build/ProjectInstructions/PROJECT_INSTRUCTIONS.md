@@ -102,3 +102,4 @@ That file owns Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, and invalid command be
 - `repository/canonical_repository_structure.md` owns all folder placement and file-placement rules.
 - `standards/CODEX_WORKFLOW_COMMANDS.md` owns Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, and invalid command behavior.
 - `bootstrap/codex_start_of_day_bootstrap.md` owns Start-of-Day bootstrap architecture.
+- `addendums/codex_artifact_and_reporting_standard.md` owns the Codex Completion Contract and ZIP outcome rules.

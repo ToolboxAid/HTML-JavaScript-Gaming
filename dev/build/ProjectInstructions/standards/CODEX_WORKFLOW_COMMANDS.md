@@ -50,6 +50,8 @@ Start of Day reports:
 
 Start of Day may recommend the next execution phase, but it must not execute that phase.
 
+Start of Day must satisfy the Codex Completion Contract in `dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md`. Because Start of Day is read-only discovery, its ZIP outcome is review-only unless another outcome is explicitly documented.
+
 ## Execution Phases
 
 PLAN_PR, BUILD_PR, and APPLY_PR are Codex PR execution phases after Start of Day. They are not part of Start of Day.
@@ -84,6 +86,7 @@ Rules:
 - Identify the correct branch or start point.
 - Identify the intended PR name, purpose, and scope.
 - Identify required validation and reporting.
+- Identify the required ZIP outcome path from the Codex Completion Contract.
 - HARD STOP on unclear scope.
 - HARD STOP if Project Instructions conflict with the requested plan.
 
@@ -96,7 +99,7 @@ Rules:
 - Use the latest Project Instructions.
 - Stay inside the approved PR purpose.
 - Create required reports.
-- Create the required repo-structured ZIP artifact when the active artifact rules require one.
+- Create the required repo-structured ZIP artifact for the attempted PR according to the Codex Completion Contract.
 - Run scoped validation required by the PR and Project Instructions.
 - HARD STOP on wrong branch.
 - HARD STOP on dirty worktree when the PR requires a clean start.
@@ -111,7 +114,7 @@ APPLY_PR is the merge and closeout phase.
 Rules:
 - Verify CI status, validation status, and mergeability before merge.
 - Verify the PR merge state is clean.
-- Verify required reports and ZIP artifacts exist.
+- Verify required reports and Codex Completion Contract ZIP artifacts exist.
 - Merge only when Project Instructions and OWNER direction allow the merge.
 - Update local `main` after merge.
 - Report final branch, worktree status, local/origin sync status, final commit, and blockers.
