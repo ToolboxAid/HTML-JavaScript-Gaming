@@ -1,6 +1,7 @@
 const DEFAULT_GRID_SIZE = 16;
 const SUPPORTED_GRID_SIZES = Object.freeze([16, 32]);
-const DRAWING_TOOLS = Object.freeze(["pencil", "eraser", "fill"]);
+const SUPPORTED_ZOOM_LEVELS = Object.freeze([1, 2, 4]);
+const EDITOR_TOOLS = Object.freeze(["pencil", "eraser", "fill", "picker", "zoom"]);
 const EDITOR_COLOR_KEYS = Object.freeze(["ink", "orange", "gold", "green", "blue"]);
 const EDITOR_COLOR_CSS_VARIABLES = Object.freeze({
   blue: "--electric-blue",
@@ -15,6 +16,7 @@ const editorState = {
   activeColor: "ink",
   gridSize: DEFAULT_GRID_SIZE,
   paintedPixels: new Map(),
+  zoomLevel: 1,
 };
 const editorHistory = {
   redoStack: [],
@@ -88,6 +90,16 @@ function normalizeColorKey(colorKey) {
   return EDITOR_COLOR_KEYS.includes(colorKey) ? colorKey : "ink";
 }
 
+function colorLabel(colorKey) {
+  const normalizedColorKey = normalizeColorKey(colorKey);
+  return `${normalizedColorKey[0].toUpperCase()}${normalizedColorKey.slice(1)}`;
+}
+
+function normalizeZoomLevel(zoomLevel) {
+  const value = Number(zoomLevel);
+  return SUPPORTED_ZOOM_LEVELS.includes(value) ? value : 1;
+}
+
 function clearCellColor(cell) {
   cell.classList.remove("is-painted");
   cell.classList.remove(...EDITOR_COLOR_KEYS.map((colorKey) => `sprite-canvas-cell--${colorKey}`));
@@ -136,7 +148,7 @@ function updateDraftStatus() {
 function updatePaletteStatus() {
   const status = document.querySelector("[data-sprites-palette-status]");
   if (status) {
-    status.textContent = `Active editor color: ${editorState.activeColor[0].toUpperCase()}${editorState.activeColor.slice(1)}. Palette/Colors remains the reusable color source for future saved sprite records.`;
+    status.textContent = `Active editor color: ${colorLabel(editorState.activeColor)}. Palette/Colors remains the reusable color source for future saved sprite records.`;
   }
 }
 
@@ -152,7 +164,7 @@ function setActiveColor(colorKey) {
 }
 
 function setActiveTool(toolName) {
-  if (!DRAWING_TOOLS.includes(toolName)) {
+  if (!EDITOR_TOOLS.includes(toolName)) {
     return;
   }
   editorState.activeTool = toolName;
@@ -167,8 +179,51 @@ function setActiveTool(toolName) {
   }
 }
 
+function setZoomLevel(zoomLevel) {
+  const normalizedZoomLevel = normalizeZoomLevel(zoomLevel);
+  const shell = document.querySelector("[data-sprites-grid-shell]");
+  const status = document.querySelector("[data-sprites-zoom-status]");
+  editorState.zoomLevel = normalizedZoomLevel;
+
+  if (shell) {
+    shell.dataset.spritesZoomLevel = String(normalizedZoomLevel);
+  }
+
+  document.querySelectorAll("[data-sprites-zoom-level]").forEach((button) => {
+    const isActive = button.dataset.spritesZoomLevel === String(normalizedZoomLevel);
+    button.classList.toggle("primary", isActive);
+    button.setAttribute("aria-pressed", String(isActive));
+  });
+
+  if (status) {
+    status.textContent = `Canvas zoom display: ${normalizedZoomLevel * 100}%.`;
+  }
+}
+
+function pickCellColor(cell) {
+  const colorKey = cell.dataset.spriteColorKey;
+  const status = document.querySelector("[data-sprites-tool-status]");
+  if (!colorKey) {
+    if (status) {
+      status.textContent = "Picker found an empty pixel. Active color was not changed.";
+    }
+    return;
+  }
+  setActiveColor(colorKey);
+  if (status) {
+    status.textContent = `Picker selected ${colorLabel(colorKey)} from the unsaved editor canvas.`;
+  }
+}
+
 function paintCell(cell) {
   const key = pixelKey(cell.dataset.spritePixelRow, cell.dataset.spritePixelColumn);
+  if (editorState.activeTool === "picker") {
+    pickCellColor(cell);
+    return;
+  }
+  if (editorState.activeTool === "zoom") {
+    return;
+  }
   if (editorState.activeTool === "eraser") {
     if (!editorState.paintedPixels.has(key)) {
       return;
@@ -334,7 +389,7 @@ function wireGridControls() {
 function wireDrawingTools() {
   document.querySelectorAll("[data-sprite-tool-button]").forEach((button) => {
     const toolName = button.dataset.spriteToolButton;
-    if (!DRAWING_TOOLS.includes(toolName) || button.disabled) {
+    if (!EDITOR_TOOLS.includes(toolName) || button.disabled) {
       return;
     }
     button.addEventListener("click", () => {
@@ -343,6 +398,12 @@ function wireDrawingTools() {
         fillGrid();
       }
     });
+  });
+}
+
+function wireZoomControls() {
+  document.querySelectorAll("[data-sprites-zoom-level]").forEach((button) => {
+    button.addEventListener("click", () => setZoomLevel(button.dataset.spritesZoomLevel));
   });
 }
 
@@ -406,9 +467,11 @@ wireDrawingTools();
 wirePaletteButtons();
 wireCanvasActions();
 wireHistoryActions();
+wireZoomControls();
 wireExportButton();
 setGridSize(DEFAULT_GRID_SIZE);
 setActiveTool(editorState.activeTool);
 setActiveColor(editorState.activeColor);
+setZoomLevel(editorState.zoomLevel);
 updateHistoryControls();
 renderPreview();
