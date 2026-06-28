@@ -11,6 +11,7 @@ import {
   validateObjectDefinition,
 } from "../../../../src/engine/object-model/index.js";
 import { createAssetToolApiRepository } from "../../../js/shared/assets-api-client.js";
+import { listMessages } from "../../../../toolbox/messages/messages-api-client.js";
 
 const constants = readServerToolConstants("objects");
 
@@ -53,10 +54,13 @@ let editingRow = null;
 let storageIssue = null;
 let selectedObjectKey = "";
 let detailDraftBaseline = null;
+let messageRecords = null;
+let messageLoadIssue = null;
 
 const elements = {
   addRow: document.querySelector("[data-objects-add-row]"),
   assetStatus: document.querySelector("[data-objects-asset-status]"),
+  assetLinks: document.querySelector("[data-objects-asset-links]"),
   count: document.querySelector("[data-objects-count]"),
   detailActive: document.querySelector("[data-objects-detail-active]"),
   detailAudio: document.querySelector("[data-objects-detail-audio]"),
@@ -65,6 +69,7 @@ const elements = {
   detailDescription: document.querySelector("[data-objects-detail-description]"),
   detailEmpty: document.querySelector("[data-objects-details-empty]"),
   detailForm: document.querySelector("[data-objects-details-form]"),
+  detailMessage: document.querySelector("[data-objects-detail-message]"),
   detailName: document.querySelector("[data-objects-detail-name]"),
   detailSave: document.querySelector("[data-objects-detail-save]"),
   detailSelected: document.querySelector("[data-objects-detail-selected]"),
@@ -153,6 +158,7 @@ function normalizeObjectDetails(source = {}) {
     audioReference: normalizeText(details.audioReference ?? source.audioReference),
     defaultValues: normalizeText(details.defaultValues ?? source.defaultValues),
     description: normalizeText(details.description ?? source.description),
+    messageReference: normalizeText(details.messageReference ?? source.messageReference),
     spriteReference: normalizeText(details.spriteReference ?? source.spriteReference) || normalizeText(source.render?.assetKey),
     tags: Object.freeze(parseTags(details.tags ?? source.tags)),
     visible: normalizeBoolean(details.visible ?? source.visible, true),
@@ -481,6 +487,7 @@ function detailFieldElements() {
     elements.detailAudio,
     elements.detailDefaults,
     elements.detailDescription,
+    elements.detailMessage,
     elements.detailName,
     elements.detailSprite,
     elements.detailTags,
@@ -503,6 +510,7 @@ function detailSnapshotForObject(object = {}) {
     audioReference: details.audioReference,
     defaultValues: details.defaultValues,
     description: details.description,
+    messageReference: details.messageReference,
     name: normalizeText(object.name),
     spriteReference: details.spriteReference,
     tags: [...details.tags],
@@ -517,6 +525,7 @@ function detailSnapshotFromForm() {
     audioReference: normalizeText(elements.detailAudio?.value),
     defaultValues: normalizeText(elements.detailDefaults?.value),
     description: normalizeText(elements.detailDescription?.value),
+    messageReference: normalizeText(elements.detailMessage?.value),
     name: normalizeText(elements.detailName?.value),
     spriteReference: normalizeText(elements.detailSprite?.value),
     tags: parseTags(elements.detailTags?.value),
@@ -606,6 +615,9 @@ function populateDetailForm(object) {
   if (elements.detailAudio) {
     elements.detailAudio.value = snapshot.audioReference;
   }
+  if (elements.detailMessage) {
+    elements.detailMessage.value = snapshot.messageReference;
+  }
   if (elements.detailDefaults) {
     elements.detailDefaults.value = snapshot.defaultValues;
   }
@@ -661,6 +673,20 @@ function objectDetailFindings(snapshot, originalId = "") {
       label: "Sprite reference",
     });
   }
+  if (snapshot.audioReference && !linkedAudioAsset(snapshot.audioReference)) {
+    findings.push({
+      action: "Use an existing audio asset reference, or clear the Audio reference before saving Object Details.",
+      label: "Audio reference",
+    });
+  }
+  if (snapshot.messageReference && !linkedMessageRecord(snapshot.messageReference)) {
+    findings.push({
+      action: messageLoadIssue
+        ? "Messages could not be checked. Reload Objects after the API is available, or clear the Message reference before saving Object Details."
+        : "Use an existing message reference, or clear the Message reference before saving Object Details.",
+      label: "Message reference",
+    });
+  }
   return findings;
 }
 
@@ -680,6 +706,7 @@ function objectFromDetailSnapshot(object, snapshot) {
       audioReference: snapshot.audioReference,
       defaultValues: snapshot.defaultValues,
       description: snapshot.description,
+      messageReference: snapshot.messageReference,
       spriteReference: snapshot.spriteReference,
       tags: snapshot.tags,
       visible: snapshot.visible,
@@ -857,12 +884,97 @@ function listAssetRecords() {
   return Array.isArray(tables?.asset_library_items) ? tables.asset_library_items : [];
 }
 
-function linkedSpriteAsset(assetKey) {
-  const key = normalizeText(assetKey);
+function assetReferenceValues(asset = {}) {
+  return [
+    asset.id,
+    asset.key,
+    asset.name,
+    asset.fileName,
+    asset.originalName,
+    asset.reference,
+    asset.path,
+    asset.storedPath,
+    asset.storageObjectKey,
+    asset.targetFilePath,
+  ].map(normalizeText).filter(Boolean);
+}
+
+function assetHasReference(asset, reference) {
+  const key = normalizeText(reference);
+  return Boolean(key) && assetReferenceValues(asset).some((value) => value === key);
+}
+
+function assetRoleText(asset = {}) {
+  return [
+    asset.assetRole,
+    asset.assetRoleLabel,
+    asset.assetType,
+    asset.mimeType,
+    asset.role,
+    asset.type,
+    asset.usage,
+  ].map(normalizeText).join(" ").toLowerCase();
+}
+
+function isSpriteAsset(asset = {}) {
+  const text = assetRoleText(asset);
+  return text.includes("sprite") || text.includes("image") || text.includes("png") || text.includes("jpeg") || text.includes("webp");
+}
+
+function isAudioAsset(asset = {}) {
+  const text = assetRoleText(asset);
+  return text.includes("audio") || text.includes("sound") || text.includes("music") || text.includes("voice") || text.includes("wav") || text.includes("mpeg") || text.includes("ogg");
+}
+
+function linkedAssetByReference(reference, predicate) {
+  const key = normalizeText(reference);
   if (!key) {
     return null;
   }
-  return listAssetRecords().find((asset) => asset.id === key) || null;
+  return listAssetRecords().find((asset) => assetHasReference(asset, key) && predicate(asset)) || null;
+}
+
+function linkedSpriteAsset(assetKey) {
+  return linkedAssetByReference(assetKey, isSpriteAsset);
+}
+
+function linkedAudioAsset(reference) {
+  return linkedAssetByReference(reference, isAudioAsset);
+}
+
+function listMessageRecords() {
+  if (messageRecords !== null) {
+    return messageRecords;
+  }
+  try {
+    const result = listMessages();
+    messageRecords = Array.isArray(result?.messages) ? result.messages : [];
+    messageLoadIssue = null;
+  } catch {
+    messageRecords = [];
+    messageLoadIssue = {
+      action: "Messages could not be checked. Reload Objects after the API is available.",
+      label: "Message references",
+    };
+  }
+  return messageRecords;
+}
+
+function messageReferenceValues(message = {}) {
+  return [
+    message.key,
+    message.id,
+    message.name,
+    message.slug,
+  ].map(normalizeText).filter(Boolean);
+}
+
+function linkedMessageRecord(reference) {
+  const key = normalizeText(reference);
+  if (!key) {
+    return null;
+  }
+  return listMessageRecords().find((message) => messageReferenceValues(message).some((value) => value === key)) || null;
 }
 
 function assetDisplayText(asset, fallbackKey = "") {
@@ -1177,6 +1289,107 @@ function renderOutput(objects, findings) {
   }
 }
 
+function messageDisplayText(message, fallbackKey = "") {
+  const key = normalizeText(message?.key || message?.id || fallbackKey);
+  const name = normalizeText(message?.name);
+  if (key && name && name !== key) {
+    return `${name} (${key})`;
+  }
+  return name || key || "Message missing";
+}
+
+function referenceStatusItem({
+  action = null,
+  label,
+  linkDataName = "",
+  linkText = "",
+  linkValue = "",
+  linkedText = "",
+  missingText = "",
+  reference,
+  warningName = "",
+}) {
+  const item = document.createElement("li");
+  const heading = document.createElement("strong");
+  heading.textContent = `${label}:`;
+  item.append(heading, " ");
+  if (!reference) {
+    item.append("No reference set.");
+    return item;
+  }
+  if (!linkedText) {
+    item.dataset.objectsReferenceWarning = warningName || label;
+    item.append(missingText);
+    if (action) {
+      item.append(" ", actionLink(linkText, action, linkDataName, linkValue));
+    }
+    return item;
+  }
+  item.append(linkedText);
+  if (action) {
+    item.append(" ", actionLink(linkText, action, linkDataName, linkValue));
+  }
+  return item;
+}
+
+function renderAssetLinks() {
+  if (!elements.assetLinks) {
+    return;
+  }
+  elements.assetLinks.replaceChildren();
+  const object = selectedObject();
+  if (!object) {
+    elements.assetLinks.append(listItem("Select an object to review sprite, audio, and message links."));
+    return;
+  }
+
+  const details = detailsForObject(object);
+  const spriteAsset = details.spriteReference ? linkedSpriteAsset(details.spriteReference) : null;
+  const audioAsset = details.audioReference ? linkedAudioAsset(details.audioReference) : null;
+  const messageRecord = details.messageReference ? linkedMessageRecord(details.messageReference) : null;
+
+  elements.assetLinks.append(
+    referenceStatusItem({
+      action: spriteAsset ? spriteEditorHref({
+        ...object,
+        render: { assetKey: details.spriteReference, type: "Sprite" },
+      }) : null,
+      label: "Sprite",
+      linkDataName: "objectsAssetLinkSprite",
+      linkText: "Edit Sprite",
+      linkValue: objectId(object),
+      linkedText: spriteAsset ? assetDisplayText(spriteAsset, details.spriteReference) : "",
+      missingText: `Sprite reference "${details.spriteReference}" is not linked to an existing sprite asset.`,
+      reference: details.spriteReference,
+      warningName: "sprite",
+    }),
+    referenceStatusItem({
+      action: details.audioReference ? "/toolbox/assets/index.html" : null,
+      label: "Audio",
+      linkDataName: "objectsAssetLinkAudio",
+      linkText: "Open Assets",
+      linkValue: normalizeText(audioAsset?.id || details.audioReference),
+      linkedText: audioAsset ? assetDisplayText(audioAsset, details.audioReference) : "",
+      missingText: `Audio reference "${details.audioReference}" is not linked to an existing audio asset.`,
+      reference: details.audioReference,
+      warningName: "audio",
+    }),
+    referenceStatusItem({
+      action: details.messageReference ? "/toolbox/messages/index.html" : null,
+      label: "Message",
+      linkDataName: "objectsMessageLink",
+      linkText: "Open Messages",
+      linkValue: normalizeText(messageRecord?.key || details.messageReference),
+      linkedText: messageRecord ? messageDisplayText(messageRecord, details.messageReference) : "",
+      missingText: messageLoadIssue
+        ? "Message references could not be checked. Reload Objects after the API is available."
+        : `Message reference "${details.messageReference}" is not linked to an existing Message.`,
+      reference: details.messageReference,
+      warningName: "message",
+    }),
+  );
+}
+
 function renderTemplateCatalog() {
   if (elements.templateCatalog) {
     elements.templateCatalog.replaceChildren();
@@ -1229,6 +1442,7 @@ function render() {
   renderOutput(draftedObjects, findings);
   renderValidation(findings);
   renderDetailsPanel({ preserveDirty: true });
+  renderAssetLinks();
   if (elements.addRow) {
     elements.addRow.disabled = Boolean(editingRow);
   }
@@ -1428,6 +1642,8 @@ function resetTable() {
 }
 
 function refreshLinkedRenderAssetDisplay() {
+  messageRecords = null;
+  messageLoadIssue = null;
   if (!editingRow) {
     render();
     return;

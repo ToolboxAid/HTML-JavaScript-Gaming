@@ -144,6 +144,9 @@
                                             <label>Audio reference
                                                 <input type="text" autocomplete="off" data-objects-detail-audio>
                                             </label>
+                                            <label>Message reference
+                                                <input type="text" autocomplete="off" data-objects-detail-message>
+                                            </label>
                                             <label>Active
                                                 <input type="checkbox" data-objects-detail-active>
                                             </label>
@@ -163,6 +166,13 @@
                                         </div>
                                         <div class="status" role="status" data-objects-detail-unsaved>Unsaved changes: none</div>
                                     </div>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Asset Links</summary>
+                                <div class="accordion-body content-stack">
+                                    <p>Review sprite, audio, and message links for the selected object.</p>
+                                    <ul data-objects-asset-links></ul>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>

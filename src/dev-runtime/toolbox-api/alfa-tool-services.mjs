@@ -547,6 +547,7 @@ function objectDetailsFromSource(source = {}, render = normalizeObjectRender(sou
     audioReference: normalizeText(details.audioReference ?? source.audioReference),
     defaultValues: normalizeText(details.defaultValues ?? source.defaultValues),
     description: normalizeText(details.description ?? source.description),
+    messageReference: normalizeText(details.messageReference ?? source.messageReference),
     spriteReference: normalizeText(details.spriteReference ?? source.spriteReference) || normalizeText(render.assetKey),
     tags: parseObjectTags(details.tags ?? source.tags),
     visible: objectBooleanField(details.visible ?? source.visible, true),
