@@ -62,7 +62,7 @@ Dev workspace ownership:
 - dev/archive/ owns historical reference material only.
 - dev/build/ owns active Project Instructions, architecture, database DDL/DML/seed docs, standards, backlog, PR planning, and governance.
 - dev/config/ owns development-only runner and tooling configuration.
-- dev/reports/ owns active and historical generated reports.
+- dev/reports/ owns active and historical generated reports. Report files under `dev/reports/` are authoritative tracked repository source and must not be deleted only to make the worktree clean.
 - dev/scripts/ owns development-only scripts and runners.
 - dev/templates/ owns reusable development templates.
 - dev/tests/ owns non-deployable test suites.
@@ -110,7 +110,7 @@ These legacy transition buckets may remain until explicit migration PRs move the
 - New development follows the canonical structure.
 - New deployable `src/` work follows `src/web/`, `src/api-runtime/`, or `src/runtime/`.
 - New non-deployable work belongs under `dev/`.
-- Required reports belong under flat `dev/reports/`.
+- Required reports belong under flat tracked `dev/reports/`.
 - Required ZIPs belong under `dev/workspace/zips/`; generated temporary artifacts belong under `dev/workspace/tmp/`.
 
 ## Creator Data Boundary

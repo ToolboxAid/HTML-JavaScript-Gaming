@@ -97,6 +97,20 @@ Optional:
 
 Generated non-report artifacts must live under `dev/workspace/`.
 
+## Tracked Report Governance
+
+`dev/reports/` is an authoritative repository report location and is tracked by Git.
+
+Rules:
+
+- Any changes to `dev/reports/` generated during a PR are expected to be included in that PR.
+- A clean `main` means the latest report files have been committed and merged.
+- Do not delete report files only to make the worktree clean.
+- Do not add `dev/reports/` to `.gitignore`.
+- Do not move reports outside the repository.
+- Continue using `dev/reports/` for reports and `dev/workspace/zips/` for ZIPs.
+- Generated post-merge closeout reports should either be committed in a follow-up governance/report PR or avoided on `main` when no commit is intended.
+
 ## Completion Reporting
 
 Codex responses must include:
