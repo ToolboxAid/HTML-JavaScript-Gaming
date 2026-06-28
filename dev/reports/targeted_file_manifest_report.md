@@ -1,19 +1,19 @@
 # Targeted File Manifest Report
 
-Generated: 2026-06-23T16:38:48.296Z
+Generated: 2026-06-28T14:20:34.628Z
 Status: PASS
 
 ## Manifest-Generated Lane Inputs
 
 | Lane | Ownership | Status | Source | Tests | Helpers | Fixtures | Imports / Dependencies | Dependency Graph Hash | Manifest Hash | Reason |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| workspace-contract | tools | PASS | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 4dcb31ccda1bdb5a | fdada39983df06d5 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
+| tool-display-mode | tools | PASS | persistent | dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs | dev/tests/helpers/playwrightRepoServer.mjs; dev/tests/helpers/playwrightStorageIsolation.mjs; dev/tests/helpers/playwrightV8CoverageReporter.mjs; dev/tests/helpers/workspaceV2CoverageReporter.mjs | none | dev/tests/helpers/playwrightRepoServer.mjs; dev/tests/helpers/playwrightStorageIsolation.mjs; dev/tests/helpers/playwrightV8CoverageReporter.mjs; dev/tests/helpers/workspaceV2CoverageReporter.mjs; src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/server/local-api-router.mjs; toolbox/toolRegistry.js | 6de254babab8aecd | 9f823d041166f7f6 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
 
 ## Discovery Expansion Control
 
 Prevented discovery expansion: Yes
-Prevented redundant scans: 4
-Targeted file/helper reads: 5
+Prevented redundant scans: 0
+Targeted file/helper reads: 0
 
 ## Runtime Savings Observations
 

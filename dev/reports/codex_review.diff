@@ -1,18 +1,2779 @@
-diff --git a/dev/reports/PR_26179_OWNER_009-pr-stack-realignment_manual-validation-notes.md b/dev/reports/PR_26179_OWNER_009-pr-stack-realignment_manual-validation-notes.md
-index 9e58e9340..1552e7096 100644
---- a/dev/reports/PR_26179_OWNER_009-pr-stack-realignment_manual-validation-notes.md
-+++ b/dev/reports/PR_26179_OWNER_009-pr-stack-realignment_manual-validation-notes.md
-@@ -18,4 +18,3 @@ Reviewed the focused open PR set and produced recommendations without changing P
- - No API files changed.
- - No database files changed.
- - No GitHub PRs were merged or closed.
+diff --git a/assets/theme-v2/css/accordion.css b/assets/theme-v2/css/accordion.css
+index b650f518e..df65a0332 100644
+--- a/assets/theme-v2/css/accordion.css
++++ b/assets/theme-v2/css/accordion.css
+@@ -75,8 +75,7 @@ details.vertical-accordion summary::-webkit-details-marker {
+ }
+
+ .horizontal-accordion-toggle__icon,
+-.vertical-accordion__chevron,
+-.tool-display-mode__chevron {
++.vertical-accordion__chevron {
+   --accordion-button-border: var(--line);
+   --accordion-button-background: var(--panel-soft);
+   --accordion-button-color: var(--gold);
+@@ -109,8 +108,7 @@ details.vertical-accordion summary::-webkit-details-marker {
+   margin-left: auto
+ }
+
+-.vertical-accordion__chevron .theme-icon,
+-.tool-display-mode__chevron .theme-icon {
++.vertical-accordion__chevron .theme-icon {
+   height: var(--space-14);
+   width: var(--space-14)
+ }
+diff --git a/assets/theme-v2/css/panels.css b/assets/theme-v2/css/panels.css
+index 74f68f0c0..dc43c5875 100644
+--- a/assets/theme-v2/css/panels.css
++++ b/assets/theme-v2/css/panels.css
+@@ -275,10 +275,7 @@ body.tool-focus-mode .tool-center-panel:has(>details.vertical-accordion)>p {
+   background: var(--panel);
+   box-shadow: var(--shadow-lg);
+   overflow: hidden;
+-  display: flex;
+-  align-items: center;
+-  justify-content: center;
+-  gap: var(--space-12)
++  display: block
+ }
+
+ .tool-display-mode summary {
+@@ -286,12 +283,13 @@ body.tool-focus-mode .tool-center-panel:has(>details.vertical-accordion)>p {
+   font-weight: var(--font-weight-heavy);
+   cursor: pointer;
+   list-style: none;
+-  padding: var(--space-10) var(--space-44) var(--space-10) var(--space-10);
++  min-width: var(--space-0);
++  padding: var(--space-10);
+   display: flex;
+   align-items: center;
+-  justify-content: center;
++  justify-content: flex-start;
+   gap: var(--space-10);
+-  flex: 0 0 auto
++  width: 100%
+ }
+
+ .tool-display-mode summary::-webkit-details-marker {
+@@ -299,15 +297,10 @@ body.tool-focus-mode .tool-center-panel:has(>details.vertical-accordion)>p {
+ }
+
+ .tool-display-mode__mode-icon {
+-  color: var(--cyan)
+-}
 -
-diff --git a/dev/reports/PR_26179_OWNER_009-pr-stack-realignment_requirement-checklist.md b/dev/reports/PR_26179_OWNER_009-pr-stack-realignment_requirement-checklist.md
-index f7b11b506..f5b8efdfa 100644
---- a/dev/reports/PR_26179_OWNER_009-pr-stack-realignment_requirement-checklist.md
-+++ b/dev/reports/PR_26179_OWNER_009-pr-stack-realignment_requirement-checklist.md
-@@ -11,4 +11,3 @@
- | Produce recommendation report only | PASS | Report-only governance deliverable. |
- | Use canonical report location | PASS | Reports are under `dev/reports/`. |
- | Produce outcome ZIP | PASS | ZIP to be generated under `dev/workspace/zips/`. |
+-.tool-display-mode__chevron {
+-  position: absolute;
+-  right: var(--space-12);
+-  top: 50%;
+-  transform: translateY(-50%);
+-  z-index: var(--z-index-sm)
++  color: var(--gold);
++  height: calc(var(--icon-size-sm) * 2.6);
++  margin-left: auto;
++  width: calc(var(--icon-size-sm) * 2.6)
+ }
+
+ .tool-display-mode__badge {
+@@ -320,54 +313,7 @@ body.tool-focus-mode .tool-center-panel:has(>details.vertical-accordion)>p {
+   background: transparent
+ }
+
+-.tool-display-mode__body {
+-  display: grid;
+-  grid-template-columns: auto minmax(var(--space-0), 1fr);
+-  grid-template-rows: auto auto;
+-  align-items: center;
+-  column-gap: var(--space-15);
+-  row-gap: var(--space-8);
+-  min-width: var(--space-0);
+-  padding: var(--space-10) var(--space-14) var(--space-10) var(--space-0)
+-}
 -
+-.tool-display-mode__identity-row {
+-  display: contents
+-}
+-
+-.tool-display-mode__navigation-row {
+-  grid-column: 2;
+-  grid-row: 2;
+-  display: flex;
+-  align-items: center;
+-  gap: var(--space-14);
+-  flex-wrap: wrap
+-}
+-
+-.tool-display-mode__navigation-link {
+-  align-items: center;
+-  color: var(--text);
+-  display: inline-flex;
+-  gap: var(--space-6);
+-  line-height: var(--line-height-tight)
+-}
+-
+-.tool-display-mode__navigation-link:hover,
+-.tool-display-mode__navigation-link:focus-visible {
+-  color: var(--gold)
+-}
+-
+-.tool-display-mode__navigation-link--disabled {
+-  color: var(--muted)
+-}
+-
+-.tool-display-mode__navigation-icon {
+-  color: currentColor
+-}
+-
+ .tool-display-mode__character {
+-  grid-column: 1;
+-  grid-row: 1 / span 2;
+   width: 225px;
+   height: 127px;
+   object-fit: contain;
+@@ -375,17 +321,13 @@ body.tool-focus-mode .tool-center-panel:has(>details.vertical-accordion)>p {
+   flex: 0 0 auto
+ }
+
+-.tool-display-mode__fullscreen-name {
+-  display: none;
+-  white-space: nowrap
+-}
+-
+-.tool-display-mode__description {
+-  grid-column: 2;
+-  grid-row: 1;
++.tool-display-mode__tool-name {
+   color: var(--gold);
++  flex: 1 1 auto;
+   font-weight: var(--font-weight-heavy);
++  min-width: var(--space-0);
+   overflow: hidden;
++  text-align: center;
+   text-overflow: ellipsis;
+   white-space: nowrap
+ }
+@@ -393,17 +335,16 @@ body.tool-focus-mode .tool-center-panel:has(>details.vertical-accordion)>p {
+ body.tool-focus-mode .tool-display-mode {
+   border-color: var(--line);
+   background: var(--panel);
+-  box-shadow: var(--shadow-lg);
+-  justify-content: center
++  box-shadow: var(--shadow-lg)
+ }
+
+-body.tool-focus-mode .tool-display-mode__fullscreen-name {
+-  display: inline
++body.tool-focus-mode .tool-display-mode__badge {
++  width: 64px;
++  height: 64px
+ }
+
+-body.tool-focus-mode .tool-display-mode__badge {
+-  width: 32px;
+-  height: 32px
++body.tool-focus-mode .tool-display-mode__character {
++  display: none
+ }
+
+ .side-menu a {
+diff --git a/assets/theme-v2/js/tool-display-mode.js b/assets/theme-v2/js/tool-display-mode.js
+index cae5febcf..0121c8f05 100644
+--- a/assets/theme-v2/js/tool-display-mode.js
++++ b/assets/theme-v2/js/tool-display-mode.js
+@@ -73,12 +73,6 @@
+         document.querySelectorAll("details.vertical-accordion").forEach(wireVerticalAccordionChevron);
+     }
+
+-    function updateToolDisplayModeChevron() {
+-        const iconName = displayMode.open ? "chevron-up" : "chevron-down";
+-        const shell = createChevronShell(iconName, "tool-display-mode__chevron", "tool-display-mode__chevron-icon");
+-        replaceIconNode(summary, ":scope > .tool-display-mode__chevron", shell);
+-    }
+-
+     function updateToolDisplayModeModeIcon() {
+         const iconName = document.body.classList.contains("tool-focus-mode") || document.fullscreenElement
+             ? "exit-fullscreen"
+@@ -107,7 +101,6 @@
+     function refreshThemeIcons() {
+         refreshVerticalAccordionChevrons();
+         updateToolDisplayModeModeIcon();
+-        updateToolDisplayModeChevron();
+         refreshHorizontalToggleIcons();
+     }
+
+@@ -146,7 +139,6 @@
+     const summary = document.createElement("summary");
+     summary.setAttribute("aria-label", "Tool Display Mode");
+     summary.title = "Tool Display Mode";
+-    summary.appendChild(createThemeIconNode("fullscreen", "layout-icon tool-display-mode__mode-icon"));
+
+     const badge = document.createElement("img");
+     badge.className = "tool-display-mode__badge";
+@@ -154,59 +146,20 @@
+     badge.alt = toolName + " badge";
+     summary.appendChild(badge);
+
+-    const fullscreenName = document.createElement("span");
+-    fullscreenName.className = "tool-display-mode__fullscreen-name";
+-    fullscreenName.textContent = toolName;
+-    summary.appendChild(fullscreenName);
+-    displayMode.appendChild(summary);
+-    displayMode.addEventListener("toggle", updateToolDisplayModeChevron);
+-
+-    const body = document.createElement("div");
+-    body.className = "tool-display-mode__body";
+-
+-    const identityRow = document.createElement("div");
+-    identityRow.className = "tool-display-mode__identity-row content-cluster";
+-    identityRow.dataset.toolDisplayModeRow = "identity";
++    const toolNameLabel = document.createElement("span");
++    toolNameLabel.className = "tool-display-mode__tool-name";
++    toolNameLabel.textContent = toolName;
++    summary.appendChild(toolNameLabel);
+
+     const character = document.createElement("img");
+     character.className = "tool-display-mode__character";
+     character.src = publicImageSource(slot.dataset.toolCharacterSrc, "characters");
+     character.alt = toolName + " character";
+-    identityRow.appendChild(character);
+-
+-    const description = document.createElement("span");
+-    description.className = "tool-display-mode__description";
+-    description.textContent = toolName;
+-    identityRow.appendChild(description);
+-    body.appendChild(identityRow);
+-    displayMode.appendChild(body);
+-    slot.replaceWith(displayMode);
++    summary.appendChild(character);
+
+-    function createNavigationControl(direction, target) {
+-        const controlLabel = direction === "previous" ? "Previous" : "Next";
+-        const dataAttribute = direction === "previous" ? "toolNavPrevious" : "toolNavNext";
+-        const iconName = direction === "previous" ? "chevron-left" : "chevron-right";
+-        const icon = createThemeIconNode(iconName, "layout-icon tool-display-mode__navigation-icon");
+-        const label = document.createTextNode(controlLabel + ": " + (target?.label || "Unavailable"));
+-
+-        if (!target || target.disabled) {
+-            const disabledText = document.createElement("span");
+-            disabledText.className = "pill tool-display-mode__navigation-link tool-display-mode__navigation-link--disabled";
+-            disabledText.dataset[dataAttribute] = "disabled";
+-            disabledText.append(icon, label);
+-            return disabledText;
+-        }
+-
+-        const link = document.createElement("a");
+-        link.className = "tool-display-mode__navigation-link";
+-        link.href = target.href;
+-        link.dataset[dataAttribute] = target.kind;
+-        if (target.group) {
+-            link.dataset.toolNavGroup = target.group;
+-        }
+-        link.append(icon, label);
+-        return link;
+-    }
++    summary.appendChild(createThemeIconNode("fullscreen", "layout-icon tool-display-mode__mode-icon"));
++    displayMode.appendChild(summary);
++    slot.replaceWith(displayMode);
+
+     function applyRegistryImages(registry) {
+         const registryTool = registry.getToolBySlug(toolSlug);
+@@ -238,37 +191,26 @@
+             leftColumnTitle.textContent = registryName;
+         }
+         badge.alt = registryName + " badge";
+-        fullscreenName.textContent = registryName;
++        toolNameLabel.textContent = registryName;
+         character.alt = registryName + " character";
+-        description.textContent = registryName;
+         badge.src = registry.getToolImageSource(registryTool, "badge");
+         character.src = registry.getToolImageSource(registryTool, "tool");
+     }
+
+-    async function renderToolNavigation() {
++    async function applyRegistryDisplayData() {
+         try {
+             const registry = await import("/toolbox/tool-registry-api-client.js");
+             const registryDiagnostic = registry.getToolRegistryApiDiagnostic();
+             if (registryDiagnostic) {
+                 throw new Error(registryDiagnostic);
+             }
+-            const navigation = registry.getToolNavigationTargets(toolSlug);
+             applyRegistryImages(registry);
+-            const navigationRow = document.createElement("nav");
+-            navigationRow.className = "tool-display-mode__navigation-row content-cluster";
+-            navigationRow.dataset.toolDisplayModeRow = "navigation";
+-            navigationRow.setAttribute("aria-label", "Tool build-order navigation");
+-            navigationRow.append(
+-                createNavigationControl("previous", navigation.previous),
+-                createNavigationControl("next", navigation.next)
+-            );
+-            body.appendChild(navigationRow);
+         } catch (error) {
+-            console.warn("Tool navigation could not be loaded.", error);
++            console.warn("Tool display mode registry metadata could not be loaded.", error);
+         }
+     }
+
+-    renderToolNavigation();
++    applyRegistryDisplayData();
+
+     async function enterToolMode() {
+         document.body.classList.add("tool-focus-mode");
+@@ -317,7 +259,6 @@
+     });
+
+     refreshVerticalAccordionChevrons();
+-    updateToolDisplayModeChevron();
+
+     document.querySelectorAll(".tool-workspace").forEach(function (workspace) {
+         const columns = workspace.querySelectorAll(":scope > .tool-column");
+diff --git a/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_branch-validation.md b/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_branch-validation.md
+new file mode 100644
+index 000000000..712a645ce
+--- /dev/null
++++ b/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_branch-validation.md
+@@ -0,0 +1,20 @@
++# PR_26179_ALFA_010-tool-display-single-line-summary Branch Validation
++
++## Result
++
++PASS
++
++## Checks
++
++| Check | Result | Notes |
++| --- | --- | --- |
++| Start branch was `main` | PASS | Verified before branch creation. |
++| `main...origin/main` was `0 0` | PASS | Verified before branch creation. |
++| PR branch created from `main` | PASS | `PR_26179_ALFA_010-tool-display-single-line-summary`. |
++| Work stayed on PR branch during implementation | PASS | No commits to `main`. |
++| Old `docs_build/` paths avoided | PASS | Reports generated under `dev/reports/`. |
++| Old `tmp/` ZIP path avoided | PASS | Outcome ZIP path: `dev/workspace/zips/PR_26179_ALFA_010-tool-display-single-line-summary_delta.zip`. |
++
++## Branch
++
++`PR_26179_ALFA_010-tool-display-single-line-summary`
+diff --git a/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_manual-validation-notes.md b/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_manual-validation-notes.md
+new file mode 100644
+index 000000000..5e7203190
+--- /dev/null
++++ b/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_manual-validation-notes.md
+@@ -0,0 +1,29 @@
++# PR_26179_ALFA_010-tool-display-single-line-summary Manual Validation Notes
++
++## Product Owner Checks
++
++1. Open `/toolbox/game-design/index.html`.
++2. Confirm the Tool Display Mode bar shows one direct line:
++   - badge
++   - Game Design name
++   - character image
++   - fullscreen icon on the far right
++3. Confirm the old chevron, identity body, and Previous/Next navigation row are absent.
++4. Click the fullscreen icon.
++5. Confirm the icon changes to exit-fullscreen.
++6. Confirm the badge remains 64x64 in fullscreen mode.
++7. Confirm the character image is hidden in fullscreen mode.
++8. Click the exit icon and confirm the normal view returns.
++
++## Adjacent Checks
++
++1. Open representative tools:
++   - `/toolbox/game-hub/index.html`
++   - `/toolbox/game-configuration/index.html`
++   - `/toolbox/build-game/index.html`
++2. Confirm each Tool Display Mode bar uses the registry-owned tool name, badge, and character image.
++3. Confirm no visible Tool Display Mode Previous/Next controls appear.
++
++## Notes
++
++PR #198 remains historical validation input only. Its useful validation intent is represented by the current targeted Playwright coverage in this PR.
+diff --git a/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_report.md b/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_report.md
+new file mode 100644
+index 000000000..c2fdfa512
+--- /dev/null
++++ b/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_report.md
+@@ -0,0 +1,58 @@
++# PR_26179_ALFA_010-tool-display-single-line-summary Report
++
++## Purpose
++
++Recreate the useful Tool Display Mode layout scope from stale PR #196 and fold in the validation intent from PR #198 without recreating #198 as a separate PR.
++
++## Product Outcome
++
++Tool Display Mode now renders a single-line summary where the summary directly owns, in order:
++
++1. badge
++2. tool name
++3. character image
++4. fullscreen or exit-fullscreen icon
++
++The deprecated Tool Display Mode body, chevron, identity row, and previous/next navigation row are no longer generated by the shared Theme V2 Tool Display Mode script.
++
++## Scope Notes
++
++- Updated shared Theme V2 Tool Display Mode CSS and JavaScript only for the requested layout change.
++- Replaced the old Tool Display Mode navigation Playwright spec with current single-line summary coverage under `dev/tests/playwright/tools/`.
++- Updated adjacent tests that directly asserted the removed Tool Display Mode previous/next row.
++- Fixed `dev/tests/helpers/playwrightRepoServer.mjs` to resolve the repository root from the current `dev/tests/` location so current Playwright tests serve production pages instead of `dev/`.
++- Treated PR #198 as historical validation input only.
++- Did not change Local API runtime behavior.
++- Did not add browser-owned product data.
++- Did not add inline styles, style blocks, script blocks, or inline event handlers.
++- Did not use old `docs_build/` report paths or `tmp/` ZIP paths.
++
++## Changed File Summary
++
++- `assets/theme-v2/js/tool-display-mode.js` - updated single-line summary generation and removed deprecated navigation row generation.
++- `assets/theme-v2/css/panels.css` - updated Tool Display Mode layout styling.
++- `assets/theme-v2/css/accordion.css` - removed obsolete Tool Display Mode chevron styling from accordion icon selectors.
++- `dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs` - added current targeted Tool Display Mode coverage.
++- `dev/tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs` - removed stale two-row navigation spec.
++- `dev/tests/playwright/tools/ToolNavigationPrevNext.spec.mjs` - updated adjacent navigation assertions to match the removed Tool Display Mode controls.
++- `dev/tests/playwright/tools/ToolImageRegistry.spec.mjs` - updated image assertions for the direct summary layout.
++- `dev/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs` - updated status-bar assertions for removed Tool Display Mode navigation controls.
++- `dev/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs` - removed the obsolete expectation that navigation warning output is required.
++- `dev/tests/helpers/playwrightRepoServer.mjs` - corrected repo-root resolution for tests under `dev/tests/`.
++- `dev/scripts/run-targeted-test-lanes.mjs` - updated targeted lane metadata and spec path.
++
++## Validation Summary
++
++- `npm run test:lane:tool-display-mode` PASS, 3/3.
++- Adjacent Playwright run for Tool Navigation, Tool Image Registry, and Toolbox Selected Game Status Bar PASS, 15/15.
++- Syntax checks for changed JS/test files PASS.
++- `git diff --check` PASS.
++- `npm run validate:canonical-structure` PASS.
++
++## Outcome ZIP
++
++- `dev/workspace/zips/PR_26179_ALFA_010-tool-display-single-line-summary_delta.zip`
++
++## Notes
++
++The old `assets/theme-v2/css/gamefoundrystudio.css` file still contains historical Tool Display Mode selectors, but it is not imported by the active Theme V2 `theme.css`. This PR leaves that legacy residue untouched to avoid unrelated cleanup.
+diff --git a/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_requirement-checklist.md b/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_requirement-checklist.md
+new file mode 100644
+index 000000000..8441611b4
+--- /dev/null
++++ b/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_requirement-checklist.md
+@@ -0,0 +1,19 @@
++# PR_26179_ALFA_010-tool-display-single-line-summary Requirement Checklist
++
++| Requirement | Result | Evidence |
++| --- | --- | --- |
++| Must start on `main` | PASS | Branch gate passed before PR branch creation. |
++| Use current Project Instructions | PASS | Read `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md` and required referenced documents. |
++| Implement Tool Display Mode single-line summary layout | PASS | `tool-display-mode.js`, `panels.css`, and targeted Playwright coverage updated. |
++| Summary directly owns badge, tool name, character image, and fullscreen/exit icon | PASS | `ToolDisplayModeSingleLineSummary.spec.mjs` asserts direct child order. |
++| Remove old chevron/body/navigation-row UI where required | PASS | Shared script no longer generates Tool Display Mode chevron, body, identity row, or navigation row. |
++| Update current Theme V2 CSS/JS carefully | PASS | Scoped to `assets/theme-v2/css/accordion.css`, `assets/theme-v2/css/panels.css`, and `assets/theme-v2/js/tool-display-mode.js`. |
++| Update or replace current tests under `dev/tests/playwright/tools/` | PASS | Replaced stale display-mode spec and updated adjacent assertions. |
++| Do not use old `docs_build` paths | PASS | No new `docs_build` output. |
++| Do not create ZIPs under `tmp` | PASS | ZIP path is `dev/workspace/zips/`. |
++| Treat #198 as historical validation only | PASS | Validation intent folded into current PR coverage. |
++| Do not recreate #198 separately | PASS | No separate PR/report-only branch created. |
++| No unrelated cleanup | PASS | Legacy inactive CSS residue left untouched. |
++| Do not change Local API behavior | PASS | Runtime Local API code unchanged; only Playwright test environment wiring updated. |
++| Do not add browser-owned product data | PASS | No product data sources added. |
++| Do not add inline styles, style blocks, script blocks, or inline event handlers | PASS | Tests assert no inline style/script additions on the targeted page. |
+diff --git a/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_validation-report.md b/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_validation-report.md
+new file mode 100644
+index 000000000..684b8e030
+--- /dev/null
++++ b/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_validation-report.md
+@@ -0,0 +1,25 @@
++# PR_26179_ALFA_010-tool-display-single-line-summary Validation Report
++
++## Required Validation
++
++| Command | Result | Notes |
++| --- | --- | --- |
++| `git diff --check` | PASS | Whitespace check passed. |
++| `npm run validate:canonical-structure` | PASS | Canonical repository structure guardrail passed. |
++| `npm run test:lane:tool-display-mode` | PASS | Targeted Tool Display Mode lane passed 3/3 after updating the current spec. |
++| `npm run test:workspace-v2` | SKIP | Fallback not needed because targeted Tool Display Mode lane passed. |
++
++## Additional Focused Validation
++
++| Command | Result | Notes |
++| --- | --- | --- |
++| `node --check` on changed JS/test files | PASS | Syntax checks passed for changed Theme V2/test helper/test lane files. |
++| Adjacent Playwright run for Tool Navigation, Tool Image Registry, and Toolbox Selected Game Status Bar | PASS | 15/15 passed. |
++
++## Initial Failure And Resolution
++
++The first targeted Tool Display Mode run failed because `dev/tests/helpers/playwrightRepoServer.mjs` still resolved the server root as `dev/` after tests moved under `dev/tests/`. The helper was corrected to resolve the repository root, and the targeted lane passed after that test infrastructure path fix.
++
++## Runtime Scope
++
++No Local API runtime code, database code, production page HTML, browser storage, or product-data behavior was changed.
+diff --git a/dev/reports/coverage_changed_js_guardrail.txt b/dev/reports/coverage_changed_js_guardrail.txt
+index 74a29674c..b58055c0d 100644
+--- a/dev/reports/coverage_changed_js_guardrail.txt
++++ b/dev/reports/coverage_changed_js_guardrail.txt
+@@ -6,7 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
+ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+
+ Changed runtime JS files considered:
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(89%) assets/theme-v2/js/tool-display-mode.js - executed lines 251/251; executed functions 25/28
+
+ Guardrail warnings:
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++(100%) none - no changed runtime JS coverage warnings
+diff --git a/dev/reports/dependency_gating_report.md b/dev/reports/dependency_gating_report.md
+index 10f49ad99..0dc2bb097 100644
+--- a/dev/reports/dependency_gating_report.md
++++ b/dev/reports/dependency_gating_report.md
+@@ -1,6 +1,6 @@
+ # Dependency Gating Report
+
+-Generated: 2026-06-23T16:38:48.295Z
++Generated: 2026-06-28T14:20:34.626Z
+ Status: PASS
+
+ ## Gate Order
+@@ -14,21 +14,21 @@ Status: PASS
+
+ | Lane | Selected | Status | Dependencies | Affected Surface | Reason |
+ | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | Yes | PASS | none | Root tools future-state navigation and Tool Template V2 contract | Lane has no lane dependencies and is eligible after preflight and compilation pass. |
++| workspace-contract | No | SKIP | none | Root tools future-state navigation and Tool Template V2 contract | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
+ | game-hub | No | SKIP | none | Game Hub mock repository, Game Hub UI, and Toolbox Progress/Build Path game-state bridge | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
+ | game-design | No | SKIP | none | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
+ | game-configuration | No | SKIP | none | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
+ | asset-tool | No | SKIP | none | Asset Tool mock repository, Game Configuration readiness handoff, library records, import preview, and visible failure handling | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
+ | build-path | No | SKIP | none | Toolbox Build Path simplification, workflow status table, and Admin Tools Progress navigation | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
+ | tools-progress | No | SKIP | none | Admin Tools Progress hydration, Toolbox Group view color model, and Game Build Path separation | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
+-| tool-navigation | No | SKIP | none | Admin Tools Progress tool route links, Tool Display Mode build-order previous/next controls, and Toolbox group fallback routing | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
+-| tool-display-mode | No | SKIP | none | Tool Display Mode identity row, registry-owned previous/next links, disabled text fallback, and multi-path group routing | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
++| tool-navigation | No | SKIP | none | Toolbox route links, Tool Display Mode deprecated previous/next removal, and Toolbox group fallback routing | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
++| tool-display-mode | Yes | PASS | none | Tool Display Mode single-line summary, registry-owned badge/tool images, and fullscreen icon swap | Lane has no lane dependencies and is eligible after preflight and compilation pass. |
+ | tool-images | No | SKIP | none | Toolbox registry image contract, Toolbox card image rendering, and Tool Display Mode image fallback | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
+ | tool-runtime | No | SKIP | none | Active public toolbox and Tool Template V2 contract | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
+-| game-runtime | No | SKIP | none | Deprecated archive/v1-v2/games reference coverage | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
++| game-runtime | No | SKIP | none | Deprecated dev/archive/v1-v2/games reference coverage | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
+ | integration | No | SKIP | none | Integration handoff behavior | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
+ | engine-src | No | SKIP | none | src/ engine and shared runtime capability behavior | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
+-| samples | No | SKIP | none | Deprecated archive/v1-v2/samples reference coverage | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
++| samples | No | SKIP | none | Deprecated dev/archive/v1-v2/samples reference coverage | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
+
+ ## Dependency Failures Caught Pre-Runtime
+
+diff --git a/dev/reports/dependency_hydration_reuse_report.md b/dev/reports/dependency_hydration_reuse_report.md
+index 4546b7441..1451b06cf 100644
+--- a/dev/reports/dependency_hydration_reuse_report.md
++++ b/dev/reports/dependency_hydration_reuse_report.md
+@@ -1,22 +1,22 @@
+ # Dependency Hydration Reuse Report
+
+-Generated: 2026-06-23T16:38:48.296Z
++Generated: 2026-06-28T14:20:34.627Z
+ Status: PASS
+
+ ## Summary
+
+-Reused dependency hydration: 0
+-Invalidated dependency hydration: 1
++Reused dependency hydration: 1
++Invalidated dependency hydration: 0
+ Generated dependency hydration: 0
+-Prevented dependency graph hydration: 0
+-Prevented helper resolution passes: 0
++Prevented dependency graph hydration: 1
++Prevented helper resolution passes: 4
+ Prevented fixture ownership traversal: 0
+
+ ## Hydration Decisions
+
+ | Lane | Status | Helpers | Fixtures | Imports | Dependency Hydration Hash | Reason |
+ | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | INVALIDATED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | e9956a75c3585e86 | Dependency hydration was refreshed after warm-start invalidation. |
++| tool-display-mode | REUSED | dev/tests/helpers/playwrightRepoServer.mjs; dev/tests/helpers/playwrightStorageIsolation.mjs; dev/tests/helpers/playwrightV8CoverageReporter.mjs; dev/tests/helpers/workspaceV2CoverageReporter.mjs | none | dev/tests/helpers/playwrightRepoServer.mjs; dev/tests/helpers/playwrightStorageIsolation.mjs; dev/tests/helpers/playwrightV8CoverageReporter.mjs; dev/tests/helpers/workspaceV2CoverageReporter.mjs; src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/server/local-api-router.mjs; toolbox/toolRegistry.js | 320babaf259f9ee0 | Dependency hydration reused from validated warm-start state. |
+
+ ## Safeguards
+
+diff --git a/dev/reports/execution_graph_reuse_report.md b/dev/reports/execution_graph_reuse_report.md
+index b875bdac2..f872cfdca 100644
+--- a/dev/reports/execution_graph_reuse_report.md
++++ b/dev/reports/execution_graph_reuse_report.md
+@@ -1,22 +1,22 @@
+ # Execution Graph Reuse Report
+
+-Generated: 2026-06-23T16:38:48.296Z
++Generated: 2026-06-28T14:20:34.628Z
+ Status: PASS
+
+ ## Summary
+
+-Reused execution graphs: 0
+-Prevented graph rebuilds: 0
+-Prevented redundant dependency traversal: 0
+-Prevented fixture/helper graph assembly: 0
+-Prevented manifest traversal: 0
+-Prevented targeted scheduling work: 0
++Reused execution graphs: 1
++Prevented graph rebuilds: 1
++Prevented redundant dependency traversal: 1
++Prevented fixture/helper graph assembly: 4
++Prevented manifest traversal: 1
++Prevented targeted scheduling work: 1
+
+ ## Execution Graph Decisions
+
+ | Lane | Status | Snapshot Status | Execution Graph Hash | Reason |
+ | --- | --- | --- | --- | --- |
+-| workspace-contract | INVALIDATED | INVALIDATED | 98ec1cea6aaaef57 | Lane snapshot is part of the selected targeted execution graph. |
++| tool-display-mode | REUSED | REUSED | a054cd1bc749225a | Lane snapshot is part of the selected targeted execution graph. |
+
+ ## Safeguards
+
+diff --git a/dev/reports/failure_fingerprint_report.md b/dev/reports/failure_fingerprint_report.md
+index a1d3f0de6..8bc4327d1 100644
+--- a/dev/reports/failure_fingerprint_report.md
++++ b/dev/reports/failure_fingerprint_report.md
+@@ -1,12 +1,12 @@
+ # Failure Fingerprint Report
+
+-Generated: 2026-06-23T16:38:57.091Z
+-Status: WARN
++Generated: 2026-06-28T14:20:59.081Z
++Status: PASS
+
+ ## Summary
+
+ Deterministic setup failures: 0
+-Runtime failures: 1
++Runtime failures: 0
+ Flaky/transient failures: 0
+ Infrastructure failures: 0
+
+@@ -14,7 +14,7 @@ Infrastructure failures: 0
+
+ | Fingerprint | Category | Rule | Lane | Source | Retry Allowed | Diagnostic |
+ | --- | --- | --- | --- | --- | --- | --- |
+-| fc8ad6ba552baa70 | runtime failure | runtime-failure | workspace-contract | runtime command | Yes | workspace-contract command failed: "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| none | none | none | none | none | No | No failures observed during deterministic classification. |
+
+ ## Known Deterministic Fingerprint Rules
+
+diff --git a/dev/reports/filesystem_scan_reduction_report.md b/dev/reports/filesystem_scan_reduction_report.md
+index 6ecd90ec9..a53adc92a 100644
+--- a/dev/reports/filesystem_scan_reduction_report.md
++++ b/dev/reports/filesystem_scan_reduction_report.md
+@@ -1,18 +1,24 @@
+ # Filesystem Scan Reduction Report
+
+-Generated: 2026-06-27T19:31:16.153Z
++Generated: 2026-06-28T14:20:34.605Z
+ Status: PASS
+
+ ## Scan Enforcement
+
+ | Path | Status | Reason |
+ | --- | --- | --- |
+-| dev/tests/playwright | BROAD | Standalone structural audit intentionally enumerated all Playwright ownership buckets. |
+-| dev/tests/helpers | BROAD | Standalone structural audit intentionally checked all shared helper ownership. |
++| dev/tests/playwright | PREVENTED | Targeted lanes supplied explicit spec files; global Playwright discovery was not used. |
++| dev/tests/helpers | SCOPED | Helper discovery used the targeted import graph instead of enumerating every helper. |
++| games/ | SCOPED | Game fixture discovery used explicit manifest/path references from targeted files. |
++| dev/tests/playwright/account | SKIP | Unselected lane directory discovery was skipped. |
++| dev/tests/playwright/engine | SKIP | Unselected lane directory discovery was skipped. |
++| dev/tests/playwright/games | SKIP | Unselected lane directory discovery was skipped. |
++| dev/tests/playwright/integration | SKIP | Unselected lane directory discovery was skipped. |
++| dev/tests/playwright/tools | SKIP | Unselected lane directory discovery was skipped. |
+
+ ## Runtime Savings Observations
+
+-- Standalone ownership validation used broad mode by design; targeted lane runner supplies scoped discovery inputs.
++- Scoped discovery prevented broad Playwright lane-directory enumeration for targeted execution.
+ - Helper and fixture inputs are explicit, allowing the runner to cache the discovery map within one execution cycle.
+ - Deterministic discovery-scope failures block Playwright launch instead of expanding into fallback lanes.
+ - Full samples smoke remains outside targeted discovery unless samples scope is explicitly active.
+diff --git a/dev/reports/incremental_validation_report.md b/dev/reports/incremental_validation_report.md
+index 43aa18265..495eaf49f 100644
+--- a/dev/reports/incremental_validation_report.md
++++ b/dev/reports/incremental_validation_report.md
+@@ -1,24 +1,24 @@
+ # Incremental Validation Report
+
+-Generated: 2026-06-23T16:38:48.296Z
++Generated: 2026-06-28T14:20:34.629Z
+ Status: PASS
+
+ ## Reuse Summary
+
+-Reused manifests: 0
+-Invalidated manifests: 1
++Reused manifests: 1
++Invalidated manifests: 0
+ Generated manifests: 0
+ Skipped manifests: 0
+-Prevented lane regeneration: 0
+-Prevented discovery scans: 0
+-Prevented helper resolution passes: 0
++Prevented lane regeneration: 1
++Prevented discovery scans: 1
++Prevented helper resolution passes: 4
+ Prevented fixture resolution passes: 0
+
+ ## Incremental Decisions
+
+ | Lane | Decision | Invalidated By | Runtime Savings Observation |
+ | --- | --- | --- | --- |
+-| workspace-contract | INVALIDATED | Persistent manifest lane definition hash changed for workspace-contract. | Manifest was regenerated or skipped; no reuse savings for this lane. |
++| tool-display-mode | REUSED | unchanged inputs | Reused 1 test input(s), 4 helper(s), and 0 fixture(s). |
+
+ ## Invalidation Rules
+
+@@ -33,4 +33,4 @@ Prevented fixture resolution passes: 0
+ - Fresh persisted manifests avoid repeated lane graph generation.
+ - Fresh persisted manifests avoid repeated helper and fixture resolution.
+ - Fresh persisted manifests avoid repeated ownership scans outside explicit manifest inputs.
+-- Incremental validation remains deterministic and does not use project JSON, toolState, localStorage, sessionStorage, or repo tmp/.
++- Incremental validation remains deterministic and does not use project JSON, toolState, localStorage, sessionStorage, or repo artifact tmp/.
+diff --git a/dev/reports/lane_compilation_report.md b/dev/reports/lane_compilation_report.md
+index c0a7442d4..893087590 100644
+--- a/dev/reports/lane_compilation_report.md
++++ b/dev/reports/lane_compilation_report.md
+@@ -1,27 +1,27 @@
+ # Lane Compilation Report
+
+-Generated: 2026-06-23T16:38:48.295Z
++Generated: 2026-06-28T14:20:34.626Z
+ Status: PASS
+
+ ## Lane Graph
+
+ | Lane | Status | Affected Surface | Targets | Commands | Reason |
+ | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | PASS | Root tools future-state navigation and Tool Template V2 contract | tests/playwright/tools/RootToolsFutureState.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Lane graph, command shape, targets, fixtures, and ownership compile before runtime. |
+-| game-hub | SKIP | Game Hub mock repository, Game Hub UI, and Toolbox Progress/Build Path game-state bridge | tests/playwright/tools/GameHubMockRepository.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/GameHubMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| game-design | SKIP | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | tests/playwright/tools/GameDesignMockRepository.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/GameDesignMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| game-configuration | SKIP | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | tests/playwright/tools/GameConfigurationMockRepository.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/GameConfigurationMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| asset-tool | SKIP | Asset Tool mock repository, Game Configuration readiness handoff, library records, import preview, and visible failure handling | tests/playwright/tools/AssetToolMockRepository.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/AssetToolMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| build-path | SKIP | Toolbox Build Path simplification, workflow status table, and Admin Tools Progress navigation | tests/playwright/tools/BuildPathProgressSimplification.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/BuildPathProgressSimplification.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| tools-progress | SKIP | Admin Tools Progress hydration, Toolbox Group view color model, and Game Build Path separation | tests/playwright/tools/ToolsProgressHydration.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/ToolsProgressHydration.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| tool-navigation | SKIP | Admin Tools Progress tool route links, Tool Display Mode build-order previous/next controls, and Toolbox group fallback routing | tests/playwright/tools/ToolNavigationPrevNext.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/ToolNavigationPrevNext.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| tool-display-mode | SKIP | Tool Display Mode identity row, registry-owned previous/next links, disabled text fallback, and multi-path group routing | tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| tool-images | SKIP | Toolbox registry image contract, Toolbox card image rendering, and Tool Display Mode image fallback | tests/playwright/tools/ToolImageRegistry.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/ToolImageRegistry.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| tool-runtime | SKIP | Active public toolbox and Tool Template V2 contract | tests/playwright/tools/RootToolsFutureState.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| game-runtime | SKIP | Deprecated archive/v1-v2/games reference coverage | none | none | Lane was not selected. |
++| workspace-contract | SKIP | Root tools future-state navigation and Tool Template V2 contract | dev/tests/playwright/tools/RootToolsFutureState.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test dev/tests/playwright/tools/RootToolsFutureState.spec.mjs --config=dev/config/playwright.config.cjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| game-hub | SKIP | Game Hub mock repository, Game Hub UI, and Toolbox Progress/Build Path game-state bridge | dev/tests/playwright/tools/GameHubMockRepository.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test dev/tests/playwright/tools/GameHubMockRepository.spec.mjs --config=dev/config/playwright.config.cjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| game-design | SKIP | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | dev/tests/playwright/tools/GameDesignMockRepository.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test dev/tests/playwright/tools/GameDesignMockRepository.spec.mjs --config=dev/config/playwright.config.cjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| game-configuration | SKIP | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | dev/tests/playwright/tools/GameConfigurationMockRepository.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test dev/tests/playwright/tools/GameConfigurationMockRepository.spec.mjs --config=dev/config/playwright.config.cjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| asset-tool | SKIP | Asset Tool mock repository, Game Configuration readiness handoff, library records, import preview, and visible failure handling | dev/tests/playwright/tools/AssetToolMockRepository.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test dev/tests/playwright/tools/AssetToolMockRepository.spec.mjs --config=dev/config/playwright.config.cjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| build-path | SKIP | Toolbox Build Path simplification, workflow status table, and Admin Tools Progress navigation | dev/tests/playwright/tools/BuildPathProgressSimplification.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test dev/tests/playwright/tools/BuildPathProgressSimplification.spec.mjs --config=dev/config/playwright.config.cjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| tools-progress | SKIP | Admin Tools Progress hydration, Toolbox Group view color model, and Game Build Path separation | dev/tests/playwright/tools/ToolsProgressHydration.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test dev/tests/playwright/tools/ToolsProgressHydration.spec.mjs --config=dev/config/playwright.config.cjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| tool-navigation | SKIP | Toolbox route links, Tool Display Mode deprecated previous/next removal, and Toolbox group fallback routing | dev/tests/playwright/tools/ToolNavigationPrevNext.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test dev/tests/playwright/tools/ToolNavigationPrevNext.spec.mjs --config=dev/config/playwright.config.cjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| tool-display-mode | PASS | Tool Display Mode single-line summary, registry-owned badge/tool images, and fullscreen icon swap | dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs --config=dev/config/playwright.config.cjs --project=playwright --workers=1 --reporter=list | Lane graph, command shape, targets, fixtures, and ownership compile before runtime. |
++| tool-images | SKIP | Toolbox registry image contract, Toolbox card image rendering, and Tool Display Mode image fallback | dev/tests/playwright/tools/ToolImageRegistry.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test dev/tests/playwright/tools/ToolImageRegistry.spec.mjs --config=dev/config/playwright.config.cjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| tool-runtime | SKIP | Active public toolbox and Tool Template V2 contract | dev/tests/playwright/tools/RootToolsFutureState.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test dev/tests/playwright/tools/RootToolsFutureState.spec.mjs --config=dev/config/playwright.config.cjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| game-runtime | SKIP | Deprecated dev/archive/v1-v2/games reference coverage | none | none | Lane was not selected. |
+ | integration | SKIP | Integration handoff behavior | none | none | Lane was not selected. |
+-| engine-src | SKIP | src/ engine and shared runtime capability behavior | tests/core/EngineCoreBoundaryBaseline.test.mjs; tests/core/FrameClock.test.mjs; tests/core/FixedTicker.test.mjs; tests/assets/AssetLoaderSystem.test.mjs; tests/audio/AudioService.test.mjs; tests/input/InputMap.test.mjs; tests/input/KeyboardState.test.mjs; tests/input/MouseState.test.mjs; tests/input/GamepadInputAdapter.test.mjs; tests/input/GamepadHapticsService.test.mjs; tests/render/Renderer.test.mjs | "C:\\Program Files\\nodejs\\node.exe" scripts/run-node-test-files.mjs tests/core/EngineCoreBoundaryBaseline.test.mjs tests/core/FrameClock.test.mjs tests/core/FixedTicker.test.mjs tests/assets/AssetLoaderSystem.test.mjs tests/audio/AudioService.test.mjs tests/input/InputMap.test.mjs tests/input/KeyboardState.test.mjs tests/input/MouseState.test.mjs tests/input/GamepadInputAdapter.test.mjs tests/input/GamepadHapticsService.test.mjs tests/render/Renderer.test.mjs | Lane was not selected. |
+-| samples | SKIP | Deprecated archive/v1-v2/samples reference coverage | none | none | Lane was not selected. |
++| engine-src | SKIP | src/ engine and shared runtime capability behavior | dev/tests/core/EngineCoreBoundaryBaseline.test.mjs; dev/tests/engine/core/FrameClock.test.mjs; dev/tests/engine/core/FixedTicker.test.mjs; dev/tests/assets/AssetLoaderSystem.test.mjs; dev/tests/audio/AudioService.test.mjs; dev/tests/input/InputMap.test.mjs; dev/tests/input/KeyboardState.test.mjs; dev/tests/input/MouseState.test.mjs; dev/tests/input/GamepadInputAdapter.test.mjs; dev/tests/input/GamepadHapticsService.test.mjs; dev/tests/render/Renderer.test.mjs | C:\nvm4w\nodejs\node.exe dev/scripts/run-node-test-files.mjs dev/tests/core/EngineCoreBoundaryBaseline.test.mjs dev/tests/engine/core/FrameClock.test.mjs dev/tests/engine/core/FixedTicker.test.mjs dev/tests/assets/AssetLoaderSystem.test.mjs dev/tests/audio/AudioService.test.mjs dev/tests/input/InputMap.test.mjs dev/tests/input/KeyboardState.test.mjs dev/tests/input/MouseState.test.mjs dev/tests/input/GamepadInputAdapter.test.mjs dev/tests/input/GamepadHapticsService.test.mjs dev/tests/render/Renderer.test.mjs | Lane was not selected. |
++| samples | SKIP | Deprecated dev/archive/v1-v2/samples reference coverage | none | none | Lane was not selected. |
+
+ ## Compilation Failures
+
+diff --git a/dev/reports/lane_deduplication_report.md b/dev/reports/lane_deduplication_report.md
+index 112fe485b..37e70b92d 100644
+--- a/dev/reports/lane_deduplication_report.md
++++ b/dev/reports/lane_deduplication_report.md
+@@ -1,12 +1,12 @@
+ # Lane Deduplication Report
+
+-Generated: 2026-06-23T16:38:48.295Z
++Generated: 2026-06-28T14:20:34.626Z
+ Status: PASS
+
+ ## Summary
+
+-Raw lane requests: workspace-contract
+-Unique scheduled lanes: workspace-contract
++Raw lane requests: tool-display-mode
++Unique scheduled lanes: tool-display-mode
+ Prevented duplicate lane executions: 0
+ Prevented browser launches: 0
+ Prevented Workspace lane reruns: 0
+diff --git a/dev/reports/lane_input_validation_report.md b/dev/reports/lane_input_validation_report.md
+index 2911bcfe5..c8100d418 100644
+--- a/dev/reports/lane_input_validation_report.md
++++ b/dev/reports/lane_input_validation_report.md
+@@ -1,25 +1,25 @@
+ # Lane Input Validation Report
+
+-Generated: 2026-06-23T16:38:48.296Z
++Generated: 2026-06-28T14:20:34.629Z
+ Status: PASS
+
+ ## Input Files
+
+ | Lane | Role | File | Status | Reason |
+ | --- | --- | --- | --- | --- |
+-| workspace-contract | test | tests/playwright/tools/RootToolsFutureState.spec.mjs | PASS | Manifest test input is explicit, present, and owned by the lane. |
+-| workspace-contract | helper | tests/helpers/playwrightRepoServer.mjs | PASS | Reusable helper is explicit, present, and shared-helper owned. |
+-| workspace-contract | helper | tests/helpers/playwrightStorageIsolation.mjs | PASS | Reusable helper is explicit, present, and shared-helper owned. |
+-| workspace-contract | helper | tests/helpers/playwrightV8CoverageReporter.mjs | PASS | Reusable helper is explicit, present, and shared-helper owned. |
+-| workspace-contract | helper | tests/helpers/workspaceV2CoverageReporter.mjs | PASS | Reusable helper is explicit, present, and shared-helper owned. |
+-| workspace-contract | import | src/dev-runtime/admin/admin-notes-directory.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
+-| workspace-contract | import | src/dev-runtime/admin/admin-notes-menu.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
+-| workspace-contract | import | src/dev-runtime/persistence/mock-db-store.js | PASS | Relative import dependency is resolved and recorded in the manifest. |
+-| workspace-contract | import | src/dev-runtime/server/local-api-router.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
+-| workspace-contract | import | tests/helpers/playwrightRepoServer.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
+-| workspace-contract | import | tests/helpers/playwrightStorageIsolation.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
+-| workspace-contract | import | tests/helpers/playwrightV8CoverageReporter.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
+-| workspace-contract | import | tests/helpers/workspaceV2CoverageReporter.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
++| tool-display-mode | test | dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs | PASS | Manifest test input is explicit, present, and owned by the lane. |
++| tool-display-mode | helper | dev/tests/helpers/playwrightRepoServer.mjs | PASS | Reusable helper is explicit, present, and shared-helper owned. |
++| tool-display-mode | helper | dev/tests/helpers/playwrightStorageIsolation.mjs | PASS | Reusable helper is explicit, present, and shared-helper owned. |
++| tool-display-mode | helper | dev/tests/helpers/playwrightV8CoverageReporter.mjs | PASS | Reusable helper is explicit, present, and shared-helper owned. |
++| tool-display-mode | helper | dev/tests/helpers/workspaceV2CoverageReporter.mjs | PASS | Reusable helper is explicit, present, and shared-helper owned. |
++| tool-display-mode | import | dev/tests/helpers/playwrightRepoServer.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
++| tool-display-mode | import | dev/tests/helpers/playwrightStorageIsolation.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
++| tool-display-mode | import | dev/tests/helpers/playwrightV8CoverageReporter.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
++| tool-display-mode | import | dev/tests/helpers/workspaceV2CoverageReporter.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
++| tool-display-mode | import | src/dev-runtime/admin/admin-notes-directory.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
++| tool-display-mode | import | src/dev-runtime/admin/admin-notes-menu.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
++| tool-display-mode | import | src/dev-runtime/server/local-api-router.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
++| tool-display-mode | import | toolbox/toolRegistry.js | PASS | Relative import dependency is resolved and recorded in the manifest. |
+
+ ## Ownership Validation Failures
+
+diff --git a/dev/reports/lane_runtime_optimization_report.md b/dev/reports/lane_runtime_optimization_report.md
+index 4152520f7..fcf16224b 100644
+--- a/dev/reports/lane_runtime_optimization_report.md
++++ b/dev/reports/lane_runtime_optimization_report.md
+@@ -1,16 +1,16 @@
+ # Lane Runtime Optimization Report
+
+-Generated: 2026-06-23T16:38:48.295Z
++Generated: 2026-06-28T14:20:34.627Z
+ Status: PASS
+
+ ## Runtime Cost Summary
+
+ Reused runtime sessions: 0
+-Reused lane snapshots: 0
+-Reused warm-start lanes: 0
+-Reused dependency hydration: 0
+-Prevented graph rebuilds: 0
+-Prevented redundant initialization: 0
++Reused lane snapshots: 1
++Reused warm-start lanes: 1
++Reused dependency hydration: 1
++Prevented graph rebuilds: 1
++Prevented redundant initialization: 1
+ Prevented redundant browser launches: 0
+ Prevented redundant lane execution: 14
+ Baseline Playwright/browser launches: 1
+@@ -18,7 +18,7 @@ Scheduled Playwright/browser launches: 1
+
+ ## Scheduled Lane Order
+
+-1. workspace-contract
++1. tool-display-mode
+
+ ## Scheduling Blockers
+
+@@ -28,7 +28,7 @@ No zero-browser, compilation, or dependency blockers were found.
+
+ | Lane | Snapshot | Warm Start | Hydration | Baseline Browser Launches | Scheduled Browser Launches | Commands | Reason |
+ | --- | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | INVALIDATED | INVALIDATED | INVALIDATED | 1 | 1 | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
++| tool-display-mode | REUSED | REUSED | REUSED | 1 | 1 | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs --config=dev/config/playwright.config.cjs --project=playwright --workers=1 --reporter=list | Tool Display Mode validates the single-line summary contract, direct summary children, registry-owned badge/tool art, fullscreen/exit icon swap, and removal of the deprecated body/navigation row without exercising unrelated toolbox routes. |
+
+ ## Runtime Savings Observations
+
+diff --git a/dev/reports/lane_snapshot_report.md b/dev/reports/lane_snapshot_report.md
+index 727fddbd0..7e78df4f7 100644
+--- a/dev/reports/lane_snapshot_report.md
++++ b/dev/reports/lane_snapshot_report.md
+@@ -1,23 +1,23 @@
+ # Lane Snapshot Report
+
+-Generated: 2026-06-23T16:38:48.296Z
++Generated: 2026-06-28T14:20:34.628Z
+ Status: PASS
+-Snapshot directory: docs_build/dev/reports/lane_snapshots
++Snapshot directory: dev/workspace/generated/lane_snapshots
+
+ ## Summary
+
+-Reused lane snapshots: 0
+-Invalidated snapshots: 1
++Reused lane snapshots: 1
++Invalidated snapshots: 0
+ Generated snapshots: 0
+ Skipped snapshots: 0
+-Prevented graph rebuilds: 0
+-Prevented manifest traversal: 0
++Prevented graph rebuilds: 1
++Prevented manifest traversal: 1
+
+ ## Snapshot Decisions
+
+ | Lane | Status | Snapshot Path | Manifest Hash | Dependency Graph Hash | Helper Graph Hash | Fixture Graph Hash | Runtime Config Hash | Execution Graph Hash | Snapshot Hash | Reason |
+ | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | fdada39983df06d5 | 4dcb31ccda1bdb5a | 6cee3b9e8c76ce0d | 6c4fac7630b0b6f3 | 2ba7784af3a4df8d | 98ec1cea6aaaef57 | 54af1dc18e270910 | Lane snapshot commandsHash changed for workspace-contract.; Lane snapshot dependencyGraphHash changed for workspace-contract.; Lane snapshot executionGraphHash changed for workspace-contract.; Lane snapshot helperGraphHash changed for workspace-contract.; Lane snapshot inputHash changed for workspace-contract.; Lane snapshot laneDefinitionHash changed for workspace-contract.; Lane snapshot manifestHash changed for workspace-contract.; Lane snapshot runtimeConfigurationHash changed for workspace-contract.; Lane snapshot snapshotHash changed for workspace-contract.; Lane snapshot warmStartHash changed for workspace-contract. |
++| tool-display-mode | REUSED | dev/workspace/generated/lane_snapshots/tool-display-mode.json | 9f823d041166f7f6 | 6de254babab8aecd | 9b7a9aaaca6ffbca | 6c4fac7630b0b6f3 | af6fb13c750a75a6 | a054cd1bc749225a | d86efa45fd194148 | Targeted files, manifest, dependency graph, helper graph, fixture graph, ownership, lane config, and runtime config are unchanged. |
+
+ ## Snapshot Validation Findings
+
+diff --git a/dev/reports/lane_warm_start_report.md b/dev/reports/lane_warm_start_report.md
+index 8ce74ca47..2e1c54f6e 100644
+--- a/dev/reports/lane_warm_start_report.md
++++ b/dev/reports/lane_warm_start_report.md
+@@ -1,23 +1,23 @@
+ # Lane Warm-Start Report
+
+-Generated: 2026-06-23T16:38:48.296Z
++Generated: 2026-06-28T14:20:34.627Z
+ Status: PASS
+-Warm-start directory: docs_build/dev/reports/lane_warm_starts
++Warm-start directory: dev/workspace/generated/lane_warm_starts
+
+ ## Summary
+
+-Reused warm-start lanes: 0
+-Invalidated warm-start states: 1
++Reused warm-start lanes: 1
++Invalidated warm-start states: 0
+ Generated warm-start states: 0
+ Skipped warm-start states: 0
+-Prevented redundant initialization: 0
+-Prevented lane graph assembly: 0
++Prevented redundant initialization: 1
++Prevented lane graph assembly: 1
+
+ ## Warm-Start Decisions
+
+ | Lane | Status | Warm-Start Path | Manifest Hash | Warm-Start Hash | Dependency Hydration Hash | Reason |
+ | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | fdada39983df06d5 | 89d30ba62849a51c | e9956a75c3585e86 | Warm-start commandsHash changed for workspace-contract.; Warm-start dependencyGraphHash changed for workspace-contract.; Warm-start dependencyHydrationHash changed for workspace-contract.; Warm-start inputHash changed for workspace-contract.; Warm-start laneConfigHash changed for workspace-contract.; Warm-start laneDefinitionHash changed for workspace-contract.; Warm-start manifestHash changed for workspace-contract.; Warm-start warmStartHash changed for workspace-contract. |
++| tool-display-mode | REUSED | dev/workspace/generated/lane_warm_starts/tool-display-mode.json | 9f823d041166f7f6 | 7b7f09e88e28d5f4 | 320babaf259f9ee0 | Manifest inputs, dependency graph, ownership metadata, helper placement, fixture placement, and lane configuration are unchanged. |
+
+ ## Fast-Fail Safeguards
+
+diff --git a/dev/reports/monolith_trigger_removal_report.md b/dev/reports/monolith_trigger_removal_report.md
+index 266ecc808..3edcb2bfb 100644
+--- a/dev/reports/monolith_trigger_removal_report.md
++++ b/dev/reports/monolith_trigger_removal_report.md
+@@ -1,6 +1,6 @@
+ # Monolith Trigger Removal Report
+
+-Generated: 2026-06-23T16:38:57.092Z
++Generated: 2026-06-28T14:20:59.081Z
+ Status: PASS
+
+ ## Removed Broad Execution Triggers
+@@ -8,7 +8,7 @@ Status: PASS
+ | Trigger | Status | Before | After |
+ | --- | --- | --- | --- |
+ | run-targeted-test-lanes.mjs with no --lane/--lanes/--all | REMOVED | no lane arguments selected all runtime lanes by default | safe no-lane mode; no runtime lanes execute |
+-| npm run test:workspace-v2 | REDIRECTED | direct deprecated Workspace Manager V2 Playwright spec | node ./scripts/run-targeted-test-lanes.mjs --lane workspace-contract |
++| npm run test:workspace-v2 | REDIRECTED | direct deprecated Workspace Manager V2 Playwright spec | node ./dev/scripts/run-targeted-test-lanes.mjs --lane workspace-contract |
+ | nested Workspace lane startup | REMOVED | workspace-contract invoked npm run test:workspace-v2 | workspace-contract command uses the Node Playwright CLI directly |
+
+ ## Remaining Broad Discovery Callers
+@@ -28,9 +28,9 @@ Status: PASS
+ ## Execution Safeguards
+
+ No-argument safe mode active for this invocation: No
+-Scheduled runtime lanes: workspace-contract
+-Executed lanes: workspace-contract
+-Skipped lanes: game-hub, game-design, game-configuration, asset-tool, build-path, tools-progress, tool-navigation, tool-display-mode, tool-images, tool-runtime, game-runtime, integration, engine-src, samples
++Scheduled runtime lanes: tool-display-mode
++Executed lanes: tool-display-mode
++Skipped lanes: workspace-contract, game-hub, game-design, game-configuration, asset-tool, build-path, tools-progress, tool-navigation, tool-images, tool-runtime, game-runtime, integration, engine-src, samples
+ Full samples smoke: SKIP - Skipped because changed files do not modify sample JSON or shared sample loader/framework behavior.
+ Unaffected lane execution blocked: Yes
+
+diff --git a/dev/reports/persistent_lane_manifest_report.md b/dev/reports/persistent_lane_manifest_report.md
+index 30fff9f34..9c39f10a5 100644
+--- a/dev/reports/persistent_lane_manifest_report.md
++++ b/dev/reports/persistent_lane_manifest_report.md
+@@ -1,27 +1,27 @@
+ # Persistent Lane Manifest Report
+
+-Generated: 2026-06-23T16:38:48.296Z
++Generated: 2026-06-28T14:20:34.629Z
+ Status: PASS
+-Manifest directory: docs_build/dev/reports/lane_manifests
++Manifest directory: dev/workspace/generated/lane_manifests
+
+ ## Summary
+
+-Reused manifests: 0
+-Invalidated manifests: 1
++Reused manifests: 1
++Invalidated manifests: 0
+ Generated manifests: 0
+-Prevented discovery scans: 0
++Prevented discovery scans: 1
+
+ ## Manifest Events
+
+ | Lane | Status | Manifest Path | Input Hash | Manifest Hash | Reason |
+ | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_manifests/workspace-contract.json | 61358ffa71dc7104 | fdada39983df06d5 | Persistent manifest lane definition hash changed for workspace-contract. |
++| tool-display-mode | REUSED | dev/workspace/generated/lane_manifests/tool-display-mode.json | 95c8372105592543 | 9f823d041166f7f6 | Inputs unchanged; persisted lane manifest reused. |
+
+ ## Persisted Manifest Files
+
+ | Lane | Ownership | Source | Tests | Helpers | Fixtures | Dependency Graph Hash | Manifest Hash |
+ | --- | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | tools | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 4dcb31ccda1bdb5a | fdada39983df06d5 |
++| tool-display-mode | tools | persistent | dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs | dev/tests/helpers/playwrightRepoServer.mjs; dev/tests/helpers/playwrightStorageIsolation.mjs; dev/tests/helpers/playwrightV8CoverageReporter.mjs; dev/tests/helpers/workspaceV2CoverageReporter.mjs | none | 6de254babab8aecd | 9f823d041166f7f6 |
+
+ ## Fast-Fail Enforcement
+
+diff --git a/dev/reports/playwright_discovery_ownership_report.md b/dev/reports/playwright_discovery_ownership_report.md
+index 146056e54..7d6600f88 100644
+--- a/dev/reports/playwright_discovery_ownership_report.md
++++ b/dev/reports/playwright_discovery_ownership_report.md
+@@ -1,73 +1,21 @@
+ # Playwright Discovery Ownership Report
+
+-Generated: 2026-06-27T19:31:16.143Z
++Generated: 2026-06-28T14:20:34.601Z
+ Status: PASS
+
+ ## Discovery-Time Ownership
+
+ | File | Lane Requested | Detected Ownership | Expected Location | Lane Blocked | Status | Reason |
+ | --- | --- | --- | --- | --- | --- | --- |
+-| dev/tests/playwright/tools/AdminDbViewer.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/AdminInvitationsNavPage.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/AdminNotesLocalViewer.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/ApiStaticRouteRecovery.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/AssetToolMockRepository.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/BrowserApiUrlConfig.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/BuildPathProgressSimplification.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/EnvironmentBannerCoverage.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/EventsTool.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/GameCrewFoundation.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/GameDesignApiBehavior.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/GameHubMockRepository.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/GameJourneyTool.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/HitboxesTool.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/InputMappingV2Tool.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/LoginSessionMode.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/MessagesTool.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/ObjectsTool.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/OwnerAiCreditsPage.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/OwnerMembershipsPage.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/PaletteToolMockRepository.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/PublicMarketplacePage.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/PublicMembershipsPage.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/RemainingLegalPages.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/RootToolsFutureState.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tool-specific filename: RootToolsFutureState |
+-| dev/tests/playwright/tools/StaticOnlyLoginApiRequired.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/TagsTool.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/TermsOfServicePage.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/TextToSpeechFunctional.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/ToolboxRoutePages.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/ToolCenterFullscreenAccordion.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/ToolImageRegistry.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/tools/ToolNavigationPrevNext.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+-| dev/tests/playwright/games/AsteroidsBackgroundAssetResolution.spec.mjs | games | games | dev/tests/playwright/games | none | PASS | games lane location |
+-| dev/tests/playwright/games/AsteroidsBeatTiming.spec.mjs | games | games | dev/tests/playwright/games | none | PASS | games lane location |
+-| dev/tests/playwright/games/AsteroidsGameSceneCleanup.spec.mjs | games | games | dev/tests/playwright/games | none | PASS | games lane location |
+-| dev/tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs | games | games | dev/tests/playwright/games | none | PASS | games lane location |
++| dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs | tools | tools | dev/tests/playwright/tools | none | PASS | tools lane location |
+
+ ## Shared Helper Naming
+
+ | File | Detected Ownership | Expected Location | Status | Reason |
+ | --- | --- | --- | --- | --- |
+-| dev/tests/helpers/browserExtensionNoise.mjs | shared | dev/tests/helpers | PASS | Generic shared helper name. |
+-| dev/tests/helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs | shared | dev/tests/helpers | PASS | Generic shared helper name. |
+-| dev/tests/helpers/messagesPostgresClientStub.mjs | shared | dev/tests/helpers | PASS | Generic shared helper name. |
+-| dev/tests/helpers/playwrightCtrlTapClick.mjs | shared | dev/tests/helpers | PASS | Generic shared helper name. |
+ | dev/tests/helpers/playwrightRepoServer.mjs | shared | dev/tests/helpers | PASS | Intentionally shared helper is documented. |
+ | dev/tests/helpers/playwrightStorageIsolation.mjs | shared | dev/tests/helpers | PASS | Intentionally shared helper is documented. |
+ | dev/tests/helpers/playwrightV8CoverageReporter.mjs | shared | dev/tests/helpers | PASS | Generic shared helper name. |
+-| dev/tests/helpers/runtimeSceneLoaderHotReload.helpers.mjs | shared | dev/tests/helpers | PASS | Generic shared helper name. |
+-| dev/tests/helpers/testCoverageCatalog.mjs | shared | dev/tests/helpers | PASS | Generic shared helper name. |
+-| dev/tests/helpers/toolFormControlAssertions.mjs | shared | dev/tests/helpers | PASS | Generic shared helper name. |
+ | dev/tests/helpers/workspaceV2CoverageReporter.mjs | shared | dev/tests/helpers | PASS | Intentionally shared helper is documented. |
+
+ ## Blocking Findings
+diff --git a/dev/reports/playwright_discovery_scope_report.md b/dev/reports/playwright_discovery_scope_report.md
+index ca512483f..a7fc5eae4 100644
+--- a/dev/reports/playwright_discovery_scope_report.md
++++ b/dev/reports/playwright_discovery_scope_report.md
+@@ -1,14 +1,18 @@
+ # Playwright Discovery Scope Report
+
+-Generated: 2026-06-27T19:31:16.148Z
++Generated: 2026-06-28T14:20:34.604Z
+ Status: PASS
+-Scoped discovery: No
++Scoped discovery: Yes
+
+ ## Targeted Discovery Scope
+
+ | Role | File | Status | Reason |
+ | --- | --- | --- | --- |
+-| none | none | SKIP | No explicit scoped discovery inputs were provided; standalone audit used the broad structural mode. |
++| target spec | dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs | PASS | Explicit target is inside the selected discovery lane scope. |
++| required shared helper | dev/tests/helpers/playwrightRepoServer.mjs | PASS | Required shared helper was resolved from targeted spec imports. |
++| required shared helper | dev/tests/helpers/playwrightStorageIsolation.mjs | PASS | Required shared helper was resolved from targeted spec imports. |
++| required shared helper | dev/tests/helpers/playwrightV8CoverageReporter.mjs | PASS | Required shared helper was resolved from targeted spec imports. |
++| required shared helper | dev/tests/helpers/workspaceV2CoverageReporter.mjs | PASS | Required shared helper was resolved from targeted spec imports. |
+
+ ## Scope Guard
+
+diff --git a/dev/reports/playwright_structure_audit.md b/dev/reports/playwright_structure_audit.md
+index 0a51b1648..68400f9f2 100644
+--- a/dev/reports/playwright_structure_audit.md
++++ b/dev/reports/playwright_structure_audit.md
+@@ -1,17 +1,17 @@
+ # Playwright Structure Audit
+
+-Generated: 2026-06-27T19:31:16.106Z
++Generated: 2026-06-28T14:20:34.576Z
+ Status: PASS
+
+ ## Lane Directories
+
+ | Directory | Status | Reason |
+ | --- | --- | --- |
+-| dev/tests/playwright/account | PASS | Directory is an allowed Playwright lane ownership bucket. |
+-| dev/tests/playwright/games | PASS | Directory is an allowed Playwright lane ownership bucket. |
+-| dev/tests/playwright/tools | PASS | Directory is an allowed Playwright lane ownership bucket. |
+-| dev/tests/playwright/engine | SKIP | No Playwright specs are currently present; this lane may be empty. |
+-| dev/tests/playwright/integration | SKIP | No Playwright specs are currently present; this lane may be empty. |
++| dev/tests/playwright/account | SKIP | Lane was not selected, so targeted discovery did not enumerate this directory. |
++| dev/tests/playwright/engine | SKIP | Lane was not selected, so targeted discovery did not enumerate this directory. |
++| dev/tests/playwright/games | SKIP | Lane was not selected, so targeted discovery did not enumerate this directory. |
++| dev/tests/playwright/integration | SKIP | Lane was not selected, so targeted discovery did not enumerate this directory. |
++| dev/tests/playwright/tools | SKIP | Lane was not selected, so targeted discovery did not enumerate this directory. |
+
+ ## Blocking Findings
+
+@@ -36,62 +36,10 @@ No blocking structural findings.
+
+ | File | Status | Missing Relative Imports |
+ | --- | --- | --- |
+-| dev/tests/playwright/tools/AdminDbViewer.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/AdminInvitationsNavPage.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/AdminNotesLocalViewer.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/ApiStaticRouteRecovery.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/AssetToolMockRepository.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/BrowserApiUrlConfig.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/BuildPathProgressSimplification.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/EnvironmentBannerCoverage.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/EventsTool.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/GameCrewFoundation.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/GameDesignApiBehavior.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/GameHubMockRepository.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/GameJourneyTool.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/HitboxesTool.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/InputMappingV2Tool.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/LoginSessionMode.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/MessagesTool.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/ObjectsTool.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/OwnerAiCreditsPage.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/OwnerMembershipsPage.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/PaletteToolMockRepository.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/PublicMarketplacePage.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/PublicMembershipsPage.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/RemainingLegalPages.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/RootToolsFutureState.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/StaticOnlyLoginApiRequired.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/TagsTool.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/TermsOfServicePage.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/TextToSpeechFunctional.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/ToolboxRoutePages.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/ToolCenterFullscreenAccordion.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/ToolImageRegistry.spec.mjs | PASS | none |
+-| dev/tests/playwright/tools/ToolNavigationPrevNext.spec.mjs | PASS | none |
+-| dev/tests/playwright/games/AsteroidsBackgroundAssetResolution.spec.mjs | PASS | none |
+-| dev/tests/playwright/games/AsteroidsBeatTiming.spec.mjs | PASS | none |
+-| dev/tests/playwright/games/AsteroidsGameSceneCleanup.spec.mjs | PASS | none |
+-| dev/tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs | PASS | none |
+-| dev/tests/helpers/browserExtensionNoise.mjs | PASS | none |
+-| dev/tests/helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs | PASS | none |
+-| dev/tests/helpers/messagesPostgresClientStub.mjs | PASS | none |
+-| dev/tests/helpers/playwrightCtrlTapClick.mjs | PASS | none |
++| dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs | PASS | none |
+ | dev/tests/helpers/playwrightRepoServer.mjs | PASS | none |
+ | dev/tests/helpers/playwrightStorageIsolation.mjs | PASS | none |
+ | dev/tests/helpers/playwrightV8CoverageReporter.mjs | PASS | none |
+-| dev/tests/helpers/runtimeSceneLoaderHotReload.helpers.mjs | PASS | none |
+-| dev/tests/helpers/testCoverageCatalog.mjs | PASS | none |
+-| dev/tests/helpers/toolFormControlAssertions.mjs | PASS | none |
+ | dev/tests/helpers/workspaceV2CoverageReporter.mjs | PASS | none |
+
+ ## Intentionally Shared Helpers
+diff --git a/dev/reports/playwright_v8_coverage_report.txt b/dev/reports/playwright_v8_coverage_report.txt
+index 9f35fd4bb..23ae016c0 100644
+--- a/dev/reports/playwright_v8_coverage_report.txt
++++ b/dev/reports/playwright_v8_coverage_report.txt
+@@ -12,35 +12,38 @@ Note: entry percentages use function coverage when available, otherwise line cov
+ Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+
+ Exercised tool entry points detected:
+-(83%) Toolbox Index - exercised 3 runtime JS files
++(49%) Toolbox Index - exercised 3 runtime JS files
+ (0%) Tool Template V2 - not exercised by this Playwright run
+-(74%) Theme V2 Shared JS - exercised 6 runtime JS files
++(76%) Theme V2 Shared JS - exercised 4 runtime JS files
+
+ Changed runtime JS files covered:
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(89%) assets/theme-v2/js/tool-display-mode.js - executed lines 251/251; executed functions 25/28
+
+ Files with executed line/function counts where available:
+ (25%) src/api/session-api-client.js - executed lines 67/67; executed functions 3/12
+-(33%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
+ (36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2044/2044; executed functions 12/33
++(38%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 9/24
+ (50%) toolbox/game-hub/game-hub-api-client.js - executed lines 26/26; executed functions 2/4
+ (53%) src/api/server-api-client.js - executed lines 168/168; executed functions 10/19
+-(57%) assets/theme-v2/js/account-auth-service.js - executed lines 64/64; executed functions 4/7
++(54%) toolbox/game-hub/game-hub.js - executed lines 787/787; executed functions 33/61
++(55%) assets/toolbox/game-configuration/js/index.js - executed lines 257/257; executed functions 12/22
+ (64%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 63/98
++(65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
+ (67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
+-(70%) assets/theme-v2/js/login-session.js - executed lines 113/113; executed functions 7/10
+-(75%) src/api/public-config-client.js - executed lines 209/209; executed functions 21/28
+-(77%) assets/theme-v2/js/tool-display-mode.js - executed lines 304/304; executed functions 23/30
++(69%) assets/toolbox/game-design/js/index.js - executed lines 340/340; executed functions 18/26
+ (80%) assets/theme-v2/js/theme-icons.js - executed lines 69/69; executed functions 4/5
+-(81%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 92/113
+-(93%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 27/29
+-(100%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 37/37
+-(100%) assets/toolbox/game-configuration/js/index.js - executed lines 257/257; executed functions 23/23
++(89%) assets/theme-v2/js/tool-display-mode.js - executed lines 251/251; executed functions 25/28
++(97%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 35/36
+
+ Uncovered or low-coverage changed JS files:
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
++(100%) none - no low-coverage changed runtime JS files
+
+ Changed JS files considered:
+-(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/GameDesignApiBehavior.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) dev/scripts/run-targeted-test-lanes.mjs - changed JS file not collected as browser runtime coverage
++(0%) dev/tests/helpers/playwrightRepoServer.mjs - changed JS file not collected as browser runtime coverage
++(0%) dev/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) dev/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) dev/tests/playwright/tools/ToolImageRegistry.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) dev/tests/playwright/tools/ToolNavigationPrevNext.spec.mjs - changed JS file not collected as browser runtime coverage
++(89%) assets/theme-v2/js/tool-display-mode.js - changed JS file with browser V8 coverage
+diff --git a/dev/reports/retry_suppression_report.md b/dev/reports/retry_suppression_report.md
+index ec68cd7e2..c73f2b607 100644
+--- a/dev/reports/retry_suppression_report.md
++++ b/dev/reports/retry_suppression_report.md
+@@ -1,7 +1,7 @@
+ # Retry Suppression Report
+
+-Generated: 2026-06-23T16:38:57.091Z
+-Status: WARN
++Generated: 2026-06-28T14:20:59.081Z
++Status: PASS
+
+ ## Summary
+
+@@ -15,7 +15,7 @@ Prevented repeated lane hydration: 0
+
+ | Fingerprint | Lane | Category | Retry Decision | Reason |
+ | --- | --- | --- | --- | --- |
+-| fc8ad6ba552baa70 | workspace-contract | runtime failure | Allowed only on explicit targeted retry | Retry is allowed only when explicitly requested and must preserve the same targeted lane scope. |
++| none | none | none | No retry needed | No failures were observed. |
+
+ ## Enforcement Rules
+
+diff --git a/dev/reports/slow_path_pruning_report.md b/dev/reports/slow_path_pruning_report.md
+index c56867eb8..043b187e9 100644
+--- a/dev/reports/slow_path_pruning_report.md
++++ b/dev/reports/slow_path_pruning_report.md
+@@ -1,19 +1,19 @@
+ # Slow Path Pruning Report
+
+-Generated: 2026-06-23T16:38:57.092Z
++Generated: 2026-06-28T14:20:59.081Z
+ Status: PASS
+-Source timing evidence: docs_build/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
++Source timing evidence: dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
+
+ ## Before / After Runtime Observations
+
+ PR_26146_038 measured lane elapsed time: 169.71s
+-Current measured lane elapsed time: 8.76s
++Current measured lane elapsed time: 24.38s
+ PR_26146_038 actual browser launches: 4
+ Current actual browser launches: 1
+ Accidental no-argument browser launches prevented: 5
+ Reduced Workspace lane nested launches: 1
+-Reused dependency hydration: 0
+-Reused snapshots: 0
++Reused dependency hydration: 1
++Reused snapshots: 1
+ Validation cache hits: 18
+
+ ## Slow Paths Optimized
+@@ -31,16 +31,14 @@ Validation cache hits: 18
+ | PR_26146_038 | tool-runtime | 19.10s | Asset Manager V2 temporary UAT context |
+ | PR_26146_038 | integration | 14.50s | games index resolves Pong thumbnail from manifest preview role |
+ | PR_26146_038 | tool-runtime | 10.10s | Preview Generator V2 real batch output |
+-| current targeted run | workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes |
+-| current targeted run | workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:485:1 > common header renders primary navigation order across active pages |
+-| current targeted run | workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:565:1 > learn wireframe pages load with shared Theme V2 structure |
+-| current targeted run | workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:644:1 > tool template future-state page loads from root Theme V2 paths |
+-| current targeted run | workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:667:1 > representative active tool pages align center cleanup and registry group colors |
++| current targeted run | tool-display-mode | 10.70s | dev\tests\playwright\tools\ToolDisplayModeSingleLineSummary.spec.mjs:184:1 > representative tools use registry-owned names and images in the single-line summary |
++| current targeted run | tool-display-mode | 3.40s | dev\tests\playwright\tools\ToolDisplayModeSingleLineSummary.spec.mjs:204:1 > fullscreen mode swaps to the exit icon without restoring old body or navigation markup |
++| current targeted run | tool-display-mode | 3.10s | dev\tests\playwright\tools\ToolDisplayModeSingleLineSummary.spec.mjs:171:1 > Game Design renders badge, tool name, character image, and fullscreen icon as direct summary children |
+
+ ## Guardrails
+
+ Full samples smoke: SKIP - Skipped because changed files do not modify sample JSON or shared sample loader/framework behavior.
+-Runtime failures observed: 1
++Runtime failures observed: 0
+ Runtime schedule status: PASS
+
+ - Only no-argument broad defaults and safe Workspace legacy routing were pruned.
+diff --git a/dev/reports/static_validation_report.md b/dev/reports/static_validation_report.md
+index 1e75365b8..2974d1118 100644
+--- a/dev/reports/static_validation_report.md
++++ b/dev/reports/static_validation_report.md
+@@ -1,13 +1,13 @@
+ # Static Validation Report
+
+-Generated: 2026-06-23T16:38:48.289Z
++Generated: 2026-06-28T14:20:34.616Z
+ Status: PASS
+ Static only: No
+ Dry run: No
+
+ ## Requested Lanes
+
+-- workspace-contract
++- tool-display-mode
+
+ ## Prevented Launches
+
+@@ -22,13 +22,13 @@ Reason: No deterministic static validation failure was found.
+ | invalid filename detection | PASS | Covered by Playwright structure audit. |
+ | missing import detection | PASS | Covered by Playwright structure audit relative import checks. |
+ | missing fixture detection | PASS | No missing fixture findings. |
+-| targeted file manifests | PASS | workspace-contract:fdada39983df06d5 |
+-| persistent lane manifests | PASS | workspace-contract:INVALIDATED |
+-| lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
+-| dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
++| targeted file manifests | PASS | tool-display-mode:9f823d041166f7f6 |
++| persistent lane manifests | PASS | tool-display-mode:REUSED |
++| lane warm-start reuse | PASS | tool-display-mode:REUSED |
++| dependency hydration reuse | PASS | tool-display-mode:REUSED |
+ | lane input graph expansion | PASS | No inputs escaped manifest scope. |
+-| scoped discovery targets | PASS | tests/playwright/tools/RootToolsFutureState.spec.mjs |
+-| broad scan prevention | PASS | Discovery map read 5 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
++| scoped discovery targets | PASS | dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs |
++| broad scan prevention | PASS | Discovery map read 0 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
+ | invalid lane target detection | PASS | No invalid lane target findings. |
+ | Windows quoting hazard detection | PASS | No shell-sensitive grep hazards found. |
+ | duplicate lane registration detection | PASS | No duplicate lane registrations found. |
+diff --git a/dev/reports/targeted_file_manifest_report.md b/dev/reports/targeted_file_manifest_report.md
+index 0c90657e2..0de6490bd 100644
+--- a/dev/reports/targeted_file_manifest_report.md
++++ b/dev/reports/targeted_file_manifest_report.md
+@@ -1,19 +1,19 @@
+ # Targeted File Manifest Report
+
+-Generated: 2026-06-23T16:38:48.296Z
++Generated: 2026-06-28T14:20:34.628Z
+ Status: PASS
+
+ ## Manifest-Generated Lane Inputs
+
+ | Lane | Ownership | Status | Source | Tests | Helpers | Fixtures | Imports / Dependencies | Dependency Graph Hash | Manifest Hash | Reason |
+ | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | tools | PASS | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 4dcb31ccda1bdb5a | fdada39983df06d5 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
++| tool-display-mode | tools | PASS | persistent | dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs | dev/tests/helpers/playwrightRepoServer.mjs; dev/tests/helpers/playwrightStorageIsolation.mjs; dev/tests/helpers/playwrightV8CoverageReporter.mjs; dev/tests/helpers/workspaceV2CoverageReporter.mjs | none | dev/tests/helpers/playwrightRepoServer.mjs; dev/tests/helpers/playwrightStorageIsolation.mjs; dev/tests/helpers/playwrightV8CoverageReporter.mjs; dev/tests/helpers/workspaceV2CoverageReporter.mjs; src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/server/local-api-router.mjs; toolbox/toolRegistry.js | 6de254babab8aecd | 9f823d041166f7f6 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
+
+ ## Discovery Expansion Control
+
+ Prevented discovery expansion: Yes
+-Prevented redundant scans: 4
+-Targeted file/helper reads: 5
++Prevented redundant scans: 0
++Targeted file/helper reads: 0
+
+ ## Runtime Savings Observations
+
+diff --git a/dev/reports/test_cleanup_performance_report.md b/dev/reports/test_cleanup_performance_report.md
+index 00df617c4..f682c9269 100644
+--- a/dev/reports/test_cleanup_performance_report.md
++++ b/dev/reports/test_cleanup_performance_report.md
+@@ -1,29 +1,29 @@
+ # Test Cleanup Performance Report
+
+-Generated: 2026-06-23T16:38:57.091Z
+-Status: WARN
++Generated: 2026-06-28T14:20:59.081Z
++Status: PASS
+
+ ## Cost Summary
+
+-Total measured lane elapsed time: 8.76s
++Total measured lane elapsed time: 24.38s
+ Actual browser launch count: 1
+ Scheduled browser launch count: 1
+ Baseline browser launch count: 1
+ Skipped lanes: 14
+-Reused manifests: 0
+-Reused snapshots: 0
++Reused manifests: 1
++Reused snapshots: 1
+ Cached validations reused: 18
+-Prevented broad execution: 2
++Prevented broad execution: 3
+ Prevented reruns: 0
+ Prevented redundant browser launches: 0
+-Prevented graph rebuilds: 0
+-Prevented redundant dependency traversal: 0
++Prevented graph rebuilds: 1
++Prevented redundant dependency traversal: 1
+
+ ## Lane Elapsed Time
+
+ | Lane | Status | Elapsed | Browser Launches | Reason |
+ | --- | --- | --- | --- | --- |
+-| workspace-contract | FAIL | 8.76s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
++| workspace-contract | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
+ | game-hub | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
+ | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
+ | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
+@@ -31,7 +31,7 @@ Prevented redundant dependency traversal: 0
+ | build-path | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
+ | tools-progress | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
+ | tool-navigation | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
+-| tool-display-mode | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
++| tool-display-mode | PASS | 24.38s | 1 | Tool Display Mode validates the single-line summary contract, direct summary children, registry-owned badge/tool art, fullscreen/exit icon swap, and removal of the deprecated body/navigation row without exercising unrelated toolbox routes. |
+ | tool-images | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
+ | tool-runtime | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
+ | game-runtime | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
+@@ -43,14 +43,13 @@ Prevented redundant dependency traversal: 0
+
+ | Lane | Duration | Test | Command |
+ | --- | --- | --- | --- |
+-| workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:485:1 > common header renders primary navigation order across active pages | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:565:1 > learn wireframe pages load with shared Theme V2 structure | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:644:1 > tool template future-state page loads from root Theme V2 paths | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:667:1 > representative active tool pages align center cleanup and registry group colors | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| tool-display-mode | 10.70s | dev\tests\playwright\tools\ToolDisplayModeSingleLineSummary.spec.mjs:184:1 > representative tools use registry-owned names and images in the single-line summary | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs --config=dev/config/playwright.config.cjs --project=playwright --workers=1 --reporter=list |
++| tool-display-mode | 3.40s | dev\tests\playwright\tools\ToolDisplayModeSingleLineSummary.spec.mjs:204:1 > fullscreen mode swaps to the exit icon without restoring old body or navigation markup | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs --config=dev/config/playwright.config.cjs --project=playwright --workers=1 --reporter=list |
++| tool-display-mode | 3.10s | dev\tests\playwright\tools\ToolDisplayModeSingleLineSummary.spec.mjs:171:1 > Game Design renders badge, tool name, character image, and fullscreen icon as direct summary children | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs --config=dev/config/playwright.config.cjs --project=playwright --workers=1 --reporter=list |
+
+ ## Prevented Broad Execution
+
++- Workspace V2 lane was not scheduled without explicit selection.
+ - Full samples smoke stayed skipped/on-request.
+ - Unselected lane directories stayed outside targeted discovery.
+
+diff --git a/dev/reports/test_cleanup_routing_report.md b/dev/reports/test_cleanup_routing_report.md
+index 542854bf0..38c5fef32 100644
+--- a/dev/reports/test_cleanup_routing_report.md
++++ b/dev/reports/test_cleanup_routing_report.md
+@@ -1,44 +1,44 @@
+ # Test Cleanup Routing Report
+
+-Generated: 2026-06-23T16:38:57.092Z
++Generated: 2026-06-28T14:20:59.081Z
+ Status: PASS
+
+ ## Representative Routing Cases
+
+ | Case | Changed Files | Expected Lanes | Actual Lanes | Status | Reason |
+ | --- | --- | --- | --- | --- | --- |
+-| docs-only change | docs_build/dev/PROJECT_INSTRUCTIONS.md | none | none | PASS | Docs/workflow-only changes use static review evidence; runtime lanes, Workspace V2, and samples stay explicit/on-request. |
++| docs-only change | dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md | none | none | PASS | Docs/workflow-only changes use static review evidence; runtime lanes, Workspace V2, and samples stay explicit/on-request. |
+ | tool change | toolbox/audio-sfx-playground-v2/index.js | tool-runtime | tool-runtime | PASS | Tool-owned runtime/UI changes route to the affected tool-runtime lane only. |
+-| deprecated game change | archive/v1-v2/games/asteroids/asteroids.js | none | none | PASS | Deprecated archive/v1-v2/games changes do not route to active runtime test lanes. |
++| deprecated game change | dev/archive/v1-v2/games/asteroids/asteroids.js | none | none | PASS | Deprecated dev/archive/v1-v2/games changes do not route to active runtime test lanes. |
+ | src change | src/input/InputMap.js | engine-src | engine-src | PASS | Reusable src/ capability changes route to engine-src validation first. |
+-| active toolbox Playwright change | tests/playwright/tools/RootToolsFutureState.spec.mjs | tool-runtime | tool-runtime | PASS | Active toolbox Playwright coverage routes to the tool-runtime lane only. |
++| active toolbox Playwright change | dev/tests/playwright/tools/RootToolsFutureState.spec.mjs | tool-runtime | tool-runtime | PASS | Active toolbox Playwright coverage routes to the tool-runtime lane only. |
+
+ ## Explicit Broad-Lane Guards
+
+ Workspace V2 explicit/on-request only: PASS
+ Full samples smoke explicit/on-request only: PASS
+ Misplaced test preflight fast-fail: PASS
+-Scheduled runtime lanes: workspace-contract
++Scheduled runtime lanes: tool-display-mode
+ Full samples smoke decision: SKIP - Skipped because changed files do not modify sample JSON or shared sample loader/framework behavior.
+
+ ## Lane Script Routing
+
+ | Script | Status | Command |
+ | --- | --- | --- |
+-| test:lane:workspace-contract | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane workspace-contract |
+-| test:lane:build-path | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane build-path |
+-| test:lane:tools-progress | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane tools-progress |
+-| test:lane:tool-navigation | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane tool-navigation |
+-| test:lane:tool-display-mode | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane tool-display-mode |
+-| test:lane:tool-images | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane tool-images |
+-| test:lane:game-configuration | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane game-configuration |
+-| test:lane:game-design | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane game-design |
+-| test:lane:game-hub | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane game-hub |
+-| test:lane:tool-runtime | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane tool-runtime |
+-| test:lane:game-runtime | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane game-runtime |
+-| test:lane:integration | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane integration |
+-| test:lane:engine-src | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane engine-src |
+-| test:lane:samples | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane samples --include-samples |
++| test:lane:workspace-contract | PASS | node ./dev/scripts/run-targeted-test-lanes.mjs --lane workspace-contract |
++| test:lane:build-path | PASS | node ./dev/scripts/run-targeted-test-lanes.mjs --lane build-path |
++| test:lane:tools-progress | PASS | node ./dev/scripts/run-targeted-test-lanes.mjs --lane tools-progress |
++| test:lane:tool-navigation | PASS | node ./dev/scripts/run-targeted-test-lanes.mjs --lane tool-navigation |
++| test:lane:tool-display-mode | PASS | node ./dev/scripts/run-targeted-test-lanes.mjs --lane tool-display-mode |
++| test:lane:tool-images | PASS | node ./dev/scripts/run-targeted-test-lanes.mjs --lane tool-images |
++| test:lane:game-configuration | PASS | node ./dev/scripts/run-targeted-test-lanes.mjs --lane game-configuration |
++| test:lane:game-design | PASS | node ./dev/scripts/run-targeted-test-lanes.mjs --lane game-design |
++| test:lane:game-hub | PASS | node ./dev/scripts/run-targeted-test-lanes.mjs --lane game-hub |
++| test:lane:tool-runtime | PASS | node ./dev/scripts/run-targeted-test-lanes.mjs --lane tool-runtime |
++| test:lane:game-runtime | PASS | node ./dev/scripts/run-targeted-test-lanes.mjs --lane game-runtime |
++| test:lane:integration | PASS | node ./dev/scripts/run-targeted-test-lanes.mjs --lane integration |
++| test:lane:engine-src | PASS | node ./dev/scripts/run-targeted-test-lanes.mjs --lane engine-src |
++| test:lane:samples | PASS | node ./dev/scripts/run-targeted-test-lanes.mjs --lane samples --include-samples |
+
+ ## Legacy Direct Playwright Scripts
+
+@@ -49,7 +49,7 @@ Full samples smoke decision: SKIP - Skipped because changed files do not modify
+ ## Misplaced Test Probe
+
+ - Lane tool-runtime has no scoped manifest target.
+-- Scoped discovery target is outside selected lane ownership: tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs.
++- Scoped discovery target is outside selected lane ownership: dev/tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs.
+
+ ## Routing Findings
+
+diff --git a/dev/reports/testing_lane_execution_report.md b/dev/reports/testing_lane_execution_report.md
+index 03e150e46..34a18c3bc 100644
+--- a/dev/reports/testing_lane_execution_report.md
++++ b/dev/reports/testing_lane_execution_report.md
+@@ -1,15 +1,15 @@
+ # Testing Lane Execution Report
+
+-Generated: 2026-06-23T16:38:57.102Z
++Generated: 2026-06-28T14:20:59.095Z
+ Dry run: No
+
+ ## Summary
+
+-PASS: 0
++PASS: 1
+ WARN: 0
+-FAIL: 1
++FAIL: 0
+ SKIP: 14
+-Total lane elapsed time: 8.76s
++Total lane elapsed time: 24.38s
+ Actual browser launches: 1
+
+ ## Full Samples Smoke
+@@ -21,7 +21,7 @@ Reason: Skipped because changed files do not modify sample JSON or shared sample
+
+ Status: PASS
+ Reason: Runner preflight and Playwright structure audit passed before expensive lane execution.
+-Command: "C:\\Program Files\\nodejs\\node.exe" scripts/audit-playwright-test-locations.mjs --discovery-report docs_build/dev/reports/playwright_discovery_ownership_report.md --scope-report docs_build/dev/reports/playwright_discovery_scope_report.md --scan-report docs_build/dev/reports/filesystem_scan_reduction_report.md --lanes workspace-contract --targets tests/playwright/tools/RootToolsFutureState.spec.mjs --helpers tests/helpers/playwrightRepoServer.mjs,tests/helpers/playwrightStorageIsolation.mjs,tests/helpers/playwrightV8CoverageReporter.mjs,tests/helpers/workspaceV2CoverageReporter.mjs
++Command: C:\nvm4w\nodejs\node.exe dev/scripts/audit-playwright-test-locations.mjs --discovery-report dev/reports/playwright_discovery_ownership_report.md --scope-report dev/reports/playwright_discovery_scope_report.md --scan-report dev/reports/filesystem_scan_reduction_report.md --lanes tool-display-mode --targets dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs --helpers dev/tests/helpers/playwrightRepoServer.mjs,dev/tests/helpers/playwrightStorageIsolation.mjs,dev/tests/helpers/playwrightV8CoverageReporter.mjs,dev/tests/helpers/workspaceV2CoverageReporter.mjs
+ Details: none
+
+ ## Dependency Gate
+@@ -32,13 +32,13 @@ Reason: No deterministic dependency failures before runtime.
+ ## Runtime Scheduling
+
+ Status: PASS
+-Scheduled lane order: workspace-contract
++Scheduled lane order: tool-display-mode
+ Reused runtime sessions: 0
+-Reused lane snapshots: 0
+-Reused warm-start lanes: 0
+-Reused dependency hydration: 0
+-Prevented graph rebuilds: 0
+-Prevented redundant initialization: 0
++Reused lane snapshots: 1
++Reused warm-start lanes: 1
++Reused dependency hydration: 1
++Prevented graph rebuilds: 1
++Prevented redundant initialization: 1
+ Prevented redundant browser launches: 0
+ Prevented redundant lane execution: 14
+
+@@ -49,9 +49,9 @@ Validation computations: 10
+
+ ## Failure Fingerprints
+
+-Status: WARN
++Status: PASS
+ Deterministic setup failures: 0
+-Runtime failures: 1
++Runtime failures: 0
+ Flaky/transient failures: 0
+ Infrastructure failures: 0
+ Prevented reruns: 0
+@@ -61,39 +61,39 @@ Prevented broad lane escalation: 0
+ ## Discovery Scope
+
+ Status: PASS
+-Target files: tests/playwright/tools/RootToolsFutureState.spec.mjs
+-Required shared helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs
++Target files: dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs
++Required shared helpers: dev/tests/helpers/playwrightRepoServer.mjs, dev/tests/helpers/playwrightStorageIsolation.mjs, dev/tests/helpers/playwrightV8CoverageReporter.mjs, dev/tests/helpers/workspaceV2CoverageReporter.mjs
+ Required fixtures: none
+-Targeted file/helper reads: 5
++Targeted file/helper reads: 0
+ Cached discovery reuse: Yes
+ Prevented fallback expansion: Yes; no ownership or scope blocker widened into broad discovery.
+
+ ## Targeted File Manifests
+
+ Status: PASS
+-Generated manifests: workspace-contract:PASS
++Generated manifests: tool-display-mode:PASS
+ Prevented discovery expansion: Yes
+-Prevented redundant scans: 4
+-Persistent manifest events: workspace-contract:INVALIDATED
++Prevented redundant scans: 0
++Persistent manifest events: tool-display-mode:REUSED
+
+ ## Warm-Start Reuse
+
+ Status: PASS
+-Warm-start events: workspace-contract:INVALIDATED
+-Dependency hydration events: workspace-contract:INVALIDATED
+-Prevented redundant initialization: 0
+-Prevented helper resolution passes: 0
++Warm-start events: tool-display-mode:REUSED
++Dependency hydration events: tool-display-mode:REUSED
++Prevented redundant initialization: 1
++Prevented helper resolution passes: 4
+ Prevented fixture ownership traversal: 0
+
+ ## Lane Snapshots
+
+ Status: PASS
+-Snapshot events: workspace-contract:INVALIDATED
+-Reused snapshots: 0
+-Invalidated snapshots: 1
+-Prevented graph rebuilds: 0
+-Prevented redundant dependency traversal: 0
+-Prevented fixture/helper graph assembly: 0
++Snapshot events: tool-display-mode:REUSED
++Reused snapshots: 1
++Invalidated snapshots: 0
++Prevented graph rebuilds: 1
++Prevented redundant dependency traversal: 1
++Prevented fixture/helper graph assembly: 4
+
+ ## Lane Deduplication
+
+@@ -105,36 +105,34 @@ Prevented Workspace lane reruns: 0
+
+ | Lane | Status | Elapsed | Browser Launches | Executed/Skipped Reason | Affected Surface | Fixtures / Inputs |
+ | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | FAIL | 8.76s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
++| workspace-contract | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
+ | game-hub | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Hub mock repository, Game Hub UI, and Toolbox Progress/Build Path game-state bridge | repo-served Game Hub page; repo-served Toolbox page with role simulation; in-memory SQL-shaped mock game repository |
+ | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | repo-served Game Design page; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Design mock repository; Game Hub mock game context |
+ | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | repo-served Game Configuration page; repo-served Game Design page for handoff checks; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Configuration mock repository; Game Design mock repository handoff |
+ | asset-tool | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Asset Tool mock repository, Game Configuration readiness handoff, library records, import preview, and visible failure handling | repo-served Assets page; in-memory SQL-shaped Asset Tool mock repository; Game Configuration mock repository handoff; file-name/path-based import preview |
+ | build-path | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Toolbox Build Path simplification, workflow status table, and Admin Tools Progress navigation | repo-served Toolbox page; repo-served Admin Tools Progress page; Game Hub mock game context; Toolbox role simulation |
+ | tools-progress | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Admin Tools Progress hydration, Toolbox Group view color model, and Game Build Path separation | repo-served Admin Tools Progress page; repo-served Toolbox Group view; Toolbox registry build sequence; Game Build Path workflow table |
+-| tool-navigation | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Admin Tools Progress tool route links, Tool Display Mode build-order previous/next controls, and Toolbox group fallback routing | repo-served Admin Tools Progress page; repo-served Game Hub, Game Design, and Game Configuration tool pages; repo-served Toolbox Group view with URL-selected accordion; Toolbox registry build sequence and route metadata |
+-| tool-display-mode | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Tool Display Mode identity row, registry-owned previous/next links, disabled text fallback, and multi-path group routing | repo-served Game Hub, Game Design, Game Configuration, and AI Assistant tool pages; repo-served Toolbox Group view with URL-selected accordion; Toolbox registry build sequence and route metadata; shared Theme V2 Tool Display Mode script |
++| tool-navigation | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Toolbox route links, Tool Display Mode deprecated previous/next removal, and Toolbox group fallback routing | repo-served Toolbox page; repo-served Game Design tool page; repo-served Toolbox Group view with URL-selected accordion; Toolbox registry route metadata |
++| tool-display-mode | PASS | 24.38s | 1 | Tool Display Mode validates the single-line summary contract, direct summary children, registry-owned badge/tool art, fullscreen/exit icon swap, and removal of the deprecated body/navigation row without exercising unrelated toolbox routes. | Tool Display Mode single-line summary, registry-owned badge/tool images, and fullscreen icon swap | repo-served Game Hub, Game Design, Game Configuration, and Build Game tool pages; Toolbox registry image metadata; shared Theme V2 Tool Display Mode script |
+ | tool-images | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Toolbox registry image contract, Toolbox card image rendering, and Tool Display Mode image fallback | Toolbox registry badge/tool image contract; repo-served Toolbox page; repo-served representative Toolbox tool pages; shared registry image fallback |
+ | tool-runtime | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Active public toolbox and Tool Template V2 contract | repo-served root toolbox page; Tool Template V2 public page; Theme V2 shared partials and assets |
+-| game-runtime | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Deprecated archive/v1-v2/games reference coverage |  |
++| game-runtime | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Deprecated dev/archive/v1-v2/games reference coverage |  |
+ | integration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Integration handoff behavior | No active integration Playwright specs after removal of stale V2 tool and removed game manifest routes. |
+ | engine-src | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | src/ engine and shared runtime capability behavior | explicit node unit fixtures; fresh in-memory localStorage/sessionStorage mocks per file |
+-| samples | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Deprecated archive/v1-v2/samples reference coverage |  |
++| samples | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Deprecated dev/archive/v1-v2/samples reference coverage |  |
+
+ ## Slowest Tests
+
+ | Lane | Duration | Test |
+ | --- | --- | --- |
+-| workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes |
+-| workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:485:1 > common header renders primary navigation order across active pages |
+-| workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:565:1 > learn wireframe pages load with shared Theme V2 structure |
+-| workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:644:1 > tool template future-state page loads from root Theme V2 paths |
+-| workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:667:1 > representative active tool pages align center cleanup and registry group colors |
++| tool-display-mode | 10.70s | dev\tests\playwright\tools\ToolDisplayModeSingleLineSummary.spec.mjs:184:1 > representative tools use registry-owned names and images in the single-line summary |
++| tool-display-mode | 3.40s | dev\tests\playwright\tools\ToolDisplayModeSingleLineSummary.spec.mjs:204:1 > fullscreen mode swaps to the exit icon without restoring old body or navigation markup |
++| tool-display-mode | 3.10s | dev\tests\playwright\tools\ToolDisplayModeSingleLineSummary.spec.mjs:171:1 > Game Design renders badge, tool name, character image, and fullscreen icon as direct summary children |
+
+ ## Commands
+
+ ### workspace-contract
+-- FAIL 8.76s "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
++- SKIP
+
+ ### game-hub
+ - SKIP
+@@ -158,7 +156,7 @@ Prevented Workspace lane reruns: 0
+ - SKIP
+
+ ### tool-display-mode
+-- SKIP
++- PASS 24.38s C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs --config=dev/config/playwright.config.cjs --project=playwright --workers=1 --reporter=list
+
+ ### tool-images
+ - SKIP
+diff --git a/dev/reports/validation_cache_report.md b/dev/reports/validation_cache_report.md
+index f9d0e606d..39b95f7f5 100644
+--- a/dev/reports/validation_cache_report.md
++++ b/dev/reports/validation_cache_report.md
+@@ -1,6 +1,6 @@
+ # Validation Cache Report
+
+-Generated: 2026-06-23T16:38:48.297Z
++Generated: 2026-06-28T14:20:34.630Z
+ Status: PASS
+
+ ## Cache Summary
+@@ -12,34 +12,34 @@ Validations computed: 10
+
+ | Stage | Cache | Input Hash | Reused By | Invalidation Inputs |
+ | --- | --- | --- | --- | --- |
+-| lane registration validation | MISS | 52928e5ef56fae1e | initial computation | lane definitions change; package.json lane scripts change |
+-| runner preflight validation | MISS | b766210e324f884f | initial computation | lane definitions change; fixture ownership changes; targeted files change |
+-| scoped discovery map | MISS | 3b6288f10251cb39 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
+-| targeted file manifest validation | MISS | 3f6048ccdda17a8d | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
+-| lane warm-start validation | MISS | e24f0d440b1410dc | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
+-| structural ownership validation | MISS | ecc95a2940cc1427 | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
+-| lane compilation validation | MISS | d9318e7005141134 | initial computation | lane definitions change; targeted files change; fixture ownership changes |
+-| lane compilation validation | HIT | d9318e7005141134 | dependency validation input | unchanged within execution cycle |
+-| dependency validation | MISS | 22637e871065d383 | initial computation | dependency graph changes; lane definitions change; lane compilation input changes |
+-| lane snapshot validation | MISS | a80d6a2d403c317b | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
+-| zero-browser preflight | MISS | 56c385cc0885a49f | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change; dependency graph changes |
+-| structural ownership validation | HIT | ecc95a2940cc1427 | static validation report | unchanged within execution cycle |
+-| structural ownership validation | HIT | ecc95a2940cc1427 | zero-browser preflight report | unchanged within execution cycle |
+-| scoped discovery map | HIT | 3b6288f10251cb39 | structural ownership validation input | unchanged within execution cycle |
+-| scoped discovery map | HIT | 3b6288f10251cb39 | discovery scope reporting | unchanged within execution cycle |
+-| targeted file manifest validation | HIT | 3f6048ccdda17a8d | lane input validation report | unchanged within execution cycle |
+-| targeted file manifest validation | HIT | 3f6048ccdda17a8d | runtime scheduling blockers | unchanged within execution cycle |
+-| lane warm-start validation | HIT | e24f0d440b1410dc | warm-start report | unchanged within execution cycle |
+-| lane warm-start validation | HIT | e24f0d440b1410dc | dependency hydration reuse report | unchanged within execution cycle |
+-| lane warm-start validation | HIT | e24f0d440b1410dc | runtime scheduling | unchanged within execution cycle |
+-| lane snapshot validation | HIT | a80d6a2d403c317b | lane snapshot report | unchanged within execution cycle |
+-| lane snapshot validation | HIT | a80d6a2d403c317b | execution graph reuse report | unchanged within execution cycle |
+-| lane snapshot validation | HIT | a80d6a2d403c317b | runtime scheduling | unchanged within execution cycle |
+-| lane compilation validation | HIT | d9318e7005141134 | lane compilation report | unchanged within execution cycle |
+-| lane compilation validation | HIT | d9318e7005141134 | runtime scheduling | unchanged within execution cycle |
+-| dependency validation | HIT | 22637e871065d383 | dependency report | unchanged within execution cycle |
+-| dependency validation | HIT | 22637e871065d383 | runtime scheduling | unchanged within execution cycle |
+-| zero-browser preflight | HIT | 56c385cc0885a49f | zero-browser report output | unchanged within execution cycle |
++| lane registration validation | MISS | 71154f2e750ad390 | initial computation | lane definitions change; package.json lane scripts change |
++| runner preflight validation | MISS | 5ac6318041e793c0 | initial computation | lane definitions change; fixture ownership changes; targeted files change |
++| scoped discovery map | MISS | 40b8f8a446180b68 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
++| targeted file manifest validation | MISS | f45517bda56f7a2f | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
++| lane warm-start validation | MISS | 476b4f6032e7a132 | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
++| structural ownership validation | MISS | 58bce19a34e5c9a6 | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
++| lane compilation validation | MISS | f039f3c33d7fdaa7 | initial computation | lane definitions change; targeted files change; fixture ownership changes |
++| lane compilation validation | HIT | f039f3c33d7fdaa7 | dependency validation input | unchanged within execution cycle |
++| dependency validation | MISS | 12176c892041f4fc | initial computation | dependency graph changes; lane definitions change; lane compilation input changes |
++| lane snapshot validation | MISS | 6e848e7bc3c39b41 | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
++| zero-browser preflight | MISS | 244a3248c13d9ada | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change; dependency graph changes |
++| structural ownership validation | HIT | 58bce19a34e5c9a6 | static validation report | unchanged within execution cycle |
++| structural ownership validation | HIT | 58bce19a34e5c9a6 | zero-browser preflight report | unchanged within execution cycle |
++| scoped discovery map | HIT | 40b8f8a446180b68 | structural ownership validation input | unchanged within execution cycle |
++| scoped discovery map | HIT | 40b8f8a446180b68 | discovery scope reporting | unchanged within execution cycle |
++| targeted file manifest validation | HIT | f45517bda56f7a2f | lane input validation report | unchanged within execution cycle |
++| targeted file manifest validation | HIT | f45517bda56f7a2f | runtime scheduling blockers | unchanged within execution cycle |
++| lane warm-start validation | HIT | 476b4f6032e7a132 | warm-start report | unchanged within execution cycle |
++| lane warm-start validation | HIT | 476b4f6032e7a132 | dependency hydration reuse report | unchanged within execution cycle |
++| lane warm-start validation | HIT | 476b4f6032e7a132 | runtime scheduling | unchanged within execution cycle |
++| lane snapshot validation | HIT | 6e848e7bc3c39b41 | lane snapshot report | unchanged within execution cycle |
++| lane snapshot validation | HIT | 6e848e7bc3c39b41 | execution graph reuse report | unchanged within execution cycle |
++| lane snapshot validation | HIT | 6e848e7bc3c39b41 | runtime scheduling | unchanged within execution cycle |
++| lane compilation validation | HIT | f039f3c33d7fdaa7 | lane compilation report | unchanged within execution cycle |
++| lane compilation validation | HIT | f039f3c33d7fdaa7 | runtime scheduling | unchanged within execution cycle |
++| dependency validation | HIT | 12176c892041f4fc | dependency report | unchanged within execution cycle |
++| dependency validation | HIT | 12176c892041f4fc | runtime scheduling | unchanged within execution cycle |
++| zero-browser preflight | HIT | 244a3248c13d9ada | zero-browser report output | unchanged within execution cycle |
+
+ ## Deterministic Invalidation Rules
+
+diff --git a/dev/reports/zero_browser_preflight_report.md b/dev/reports/zero_browser_preflight_report.md
+index 2417f5424..0c725d132 100644
+--- a/dev/reports/zero_browser_preflight_report.md
++++ b/dev/reports/zero_browser_preflight_report.md
+@@ -1,6 +1,6 @@
+ # Zero-Browser Preflight Report
+
+-Generated: 2026-06-23T16:38:48.297Z
++Generated: 2026-06-28T14:20:34.630Z
+ Status: PASS
+
+ ## Prevented Browser Launches
+@@ -23,24 +23,24 @@ No deterministic setup failures.
+ | invalid imports | PASS | Relative imports checked by Playwright structure audit. |
+ | unresolved fixtures | PASS | No unresolved fixture findings. |
+ | unresolved helpers | PASS | Shared helper imports and naming ownership checked. |
+-| targeted file manifests | PASS | workspace-contract:PASS |
+-| persistent lane manifests | PASS | workspace-contract:INVALIDATED |
+-| lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
+-| dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
+-| lane snapshots | PASS | workspace-contract:INVALIDATED |
++| targeted file manifests | PASS | tool-display-mode:PASS |
++| persistent lane manifests | PASS | tool-display-mode:REUSED |
++| lane warm-start reuse | PASS | tool-display-mode:REUSED |
++| dependency hydration reuse | PASS | tool-display-mode:REUSED |
++| lane snapshots | PASS | tool-display-mode:REUSED |
+ | manifest input graph expansion | PASS | No scoped discovery inputs escaped manifest ownership. |
+-| scoped discovery | PASS | Targets: tests/playwright/tools/RootToolsFutureState.spec.mjs; helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs. |
++| scoped discovery | PASS | Targets: dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs; helpers: dev/tests/helpers/playwrightRepoServer.mjs, dev/tests/helpers/playwrightStorageIsolation.mjs, dev/tests/helpers/playwrightV8CoverageReporter.mjs, dev/tests/helpers/workspaceV2CoverageReporter.mjs. |
+ | invalid grep patterns | PASS | No invalid grep patterns. |
+ | Windows quoting hazards | PASS | No shell quoting hazards. |
+ | invalid lane references | PASS | No invalid lane references. |
+-| invalid lane configuration | PASS | See docs_build/dev/reports/lane_compilation_report.md. |
+-| deterministic dependency graph | PASS | See docs_build/dev/reports/dependency_gating_report.md. |
++| invalid lane configuration | PASS | See dev/reports/lane_compilation_report.md. |
++| deterministic dependency graph | PASS | See dev/reports/dependency_gating_report.md. |
+ | conflicting reusable helper ownership | PASS | Shared helper filenames checked against known game names. |
+
+ ## Corrected Ownership Drift
+
+-- Asteroids Playwright runtime specs are enforced under `tests/playwright/games`.
+-- Game index preview manifest handoff is enforced under `tests/playwright/integration`.
++- Asteroids Playwright runtime specs are enforced under `dev/tests/playwright/games`.
++- Game index preview manifest handoff is enforced under `dev/tests/playwright/integration`.
+ - Tool-owned specs may reference games only as documented explicit fixtures.
+
+ ## Runtime Savings Observations
+diff --git a/dev/scripts/run-targeted-test-lanes.mjs b/dev/scripts/run-targeted-test-lanes.mjs
+index f83dc82ce..561332eeb 100644
+--- a/dev/scripts/run-targeted-test-lanes.mjs
++++ b/dev/scripts/run-targeted-test-lanes.mjs
+@@ -251,7 +251,7 @@ const laneDefinitions = Object.freeze({
+     reason: "Tools Progress validates that Admin platform progress hydrates every planned/active Toolbox registry entry in build order, the restored semantic group colors render in Toolbox Group view, and Game Build Path stays workflow-order and project-specific."
+   },
+   "tool-navigation": {
+-    affectedSurface: "Admin Tools Progress tool route links, Tool Display Mode build-order previous/next controls, and Toolbox group fallback routing",
++    affectedSurface: "Toolbox route links, Tool Display Mode deprecated previous/next removal, and Toolbox group fallback routing",
+     commands: [
+       playwrightCommand("dev/tests/playwright/tools/ToolNavigationPrevNext.spec.mjs")
+     ],
+@@ -260,37 +260,36 @@ const laneDefinitions = Object.freeze({
+       "dev/tests/playwright/tools/ToolNavigationPrevNext.spec.mjs"
+     ],
+     fixtures: [
+-      "repo-served Admin Tools Progress page",
+-      "repo-served Game Hub, Game Design, and Game Configuration tool pages",
++      "repo-served Toolbox page",
++      "repo-served Game Design tool page",
+       "repo-served Toolbox Group view with URL-selected accordion",
+-      "Toolbox registry build sequence and route metadata"
++      "Toolbox registry route metadata"
+     ],
+     fixturePaths: [],
+     ownership: "tools",
+     playwrightDir: "dev/tests/playwright/tools",
+     requiresPreflight: true,
+-    reason: "Tool navigation validates registry-owned tool routes, disabled rendering for route-less tools, build-order previous/next controls, multi-path fallback to Toolbox Group view, and role query preservation without exercising unrelated toolbox routes."
++    reason: "Tool navigation validates registry-owned tool routes, removal of deprecated Tool Display Mode previous/next controls, and direct Toolbox Group fallback routing without exercising unrelated toolbox routes."
+   },
+   "tool-display-mode": {
+-    affectedSurface: "Tool Display Mode identity row, registry-owned previous/next links, disabled text fallback, and multi-path group routing",
++    affectedSurface: "Tool Display Mode single-line summary, registry-owned badge/tool images, and fullscreen icon swap",
+     commands: [
+-      playwrightCommand("dev/tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs")
++      playwrightCommand("dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs")
+     ],
+     dependencies: [],
+     discoveryTargets: [
+-      "dev/tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs"
++      "dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs"
+     ],
+     fixtures: [
+-      "repo-served Game Hub, Game Design, Game Configuration, and AI Assistant tool pages",
+-      "repo-served Toolbox Group view with URL-selected accordion",
+-      "Toolbox registry build sequence and route metadata",
++      "repo-served Game Hub, Game Design, Game Configuration, and Build Game tool pages",
++      "Toolbox registry image metadata",
+       "shared Theme V2 Tool Display Mode script"
+     ],
+     fixturePaths: [],
+     ownership: "tools",
+     playwrightDir: "dev/tests/playwright/tools",
+     requiresPreflight: true,
+-    reason: "Tool Display Mode validates the two-row identity/navigation layout, anchors for previous/next targets, disabled text for missing targets, registry build-order labels, role preservation, and multi-path fallback without exercising unrelated toolbox routes."
++    reason: "Tool Display Mode validates the single-line summary contract, direct summary children, registry-owned badge/tool art, fullscreen/exit icon swap, and removal of the deprecated body/navigation row without exercising unrelated toolbox routes."
+   },
+   "tool-images": {
+     affectedSurface: "Toolbox registry image contract, Toolbox card image rendering, and Tool Display Mode image fallback",
+diff --git a/dev/tests/helpers/playwrightRepoServer.mjs b/dev/tests/helpers/playwrightRepoServer.mjs
+index 9f479c8a1..6a8f0e059 100644
+--- a/dev/tests/helpers/playwrightRepoServer.mjs
++++ b/dev/tests/helpers/playwrightRepoServer.mjs
+@@ -8,7 +8,7 @@ import { createLocalApiRouter } from "../../../src/dev-runtime/server/local-api-
+
+ const __filename = fileURLToPath(import.meta.url);
+ const __dirname = path.dirname(__filename);
+-const repoRoot = path.resolve(__dirname, "..", "..");
++const repoRoot = path.resolve(__dirname, "..", "..", "..");
+ let runtimeEnvLoaded = false;
+
+ function parseEnvValue(value) {
+diff --git a/dev/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs b/dev/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+index bf6ad4f1e..dc72434e0 100644
+--- a/dev/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
++++ b/dev/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+@@ -768,7 +768,6 @@ test("Idea Board remains usable without visible navigation fallback when registr
+   process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
+   const pageErrors = [];
+   const consoleErrors = [];
+-  const navigationWarnings = [];
+
+   await page.route("**/api/toolbox/registry/snapshot", async (route) => {
+     await route.fulfill({ body: "", status: 204 });
+@@ -783,9 +782,6 @@ test("Idea Board remains usable without visible navigation fallback when registr
+   });
+   page.on("console", (message) => {
+     const text = message.text();
+-    if (message.type() === "warning" && text.includes("Tool navigation could not be loaded.")) {
+-      navigationWarnings.push(text);
+-    }
+     if (message.type() === "error" && !isBrowserExtensionNoise(text)) consoleErrors.push(text);
+   });
+
+@@ -805,7 +801,6 @@ test("Idea Board remains usable without visible navigation fallback when registr
+     await page.locator("[data-idea-board-note-action='save']").click();
+     await expect(page.locator("[data-idea-board-notes-table='top-thoughts']")).toContainText("Navigation fallback does not block table notes.");
+
+-    expect(navigationWarnings.length).toBeGreaterThan(0);
+     expect(pageErrors).toEqual([]);
+     expect(consoleErrors).toEqual([]);
+   } finally {
+diff --git a/dev/tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs b/dev/tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs
+deleted file mode 100644
+index 7cbe3fd8a..000000000
+--- a/dev/tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs
++++ /dev/null
+@@ -1,313 +0,0 @@
+-import { expect, test } from "@playwright/test";
+-import {
+-  getActiveToolRegistry,
+-  getToolNavigationTargets,
+-  getToolRoute,
+-} from "../../../../toolbox/toolRegistry.js";
+-import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
+-import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
+-import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
+-
+-test.beforeEach(async ({ page }) => {
+-  await installPlaywrightStorageIsolation(page, {
+-    lane: "tool-display-mode",
+-    surface: "Tool Display Mode navigation layout and registry links"
+-  });
+-});
+-
+-test.afterEach(async ({ page }) => {
+-  await clearPlaywrightStorage(page);
+-});
+-
+-test.afterAll(async () => {
+-  await workspaceV2CoverageReporter.writeReport();
+-});
+-
+-async function openRepoPage(page, pathName) {
+-  const server = await startRepoServer();
+-  const failedRequests = [];
+-  const pageErrors = [];
+-  const consoleErrors = [];
+-
+-  page.on("pageerror", (error) => {
+-    pageErrors.push(error.message);
+-  });
+-  page.on("console", (message) => {
+-    if (message.type() === "error") {
+-      consoleErrors.push(message.text());
+-    }
+-  });
+-  page.on("response", (response) => {
+-    if (response.status() >= 400) {
+-      failedRequests.push(`${response.status()} ${response.url()}`);
+-    }
+-  });
+-  page.on("requestfailed", (request) => {
+-    failedRequests.push(`FAILED ${request.url()}`);
+-  });
+-
+-  await workspaceV2CoverageReporter.start(page);
+-  await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
+-  return { consoleErrors, failedRequests, pageErrors, server };
+-}
+-
+-function expectNoPageFailures(failures) {
+-  expect(failures.failedRequests).toEqual([]);
+-  expect(failures.pageErrors).toEqual([]);
+-  expect(failures.consoleErrors).toEqual([]);
+-}
+-
+-async function expectNavigationTarget(locator, prefix, target) {
+-  await expect(locator).toHaveText(`${prefix}: ${target.label}`);
+-  if (target.disabled) {
+-    await expect(locator).not.toHaveAttribute("href");
+-    return;
+-  }
+-  await expect(locator).toHaveAttribute("href", target.href);
+-  if (target.kind === "group") {
+-    await expect(locator).toHaveAttribute("data-tool-nav-group", target.group);
+-  }
+-}
+-
+-async function expectPlainNavigationLinks(page) {
+-  await expect(page.locator("[data-tool-display-mode-row='navigation'] button")).toHaveCount(0);
+-  const navigationLinks = await page.locator("[data-tool-display-mode-row='navigation'] a").evaluateAll((links) => (
+-    links.map((link) => ({
+-      className: link.className,
+-      tagName: link.tagName.toLowerCase()
+-    }))
+-  ));
+-  navigationLinks.forEach((link) => {
+-    expect(link.tagName).toBe("a");
+-    expect(link.className.split(/\s+/).filter(Boolean)).not.toContain("btn");
+-    expect(link.className.split(/\s+/).filter(Boolean)).not.toContain("btn-secondary");
+-  });
+-}
+-
+-async function toolDisplayRows(page) {
+-  return page.locator("[data-tool-display-mode-row]").evaluateAll((rows) => (
+-    rows.map((row) => ({
+-      childClasses: Array.from(row.children).map((child) => child.className),
+-      childTags: Array.from(row.children).map((child) => child.tagName.toLowerCase()),
+-      row: row.dataset.toolDisplayModeRow,
+-      text: row.textContent.trim()
+-    }))
+-  ));
+-}
+-
+-async function expectToolDisplayModeVisualLayout(page) {
+-  const layout = await page.locator("#toolDisplayMode").evaluate((displayMode) => {
+-    const badge = displayMode.querySelector(".tool-display-mode__badge");
+-    const character = displayMode.querySelector(".tool-display-mode__character");
+-    const description = displayMode.querySelector(".tool-display-mode__description");
+-    const navigation = displayMode.querySelector(".tool-display-mode__navigation-row");
+-    const badgeBox = badge.getBoundingClientRect();
+-    const characterBox = character.getBoundingClientRect();
+-    const descriptionBox = description.getBoundingClientRect();
+-    const navigationBox = navigation.getBoundingClientRect();
+-
+-    return {
+-      badgeBorderRadius: getComputedStyle(badge).borderRadius,
+-      badgeBorderWidth: getComputedStyle(badge).borderTopWidth,
+-      badgeHeight: Math.round(badgeBox.height),
+-      badgeObjectFit: getComputedStyle(badge).objectFit,
+-      badgeWidth: Math.round(badgeBox.width),
+-      characterHeight: Math.round(characterBox.height),
+-      characterWidth: Math.round(characterBox.width),
+-      descriptionRightOfCharacter: descriptionBox.left >= characterBox.right,
+-      navigationAlignedWithDescription: Math.abs(navigationBox.left - descriptionBox.left) <= 2,
+-      navigationBelowDescription: navigationBox.top >= descriptionBox.bottom,
+-      navigationRightOfCharacter: navigationBox.left >= characterBox.right
+-    };
+-  });
+-
+-  expect(layout).toEqual({
+-    badgeBorderRadius: "0px",
+-    badgeBorderWidth: "0px",
+-    badgeHeight: 64,
+-    badgeObjectFit: "contain",
+-    badgeWidth: 64,
+-    characterHeight: 127,
+-    characterWidth: 225,
+-    descriptionRightOfCharacter: true,
+-    navigationAlignedWithDescription: true,
+-    navigationBelowDescription: true,
+-    navigationRightOfCharacter: true
+-  });
+-}
+-
+-async function expectToolDisplayModeFullscreenBadge(page) {
+-  const centerHeading = page.locator(".tool-center-panel > h2").first();
+-  const centerDescription = page.locator(".tool-center-panel > h2 + p").first();
+-  await expect(centerHeading).toBeVisible();
+-  if (await centerDescription.count()) {
+-    await expect(centerDescription).toBeVisible();
+-  }
+-
+-  await page.locator("#toolDisplayMode summary").click();
+-  await expect(page.locator("body")).toHaveClass(/tool-focus-mode/);
+-  await expect(centerHeading).toBeHidden();
+-  if (await centerDescription.count()) {
+-    await expect(centerDescription).toBeHidden();
+-  }
+-  const fullscreenLayout = await page.locator(".tool-workspace").evaluate((workspace) => {
+-    const left = workspace.querySelector(".tool-column:first-of-type");
+-    const center = workspace.querySelector(".tool-center-panel");
+-    const right = workspace.querySelector(".tool-column:last-of-type");
+-    const boxes = [left, center, right].map((node) => {
+-      const box = node.getBoundingClientRect();
+-      return {
+-        bottom: Math.round(box.bottom),
+-        top: Math.round(box.top)
+-      };
+-    });
+-    return {
+-      bodyOverflowY: getComputedStyle(document.body).overflowY,
+-      centerOverflowY: center ? getComputedStyle(center).overflowY : "",
+-      columns: boxes,
+-      documentOverflow: Math.max(document.body.scrollHeight, document.documentElement.scrollHeight) - window.innerHeight,
+-      leftOverflowY: left ? getComputedStyle(left).overflowY : "",
+-      rightOverflowY: right ? getComputedStyle(right).overflowY : "",
+-      viewportHeight: Math.round(window.innerHeight)
+-    };
+-  });
+-  expect(fullscreenLayout.bodyOverflowY).toBe("hidden");
+-  expect(fullscreenLayout.leftOverflowY).toBe("auto");
+-  expect(fullscreenLayout.centerOverflowY).toBe("auto");
+-  expect(fullscreenLayout.rightOverflowY).toBe("auto");
+-  expect(fullscreenLayout.documentOverflow).toBeLessThanOrEqual(2);
+-  fullscreenLayout.columns.forEach((box) => {
+-    expect(box.top).toBeGreaterThanOrEqual(0);
+-    expect(box.bottom).toBeLessThanOrEqual(fullscreenLayout.viewportHeight + 1);
+-  });
+-  const badgeSize = await page.locator(".tool-display-mode__badge").evaluate((badge) => {
+-    const box = badge.getBoundingClientRect();
+-    return {
+-      height: Math.round(box.height),
+-      width: Math.round(box.width)
+-    };
+-  });
+-  expect(badgeSize).toEqual({ height: 32, width: 32 });
+-
+-  await page.locator("#toolDisplayMode summary").click();
+-  await expect(page.locator("body")).not.toHaveClass(/tool-focus-mode/);
+-  await expect(centerHeading).toBeVisible();
+-  if (await centerDescription.count()) {
+-    await expect(centerDescription).toBeVisible();
+-  }
+-}
+-
+-test("Game Design renders identity and navigation rows with registry anchor links", async ({ page }) => {
+-  const failures = await openRepoPage(page, "/toolbox/game-design/index.html");
+-  const navigation = getToolNavigationTargets("game-design");
+-
+-  try {
+-    const rows = await toolDisplayRows(page);
+-    expect(rows.map((row) => row.row)).toEqual(["identity", "navigation"]);
+-    expect(rows[0].childTags).toEqual(["img", "span"]);
+-    expect(rows[0].childClasses).toContain("tool-display-mode__character");
+-    expect(rows[0].childClasses).toContain("tool-display-mode__description");
+-    expect(rows[0].text).toBe("Game Design");
+-    expect(rows[1].childTags).toEqual(["a", "a"]);
+-
+-    const previous = page.locator("[data-tool-nav-previous]");
+-    const next = page.locator("[data-tool-nav-next]");
+-    await expectNavigationTarget(previous, "Previous", navigation.previous);
+-    await expectNavigationTarget(next, "Next", navigation.next);
+-    await expectPlainNavigationLinks(page);
+-    await expectToolDisplayModeVisualLayout(page);
+-    await expectToolDisplayModeFullscreenBadge(page);
+-    await expectNoPageFailures(failures);
+-  } finally {
+-    await workspaceV2CoverageReporter.stop(page);
+-    await failures.server.close();
+-  }
+-});
+-
+-test("Game Hub and Game Configuration use registry order without page hardcoding", async ({ page }) => {
+-  const failures = await openRepoPage(page, "/toolbox/game-hub/index.html");
+-  const gameWorkspaceNavigation = getToolNavigationTargets("game-hub");
+-  const gameConfigurationNavigation = getToolNavigationTargets("game-configuration");
+-
+-  try {
+-    await expect(page.locator("[data-tool-display-mode-row='identity']")).toContainText("Game Hub");
+-    await expectNavigationTarget(page.locator("[data-tool-nav-previous]"), "Previous", gameWorkspaceNavigation.previous);
+-    await expectNavigationTarget(page.locator("[data-tool-nav-next]"), "Next", gameWorkspaceNavigation.next);
+-
+-    await page.goto(`${failures.server.baseUrl}/toolbox/game-configuration/index.html`, { waitUntil: "networkidle" });
+-    await expect(page.locator("[data-tool-display-mode-row='identity']")).toContainText("Game Configuration");
+-    await expectNavigationTarget(page.locator("[data-tool-nav-previous]"), "Previous", gameConfigurationNavigation.previous);
+-    await expectNavigationTarget(page.locator("[data-tool-nav-next]"), "Next", gameConfigurationNavigation.next);
+-    await expectPlainNavigationLinks(page);
+-    await expectNoPageFailures(failures);
+-  } finally {
+-    await workspaceV2CoverageReporter.stop(page);
+-    await failures.server.close();
+-  }
+-});
+-
+-test("first registry tool renders disabled previous text instead of a broken link", async ({ page }) => {
+-  const firstTool = getActiveToolRegistry()[0];
+-  const navigation = getToolNavigationTargets(firstTool.id);
+-  const failures = await openRepoPage(page, `/${getToolRoute(firstTool)}`);
+-
+-  try {
+-    const previous = page.locator("[data-tool-nav-previous]");
+-    await expectNavigationTarget(previous, "Previous", navigation.previous);
+-    await expect(previous).not.toHaveJSProperty("tagName", "A");
+-    await expect(page.locator("[data-tool-display-mode-row='navigation'] a")).toHaveCount(navigation.next.disabled ? 0 : 1);
+-    await expectNavigationTarget(page.locator("[data-tool-nav-next]"), "Next", navigation.next);
+-    await expectNoPageFailures(failures);
+-  } finally {
+-    await workspaceV2CoverageReporter.stop(page);
+-    await failures.server.close();
+-  }
+-});
+-
+-test("Build Game renders plain previous and next links in the second row", async ({ page }) => {
+-  const failures = await openRepoPage(page, "/toolbox/build-game/index.html");
+-  const navigation = getToolNavigationTargets("build-game");
+-
+-  try {
+-    const rows = await toolDisplayRows(page);
+-    expect(rows.map((row) => row.row)).toEqual(["identity", "navigation"]);
+-    expect(rows[0].childTags).toEqual(["img", "span"]);
+-    expect(rows[0].text).toBe("Build Game");
+-    expect(rows[1].childTags).toEqual(["a", "a"]);
+-
+-    const previous = page.locator("[data-tool-nav-previous]");
+-    const next = page.locator("[data-tool-nav-next]");
+-    await expectNavigationTarget(previous, "Previous", navigation.previous);
+-    await expectNavigationTarget(next, "Next", navigation.next);
+-    await expectPlainNavigationLinks(page);
+-    await expectToolDisplayModeVisualLayout(page);
+-    await expectNoPageFailures(failures);
+-  } finally {
+-    await workspaceV2CoverageReporter.stop(page);
+-    await failures.server.close();
+-  }
+-});
+-
+-test("multi-path fallback opens Toolbox Group view with only the target group expanded", async ({ page }) => {
+-  const failures = await openRepoPage(page, "/toolbox/game-configuration/index.html");
+-  const navigation = getToolNavigationTargets("game-configuration");
+-
+-  try {
+-    const next = page.locator("[data-tool-nav-next]");
+-    expect(navigation.next.kind).toBe("group");
+-    await expectNavigationTarget(next, "Next", navigation.next);
+-    await next.click();
+-    await page.waitForURL(new RegExp(`${navigation.next.href.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`));
+-    await page.waitForLoadState("networkidle");
+-    await expect(page.getByRole("button", { name: "Group" })).toHaveAttribute("aria-pressed", "true");
+-
+-    const openGroups = await page.locator("[data-tools-accordion]").evaluateAll((groups) => (
+-      groups.filter((group) => group.open).map((group) => group.dataset.toolsAccordion)
+-    ));
+-    expect(openGroups).toEqual(["Design"]);
+-    await expectNoPageFailures(failures);
+-  } finally {
+-    await workspaceV2CoverageReporter.stop(page);
+-    await failures.server.close();
+-  }
+-});
+diff --git a/dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs b/dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs
+new file mode 100644
+index 000000000..1494fb2ee
+--- /dev/null
++++ b/dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs
+@@ -0,0 +1,250 @@
++import { expect, test } from "@playwright/test";
++import {
++  getToolById,
++  getToolImageSource,
++} from "../../../../toolbox/toolRegistry.js";
++import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
++import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
++import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
++
++test.beforeEach(async ({ page }) => {
++  await installPlaywrightStorageIsolation(page, {
++    lane: "tool-display-mode",
++    surface: "Tool Display Mode single-line summary layout",
++  });
++});
++
++test.afterEach(async ({ page }) => {
++  await clearPlaywrightStorage(page);
++});
++
++test.afterAll(async () => {
++  await workspaceV2CoverageReporter.writeReport();
++});
++
++function restoreEnvValue(key, value) {
++  if (value === undefined) {
++    delete process.env[key];
++    return;
++  }
++  process.env[key] = value;
++}
++
++async function openRepoPage(page, pathName) {
++  const server = await startRepoServer();
++  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
++  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
++  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
++  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
++  const closeServer = server.close.bind(server);
++  server.close = async () => {
++    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
++    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
++    await closeServer();
++  };
++  const failedRequests = [];
++  const pageErrors = [];
++  const consoleErrors = [];
++
++  page.on("pageerror", (error) => {
++    pageErrors.push(error.message);
++  });
++  page.on("console", (message) => {
++    if (message.type() === "error") {
++      consoleErrors.push(message.text());
++    }
++  });
++  page.on("response", (response) => {
++    if (response.status() >= 400) {
++      failedRequests.push(`${response.status()} ${response.url()}`);
++    }
++  });
++  page.on("requestfailed", (request) => {
++    failedRequests.push(`FAILED ${request.url()}`);
++  });
++
++  await workspaceV2CoverageReporter.start(page);
++  await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
++  return { consoleErrors, failedRequests, pageErrors, server };
++}
++
++function expectNoPageFailures(failures) {
++  expect(failures.failedRequests).toEqual([]);
++  expect(failures.pageErrors).toEqual([]);
++  expect(failures.consoleErrors).toEqual([]);
++}
++
++async function expectNoDeprecatedToolDisplayMarkup(page) {
++  await expect(page.locator(".tool-display-mode__body")).toHaveCount(0);
++  await expect(page.locator(".tool-display-mode__identity-row")).toHaveCount(0);
++  await expect(page.locator(".tool-display-mode__description")).toHaveCount(0);
++  await expect(page.locator(".tool-display-mode__navigation-row")).toHaveCount(0);
++  await expect(page.locator(".tool-display-mode__chevron")).toHaveCount(0);
++  await expect(page.locator("[data-tool-display-mode-row]")).toHaveCount(0);
++  await expect(page.locator("[data-tool-nav-previous]")).toHaveCount(0);
++  await expect(page.locator("[data-tool-nav-next]")).toHaveCount(0);
++}
++
++async function expectSingleLineSummary(page, toolId) {
++  const tool = getToolById(toolId);
++  const displayMode = page.locator("#toolDisplayMode");
++  const summary = displayMode.locator("summary");
++
++  await expect(displayMode).toBeVisible();
++  await expect(summary).toBeVisible();
++  await expect(summary.locator(":scope > .tool-display-mode__badge")).toHaveAttribute(
++    "src",
++    getToolImageSource(tool, "badge"),
++  );
++  await expect(summary.locator(":scope > .tool-display-mode__badge")).toHaveAttribute(
++    "alt",
++    `${tool.displayName} badge`,
++  );
++  await expect(summary.locator(":scope > .tool-display-mode__tool-name")).toHaveText(tool.displayName);
++  await expect(summary.locator(":scope > .tool-display-mode__character")).toHaveAttribute(
++    "src",
++    getToolImageSource(tool, "tool"),
++  );
++  await expect(summary.locator(":scope > .tool-display-mode__character")).toHaveAttribute(
++    "alt",
++    `${tool.displayName} character`,
++  );
++  await expect(summary.locator(":scope > .tool-display-mode__mode-icon")).toHaveAttribute(
++    "data-theme-icon-file",
++    "gfs-fullscreen.svg",
++  );
++
++  const layout = await summary.evaluate((summaryElement) => {
++    const directChildren = Array.from(summaryElement.children);
++    const badge = summaryElement.querySelector(".tool-display-mode__badge");
++    const toolName = summaryElement.querySelector(".tool-display-mode__tool-name");
++    const character = summaryElement.querySelector(".tool-display-mode__character");
++    const modeIcon = summaryElement.querySelector(".tool-display-mode__mode-icon");
++    const badgeBox = badge.getBoundingClientRect();
++    const characterBox = character.getBoundingClientRect();
++    const modeIconBox = modeIcon.getBoundingClientRect();
++    return {
++      badgeHeight: Math.round(badgeBox.height),
++      badgeWidth: Math.round(badgeBox.width),
++      characterHeight: Math.round(characterBox.height),
++      characterWidth: Math.round(characterBox.width),
++      directChildRoles: directChildren.map((child) => {
++        if (child === badge) return "badge";
++        if (child === toolName) return "toolName";
++        if (child === character) return "character";
++        if (child === modeIcon) return "modeIcon";
++        return child.className || child.tagName.toLowerCase();
++      }),
++      display: getComputedStyle(summaryElement).display,
++      iconColor: getComputedStyle(modeIcon).color,
++      iconHeight: Math.round(modeIconBox.height),
++      iconMarginLeft: getComputedStyle(modeIcon).marginLeft,
++      iconWidth: Math.round(modeIconBox.width),
++      modeIconIsFinalChild: directChildren.at(-1) === modeIcon,
++      rootGold: getComputedStyle(document.documentElement).getPropertyValue("--gold").trim(),
++      toolNameOverflow: getComputedStyle(toolName).overflow,
++      toolNameTextAlign: getComputedStyle(toolName).textAlign,
++      toolNameWhiteSpace: getComputedStyle(toolName).whiteSpace,
++    };
++  });
++
++  expect(layout).toMatchObject({
++    badgeHeight: 64,
++    badgeWidth: 64,
++    characterHeight: 127,
++    characterWidth: 225,
++    directChildRoles: ["badge", "toolName", "character", "modeIcon"],
++    display: "flex",
++    iconHeight: 42,
++    iconWidth: 42,
++    modeIconIsFinalChild: true,
++    toolNameOverflow: "hidden",
++    toolNameTextAlign: "center",
++    toolNameWhiteSpace: "nowrap",
++  });
++  expect(layout.iconMarginLeft === "auto" || Number.parseFloat(layout.iconMarginLeft) >= 0).toBe(true);
++  expect(layout.iconColor).not.toBe("");
++  expect(layout.rootGold).not.toBe("");
++  await expectNoDeprecatedToolDisplayMarkup(page);
++}
++
++test("Game Design renders badge, tool name, character image, and fullscreen icon as direct summary children", async ({ page }) => {
++  const failures = await openRepoPage(page, "/toolbox/game-design/index.html");
++
++  try {
++    await expectSingleLineSummary(page, "game-design");
++    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
++    expectNoPageFailures(failures);
++  } finally {
++    await workspaceV2CoverageReporter.stop(page);
++    await failures.server.close();
++  }
++});
++
++test("representative tools use registry-owned names and images in the single-line summary", async ({ page }) => {
++  const toolCases = [
++    { path: "/toolbox/game-hub/index.html", toolId: "game-hub" },
++    { path: "/toolbox/game-configuration/index.html", toolId: "game-configuration" },
++    { path: "/toolbox/build-game/index.html", toolId: "build-game" },
++  ];
++  const failures = await openRepoPage(page, toolCases[0].path);
++
++  try {
++    for (const toolCase of toolCases) {
++      await page.goto(`${failures.server.baseUrl}${toolCase.path}`, { waitUntil: "networkidle" });
++      await expectSingleLineSummary(page, toolCase.toolId);
++    }
++    expectNoPageFailures(failures);
++  } finally {
++    await workspaceV2CoverageReporter.stop(page);
++    await failures.server.close();
++  }
++});
++
++test("fullscreen mode swaps to the exit icon without restoring old body or navigation markup", async ({ page }) => {
++  const failures = await openRepoPage(page, "/toolbox/game-design/index.html");
++
++  try {
++    const centerHeading = page.locator(".tool-center-panel > h2").first();
++    await expect(centerHeading).toBeVisible();
++    await page.locator("#toolDisplayMode summary").click();
++    await expect(page.locator("body")).toHaveClass(/tool-focus-mode/);
++    await expect(page.locator("#toolDisplayMode summary .tool-display-mode__mode-icon")).toHaveAttribute(
++      "data-theme-icon-file",
++      "gfs-exit-fullscreen.svg",
++    );
++    await expect(page.locator("#toolDisplayMode summary > .tool-display-mode__character")).toBeHidden();
++    await expectNoDeprecatedToolDisplayMarkup(page);
++
++    const fullscreenLayout = await page.locator("#toolDisplayMode summary").evaluate((summaryElement) => {
++      const badge = summaryElement.querySelector(".tool-display-mode__badge");
++      const toolName = summaryElement.querySelector(".tool-display-mode__tool-name");
++      const modeIcon = summaryElement.querySelector(".tool-display-mode__mode-icon");
++      const badgeBox = badge.getBoundingClientRect();
++      const modeIconBox = modeIcon.getBoundingClientRect();
++      return {
++        badgeHeight: Math.round(badgeBox.height),
++        badgeWidth: Math.round(badgeBox.width),
++        modeIconIsFinalChild: Array.from(summaryElement.children).at(-1) === modeIcon,
++        modeIconWidth: Math.round(modeIconBox.width),
++        toolNameText: toolName.textContent.trim(),
++      };
++    });
++
++    expect(fullscreenLayout).toEqual({
++      badgeHeight: 64,
++      badgeWidth: 64,
++      modeIconIsFinalChild: true,
++      modeIconWidth: 42,
++      toolNameText: "Game Design",
++    });
++
++    await page.locator("#toolDisplayMode summary").click();
++    await expect(page.locator("body")).not.toHaveClass(/tool-focus-mode/);
++    await expect(centerHeading).toBeVisible();
++    expectNoPageFailures(failures);
++  } finally {
++    await workspaceV2CoverageReporter.stop(page);
++    await failures.server.close();
++  }
++});
+diff --git a/dev/tests/playwright/tools/ToolImageRegistry.spec.mjs b/dev/tests/playwright/tools/ToolImageRegistry.spec.mjs
+index e5d6ad4d2..f78d40903 100644
+--- a/dev/tests/playwright/tools/ToolImageRegistry.spec.mjs
++++ b/dev/tests/playwright/tools/ToolImageRegistry.spec.mjs
+@@ -32,8 +32,26 @@ test.afterAll(async () => {
+   await workspaceV2CoverageReporter.writeReport();
+ });
+
++function restoreEnvValue(key, value) {
++  if (value === undefined) {
++    delete process.env[key];
++    return;
++  }
++  process.env[key] = value;
++}
++
+ async function openRepoPage(page, pathName) {
+   const server = await startRepoServer();
++  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
++  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
++  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
++  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
++  const closeServer = server.close.bind(server);
++  server.close = async () => {
++    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
++    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
++    await closeServer();
++  };
+   const failedRequests = [];
+   const pageErrors = [];
+   const consoleErrors = [];
+@@ -168,7 +186,14 @@ test("representative tool pages consume registry images in Tool Display Mode", a
+     for (const toolCase of toolCases) {
+       const tool = getToolById(toolCase.toolId);
+       await page.goto(`${failures.server.baseUrl}${toolCase.path}`, { waitUntil: "networkidle" });
+-      await expect(page.locator("[data-tool-display-mode-row='navigation']")).toBeVisible();
++      await expect(page.locator("#toolDisplayMode summary > .tool-display-mode__badge")).toBeVisible();
++      await expect(page.locator("#toolDisplayMode summary > .tool-display-mode__tool-name")).toHaveText(tool.displayName);
++      await expect(page.locator("#toolDisplayMode summary > .tool-display-mode__character")).toBeVisible();
++      await expect(page.locator("#toolDisplayMode summary > .tool-display-mode__mode-icon")).toHaveAttribute(
++        "data-theme-icon-file",
++        "gfs-fullscreen.svg"
++      );
++      await expect(page.locator(".tool-display-mode__navigation-row")).toHaveCount(0);
+
+       const displayImages = await page.evaluate(() => ({
+         badge: document.querySelector(".tool-display-mode__badge")?.src || "",
+diff --git a/dev/tests/playwright/tools/ToolNavigationPrevNext.spec.mjs b/dev/tests/playwright/tools/ToolNavigationPrevNext.spec.mjs
+index 0c4c84108..0e62a7140 100644
+--- a/dev/tests/playwright/tools/ToolNavigationPrevNext.spec.mjs
++++ b/dev/tests/playwright/tools/ToolNavigationPrevNext.spec.mjs
+@@ -1,7 +1,6 @@
+ import { expect, test } from "@playwright/test";
+ import {
+   TOOL_REGISTRY,
+-  getToolNavigationTargets,
+   getToolRoute,
+ } from "../../../../toolbox/toolRegistry.js";
+ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
+@@ -13,7 +12,7 @@ const registryToolsByDisplayName = new Map(TOOL_REGISTRY.map((tool) => [tool.dis
+ test.beforeEach(async ({ page }) => {
+   await installPlaywrightStorageIsolation(page, {
+     lane: "tool-navigation",
+-    surface: "Toolbox card links and Tool Display Mode navigation"
++    surface: "Toolbox route links and group fallback routing",
+   });
+ });
+
+@@ -25,8 +24,26 @@ test.afterAll(async () => {
+   await workspaceV2CoverageReporter.writeReport();
+ });
+
++function restoreEnvValue(key, value) {
++  if (value === undefined) {
++    delete process.env[key];
++    return;
++  }
++  process.env[key] = value;
++}
++
+ async function openRepoPage(page, pathName) {
+   const server = await startRepoServer();
++  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
++  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
++  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
++  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
++  const closeServer = server.close.bind(server);
++  server.close = async () => {
++    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
++    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
++    await closeServer();
++  };
+   const failedRequests = [];
+   const pageErrors = [];
+   const consoleErrors = [];
+@@ -59,18 +76,6 @@ function expectNoPageFailures(failures) {
+   expect(failures.consoleErrors).toEqual([]);
+ }
+
+-async function expectNavigationTarget(locator, prefix, target) {
+-  await expect(locator).toHaveText(`${prefix}: ${target.label}`);
+-  if (target.disabled) {
+-    await expect(locator).not.toHaveAttribute("href");
+-    return;
+-  }
+-  await expect(locator).toHaveAttribute("href", target.href);
+-  if (target.kind === "group") {
+-    await expect(locator).toHaveAttribute("data-tool-nav-group", target.group);
+-  }
+-}
+-
+ test("Toolbox card names link to registered tool routes without duplicating launch actions", async ({ page }) => {
+   const failures = await openRepoPage(page, "/toolbox/index.html");
+
+@@ -96,67 +101,31 @@ test("Toolbox card names link to registered tool routes without duplicating laun
+     }
+
+     const gameDesignCard = cards.filter({
+-      has: page.getByRole("heading", { exact: true, name: "Game Design" })
++      has: page.getByRole("heading", { exact: true, name: "Game Design" }),
+     }).first();
+     await expect(gameDesignCard.locator(".card-media-link")).toHaveAttribute("href", "../toolbox/game-design/index.html");
+     await expect(gameDesignCard.locator("[data-toolbox-tile-action-row] a.btn")).toHaveAttribute("href", "../toolbox/game-design/index.html");
+     await gameDesignCard.locator("h3 > a[data-toolbox-tool-name-link]").click();
+     await page.waitForURL(/\/toolbox\/game-design\/index\.html$/);
+     await expect(page.locator(".page-title h1")).toHaveText("Game Design");
+-    await expectNoPageFailures(failures);
++    expectNoPageFailures(failures);
+   } finally {
+     await workspaceV2CoverageReporter.stop(page);
+     await failures.server.close();
+   }
+ });
+
+-test("Tool Display Mode renders build-order previous and next controls", async ({ page }) => {
++test("Tool Display Mode no longer renders deprecated previous and next controls", async ({ page }) => {
+   const failures = await openRepoPage(page, "/toolbox/game-design/index.html");
+-  const navigation = getToolNavigationTargets("game-design");
+
+   try {
+-    await expectNavigationTarget(page.locator("[data-tool-nav-previous]"), "Previous", navigation.previous);
+-    await expectNavigationTarget(page.locator("[data-tool-nav-next]"), "Next", navigation.next);
+-    await expectNoPageFailures(failures);
+-  } finally {
+-    await workspaceV2CoverageReporter.stop(page);
+-    await failures.server.close();
+-  }
+-});
+-
+-test("Game Hub Tool Display Mode follows registry route targets", async ({ page }) => {
+-  const failures = await openRepoPage(page, "/toolbox/game-hub/index.html");
+-  const navigation = getToolNavigationTargets("game-hub");
+-
+-  try {
+-    await expectNavigationTarget(page.locator("[data-tool-nav-previous]"), "Previous", navigation.previous);
+-    await expectNavigationTarget(page.locator("[data-tool-nav-next]"), "Next", navigation.next);
+-    await expectNoPageFailures(failures);
+-  } finally {
+-    await workspaceV2CoverageReporter.stop(page);
+-    await failures.server.close();
+-  }
+-});
+-
+-test("multi-path next control routes to Toolbox Group view and preserves role", async ({ page }) => {
+-  const failures = await openRepoPage(page, "/toolbox/game-configuration/index.html");
+-  const navigation = getToolNavigationTargets("game-configuration");
+-
+-  try {
+-    const nextControl = page.locator("[data-tool-nav-next]");
+-    expect(navigation.next.kind).toBe("group");
+-    await expectNavigationTarget(nextControl, "Next", navigation.next);
+-
+-    await nextControl.click();
+-    await page.waitForURL(new RegExp(`${navigation.next.href.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`));
+-    await page.waitForLoadState("networkidle");
+-    await expect(page.getByRole("button", { name: "Group" })).toHaveAttribute("aria-pressed", "true");
+-
+-    const openGroups = await page.locator("[data-tools-accordion]").evaluateAll((groups) => (
+-      groups.filter((group) => group.open).map((group) => group.dataset.toolsAccordion)
+-    ));
+-    expect(openGroups).toEqual(["Design"]);
+-    await expectNoPageFailures(failures);
++    const displayMode = page.locator("#toolDisplayMode");
++    await expect(displayMode).toBeVisible();
++    await expect(displayMode.locator("[data-tool-nav-previous]")).toHaveCount(0);
++    await expect(displayMode.locator("[data-tool-nav-next]")).toHaveCount(0);
++    await expect(displayMode.locator(".tool-display-mode__navigation-row")).toHaveCount(0);
++    await expect(displayMode.locator("summary > .tool-display-mode__tool-name")).toHaveText("Game Design");
++    expectNoPageFailures(failures);
+   } finally {
+     await workspaceV2CoverageReporter.stop(page);
+     await failures.server.close();
+@@ -171,12 +140,12 @@ test("Toolbox Group view can be selected directly with only the requested group
+     const groups = await page.locator("[data-tools-accordion]").evaluateAll((accordionGroups) => (
+       accordionGroups.map((group) => ({
+         name: group.dataset.toolsAccordion,
+-        open: group.open
++        open: group.open,
+       }))
+     ));
+     expect(groups.filter((group) => group.open).map((group) => group.name)).toEqual(["Design"]);
+     expect(groups.filter((group) => group.name !== "Design").every((group) => group.open === false)).toBe(true);
+-    await expectNoPageFailures(failures);
++    expectNoPageFailures(failures);
+   } finally {
+     await workspaceV2CoverageReporter.stop(page);
+     await failures.server.close();
+diff --git a/dev/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs b/dev/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
+index bdd177496..14d507ca9 100644
+--- a/dev/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
++++ b/dev/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
+@@ -232,8 +232,8 @@ test("shared toolbox status bar shows selected Game Hub game above the footer",
+     await expect(statusBar).toBeVisible();
+     const displayMode = page.locator("#toolDisplayMode");
+     await expect(displayMode.locator("summary [data-theme-icon='fullscreen']")).toHaveAttribute("data-theme-icon-file", "gfs-fullscreen.svg");
+-    await expect(displayMode.locator("[data-tool-nav-previous] [data-theme-icon='chevron-left']")).toHaveAttribute("data-theme-icon-file", "gfs-chevron-left.svg");
+-    await expect(displayMode.locator("[data-tool-nav-next] [data-theme-icon='chevron-right']")).toHaveAttribute("data-theme-icon-file", "gfs-chevron-right.svg");
++    await expect(displayMode.locator("[data-tool-nav-previous]")).toHaveCount(0);
++    await expect(displayMode.locator("[data-tool-nav-next]")).toHaveCount(0);
+     await expect(page.locator(".horizontal-accordion-toggle").first().locator("[data-theme-icon]")).toHaveAttribute("data-theme-icon-file", /gfs-chevron-(left|right)\.svg/);
+     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+     await expect(statusBar).not.toContainText("Environment");

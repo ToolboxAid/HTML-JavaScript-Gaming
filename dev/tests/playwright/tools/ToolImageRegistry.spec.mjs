@@ -32,8 +32,26 @@ test.afterAll(async () => {
   await workspaceV2CoverageReporter.writeReport();
 });
 
+function restoreEnvValue(key, value) {
+  if (value === undefined) {
+    delete process.env[key];
+    return;
+  }
+  process.env[key] = value;
+}
+
 async function openRepoPage(page, pathName) {
   const server = await startRepoServer();
+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
+  const closeServer = server.close.bind(server);
+  server.close = async () => {
+    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
+    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
+    await closeServer();
+  };
   const failedRequests = [];
   const pageErrors = [];
   const consoleErrors = [];
@@ -168,7 +186,14 @@ test("representative tool pages consume registry images in Tool Display Mode", a
     for (const toolCase of toolCases) {
       const tool = getToolById(toolCase.toolId);
       await page.goto(`${failures.server.baseUrl}${toolCase.path}`, { waitUntil: "networkidle" });
-      await expect(page.locator("[data-tool-display-mode-row='navigation']")).toBeVisible();
+      await expect(page.locator("#toolDisplayMode summary > .tool-display-mode__badge")).toBeVisible();
+      await expect(page.locator("#toolDisplayMode summary > .tool-display-mode__tool-name")).toHaveText(tool.displayName);
+      await expect(page.locator("#toolDisplayMode summary > .tool-display-mode__character")).toBeVisible();
+      await expect(page.locator("#toolDisplayMode summary > .tool-display-mode__mode-icon")).toHaveAttribute(
+        "data-theme-icon-file",
+        "gfs-fullscreen.svg"
+      );
+      await expect(page.locator(".tool-display-mode__navigation-row")).toHaveCount(0);
 
       const displayImages = await page.evaluate(() => ({
         badge: document.querySelector(".tool-display-mode__badge")?.src || "",

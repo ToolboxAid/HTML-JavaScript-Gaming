@@ -1,23 +1,23 @@
 # Lane Warm-Start Report
 
-Generated: 2026-06-23T16:38:48.296Z
+Generated: 2026-06-28T14:20:34.627Z
 Status: PASS
-Warm-start directory: docs_build/dev/reports/lane_warm_starts
+Warm-start directory: dev/workspace/generated/lane_warm_starts
 
 ## Summary
 
-Reused warm-start lanes: 0
-Invalidated warm-start states: 1
+Reused warm-start lanes: 1
+Invalidated warm-start states: 0
 Generated warm-start states: 0
 Skipped warm-start states: 0
-Prevented redundant initialization: 0
-Prevented lane graph assembly: 0
+Prevented redundant initialization: 1
+Prevented lane graph assembly: 1
 
 ## Warm-Start Decisions
 
 | Lane | Status | Warm-Start Path | Manifest Hash | Warm-Start Hash | Dependency Hydration Hash | Reason |
 | --- | --- | --- | --- | --- | --- | --- |
-| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | fdada39983df06d5 | 89d30ba62849a51c | e9956a75c3585e86 | Warm-start commandsHash changed for workspace-contract.; Warm-start dependencyGraphHash changed for workspace-contract.; Warm-start dependencyHydrationHash changed for workspace-contract.; Warm-start inputHash changed for workspace-contract.; Warm-start laneConfigHash changed for workspace-contract.; Warm-start laneDefinitionHash changed for workspace-contract.; Warm-start manifestHash changed for workspace-contract.; Warm-start warmStartHash changed for workspace-contract. |
+| tool-display-mode | REUSED | dev/workspace/generated/lane_warm_starts/tool-display-mode.json | 9f823d041166f7f6 | 7b7f09e88e28d5f4 | 320babaf259f9ee0 | Manifest inputs, dependency graph, ownership metadata, helper placement, fixture placement, and lane configuration are unchanged. |
 
 ## Fast-Fail Safeguards
 

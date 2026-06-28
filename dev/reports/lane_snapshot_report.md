@@ -1,23 +1,23 @@
 # Lane Snapshot Report
 
-Generated: 2026-06-23T16:38:48.296Z
+Generated: 2026-06-28T14:20:34.628Z
 Status: PASS
-Snapshot directory: docs_build/dev/reports/lane_snapshots
+Snapshot directory: dev/workspace/generated/lane_snapshots
 
 ## Summary
 
-Reused lane snapshots: 0
-Invalidated snapshots: 1
+Reused lane snapshots: 1
+Invalidated snapshots: 0
 Generated snapshots: 0
 Skipped snapshots: 0
-Prevented graph rebuilds: 0
-Prevented manifest traversal: 0
+Prevented graph rebuilds: 1
+Prevented manifest traversal: 1
 
 ## Snapshot Decisions
 
 | Lane | Status | Snapshot Path | Manifest Hash | Dependency Graph Hash | Helper Graph Hash | Fixture Graph Hash | Runtime Config Hash | Execution Graph Hash | Snapshot Hash | Reason |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | fdada39983df06d5 | 4dcb31ccda1bdb5a | 6cee3b9e8c76ce0d | 6c4fac7630b0b6f3 | 2ba7784af3a4df8d | 98ec1cea6aaaef57 | 54af1dc18e270910 | Lane snapshot commandsHash changed for workspace-contract.; Lane snapshot dependencyGraphHash changed for workspace-contract.; Lane snapshot executionGraphHash changed for workspace-contract.; Lane snapshot helperGraphHash changed for workspace-contract.; Lane snapshot inputHash changed for workspace-contract.; Lane snapshot laneDefinitionHash changed for workspace-contract.; Lane snapshot manifestHash changed for workspace-contract.; Lane snapshot runtimeConfigurationHash changed for workspace-contract.; Lane snapshot snapshotHash changed for workspace-contract.; Lane snapshot warmStartHash changed for workspace-contract. |
+| tool-display-mode | REUSED | dev/workspace/generated/lane_snapshots/tool-display-mode.json | 9f823d041166f7f6 | 6de254babab8aecd | 9b7a9aaaca6ffbca | 6c4fac7630b0b6f3 | af6fb13c750a75a6 | a054cd1bc749225a | d86efa45fd194148 | Targeted files, manifest, dependency graph, helper graph, fixture graph, ownership, lane config, and runtime config are unchanged. |
 
 ## Snapshot Validation Findings
 

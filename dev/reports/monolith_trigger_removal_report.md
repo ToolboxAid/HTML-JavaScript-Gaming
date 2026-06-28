@@ -1,6 +1,6 @@
 # Monolith Trigger Removal Report
 
-Generated: 2026-06-23T16:38:57.092Z
+Generated: 2026-06-28T14:20:59.081Z
 Status: PASS
 
 ## Removed Broad Execution Triggers
@@ -8,7 +8,7 @@ Status: PASS
 | Trigger | Status | Before | After |
 | --- | --- | --- | --- |
 | run-targeted-test-lanes.mjs with no --lane/--lanes/--all | REMOVED | no lane arguments selected all runtime lanes by default | safe no-lane mode; no runtime lanes execute |
-| npm run test:workspace-v2 | REDIRECTED | direct deprecated Workspace Manager V2 Playwright spec | node ./scripts/run-targeted-test-lanes.mjs --lane workspace-contract |
+| npm run test:workspace-v2 | REDIRECTED | direct deprecated Workspace Manager V2 Playwright spec | node ./dev/scripts/run-targeted-test-lanes.mjs --lane workspace-contract |
 | nested Workspace lane startup | REMOVED | workspace-contract invoked npm run test:workspace-v2 | workspace-contract command uses the Node Playwright CLI directly |
 
 ## Remaining Broad Discovery Callers
@@ -28,9 +28,9 @@ Status: PASS
 ## Execution Safeguards
 
 No-argument safe mode active for this invocation: No
-Scheduled runtime lanes: workspace-contract
-Executed lanes: workspace-contract
-Skipped lanes: game-hub, game-design, game-configuration, asset-tool, build-path, tools-progress, tool-navigation, tool-display-mode, tool-images, tool-runtime, game-runtime, integration, engine-src, samples
+Scheduled runtime lanes: tool-display-mode
+Executed lanes: tool-display-mode
+Skipped lanes: workspace-contract, game-hub, game-design, game-configuration, asset-tool, build-path, tools-progress, tool-navigation, tool-images, tool-runtime, game-runtime, integration, engine-src, samples
 Full samples smoke: SKIP - Skipped because changed files do not modify sample JSON or shared sample loader/framework behavior.
 Unaffected lane execution blocked: Yes
 

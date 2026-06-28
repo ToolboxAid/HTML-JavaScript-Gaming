@@ -6,7 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
 Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(89%) assets/theme-v2/js/tool-display-mode.js - executed lines 251/251; executed functions 25/28
 
 Guardrail warnings:
-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+(100%) none - no changed runtime JS coverage warnings

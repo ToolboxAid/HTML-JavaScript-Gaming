@@ -1,29 +1,29 @@
 # Test Cleanup Performance Report
 
-Generated: 2026-06-23T16:38:57.091Z
-Status: WARN
+Generated: 2026-06-28T14:20:59.081Z
+Status: PASS
 
 ## Cost Summary
 
-Total measured lane elapsed time: 8.76s
+Total measured lane elapsed time: 24.38s
 Actual browser launch count: 1
 Scheduled browser launch count: 1
 Baseline browser launch count: 1
 Skipped lanes: 14
-Reused manifests: 0
-Reused snapshots: 0
+Reused manifests: 1
+Reused snapshots: 1
 Cached validations reused: 18
-Prevented broad execution: 2
+Prevented broad execution: 3
 Prevented reruns: 0
 Prevented redundant browser launches: 0
-Prevented graph rebuilds: 0
-Prevented redundant dependency traversal: 0
+Prevented graph rebuilds: 1
+Prevented redundant dependency traversal: 1
 
 ## Lane Elapsed Time
 
 | Lane | Status | Elapsed | Browser Launches | Reason |
 | --- | --- | --- | --- | --- |
-| workspace-contract | FAIL | 8.76s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
+| workspace-contract | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
 | game-hub | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
 | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
 | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
@@ -31,7 +31,7 @@ Prevented redundant dependency traversal: 0
 | build-path | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
 | tools-progress | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
 | tool-navigation | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
-| tool-display-mode | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
+| tool-display-mode | PASS | 24.38s | 1 | Tool Display Mode validates the single-line summary contract, direct summary children, registry-owned badge/tool art, fullscreen/exit icon swap, and removal of the deprecated body/navigation row without exercising unrelated toolbox routes. |
 | tool-images | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
 | tool-runtime | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
 | game-runtime | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
@@ -43,14 +43,13 @@ Prevented redundant dependency traversal: 0
 
 | Lane | Duration | Test | Command |
 | --- | --- | --- | --- |
-| workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-| workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:485:1 > common header renders primary navigation order across active pages | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-| workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:565:1 > learn wireframe pages load with shared Theme V2 structure | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-| workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:644:1 > tool template future-state page loads from root Theme V2 paths | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-| workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:667:1 > representative active tool pages align center cleanup and registry group colors | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+| tool-display-mode | 10.70s | dev\tests\playwright\tools\ToolDisplayModeSingleLineSummary.spec.mjs:184:1 > representative tools use registry-owned names and images in the single-line summary | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs --config=dev/config/playwright.config.cjs --project=playwright --workers=1 --reporter=list |
+| tool-display-mode | 3.40s | dev\tests\playwright\tools\ToolDisplayModeSingleLineSummary.spec.mjs:204:1 > fullscreen mode swaps to the exit icon without restoring old body or navigation markup | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs --config=dev/config/playwright.config.cjs --project=playwright --workers=1 --reporter=list |
+| tool-display-mode | 3.10s | dev\tests\playwright\tools\ToolDisplayModeSingleLineSummary.spec.mjs:171:1 > Game Design renders badge, tool name, character image, and fullscreen icon as direct summary children | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs --config=dev/config/playwright.config.cjs --project=playwright --workers=1 --reporter=list |
 
 ## Prevented Broad Execution
 
+- Workspace V2 lane was not scheduled without explicit selection.
 - Full samples smoke stayed skipped/on-request.
 - Unselected lane directories stayed outside targeted discovery.
 

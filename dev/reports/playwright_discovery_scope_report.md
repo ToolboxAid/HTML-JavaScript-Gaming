@@ -1,14 +1,18 @@
 # Playwright Discovery Scope Report
 
-Generated: 2026-06-27T19:31:16.148Z
+Generated: 2026-06-28T14:20:34.604Z
 Status: PASS
-Scoped discovery: No
+Scoped discovery: Yes
 
 ## Targeted Discovery Scope
 
 | Role | File | Status | Reason |
 | --- | --- | --- | --- |
-| none | none | SKIP | No explicit scoped discovery inputs were provided; standalone audit used the broad structural mode. |
+| target spec | dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs | PASS | Explicit target is inside the selected discovery lane scope. |
+| required shared helper | dev/tests/helpers/playwrightRepoServer.mjs | PASS | Required shared helper was resolved from targeted spec imports. |
+| required shared helper | dev/tests/helpers/playwrightStorageIsolation.mjs | PASS | Required shared helper was resolved from targeted spec imports. |
+| required shared helper | dev/tests/helpers/playwrightV8CoverageReporter.mjs | PASS | Required shared helper was resolved from targeted spec imports. |
+| required shared helper | dev/tests/helpers/workspaceV2CoverageReporter.mjs | PASS | Required shared helper was resolved from targeted spec imports. |
 
 ## Scope Guard
 
