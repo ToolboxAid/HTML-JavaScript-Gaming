@@ -1195,6 +1195,10 @@ body.tool-focus-mode .tool-column:last-of-type {
   opacity: 1
 }
 
+.sprite-canvas-cell.is-painted {
+  background: var(--text)
+}
+
 @media(max-width:980px) {
 
   .grid.cols-4,
