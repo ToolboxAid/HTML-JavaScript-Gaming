@@ -451,10 +451,10 @@ index 000000000..dff7c5ede
 +| Scope | PASS | Governance/documentation only |
 diff --git a/dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_manual-validation-notes.md b/dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_manual-validation-notes.md
 new file mode 100644
-index 000000000..496975603
+index 000000000..f40b1c3ea
 --- /dev/null
 +++ b/dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_manual-validation-notes.md
-@@ -0,0 +1,13 @@
+@@ -0,0 +1,14 @@
 +# PR_26180_OWNER_003 Manual Validation Notes
 +
 +- Confirmed `dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md` exists and is referenced as the authoritative assigned-work source.
@@ -462,6 +462,7 @@ index 000000000..496975603
 +- Confirmed the required Team Assignment startup output section appears in active startup governance.
 +- Confirmed Project Instructions version is updated to `2026.06.28.003`.
 +- Confirmed rebase onto current `origin/main`; conflict resolution touched generated report artifacts only.
++- Confirmed second rebase onto current `origin/main` after Bravo Messages merged; conflict resolution again touched generated report artifacts only.
 +- Confirmed `BACKLOG_MASTER.md` now treats team-aware local dev bootstrap runtime as implemented, not remaining work.
 +- Confirmed correction used OWNER-provided verification for `npm run dev:bootstrap -- --team bravo`.
 +- Confirmed future-normalization wording was replaced with current-state canonical backlog language.
@@ -470,10 +471,10 @@ index 000000000..496975603
 +- Playwright was not run because this is governance/documentation-only and no runtime or UI files changed.
 diff --git a/dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_report.md b/dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_report.md
 new file mode 100644
-index 000000000..04a6952c6
+index 000000000..5c5e0100e
 --- /dev/null
 +++ b/dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_report.md
-@@ -0,0 +1,104 @@
+@@ -0,0 +1,105 @@
 +# PR_26180_OWNER_003 Backlog Startup Assignment Policy Report
 +
 +## Executive Summary
@@ -553,8 +554,9 @@ index 000000000..04a6952c6
 +## Rebase Notes
 +
 +- Rebased onto current `origin/main` after Owner 035 merged.
++- Rebased again onto current `origin/main` after Bravo Messages merged.
 +- Merge conflicts were limited to generated report artifacts: `dev/reports/codex_changed_files.txt` and `dev/reports/codex_review.diff`.
-+- Owner 035 runtime/API/auth files from `main` were preserved unchanged.
++- Owner 035 runtime/API/auth files and Bravo Messages runtime/UI/API files from `main` were preserved unchanged.
 +- Owner 003 remains governance/documentation-only.
 +
 +## Owner Recommendation
@@ -659,5 +661,54 @@ index 000000000..2ff76a6c2
 +- `BACKLOG_MASTER.md` no longer implies team/product-area backlog normalization is a future activity.
 +- No `dev/bootstrap/`, `package.json`, runtime, UI, API, or database files were modified by this correction.
 diff --git a/dev/reports/codex_changed_files.txt b/dev/reports/codex_changed_files.txt
-index 952a0ad68..952e9ff60 100644
-Binary files a/dev/reports/codex_changed_files.txt and b/dev/reports/codex_changed_files.txt differ
+index bc37b31a4..266edf984 100644
+--- a/dev/reports/codex_changed_files.txt
++++ b/dev/reports/codex_changed_files.txt
+@@ -1,10 +1,37 @@
+-﻿dev/build/database/ddl/messages.sql
+-dev/reports/PR_26180_BRAVO_002-complete-messages-creator-tool.md
+-dev/reports/codex_changed_files.txt
+-dev/reports/codex_review.diff
+-dev/tests/dev-runtime/MessagesPublishValidation.test.mjs
+-dev/tests/helpers/playwrightRepoServer.mjs
+-dev/tests/playwright/tools/MessagesTool.spec.mjs
+-src/dev-runtime/messages/messages-postgres-service.mjs
+-toolbox/messages/index.html
+-toolbox/messages/messages.js
++# git diff --name-status merge-base(origin/main, HEAD)..working-tree
++M	dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
++M	dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
++M	dev/build/ProjectInstructions/TEAM_START_COMMANDS.md
++M	dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
++M	dev/build/ProjectInstructions/addendums/team_start_and_release.md
++M	dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
++M	dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md
++M	dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
++A	dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_branch-validation.md
++A	dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_manual-validation-notes.md
++A	dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_report.md
++A	dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_requirement-checklist.md
++A	dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_validation-report.md
++M	dev/reports/codex_changed_files.txt
++M	dev/reports/codex_review.diff
++
++# git diff --stat merge-base(origin/main, HEAD)..working-tree
++.../ProjectInstructions/PROJECT_INSTRUCTIONS.md    |    4 +-
++ .../PROJECT_INSTRUCTIONS_VERSION.md                |    3 +-
++ .../ProjectInstructions/TEAM_START_COMMANDS.md     |   17 +
++ .../addendums/team_backlog_sod_eod_standard.md     |   69 +
++ .../addendums/team_start_and_release.md            |   28 +-
++ .../ProjectInstructions/backlog/BACKLOG_MASTER.md  |   39 +-
++ .../bootstrap/codex_start_of_day_bootstrap.md      |   27 +
++ .../standards/CODEX_WORKFLOW_COMMANDS.md           |    9 +
++ ...-startup-assignment-policy_branch-validation.md |   13 +
++ ...up-assignment-policy_manual-validation-notes.md |   13 +
++ ...003-backlog-startup-assignment-policy_report.md |  104 ++
++ ...rtup-assignment-policy_requirement-checklist.md |   29 +
++ ...-startup-assignment-policy_validation-report.md |   39 +
++ dev/reports/codex_changed_files.txt                |   47 +-
++ dev/reports/codex_review.diff                      | 1553 +++++++++-----------
++ 15 files changed, 1101 insertions(+), 893 deletions(-)
++
++# merge-base
++8c332fc82aeeed6508170363f04e04beaf67db28

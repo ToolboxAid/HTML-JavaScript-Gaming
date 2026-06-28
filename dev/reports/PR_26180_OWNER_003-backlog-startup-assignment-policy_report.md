@@ -77,8 +77,9 @@ This removes wording that implied team/product-area backlog normalization was a 
 ## Rebase Notes
 
 - Rebased onto current `origin/main` after Owner 035 merged.
+- Rebased again onto current `origin/main` after Bravo Messages merged.
 - Merge conflicts were limited to generated report artifacts: `dev/reports/codex_changed_files.txt` and `dev/reports/codex_review.diff`.
-- Owner 035 runtime/API/auth files from `main` were preserved unchanged.
+- Owner 035 runtime/API/auth files and Bravo Messages runtime/UI/API files from `main` were preserved unchanged.
 - Owner 003 remains governance/documentation-only.
 
 ## Owner Recommendation
