@@ -4,16 +4,29 @@
 
 Canonical backlog tracking owner: `dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md`.
 
+This file is the authoritative source for assigned product work.
+
+This document is updated as work status changes, including Owner assignment, reprioritization, completion, deferral, accepted PRs, SOD review, and EOD review.
+
+Backlog content must be organized by Team, then Product Area. Existing roadmap phase sections must preserve explicit team/product-area ownership until they are normalized into the Team/Product Area grouping.
+
+Each product area must include status and percent complete.
+
 Every active team owns an active backlog when it has assigned work.
 
 Backlog entries in this file follow the canonical field list, including:
 
 - Name
 - Description
+- Product area
+- Status
 - Current completion percentage
+- Active PR, when one exists
+- Next milestone
 - Remaining work
 - Blocking dependencies
 - Owning team
+- Source or reference
 
 Completion percentages are updated at SOD, after every accepted PR, and at EOD.
 

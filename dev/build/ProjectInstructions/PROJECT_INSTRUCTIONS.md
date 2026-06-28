@@ -202,6 +202,8 @@ That file owns Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, and invalid command be
 - Team ownership: `dev/build/ProjectInstructions/team_assignments/team_ownership.md`
 - Team assignments: `dev/build/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md`
 - Backlog: `dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md`
+- Team backlog/startup assignment standard: `dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md`
+- Tool Votes/Admin Owner priority signal source: `admin/tool-votes.html`
 - Database docs: `dev/build/database/`
 - Runtime/API standards: `dev/build/ProjectInstructions/standards/`
 - Runtime/API governance: `dev/build/ProjectInstructions/addendums/environment_governance_model.md`

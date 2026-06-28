@@ -1,10 +1,34 @@
-﻿dev/build/database/ddl/messages.sql
-dev/reports/PR_26180_BRAVO_002-complete-messages-creator-tool.md
-dev/reports/codex_changed_files.txt
-dev/reports/codex_review.diff
-dev/tests/dev-runtime/MessagesPublishValidation.test.mjs
-dev/tests/helpers/playwrightRepoServer.mjs
-dev/tests/playwright/tools/MessagesTool.spec.mjs
-src/dev-runtime/messages/messages-postgres-service.mjs
-toolbox/messages/index.html
-toolbox/messages/messages.js
+# git status --short
+M dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+ M dev/build/ProjectInstructions/TEAM_START_COMMANDS.md
+ M dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
+ M dev/build/ProjectInstructions/addendums/team_start_and_release.md
+ M dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
+ M dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md
+ M dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
+ M dev/reports/codex_changed_files.txt
+ M dev/reports/codex_review.diff
+?? dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_branch-validation.md
+?? dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_manual-validation-notes.md
+?? dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_report.md
+?? dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_requirement-checklist.md
+?? dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_validation-report.md
+
+# git ls-files --others --exclude-standard
+dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_branch-validation.md
+dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_manual-validation-notes.md
+dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_report.md
+dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_requirement-checklist.md
+dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_validation-report.md
+
+# git diff --stat
+.../ProjectInstructions/PROJECT_INSTRUCTIONS.md    |    2 +
+ .../ProjectInstructions/TEAM_START_COMMANDS.md     |   17 +
+ .../addendums/team_backlog_sod_eod_standard.md     |   69 +
+ .../addendums/team_start_and_release.md            |   28 +-
+ .../ProjectInstructions/backlog/BACKLOG_MASTER.md  |   13 +
+ .../bootstrap/codex_start_of_day_bootstrap.md      |   27 +
+ .../standards/CODEX_WORKFLOW_COMMANDS.md           |    9 +
+ dev/reports/codex_changed_files.txt                |  128 +-
+ dev/reports/codex_review.diff                      | 9336 +++++++++++---------
+ 9 files changed, 5356 insertions(+), 4273 deletions(-)

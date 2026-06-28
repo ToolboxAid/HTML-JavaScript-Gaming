@@ -19,11 +19,13 @@ Before a team starts, validate:
 - `main...origin/main` is `0 0`
 - `HEAD` SHA matches published EOD SHA
 - active assignment is selected or confirmed by OWNER
+- `dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md` is loaded as the authoritative assigned-work source
+- `admin/tool-votes.html` is located as the Tool Votes/Admin Owner priority signal source
 - assigned team uses the canonical Owner plus military team-name set
 - work remains with the assigned team until complete or OWNER reassignment
 - the team's previous PR is Closed, unless OWNER documented an explicit stacked PR chain
 
-Before implementation begins, ChatGPT/Codex must provide the SOD briefing defined in `dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md`.
+Before implementation begins, ChatGPT/Codex must provide the SOD briefing and Team Assignment table defined in `dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md`.
 
 ## Current Four-Team Start Set
 
@@ -63,17 +65,19 @@ Clarification:
 For backlog-driven work:
 
 1. Read `dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md`.
-2. Select only the OWNER-approved backlog item.
-3. Use the approved status model from `status_model.md`.
-4. Confirm the previous PR for the team is Closed, unless this is an explicitly documented stacked PR chain.
-5. Follow the canonical START phase in `project_instructions_single_source_eod_lock.md`.
-6. Create or use the approved team branch and PR identity only after START passes.
-7. Mark lifecycle state as PR Open.
-8. Plan on the same PR branch.
-9. Build on the same PR branch.
-10. Record active work in the active team registry when required.
-11. Open or update a draft PR during active WORK.
-12. Merge only through OWNER-approved PR workflow and canonical END.
+2. Locate the assigned team section and product areas.
+3. Locate `admin/tool-votes.html` as the Tool Votes/Admin Owner priority signal source when tool demand or Owner/Admin prioritization is relevant.
+4. Select only the OWNER-approved backlog item.
+5. Use the approved status model from `status_model.md`.
+6. Confirm the previous PR for the team is Closed, unless this is an explicitly documented stacked PR chain.
+7. Follow the canonical START phase in `project_instructions_single_source_eod_lock.md`.
+8. Create or use the approved team branch and PR identity only after START passes.
+9. Mark lifecycle state as PR Open.
+10. Plan on the same PR branch.
+11. Build on the same PR branch.
+12. Record active work in the active team registry when required.
+13. Open or update a draft PR during active WORK.
+14. Merge only through OWNER-approved PR workflow and canonical END.
 
 ## Team Command Examples
 

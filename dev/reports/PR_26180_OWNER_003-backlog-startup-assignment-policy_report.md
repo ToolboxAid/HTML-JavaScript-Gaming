@@ -1,0 +1,55 @@
+# PR_26180_OWNER_003 Backlog Startup Assignment Policy Report
+
+## Executive Summary
+
+PASS: This PR updates Project Instructions so team startup must load `BACKLOG_MASTER.md`, report assigned product work by team/product area, and treat Admin Tool Votes as the priority signal source for tool demand and Owner/Admin review.
+
+The change is governance/documentation only. No runtime, UI, API, database, or tool implementation files were modified.
+
+## Scope Decision
+
+Updated active Project Instructions and the backlog header only.
+
+`admin/tool-votes.html` was identified as the current Tool Votes/Admin Owner priority signal source. It was not modified because this PR is governance-only and the user explicitly prohibited UI/tool implementation changes.
+
+## Source Discovery
+
+| Source | Path | Status |
+|---|---|---|
+| Authoritative backlog | `dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md` | Found |
+| Team backlog/SOD/EOD standard | `dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md` | Updated |
+| Start of Day bootstrap architecture | `dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md` | Updated |
+| Codex workflow commands | `dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md` | Updated |
+| Team start commands | `dev/build/ProjectInstructions/TEAM_START_COMMANDS.md` | Updated |
+| Tool Votes/Admin Owner priority signal | `admin/tool-votes.html` | Found, not modified |
+
+## Changes
+
+- Added `BACKLOG_MASTER.md` as the authoritative assigned product work source in active startup/team governance.
+- Added `admin/tool-votes.html` as the Tool Votes/Admin Owner priority signal source.
+- Added the required Team Assignment startup output table.
+- Added hard-stop behavior for missing backlog, missing assigned team, missing product-area representation, and missing Tool Votes priority source.
+- Updated `BACKLOG_MASTER.md` header to state assigned-work ownership, status update expectations, Team/Product Area grouping, and required product-area status/percent complete.
+- Updated Start of Day command/bootstrap docs to require the Team Assignment section.
+- Added top-level `PROJECT_INSTRUCTIONS.md` pointers for the team backlog/startup assignment standard and Tool Votes priority source.
+
+## Owner Recommendation
+
+Use `dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md` as the required assigned-work source during startup and use `admin/tool-votes.html` as the priority signal source for tool demand. When either source is missing or does not represent the requested work, Codex must stop and ask OWNER whether to update the backlog before proceeding.
+
+## Validation
+
+| Check | Result |
+|---|---|
+| Branch validation | PASS |
+| `git diff --check` | PASS |
+| `npm run validate:canonical-structure` | PASS |
+| Runtime/UI/API/DB implementation files changed | PASS - none changed |
+
+## Artifact
+
+Repo-structured outcome ZIP:
+
+```text
+dev/workspace/zips/PR_26180_OWNER_003-backlog-startup-assignment-policy_delta.zip
+```

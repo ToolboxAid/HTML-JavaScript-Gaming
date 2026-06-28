@@ -61,9 +61,18 @@ Start of Day reports:
 - current branch
 - worktree status
 - latest main status
+- backlog assignment source
+- Tool Votes/Admin Owner priority signal source
+- Team Assignment table grouped by Team, then Product Area
 - active PR, if any
 - recommended next action
 - blockers
+
+The Team Assignment table and backlog hard stops are defined in:
+
+```text
+dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
+```
 
 Start of Day may recommend the next execution phase, but it must not execute that phase.
 
