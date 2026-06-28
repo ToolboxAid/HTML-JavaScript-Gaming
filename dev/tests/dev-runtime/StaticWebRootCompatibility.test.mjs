@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
-import { startStaticWebServer } from "../../scripts/start-dev.mjs";
+import { startStaticWebServer } from "../../local-runtime/start-dev.mjs";
 import {
   DEFAULT_LOCAL_WEB_ROOT,
   LOCAL_WEB_ROOT_ENV,

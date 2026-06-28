@@ -39,9 +39,9 @@ The backlog is the authoritative source for determining the next logical PRs.
 - Team: Owner
 - Product Area: Repository Architecture Simplification
 - Status: Active
-- Percent Complete: 40%
-- Active PR: PR_26180_OWNER_009-move-api-application
-- Next Milestone: Move developer-only local runtime into `dev/local-runtime/`
+- Percent Complete: 50%
+- Active PR: PR_26180_OWNER_010-move-dev-local-runtime
+- Next Milestone: Move tests and validation path references for the new layout
 - Source / Reference: `dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md`; `dev/build/ProjectInstructions/repository/www_migration_map.md`
 
 ## Game Journey MVP
@@ -214,8 +214,8 @@ The backlog is the authoritative source for determining the next logical PRs.
   - `npm run dev:local-api` remains as the legacy API alias.
   - `npm run dev:api` supports API-only startup.
   - `npm run dev:web` supports web-only startup.
-  - `dev/bootstrap/start-dev.mjs` owns bootstrap orchestration.
-  - `dev/bootstrap/team-port-config.mjs` owns team port resolution.
+  - `dev/local-runtime/start-dev.mjs` owns bootstrap orchestration.
+  - `dev/local-runtime/team-port-config.mjs` owns team port resolution.
   - Team-aware `--team` runtime support is implemented.
   - Bootstrap orchestration, browser launch reporting, and port resolution are implemented.
   - Verified command: `npm run dev:bootstrap -- --team bravo`.

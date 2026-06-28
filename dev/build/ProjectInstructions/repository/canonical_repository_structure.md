@@ -52,7 +52,7 @@ Dev workspace ownership:
 - dev/archive/ owns historical reference material only.
 - dev/build/ owns active Project Instructions, architecture, database DDL/DML/seed docs, standards, backlog, PR planning, and governance.
 - dev/config/ owns development-only runner and tooling configuration.
-- dev/local-runtime/ owns developer-only local runtime bootstrap, team port resolution, local diagnostics, and browser launch orchestration after the migration step that moves those files.
+- dev/local-runtime/ owns developer-only local runtime bootstrap, team port resolution, local diagnostics, and browser launch orchestration.
 - dev/reports/ owns authoritative Codex reports for the repository. Reports committed to `main` are the official record.
 - dev/scripts/ owns development-only scripts and runners.
 - dev/templates/ owns reusable development templates.

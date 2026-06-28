@@ -1,150 +1,275 @@
-﻿diff --git a/dev/reports/PR_26180_OWNER_009-move-api-application_branch-validation.md b/dev/reports/PR_26180_OWNER_009-move-api-application_branch-validation.md
-index 4d6dbea40..fa1c9e61d 100644
---- a/dev/reports/PR_26180_OWNER_009-move-api-application_branch-validation.md
-+++ b/dev/reports/PR_26180_OWNER_009-move-api-application_branch-validation.md
-@@ -21,4 +21,3 @@
- - Dev-only bootstrap/orchestration not moved: PASS
- - Browser/www direct imports of top-level `api/` implementation avoided: PASS
- - Runtime/UI product behavior changes avoided: PASS
--
-diff --git a/dev/reports/PR_26180_OWNER_009-move-api-application_manual-validation-notes.md b/dev/reports/PR_26180_OWNER_009-move-api-application_manual-validation-notes.md
-index 550447e6a..809478225 100644
---- a/dev/reports/PR_26180_OWNER_009-move-api-application_manual-validation-notes.md
-+++ b/dev/reports/PR_26180_OWNER_009-move-api-application_manual-validation-notes.md
-@@ -12,4 +12,3 @@
+﻿diff --git a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+index 5f477a565..dbb28c44e 100644
+--- a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
++++ b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+@@ -117,7 +117,7 @@ Rules:
 
- - Representative `/api/*` endpoints were exercised through the moved local API server.
- - Public URL preservation was checked through the targeted Browser API URL Playwright smoke.
--
-diff --git a/dev/reports/PR_26180_OWNER_009-move-api-application_report.md b/dev/reports/PR_26180_OWNER_009-move-api-application_report.md
-index a76840b9d..a6d78c342 100644
---- a/dev/reports/PR_26180_OWNER_009-move-api-application_report.md
-+++ b/dev/reports/PR_26180_OWNER_009-move-api-application_report.md
-@@ -27,4 +27,3 @@ The move keeps developer-only local bootstrap/orchestration in `dev/` for the la
+ ## Current Version/Date
 
- - The first route smoke attempt included `/api/session/users`, which returned 503 because that route depends on configured provider/session-user data. The final smoke used provider-independent API routes and passed.
- - Targeted Playwright initially exposed a stale test-local static server assumption from the prior `www/` move. The spec now uses the shared static route resolver, preserving public routes while serving from `www/`.
--
-diff --git a/dev/reports/PR_26180_OWNER_009-move-api-application_requirement-checklist.md b/dev/reports/PR_26180_OWNER_009-move-api-application_requirement-checklist.md
-index 39ef2e0e7..80d331c15 100644
---- a/dev/reports/PR_26180_OWNER_009-move-api-application_requirement-checklist.md
-+++ b/dev/reports/PR_26180_OWNER_009-move-api-application_requirement-checklist.md
-@@ -11,4 +11,3 @@
- | Browser/www must not import `api/` files directly | PASS | Browser code continues importing `src/api` client modules; boundary test passes. |
- | Update reports under canonical path | PASS | Reports generated under `dev/reports/`. |
- | Produce repo-structured ZIP under canonical path | PASS | ZIP generated under `dev/workspace/zips/`. |
--
-diff --git a/dev/reports/PR_26180_OWNER_009-move-api-application_validation-report.md b/dev/reports/PR_26180_OWNER_009-move-api-application_validation-report.md
-index f73c4083c..b78241c05 100644
---- a/dev/reports/PR_26180_OWNER_009-move-api-application_validation-report.md
-+++ b/dev/reports/PR_26180_OWNER_009-move-api-application_validation-report.md
-@@ -24,4 +24,3 @@
+-- Project Instructions Version: 2026.06.28.009
++- Project Instructions Version: 2026.06.28.010
+ - Date: 2026-06-28
+ - Owner: OWNER
 
- - `/api/session/users` was not used in the final smoke because it depends on configured provider/session-user data and returned 503 in this local environment.
- - Playwright is targeted because API route behavior and browser API URL handling are adjacent to this move.
--
+diff --git a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
+index 973eb9002..c2417d5e3 100644
+--- a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
++++ b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
+@@ -1,6 +1,6 @@
+ # Project Instructions Version
+
+-Current Project Instructions Version: 2026.06.28.009
++Current Project Instructions Version: 2026.06.28.010
+
+ Last Updated: 2026-06-28
+
+@@ -16,7 +16,8 @@ Last Updated: 2026-06-28
+ - Added `www/` migration map for safe browser-served application movement planning.
+ - Added local route-root compatibility toggle documentation for future `www/` activation.
+ - Moved browser-served application files under `www/` and made local static serving prefer `www/` by default.
+-- Moved server/API application runtime under `api/`; browser API clients remain outside `api/` and developer-only bootstrap remains in `dev/` until the local-runtime migration PR.
++- Moved server/API application runtime under `api/`; browser API clients remain outside `api/`.
++- Moved developer-only local runtime/bootstrap entrypoints under `dev/local-runtime/` and preserved the public npm command surface.
+ - Codex must read this version file and the latest repository copy of `PROJECT_INSTRUCTIONS.md` before performing work.
+ - Codex must discard previously remembered Project Instructions and treat the repository copy as authoritative.
+ - Codex must validate canonical report and ZIP paths, branching model, and legacy path avoidance before work proceeds.
+diff --git a/dev/build/ProjectInstructions/PROJECT_STATE.md b/dev/build/ProjectInstructions/PROJECT_STATE.md
+index 3b1323747..fc5b3d5af 100644
+--- a/dev/build/ProjectInstructions/PROJECT_STATE.md
++++ b/dev/build/ProjectInstructions/PROJECT_STATE.md
+@@ -1,7 +1,7 @@
+ # Project State
+
+ ```yaml
+-project_state_version: "2026.06.28.009"
++project_state_version: "2026.06.28.010"
+ last_updated: "2026-06-28"
+ current_main_commit: "40de767476d70cadfd1292c916844c2f31b6f185"
+ repository_status:
+@@ -10,9 +10,9 @@ repository_status:
+   runtime_database: "Postgres"
+   creator_metadata: "API to Postgres"
+   creator_assets: "API to R2"
+-project_instructions_version: "2026.06.28.009"
+-repository_structure_version: "2026.06.28.009"
+-canonical_layout_version: "2026.06.28.009"
++project_instructions_version: "2026.06.28.010"
++repository_structure_version: "2026.06.28.010"
++canonical_layout_version: "2026.06.28.010"
+ active_teams:
+   - "Owner"
+   - "Alfa"
+@@ -20,8 +20,8 @@ active_teams:
+   - "Charlie"
+   - "Delta"
+   - "Golf"
+-latest_owner_pr: "PR_26180_OWNER_009-move-api-application"
+-latest_structure_pr: "PR_26180_OWNER_009-move-api-application"
++latest_owner_pr: "PR_26180_OWNER_010-move-dev-local-runtime"
++latest_structure_pr: "PR_26180_OWNER_010-move-dev-local-runtime"
+ valid_top_level_folders:
+   - "api/"
+   - "deploy/"
+diff --git a/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md b/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
+index 0f32f8f6d..16c1068f8 100644
+--- a/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
++++ b/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
+@@ -39,9 +39,9 @@ The backlog is the authoritative source for determining the next logical PRs.
+ - Team: Owner
+ - Product Area: Repository Architecture Simplification
+ - Status: Active
+-- Percent Complete: 40%
+-- Active PR: PR_26180_OWNER_009-move-api-application
+-- Next Milestone: Move developer-only local runtime into `dev/local-runtime/`
++- Percent Complete: 50%
++- Active PR: PR_26180_OWNER_010-move-dev-local-runtime
++- Next Milestone: Move tests and validation path references for the new layout
+ - Source / Reference: `dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md`; `dev/build/ProjectInstructions/repository/www_migration_map.md`
+
+ ## Game Journey MVP
+@@ -214,8 +214,8 @@ The backlog is the authoritative source for determining the next logical PRs.
+   - `npm run dev:local-api` remains as the legacy API alias.
+   - `npm run dev:api` supports API-only startup.
+   - `npm run dev:web` supports web-only startup.
+-  - `dev/bootstrap/start-dev.mjs` owns bootstrap orchestration.
+-  - `dev/bootstrap/team-port-config.mjs` owns team port resolution.
++  - `dev/local-runtime/start-dev.mjs` owns bootstrap orchestration.
++  - `dev/local-runtime/team-port-config.mjs` owns team port resolution.
+   - Team-aware `--team` runtime support is implemented.
+   - Bootstrap orchestration, browser launch reporting, and port resolution are implemented.
+   - Verified command: `npm run dev:bootstrap -- --team bravo`.
+diff --git a/dev/build/ProjectInstructions/repository/canonical_repository_structure.md b/dev/build/ProjectInstructions/repository/canonical_repository_structure.md
+index 848c9f767..3220aea3b 100644
+--- a/dev/build/ProjectInstructions/repository/canonical_repository_structure.md
++++ b/dev/build/ProjectInstructions/repository/canonical_repository_structure.md
+@@ -52,7 +52,7 @@ Dev workspace ownership:
+ - dev/archive/ owns historical reference material only.
+ - dev/build/ owns active Project Instructions, architecture, database DDL/DML/seed docs, standards, backlog, PR planning, and governance.
+ - dev/config/ owns development-only runner and tooling configuration.
+-- dev/local-runtime/ owns developer-only local runtime bootstrap, team port resolution, local diagnostics, and browser launch orchestration after the migration step that moves those files.
++- dev/local-runtime/ owns developer-only local runtime bootstrap, team port resolution, local diagnostics, and browser launch orchestration.
+ - dev/reports/ owns authoritative Codex reports for the repository. Reports committed to `main` are the official record.
+ - dev/scripts/ owns development-only scripts and runners.
+ - dev/templates/ owns reusable development templates.
+diff --git a/dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md b/dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
+index 2265848ab..f311571fd 100644
+--- a/dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
++++ b/dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
+@@ -26,7 +26,9 @@ No browser, API, server, test, script, or runtime files move in the scaffold or
+
+ `PR_26180_OWNER_008-move-www-application` moved browser-served application files under `www/` and made local static serving prefer `www/` while preserving public URLs.
+
+-`PR_26180_OWNER_009-move-api-application` moves server/API application runtime under `api/` while preserving `/api/*` route behavior. Browser API client modules remain outside `api/`, and developer-only local startup orchestration remains under `dev/` until the local-runtime migration PR.
++`PR_26180_OWNER_009-move-api-application` moves server/API application runtime under `api/` while preserving `/api/*` route behavior. Browser API client modules remain outside `api/`.
++
++`PR_26180_OWNER_010-move-dev-local-runtime` moves developer-only local runtime/bootstrap entrypoints under `dev/local-runtime/` while preserving `npm run dev:bootstrap`, `npm run dev:api`, `npm run dev:web`, and `npm run dev:local-api`.
+
+ ## Proposed Future Layout
+
+@@ -95,7 +97,7 @@ Local development may use the team-aware developer bootstrap and local runtime s
+ Developer command -> dev bootstrap -> local www server + local api server -> Postgres/R2 or approved local provider
+ ```
+
+-Current local bootstrap commands remain unchanged by this plan. This PR does not modify `package.json` commands.
++Current local bootstrap command names remain stable. `PR_26180_OWNER_010-move-dev-local-runtime` updates the command targets to `dev/local-runtime/` without changing the user-facing command names.
+
+ The local developer workflow must continue to prove the same browser/API/database contract that deployed environments use.
+
+diff --git a/dev/build/ProjectInstructions/repository/www_migration_map.md b/dev/build/ProjectInstructions/repository/www_migration_map.md
+index df933d046..a41ddc297 100644
+--- a/dev/build/ProjectInstructions/repository/www_migration_map.md
++++ b/dev/build/ProjectInstructions/repository/www_migration_map.md
+@@ -111,7 +111,7 @@ Three active server/helper surfaces currently resolve static browser paths throu
+
+ | File | Current behavior |
+ | --- | --- |
+-| `dev/scripts/start-dev.mjs` | Team-aware bootstrap static server resolves requests with `resolveStaticRouteTarget()`, preferring `www/` while preserving public route URLs and compatibility routes. |
++| `dev/local-runtime/start-dev.mjs` | Team-aware bootstrap static server resolves requests with `resolveStaticRouteTarget()`, preferring `www/` while preserving public route URLs and compatibility routes. |
+ | `api/server/local-api-server.mjs` | Legacy local API alias serves API routes and falls back to `resolveStaticRouteTarget()`, preferring `www/` while preserving public route URLs and compatibility routes. |
+ | `dev/tests/helpers/playwrightRepoServer.mjs` | Playwright test server mirrors the shared static route resolver and compatibility routes. |
+
+@@ -151,7 +151,6 @@ The `www/` move PR updated test helpers and route expectations for the filesyste
+
+ ### Defer
+
+-- Moving developer bootstrap into `dev/local-runtime/`.
+ - Removing legacy root compatibility routes.
+ - Changing package commands.
+ - Renaming public URLs.
 diff --git a/dev/reports/codex_changed_files.txt b/dev/reports/codex_changed_files.txt
-index 7b9ed6047..f2d871603 100644
+index f2d871603..64d1c8116 100644
 --- a/dev/reports/codex_changed_files.txt
 +++ b/dev/reports/codex_changed_files.txt
-@@ -1,95 +1,5 @@
--﻿api/API_RUNTIME_BOUNDARY.md
--api/guest-seeds/tool-metadata-inventory.js
--api/server/local-api-router.mjs
--api/server/local-api-server.mjs
--dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
--dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
--dev/build/ProjectInstructions/PROJECT_STATE.md
--dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
--dev/build/ProjectInstructions/repository/canonical_repository_structure.md
--dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
--dev/build/ProjectInstructions/repository/www_migration_map.md
--dev/build/database/runbook.md
--dev/scripts/apply-database-seed.mjs
--dev/scripts/cleanup-supabase-dev-auth-test-users.mjs
--dev/scripts/database-migration-runner.mjs
--dev/scripts/start-dev.mjs
--dev/scripts/start-local-api-server.mjs
--dev/scripts/sync-supabase-dev-creator-identities.mjs
--dev/scripts/validate-browser-env-agnostic.mjs
--dev/scripts/validate-database-drift.mjs
--dev/scripts/validate-dev-runtime-boundary.mjs
--dev/scripts/validate-local-postgres-runtime.mjs
--dev/scripts/validate-runtime-connections.mjs
--dev/scripts/validate-storage-config.mjs
--dev/tests/api/admin-system-health/contract.test.mjs
--dev/tests/dev-runtime/AdminHealthOperations.test.mjs
--dev/tests/dev-runtime/AdminNotesBoundary.test.mjs
--dev/tests/dev-runtime/AiCreditDisplay.test.mjs
--dev/tests/dev-runtime/AiCreditFoundation.test.mjs
--dev/tests/dev-runtime/ArchitectureCleanupApiNavInvitations.test.mjs
--dev/tests/dev-runtime/BetaInvitationsAdmin.test.mjs
--dev/tests/dev-runtime/DbSeedIntegrity.test.mjs
--dev/tests/dev-runtime/DbViewerConfiguredSnapshot.test.mjs
--dev/tests/dev-runtime/DevRuntimeBoundary.test.mjs
--dev/tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
--dev/tests/dev-runtime/LegalFoundation.test.mjs
--dev/tests/dev-runtime/MarketplaceCategories.test.mjs
--dev/tests/dev-runtime/MarketplaceMembershipRules.test.mjs
--dev/tests/dev-runtime/MarketplaceRevenueModel.test.mjs
--dev/tests/dev-runtime/MembershipAssignment.test.mjs
--dev/tests/dev-runtime/MembershipDataModel.test.mjs
--dev/tests/dev-runtime/MembershipsPageData.test.mjs
--dev/tests/dev-runtime/MessagesPublishValidation.test.mjs
--dev/tests/dev-runtime/ObjectsApiService.test.mjs
--dev/tests/dev-runtime/OwnerAiCredits.test.mjs
--dev/tests/dev-runtime/OwnerMemberships.test.mjs
--dev/tests/dev-runtime/PostgresBackupService.test.mjs
--dev/tests/dev-runtime/ProductDataDatabaseUrl.test.mjs
--dev/tests/dev-runtime/PublicEnvironmentConfig.test.mjs
--dev/tests/dev-runtime/StaticWebRootCompatibility.test.mjs
--dev/tests/dev-runtime/StorageConfig.test.mjs
--dev/tests/dev-runtime/SupabaseDevAuthTestUserCleanup.test.mjs
--dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs
--dev/tests/dev-runtime/SupabaseProductDataCutover.test.mjs
--dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
--dev/tests/dev-runtime/TagsApiErrorResponse.test.mjs
--dev/tests/dev-runtime/TagsApiService.test.mjs
--dev/tests/dev-runtime/TeamEnforcement.test.mjs
--dev/tests/dev-runtime/TeamsFoundation.test.mjs
--dev/tests/helpers/playwrightRepoServer.mjs
--dev/tests/playwright/account/AchievementsPage.spec.mjs
--dev/tests/playwright/account/AiCreditsPage.spec.mjs
--dev/tests/playwright/tools/AdminDbViewer.spec.mjs
--dev/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
--dev/tests/playwright/tools/AdminInvitationsNavPage.spec.mjs
--dev/tests/playwright/tools/AdminNotesLocalViewer.spec.mjs
--dev/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
--dev/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
--dev/tests/playwright/tools/AssetToolMockRepository.spec.mjs
--dev/tests/playwright/tools/BrowserApiUrlConfig.spec.mjs
--dev/tests/playwright/tools/BuildPathProgressSimplification.spec.mjs
--dev/tests/playwright/tools/EnvironmentBannerCoverage.spec.mjs
--dev/tests/playwright/tools/EventsTool.spec.mjs
--dev/tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs
--dev/tests/playwright/tools/GameCrewFoundation.spec.mjs
--dev/tests/playwright/tools/GameDesignApiBehavior.spec.mjs
--dev/tests/playwright/tools/GameHubMockRepository.spec.mjs
--dev/tests/playwright/tools/GameJourneyTool.spec.mjs
--dev/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
--dev/tests/playwright/tools/InputMappingV2Tool.spec.mjs
--dev/tests/playwright/tools/LoginSessionMode.spec.mjs
--dev/tests/playwright/tools/MessagesTool.spec.mjs
--dev/tests/playwright/tools/ObjectsTool.spec.mjs
--dev/tests/playwright/tools/OwnerAiCreditsPage.spec.mjs
--dev/tests/playwright/tools/OwnerMembershipsPage.spec.mjs
--dev/tests/playwright/tools/PaletteToolMockRepository.spec.mjs
--dev/tests/playwright/tools/PublicMarketplacePage.spec.mjs
--dev/tests/playwright/tools/PublicMembershipsPage.spec.mjs
--dev/tests/playwright/tools/RootToolsFutureState.spec.mjs
--dev/tests/playwright/tools/TagsTool.spec.mjs
--dev/tests/playwright/tools/TextToSpeechFunctional.spec.mjs
--dev/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
--dev/tests/playwright/tools/ToolboxRoutePages.spec.mjs
--dev/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
--dev/tests/tools/MessagesPlaybackSource.test.mjs
-+﻿dev/reports/PR_26180_OWNER_009-move-api-application_branch-validation.md
-+dev/reports/PR_26180_OWNER_009-move-api-application_manual-validation-notes.md
-+dev/reports/PR_26180_OWNER_009-move-api-application_report.md
-+dev/reports/PR_26180_OWNER_009-move-api-application_requirement-checklist.md
-+dev/reports/PR_26180_OWNER_009-move-api-application_validation-report.md
+@@ -1,5 +1,12 @@
+-﻿dev/reports/PR_26180_OWNER_009-move-api-application_branch-validation.md
+-dev/reports/PR_26180_OWNER_009-move-api-application_manual-validation-notes.md
+-dev/reports/PR_26180_OWNER_009-move-api-application_report.md
+-dev/reports/PR_26180_OWNER_009-move-api-application_requirement-checklist.md
+-dev/reports/PR_26180_OWNER_009-move-api-application_validation-report.md
++﻿dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
++dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
++dev/build/ProjectInstructions/PROJECT_STATE.md
++dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
++dev/build/ProjectInstructions/repository/canonical_repository_structure.md
++dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
++dev/build/ProjectInstructions/repository/www_migration_map.md
++dev/scripts/validate-browser-env-agnostic.mjs
++dev/tests/dev-runtime/LocalApiStartupLogging.test.mjs
++dev/tests/dev-runtime/StaticWebRootCompatibility.test.mjs
++dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs
++package.json
+diff --git a/dev/scripts/validate-browser-env-agnostic.mjs b/dev/scripts/validate-browser-env-agnostic.mjs
+index ccbbab47d..239739aa7 100644
+--- a/dev/scripts/validate-browser-env-agnostic.mjs
++++ b/dev/scripts/validate-browser-env-agnostic.mjs
+@@ -339,8 +339,8 @@ async function validateProductServiceContract() {
+   rejectPattern(router, "api/server/local-api-router.mjs", /selectedDatabaseProviderId|selectedAuthProvider|selectedProvidersCanServeRuntime/, findings, "Runtime router must not contain active provider-selection helpers.");
+   rejectPattern(router, "api/server/local-api-router.mjs", routerRetiredStoragePattern, findings, "Runtime router must not contain retired file-DB startup/opening code, provider-selection environment variables, or retired local-db/mock-db routes.");
+
+-  const startup = await readRequiredRepoFile("dev/scripts/start-local-api-server.mjs", findings, "Local API startup script is missing");
+-  rejectPattern(startup, "dev/scripts/start-local-api-server.mjs", /GAMEFOUNDRY_AUTH_PROVIDER|GAMEFOUNDRY_DB_PROVIDER|auth provider|product data provider|provider selection/i, findings, "Local API startup must describe configured connections without provider-selection environment variables.");
++  const startup = await readRequiredRepoFile("dev/local-runtime/start-local-api-server.mjs", findings, "Local API startup script is missing");
++  rejectPattern(startup, "dev/local-runtime/start-local-api-server.mjs", /GAMEFOUNDRY_AUTH_PROVIDER|GAMEFOUNDRY_DB_PROVIDER|auth provider|product data provider|provider selection/i, findings, "Local API startup must describe configured connections without provider-selection environment variables.");
+
+   return findings;
+ }
+diff --git a/dev/tests/dev-runtime/LocalApiStartupLogging.test.mjs b/dev/tests/dev-runtime/LocalApiStartupLogging.test.mjs
+index fd4239962..1de5a9323 100644
+--- a/dev/tests/dev-runtime/LocalApiStartupLogging.test.mjs
++++ b/dev/tests/dev-runtime/LocalApiStartupLogging.test.mjs
+@@ -1,6 +1,6 @@
+ import assert from "node:assert/strict";
+ import test from "node:test";
+-import { formatStartupLogLines } from "../../scripts/start-local-api-server.mjs";
++import { formatStartupLogLines } from "../../local-runtime/start-local-api-server.mjs";
+
+ const CONFIGURED_CONNECTION = Object.freeze({
+   missingKeys: [],
+diff --git a/dev/tests/dev-runtime/StaticWebRootCompatibility.test.mjs b/dev/tests/dev-runtime/StaticWebRootCompatibility.test.mjs
+index 748082fb6..3510f2af6 100644
+--- a/dev/tests/dev-runtime/StaticWebRootCompatibility.test.mjs
++++ b/dev/tests/dev-runtime/StaticWebRootCompatibility.test.mjs
+@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
+ import path from "node:path";
+ import test from "node:test";
+ import { fileURLToPath } from "node:url";
+-import { startStaticWebServer } from "../../scripts/start-dev.mjs";
++import { startStaticWebServer } from "../../local-runtime/start-dev.mjs";
+ import {
+   DEFAULT_LOCAL_WEB_ROOT,
+   LOCAL_WEB_ROOT_ENV,
+diff --git a/dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs b/dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs
+index 0f7b91480..5720076cb 100644
+--- a/dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs
++++ b/dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs
+@@ -11,14 +11,14 @@ import {
+   shouldLaunchBrowser,
+   startBootstrapRuntime,
+   teamIndexUrl,
+-} from "../../scripts/start-dev.mjs";
++} from "../../local-runtime/start-dev.mjs";
+ import {
+   parseRoleArgument,
+   parseTeamArgument,
+   resolveTeamPortConfig,
+   supportedBootstrapRolesLabel,
+   supportedBootstrapTeamsLabel,
+-} from "../../scripts/team-port-config.mjs";
++} from "../../local-runtime/team-port-config.mjs";
+
+ const repoRoot = fileURLToPath(new URL("../../..", import.meta.url));
+
+@@ -247,10 +247,10 @@ test("startup diagnostics and package scripts expose team-aware bootstrap comman
+   assert.equal(lines.includes(`Supported roles: ${supportedBootstrapRolesLabel()}`), true);
+
+   const packageJson = JSON.parse(readFileSync(`${repoRoot}/package.json`, "utf8"));
+-  assert.equal(packageJson.scripts["dev:bootstrap"], "node --use-system-ca ./dev/scripts/start-dev.mjs --mode bootstrap");
+-  assert.equal(packageJson.scripts["dev:api"], "node --use-system-ca ./dev/scripts/start-dev.mjs --mode api");
+-  assert.equal(packageJson.scripts["dev:web"], "node ./dev/scripts/start-dev.mjs --mode web");
+-  assert.equal(packageJson.scripts["dev:local-api"], "node --use-system-ca ./dev/scripts/start-local-api-server.mjs");
++  assert.equal(packageJson.scripts["dev:bootstrap"], "node --use-system-ca ./dev/local-runtime/start-dev.mjs --mode bootstrap");
++  assert.equal(packageJson.scripts["dev:api"], "node --use-system-ca ./dev/local-runtime/start-dev.mjs --mode api");
++  assert.equal(packageJson.scripts["dev:web"], "node ./dev/local-runtime/start-dev.mjs --mode web");
++  assert.equal(packageJson.scripts["dev:local-api"], "node --use-system-ca ./dev/local-runtime/start-local-api-server.mjs");
+ });
+
+ test("runtime env loader applies .env values without overriding existing process values", () => {
+diff --git a/package.json b/package.json
+index 65e67bf62..37277ef09 100644
+--- a/package.json
++++ b/package.json
+@@ -25,10 +25,10 @@
+     "test:lane:integration": "node ./dev/scripts/run-targeted-test-lanes.mjs --lane integration",
+     "test:lane:engine-src": "node ./dev/scripts/run-targeted-test-lanes.mjs --lane engine-src",
+     "test:lane:samples": "node ./dev/scripts/run-targeted-test-lanes.mjs --lane samples --include-samples",
+-    "dev:bootstrap": "node --use-system-ca ./dev/scripts/start-dev.mjs --mode bootstrap",
+-    "dev:api": "node --use-system-ca ./dev/scripts/start-dev.mjs --mode api",
+-    "dev:web": "node ./dev/scripts/start-dev.mjs --mode web",
+-    "dev:local-api": "node --use-system-ca ./dev/scripts/start-local-api-server.mjs",
++    "dev:bootstrap": "node --use-system-ca ./dev/local-runtime/start-dev.mjs --mode bootstrap",
++    "dev:api": "node --use-system-ca ./dev/local-runtime/start-dev.mjs --mode api",
++    "dev:web": "node ./dev/local-runtime/start-dev.mjs --mode web",
++    "dev:local-api": "node --use-system-ca ./dev/local-runtime/start-local-api-server.mjs",
+     "validate:local-postgres-runtime": "node --use-system-ca ./dev/scripts/validate-local-postgres-runtime.mjs",
+     "validate:database-drift": "node ./dev/scripts/validate-database-drift.mjs",
+     "validate:runtime-connections": "node --use-system-ca ./dev/scripts/validate-runtime-connections.mjs",

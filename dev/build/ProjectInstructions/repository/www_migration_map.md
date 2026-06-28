@@ -111,7 +111,7 @@ Three active server/helper surfaces currently resolve static browser paths throu
 
 | File | Current behavior |
 | --- | --- |
-| `dev/scripts/start-dev.mjs` | Team-aware bootstrap static server resolves requests with `resolveStaticRouteTarget()`, preferring `www/` while preserving public route URLs and compatibility routes. |
+| `dev/local-runtime/start-dev.mjs` | Team-aware bootstrap static server resolves requests with `resolveStaticRouteTarget()`, preferring `www/` while preserving public route URLs and compatibility routes. |
 | `api/server/local-api-server.mjs` | Legacy local API alias serves API routes and falls back to `resolveStaticRouteTarget()`, preferring `www/` while preserving public route URLs and compatibility routes. |
 | `dev/tests/helpers/playwrightRepoServer.mjs` | Playwright test server mirrors the shared static route resolver and compatibility routes. |
 
@@ -151,7 +151,6 @@ The `www/` move PR updated test helpers and route expectations for the filesyste
 
 ### Defer
 
-- Moving developer bootstrap into `dev/local-runtime/`.
 - Removing legacy root compatibility routes.
 - Changing package commands.
 - Renaming public URLs.
