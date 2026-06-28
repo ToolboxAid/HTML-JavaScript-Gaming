@@ -35,9 +35,9 @@
                                 <div class="accordion-body content-stack">
                                     <p>Choose the creation action that will shape the sprite canvas in a later editor slice.</p>
                                     <div class="action-group action-group--tight" aria-label="Sprite Creator toolbar placeholders" data-sprites-toolbar>
-                                        <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="pencil" aria-label="Pencil tool placeholder">Pencil</button>
-                                        <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="eraser" aria-label="Eraser tool placeholder">Eraser</button>
-                                        <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="fill" aria-label="Fill tool placeholder">Fill</button>
+                                        <button class="btn btn--compact primary" type="button" data-sprite-tool-button="pencil" aria-label="Pencil tool" aria-pressed="true">Pencil</button>
+                                        <button class="btn btn--compact" type="button" data-sprite-tool-button="eraser" aria-label="Eraser tool" aria-pressed="false">Eraser</button>
+                                        <button class="btn btn--compact" type="button" data-sprite-tool-button="fill" aria-label="Fill tool" aria-pressed="false">Fill</button>
                                         <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="line" aria-label="Line tool placeholder">Line</button>
                                         <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="rectangle" aria-label="Rectangle tool placeholder">Rectangle</button>
                                         <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="circle" aria-label="Circle tool placeholder">Circle</button>
@@ -45,7 +45,7 @@
                                         <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="move" aria-label="Move tool placeholder">Move</button>
                                         <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="zoom" aria-label="Zoom tool placeholder">Zoom</button>
                                     </div>
-                                    <p class="status" role="status">Toolbar placeholders only. Drawing behavior is not implemented in this PR.</p>
+                                    <p class="status" role="status" data-sprites-tool-status>Pencil is active. Drawing stays in unsaved editor state for this page session only.</p>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
@@ -103,6 +103,7 @@
                                     <div class="sprite-canvas-grid" role="grid" aria-label="Sprite Creator 16 by 16 pixel canvas" data-sprites-pixel-grid></div>
                                 </div>
                                 <p class="status" role="status" data-sprites-grid-status>Canvas display mode: 16x16. No pixel data is saved.</p>
+                                <p class="status" role="status" data-sprites-draft-status>Unsaved editor state: empty draft.</p>
                             </div>
                         </article>
                         <article class="card" data-sprites-footer-status>
@@ -111,7 +112,7 @@
                                     <div class="kicker">Status</div>
                                     <h3>Sprite Creator Shell</h3>
                                 </div>
-                                <p class="status" role="status" data-sprites-shell-status>Shell ready. Drawing, Palette/Colors references, and save/load data contracts remain reserved for later scoped PRs.</p>
+                                <p class="status" role="status" data-sprites-shell-status>Editor ready. Pencil, Eraser, and Fill affect unsaved page-session draft pixels only; save/load data contracts remain reserved for later scoped PRs.</p>
                             </div>
                         </article>
                     </section>
