@@ -3,7 +3,7 @@
 Team: CHARLIE
 Workflow: stacked feature workflow
 Base branch: PR_26179_CHARLIE_028-sprites-editor-polish
-Canonical ZIP path for this batch: dev/workspace/zip/PR_26179_CHARLIE_029-sprites-clear-reset-controls_delta.zip
+Canonical ZIP path for this batch: dev/workspace/zips/PR_26179_CHARLIE_029-sprites-clear-reset-controls_delta.zip
 
 ## Summary
 
@@ -68,4 +68,4 @@ PR_26179_CHARLIE_030-sprites-undo-redo
 
 ## ZIP Path
 
-`dev/workspace/zip/PR_26179_CHARLIE_029-sprites-clear-reset-controls_delta.zip`
+`dev/workspace/zips/PR_26179_CHARLIE_029-sprites-clear-reset-controls_delta.zip`

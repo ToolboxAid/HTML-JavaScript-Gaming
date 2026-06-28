@@ -70,4 +70,4 @@ PASS - `npx playwright test dev/tests/playwright/tools/SpritesToolShell.spec.mjs
 
 ## ZIP
 
-`dev/workspace/zip/PR_26179_CHARLIE_030-sprites-undo-redo_delta.zip`
+`dev/workspace/zips/PR_26179_CHARLIE_030-sprites-undo-redo_delta.zip`

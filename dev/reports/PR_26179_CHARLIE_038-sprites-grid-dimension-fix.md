@@ -63,4 +63,4 @@ PASS - `npx playwright test dev/tests/playwright/tools/SpritesToolShell.spec.mjs
 
 ## ZIP
 
-`dev/workspace/zip/PR_26179_CHARLIE_038-sprites-grid-dimension-fix_delta.zip`
+`dev/workspace/zips/PR_26179_CHARLIE_038-sprites-grid-dimension-fix_delta.zip`
