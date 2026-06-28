@@ -17,7 +17,7 @@ Exercised tool entry points detected:
 (72%) Theme V2 Shared JS - exercised 4 runtime JS files
 
 Changed runtime JS files covered:
-(0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(100%) none changed - no changed runtime JS files
 
 Files with executed line/function counts where available:
 (36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2044/2044; executed functions 12/33
@@ -33,12 +33,8 @@ Files with executed line/function counts where available:
 (100%) assets/js/shared/game-journey-api-client.js - executed lines 19/19; executed functions 2/2
 
 Uncovered or low-coverage changed JS files:
-(0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: uncovered changed runtime JS file; advisory only
+(100%) none changed - no changed runtime JS files
 
 Changed JS files considered:
-(0%) assets/toolbox/objects/js/index.js - changed JS file not collected as browser runtime coverage
-(0%) dev/tests/dev-runtime/ObjectsApiService.test.mjs - changed JS file not collected as browser runtime coverage
 (0%) dev/tests/playwright/tools/GameJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) dev/tests/playwright/tools/ObjectsTool.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - changed JS file not collected as browser runtime coverage
 (75%) assets/toolbox/game-journey/js/index.js - changed JS file with browser V8 coverage

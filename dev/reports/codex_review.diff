@@ -383,11 +383,175 @@ index 085df839c..c2c4f1d05 100644
  applyInitialGameRoute();
 +refreshObjectsReadinessSnapshot();
  render();
+diff --git a/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_branch_validation.md b/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_branch_validation.md
+new file mode 100644
+index 000000000..5ba8f9771
+--- /dev/null
++++ b/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_branch_validation.md
+@@ -0,0 +1,24 @@
++# PR_26179_ALFA_014 Branch Validation
++
++Branch: PR_26179_ALFA_014-objects-journey-readiness
++Base stack: PR_26179_ALFA_013-objects-asset-links
++
++## Gates
++- Current branch is PR_26179_ALFA_014-objects-journey-readiness: PASS
++- Project Instructions loaded from `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md`: PASS
++- Batch governance addendum loaded from `dev/build/ProjectInstructions/addendums/batch_governance_mode.md`: PASS
++- Canonical report path `dev/reports/`: PASS
++- Canonical ZIP path `dev/workspace/zips/`: PASS
++- No `docs_build/` report output created: PASS
++- No `tmp/` ZIP output created: PASS
++- One PR purpose only: PASS
++- Existing Objects API architecture preserved: PASS
++
++## Validation Commands
++- `node --check assets/toolbox/game-journey/js/index.js`: PASS
++- `node --check dev/tests/playwright/tools/GameJourneyTool.spec.mjs`: PASS
++- `npx playwright test dev/tests/playwright/tools/GameJourneyTool.spec.mjs --grep "progress dashboard|Objects readiness"`: PASS
++- `git diff --check`: PASS
++- `npm run validate:canonical-structure`: PASS
++
++Branch validation: PASS
+diff --git a/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_manual_validation_notes.md b/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_manual_validation_notes.md
+new file mode 100644
+index 000000000..56ecf33af
+--- /dev/null
++++ b/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_manual_validation_notes.md
+@@ -0,0 +1,14 @@
++# PR_26179_ALFA_014 Manual Validation Notes
++
++## Manual Review Path
++1. Open Game Journey for the active Demo Game.
++2. Confirm Journey Progress Dashboard renders normally when there are no saved Objects.
++3. Save a review-ready Object for the same Game Hub game in Objects.
++4. Return to Game Journey and confirm Objects Stage Readiness shows the criteria table and Product Owner checklist.
++5. Confirm the Objects completion bucket reflects meaningful Objects work while the fullscreen, Rules, Worlds, and behavior editor areas remain unchanged.
++
++## Automated Proxy
++The focused Playwright lane performed the API-backed setup, loaded Game Journey, verified readiness copy, checked the Objects bucket, reloaded the page, and verified persisted display.
++
++## Result
++PASS. No manual-only blockers identified.
+diff --git a/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_report.md b/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_report.md
+new file mode 100644
+index 000000000..988365739
+--- /dev/null
++++ b/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_report.md
+@@ -0,0 +1,34 @@
++# PR_26179_ALFA_014-objects-journey-readiness Report
++
++## Summary
++Added Game Journey visibility for Objects stage readiness so Product Owners can see whether the current Game Hub game has meaningful Objects work ready for review.
++
++## Scope
++- Added an Objects Stage Readiness accordion to `toolbox/game-journey/index.html`.
++- Read current-game Objects through the existing Objects API repository from `assets/toolbox/game-journey/js/index.js`.
++- Defined five readiness criteria: saved objects, name/type/state, player-facing interactivity, sprite reference coverage, and Product Owner review details.
++- Added a Product Owner review checklist for the Objects stage.
++- Updated the Journey progress dashboard display so completed Objects readiness criteria can raise the Objects bucket progress without writing Journey metrics.
++- Added targeted Playwright coverage for no-Objects baseline progress and review-ready Objects progress.
++
++## Architecture Notes
++- Objects data continues through Browser -> API -> Database.
++- Game Journey consumes Objects as read-only API data for progress display.
++- No Objects API architecture changes were made.
++- No page-local product data arrays or browser-owned product data were added.
++- No Rules integration was added.
++- No Worlds integration was added.
++- No behavior editor was added.
++
++## Validation Outcome
++PASS. Targeted Journey validation, syntax checks, diff check, and canonical structure validation completed successfully.
++
++## Changed Runtime Surface
++- Game Journey inspector UI.
++- Game Journey browser controller progress display.
++
++## Not Changed
++- Objects API contract.
++- Objects persistence.
++- Game Journey completion metrics persistence.
++- Rules, Worlds, or behavior editor flows.
+diff --git a/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_requirement_checklist.md b/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_requirement_checklist.md
+new file mode 100644
+index 000000000..3d4a45113
+--- /dev/null
++++ b/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_requirement_checklist.md
+@@ -0,0 +1,17 @@
++# PR_26179_ALFA_014 Requirement Checklist
++
++- Define Objects stage readiness criteria: PASS
++- Update Journey progress when Objects has meaningful completion: PASS
++- Add Product Owner review checklist for Objects stage: PASS
++- Preserve existing Objects API architecture: PASS
++- Do not add Rules integration: PASS
++- Do not add Worlds integration: PASS
++- Do not add behavior editor: PASS
++- Use Browser -> API -> Database data flow: PASS
++- Avoid browser-owned product data: PASS
++- Avoid page-local product data arrays: PASS
++- Use current Game Hub game context: PASS
++- Use current Project Instructions: PASS
++- Use canonical `dev/reports/` reports path: PASS
++- Use canonical `dev/workspace/zips/` ZIP path: PASS
++- Return repo-structured ZIP: PASS
+diff --git a/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_validation_lane.md b/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_validation_lane.md
+new file mode 100644
+index 000000000..c561a478a
+--- /dev/null
++++ b/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_validation_lane.md
+@@ -0,0 +1,20 @@
++# PR_26179_ALFA_014 Validation Lane
++
++Lane: Focused Game Journey Objects readiness
++
++## Coverage
++- Game Journey progress dashboard baseline with no Objects rows.
++- Game Journey Objects Stage Readiness accordion.
++- Current-game Object persistence through the Objects API repository.
++- Product Owner Objects checklist rendering.
++- Objects readiness contribution to the Journey Objects completion bucket.
++- Reload persistence of Journey readiness display.
++
++## Command
++`npx playwright test dev/tests/playwright/tools/GameJourneyTool.spec.mjs --grep "progress dashboard|Objects readiness"`
++
++## Result
++PASS. 2 tests passed.
++
++## Follow-up
++None for this PR.
+diff --git a/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_validation_report.md b/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_validation_report.md
+new file mode 100644
+index 000000000..1abd35fed
+--- /dev/null
++++ b/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_validation_report.md
+@@ -0,0 +1,19 @@
++# PR_26179_ALFA_014 Validation Report
++
++## Commands Run
++- `node --check assets/toolbox/game-journey/js/index.js`
++- `node --check dev/tests/playwright/tools/GameJourneyTool.spec.mjs`
++- `npx playwright test dev/tests/playwright/tools/GameJourneyTool.spec.mjs --grep "progress dashboard|Objects readiness"`
++- `git diff --check`
++- `npm run validate:canonical-structure`
++- `npm run codex:review-artifacts`
++
++## Results
++- JavaScript syntax checks: PASS
++- Focused Game Journey Playwright lane: PASS, 2 tests passed
++- Diff whitespace check: PASS
++- Canonical repository structure guardrail: PASS
++- Review artifacts generated: PASS
++
++## Notes
++The Playwright lane verifies that Game Journey keeps the baseline progress at 0 when no Objects are saved, then reflects a persisted review-ready Object as 5 of 5 Objects criteria complete and 100% Objects bucket progress after reload.
 diff --git a/dev/reports/codex_changed_files.txt b/dev/reports/codex_changed_files.txt
-index df3e293b6..b3a189764 100644
+index df3e293b6..8979242c9 100644
 --- a/dev/reports/codex_changed_files.txt
 +++ b/dev/reports/codex_changed_files.txt
-@@ -1,15 +1,15 @@
+@@ -1,15 +1,30 @@
 -assets/toolbox/objects/js/index.js
 -dev/reports/codex_changed_files.txt
 -dev/reports/codex_review.diff
@@ -405,1345 +569,35 @@ index df3e293b6..b3a189764 100644
 -toolbox/objects/index.html
 +# git status --short
 +M assets/toolbox/game-journey/js/index.js
++ M dev/reports/codex_changed_files.txt
++ M dev/reports/codex_review.diff
 + M dev/reports/playwright_v8_coverage_report.txt
 + M dev/tests/playwright/tools/GameJourneyTool.spec.mjs
 + M toolbox/game-journey/index.html
++?? dev/reports/PR_26179_ALFA_014-objects-journey-readiness_branch_validation.md
++?? dev/reports/PR_26179_ALFA_014-objects-journey-readiness_manual_validation_notes.md
++?? dev/reports/PR_26179_ALFA_014-objects-journey-readiness_report.md
++?? dev/reports/PR_26179_ALFA_014-objects-journey-readiness_requirement_checklist.md
++?? dev/reports/PR_26179_ALFA_014-objects-journey-readiness_validation_lane.md
++?? dev/reports/PR_26179_ALFA_014-objects-journey-readiness_validation_report.md
 +
 +# git ls-files --others --exclude-standard
-+(no output)
++dev/reports/PR_26179_ALFA_014-objects-journey-readiness_branch_validation.md
++dev/reports/PR_26179_ALFA_014-objects-journey-readiness_manual_validation_notes.md
++dev/reports/PR_26179_ALFA_014-objects-journey-readiness_report.md
++dev/reports/PR_26179_ALFA_014-objects-journey-readiness_requirement_checklist.md
++dev/reports/PR_26179_ALFA_014-objects-journey-readiness_validation_lane.md
++dev/reports/PR_26179_ALFA_014-objects-journey-readiness_validation_report.md
 +
 +# git diff --stat
-+assets/toolbox/game-journey/js/index.js            | 285 ++++++++++++++++++++-
-+ dev/reports/playwright_v8_coverage_report.txt      |  31 +--
-+ .../playwright/tools/GameJourneyTool.spec.mjs      |  94 +++++++
-+ toolbox/game-journey/index.html                    |  21 ++
-+ 4 files changed, 404 insertions(+), 27 deletions(-)
++assets/toolbox/game-journey/js/index.js            |  285 ++++-
++ dev/reports/codex_changed_files.txt                |   30 +-
++ dev/reports/codex_review.diff                      | 1249 +++++++++-----------
++ dev/reports/playwright_v8_coverage_report.txt      |   31 +-
++ .../playwright/tools/GameJourneyTool.spec.mjs      |   94 ++
++ toolbox/game-journey/index.html                    |   21 +
++ 6 files changed, 949 insertions(+), 761 deletions(-)
 \ No newline at end of file
-diff --git a/dev/reports/codex_review.diff b/dev/reports/codex_review.diff
-index 77ca1caa9..4bce0427b 100644
---- a/dev/reports/codex_review.diff
-+++ b/dev/reports/codex_review.diff
-@@ -1,790 +1,601 @@
--diff --git a/assets/toolbox/objects/js/index.js b/assets/toolbox/objects/js/index.js
--index f07359885..96644bf92 100644
----- a/assets/toolbox/objects/js/index.js
--+++ b/assets/toolbox/objects/js/index.js
--@@ -11,6 +11,7 @@ import {
--   validateObjectDefinition,
-- } from "../../../../src/engine/object-model/index.js";
-- import { createAssetToolApiRepository } from "../../../js/shared/assets-api-client.js";
--+import { listMessages } from "../../../../toolbox/messages/messages-api-client.js";
--
-- const constants = readServerToolConstants("objects");
--
--@@ -53,10 +54,13 @@ let editingRow = null;
-- let storageIssue = null;
-- let selectedObjectKey = "";
-- let detailDraftBaseline = null;
--+let messageRecords = null;
--+let messageLoadIssue = null;
--
-- const elements = {
--   addRow: document.querySelector("[data-objects-add-row]"),
--   assetStatus: document.querySelector("[data-objects-asset-status]"),
--+  assetLinks: document.querySelector("[data-objects-asset-links]"),
--   count: document.querySelector("[data-objects-count]"),
--   detailActive: document.querySelector("[data-objects-detail-active]"),
--   detailAudio: document.querySelector("[data-objects-detail-audio]"),
--@@ -65,6 +69,7 @@ const elements = {
--   detailDescription: document.querySelector("[data-objects-detail-description]"),
--   detailEmpty: document.querySelector("[data-objects-details-empty]"),
--   detailForm: document.querySelector("[data-objects-details-form]"),
--+  detailMessage: document.querySelector("[data-objects-detail-message]"),
--   detailName: document.querySelector("[data-objects-detail-name]"),
--   detailSave: document.querySelector("[data-objects-detail-save]"),
--   detailSelected: document.querySelector("[data-objects-detail-selected]"),
--@@ -153,6 +158,7 @@ function normalizeObjectDetails(source = {}) {
--     audioReference: normalizeText(details.audioReference ?? source.audioReference),
--     defaultValues: normalizeText(details.defaultValues ?? source.defaultValues),
--     description: normalizeText(details.description ?? source.description),
--+    messageReference: normalizeText(details.messageReference ?? source.messageReference),
--     spriteReference: normalizeText(details.spriteReference ?? source.spriteReference) || normalizeText(source.render?.assetKey),
--     tags: Object.freeze(parseTags(details.tags ?? source.tags)),
--     visible: normalizeBoolean(details.visible ?? source.visible, true),
--@@ -481,6 +487,7 @@ function detailFieldElements() {
--     elements.detailAudio,
--     elements.detailDefaults,
--     elements.detailDescription,
--+    elements.detailMessage,
--     elements.detailName,
--     elements.detailSprite,
--     elements.detailTags,
--@@ -503,6 +510,7 @@ function detailSnapshotForObject(object = {}) {
--     audioReference: details.audioReference,
--     defaultValues: details.defaultValues,
--     description: details.description,
--+    messageReference: details.messageReference,
--     name: normalizeText(object.name),
--     spriteReference: details.spriteReference,
--     tags: [...details.tags],
--@@ -517,6 +525,7 @@ function detailSnapshotFromForm() {
--     audioReference: normalizeText(elements.detailAudio?.value),
--     defaultValues: normalizeText(elements.detailDefaults?.value),
--     description: normalizeText(elements.detailDescription?.value),
--+    messageReference: normalizeText(elements.detailMessage?.value),
--     name: normalizeText(elements.detailName?.value),
--     spriteReference: normalizeText(elements.detailSprite?.value),
--     tags: parseTags(elements.detailTags?.value),
--@@ -606,6 +615,9 @@ function populateDetailForm(object) {
--   if (elements.detailAudio) {
--     elements.detailAudio.value = snapshot.audioReference;
--   }
--+  if (elements.detailMessage) {
--+    elements.detailMessage.value = snapshot.messageReference;
--+  }
--   if (elements.detailDefaults) {
--     elements.detailDefaults.value = snapshot.defaultValues;
--   }
--@@ -661,6 +673,20 @@ function objectDetailFindings(snapshot, originalId = "") {
--       label: "Sprite reference",
--     });
--   }
--+  if (snapshot.audioReference && !linkedAudioAsset(snapshot.audioReference)) {
--+    findings.push({
--+      action: "Use an existing audio asset reference, or clear the Audio reference before saving Object Details.",
--+      label: "Audio reference",
--+    });
--+  }
--+  if (snapshot.messageReference && !linkedMessageRecord(snapshot.messageReference)) {
--+    findings.push({
--+      action: messageLoadIssue
--+        ? "Messages could not be checked. Reload Objects after the API is available, or clear the Message reference before saving Object Details."
--+        : "Use an existing message reference, or clear the Message reference before saving Object Details.",
--+      label: "Message reference",
--+    });
--+  }
--   return findings;
-+diff --git a/assets/toolbox/game-journey/js/index.js b/assets/toolbox/game-journey/js/index.js
-+index 085df839c..c2c4f1d05 100644
-+--- a/assets/toolbox/game-journey/js/index.js
-++++ b/assets/toolbox/game-journey/js/index.js
-+@@ -11,8 +11,10 @@ import {
-+   getActiveToolRegistry,
-+   getToolRegistryApiDiagnostic,
-+ } from "../../../../toolbox/tool-registry-api-client.js";
-++import { createServerRepositoryClient } from "../../../../src/api/server-api-client.js";
-+
-+ const repository = createGameJourneyApiRepository();
-++const objectsRepository = createServerRepositoryClient("objects");
-+ const registryDiagnostic = getToolRegistryApiDiagnostic();
-+ const registryTools = getActiveToolRegistry();
-+ const params = new URLSearchParams(window.location.search);
-+@@ -51,6 +53,9 @@ const diagnostics = document.querySelector("[data-journey-diagnostics]");
-+ const searchInput = document.querySelector("[data-journey-search-input]");
-+ const searchStatus = document.querySelector("[data-journey-search-status]");
-+ const completionMetrics = document.querySelector("[data-journey-completion-metrics]");
-++const objectsReadinessTable = document.querySelector("[data-journey-objects-readiness]");
-++const objectsReadinessStatus = document.querySelector("[data-journey-objects-readiness-status]");
-++const objectsReviewChecklist = document.querySelector("[data-journey-objects-review-checklist]");
-+ const recommendedTargets = document.querySelector("[data-journey-recommended-targets]");
-+ const recommendedTargetStatus = document.querySelector("[data-journey-target-status]");
-+ const SUMMARY_TABLE_COLUMN_COUNT = 13;
-+@@ -88,6 +93,54 @@ let routeForcesNoActiveGame = false;
-+ const recommendedTargetValues = new Map(
-+   GAME_JOURNEY_RECOMMENDED_TARGETS.map((target) => [target.key, target.suggestedCount]),
-+ );
-++const OBJECTS_COMPLETION_BUCKET_KEY = "006-objects";
-++const OBJECTS_STAGE_CRITERIA = Object.freeze([
-++  Object.freeze({
-++    key: "saved-objects",
-++    label: "At least one object is saved for the current game.",
-++  }),
-++  Object.freeze({
-++    key: "named-typed",
-++    label: "Every saved object has a name, type, and starting state.",
-++  }),
-++  Object.freeze({
-++    key: "interactive-object",
-++    label: "At least one object represents something the player can use, collect, avoid, or reach.",
-++  }),
-++  Object.freeze({
-++    key: "render-links",
-++    label: "Sprite-rendered objects have a sprite asset reference.",
-++  }),
-++  Object.freeze({
-++    key: "owner-review-details",
-++    label: "Object Details include Product Owner review context such as description, tags, or defaults.",
-++  }),
-++]);
-++const OBJECTS_REVIEW_CHECKLIST = Object.freeze([
-++  "Confirm the object list matches the current Game Hub game.",
-++  "Confirm each object name and type is understandable to a Creator.",
-++  "Confirm sprite, audio, and message references are resolved or intentionally empty.",
-++  "Confirm at least one meaningful player-facing object exists.",
-++  "Confirm Objects validation is clean before expanding later gameplay work.",
-++]);
-++const INTERACTIVE_OBJECT_ROLES = Object.freeze([
-++  "collectible",
-++  "enemy",
-++  "goal",
-++  "hazard",
-++  "hero",
-++  "projectile",
-++]);
-++const INTERACTIVE_OBJECT_TRAITS = Object.freeze([
-++  "collectible",
-++  "goal",
-++  "hazard",
-++  "movable",
-++  "playerControlled",
-++  "scores",
-++]);
-++let objectsReadinessSnapshot = null;
-++let objectsReadinessDiagnostic = "";
-+
-+ function currentRecommendedTargets() {
-+   const result = repository.listRecommendedTargets();
-+@@ -135,6 +188,10 @@ function routedNotes(filterId) {
-+   return routeForcesNoActiveGame ? [] : repository.listNotes(filterId);
-  }
--
--@@ -680,6 +706,7 @@ function objectFromDetailSnapshot(object, snapshot) {
--       audioReference: snapshot.audioReference,
--       defaultValues: snapshot.defaultValues,
--       description: snapshot.description,
--+      messageReference: snapshot.messageReference,
--       spriteReference: snapshot.spriteReference,
--       tags: snapshot.tags,
--       visible: snapshot.visible,
--@@ -857,12 +884,97 @@ function listAssetRecords() {
--   return Array.isArray(tables?.asset_library_items) ? tables.asset_library_items : [];
-- }
--
--+function assetReferenceValues(asset = {}) {
--+  return [
--+    asset.id,
--+    asset.key,
--+    asset.name,
--+    asset.fileName,
--+    asset.originalName,
--+    asset.reference,
--+    asset.path,
--+    asset.storedPath,
--+    asset.storageObjectKey,
--+    asset.targetFilePath,
--+  ].map(normalizeText).filter(Boolean);
-+
-++function normalizeText(value) {
-++  return String(value || "").trim();
- +}
- +
--+function assetHasReference(asset, reference) {
--+  const key = normalizeText(reference);
--+  return Boolean(key) && assetReferenceValues(asset).some((value) => value === key);
-+ function createElement(tagName, options = {}) {
-+   const element = document.createElement(tagName);
-+   if (options.className) {
-+@@ -146,6 +203,120 @@ function createElement(tagName, options = {}) {
-+   return element;
-+ }
-+
-++function objectDetails(object = {}) {
-++  return object.details && typeof object.details === "object" ? object.details : {};
- +}
- +
--+function assetRoleText(asset = {}) {
--+  return [
--+    asset.assetRole,
--+    asset.assetRoleLabel,
--+    asset.assetType,
--+    asset.mimeType,
--+    asset.role,
--+    asset.type,
--+    asset.usage,
--+  ].map(normalizeText).join(" ").toLowerCase();
-++function objectHasNameTypeAndState(object = {}) {
-++  return Boolean(normalizeText(object.name) && normalizeText(object.role || object.type) && normalizeText(object.state));
- +}
- +
--+function isSpriteAsset(asset = {}) {
--+  const text = assetRoleText(asset);
--+  return text.includes("sprite") || text.includes("image") || text.includes("png") || text.includes("jpeg") || text.includes("webp");
-++function normalizedObjectRole(object = {}) {
-++  return normalizeText(object.role || object.type).toLowerCase();
- +}
- +
--+function isAudioAsset(asset = {}) {
--+  const text = assetRoleText(asset);
--+  return text.includes("audio") || text.includes("sound") || text.includes("music") || text.includes("voice") || text.includes("wav") || text.includes("mpeg") || text.includes("ogg");
-++function normalizedObjectTraits(object = {}) {
-++  return Array.isArray(object.traits)
-++    ? object.traits.map(normalizeText).filter(Boolean)
-++    : [];
- +}
- +
--+function linkedAssetByReference(reference, predicate) {
--+  const key = normalizeText(reference);
--+  if (!key) {
--+    return null;
-++function objectIsInteractive(object = {}) {
-++  const role = normalizedObjectRole(object);
-++  if (INTERACTIVE_OBJECT_ROLES.includes(role)) {
-++    return true;
- +  }
--+  return listAssetRecords().find((asset) => assetHasReference(asset, key) && predicate(asset)) || null;
-++  const traits = normalizedObjectTraits(object);
-++  return traits.some((trait) => INTERACTIVE_OBJECT_TRAITS.includes(trait));
- +}
- +
-- function linkedSpriteAsset(assetKey) {
---  const key = normalizeText(assetKey);
--+  return linkedAssetByReference(assetKey, isSpriteAsset);
-++function objectSpriteReference(object = {}) {
-++  const details = objectDetails(object);
-++  return normalizeText(object.render?.assetKey || details.spriteReference);
- +}
- +
--+function linkedAudioAsset(reference) {
--+  return linkedAssetByReference(reference, isAudioAsset);
-++function objectHasRenderReference(object = {}) {
-++  return normalizeText(object.render?.type) !== "Sprite" || Boolean(objectSpriteReference(object));
- +}
- +
--+function listMessageRecords() {
--+  if (messageRecords !== null) {
--+    return messageRecords;
--+  }
--+  try {
--+    const result = listMessages();
--+    messageRecords = Array.isArray(result?.messages) ? result.messages : [];
--+    messageLoadIssue = null;
--+  } catch {
--+    messageRecords = [];
--+    messageLoadIssue = {
--+      action: "Messages could not be checked. Reload Objects after the API is available.",
--+      label: "Message references",
--+    };
--+  }
--+  return messageRecords;
-++function objectHasOwnerReviewDetails(object = {}) {
-++  const details = objectDetails(object);
-++  return Boolean(
-++    normalizeText(details.description) ||
-++    normalizeText(details.defaultValues) ||
-++    normalizeText(details.spriteReference) ||
-++    normalizeText(details.audioReference) ||
-++    normalizeText(details.messageReference) ||
-++    (Array.isArray(details.tags) && details.tags.length > 0)
-++  );
- +}
- +
--+function messageReferenceValues(message = {}) {
--+  return [
--+    message.key,
--+    message.id,
--+    message.name,
--+    message.slug,
--+  ].map(normalizeText).filter(Boolean);
-++function evaluateObjectsStageReadiness(objects = []) {
-++  const savedObjects = Array.isArray(objects) ? objects : [];
-++  const hasObjects = savedObjects.length > 0;
-++  const criteriaByKey = {
-++    "saved-objects": hasObjects,
-++    "named-typed": hasObjects && savedObjects.every(objectHasNameTypeAndState),
-++    "interactive-object": savedObjects.some(objectIsInteractive),
-++    "render-links": hasObjects && savedObjects.every(objectHasRenderReference),
-++    "owner-review-details": savedObjects.some(objectHasOwnerReviewDetails),
-++  };
-++  const criteria = OBJECTS_STAGE_CRITERIA.map((criterion) => ({
-++    ...criterion,
-++    complete: Boolean(criteriaByKey[criterion.key]),
-++  }));
-++  const completedCriteria = criteria.filter((criterion) => criterion.complete).length;
-++  return {
-++    available: true,
-++    completedCriteria,
-++    criteria,
-++    meaningful: completedCriteria >= 3,
-++    objectCount: savedObjects.length,
-++    ready: completedCriteria === criteria.length,
-++    totalCriteria: criteria.length,
-++  };
- +}
- +
--+function linkedMessageRecord(reference) {
--+  const key = normalizeText(reference);
--   if (!key) {
--     return null;
--   }
---  return listAssetRecords().find((asset) => asset.id === key) || null;
--+  return listMessageRecords().find((message) => messageReferenceValues(message).some((value) => value === key)) || null;
-- }
--
-- function assetDisplayText(asset, fallbackKey = "") {
--@@ -1177,6 +1289,107 @@ function renderOutput(objects, findings) {
--   }
-- }
--
--+function messageDisplayText(message, fallbackKey = "") {
--+  const key = normalizeText(message?.key || message?.id || fallbackKey);
--+  const name = normalizeText(message?.name);
--+  if (key && name && name !== key) {
--+    return `${name} (${key})`;
--+  }
--+  return name || key || "Message missing";
-++function unavailableObjectsStageReadiness(message) {
-++  return {
-++    available: false,
-++    completedCriteria: 0,
-++    criteria: OBJECTS_STAGE_CRITERIA.map((criterion) => ({
-++      ...criterion,
-++      complete: false,
-++    })),
-++    meaningful: false,
-++    objectCount: 0,
-++    ready: false,
-++    totalCriteria: OBJECTS_STAGE_CRITERIA.length,
-++    unavailableMessage: message,
-++  };
- +}
- +
--+function referenceStatusItem({
--+  action = null,
--+  label,
--+  linkDataName = "",
--+  linkText = "",
--+  linkValue = "",
--+  linkedText = "",
--+  missingText = "",
--+  reference,
--+  warningName = "",
--+}) {
--+  const item = document.createElement("li");
--+  const heading = document.createElement("strong");
--+  heading.textContent = `${label}:`;
--+  item.append(heading, " ");
--+  if (!reference) {
--+    item.append("No reference set.");
--+    return item;
-++function objectRepositoryErrorMessage(result) {
-++  if (result?.error || objectsRepository.__apiDiagnostic?.()) {
-++    return "Objects readiness is temporarily unavailable. Continue building while the API refreshes.";
- +  }
--+  if (!linkedText) {
--+    item.dataset.objectsReferenceWarning = warningName || label;
--+    item.append(missingText);
--+    if (action) {
--+      item.append(" ", actionLink(linkText, action, linkDataName, linkValue));
--+    }
--+    return item;
--+  }
--+  item.append(linkedText);
--+  if (action) {
--+    item.append(" ", actionLink(linkText, action, linkDataName, linkValue));
--+  }
--+  return item;
-++  return "Objects readiness is temporarily unavailable. Continue building while the API refreshes.";
- +}
- +
--+function renderAssetLinks() {
--+  if (!elements.assetLinks) {
-++function refreshObjectsReadinessSnapshot() {
-++  const activeGame = routedActiveGame();
-++  if (!activeGame) {
-++    objectsReadinessDiagnostic = "Open a game in Game Hub before checking Objects readiness.";
-++    objectsReadinessSnapshot = unavailableObjectsStageReadiness(objectsReadinessDiagnostic);
- +    return;
- +  }
--+  elements.assetLinks.replaceChildren();
--+  const object = selectedObject();
--+  if (!object) {
--+    elements.assetLinks.append(listItem("Select an object to review sprite, audio, and message links."));
-++  const result = objectsRepository.listObjects(activeGame.id || activeGame.key);
-++  if (Array.isArray(result)) {
-++    objectsReadinessDiagnostic = "";
-++    objectsReadinessSnapshot = evaluateObjectsStageReadiness(result);
- +    return;
- +  }
--+
--+  const details = detailsForObject(object);
--+  const spriteAsset = details.spriteReference ? linkedSpriteAsset(details.spriteReference) : null;
--+  const audioAsset = details.audioReference ? linkedAudioAsset(details.audioReference) : null;
--+  const messageRecord = details.messageReference ? linkedMessageRecord(details.messageReference) : null;
--+
--+  elements.assetLinks.append(
--+    referenceStatusItem({
--+      action: spriteAsset ? spriteEditorHref({
--+        ...object,
--+        render: { assetKey: details.spriteReference, type: "Sprite" },
--+      }) : null,
--+      label: "Sprite",
--+      linkDataName: "objectsAssetLinkSprite",
--+      linkText: "Edit Sprite",
--+      linkValue: objectId(object),
--+      linkedText: spriteAsset ? assetDisplayText(spriteAsset, details.spriteReference) : "",
--+      missingText: `Sprite reference "${details.spriteReference}" is not linked to an existing sprite asset.`,
--+      reference: details.spriteReference,
--+      warningName: "sprite",
--+    }),
--+    referenceStatusItem({
--+      action: details.audioReference ? "/toolbox/assets/index.html" : null,
--+      label: "Audio",
--+      linkDataName: "objectsAssetLinkAudio",
--+      linkText: "Open Assets",
--+      linkValue: normalizeText(audioAsset?.id || details.audioReference),
--+      linkedText: audioAsset ? assetDisplayText(audioAsset, details.audioReference) : "",
--+      missingText: `Audio reference "${details.audioReference}" is not linked to an existing audio asset.`,
--+      reference: details.audioReference,
--+      warningName: "audio",
--+    }),
--+    referenceStatusItem({
--+      action: details.messageReference ? "/toolbox/messages/index.html" : null,
--+      label: "Message",
--+      linkDataName: "objectsMessageLink",
--+      linkText: "Open Messages",
--+      linkValue: normalizeText(messageRecord?.key || details.messageReference),
--+      linkedText: messageRecord ? messageDisplayText(messageRecord, details.messageReference) : "",
--+      missingText: messageLoadIssue
--+        ? "Message references could not be checked. Reload Objects after the API is available."
--+        : `Message reference "${details.messageReference}" is not linked to an existing Message.`,
--+      reference: details.messageReference,
--+      warningName: "message",
--+    }),
--+  );
-++  objectsReadinessDiagnostic = objectRepositoryErrorMessage(result);
-++  objectsReadinessSnapshot = unavailableObjectsStageReadiness(objectsReadinessDiagnostic);
- +}
- +
-- function renderTemplateCatalog() {
--   if (elements.templateCatalog) {
--     elements.templateCatalog.replaceChildren();
--@@ -1229,6 +1442,7 @@ function render() {
--   renderOutput(draftedObjects, findings);
--   renderValidation(findings);
--   renderDetailsPanel({ preserveDirty: true });
--+  renderAssetLinks();
--   if (elements.addRow) {
--     elements.addRow.disabled = Boolean(editingRow);
--   }
--@@ -1428,6 +1642,8 @@ function resetTable() {
-+ function formatDate(value) {
-+   const date = new Date(value);
-+   if (Number.isNaN(date.getTime())) {
-+@@ -952,6 +1123,52 @@ function formatCompletionFocusStatus(metric) {
-+   return metric.active ? "Active focus" : "Planning context";
-  }
--
-- function refreshLinkedRenderAssetDisplay() {
--+  messageRecords = null;
--+  messageLoadIssue = null;
--   if (!editingRow) {
--     render();
--     return;
--diff --git a/dev/reports/PR_26179_ALFA_013-objects-asset-links_branch_validation.md b/dev/reports/PR_26179_ALFA_013-objects-asset-links_branch_validation.md
--new file mode 100644
--index 000000000..a4d9e7204
----- /dev/null
--+++ b/dev/reports/PR_26179_ALFA_013-objects-asset-links_branch_validation.md
--@@ -0,0 +1,27 @@
--+# PR_26179_ALFA_013 Branch Validation
--+
--+Branch: PR_26179_ALFA_013-objects-asset-links
--+Base stack: PR_26179_ALFA_012-objects-properties-mvp
--+
--+## Gates
--+- Current branch is PR_26179_ALFA_013-objects-asset-links: PASS
--+- Project Instructions loaded from `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md`: PASS
--+- Batch governance addendum loaded from `dev/build/ProjectInstructions/addendums/batch_governance_mode.md`: PASS
--+- Canonical report path `dev/reports/`: PASS
--+- Canonical ZIP path `dev/workspace/zips/`: PASS
--+- No `docs_build/` report output created: PASS
--+- No `tmp/` ZIP output created: PASS
--+- One PR purpose only: PASS
--+- No API architecture change: PASS
--+
--+## Validation Commands
--+- `node --check assets/toolbox/objects/js/index.js`: PASS
--+- `node --check src/dev-runtime/toolbox-api/alfa-tool-services.mjs`: PASS
--+- `node --check dev/tests/playwright/tools/ObjectsTool.spec.mjs`: PASS
--+- `node --test dev/tests/dev-runtime/ObjectsApiService.test.mjs`: PASS
--+- `npx playwright test dev/tests/playwright/tools/ObjectsTool.spec.mjs --grep "Object Details panel saves reviewable properties through shared DB"`: PASS
--+- `npx playwright test dev/tests/playwright/tools/ObjectsTool.spec.mjs`: PASS
--+- `git diff --check`: PASS
--+- `npm run validate:canonical-structure`: PASS
--+
--+Branch validation: PASS
--diff --git a/dev/reports/PR_26179_ALFA_013-objects-asset-links_manual_validation_notes.md b/dev/reports/PR_26179_ALFA_013-objects-asset-links_manual_validation_notes.md
--new file mode 100644
--index 000000000..b9e40bc90
----- /dev/null
--+++ b/dev/reports/PR_26179_ALFA_013-objects-asset-links_manual_validation_notes.md
--@@ -0,0 +1,24 @@
--+# PR_26179_ALFA_013 Manual Validation Notes
--+
--+## Manual Review Path
--+1. Open `toolbox/objects/index.html` with the API server running.
--+2. Add an object with Sprite render enabled.
--+3. Select `Details` on the object row.
--+4. Confirm Object Details includes Sprite reference, Audio reference, and Message reference.
--+5. Confirm the Asset Links panel shows the selected object's sprite, audio, and message statuses.
--+6. Enter a missing audio or message reference and press Save Details.
--+7. Confirm friendly validation appears without exposing API/database internals.
--+8. Enter an existing message reference and save.
--+9. Refresh the page; confirm the message reference reloads and the Asset Links panel resolves it.
--+
--+## Expected Owner Review Result
--+The Objects inspector is reviewable as a product surface for asset and message references. It keeps object details, reference links, and missing-reference guidance in one place without exposing a behavior editor, Rules integration, Worlds integration, JSON editor, or engine internals.
--+
--+## Known Out-of-Scope Items
--+- Creating new audio assets from Objects.
--+- Creating new messages from Objects.
--+- Behavior editor.
--+- Rules integration.
--+- Worlds integration.
--+- Database schema expansion.
--+- New API routes.
--diff --git a/dev/reports/PR_26179_ALFA_013-objects-asset-links_report.md b/dev/reports/PR_26179_ALFA_013-objects-asset-links_report.md
--new file mode 100644
--index 000000000..7caafd383
----- /dev/null
--+++ b/dev/reports/PR_26179_ALFA_013-objects-asset-links_report.md
--@@ -0,0 +1,41 @@
--+# PR_26179_ALFA_013-objects-asset-links Report
--+
--+## Summary
--+Improved the Objects inspector so Product Owners can review object sprite, audio, and message references from the selected object without adding behavior editing or changing the existing Objects API architecture.
--+
--+## Scope
--+- Added a Message reference field to the existing Object Details form in `toolbox/objects/index.html`.
--+- Added an Asset Links accordion that reviews the selected object's Sprite, Audio, and Message references.
--+- Linked valid sprite references to Sprite Editor and valid message references to Messages.
--+- Added friendly missing-reference warnings for stale sprite, audio, and message references.
--+- Persisted `messageReference` through the existing Objects service details payload.
--+- Updated focused Objects API and Playwright validation.
--+
--+## Architecture Notes
--+- Objects continues to use the existing Browser -> API -> Database path.
--+- No new API routes were added.
--+- No database schema changes were added.
--+- No browser-owned product data was added.
--+- No page-local product data arrays were added.
--+- No behavior editor was added.
--+- No Rules integration was added.
--+- No Worlds integration was added.
--+
--+## Validation Outcome
--+PASS. Final targeted and impacted validation completed successfully.
--+
--+## Corrective Notes From Validation
--+- Initial Playwright setup tried to create an audio upload asset and hit a storage-provider setup failure unrelated to Objects. The automated lane now validates audio missing-reference messaging while keeping the runtime resolver ready for existing audio asset records.
--+- Initial Messages setup missed the required emotion profile key. The test now creates a TTS profile and passes the returned emotion profile key through the Messages API.
--+
--+## Changed Runtime Surface
--+- Objects page inspector.
--+- Objects browser controller.
--+- Objects API service serialization for existing object details payloads.
--+
--+## Not Changed
--+- Objects repository contract.
--+- API architecture.
--+- Database schema.
--+- Behavior editor.
--+- Rules or Worlds integrations.
--diff --git a/dev/reports/PR_26179_ALFA_013-objects-asset-links_requirement_checklist.md b/dev/reports/PR_26179_ALFA_013-objects-asset-links_requirement_checklist.md
--new file mode 100644
--index 000000000..d8fea7ece
----- /dev/null
--+++ b/dev/reports/PR_26179_ALFA_013-objects-asset-links_requirement_checklist.md
--@@ -0,0 +1,15 @@
--+# PR_26179_ALFA_013 Requirement Checklist
--+
--+- Improve Object asset/reference linking for Product Owner review: PASS
--+- Link graphics/sprite references: PASS
--+- Link audio/message references: PASS
--+- Show friendly missing-reference warnings: PASS
--+- Preserve existing Objects API architecture: PASS
--+- Do not add behavior editor: PASS
--+- Do not add Rules integration: PASS
--+- Do not add Worlds integration: PASS
--+- No unrelated cleanup: PASS
--+- Use current Project Instructions: PASS
--+- Use canonical `dev/reports/` reports path: PASS
--+- Use canonical `dev/workspace/zips/` ZIP path: PASS
--+- Return repo-structured ZIP: PASS
--diff --git a/dev/reports/PR_26179_ALFA_013-objects-asset-links_validation_lane.md b/dev/reports/PR_26179_ALFA_013-objects-asset-links_validation_lane.md
--new file mode 100644
--index 000000000..7a6f29a6b
----- /dev/null
--+++ b/dev/reports/PR_26179_ALFA_013-objects-asset-links_validation_lane.md
--@@ -0,0 +1,23 @@
--+# PR_26179_ALFA_013 Validation Lane Report
--+
--+Lane: Objects tool focused validation
--+
--+## Commands
--+1. `node --check assets/toolbox/objects/js/index.js`
--+2. `node --check src/dev-runtime/toolbox-api/alfa-tool-services.mjs`
--+3. `node --check dev/tests/playwright/tools/ObjectsTool.spec.mjs`
--+4. `node --test dev/tests/dev-runtime/ObjectsApiService.test.mjs`
--+5. `npx playwright test dev/tests/playwright/tools/ObjectsTool.spec.mjs --grep "Object Details panel saves reviewable properties through shared DB"`
--+6. `npx playwright test dev/tests/playwright/tools/ObjectsTool.spec.mjs`
--+7. `git diff --check`
--+8. `npm run validate:canonical-structure`
-+
-++function metricPercentComplete(completedCount, plannedCount) {
-++  if (!plannedCount) {
-++    return 0;
-++  }
-++  return Math.round((completedCount / plannedCount) * 100);
-++}
- +
--+## Result
--+PASS
-++function recalculateCompletionSnapshot(snapshot, records) {
-++  const plannedCount = records.reduce((total, metric) => total + metric.plannedCount, 0);
-++  const completedCount = records.reduce((total, metric) => total + metric.completedCount, 0);
-++  const activeCount = records.filter((metric) => metric.active).length;
-++  return {
-++    ...snapshot,
-++    activeCount,
-++    completedCount,
-++    inactiveCount: records.length - activeCount,
-++    percentComplete: metricPercentComplete(completedCount, plannedCount),
-++    plannedCount,
-++    records,
-++  };
-++}
- +
--+## Impacted Coverage
--+- Objects API service database adapter round-trip for `messageReference`.
--+- Objects Object Details panel save/cancel/dirty state retained.
--+- Selected object Asset Links review for sprite, audio, and message references.
--+- Friendly missing-reference validation for audio and message references.
--+- Existing guest write redirect and sprite asset link behavior retained.
--diff --git a/dev/reports/PR_26179_ALFA_013-objects-asset-links_validation_report.md b/dev/reports/PR_26179_ALFA_013-objects-asset-links_validation_report.md
--new file mode 100644
--index 000000000..82aa33596
----- /dev/null
--+++ b/dev/reports/PR_26179_ALFA_013-objects-asset-links_validation_report.md
--@@ -0,0 +1,16 @@
--+# PR_26179_ALFA_013 Validation Report
-++function completionSnapshotWithObjectsReadiness(snapshot) {
-++  if (!snapshot?.records || !objectsReadinessSnapshot?.available || objectsReadinessSnapshot.completedCriteria <= 0) {
-++    return snapshot;
-++  }
-++  const records = snapshot.records.map((metric) => {
-++    if (metric.bucketKey !== OBJECTS_COMPLETION_BUCKET_KEY) {
-++      return metric;
-++    }
-++    const plannedCount = metric.plannedCount || objectsReadinessSnapshot.totalCriteria;
-++    const completedCount = Math.min(
-++      plannedCount,
-++      Math.max(metric.completedCount, objectsReadinessSnapshot.completedCriteria),
-++    );
-++    return {
-++      ...metric,
-++      completedCount,
-++      percentComplete: metricPercentComplete(completedCount, plannedCount),
-++      plannedCount,
-++      status: metric.active ? "active" : metric.status,
-++    };
-++  });
-++  return recalculateCompletionSnapshot(snapshot, records);
-++}
- +
--+## Result
--+PASS
-+ function renderCompletionMetrics() {
-+   if (!completionMetrics) {
-+     return;
-+@@ -967,7 +1184,8 @@ function renderCompletionMetrics() {
-+     return;
-+   }
-+
-+-  const records = completionMetricsSnapshot?.records || [];
-++  const snapshot = completionSnapshotWithObjectsReadiness(completionMetricsSnapshot);
-++  const records = snapshot?.records || [];
-+   if (!records.length) {
-+     completionMetrics.append(createElement("p", { text: "No Journey progress targets are set yet. Add suggested targets to start tracking progress." }));
-+     return;
-+@@ -977,16 +1195,16 @@ function renderCompletionMetrics() {
-+   dashboard.dataset.journeyProgressDashboard = "";
-+   const summary = createElement("p", {
-+     className: "status",
-+-    text: `Journey progress: ${completionMetricsSnapshot.completedCount} of ${completionMetricsSnapshot.plannedCount} planned items done (${completionMetricsSnapshot.percentComplete}%). ${completionMetricsSnapshot.activeCount} sections are active focus areas; ${completionMetricsSnapshot.inactiveCount} are planning context.`,
-++    text: `Journey progress: ${snapshot.completedCount} of ${snapshot.plannedCount} planned items done (${snapshot.percentComplete}%). ${snapshot.activeCount} sections are active focus areas; ${snapshot.inactiveCount} are planning context.`,
-+   });
-+   const overallHeading = createElement("h3", { text: "Overall Progress" });
-+   const overallGrid = createElement("div", { className: "grid cols-2" });
-+   overallGrid.dataset.journeyOverallProgress = "";
-+   [
-+-    ["Overall", `${completionMetricsSnapshot.percentComplete}%`],
-+-    ["Done", String(completionMetricsSnapshot.completedCount)],
-+-    ["Planned", String(completionMetricsSnapshot.plannedCount)],
-+-    ["Active Focus", String(completionMetricsSnapshot.activeCount)],
-++    ["Overall", `${snapshot.percentComplete}%`],
-++    ["Done", String(snapshot.completedCount)],
-++    ["Planned", String(snapshot.plannedCount)],
-++    ["Active Focus", String(snapshot.activeCount)],
-+   ].forEach(([label, value]) => {
-+     const stat = createElement("article", { className: "mini-stat mini-stat--inline" });
-+     stat.append(
-+@@ -1062,7 +1280,7 @@ function renderCompletionMetrics() {
-+   const insightHeading = createElement("h3", { text: "What To Do Next" });
-+   const insightList = createElement("ul");
-+   insightList.dataset.journeyCompletionInsights = "";
-+-  completionInsightMessages(completionMetricsSnapshot, records, mostComplete, leastComplete).forEach((message) => {
-++  completionInsightMessages(snapshot, records, mostComplete, leastComplete).forEach((message) => {
-+     insightList.append(createElement("li", { text: message }));
-+   });
-+
-+@@ -1082,6 +1300,47 @@ function renderCompletionMetrics() {
-+   completionMetrics.append(dashboard);
-+ }
-+
-++function objectsReadinessStatusText(snapshot) {
-++  if (!snapshot?.available) {
-++    return snapshot?.unavailableMessage || "Objects readiness is temporarily unavailable.";
-++  }
-++  if (snapshot.objectCount === 0) {
-++    return "Objects readiness: no saved objects for this game yet.";
-++  }
-++  if (snapshot.ready) {
-++    return `Objects readiness: ${snapshot.completedCriteria} of ${snapshot.totalCriteria} criteria complete. Product Owner review can start.`;
-++  }
-++  if (snapshot.meaningful) {
-++    return `Objects readiness: ${snapshot.completedCriteria} of ${snapshot.totalCriteria} criteria complete. Journey progress now reflects meaningful Objects work.`;
-++  }
-++  return `Objects readiness: ${snapshot.completedCriteria} of ${snapshot.totalCriteria} criteria complete. Continue Objects before treating this stage as ready.`;
-++}
- +
--+## Validation Performed
--+- Static JS/MJS syntax checks passed.
--+- Objects API service test passed.
--+- Focused Object Details Playwright scenario passed.
--+- Full Objects Playwright spec passed: 8 passed.
--+- Canonical repository structure validation passed.
--+- Git whitespace validation passed.
-++function renderObjectsReadiness() {
-++  const snapshot = objectsReadinessSnapshot || unavailableObjectsStageReadiness("Objects readiness is waiting for API data.");
-++  if (objectsReadinessStatus) {
-++    objectsReadinessStatus.textContent = objectsReadinessStatusText(snapshot);
-++  }
-++  if (objectsReadinessTable) {
-++    objectsReadinessTable.replaceChildren();
-++    snapshot.criteria.forEach((criterion) => {
-++      const row = createElement("tr");
-++      row.dataset.journeyObjectsCriterion = criterion.key;
-++      row.append(
-++        createElement("td", { text: criterion.label }),
-++        createElement("td", { text: criterion.complete ? "PASS" : "Needs work" }),
-++      );
-++      objectsReadinessTable.append(row);
-++    });
-++  }
-++  if (objectsReviewChecklist) {
-++    objectsReviewChecklist.replaceChildren();
-++    OBJECTS_REVIEW_CHECKLIST.forEach((item) => {
-++      objectsReviewChecklist.append(createElement("li", { text: item }));
-++    });
-++  }
-++}
- +
--+## Notes
--+- The audio upload creation path depends on storage-provider setup and was not used as a PR013 fixture. Runtime audio reference resolution remains implemented against existing shared Assets records, and missing audio references render friendly action text.
--+- The Messages fixture uses the Messages API to create a TTS profile and message record, then verifies Objects can resolve the message reference after save and refresh.
--diff --git a/dev/reports/codex_changed_files.txt b/dev/reports/codex_changed_files.txt
--index bf09e9898..df3e293b6 100644
----- a/dev/reports/codex_changed_files.txt
--+++ b/dev/reports/codex_changed_files.txt
--@@ -1,14 +1,14 @@
---?assets/toolbox/objects/js/index.js
--+assets/toolbox/objects/js/index.js
-- dev/reports/codex_changed_files.txt
-- dev/reports/codex_review.diff
-- dev/reports/coverage_changed_js_guardrail.txt
-- dev/reports/playwright_v8_coverage_report.txt
---dev/reports/PR_26179_ALFA_012-objects-properties-mvp_branch_validation.md
---dev/reports/PR_26179_ALFA_012-objects-properties-mvp_manual_validation_notes.md
---dev/reports/PR_26179_ALFA_012-objects-properties-mvp_report.md
---dev/reports/PR_26179_ALFA_012-objects-properties-mvp_requirement_checklist.md
---dev/reports/PR_26179_ALFA_012-objects-properties-mvp_validation_lane.md
---dev/reports/PR_26179_ALFA_012-objects-properties-mvp_validation_report.md
--+dev/reports/PR_26179_ALFA_013-objects-asset-links_branch_validation.md
--+dev/reports/PR_26179_ALFA_013-objects-asset-links_manual_validation_notes.md
--+dev/reports/PR_26179_ALFA_013-objects-asset-links_report.md
--+dev/reports/PR_26179_ALFA_013-objects-asset-links_requirement_checklist.md
--+dev/reports/PR_26179_ALFA_013-objects-asset-links_validation_lane.md
--+dev/reports/PR_26179_ALFA_013-objects-asset-links_validation_report.md
-- dev/tests/dev-runtime/ObjectsApiService.test.mjs
-- dev/tests/playwright/tools/ObjectsTool.spec.mjs
-- src/dev-runtime/toolbox-api/alfa-tool-services.mjs
--diff --git a/dev/reports/coverage_changed_js_guardrail.txt b/dev/reports/coverage_changed_js_guardrail.txt
--index 76ad8c694..d9fc5da23 100644
----- a/dev/reports/coverage_changed_js_guardrail.txt
--+++ b/dev/reports/coverage_changed_js_guardrail.txt
--@@ -6,9 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
-- Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
--
-- Changed runtime JS files considered:
---(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-- (0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--
-- Guardrail warnings:
---(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-- (0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-+ function normalizeTargetCount(value) {
-+   const parsed = Number(value);
-+   if (!Number.isFinite(parsed)) {
-+@@ -1474,6 +1733,7 @@ function render() {
-+   renderStatScope(selectedStatsNote, notes);
-+   renderStats(statCounts);
-+   renderCompletionMetrics();
-++  renderObjectsReadiness();
-+   renderRecommendedTargets();
-+   renderSuggestedTools(displayNote);
-+   renderRecentActivity();
-+@@ -1788,6 +2048,16 @@ recommendedTargets?.addEventListener("input", (event) => {
-+   }
-+ });
-+
-++window.addEventListener("focus", () => {
-++  refreshObjectsReadinessSnapshot();
-++  render();
-++});
-++
-++window.addEventListener("pageshow", () => {
-++  refreshObjectsReadinessSnapshot();
-++  render();
-++});
-++
-+ addNoteButton?.addEventListener("click", () => {
-+   if (redirectGuestWriteAction(noteStatus)) {
-+     return;
-+@@ -1821,4 +2091,5 @@ addTypeButton?.addEventListener("click", () => {
-+ renderStatusOptions();
-+ refreshCompletionMetricsSnapshot();
-+ applyInitialGameRoute();
-++refreshObjectsReadinessSnapshot();
-+ render();
- diff --git a/dev/reports/playwright_v8_coverage_report.txt b/dev/reports/playwright_v8_coverage_report.txt
--index a433d0ee0..eaea8c7d9 100644
-+index eaea8c7d9..43a555fca 100644
- --- a/dev/reports/playwright_v8_coverage_report.txt
- +++ b/dev/reports/playwright_v8_coverage_report.txt
--@@ -12,21 +12,22 @@ Note: entry percentages use function coverage when available, otherwise line cov
-+@@ -12,42 +12,33 @@ Note: entry percentages use function coverage when available, otherwise line cov
-  Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
--
-+
-  Exercised tool entry points detected:
---(71%) Toolbox Index - exercised 3 runtime JS files
--+(62%) Toolbox Index - exercised 4 runtime JS files
-+-(62%) Toolbox Index - exercised 4 runtime JS files
-++(44%) Toolbox Index - exercised 1 runtime JS files
-  (0%) Tool Template V2 - not exercised by this Playwright run
---(71%) Theme V2 Shared JS - exercised 6 runtime JS files
--+(70%) Theme V2 Shared JS - exercised 6 runtime JS files
--
-+-(70%) Theme V2 Shared JS - exercised 6 runtime JS files
-++(72%) Theme V2 Shared JS - exercised 4 runtime JS files
-+
-  Changed runtime JS files covered:
---(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-  (0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--
-+
-  Files with executed line/function counts where available:
--+(12%) toolbox/messages/messages-api-client.js - executed lines 87/87; executed functions 3/25
-- (25%) src/api/session-api-client.js - executed lines 67/67; executed functions 3/12
-- (33%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
-+-(12%) toolbox/messages/messages-api-client.js - executed lines 87/87; executed functions 3/25
-+-(25%) src/api/session-api-client.js - executed lines 67/67; executed functions 3/12
-+-(33%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
-  (36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2044/2044; executed functions 12/33
-- (50%) src/api/public-config-client.js - executed lines 209/209; executed functions 13/26
-- (50%) toolbox/game-hub/game-hub-api-client.js - executed lines 26/26; executed functions 2/4
-+-(50%) src/api/public-config-client.js - executed lines 209/209; executed functions 13/26
-+-(50%) toolbox/game-hub/game-hub-api-client.js - executed lines 26/26; executed functions 2/4
-++(44%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 11/25
-  (53%) src/api/server-api-client.js - executed lines 168/168; executed functions 10/19
--+(57%) assets/theme-v2/js/account-auth-service.js - executed lines 64/64; executed functions 4/7
-- (57%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 55/97
-- (60%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 15/25
-- (67%) assets/js/shared/assets-api-client.js - executed lines 19/19; executed functions 2/3
--@@ -38,18 +39,15 @@ Files with executed line/function counts where available:
-+-(57%) assets/theme-v2/js/account-auth-service.js - executed lines 64/64; executed functions 4/7
-+-(57%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 55/97
-+-(60%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 15/25
-+-(67%) assets/js/shared/assets-api-client.js - executed lines 19/19; executed functions 2/3
-++(64%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 63/98
-++(65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
-+ (67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
-+-(67%) src/engine/object-model/objectModelRegistry.js - executed lines 139/139; executed functions 4/6
-+-(70%) assets/theme-v2/js/login-session.js - executed lines 113/113; executed functions 7/10
-+-(70%) src/engine/object-model/objectDefinitionValidator.js - executed lines 360/360; executed functions 16/23
-+-(74%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 80/108
-  (75%) assets/theme-v2/js/tool-display-mode.js - executed lines 251/251; executed functions 21/28
-- (75%) src/engine/object-model/objectDefinitionSchema.js - executed lines 58/58; executed functions 3/4
-+-(75%) src/engine/object-model/objectDefinitionSchema.js - executed lines 58/58; executed functions 3/4
-++(75%) assets/toolbox/game-journey/js/index.js - executed lines 1913/1913; executed functions 132/177
-  (80%) assets/theme-v2/js/theme-icons.js - executed lines 69/69; executed functions 4/5
---(96%) assets/toolbox/objects/js/index.js - executed lines 1373/1373; executed functions 131/137
---(100%) assets/theme-v2/js/account-auth-service.js - executed lines 64/64; executed functions 7/7
--+(95%) assets/toolbox/objects/js/index.js - executed lines 1574/1574; executed functions 146/153
-- (100%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 37/37
-- (100%) src/engine/object-model/index.js - executed lines 29/29; executed functions 1/1
--
-+-(95%) assets/toolbox/objects/js/index.js - executed lines 1574/1574; executed functions 146/153
-+-(100%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 37/37
-+-(100%) src/engine/object-model/index.js - executed lines 29/29; executed functions 1/1
-++(89%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 32/36
-++(100%) assets/js/shared/game-journey-api-client.js - executed lines 19/19; executed functions 2/2
-+
-  Uncovered or low-coverage changed JS files:
---(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
-  (0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: uncovered changed runtime JS file; advisory only
--
-+
-  Changed JS files considered:
-++(0%) assets/toolbox/objects/js/index.js - changed JS file not collected as browser runtime coverage
-  (0%) dev/tests/dev-runtime/ObjectsApiService.test.mjs - changed JS file not collected as browser runtime coverage
-++(0%) dev/tests/playwright/tools/GameJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
-  (0%) dev/tests/playwright/tools/ObjectsTool.spec.mjs - changed JS file not collected as browser runtime coverage
---(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
-  (0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - changed JS file not collected as browser runtime coverage
---(96%) assets/toolbox/objects/js/index.js - changed JS file with browser V8 coverage
--+(95%) assets/toolbox/objects/js/index.js - changed JS file with browser V8 coverage
--diff --git a/dev/tests/dev-runtime/ObjectsApiService.test.mjs b/dev/tests/dev-runtime/ObjectsApiService.test.mjs
--index c55b1af32..ccc835d21 100644
----- a/dev/tests/dev-runtime/ObjectsApiService.test.mjs
--+++ b/dev/tests/dev-runtime/ObjectsApiService.test.mjs
--@@ -118,6 +118,7 @@ test("Objects API service lists and replaces objects through the database adapte
--         audioReference: "audio/hero-hop.wav",
--         defaultValues: "speed=8",
--         description: "Player-controlled hero used for review.",
--+        messageReference: "msg-hero-hop",
--         spriteReference: "sprite-hero",
--         tags: ["hero", "playable"],
--         visible: true,
--@@ -144,6 +145,7 @@ test("Objects API service lists and replaces objects through the database adapte
--     audioReference: "audio/hero-hop.wav",
--     defaultValues: "speed=8",
--     description: "Player-controlled hero used for review.",
--+    messageReference: "msg-hero-hop",
--     spriteReference: "sprite-hero",
--     tags: ["hero", "playable"],
--     visible: true,
--@@ -157,6 +159,7 @@ test("Objects API service lists and replaces objects through the database adapte
--         audioReference: "audio/hero-hop.wav",
--         defaultValues: "speed=8",
--         description: "Player-controlled hero used for review.",
--+        messageReference: "msg-hero-hop",
--         spriteReference: "sprite-hero",
--         tags: ["hero", "playable"],
--         visible: true,
--diff --git a/dev/tests/playwright/tools/ObjectsTool.spec.mjs b/dev/tests/playwright/tools/ObjectsTool.spec.mjs
--index da0fa9242..74e132e67 100644
----- a/dev/tests/playwright/tools/ObjectsTool.spec.mjs
--+++ b/dev/tests/playwright/tools/ObjectsTool.spec.mjs
--@@ -102,6 +102,36 @@ async function clearObjectsForActiveGame(baseUrl) {
--   expect(cleared.response.ok).toBe(true);
-+-(95%) assets/toolbox/objects/js/index.js - changed JS file with browser V8 coverage
-++(75%) assets/toolbox/game-journey/js/index.js - changed JS file with browser V8 coverage
-+diff --git a/dev/tests/playwright/tools/GameJourneyTool.spec.mjs b/dev/tests/playwright/tools/GameJourneyTool.spec.mjs
-+index c478c40e5..cafea7135 100644
-+--- a/dev/tests/playwright/tools/GameJourneyTool.spec.mjs
-++++ b/dev/tests/playwright/tools/GameJourneyTool.spec.mjs
-+@@ -81,6 +81,9 @@ async function openRepoPage(page, pathName, options = {}) {
-+     headers: { "content-type": "application/json" },
-+     method: "POST",
-+   });
-++  if (typeof options.beforeGoto === "function") {
-++    await options.beforeGoto({ server, sessionUserKey });
-++  }
-+   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
-+   return {
-+     consoleErrors,
-+@@ -104,6 +107,22 @@ async function fetchApiData(server, pathName, options = {}) {
-+   return payload.data;
-  }
--
--+async function createReviewMessage(baseUrl) {
--+  const suffix = Date.now().toString(36);
--+  const profile = await postApiPayload(baseUrl, "/api/messages/tts-profiles", {
--+    emotionSettings: [{
--+      emotion: "calm",
--+      emotionLabel: "Calm",
--+      pitch: 1,
--+      rate: 1,
--+      volume: 1,
--+    }],
--+    language: "en-US",
--+    name: `Objects Review Voice ${suffix}`,
--+    pitch: 1,
--+    providerKey: "browser-speech",
--+    rate: 1,
--+    voiceName: "Default browser voice",
--+    volume: 1,
-+
-++async function replaceObjectsForActiveGame(server, objects) {
-++  const repositoryData = await fetchApiData(server, "/api/toolbox/objects/repositories", {
-++    body: JSON.stringify({ options: {} }),
-++    method: "POST",
- +  });
--+  expect(profile.response.ok).toBe(true);
--+  const message = await postApiPayload(baseUrl, "/api/messages/messages", {
--+    active: true,
--+    emotionProfileKey: profile.payload.data.ttsProfile.emotionSettings[0].key,
--+    messageText: "Review hero is ready.",
--+    name: `Objects Review Message ${suffix}`,
--+    voiceProfileKey: profile.payload.data.ttsProfile.key,
--+  });
--+  expect(message.response.ok).toBe(true);
--+  return message.payload.data.message;
-++  const resultData = await fetchApiData(
-++    server,
-++    `/api/toolbox/objects/repositories/${repositoryData.repositoryId}/methods/replaceObjects`,
-++    {
-++      body: JSON.stringify({ args: [objects] }),
-++      method: "POST",
-++    },
-++  );
-++  return resultData.result;
- +}
- +
-- async function openObjectsPage(page, { signedIn = true } = {}) {
--   const server = await startRepoServer();
--   const failures = collectPageFailures(page);
--@@ -492,6 +522,8 @@ test("Object Details panel saves reviewable properties through shared DB", async
--   const failures = await openObjectsPage(page);
--
--   try {
--+    const message = await createReviewMessage(failures.server.baseUrl);
--+
--     await page.getByRole("button", { name: "Add Object" }).click();
--     await fillActiveRow(page, {
--       name: "Review Hero",
--@@ -512,6 +544,10 @@ test("Object Details panel saves reviewable properties through shared DB", async
--     await expect(page.locator("[data-objects-detail-sprite]")).toHaveValue("sprite_review_hero");
--     await expect(page.locator("[data-objects-detail-unsaved]")).toHaveText("Unsaved changes: none");
--     await expect(page.locator("[data-objects-detail-save]")).toBeDisabled();
--+    await expect(page.locator("[data-objects-asset-links]")).toContainText("Sprite:");
--+    await expect(page.locator("[data-objects-asset-links]")).toContainText("sprite_review_hero");
--+    await expect(page.locator("[data-objects-asset-links]")).toContainText("Audio: No reference set.");
--+    await expect(page.locator("[data-objects-asset-links]")).toContainText("Message: No reference set.");
--     await expect(page.locator("[data-objects-details-form]")).not.toContainText(/\bBehavior\b|\bRules\b|\bWorlds\b/);
--
--     await page.locator("[data-objects-detail-description]").fill("Hero object used by Product Owner review.");
--@@ -534,14 +570,31 @@ test("Object Details panel saves reviewable properties through shared DB", async
--     await page.locator("[data-objects-detail-active]").uncheck();
--     await page.locator("[data-objects-detail-visible]").uncheck();
--     await page.locator("[data-objects-detail-sprite]").fill("sprite_review_hero");
---    await page.locator("[data-objects-detail-audio]").fill("audio/review-hero.wav");
--+    await page.locator("[data-objects-detail-audio]").fill("missing-review-hero.wav");
--+    await page.locator("[data-objects-detail-message]").fill("missing-message-key");
--     await page.locator("[data-objects-detail-defaults]").fill("speed=8\nhealth=3");
--     await page.locator("[data-objects-detail-save]").click();
--+    await expect(page.locator("[data-objects-validation-list]")).toContainText("Audio reference: Use an existing audio asset reference");
--+    await expect(page.locator("[data-objects-validation-list]")).toContainText("Message reference: Use an existing message reference");
--+    await expect(page.locator("[data-objects-log]")).toHaveText("Object Details blocked: 2 validation actions.");
-+ function expectNoPageFailures(failures) {
-+   expect(failures.failedRequests).toEqual([]);
-+   expect(failures.pageErrors).toEqual([]);
-+@@ -306,6 +325,7 @@ test("Game Journey progress dashboard summarizes completion metrics", async ({ p
-+       headers: { "content-type": "application/json" },
-+       method: "POST",
-+     });
-++    await replaceObjectsForActiveGame(server, []);
-+     await page.goto(`${server.baseUrl}/toolbox/game-journey/index.html?game=demo-game`, { waitUntil: "networkidle" });
-+
-+     await expect(page.locator("[data-journey-active-game]")).toHaveText("Active game: Demo Game.");
-+@@ -428,6 +448,80 @@ test("Game Journey progress dashboard summarizes completion metrics", async ({ p
-+   }
-+ });
-+
-++test("Game Journey reflects meaningful Objects readiness in Journey progress", async ({ page }) => {
-++  const reviewReadyObject = {
-++    details: {
-++      defaultValues: "speed=8",
-++      description: "Primary playable object for Product Owner review.",
-++      spriteReference: "sprite_journey_hero",
-++      tags: ["hero", "review"],
-++    },
-++    name: "Journey Hero",
-++    render: {
-++      assetKey: "sprite_journey_hero",
-++      previewPath: "projects/demo-game/sprites/journey-hero.png",
-++      type: "Sprite",
-++    },
-++    role: "Hero",
-++    state: "Active",
-++    traits: ["playerControlled", "movable"],
-++  };
-++  const failures = await openRepoPage(page, "/toolbox/game-journey/index.html?game=demo-game", {
-++    beforeGoto: async ({ server }) => {
-++      await replaceObjectsForActiveGame(server, [reviewReadyObject]);
-++    },
-++  });
- +
--+    await page.locator("[data-objects-detail-audio]").fill("");
--+    await page.locator("[data-objects-detail-message]").fill(message.key);
--+    await page.locator("[data-objects-detail-save]").click();
--     await expect(page.locator("[data-objects-log]")).toHaveText("Saved Object Details for Review Hero Prime.");
--     await expect(page.locator("[data-objects-list]")).toContainText("Review Hero Prime");
--     await expect(page.locator("[data-objects-list] tr").first().locator("td").nth(1)).toHaveText("Enemy");
--     await expect(page.locator("[data-objects-list] tr").first().locator("td").nth(2)).toHaveText("Disabled");
--     await expect(page.locator("[data-objects-detail-unsaved]")).toHaveText("Unsaved changes: none");
--+    await expect(page.locator("[data-objects-asset-links]")).toContainText("Audio: No reference set.");
--+    await expect(page.locator("[data-objects-asset-links]")).toContainText(message.name);
--+    await expect(page.locator("[data-objects-asset-link-sprite]")).toHaveAttribute(
--+      "href",
--+      "/toolbox/sprites/index.html?assetKey=sprite_review_hero&objectKey=review-hero-prime&sourceTool=objects"
-++  try {
-++    await expect(page.locator("[data-journey-active-game]")).toHaveText("Active game: Demo Game.");
-++    await expect(page.locator("details > summary", { hasText: /^Objects Stage Readiness$/ })).toHaveCount(1);
-++    await expect(page.locator("[data-journey-objects-readiness-status]")).toHaveText(
-++      "Objects readiness: 5 of 5 criteria complete. Product Owner review can start.",
-++    );
-++    await expect(page.locator("[data-journey-objects-readiness] tr")).toHaveCount(5);
-++    await expect(page.locator("[data-journey-objects-readiness] tr td:nth-child(2)")).toHaveText([
-++      "PASS",
-++      "PASS",
-++      "PASS",
-++      "PASS",
-++      "PASS",
-++    ]);
-++    await expect(page.locator("[data-journey-objects-review-checklist] li")).toHaveText([
-++      "Confirm the object list matches the current Game Hub game.",
-++      "Confirm each object name and type is understandable to a Creator.",
-++      "Confirm sprite, audio, and message references are resolved or intentionally empty.",
-++      "Confirm at least one meaningful player-facing object exists.",
-++      "Confirm Objects validation is clean before expanding later gameplay work.",
-++    ]);
-++    await expect(page.locator("[data-journey-completion-metrics]")).toContainText(
-++      "Journey progress: 5 of 66 planned items done (8%). 10 sections are active focus areas; 4 are planning context.",
- +    );
--+    await expect(page.locator("[data-objects-asset-link-audio]")).toHaveCount(0);
--+    await expect(page.locator("[data-objects-message-link]")).toHaveAttribute("href", "/toolbox/messages/index.html");
--+    await expect(page.locator("[data-objects-reference-warning]")).toHaveCount(0);
--
--     const rows = await objectDefinitionRecords(page);
--     expect(rows).toHaveLength(1);
--@@ -554,9 +607,10 @@ test("Object Details panel saves reviewable properties through shared DB", async
--     }));
--     expect(rows[0].interaction.details).toEqual({
--       active: false,
---      audioReference: "audio/review-hero.wav",
--+      audioReference: "",
--       defaultValues: "speed=8\nhealth=3",
--       description: "Hero object used by Product Owner review.",
--+      messageReference: message.key,
--       spriteReference: "sprite_review_hero",
--       tags: ["hero", "review", "boss-fight"],
--       visible: false,
--@@ -571,8 +625,11 @@ test("Object Details panel saves reviewable properties through shared DB", async
--     await expect(page.locator("[data-objects-detail-active]")).not.toBeChecked();
--     await expect(page.locator("[data-objects-detail-visible]")).not.toBeChecked();
--     await expect(page.locator("[data-objects-detail-sprite]")).toHaveValue("sprite_review_hero");
---    await expect(page.locator("[data-objects-detail-audio]")).toHaveValue("audio/review-hero.wav");
--+    await expect(page.locator("[data-objects-detail-audio]")).toHaveValue("");
--+    await expect(page.locator("[data-objects-detail-message]")).toHaveValue(message.key);
--     await expect(page.locator("[data-objects-detail-defaults]")).toHaveValue("speed=8\nhealth=3");
--+    await expect(page.locator("[data-objects-asset-links]")).toContainText("Audio: No reference set.");
--+    await expect(page.locator("[data-objects-asset-links]")).toContainText(message.name);
--
--     await expectNoPageFailures(failures);
--   } finally {
--diff --git a/src/dev-runtime/toolbox-api/alfa-tool-services.mjs b/src/dev-runtime/toolbox-api/alfa-tool-services.mjs
--index a608e74ea..d24eb63ac 100644
----- a/src/dev-runtime/toolbox-api/alfa-tool-services.mjs
--+++ b/src/dev-runtime/toolbox-api/alfa-tool-services.mjs
--@@ -547,6 +547,7 @@ function objectDetailsFromSource(source = {}, render = normalizeObjectRender(sou
--     audioReference: normalizeText(details.audioReference ?? source.audioReference),
--     defaultValues: normalizeText(details.defaultValues ?? source.defaultValues),
--     description: normalizeText(details.description ?? source.description),
--+    messageReference: normalizeText(details.messageReference ?? source.messageReference),
--     spriteReference: normalizeText(details.spriteReference ?? source.spriteReference) || normalizeText(render.assetKey),
--     tags: parseObjectTags(details.tags ?? source.tags),
--     visible: objectBooleanField(details.visible ?? source.visible, true),
--diff --git a/toolbox/objects/index.html b/toolbox/objects/index.html
--index 8f507eec4..ab076292b 100644
----- a/toolbox/objects/index.html
--+++ b/toolbox/objects/index.html
--@@ -144,6 +144,9 @@
--                                             <label>Audio reference
--                                                 <input type="text" autocomplete="off" data-objects-detail-audio>
--                                             </label>
--+                                            <label>Message reference
--+                                                <input type="text" autocomplete="off" data-objects-detail-message>
--+                                            </label>
--                                             <label>Active
--                                                 <input type="checkbox" data-objects-detail-active>
--                                             </label>
--@@ -165,6 +168,13 @@
--                                     </div>
-++    await expect(page.locator("[data-journey-completion-bucket='006-objects'] td")).toHaveText([
-++      "Objects",
-++      "5",
-++      "5",
-++      "100%",
-++      "Active focus",
-++    ]);
-++
-++    await page.reload({ waitUntil: "networkidle" });
-++    await expect(page.locator("[data-journey-objects-readiness-status]")).toHaveText(
-++      "Objects readiness: 5 of 5 criteria complete. Product Owner review can start.",
-++    );
-++    await expect(page.locator("[data-journey-completion-bucket='006-objects'] td")).toHaveText([
-++      "Objects",
-++      "5",
-++      "5",
-++      "100%",
-++      "Active focus",
-++    ]);
-++    await expectNoPageFailures(failures);
-++  } finally {
-++    await replaceObjectsForActiveGame(failures.server, []);
-++    await closeWithCoverage(page, failures);
-++  }
-++});
-++
-+ async function closeWithCoverage(page, failures) {
-+   await workspaceV2CoverageReporter.stop(page);
-+   await failures.server.close();
-+diff --git a/toolbox/game-journey/index.html b/toolbox/game-journey/index.html
-+index 2965e2b19..ad48c27f3 100644
-+--- a/toolbox/game-journey/index.html
-++++ b/toolbox/game-journey/index.html
-+@@ -161,6 +161,27 @@
-+                                     <div class="content-stack content-stack--compact" data-journey-completion-metrics></div>
-                                  </div>
-                              </details>
- +                            <details class="vertical-accordion" open>
--+                                <summary>Asset Links</summary>
-++                                <summary>Objects Stage Readiness</summary>
- +                                <div class="accordion-body content-stack">
--+                                    <p>Review sprite, audio, and message links for the selected object.</p>
--+                                    <ul data-objects-asset-links></ul>
-++                                    <div class="status" role="status" data-journey-objects-readiness-status>Objects readiness is waiting for API data.</div>
-++                                    <div class="table-wrapper">
-++                                        <table class="data-table data-table--fixed" aria-label="Objects stage readiness criteria">
-++                                            <thead>
-++                                                <tr>
-++                                                    <th scope="col">Criterion</th>
-++                                                    <th scope="col">Status</th>
-++                                                </tr>
-++                                            </thead>
-++                                            <tbody data-journey-objects-readiness></tbody>
-++                                        </table>
-++                                    </div>
-++                                    <div>
-++                                        <h3>Product Owner Review Checklist</h3>
-++                                        <ul data-journey-objects-review-checklist></ul>
-++                                    </div>
- +                                </div>
- +                            </details>
-                              <details class="vertical-accordion" open>
--                                 <summary>Validation</summary>
--                                 <div class="accordion-body content-stack">
-+                                 <summary>Suggested Tools</summary>
-+                                 <div class="accordion-body">
 diff --git a/dev/reports/playwright_v8_coverage_report.txt b/dev/reports/playwright_v8_coverage_report.txt
 index eaea8c7d9..43a555fca 100644
 --- a/dev/reports/playwright_v8_coverage_report.txt
@@ -1960,167 +814,170 @@ index 2965e2b19..ad48c27f3 100644
                              <details class="vertical-accordion" open>
                                  <summary>Suggested Tools</summary>
                                  <div class="accordion-body">
-diff --git a/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_branch_validation.md b/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_branch_validation.md
+diff --git a/dev/reports/coverage_changed_js_guardrail.txt b/dev/reports/coverage_changed_js_guardrail.txt
+index d9fc5da23..7b1c51f19 100644
+--- a/dev/reports/coverage_changed_js_guardrail.txt
++++ b/dev/reports/coverage_changed_js_guardrail.txt
+@@ -6,7 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
+ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+
+ Changed runtime JS files considered:
+-(0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(100%) none changed - no changed runtime JS files
+
+ Guardrail warnings:
+-(0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++(100%) none changed - no changed runtime JS files
+diff --git a/dev/reports/playwright_v8_coverage_report.txt b/dev/reports/playwright_v8_coverage_report.txt
+index 43a555fca..c90ded425 100644
+--- a/dev/reports/playwright_v8_coverage_report.txt
++++ b/dev/reports/playwright_v8_coverage_report.txt
+@@ -17,7 +17,7 @@ Exercised tool entry points detected:
+ (72%) Theme V2 Shared JS - exercised 4 runtime JS files
+
+ Changed runtime JS files covered:
+-(0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(100%) none changed - no changed runtime JS files
+
+ Files with executed line/function counts where available:
+ (36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2044/2044; executed functions 12/33
+@@ -33,12 +33,8 @@ Files with executed line/function counts where available:
+ (100%) assets/js/shared/game-journey-api-client.js - executed lines 19/19; executed functions 2/2
+
+ Uncovered or low-coverage changed JS files:
+-(0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: uncovered changed runtime JS file; advisory only
++(100%) none changed - no changed runtime JS files
+
+ Changed JS files considered:
+-(0%) assets/toolbox/objects/js/index.js - changed JS file not collected as browser runtime coverage
+-(0%) dev/tests/dev-runtime/ObjectsApiService.test.mjs - changed JS file not collected as browser runtime coverage
+ (0%) dev/tests/playwright/tools/GameJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) dev/tests/playwright/tools/ObjectsTool.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - changed JS file not collected as browser runtime coverage
+ (75%) assets/toolbox/game-journey/js/index.js - changed JS file with browser V8 coverage
+diff --git a/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_eod_report.md b/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_eod_report.md
 new file mode 100644
-index 000000000..5ba8f9771
+index 000000000..f16f2e700
 --- /dev/null
-+++ b/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_branch_validation.md
-@@ -0,0 +1,24 @@
-+# PR_26179_ALFA_014 Branch Validation
++++ b/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_eod_report.md
+@@ -0,0 +1,27 @@
++# PR_26179_ALFA_014 Objects Journey Readiness EOD Report
 +
-+Branch: PR_26179_ALFA_014-objects-journey-readiness
-+Base stack: PR_26179_ALFA_013-objects-asset-links
++## Branch
++- Branch: PR_26179_ALFA_014-objects-journey-readiness
++- Base stack dependency: PR_26179_ALFA_013-objects-asset-links
++- Implementation commit before EOD notes: f34da790f38942aa048a8794b7947c450b7e4659
 +
-+## Gates
-+- Current branch is PR_26179_ALFA_014-objects-journey-readiness: PASS
-+- Project Instructions loaded from `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md`: PASS
-+- Batch governance addendum loaded from `dev/build/ProjectInstructions/addendums/batch_governance_mode.md`: PASS
-+- Canonical report path `dev/reports/`: PASS
-+- Canonical ZIP path `dev/workspace/zips/`: PASS
-+- No `docs_build/` report output created: PASS
-+- No `tmp/` ZIP output created: PASS
-+- One PR purpose only: PASS
-+- Existing Objects API architecture preserved: PASS
++## EOD Status
++- Objects Journey Readiness implementation: complete
++- Required PR014 reports: present
++- Product Owner review notes for Objects stack: prepared
++- Repo-structured ZIP: rebuilt under `dev/workspace/zips/`
++- Worktree before EOD notes: clean
++- Worlds work: not started
 +
-+## Validation Commands
++## Fresh Validation
 +- `node --check assets/toolbox/game-journey/js/index.js`: PASS
 +- `node --check dev/tests/playwright/tools/GameJourneyTool.spec.mjs`: PASS
-+- `npx playwright test dev/tests/playwright/tools/GameJourneyTool.spec.mjs --grep "progress dashboard|Objects readiness"`: PASS
++- `npx playwright test dev/tests/playwright/tools/GameJourneyTool.spec.mjs --grep "progress dashboard|Objects readiness"`: PASS, 2 tests passed
 +- `git diff --check`: PASS
 +- `npm run validate:canonical-structure`: PASS
 +
-+Branch validation: PASS
-diff --git a/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_manual_validation_notes.md b/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_manual_validation_notes.md
++## Review Readiness
++PR014 is ready for Product Owner review as the final Objects stack readiness PR. The Product Owner should review the stack in order: PR011, PR012, PR013, PR014.
++
++## Merge Note
++Do not start Worlds until Product Owner review of the completed Objects stack is complete.
+diff --git a/dev/reports/PR_26179_ALFA_objects-stack_product-owner-review-notes.md b/dev/reports/PR_26179_ALFA_objects-stack_product-owner-review-notes.md
 new file mode 100644
-index 000000000..56ecf33af
+index 000000000..38f2e22c5
 --- /dev/null
-+++ b/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_manual_validation_notes.md
-@@ -0,0 +1,14 @@
-+# PR_26179_ALFA_014 Manual Validation Notes
++++ b/dev/reports/PR_26179_ALFA_objects-stack_product-owner-review-notes.md
+@@ -0,0 +1,87 @@
++# Product Owner Review Notes - Objects Stack
 +
-+## Manual Review Path
-+1. Open Game Journey for the active Demo Game.
-+2. Confirm Journey Progress Dashboard renders normally when there are no saved Objects.
-+3. Save a review-ready Object for the same Game Hub game in Objects.
-+4. Return to Game Journey and confirm Objects Stage Readiness shows the criteria table and Product Owner checklist.
-+5. Confirm the Objects completion bucket reflects meaningful Objects work while the fullscreen, Rules, Worlds, and behavior editor areas remain unchanged.
++## Stack Under Review
++- PR_26179_ALFA_011 Objects Manager
++- PR_26179_ALFA_012 Object Properties
++- PR_26179_ALFA_013 Object Asset Links
++- PR_26179_ALFA_014 Objects Journey Readiness
 +
-+## Automated Proxy
-+The focused Playwright lane performed the API-backed setup, loaded Game Journey, verified readiness copy, checked the Objects bucket, reloaded the page, and verified persisted display.
++## Review Goal
++Confirm the Objects MVP is Product Owner testable from object creation through Journey readiness without starting Worlds, Rules, or behavior-editor work.
 +
-+## Result
-+PASS. No manual-only blockers identified.
-diff --git a/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_report.md b/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_report.md
-new file mode 100644
-index 000000000..988365739
---- /dev/null
-+++ b/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_report.md
-@@ -0,0 +1,34 @@
-+# PR_26179_ALFA_014-objects-journey-readiness Report
++## PR011 - Objects Manager
++Product Owner testable outcome:
++- Open `toolbox/objects/index.html`.
++- Sign in as a Creator.
++- Add an object row with a name, type, state, render mode, and capabilities.
++- Save, refresh, and confirm the object remains for the current Game Hub game.
++- Edit and delete the object.
++- Sign out, attempt to save, and confirm redirect to `account/sign-in.html`.
 +
-+## Summary
-+Added Game Journey visibility for Objects stage readiness so Product Owners can see whether the current Game Hub game has meaningful Objects work ready for review.
++Acceptance checks:
++- Objects load through the API/database path.
++- Browser does not own product data.
++- Guest writes redirect to sign-in.
++- Object rows persist after refresh.
 +
-+## Scope
-+- Added an Objects Stage Readiness accordion to `toolbox/game-journey/index.html`.
-+- Read current-game Objects through the existing Objects API repository from `assets/toolbox/game-journey/js/index.js`.
-+- Defined five readiness criteria: saved objects, name/type/state, player-facing interactivity, sprite reference coverage, and Product Owner review details.
-+- Added a Product Owner review checklist for the Objects stage.
-+- Updated the Journey progress dashboard display so completed Objects readiness criteria can raise the Objects bucket progress without writing Journey metrics.
-+- Added targeted Playwright coverage for no-Objects baseline progress and review-ready Objects progress.
++## PR012 - Object Properties
++Product Owner testable outcome:
++- Select an object and open Object Details.
++- Edit Name, Description, Type, Tags, Active, Visible, Sprite reference, Audio reference, and Default values.
++- Confirm required-field validation and friendly messages.
++- Confirm Save and Cancel behavior.
++- Confirm unsaved-change messaging appears only when edits are pending.
++- Refresh and confirm saved details persist.
 +
-+## Architecture Notes
-+- Objects data continues through Browser -> API -> Database.
-+- Game Journey consumes Objects as read-only API data for progress display.
-+- No Objects API architecture changes were made.
-+- No page-local product data arrays or browser-owned product data were added.
-+- No Rules integration was added.
-+- No Worlds integration was added.
-+- No behavior editor was added.
++Acceptance checks:
++- Details persist through the existing Objects API/database service.
++- Duplicate or invalid details are blocked with friendly messages.
++- No behavior editor, Rules integration, or Worlds integration appears.
 +
-+## Validation Outcome
-+PASS. Targeted Journey validation, syntax checks, diff check, and canonical structure validation completed successfully.
++## PR013 - Object Asset Links
++Product Owner testable outcome:
++- Select an object with sprite, audio, or message references.
++- Review the Asset Links section.
++- Confirm valid sprite references link to Sprite Editor.
++- Confirm valid message references link to Messages.
++- Confirm missing sprite, audio, and message references show friendly warnings.
 +
-+## Changed Runtime Surface
-+- Game Journey inspector UI.
-+- Game Journey browser controller progress display.
++Acceptance checks:
++- Reference review is readable without internal implementation wording.
++- Missing references are surfaced as review guidance, not runtime errors.
++- Existing Objects API architecture is preserved.
++- No new Rules, Worlds, or behavior-editor scope appears.
 +
-+## Not Changed
-+- Objects API contract.
-+- Objects persistence.
-+- Game Journey completion metrics persistence.
-+- Rules, Worlds, or behavior editor flows.
-diff --git a/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_requirement_checklist.md b/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_requirement_checklist.md
-new file mode 100644
-index 000000000..3d4a45113
---- /dev/null
-+++ b/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_requirement_checklist.md
-@@ -0,0 +1,17 @@
-+# PR_26179_ALFA_014 Requirement Checklist
++## PR014 - Objects Journey Readiness
++Product Owner testable outcome:
++- Open Game Journey for the current Game Hub game.
++- Review the Objects Stage Readiness accordion.
++- Confirm readiness criteria list saved objects, name/type/state coverage, player-facing interactivity, sprite reference coverage, and Product Owner review details.
++- Confirm the Product Owner review checklist is present.
++- Confirm Journey progress reflects meaningful Objects completion when Objects are review-ready.
++- Refresh and confirm readiness display remains stable.
 +
-+- Define Objects stage readiness criteria: PASS
-+- Update Journey progress when Objects has meaningful completion: PASS
-+- Add Product Owner review checklist for Objects stage: PASS
-+- Preserve existing Objects API architecture: PASS
-+- Do not add Rules integration: PASS
-+- Do not add Worlds integration: PASS
-+- Do not add behavior editor: PASS
-+- Use Browser -> API -> Database data flow: PASS
-+- Avoid browser-owned product data: PASS
-+- Avoid page-local product data arrays: PASS
-+- Use current Game Hub game context: PASS
-+- Use current Project Instructions: PASS
-+- Use canonical `dev/reports/` reports path: PASS
-+- Use canonical `dev/workspace/zips/` ZIP path: PASS
-+- Return repo-structured ZIP: PASS
-diff --git a/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_validation_lane.md b/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_validation_lane.md
-new file mode 100644
-index 000000000..c561a478a
---- /dev/null
-+++ b/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_validation_lane.md
-@@ -0,0 +1,20 @@
-+# PR_26179_ALFA_014 Validation Lane
++Acceptance checks:
++- Journey consumes Objects as read-only API data.
++- Journey does not create, edit, or duplicate Objects logic.
++- Journey progress display updates without writing new Journey completion metrics.
++- No Rules, Worlds, or behavior-editor work starts.
 +
-+Lane: Focused Game Journey Objects readiness
++## End-to-End Review Flow
++1. Open Game Hub and confirm the active game.
++2. Open Objects and save a review-ready object.
++3. Edit Object Details and save review context.
++4. Verify asset/reference warnings or links.
++5. Open Game Journey for the same game.
++6. Confirm Objects Stage Readiness and the Objects progress bucket.
++7. Record any Product Owner findings before Worlds begins.
 +
-+## Coverage
-+- Game Journey progress dashboard baseline with no Objects rows.
-+- Game Journey Objects Stage Readiness accordion.
-+- Current-game Object persistence through the Objects API repository.
-+- Product Owner Objects checklist rendering.
-+- Objects readiness contribution to the Journey Objects completion bucket.
-+- Reload persistence of Journey readiness display.
++## Explicit Non-Scope For This Stack
++- Worlds integration: not started.
++- Rules integration: not started.
++- Behavior editor: not started.
++- Collision configuration beyond current Objects metadata: not started.
++- Engine runtime object instantiation work: not started.
 +
-+## Command
-+`npx playwright test dev/tests/playwright/tools/GameJourneyTool.spec.mjs --grep "progress dashboard|Objects readiness"`
-+
-+## Result
-+PASS. 2 tests passed.
-+
-+## Follow-up
-+None for this PR.
-diff --git a/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_validation_report.md b/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_validation_report.md
-new file mode 100644
-index 000000000..1abd35fed
---- /dev/null
-+++ b/dev/reports/PR_26179_ALFA_014-objects-journey-readiness_validation_report.md
-@@ -0,0 +1,19 @@
-+# PR_26179_ALFA_014 Validation Report
-+
-+## Commands Run
-+- `node --check assets/toolbox/game-journey/js/index.js`
-+- `node --check dev/tests/playwright/tools/GameJourneyTool.spec.mjs`
-+- `npx playwright test dev/tests/playwright/tools/GameJourneyTool.spec.mjs --grep "progress dashboard|Objects readiness"`
-+- `git diff --check`
-+- `npm run validate:canonical-structure`
-+- `npm run codex:review-artifacts`
-+
-+## Results
-+- JavaScript syntax checks: PASS
-+- Focused Game Journey Playwright lane: PASS, 2 tests passed
-+- Diff whitespace check: PASS
-+- Canonical repository structure guardrail: PASS
-+- Review artifacts generated: PASS
-+
-+## Notes
-+The Playwright lane verifies that Game Journey keeps the baseline progress at 0 when no Objects are saved, then reflects a persisted review-ready Object as 5 of 5 Objects criteria complete and 100% Objects bucket progress after reload.
++## Product Owner Decision Needed
++Product Owner review should decide whether the Objects MVP is accepted as testable before Alfa proceeds to any Worlds-related work.
