@@ -7,9 +7,9 @@ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..", "..");
-const svgRoot = path.join(repoRoot, "assets", "theme-v2", "svg");
+const svgRoot = path.join(repoRoot, "www", "assets", "theme-v2", "svg");
 const readmePath = path.join(svgRoot, "README.md");
-const themeIconsPath = path.join(repoRoot, "assets", "theme-v2", "js", "theme-icons.js");
+const themeIconsPath = path.join(repoRoot, "www", "assets", "theme-v2", "js", "theme-icons.js");
 const styleGuidePath = path.join(repoRoot, "dev", "build", "design", "theme-v2-icons", "theme-v2-icon-style-guide.md");
 
 const REQUIRED_SVG_FILES = [

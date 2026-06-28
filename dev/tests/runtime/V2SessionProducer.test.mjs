@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const repoRoot = path.resolve(__dirname, "..", "..");
+const repoRoot = path.resolve(__dirname, "..", "..", "..");
 const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
-const workspaceJsPath = path.join(repoRoot, "toolbox", "workspace-v2", "index.js");
-const resultsPath = path.join(repoRoot, "tmp", "v2-session-producer-results.json");
+const workspaceJsPath = path.join(repoRoot, "www", "toolbox", "workspace-v2", "index.js");
+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-session-producer-results.json");
 
 const TOOLS = [
   "asset-manager-v2",
@@ -70,8 +70,8 @@ function buildToolUrl(toolId, hostContextId) {
 
 function validateTool(toolId) {
   const fixturePath = path.join(fixturesRoot, `${toolId}.json`);
-  const toolJsPath = path.join(repoRoot, "toolbox", toolId, "index.js");
-  const toolHtmlPath = path.join(repoRoot, "toolbox", toolId, "index.html");
+  const toolJsPath = path.join(repoRoot, "www", "toolbox", toolId, "index.js");
+  const toolHtmlPath = path.join(repoRoot, "www", "toolbox", toolId, "index.html");
   const failures = [];
   const fixtureExists = fs.existsSync(fixturePath);
   const toolJsExists = fs.existsSync(toolJsPath);

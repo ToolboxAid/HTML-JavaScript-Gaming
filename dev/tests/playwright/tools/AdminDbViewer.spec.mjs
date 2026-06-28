@@ -77,7 +77,7 @@ test.afterAll(async () => {
 
 function nextLocalDbStoragePath() {
   localDbRunId += 1;
-  return path.join(process.cwd(), "tmp", "local-db", `admin-db-viewer-${process.pid}-${localDbRunId}.local-db-state`);
+  return path.join(process.cwd(), "dev", "workspace", "tmp", "local-db", `admin-db-viewer-${process.pid}-${localDbRunId}.local-db-state`);
 }
 
 async function withSupabaseEnv(baseUrl, callback) {

@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const repoRoot = path.resolve(__dirname, "..", "..");
+const repoRoot = path.resolve(__dirname, "..", "..", "..");
 const fixturePath = path.join(repoRoot, "tests", "fixtures", "v2-tools", "asset-manager-v2.json");
-const toolJsPath = path.join(repoRoot, "toolbox", "asset-manager-v2", "index.js");
-const resultsPath = path.join(repoRoot, "tmp", "pr_11_313_asset_browser_results.json");
+const toolJsPath = path.join(repoRoot, "www", "toolbox", "asset-manager-v2", "index.js");
+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "pr_11_313_asset_browser_results.json");
 
 function cloneJson(value) {
   return JSON.parse(JSON.stringify(value));

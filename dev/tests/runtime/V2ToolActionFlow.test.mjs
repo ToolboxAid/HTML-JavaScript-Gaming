@@ -6,10 +6,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const repoRoot = path.resolve(__dirname, "..", "..");
+const repoRoot = path.resolve(__dirname, "..", "..", "..");
 const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
-const toolsRoot = path.join(repoRoot, "toolbox");
-const resultsPath = path.join(repoRoot, "tmp", "v2-tool-action-results.json");
+const toolsRoot = path.join(repoRoot, "www", "toolbox");
+const resultsPath = path.join(repoRoot, "dev", "workspace", "tmp", "v2-tool-action-results.json");
 
 const FLOWS = [
   {
