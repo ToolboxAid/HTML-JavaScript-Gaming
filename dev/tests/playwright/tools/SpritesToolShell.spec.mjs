@@ -10,9 +10,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..", "..", "..");
 const SPRITE_TOOLBAR_PLACEHOLDERS = [
-  "Line",
-  "Rectangle",
-  "Circle",
   "Move",
 ];
 
@@ -228,6 +225,9 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status 
     await expect(page.getByRole("button", { name: "Pencil tool" })).toBeEnabled();
     await expect(page.getByRole("button", { name: "Eraser tool" })).toBeEnabled();
     await expect(page.getByRole("button", { name: "Fill tool" })).toBeEnabled();
+    await expect(page.getByRole("button", { name: "Line tool" })).toBeEnabled();
+    await expect(page.getByRole("button", { name: "Rectangle tool" })).toBeEnabled();
+    await expect(page.getByRole("button", { name: "Circle tool" })).toBeEnabled();
     await expect(page.getByRole("button", { name: "Picker tool" })).toBeEnabled();
     await expect(page.getByRole("button", { name: "Zoom tool" })).toBeEnabled();
     for (const toolName of SPRITE_TOOLBAR_PLACEHOLDERS) {
@@ -315,11 +315,38 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status 
     await expect(page.locator("[data-sprites-zoom-status]")).toContainText("400%");
     await page.getByRole("button", { name: "100%" }).click();
     await expect(page.locator("[data-sprites-grid-shell]")).toHaveAttribute("data-sprites-zoom-level", "1");
+    const gridCells = page.locator("[data-sprites-pixel-grid] [role='gridcell']");
+    await page.getByRole("button", { name: "Clear Canvas" }).click();
+    await page.getByRole("button", { name: "Green editor color" }).click();
+    await page.getByRole("button", { name: "Line tool" }).click();
+    await gridCells.nth(0).click();
+    await expect(page.locator("[data-sprites-tool-status]")).toContainText("Line start selected");
+    await gridCells.nth(5).click();
+    await expect(page.locator("[data-sprites-tool-status]")).toContainText("Line added");
+    await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(6);
+    await page.getByRole("button", { name: "Clear Canvas" }).click();
+    await page.getByRole("button", { name: "Rectangle tool" }).click();
+    await gridCells.nth(0).click();
+    await gridCells.nth(34).click();
+    await expect(page.locator("[data-sprites-tool-status]")).toContainText("Rectangle added");
+    await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(8);
+    await page.getByRole("button", { name: "Clear Canvas" }).click();
+    await page.getByRole("button", { name: "Circle tool" }).click();
+    await gridCells.nth(68).click();
+    await gridCells.nth(71).click();
+    await expect(page.locator("[data-sprites-tool-status]")).toContainText("Circle added");
+    const circlePaintedCount = await page.locator("[data-sprites-pixel-grid] .is-painted").count();
+    expect(circlePaintedCount).toBeGreaterThan(8);
     await expect(page.locator("[data-sprites-preview-canvas]")).toBeVisible();
     const previewHasPaint = await page.locator("[data-sprites-preview-canvas]").evaluate((canvas) => {
       const context = canvas.getContext("2d");
-      const pixel = context.getImageData(1, 1, 1, 1).data;
-      return pixel[3] > 0;
+      const imageData = context.getImageData(0, 0, canvas.width, canvas.height).data;
+      for (let index = 3; index < imageData.length; index += 4) {
+        if (imageData[index] > 0) {
+          return true;
+        }
+      }
+      return false;
     });
     expect(previewHasPaint).toBe(true);
     const downloadPromise = page.waitForEvent("download");
