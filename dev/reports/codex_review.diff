@@ -1,421 +1,290 @@
+diff --git a/api/.gitkeep b/api/.gitkeep
+new file mode 100644
+index 000000000..8b1378917
+--- /dev/null
++++ b/api/.gitkeep
+@@ -0,0 +1 @@
++
 diff --git a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-index 8ca721dc7..aeda69a61 100644
+index aeda69a61..c1e5bd33a 100644
 --- a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 +++ b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 @@ -117,7 +117,7 @@ Rules:
 
  ## Current Version/Date
 
--- Project Instructions Version: 2026.06.28.003
-+- Project Instructions Version: 2026.06.28.004
+-- Project Instructions Version: 2026.06.28.004
++- Project Instructions Version: 2026.06.28.005
  - Date: 2026-06-28
  - Owner: OWNER
 
-@@ -195,6 +195,7 @@ That file owns Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, and invalid command be
- - Project branching policy: `dev/build/ProjectInstructions/PROJECT_BRANCHING_POLICY.md`
- - Project state: `dev/build/ProjectInstructions/PROJECT_STATE.md`
- - Repository folder placement SSoT: `dev/build/ProjectInstructions/repository/canonical_repository_structure.md`
-+- Proposed repository layout architecture plan: `dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md`
- - Codex workflow commands: `dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`
- - Codex Start-of-Day bootstrap: `dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md`
- - Branch lifecycle: `dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`
 diff --git a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
-index 56ae2b21e..d489f2af4 100644
+index d489f2af4..fb6a5ce89 100644
 --- a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
 +++ b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
 @@ -1,6 +1,6 @@
  # Project Instructions Version
 
--Current Project Instructions Version: 2026.06.28.003
-+Current Project Instructions Version: 2026.06.28.004
+-Current Project Instructions Version: 2026.06.28.004
++Current Project Instructions Version: 2026.06.28.005
 
  Last Updated: 2026-06-28
 
-@@ -11,6 +11,7 @@ Last Updated: 2026-06-28
- - Added dedicated branching policy document.
+@@ -12,6 +12,7 @@ Last Updated: 2026-06-28
  - Startup validation now verifies the branching policy document was loaded instead of duplicating policy text.
  - Added backlog startup assignment policy requiring `BACKLOG_MASTER.md` and Tool Votes/Admin Owner priority signal review during team startup.
-+- Added proposed repository layout architecture plan for future `www/`, `api/`, and `dev/` separation.
+ - Added proposed repository layout architecture plan for future `www/`, `api/`, and `dev/` separation.
++- Added repository layout scaffold governance for `www/`, `api/`, and `dev/local-runtime/`.
  - Codex must read this version file and the latest repository copy of `PROJECT_INSTRUCTIONS.md` before performing work.
  - Codex must discard previously remembered Project Instructions and treat the repository copy as authoritative.
  - Codex must validate canonical report and ZIP paths, branching model, and legacy path avoidance before work proceeds.
+diff --git a/dev/build/ProjectInstructions/PROJECT_STATE.md b/dev/build/ProjectInstructions/PROJECT_STATE.md
+index 145a9f088..633e2121c 100644
+--- a/dev/build/ProjectInstructions/PROJECT_STATE.md
++++ b/dev/build/ProjectInstructions/PROJECT_STATE.md
+@@ -1,7 +1,7 @@
+ # Project State
+
+ ```yaml
+-project_state_version: "2026-06-28.PR_26179_OWNER_010"
++project_state_version: "2026.06.28.005"
+ last_updated: "2026-06-28"
+ current_main_commit: "40de767476d70cadfd1292c916844c2f31b6f185"
+ repository_status:
+@@ -10,9 +10,9 @@ repository_status:
+   runtime_database: "Postgres"
+   creator_metadata: "API to Postgres"
+   creator_assets: "API to R2"
+-project_instructions_version: "2026-06-28.PR_26179_OWNER_010"
+-repository_structure_version: "2026-06-28.PR_26179_OWNER_010"
+-canonical_layout_version: "2026-06-28.PR_26179_OWNER_010"
++project_instructions_version: "2026.06.28.005"
++repository_structure_version: "2026.06.28.005"
++canonical_layout_version: "2026.06.28.005"
+ active_teams:
+   - "Owner"
+   - "Alfa"
+@@ -20,11 +20,12 @@ active_teams:
+   - "Charlie"
+   - "Delta"
+   - "Golf"
+-latest_owner_pr: "PR_26179_OWNER_010-canonical-project-folder-instructions"
+-latest_structure_pr: "PR_26179_OWNER_010-canonical-project-folder-instructions"
++latest_owner_pr: "PR_26180_OWNER_005-repository-layout-scaffold"
++latest_structure_pr: "PR_26180_OWNER_005-repository-layout-scaffold"
+ valid_top_level_folders:
+   - "account/"
+   - "admin/"
++  - "api/"
+   - "assets/"
+   - "community/"
+   - "company/"
+@@ -39,10 +40,12 @@ valid_top_level_folders:
+   - "owner/"
+   - "src/"
+   - "toolbox/"
++  - "www/"
+ valid_dev_folders:
+   - "dev/archive/"
+   - "dev/build/"
+   - "dev/config/"
++  - "dev/local-runtime/"
+   - "dev/reports/"
+   - "dev/scripts/"
+   - "dev/templates/"
 diff --git a/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md b/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
-index 3c47c2a1b..ee8160a46 100644
+index ee8160a46..6c71e71a7 100644
 --- a/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
 +++ b/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
-@@ -32,6 +32,18 @@ Completion percentages are updated at SOD, after every accepted PR, and at EOD.
+@@ -38,10 +38,10 @@ The backlog is the authoritative source for determining the next logical PRs.
 
- The backlog is the authoritative source for determining the next logical PRs.
+ - Team: Owner
+ - Product Area: Repository Architecture Simplification
+-- Status: Planned
+-- Percent Complete: 0%
+-- Active PR: PR_26180_OWNER_004-repository-layout-architecture-plan
+-- Next Milestone: Architecture plan
++- Status: Active
++- Percent Complete: 10%
++- Active PR: PR_26180_OWNER_005-repository-layout-scaffold
++- Next Milestone: Move browser-served application to `www/`
+ - Source / Reference: `dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md`
 
-+## Owner Assignments
-+
-+### Repository Architecture Simplification
-+
-+- Team: Owner
-+- Product Area: Repository Architecture Simplification
-+- Status: Planned
-+- Percent Complete: 0%
-+- Active PR: PR_26180_OWNER_004-repository-layout-architecture-plan
-+- Next Milestone: Architecture plan
-+- Source / Reference: `dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md`
-+
  ## Game Journey MVP
+diff --git a/dev/build/ProjectInstructions/repository/canonical_repository_structure.md b/dev/build/ProjectInstructions/repository/canonical_repository_structure.md
+index adf926ea2..4c9e960f3 100644
+--- a/dev/build/ProjectInstructions/repository/canonical_repository_structure.md
++++ b/dev/build/ProjectInstructions/repository/canonical_repository_structure.md
+@@ -9,6 +9,7 @@ Establish the canonical repository structure for future development and reduce t
+ Valid top-level folders:
+ - account/
+ - admin/
++- api/
+ - assets/
+ - community/
+ - company/
+@@ -23,16 +24,19 @@ Valid top-level folders:
+ - owner/
+ - src/
+ - toolbox/
++- www/
 
- ### Idea
-diff --git a/dev/reports/codex_changed_files.txt b/dev/reports/codex_changed_files.txt
-index dae75d365..de565a339 100644
---- a/dev/reports/codex_changed_files.txt
-+++ b/dev/reports/codex_changed_files.txt
-@@ -1,23 +1,23 @@
--dev/reports/PR_26179_CHARLIE_022-sprites-tool-shell.md
--dev/reports/PR_26179_CHARLIE_023-sprites-toolbar-placeholders.md
--dev/reports/PR_26179_CHARLIE_024-sprites-canvas-grid.md
--dev/reports/PR_26179_CHARLIE_025-sprites-basic-drawing.md
--dev/reports/PR_26179_CHARLIE_026-sprites-palette-panel.md
--dev/reports/PR_26179_CHARLIE_027-sprites-preview-export.md
--dev/reports/PR_26179_CHARLIE_028-sprites-editor-polish.md
--dev/reports/PR_26179_CHARLIE_029-sprites-clear-reset-controls.md
--dev/reports/PR_26179_CHARLIE_030-sprites-undo-redo.md
--dev/reports/PR_26179_CHARLIE_031-sprites-picker-zoom.md
--dev/reports/PR_26179_CHARLIE_032-sprites-shape-tools.md
--dev/reports/PR_26179_CHARLIE_033-sprites-canvas-preview-sync.md
--dev/reports/PR_26179_CHARLIE_034-sprites-frame-strip.md
--dev/reports/PR_26179_CHARLIE_035-sprites-frame-editing.md
--dev/reports/PR_26179_CHARLIE_036-sprites-animation-preview.md
--dev/reports/PR_26179_CHARLIE_037-sprites-animation-export.md
--dev/reports/PR_26179_CHARLIE_038-sprites-grid-dimension-fix.md
--dev/reports/PR_26179_CHARLIE_039-sprites-color-and-zoom-fix.md
--dev/reports/PR_26179_CHARLIE_040-dev-artifact-location-cleanup.md
--dev/reports/codex_changed_files.txt
--dev/reports/codex_review.diff
--docs_build/dev/reports/codex_changed_files.txt
--docs_build/dev/reports/codex_review.diff
-+# git diff --name-status merge-base(origin/main, HEAD)..working-tree
-+M	dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-+M	dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
-+M	dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
-+M	dev/reports/codex_review.diff
-+
-+# git ls-files --others --exclude-standard
-+dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
-+dev/reports/PR_26180_OWNER_004-repository-layout-architecture-plan_branch-validation.md
-+dev/reports/PR_26180_OWNER_004-repository-layout-architecture-plan_manual-validation-notes.md
-+dev/reports/PR_26180_OWNER_004-repository-layout-architecture-plan_report.md
-+dev/reports/PR_26180_OWNER_004-repository-layout-architecture-plan_requirement-checklist.md
-+dev/reports/PR_26180_OWNER_004-repository-layout-architecture-plan_validation-report.md
-+
-+# git diff --stat merge-base(origin/main, HEAD)..working-tree
-+.../ProjectInstructions/PROJECT_INSTRUCTIONS.md    |    3 +-
-+ .../PROJECT_INSTRUCTIONS_VERSION.md                |    3 +-
-+ .../ProjectInstructions/backlog/BACKLOG_MASTER.md  |   12 +
-+ dev/reports/codex_review.diff                      | 1043 +++++++-------------
-+ 4 files changed, 357 insertions(+), 704 deletions(-)
-+
-+# merge-base
-+b3a2b30f51a1050596bbad2d7db211e1cba45b66
+ Root product and repo sections:
+ - account/, admin/, community/, company/, learn/, legal/, marketplace/, memberships/, and owner/ are production website sections.
+ - assets/ contains production website and tool assets.
++- api/ is the target Node/API/server application surface for the repository layout simplification workstream.
+ - docs/ is production Docs & Help content.
+ - games/ is public game discovery.
+ - toolbox/ is the Creator toolbox/workspace.
+ - deploy/ contains deployment configuration.
+ - dev/ contains the development workspace.
+ - src/ contains deployable application/runtime/API source.
++- www/ is the target browser-served application surface for the repository layout simplification workstream.
+
+ Deployable application source:
+ - src/web/{feature-name}/
+@@ -51,6 +55,7 @@ Valid dev workspace folders:
+ - dev/archive/
+ - dev/build/
+ - dev/config/
++- dev/local-runtime/
+ - dev/reports/
+ - dev/scripts/
+ - dev/templates/
+@@ -62,6 +67,7 @@ Dev workspace ownership:
+ - dev/archive/ owns historical reference material only.
+ - dev/build/ owns active Project Instructions, architecture, database DDL/DML/seed docs, standards, backlog, PR planning, and governance.
+ - dev/config/ owns development-only runner and tooling configuration.
++- dev/local-runtime/ owns developer-only local runtime bootstrap, team port resolution, local diagnostics, and browser launch orchestration after the migration step that moves those files.
+ - dev/reports/ owns authoritative Codex reports for the repository. Reports committed to `main` are the official record.
+ - dev/scripts/ owns development-only scripts and runners.
+ - dev/templates/ owns reusable development templates.
+@@ -96,6 +102,8 @@ These legacy transition buckets may remain until explicit migration PRs move the
+ ## Rules
+
+ - Root is production website and standard repository configuration only.
++- www/ is the browser-served application target surface for migration.
++- api/ is the Node/API/server application target surface for migration.
+ - src/ is deployable application/runtime/API code.
+ - dev/ is development workspace only.
+ - deploy/ is deployment configuration.
 diff --git a/dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md b/dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
-new file mode 100644
-index 000000000..f2ec47fee
---- /dev/null
+index f2ec47fee..c700068f8 100644
+--- a/dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
 +++ b/dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
-@@ -0,0 +1,151 @@
-+# Repository Layout Architecture Plan
+@@ -1,6 +1,6 @@
+ # Repository Layout Architecture Plan
+
+-Status: Proposed
++Status: Active Scaffold
+ Owner: Owner
+ Scope: Documentation/governance only
+
+@@ -10,6 +10,16 @@ Document the proposed repository architecture simplification before any file mov
+
+ This plan does not authorize moving files, changing runtime behavior, changing package commands, or mixing feature work into layout migration PRs.
+
++## Current Migration Status
 +
-+Status: Proposed
-+Owner: Owner
-+Scope: Documentation/governance only
++`PR_26180_OWNER_005-repository-layout-scaffold` creates the empty canonical destination shells:
 +
-+## Purpose
++- `www/`
++- `api/`
++- `dev/local-runtime/`
 +
-+Document the proposed repository architecture simplification before any file moves occur.
++No browser, API, server, test, script, or runtime files move in the scaffold PR.
 +
-+This plan does not authorize moving files, changing runtime behavior, changing package commands, or mixing feature work into layout migration PRs.
-+
-+## Proposed Future Layout
-+
-+```text
-+www/
-+api/
-+dev/
-+```
-+
-+### www/
-+
-+`www/` is the browser-served application.
-+
-+It will own deployable browser pages, browser assets, and static application entry points currently spread across root product folders, `assets/`, `docs/`, `games/`, `toolbox/`, and browser-facing runtime surfaces.
-+
-+`www/` must not own authoritative product data.
-+
-+### api/
-+
-+`api/` is the Node/API/server application.
-+
-+It will own server entry points, API routing, API services, environment adapters, database access, storage access, server-side setup, and deployable API/runtime support code.
-+
-+`api/` owns the Browser -> API -> Postgres/R2 boundary.
-+
-+### dev/
-+
-+`dev/` is the developer-only workspace.
-+
-+It owns Project Instructions, governance, architecture docs, reports, tests, scripts, templates, local developer bootstrap, generated output, zips, logs, and historical archive material.
-+
-+Production runtime, browser application code, and API deployment code must never depend on `dev/`.
-+
-+## Deployment Model
-+
-+The proposed target deployment model has two deployable application surfaces:
-+
-+- `www/` deploys the browser-served application.
-+- `api/` deploys the Node/API/server application.
-+
-+`dev/` is not deployed as product runtime and must be excluded from runtime dependency paths.
-+
-+Environment differences remain governed by `.env` values and environment-managed secrets. The same deployable browser and API code paths must be promoted through Local, DEV, IST, UAT, and PROD.
-+
-+## Browser/API/Database Flow
-+
-+Required product-data flow:
-+
-+```text
-+Browser -> API -> Postgres/R2
-+```
-+
-+Rules:
-+
-+- Browser code reads and writes authoritative product data only through the API/service contract.
-+- Product metadata is persisted in Postgres.
-+- Product assets are persisted in Cloudflare R2.
-+- Browser storage, page arrays, source JSON files, `/tmp`, and dev workspace files are not authoritative product-data sources.
-+- Seed data is allowed only when it seeds the database through server/API/setup ownership.
-+
-+## Developer Local-Runtime Flow
-+
-+Local development may use the team-aware developer bootstrap and local runtime support, but the runtime boundary remains the same:
-+
-+```text
-+Developer command -> dev bootstrap -> local www server + local api server -> Postgres/R2 or approved local provider
-+```
-+
-+Current local bootstrap commands remain unchanged by this plan. This PR does not modify `package.json` commands.
-+
-+The local developer workflow must continue to prove the same browser/API/database contract that deployed environments use.
-+
-+## Migration Strategy
-+
-+Migration must happen through small, reviewable, stacked PRs after this architecture plan is accepted.
-+
-+Rules:
-+
-+- No file moves occur in this plan PR.
-+- No feature work may be mixed into migration PRs.
-+- Each migration PR moves or rewires one bounded ownership area.
-+- Each migration PR must preserve the same product behavior unless the PR is explicitly a behavior change.
-+- Each migration PR must update references, validation, reports, and ZIP artifacts for only its scoped move.
-+- Each migration PR must include rollback notes or clear validation evidence.
-+
-+## Proposed Stacked PR Sequence
-+
-+1. `www/` shell and governance
-+   - Create the destination shell and document browser-served ownership.
-+   - Do not move product pages yet.
-+
-+2. `api/` shell and governance
-+   - Create the destination shell and document API/server ownership.
-+   - Do not move API/runtime implementation yet.
-+
-+3. Browser-served public section moves
-+   - Move root browser-served product sections into `www/` in small groups.
-+   - Preserve routes through compatibility redirects or server/static configuration as needed.
-+
-+4. Browser asset moves
-+   - Move browser assets into `www/` ownership.
-+   - Preserve asset URLs or update references in the same PR.
-+
-+5. API/server moves
-+   - Move Node/API/server entry points and service code into `api/`.
-+   - Preserve API contract shape and route behavior.
-+
-+6. Runtime/shared source boundary cleanup
-+   - Move deployable browser/runtime/API modules into `www/` or `api/` ownership as appropriate.
-+   - Keep shared runtime dependency direction explicit.
-+
-+7. Developer bootstrap and validation updates
-+   - Update local developer bootstrap and validation paths after deployable surfaces are moved.
-+   - Keep `dev/` developer-only.
-+
-+8. Legacy path cleanup
-+   - Remove or archive obsolete empty folders and compatibility shims only after validation proves they are unused.
-+
-+## Hard Rules
-+
-+- No feature work may be mixed into repository layout migration.
-+- Runtime must never depend on `dev/`.
-+- Browser code must never own authoritative product data.
-+- Browser code must use Browser -> API -> Postgres/R2 for product data.
-+- API/server code must not import from developer-only reports, Project Instructions, tests, or workspace artifacts.
-+- Migration PRs must not change package commands unless the PR explicitly owns command migration.
-+- Migration PRs must not introduce Creator-writeable repository folders.
-+- Migration PRs must not hide behavior changes inside path moves.
-+
-+## Validation Expectations
-+
-+Every layout migration PR must at minimum run:
-+
-+```text
-+git diff --check
-+npm run validate:canonical-structure
-+```
-+
-+Additional targeted validation must match the moved surface.
-+
-diff --git a/dev/reports/PR_26180_OWNER_004-repository-layout-architecture-plan_branch-validation.md b/dev/reports/PR_26180_OWNER_004-repository-layout-architecture-plan_branch-validation.md
+ ## Proposed Future Layout
+
+ ```text
+@@ -94,38 +104,47 @@ Rules:
+ - Each migration PR must update references, validation, reports, and ZIP artifacts for only its scoped move.
+ - Each migration PR must include rollback notes or clear validation evidence.
+
+-## Proposed Stacked PR Sequence
++## Active Stacked PR Sequence
+
+-1. `www/` shell and governance
+-   - Create the destination shell and document browser-served ownership.
+-   - Do not move product pages yet.
++1. `PR_26180_OWNER_005-repository-layout-scaffold`
++   - Create `www/`, `api/`, and `dev/local-runtime/` shells.
++   - Update architecture docs and backlog status only.
+
+-2. `api/` shell and governance
+-   - Create the destination shell and document API/server ownership.
+-   - Do not move API/runtime implementation yet.
++2. `PR_26180_OWNER_006-move-www-application`
++   - Move browser-served application files into `www/`.
++   - Include root HTML pages, `assets/`, `toolbox/`, `account/`, `legal/`, `learn/`, `play/`, and other browser-served static routes.
++   - Update internal static references only as needed.
++   - Do not move API/server files.
+
+-3. Browser-served public section moves
+-   - Move root browser-served product sections into `www/` in small groups.
+-   - Preserve routes through compatibility redirects or server/static configuration as needed.
++3. `PR_26180_OWNER_007-move-api-application`
++   - Move server/API application files into `api/`.
++   - Include Local API server runtime files, API routes, services, database, storage, auth, publishing, and admin server code.
++   - Do not move developer-only startup orchestration.
++   - Browser code must not import from `api/`.
+
+-4. Browser asset moves
+-   - Move browser assets into `www/` ownership.
+-   - Preserve asset URLs or update references in the same PR.
++4. `PR_26180_OWNER_008-move-dev-local-runtime`
++   - Move developer-only local runtime into `dev/local-runtime/`.
++   - Include team-aware bootstrap, port config, local startup orchestration, local diagnostics, and browser launch support.
++   - Update `package.json` commands to point to the new local-runtime paths.
+
+-5. API/server moves
+-   - Move Node/API/server entry points and service code into `api/`.
+-   - Preserve API contract shape and route behavior.
++5. `PR_26180_OWNER_009-move-tests-and-validation`
++   - Ensure all tests and validation suites live under `dev/tests/` or the current canonical dev test structure.
++   - Update test paths after the `www/`, `api/`, and `dev/` migrations.
++   - Do not change behavior.
+
+-6. Runtime/shared source boundary cleanup
+-   - Move deployable browser/runtime/API modules into `www/` or `api/` ownership as appropriate.
+-   - Keep shared runtime dependency direction explicit.
++6. `PR_26180_OWNER_010-update-ci-and-scripts`
++   - Update CI, package scripts, validation scripts, and developer utilities for the new layout.
++   - Preserve `npm run dev:bootstrap`, `npm run dev:api`, `npm run dev:web`, and `npm run dev:local-api`.
+
+-7. Developer bootstrap and validation updates
+-   - Update local developer bootstrap and validation paths after deployable surfaces are moved.
+-   - Keep `dev/` developer-only.
++7. `PR_26180_OWNER_011-remove-legacy-layout`
++   - Remove or retire obsolete legacy paths after all references are updated.
++   - Hard stop if any runtime, test, or CI reference still points to old locations.
+
+-8. Legacy path cleanup
+-   - Remove or archive obsolete empty folders and compatibility shims only after validation proves they are unused.
++8. `PR_26180_OWNER_012-final-layout-validation`
++   - Validate final repository layout.
++   - Confirm `www/` owns the browser-served app, `api/` owns the server app, and `dev/` owns the developer workspace.
++   - Confirm runtime does not depend on `dev/`, browser code does not import `api/`, and legacy references are removed or documented.
++   - Mark Repository Architecture Simplification complete in `BACKLOG_MASTER.md`.
+
+ ## Hard Rules
+
+@@ -148,4 +167,3 @@ npm run validate:canonical-structure
+ ```
+
+ Additional targeted validation must match the moved surface.
+-
+diff --git a/dev/local-runtime/.gitkeep b/dev/local-runtime/.gitkeep
 new file mode 100644
-index 000000000..4c063b57e
+index 000000000..8b1378917
 --- /dev/null
-+++ b/dev/reports/PR_26180_OWNER_004-repository-layout-architecture-plan_branch-validation.md
-@@ -0,0 +1,13 @@
-+# PR_26180_OWNER_004 Branch Validation
++++ b/dev/local-runtime/.gitkeep
+@@ -0,0 +1 @@
 +
-+| Gate | Result | Evidence |
-+|---|---|---|
-+| Project Instructions loaded | PASS | Version `2026.06.28.003` loaded before work began; PR bumps to `2026.06.28.004`. |
-+| Repository source | PASS | Loaded from `dev/build/ProjectInstructions/`. |
-+| Cached memory discarded | PASS | Repository files used as authority. |
-+| Branching policy loaded | PASS | `dev/build/ProjectInstructions/PROJECT_BRANCHING_POLICY.md`. |
-+| Start branch | PASS | Started from synchronized `main`. |
-+| Working branch | PASS | `PR_26180_OWNER_004-repository-layout-architecture-plan`. |
-+| Worktree before edits | PASS | Clean before edits. |
-+| Scope | PASS | Documentation/governance only. |
-+
-diff --git a/dev/reports/PR_26180_OWNER_004-repository-layout-architecture-plan_manual-validation-notes.md b/dev/reports/PR_26180_OWNER_004-repository-layout-architecture-plan_manual-validation-notes.md
+diff --git a/www/.gitkeep b/www/.gitkeep
 new file mode 100644
-index 000000000..511e09a30
+index 000000000..8b1378917
 --- /dev/null
-+++ b/dev/reports/PR_26180_OWNER_004-repository-layout-architecture-plan_manual-validation-notes.md
-@@ -0,0 +1,11 @@
-+# PR_26180_OWNER_004 Manual Validation Notes
-+
-+- Confirmed the new architecture plan is proposal-only and explicitly does not authorize file moves.
-+- Confirmed proposed future layout documents `www/`, `api/`, and `dev/`.
-+- Confirmed migration hard rules prohibit feature work mixed with path migration.
-+- Confirmed runtime dependency on `dev/` is prohibited.
-+- Confirmed browser-owned authoritative product data is prohibited.
-+- Confirmed `BACKLOG_MASTER.md` contains the planned Owner backlog item.
-+- Confirmed Project Instructions version is updated to `2026.06.28.004`.
-+- Confirmed no package command changes.
-+
-diff --git a/dev/reports/PR_26180_OWNER_004-repository-layout-architecture-plan_report.md b/dev/reports/PR_26180_OWNER_004-repository-layout-architecture-plan_report.md
-new file mode 100644
-index 000000000..b975f2e9f
---- /dev/null
-+++ b/dev/reports/PR_26180_OWNER_004-repository-layout-architecture-plan_report.md
-@@ -0,0 +1,53 @@
-+# PR_26180_OWNER_004 Repository Layout Architecture Plan Report
-+
-+## Executive Summary
-+
-+PASS: Added a documentation/governance-only architecture plan for future repository layout simplification before any file moves.
-+
-+The proposed future layout is:
-+
-+- `www/` = browser-served application
-+- `api/` = Node/API/server application
-+- `dev/` = developer-only workspace
-+
-+No files were moved. No runtime, UI, API implementation, database implementation, or `package.json` command changes were made.
-+
-+## Changes
-+
-+- Added `dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md`.
-+- Updated `PROJECT_INSTRUCTIONS.md` to reference the new proposed layout plan.
-+- Bumped Project Instructions version to `2026.06.28.004`.
-+- Updated `BACKLOG_MASTER.md` with Owner planned work:
-+  - Team: Owner
-+  - Product Area: Repository Architecture Simplification
-+  - Status: Planned
-+  - Percent Complete: 0%
-+  - Next Milestone: Architecture plan
-+
-+## Architecture Plan Coverage
-+
-+| Required Topic | Result |
-+|---|---|
-+| Proposed `www/`, `api/`, `dev/` layout | PASS |
-+| Deployment model | PASS |
-+| Browser/API/database flow | PASS |
-+| Developer local-runtime flow | PASS |
-+| Migration strategy | PASS |
-+| Stacked PR sequence | PASS |
-+| No feature work mixed into migration | PASS |
-+| Runtime must never depend on `dev/` | PASS |
-+| Browser must never own authoritative product data | PASS |
-+
-+## Scope Validation
-+
-+Changed files are limited to Project Instructions, backlog governance, and reports.
-+
-+Implementation files, runtime code, UI files, API implementation files, database implementation files, and package commands were not changed.
-+
-+## Artifact
-+
-+Repo-structured outcome ZIP:
-+
-+```text
-+dev/workspace/zips/PR_26180_OWNER_004-repository-layout-architecture-plan_delta.zip
-+```
-diff --git a/dev/reports/PR_26180_OWNER_004-repository-layout-architecture-plan_requirement-checklist.md b/dev/reports/PR_26180_OWNER_004-repository-layout-architecture-plan_requirement-checklist.md
-new file mode 100644
-index 000000000..0b7bdf07a
---- /dev/null
-+++ b/dev/reports/PR_26180_OWNER_004-repository-layout-architecture-plan_requirement-checklist.md
-@@ -0,0 +1,19 @@
-+# PR_26180_OWNER_004 Requirement Checklist
-+
-+| Requirement | Result | Notes |
-+|---|---|---|
-+| Document proposed future layout `www/`, `api/`, `dev/` | PASS | Added to repository layout architecture plan. |
-+| Include deployment model | PASS | `www/` and `api/` deployable surfaces documented; `dev/` non-runtime. |
-+| Include browser/API/database flow | PASS | Browser -> API -> Postgres/R2 documented. |
-+| Include developer local-runtime flow | PASS | Developer command -> dev bootstrap -> local www/API flow documented. |
-+| Include migration strategy | PASS | Strategy and constraints documented. |
-+| Include stacked PR sequence | PASS | Eight-step proposed sequence documented. |
-+| Hard rule: no feature work mixed into migration | PASS | Documented. |
-+| Hard rule: runtime must never depend on `dev/` | PASS | Documented. |
-+| Hard rule: browser must never own authoritative product data | PASS | Documented. |
-+| Update `BACKLOG_MASTER.md` Owner planned item | PASS | Added Team/Product Area/Status/Percent/Next Milestone entry. |
-+| Increment Project Instructions version if ProjectInstructions changed | PASS | Version bumped to `2026.06.28.004`. |
-+| Do not move files | PASS | No file moves performed. |
-+| Do not modify runtime code | PASS | No runtime files changed. |
-+| Do not change `package.json` commands | PASS | `package.json` unchanged. |
-+
-diff --git a/dev/reports/PR_26180_OWNER_004-repository-layout-architecture-plan_validation-report.md b/dev/reports/PR_26180_OWNER_004-repository-layout-architecture-plan_validation-report.md
-new file mode 100644
-index 000000000..30520dac8
---- /dev/null
-+++ b/dev/reports/PR_26180_OWNER_004-repository-layout-architecture-plan_validation-report.md
-@@ -0,0 +1,23 @@
-+# PR_26180_OWNER_004 Validation Report
-+
-+## Validation Commands
-+
-+| Command | Result |
-+|---|---|
-+| `git diff --check` | PASS |
-+| `npm run validate:canonical-structure` | PASS |
-+
-+## Canonical Structure Output
-+
-+```text
-+Canonical repository structure guardrail: PASS
-+Blocking violations: 0
-+Approved legacy exceptions: 501
-+```
-+
-+## Scope Validation
-+
-+No runtime, UI, API implementation, database implementation, or package command files changed.
-+
-+Playwright was not run because this is documentation/governance-only and no runtime/UI files changed.
++++ b/www/.gitkeep
+@@ -0,0 +1 @@
 +

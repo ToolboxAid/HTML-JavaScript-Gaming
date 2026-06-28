@@ -9,6 +9,7 @@ Establish the canonical repository structure for future development and reduce t
 Valid top-level folders:
 - account/
 - admin/
+- api/
 - assets/
 - community/
 - company/
@@ -23,16 +24,19 @@ Valid top-level folders:
 - owner/
 - src/
 - toolbox/
+- www/
 
 Root product and repo sections:
 - account/, admin/, community/, company/, learn/, legal/, marketplace/, memberships/, and owner/ are production website sections.
 - assets/ contains production website and tool assets.
+- api/ is the target Node/API/server application surface for the repository layout simplification workstream.
 - docs/ is production Docs & Help content.
 - games/ is public game discovery.
 - toolbox/ is the Creator toolbox/workspace.
 - deploy/ contains deployment configuration.
 - dev/ contains the development workspace.
 - src/ contains deployable application/runtime/API source.
+- www/ is the target browser-served application surface for the repository layout simplification workstream.
 
 Deployable application source:
 - src/web/{feature-name}/
@@ -51,6 +55,7 @@ Valid dev workspace folders:
 - dev/archive/
 - dev/build/
 - dev/config/
+- dev/local-runtime/
 - dev/reports/
 - dev/scripts/
 - dev/templates/
@@ -62,6 +67,7 @@ Dev workspace ownership:
 - dev/archive/ owns historical reference material only.
 - dev/build/ owns active Project Instructions, architecture, database DDL/DML/seed docs, standards, backlog, PR planning, and governance.
 - dev/config/ owns development-only runner and tooling configuration.
+- dev/local-runtime/ owns developer-only local runtime bootstrap, team port resolution, local diagnostics, and browser launch orchestration after the migration step that moves those files.
 - dev/reports/ owns authoritative Codex reports for the repository. Reports committed to `main` are the official record.
 - dev/scripts/ owns development-only scripts and runners.
 - dev/templates/ owns reusable development templates.
@@ -96,6 +102,8 @@ These legacy transition buckets may remain until explicit migration PRs move the
 ## Rules
 
 - Root is production website and standard repository configuration only.
+- www/ is the browser-served application target surface for migration.
+- api/ is the Node/API/server application target surface for migration.
 - src/ is deployable application/runtime/API code.
 - dev/ is development workspace only.
 - deploy/ is deployment configuration.

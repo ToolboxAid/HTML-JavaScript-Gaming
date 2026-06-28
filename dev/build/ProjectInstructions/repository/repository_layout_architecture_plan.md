@@ -1,6 +1,6 @@
 # Repository Layout Architecture Plan
 
-Status: Proposed
+Status: Active Scaffold
 Owner: Owner
 Scope: Documentation/governance only
 
@@ -9,6 +9,16 @@ Scope: Documentation/governance only
 Document the proposed repository architecture simplification before any file moves occur.
 
 This plan does not authorize moving files, changing runtime behavior, changing package commands, or mixing feature work into layout migration PRs.
+
+## Current Migration Status
+
+`PR_26180_OWNER_005-repository-layout-scaffold` creates the empty canonical destination shells:
+
+- `www/`
+- `api/`
+- `dev/local-runtime/`
+
+No browser, API, server, test, script, or runtime files move in the scaffold PR.
 
 ## Proposed Future Layout
 
@@ -94,38 +104,47 @@ Rules:
 - Each migration PR must update references, validation, reports, and ZIP artifacts for only its scoped move.
 - Each migration PR must include rollback notes or clear validation evidence.
 
-## Proposed Stacked PR Sequence
+## Active Stacked PR Sequence
 
-1. `www/` shell and governance
-   - Create the destination shell and document browser-served ownership.
-   - Do not move product pages yet.
+1. `PR_26180_OWNER_005-repository-layout-scaffold`
+   - Create `www/`, `api/`, and `dev/local-runtime/` shells.
+   - Update architecture docs and backlog status only.
 
-2. `api/` shell and governance
-   - Create the destination shell and document API/server ownership.
-   - Do not move API/runtime implementation yet.
+2. `PR_26180_OWNER_006-move-www-application`
+   - Move browser-served application files into `www/`.
+   - Include root HTML pages, `assets/`, `toolbox/`, `account/`, `legal/`, `learn/`, `play/`, and other browser-served static routes.
+   - Update internal static references only as needed.
+   - Do not move API/server files.
 
-3. Browser-served public section moves
-   - Move root browser-served product sections into `www/` in small groups.
-   - Preserve routes through compatibility redirects or server/static configuration as needed.
+3. `PR_26180_OWNER_007-move-api-application`
+   - Move server/API application files into `api/`.
+   - Include Local API server runtime files, API routes, services, database, storage, auth, publishing, and admin server code.
+   - Do not move developer-only startup orchestration.
+   - Browser code must not import from `api/`.
 
-4. Browser asset moves
-   - Move browser assets into `www/` ownership.
-   - Preserve asset URLs or update references in the same PR.
+4. `PR_26180_OWNER_008-move-dev-local-runtime`
+   - Move developer-only local runtime into `dev/local-runtime/`.
+   - Include team-aware bootstrap, port config, local startup orchestration, local diagnostics, and browser launch support.
+   - Update `package.json` commands to point to the new local-runtime paths.
 
-5. API/server moves
-   - Move Node/API/server entry points and service code into `api/`.
-   - Preserve API contract shape and route behavior.
+5. `PR_26180_OWNER_009-move-tests-and-validation`
+   - Ensure all tests and validation suites live under `dev/tests/` or the current canonical dev test structure.
+   - Update test paths after the `www/`, `api/`, and `dev/` migrations.
+   - Do not change behavior.
 
-6. Runtime/shared source boundary cleanup
-   - Move deployable browser/runtime/API modules into `www/` or `api/` ownership as appropriate.
-   - Keep shared runtime dependency direction explicit.
+6. `PR_26180_OWNER_010-update-ci-and-scripts`
+   - Update CI, package scripts, validation scripts, and developer utilities for the new layout.
+   - Preserve `npm run dev:bootstrap`, `npm run dev:api`, `npm run dev:web`, and `npm run dev:local-api`.
 
-7. Developer bootstrap and validation updates
-   - Update local developer bootstrap and validation paths after deployable surfaces are moved.
-   - Keep `dev/` developer-only.
+7. `PR_26180_OWNER_011-remove-legacy-layout`
+   - Remove or retire obsolete legacy paths after all references are updated.
+   - Hard stop if any runtime, test, or CI reference still points to old locations.
 
-8. Legacy path cleanup
-   - Remove or archive obsolete empty folders and compatibility shims only after validation proves they are unused.
+8. `PR_26180_OWNER_012-final-layout-validation`
+   - Validate final repository layout.
+   - Confirm `www/` owns the browser-served app, `api/` owns the server app, and `dev/` owns the developer workspace.
+   - Confirm runtime does not depend on `dev/`, browser code does not import `api/`, and legacy references are removed or documented.
+   - Mark Repository Architecture Simplification complete in `BACKLOG_MASTER.md`.
 
 ## Hard Rules
 
@@ -148,4 +167,3 @@ npm run validate:canonical-structure
 ```
 
 Additional targeted validation must match the moved surface.
-
