@@ -31,7 +31,7 @@ Updated active Project Instructions and the backlog header only.
 - Added `admin/tool-votes.html` as the Tool Votes/Admin Owner priority signal source.
 - Added the required Team Assignment startup output table.
 - Added hard-stop behavior for missing backlog, missing assigned team, missing product-area representation, and missing Tool Votes priority source.
-- Updated `BACKLOG_MASTER.md` header to state assigned-work ownership, status update expectations, Team/Product Area grouping, and required product-area status/percent complete.
+- Updated `BACKLOG_MASTER.md` header to state assigned-work ownership, status update expectations, current Team/Product Area status-source ownership, and required product-area status/percent complete.
 - Corrected `BACKLOG_MASTER.md` to mark team-aware local dev bootstrap runtime as complete, including `dev:bootstrap`, `team-port-config.mjs`, `--team` support, bootstrap orchestration, browser launch reporting, and port resolution.
 - Updated Start of Day command/bootstrap docs to require the Team Assignment section.
 - Added top-level `PROJECT_INSTRUCTIONS.md` pointers for the team backlog/startup assignment standard and Tool Votes priority source.
@@ -63,6 +63,16 @@ Corrected implemented items:
 - browser launch reporting
 - port resolution
 - legacy `npm run dev:local-api` alias
+
+## Backlog Canonical Structure Correction
+
+`BACKLOG_MASTER.md` now states:
+
+```text
+BACKLOG_MASTER.md is now the canonical team/product-area assignment and status source. Future backlog changes must update this structure directly.
+```
+
+This removes wording that implied team/product-area backlog normalization was a future activity.
 
 ## Rebase Notes
 

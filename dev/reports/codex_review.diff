@@ -285,7 +285,7 @@ index 3c660f598..021f2d0be 100644
  ## Team Command Examples
 
 diff --git a/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md b/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
-index a7d317ed2..26913927e 100644
+index a7d317ed2..3c47c2a1b 100644
 --- a/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
 +++ b/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
 @@ -4,16 +4,29 @@
@@ -296,7 +296,7 @@ index a7d317ed2..26913927e 100644
 +
 +This document is updated as work status changes, including Owner assignment, reprioritization, completion, deferral, accepted PRs, SOD review, and EOD review.
 +
-+Backlog content must be organized by Team, then Product Area. Existing roadmap phase sections must preserve explicit team/product-area ownership until they are normalized into the Team/Product Area grouping.
++`BACKLOG_MASTER.md` is now the canonical team/product-area assignment and status source. Future backlog changes must update this structure directly.
 +
 +Each product area must include status and percent complete.
 +
@@ -451,10 +451,10 @@ index 000000000..dff7c5ede
 +| Scope | PASS | Governance/documentation only |
 diff --git a/dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_manual-validation-notes.md b/dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_manual-validation-notes.md
 new file mode 100644
-index 000000000..c1471cccc
+index 000000000..496975603
 --- /dev/null
 +++ b/dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_manual-validation-notes.md
-@@ -0,0 +1,12 @@
+@@ -0,0 +1,13 @@
 +# PR_26180_OWNER_003 Manual Validation Notes
 +
 +- Confirmed `dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md` exists and is referenced as the authoritative assigned-work source.
@@ -464,15 +464,16 @@ index 000000000..c1471cccc
 +- Confirmed rebase onto current `origin/main`; conflict resolution touched generated report artifacts only.
 +- Confirmed `BACKLOG_MASTER.md` now treats team-aware local dev bootstrap runtime as implemented, not remaining work.
 +- Confirmed correction used OWNER-provided verification for `npm run dev:bootstrap -- --team bravo`.
++- Confirmed future-normalization wording was replaced with current-state canonical backlog language.
 +- Confirmed Tool Votes UI/page files were not modified.
 +- Confirmed this PR does not implement Tile, Tool Votes, runtime, API, database, or UI behavior.
 +- Playwright was not run because this is governance/documentation-only and no runtime or UI files changed.
 diff --git a/dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_report.md b/dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_report.md
 new file mode 100644
-index 000000000..c4caa075d
+index 000000000..04a6952c6
 --- /dev/null
 +++ b/dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_report.md
-@@ -0,0 +1,94 @@
+@@ -0,0 +1,104 @@
 +# PR_26180_OWNER_003 Backlog Startup Assignment Policy Report
 +
 +## Executive Summary
@@ -506,7 +507,7 @@ index 000000000..c4caa075d
 +- Added `admin/tool-votes.html` as the Tool Votes/Admin Owner priority signal source.
 +- Added the required Team Assignment startup output table.
 +- Added hard-stop behavior for missing backlog, missing assigned team, missing product-area representation, and missing Tool Votes priority source.
-+- Updated `BACKLOG_MASTER.md` header to state assigned-work ownership, status update expectations, Team/Product Area grouping, and required product-area status/percent complete.
++- Updated `BACKLOG_MASTER.md` header to state assigned-work ownership, status update expectations, current Team/Product Area status-source ownership, and required product-area status/percent complete.
 +- Corrected `BACKLOG_MASTER.md` to mark team-aware local dev bootstrap runtime as complete, including `dev:bootstrap`, `team-port-config.mjs`, `--team` support, bootstrap orchestration, browser launch reporting, and port resolution.
 +- Updated Start of Day command/bootstrap docs to require the Team Assignment section.
 +- Added top-level `PROJECT_INSTRUCTIONS.md` pointers for the team backlog/startup assignment standard and Tool Votes priority source.
@@ -539,6 +540,16 @@ index 000000000..c4caa075d
 +- port resolution
 +- legacy `npm run dev:local-api` alias
 +
++## Backlog Canonical Structure Correction
++
++`BACKLOG_MASTER.md` now states:
++
++```text
++BACKLOG_MASTER.md is now the canonical team/product-area assignment and status source. Future backlog changes must update this structure directly.
++```
++
++This removes wording that implied team/product-area backlog normalization was a future activity.
++
 +## Rebase Notes
 +
 +- Rebased onto current `origin/main` after Owner 035 merged.
@@ -569,10 +580,10 @@ index 000000000..c4caa075d
 +```
 diff --git a/dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_requirement-checklist.md b/dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_requirement-checklist.md
 new file mode 100644
-index 000000000..c5af1228d
+index 000000000..276735921
 --- /dev/null
 +++ b/dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_requirement-checklist.md
-@@ -0,0 +1,28 @@
+@@ -0,0 +1,29 @@
 +# PR_26180_OWNER_003 Requirement Checklist
 +
 +| Requirement | Result | Notes |
@@ -600,13 +611,14 @@ index 000000000..c5af1228d
 +| Mark bootstrap/team-aware dev runtime as implemented | PASS | `BACKLOG_MASTER.md` now records team-aware local dev bootstrap as complete. |
 +| Do not recreate bootstrap work | PASS | No runtime/bootstrap source files were modified. |
 +| Do not assign bootstrap as remaining work | PASS | Backlog notes explicitly prohibit assigning `dev:bootstrap`, team-port config, browser launch, bootstrap orchestration, or port resolution as remaining backlog work unless OWNER opens a new enhancement. |
++| Remove future-normalization wording | PASS | `BACKLOG_MASTER.md` now uses current-state canonical team/product-area assignment and status language. |
 +| No runtime/UI/API/database/tool implementation changes | PASS | Only Project Instructions and reports changed. |
 diff --git a/dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_validation-report.md b/dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_validation-report.md
 new file mode 100644
-index 000000000..52287f5af
+index 000000000..2ff76a6c2
 --- /dev/null
 +++ b/dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_validation-report.md
-@@ -0,0 +1,38 @@
+@@ -0,0 +1,39 @@
 +# PR_26180_OWNER_003 Validation Report
 +
 +## Validation Commands
@@ -644,7 +656,8 @@ index 000000000..52287f5af
 +
 +- `BACKLOG_MASTER.md` marks team-aware local dev bootstrap runtime as complete.
 +- `dev:bootstrap`, `team-port-config.mjs`, `--team` runtime support, bootstrap orchestration, browser launch reporting, and port resolution are not listed as remaining backlog work.
++- `BACKLOG_MASTER.md` no longer implies team/product-area backlog normalization is a future activity.
 +- No `dev/bootstrap/`, `package.json`, runtime, UI, API, or database files were modified by this correction.
 diff --git a/dev/reports/codex_changed_files.txt b/dev/reports/codex_changed_files.txt
-index 952a0ad68..b7a959aab 100644
+index 952a0ad68..952e9ff60 100644
 Binary files a/dev/reports/codex_changed_files.txt and b/dev/reports/codex_changed_files.txt differ

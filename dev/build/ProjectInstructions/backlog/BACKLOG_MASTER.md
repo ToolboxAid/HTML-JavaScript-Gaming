@@ -8,7 +8,7 @@ This file is the authoritative source for assigned product work.
 
 This document is updated as work status changes, including Owner assignment, reprioritization, completion, deferral, accepted PRs, SOD review, and EOD review.
 
-Backlog content must be organized by Team, then Product Area. Existing roadmap phase sections must preserve explicit team/product-area ownership until they are normalized into the Team/Product Area grouping.
+`BACKLOG_MASTER.md` is now the canonical team/product-area assignment and status source. Future backlog changes must update this structure directly.
 
 Each product area must include status and percent complete.
 
