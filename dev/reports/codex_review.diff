@@ -170,19 +170,61 @@ index 000000000..69fffdfa9
 +```
 diff --git a/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_branch-validation.md b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_branch-validation.md
 new file mode 100644
-index 000000000..bc3cddf6c
+index 000000000..18e9f6841
 --- /dev/null
 +++ b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_branch-validation.md
-@@ -0,0 +1,9 @@
+@@ -0,0 +1,10 @@
 +ï»¿# PR_26179_OWNER_036-reports-are-tracked-source Branch Validation
 +
 +Status: PASS
 +
 +- Source branch: `PR_26179_OWNER_036-reports-are-tracked-source`
 +- Base branch: `main`
-+- Branch created from synchronized `main`: PASS
++- Branch rebased onto latest `origin/main`: PASS
 +- Existing generated report artifacts preserved: PASS
 +- Scope limited to governance docs and reports: PASS
++- Merge conflict resolved: PASS
+diff --git a/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_eod-report.md b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_eod-report.md
+new file mode 100644
+index 000000000..ec1383ae3
+--- /dev/null
++++ b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_eod-report.md
+@@ -0,0 +1,35 @@
++ï»¿# PR_26179_OWNER_036-reports-are-tracked-source EOD Report
++
++## Summary
++
++PR #280 conflict resolution and merge closeout for `PR_26179_OWNER_036-reports-are-tracked-source`.
++
++## Scope
++
++- Governance documentation only.
++- Preserved approved Codex Reports wording.
++- Updated PR reports and repo-structured ZIP.
++- No runtime changes.
++- No auth changes.
++- No Local API changes.
++- No seed data changes.
++- No `.gitignore` changes.
++
++## Conflict Resolution
++
++- Latest `origin/main` was merged/rebased into the PR branch.
++- Conflicts were limited to generated report artifacts.
++- `dev/reports/codex_changed_files.txt` and `dev/reports/codex_review.diff` were regenerated from the final PR diff.
++
++## Validation
++
++- `git diff --check`: PASS
++- `npm run validate:canonical-structure`: PASS
++- GitHub `platform-validation`: PASS after push
++
++## Closeout
++
++- PR branch: `PR_26179_OWNER_036-reports-are-tracked-source`
++- PR: #280
++- ZIP: `dev/workspace/zips/PR_26179_OWNER_036-reports-are-tracked-source_delta.zip`
++- Final main verification is recorded in the Codex final response after merge and pull.
 diff --git a/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_manual-validation-notes.md b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_manual-validation-notes.md
 new file mode 100644
 index 000000000..8ca887c65
@@ -263,13 +305,19 @@ index 000000000..4e3b40097
 +- No unrelated cleanup: PASS
 diff --git a/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_validation-report.md b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_validation-report.md
 new file mode 100644
-index 000000000..fe68f5bdb
+index 000000000..6bde7d2f0
 --- /dev/null
 +++ b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_validation-report.md
-@@ -0,0 +1,27 @@
+@@ -0,0 +1,33 @@
 +ï»¿# PR_26179_OWNER_036-reports-are-tracked-source Validation Report
 +
 +Status: PASS
++
++Conflict resolution:
++
++- Rebasing onto latest `origin/main` produced conflicts in generated report files only: `dev/reports/codex_changed_files.txt` and `dev/reports/codex_review.diff`.
++- The approved Codex Reports governance wording was preserved.
++- Generated report files were regenerated from the final post-rebase diff.
 +
 +Commands run:
 +
@@ -295,38 +343,124 @@ index 000000000..fe68f5bdb
 +
 +No runtime, auth, Local API, seed, or `.gitignore` changes were made.
 diff --git a/dev/reports/codex_changed_files.txt b/dev/reports/codex_changed_files.txt
-index bc37b31a4..78dfb6a28 100644
-Binary files a/dev/reports/codex_changed_files.txt and b/dev/reports/codex_changed_files.txt differ
+index 1d5194e5c..81cf5fdec 100644
+--- a/dev/reports/codex_changed_files.txt
++++ b/dev/reports/codex_changed_files.txt
+@@ -1,37 +1,17 @@
+-# git diff --name-status merge-base(origin/main, HEAD)..working-tree
+-M	dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+-M	dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
+-M	dev/build/ProjectInstructions/TEAM_START_COMMANDS.md
+-M	dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
+-M	dev/build/ProjectInstructions/addendums/team_start_and_release.md
+-M	dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
+-M	dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md
+-M	dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
+-A	dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_branch-validation.md
+-A	dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_manual-validation-notes.md
+-A	dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_report.md
+-A	dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_requirement-checklist.md
+-A	dev/reports/PR_26180_OWNER_003-backlog-startup-assignment-policy_validation-report.md
++M	dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
++M	dev/build/ProjectInstructions/addendums/pr_workflow.md
++M	dev/build/ProjectInstructions/repository/canonical_repository_structure.md
++A	dev/reports/PR277-post-merge-closeout_branch-validation.md
++A	dev/reports/PR277-post-merge-closeout_manual-validation-notes.md
++A	dev/reports/PR277-post-merge-closeout_report.md
++A	dev/reports/PR277-post-merge-closeout_requirement-checklist.md
++A	dev/reports/PR277-post-merge-closeout_validation-report.md
++A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_branch-validation.md
++A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_manual-validation-notes.md
++A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_report.md
++A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_requirement-checklist.md
++A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_validation-report.md
+ M	dev/reports/codex_changed_files.txt
+ M	dev/reports/codex_review.diff
+-
+-# git diff --stat merge-base(origin/main, HEAD)..working-tree
+-.../ProjectInstructions/PROJECT_INSTRUCTIONS.md    |    4 +-
+- .../PROJECT_INSTRUCTIONS_VERSION.md                |    3 +-
+- .../ProjectInstructions/TEAM_START_COMMANDS.md     |   17 +
+- .../addendums/team_backlog_sod_eod_standard.md     |   69 +
+- .../addendums/team_start_and_release.md            |   28 +-
+- .../ProjectInstructions/backlog/BACKLOG_MASTER.md  |   39 +-
+- .../bootstrap/codex_start_of_day_bootstrap.md      |   27 +
+- .../standards/CODEX_WORKFLOW_COMMANDS.md           |    9 +
+- ...-startup-assignment-policy_branch-validation.md |   13 +
+- ...up-assignment-policy_manual-validation-notes.md |   14 +
+- ...003-backlog-startup-assignment-policy_report.md |  105 ++
+- ...rtup-assignment-policy_requirement-checklist.md |   29 +
+- ...-startup-assignment-policy_validation-report.md |   39 +
+- dev/reports/codex_changed_files.txt                |   47 +-
+- dev/reports/codex_review.diff                      | 1555 +++++++++-----------
+- 15 files changed, 1105 insertions(+), 893 deletions(-)
+-
+-# merge-base
+-8c332fc82aeeed6508170363f04e04beaf67db28
++M	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_branch-validation.md
++M	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_validation-report.md
 diff --git a/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_branch-validation.md b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_branch-validation.md
-index bc3cddf6c..18e9f6841 100644
+index 18e9f6841..17915ab80 100644
 --- a/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_branch-validation.md
 +++ b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_branch-validation.md
 @@ -4,6 +4,7 @@ Status: PASS
 
  - Source branch: `PR_26179_OWNER_036-reports-are-tracked-source`
  - Base branch: `main`
--- Branch created from synchronized `main`: PASS
-+- Branch rebased onto latest `origin/main`: PASS
++- Latest `origin/main`: `742245d454b1be1fdfc923f1bcf4089199b85d90`
+ - Branch rebased onto latest `origin/main`: PASS
  - Existing generated report artifacts preserved: PASS
  - Scope limited to governance docs and reports: PASS
-+- Merge conflict resolved: PASS
+diff --git a/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_eod-report.md b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_eod-report.md
+index ec1383ae3..87539db1f 100644
+--- a/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_eod-report.md
++++ b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_eod-report.md
+@@ -25,7 +25,7 @@ PR #280 conflict resolution and merge closeout for `PR_26179_OWNER_036-reports-a
+
+ - `git diff --check`: PASS
+ - `npm run validate:canonical-structure`: PASS
+-- GitHub `platform-validation`: PASS after push
++- GitHub checks: to be verified on PR #280 after the updated branch push
+
+ ## Closeout
+
 diff --git a/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_validation-report.md b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_validation-report.md
-index fe68f5bdb..6bde7d2f0 100644
+index 6bde7d2f0..03ac15f20 100644
 --- a/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_validation-report.md
 +++ b/dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_validation-report.md
-@@ -2,6 +2,12 @@
+@@ -6,7 +6,7 @@ Conflict resolution:
 
- Status: PASS
+ - Rebasing onto latest `origin/main` produced conflicts in generated report files only: `dev/reports/codex_changed_files.txt` and `dev/reports/codex_review.diff`.
+ - The approved Codex Reports governance wording was preserved.
+-- Generated report files were regenerated from the final post-rebase diff.
++- Generated report files were regenerated from the final post-rebase diff against `742245d454b1be1fdfc923f1bcf4089199b85d90`.
 
-+Conflict resolution:
-+
-+- Rebasing onto latest `origin/main` produced conflicts in generated report files only: `dev/reports/codex_changed_files.txt` and `dev/reports/codex_review.diff`.
-+- The approved Codex Reports governance wording was preserved.
-+- Generated report files were regenerated from the final post-rebase diff.
-+
  Commands run:
 
+@@ -27,7 +27,7 @@ Output summary:
  ```text
+ Canonical repository structure guardrail: PASS
+ Blocking violations: 0
+-Approved legacy exceptions: 500
++Approved legacy exceptions: 501
+ ```
+
+ No runtime, auth, Local API, seed, or `.gitignore` changes were made.
 diff --git a/dev/reports/codex_changed_files.txt b/dev/reports/codex_changed_files.txt
-index 78dfb6a28..81cf5fdec 100644
-Binary files a/dev/reports/codex_changed_files.txt and b/dev/reports/codex_changed_files.txt differ
+index 81cf5fdec..0e26265e5 100644
+--- a/dev/reports/codex_changed_files.txt
++++ b/dev/reports/codex_changed_files.txt
+@@ -7,6 +7,7 @@ A	dev/reports/PR277-post-merge-closeout_report.md
+ A	dev/reports/PR277-post-merge-closeout_requirement-checklist.md
+ A	dev/reports/PR277-post-merge-closeout_validation-report.md
+ A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_branch-validation.md
++A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_eod-report.md
+ A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_manual-validation-notes.md
+ A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_report.md
+ A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_requirement-checklist.md
+@@ -14,4 +15,5 @@ A	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_validation-report.md
+ M	dev/reports/codex_changed_files.txt
+ M	dev/reports/codex_review.diff
+ M	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_branch-validation.md
++M	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_eod-report.md
+ M	dev/reports/PR_26179_OWNER_036-reports-are-tracked-source_validation-report.md

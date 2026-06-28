@@ -25,7 +25,7 @@ PR #280 conflict resolution and merge closeout for `PR_26179_OWNER_036-reports-a
 
 - `git diff --check`: PASS
 - `npm run validate:canonical-structure`: PASS
-- GitHub `platform-validation`: PASS after push
+- GitHub checks: to be verified on PR #280 after the updated branch push
 
 ## Closeout
 
