@@ -7,6 +7,7 @@ import { startStaticWebServer } from "../../scripts/start-dev.mjs";
 import {
   DEFAULT_LOCAL_WEB_ROOT,
   LOCAL_WEB_ROOT_ENV,
+  REPO_ROOT_LOCAL_WEB_ROOT,
   WWW_LOCAL_WEB_ROOT,
   resolveBrowserRoutePath,
   resolveLocalWebRoot,
@@ -15,21 +16,21 @@ import {
 
 const repoRoot = path.resolve(fileURLToPath(new URL("../../..", import.meta.url)));
 
-test("local web root defaults to repository root and can be pointed at www", () => {
+test("local web root defaults to www and can be pointed at the repository root", () => {
   const defaultRoot = resolveLocalWebRoot({ env: {}, repoRoot });
   assert.equal(defaultRoot.relativePath, DEFAULT_LOCAL_WEB_ROOT);
-  assert.equal(defaultRoot.absolutePath, repoRoot);
+  assert.equal(defaultRoot.absolutePath, path.join(repoRoot, "www"));
   assert.equal(defaultRoot.source, "default");
 
-  const wwwRoot = resolveLocalWebRoot({
+  const repoRootConfig = resolveLocalWebRoot({
     env: {
-      [LOCAL_WEB_ROOT_ENV]: WWW_LOCAL_WEB_ROOT,
+      [LOCAL_WEB_ROOT_ENV]: "repo-root",
     },
     repoRoot,
   });
-  assert.equal(wwwRoot.relativePath, WWW_LOCAL_WEB_ROOT);
-  assert.equal(wwwRoot.absolutePath, path.join(repoRoot, "www"));
-  assert.equal(wwwRoot.source, "configured");
+  assert.equal(repoRootConfig.relativePath, REPO_ROOT_LOCAL_WEB_ROOT);
+  assert.equal(repoRootConfig.absolutePath, repoRoot);
+  assert.equal(repoRootConfig.source, "configured");
 });
 
 test("browser route compatibility preserves public URLs while normalizing filesystem lookup", () => {
@@ -47,10 +48,10 @@ test("static route target can prefer a configured www root before repo-root fall
   const routeTarget = await resolveStaticRouteTarget({
     decodedPath: "/index.html",
     repoRoot,
-    webRoot: "www",
+    webRoot: WWW_LOCAL_WEB_ROOT,
   });
   assert.equal(routeTarget.routePath, "/index.html");
-  assert.equal(routeTarget.targetPath, path.join(repoRoot, "index.html"));
+  assert.equal(routeTarget.targetPath, path.join(repoRoot, "www", "index.html"));
   assert.equal(routeTarget.webRoot.relativePath, "www");
 });
 

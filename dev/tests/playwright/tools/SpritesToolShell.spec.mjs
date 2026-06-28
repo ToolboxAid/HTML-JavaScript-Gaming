@@ -1,10 +1,10 @@
-import { expect, test } from "@playwright/test";
+﻿import { expect, test } from "@playwright/test";
 import fs from "node:fs/promises";
 import http from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { isBrowserExtensionNoise } from "../../helpers/browserExtensionNoise.mjs";
-import { getToolRegistrySnapshot } from "../../../../toolbox/toolRegistry.js";
+import { getToolRegistrySnapshot } from "../../../../www/toolbox/toolRegistry.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

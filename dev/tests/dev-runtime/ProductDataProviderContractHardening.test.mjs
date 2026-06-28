@@ -1,4 +1,4 @@
-import assert from "node:assert/strict";
+﻿import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { test } from "node:test";
@@ -10,7 +10,7 @@ function readRepoFile(filePath) {
 }
 
 function importRegistryClient(label) {
-  return import(`../../../toolbox/tool-registry-api-client.js?contract=${label}-${Date.now()}-${Math.random()}`);
+  return import(`../../../www/toolbox/tool-registry-api-client.js?contract=${label}-${Date.now()}-${Math.random()}`);
 }
 
 class RegistrySnapshotXhr {
@@ -44,7 +44,7 @@ class RegistrySnapshotXhr {
             badge: "/assets/theme-v2/images/badges/contract-tool.png",
             tool: "/assets/theme-v2/images/tools/contract-tool.png",
           },
-          route: "toolbox/contract-tool/index.html",
+          route: "www/toolbox/contract-tool/index.html",
         }],
         imageFallback: "/should-not-own-product-data.svg",
         readinessByStatus: { beta: "Yes" },
@@ -56,7 +56,7 @@ class RegistrySnapshotXhr {
             badge: "/assets/theme-v2/images/badges/contract-tool.png",
             tool: "/assets/theme-v2/images/tools/contract-tool.png",
           },
-          route: "toolbox/contract-tool/index.html",
+          route: "www/toolbox/contract-tool/index.html",
         }],
       },
       ok: true,
@@ -104,7 +104,7 @@ test("Toolbox registry browser client consumes server API snapshot when availabl
 });
 
 test("Active browser product-data entrypoints use API or service clients", () => {
-  const registryClient = readRepoFile("toolbox/tool-registry-api-client.js");
+  const registryClient = readRepoFile("www/toolbox/tool-registry-api-client.js");
   assert.doesNotMatch(registryClient, /activeTools:\s*\[\]/);
   assert.doesNotMatch(registryClient, /tools:\s*\[\]/);
 
@@ -115,7 +115,7 @@ test("Active browser product-data entrypoints use API or service clients", () =>
     "assets/toolbox/game-configuration/js/index.js",
     "assets/toolbox/game-design/js/index.js",
     "assets/js/shared/game-journey-api-client.js",
-    "toolbox/game-hub/game-hub-api-client.js",
+    "www/toolbox/game-hub/game-hub-api-client.js",
     "assets/toolbox/objects/js/index.js",
     "assets/toolbox/tags/js/index.js",
   ];
@@ -127,13 +127,13 @@ test("Active browser product-data entrypoints use API or service clients", () =>
   });
 
   assert.match(readRepoFile("admin/tool-votes.js"), /src\/engine\/api\/toolbox-votes-api-client\.js/);
-  assert.match(readRepoFile("toolbox/tools-page-accordions.js"), /src\/engine\/api\/toolbox-votes-api-client\.js/);
+  assert.match(readRepoFile("www/toolbox/tools-page-accordions.js"), /src\/engine\/api\/toolbox-votes-api-client\.js/);
   assert.match(readRepoFile("assets/theme-v2/js/account-achievements.js"), /createServerRepositoryClient\("game-hub"\)/);
 
   [
     "admin/tool-votes.js",
     "assets/theme-v2/js/account-achievements.js",
-    "toolbox/tools-page-accordions.js",
+    "www/toolbox/tools-page-accordions.js",
     ...productApiClients,
   ].forEach((filePath) => {
     const contents = readRepoFile(filePath);

@@ -39,9 +39,9 @@ The backlog is the authoritative source for determining the next logical PRs.
 - Team: Owner
 - Product Area: Repository Architecture Simplification
 - Status: Active
-- Percent Complete: 20%
-- Active PR: PR_26180_OWNER_007-www-route-root-compatibility
-- Next Milestone: Move browser-served application to `www/`
+- Percent Complete: 30%
+- Active PR: PR_26180_OWNER_008-move-www-application
+- Next Milestone: Move server/API application files into `api/`
 - Source / Reference: `dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md`; `dev/build/ProjectInstructions/repository/www_migration_map.md`
 
 ## Game Journey MVP

@@ -1,4 +1,4 @@
-import { getToolById } from "../../../toolbox/tool-registry-api-client.js";
+import { getToolById } from "../../../www/toolbox/tool-registry-api-client.js";
 import { downloadTextFile, readFileText } from '../../engine/persistence/FilePersistenceService.js';
 import {
   ACTIVE_PROJECT_STORAGE_KEY,

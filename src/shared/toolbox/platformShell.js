@@ -1,4 +1,4 @@
-import { getToolById, getToolRegistry } from "../../../toolbox/tool-registry-api-client.js";
+import { getToolById, getToolRegistry } from "../../../www/toolbox/tool-registry-api-client.js";
 import {
   clearSharedAssetHandoff,
   clearSharedPaletteHandoff,

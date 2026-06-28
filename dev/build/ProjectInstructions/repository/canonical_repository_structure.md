@@ -7,36 +7,19 @@ Establish the canonical repository structure for future development and reduce t
 ## Canonical Structure
 
 Valid top-level folders:
-- account/
-- admin/
 - api/
-- assets/
-- community/
-- company/
 - deploy/
 - dev/
-- docs/
-- games/
-- learn/
-- legal/
-- marketplace/
-- memberships/
-- owner/
 - src/
-- toolbox/
 - www/
 
 Root product and repo sections:
-- account/, admin/, community/, company/, learn/, legal/, marketplace/, memberships/, and owner/ are production website sections.
-- assets/ contains production website and tool assets.
+- www/ owns browser-served production website sections, Creator toolbox pages, public game discovery, production Docs & Help, and browser assets.
 - api/ is the target Node/API/server application surface for the repository layout simplification workstream.
-- docs/ is production Docs & Help content.
-- games/ is public game discovery.
-- toolbox/ is the Creator toolbox/workspace.
 - deploy/ contains deployment configuration.
 - dev/ contains the development workspace.
 - src/ contains deployable application/runtime/API source.
-- www/ is the target browser-served application surface for the repository layout simplification workstream.
+- repository root contains standard repository configuration and top-level application shells only.
 
 Deployable application source:
 - src/web/{feature-name}/
@@ -75,19 +58,19 @@ Dev workspace ownership:
 - dev/tools/ owns development-only tooling.
 - dev/workspace/ owns generated output: tmp, zips, logs, generated files, and test-results.
 
-Tools:
-- toolbox/{tool-name}/index.html
+Browser-served tools:
+- www/toolbox/{tool-name}/index.html
 
-Tool assets:
-- assets/toolbox/{tool-name}/js/index.js
-- assets/toolbox/{tool-name}/css/index.css
+Browser-served tool assets:
+- www/assets/toolbox/{tool-name}/js/index.js
+- www/assets/toolbox/{tool-name}/css/index.css
 
 Themes:
-- assets/theme-v1/
-- assets/theme-v2/
+- www/assets/theme-v1/
+- www/assets/theme-v2/
 
 Shared JavaScript:
-- assets/js/shared/
+- www/assets/js/shared/
 
 Legacy transition buckets:
 - src/advanced/
@@ -101,16 +84,16 @@ These legacy transition buckets may remain until explicit migration PRs move the
 
 ## Rules
 
-- Root is production website and standard repository configuration only.
-- www/ is the browser-served application target surface for migration.
+- Root is standard repository configuration and top-level application shells only.
+- www/ is the browser-served application surface.
 - api/ is the Node/API/server application target surface for migration.
 - src/ is deployable application/runtime/API code.
 - dev/ is development workspace only.
 - deploy/ is deployment configuration.
-- docs/ is production Docs & Help content.
+- docs/ routes are served from `www/docs/`.
 - Theme first.
 - Tool CSS second.
-- Shared functionality belongs in assets/js/shared/.
+- Browser-served shared functionality belongs in `www/assets/js/shared/`.
 - No new scattered JS folders.
 - No new scattered CSS folders.
 - Do not create new folders unless they fit the documented canonical structure.

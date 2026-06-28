@@ -1,4 +1,4 @@
-/*
+﻿/*
 Toolbox Aid
 David Quesenberry
 06/02/2026
@@ -60,7 +60,7 @@ import {
 } from "../../../../src/shared/contracts/tools/toolContractsIndex.js";
 import {
   getVisibleActiveToolRegistry,
-} from "../../../../toolbox/toolRegistry.js";
+} from "../../../../www/toolbox/toolRegistry.js";
 
 const scenariosPath = fileURLToPath(
   new URL("../../fixtures/tools/tool-contract-scenarios.json", import.meta.url)

@@ -1,6 +1,6 @@
 # Project Instructions Version
 
-Current Project Instructions Version: 2026.06.28.007
+Current Project Instructions Version: 2026.06.28.008
 
 Last Updated: 2026-06-28
 
@@ -15,6 +15,7 @@ Last Updated: 2026-06-28
 - Added repository layout scaffold governance for `www/`, `api/`, and `dev/local-runtime/`.
 - Added `www/` migration map for safe browser-served application movement planning.
 - Added local route-root compatibility toggle documentation for future `www/` activation.
+- Moved browser-served application files under `www/` and made local static serving prefer `www/` by default.
 - Codex must read this version file and the latest repository copy of `PROJECT_INSTRUCTIONS.md` before performing work.
 - Codex must discard previously remembered Project Instructions and treat the repository copy as authoritative.
 - Codex must validate canonical report and ZIP paths, branching model, and legacy path avoidance before work proceeds.

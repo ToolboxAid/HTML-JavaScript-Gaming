@@ -1,4 +1,4 @@
-import assert from "node:assert/strict";
+﻿import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
@@ -200,7 +200,7 @@ test("Owner Notes route is the only production-facing Admin Notes viewer route",
 });
 
 test("production-facing paths only expose Admin Notes through Owner Notes", () => {
-  const headerSource = fs.readFileSync(repoPath("assets/theme-v2/partials/header-nav.html"), "utf8");
+  const headerSource = fs.readFileSync(repoPath("www/assets/theme-v2/partials/header-nav.html"), "utf8");
   assert.doesNotMatch(headerSource, /docs_build\/dev\/admin-notes|admin-notes-dev|data-admin-notes-local-menu|data-admin-my-stuff-menu|My Stuff|Admin Notes/);
   for (const label of devOnlyAdminLabels) {
     assert.doesNotMatch(headerSource, new RegExp(`>${label}<\\/a>`), `production Admin menu omits dev-only ${label}`);
@@ -274,7 +274,7 @@ test("Admin Notes directory API is read-only, sorted, and restricted to dev/arch
 });
 
 test("local header partial does not create a competing Admin Notes menu", () => {
-  const headerPath = repoPath("assets/theme-v2/partials/header-nav.html");
+  const headerPath = repoPath("www/assets/theme-v2/partials/header-nav.html");
   const source = fs.readFileSync(headerPath, "utf8");
   const localHeaderPath = localAdminNotesHeaderPartialPath(repoRoot, headerPath);
   const servedHeader = fs.readFileSync(localHeaderPath, "utf8");

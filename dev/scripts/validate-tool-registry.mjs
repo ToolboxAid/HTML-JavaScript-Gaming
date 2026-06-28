@@ -1,12 +1,12 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { getToolRegistry, getVisibleActiveToolRegistry } from "../toolbox/toolRegistry.js";
+import { getToolRegistry, getVisibleActiveToolRegistry } from "../../www/toolbox/toolRegistry.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "../..");
-const toolboxRoot = path.join(repoRoot, "toolbox");
+const toolboxRoot = path.join(repoRoot, "www", "toolbox");
 const reportPath = path.join(repoRoot, "dev", "reports", "tool_registry_validation.txt");
 
 const IGNORED_DIRECTORIES = new Set([

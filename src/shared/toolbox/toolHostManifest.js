@@ -1,4 +1,4 @@
-import { getActiveToolRegistry, resolveToolIdAlias } from "../../../toolbox/tool-registry-api-client.js";
+import { getActiveToolRegistry, resolveToolIdAlias } from "../../../www/toolbox/tool-registry-api-client.js";
 
 const TOOL_HOST_MANIFEST_SCHEMA = "tools.tool-host-manifest/1";
 
