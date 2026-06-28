@@ -29,7 +29,7 @@ Per OWNER instruction, those uncommitted changes were discarded with `git reset 
 - Added `dev/scripts/start-dev.mjs` as the bootstrap orchestrator.
 - Added focused node tests for team resolution, role offsets, invalid team/role validation, script wiring, `.env` loading behavior, and bootstrap diagnostics.
 - Added automatic browser launch for owner-role `dev:bootstrap` after the API and web servers are both ready.
-- Suppressed automatic browser launch for the `codex` role.
+- Skipped automatic browser launch for the `codex` role.
 - Fixed npm argument forwarding/parsing so both `--team charlie` and positional `charlie` select the same team after the package script's `--mode bootstrap` argument.
 - Treats `.env` `GAMEFOUNDRY_SITE_URL` and `GAMEFOUNDRY_API_URL` as legacy/default local values for bootstrap mode, then overwrites runtime URLs from the resolved team/role ports.
 
@@ -94,10 +94,10 @@ npm run dev:bootstrap -- --team alfa --role codex
 ## Browser Launch Behavior
 
 - `owner` role launches the browser automatically to the selected team's `index.html`.
-- `codex` role suppresses browser launch.
+- `codex` role skips browser launch.
 - Browser launch happens only after both API and web servers are ready.
 - The Alfa owner launch target is `http://127.0.0.1:5510/index.html`.
-- The Alfa codex launch target is suppressed while using web `5512` and API `5513`.
+- The Alfa codex browser launch is skipped while using web `5512` and API `5513`.
 - The Charlie launch target is `http://127.0.0.1:5530/index.html` for both `npm run dev:bootstrap -- --team charlie` and `npm run dev:bootstrap -- charlie`.
 - Computed team/role ports override any `.env` or inherited process `GAMEFOUNDRY_SITE_URL` / `GAMEFOUNDRY_API_URL` values loaded before bootstrap startup.
 - Bootstrap runtime sets `GAMEFOUNDRY_SITE_URL=http://127.0.0.1:<webPort>` and `GAMEFOUNDRY_API_URL=http://127.0.0.1:<apiPort>/api` after team/role resolution.

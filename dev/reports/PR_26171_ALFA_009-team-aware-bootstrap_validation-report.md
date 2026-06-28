@@ -12,7 +12,8 @@
 | Unsupported team token scan in new bootstrap files | PASS | No unsupported old team names or single-letter public team commands found in package scripts, bootstrap scripts, or targeted bootstrap tests. |
 | `npm run validate:canonical-structure` | PASS | Canonical repository structure guardrail passed. |
 | `npm run dev:bootstrap -- --team alfa` | PASS | Started with team `alfa`, role `owner`, web `5510`, API `5511`, launched browser to `http://127.0.0.1:5510/index.html`, then process tree was stopped. |
-| `npm run dev:bootstrap -- --team alfa --role codex` | PASS | Started with team `alfa`, role `codex`, web `5512`, API `5513`, suppressed browser launch, then process tree was stopped. |
+| `npm run dev:bootstrap -- --team alfa --role codex` | PASS | Started with team `alfa`, role `codex`, web `5512`, API `5513`, skipped browser launch, then process tree was stopped. |
+| `npm run dev:bootstrap -- alfa codex` | PASS | Positional team/role forwarding selected team `alfa`, role `codex`, web `5512`, API `5513`, and skipped browser launch. |
 | `npm run dev:bootstrap -- --team charlie` with inherited stale URL env values | PASS | Started with team `charlie`, role `owner`, web `5530`, API `5531`, launched browser to `http://127.0.0.1:5530/index.html`, and ignored inherited `GAMEFOUNDRY_SITE_URL` / `GAMEFOUNDRY_API_URL` port values before process cleanup. |
 | `npm run dev:bootstrap -- charlie` | PASS | Positional team forwarding selected team `charlie`, web `5530`, API `5531`, and browser target `http://127.0.0.1:5530/index.html`. |
 | `npm run dev:bootstrap -- --team bravo` | PASS | Started with team `bravo`, role `owner`, web `5520`, API `5521`, and browser target `http://127.0.0.1:5520/index.html`. |

@@ -80,9 +80,10 @@ function parseNamedArgument(args, name, fallback, supportedLabel) {
   return fallback;
 }
 
-function firstPositionalArgument(args = []) {
+function positionalArguments(args = []) {
   const values = Array.from(args);
   const optionsWithValues = new Set(["mode", "role", "team"]);
+  const positional = [];
   for (let index = 0; index < values.length; index += 1) {
     const argument = values[index];
     if (!argument) {
@@ -98,13 +99,21 @@ function firstPositionalArgument(args = []) {
       }
       continue;
     }
-    return argument;
+    positional.push(argument);
   }
-  return "";
+  return positional;
 }
 
 export function parseRoleArgument(args = []) {
-  return parseNamedArgument(args, "role", DEFAULT_BOOTSTRAP_ROLE, supportedBootstrapRolesLabel);
+  const explicitRole = parseNamedArgument(args, "role", "", supportedBootstrapRolesLabel);
+  if (explicitRole) {
+    return explicitRole;
+  }
+  const positionalRole = positionalArguments(args).find((argument) => {
+    const normalizedRole = normalizeToken(argument, "");
+    return ROLE_PORT_OFFSETS[normalizedRole] !== undefined;
+  });
+  return normalizeToken(positionalRole, DEFAULT_BOOTSTRAP_ROLE);
 }
 
 export function parseTeamArgument(args = []) {
@@ -112,5 +121,17 @@ export function parseTeamArgument(args = []) {
   if (explicitTeam) {
     return explicitTeam;
   }
-  return normalizeToken(firstPositionalArgument(args), DEFAULT_BOOTSTRAP_TEAM);
+  const positional = positionalArguments(args);
+  const positionalTeam = positional.find((argument) => {
+    const normalizedTeam = normalizeToken(argument, "");
+    return TEAM_BASE_PORTS[normalizedTeam] !== undefined;
+  });
+  if (positionalTeam) {
+    return normalizeToken(positionalTeam, DEFAULT_BOOTSTRAP_TEAM);
+  }
+  const unknownTeam = positional.find((argument) => {
+    const normalizedArgument = normalizeToken(argument, "");
+    return ROLE_PORT_OFFSETS[normalizedArgument] === undefined;
+  });
+  return normalizeToken(unknownTeam, DEFAULT_BOOTSTRAP_TEAM);
 }

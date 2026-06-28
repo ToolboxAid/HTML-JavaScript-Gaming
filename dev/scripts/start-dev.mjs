@@ -364,7 +364,7 @@ export async function startBootstrapRuntime(
     : {
       enabled: false,
       reason: options.role === "codex"
-        ? "suppressed for codex role"
+        ? "skipped for codex role"
         : "requires bootstrap mode with API and web servers",
       url: browserUrl,
     };

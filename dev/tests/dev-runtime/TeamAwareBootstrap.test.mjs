@@ -62,10 +62,14 @@ test("team and role parsers accept canonical argument forms", () => {
   assert.equal(parseTeamArgument(["--team=bravo"]), "bravo");
   assert.equal(parseTeamArgument(["--mode", "bootstrap", "charlie"]), "charlie");
   assert.equal(parseTeamArgument(["--mode=bootstrap", "charlie"]), "charlie");
+  assert.equal(parseTeamArgument(["--mode", "bootstrap", "alfa", "codex"]), "alfa");
+  assert.equal(parseTeamArgument(["--mode", "bootstrap", "codex", "alfa"]), "alfa");
   assert.equal(parseTeamArgument(["charlie", "--role", "codex"]), "charlie");
   assert.equal(parseRoleArgument([]), "owner");
   assert.equal(parseRoleArgument(["--role", "codex"]), "codex");
   assert.equal(parseRoleArgument(["--role=owner"]), "owner");
+  assert.equal(parseRoleArgument(["--mode", "bootstrap", "alfa", "codex"]), "codex");
+  assert.equal(parseRoleArgument(["--mode", "bootstrap", "codex", "alfa"]), "codex");
 });
 
 test("invalid teams and roles fail with supported values", () => {
@@ -102,6 +106,32 @@ test("bootstrap option parser maps npm script modes to server startup plan", () 
     web: true,
   });
   assert.deepEqual(parseBootstrapOptions(["--mode=bootstrap", "--team=alfa", "--role=codex"]), {
+    api: true,
+    mode: "bootstrap",
+    ports: {
+      apiPort: 5513,
+      role: "codex",
+      team: "alfa",
+      webPort: 5512,
+    },
+    role: "codex",
+    team: "alfa",
+    web: true,
+  });
+  assert.deepEqual(parseBootstrapOptions(["--mode", "bootstrap", "--team", "alfa", "--role", "codex"]), {
+    api: true,
+    mode: "bootstrap",
+    ports: {
+      apiPort: 5513,
+      role: "codex",
+      team: "alfa",
+      webPort: 5512,
+    },
+    role: "codex",
+    team: "alfa",
+    web: true,
+  });
+  assert.deepEqual(parseBootstrapOptions(["--mode", "bootstrap", "alfa", "codex"]), {
     api: true,
     mode: "bootstrap",
     ports: {
@@ -195,7 +225,7 @@ test("startup diagnostics and package scripts expose team-aware bootstrap comman
     apiBaseUrl: "http://127.0.0.1:5513",
     browserLaunch: {
       enabled: false,
-      reason: "suppressed for codex role",
+      reason: "skipped for codex role",
       url: "http://127.0.0.1:5512/index.html",
     },
     mode: "bootstrap",
@@ -212,7 +242,7 @@ test("startup diagnostics and package scripts expose team-aware bootstrap comman
   assert.equal(lines.includes("Role: codex"), true);
   assert.equal(lines.includes("Web URL: http://127.0.0.1:5512"), true);
   assert.equal(lines.includes("API URL: http://127.0.0.1:5513/api"), true);
-  assert.equal(lines.includes("Browser launch: suppressed for codex role"), true);
+  assert.equal(lines.includes("Browser launch: skipped for codex role"), true);
   assert.equal(lines.includes(`Supported teams: ${supportedBootstrapTeamsLabel()}`), true);
   assert.equal(lines.includes(`Supported roles: ${supportedBootstrapRolesLabel()}`), true);
 
@@ -236,7 +266,7 @@ test("runtime env loader applies .env values without overriding existing process
   assert.equal(env.GAMEFOUNDRY_API_URL, "http://127.0.0.1:5999/api");
 });
 
-test("browser launch targets team index after API and web servers are ready for owner role", async () => {
+test("browser launch targets team index after API and web servers are ready for bravo owner role", async () => {
   const events = [];
   const env = {
     GAMEFOUNDRY_LOCAL_API_HOST: "0.0.0.0",
@@ -244,7 +274,7 @@ test("browser launch targets team index after API and web servers are ready for 
     GAMEFOUNDRY_SITE_URL: "http://127.0.0.1:5500",
   };
   const runtime = await startBootstrapRuntime(
-    parseBootstrapOptions(["--mode=bootstrap", "--team=alfa"]),
+    parseBootstrapOptions(["--mode=bootstrap", "--team=bravo"]),
     {
       apiServerStarter: async ({ port }) => {
         events.push(`api:${port}`);
@@ -274,25 +304,26 @@ test("browser launch targets team index after API and web servers are ready for 
   );
 
   assert.deepEqual(events, [
-    "api:5511",
-    "web:5510",
-    "browser:http://127.0.0.1:5510/index.html",
+    "api:5521",
+    "web:5520",
+    "browser:http://127.0.0.1:5520/index.html",
   ]);
   assert.equal(env.GAMEFOUNDRY_LOCAL_API_HOST, "127.0.0.1");
-  assert.equal(env.GAMEFOUNDRY_API_URL, "http://127.0.0.1:5511/api");
-  assert.equal(env.GAMEFOUNDRY_SITE_URL, "http://127.0.0.1:5510");
-  assert.equal(runtime.diagnostics.includes("Browser launch: http://127.0.0.1:5510/index.html"), true);
+  assert.equal(env.GAMEFOUNDRY_API_URL, "http://127.0.0.1:5521/api");
+  assert.equal(env.GAMEFOUNDRY_SITE_URL, "http://127.0.0.1:5520");
+  assert.equal(runtime.diagnostics.includes("Browser launch: http://127.0.0.1:5520/index.html"), true);
   await runtime.close();
   assert.deepEqual(events.slice(-2), ["api:closed", "web:closed"]);
 });
 
-test("codex role suppresses browser launch even after API and web servers are ready", async () => {
+test("alfa codex role skips browser launch even after API and web servers are ready", async () => {
   const events = [];
+  const env = {};
   const runtime = await startBootstrapRuntime(
-    parseBootstrapOptions(["--mode=bootstrap", "--team=alfa", "--role=codex"]),
+    parseBootstrapOptions(["--mode=bootstrap", "--team", "alfa", "--role", "codex"]),
     {
-      apiServerStarter: async () => {
-        events.push("api");
+      apiServerStarter: async ({ port }) => {
+        events.push(`api:${port}`);
         return {
           close: async () => {},
         };
@@ -304,13 +335,13 @@ test("codex role suppresses browser launch even after API and web servers are re
           url,
         };
       },
-      env: {},
+      env,
       loadEnv: () => ({
         loaded: false,
         loadedKeys: 0,
       }),
-      webServerStarter: async () => {
-        events.push("web");
+      webServerStarter: async ({ port }) => {
+        events.push(`web:${port}`);
         return {
           close: async () => {},
         };
@@ -318,8 +349,10 @@ test("codex role suppresses browser launch even after API and web servers are re
     },
   );
 
-  assert.deepEqual(events, ["api", "web"]);
-  assert.equal(runtime.diagnostics.includes("Browser launch: suppressed for codex role"), true);
+  assert.deepEqual(events, ["api:5513", "web:5512"]);
+  assert.equal(env.GAMEFOUNDRY_API_URL, "http://127.0.0.1:5513/api");
+  assert.equal(env.GAMEFOUNDRY_SITE_URL, "http://127.0.0.1:5512");
+  assert.equal(runtime.diagnostics.includes("Browser launch: skipped for codex role"), true);
   await runtime.close();
 });
 
