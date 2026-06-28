@@ -41,9 +41,9 @@
                                         <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="line" aria-label="Line tool placeholder">Line</button>
                                         <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="rectangle" aria-label="Rectangle tool placeholder">Rectangle</button>
                                         <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="circle" aria-label="Circle tool placeholder">Circle</button>
-                                        <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="picker" aria-label="Picker tool placeholder">Picker</button>
+                                        <button class="btn btn--compact" type="button" data-sprite-tool-button="picker" aria-label="Picker tool" aria-pressed="false">Picker</button>
                                         <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="move" aria-label="Move tool placeholder">Move</button>
-                                        <button class="btn btn--compact" type="button" disabled data-sprite-tool-button="zoom" aria-label="Zoom tool placeholder">Zoom</button>
+                                        <button class="btn btn--compact" type="button" data-sprite-tool-button="zoom" aria-label="Zoom tool" aria-pressed="false">Zoom</button>
                                     </div>
                                     <p class="status" role="status" data-sprites-tool-status>Pencil is active. Drawing stays in unsaved editor state for this page session only.</p>
                                 </div>
@@ -110,10 +110,16 @@
                                     <button class="btn btn--compact" type="button" data-sprites-undo disabled>Undo</button>
                                     <button class="btn btn--compact" type="button" data-sprites-redo disabled>Redo</button>
                                 </div>
-                                <div class="sprite-canvas-shell" data-sprites-grid-shell>
+                                <div class="action-group action-group--tight" aria-label="Sprite zoom display controls" data-sprites-zoom-controls>
+                                    <button class="btn btn--compact primary" type="button" data-sprites-zoom-level="1" aria-pressed="true">100%</button>
+                                    <button class="btn btn--compact" type="button" data-sprites-zoom-level="2" aria-pressed="false">200%</button>
+                                    <button class="btn btn--compact" type="button" data-sprites-zoom-level="4" aria-pressed="false">400%</button>
+                                </div>
+                                <div class="sprite-canvas-shell" data-sprites-grid-shell data-sprites-zoom-level="1">
                                     <div class="sprite-canvas-grid" role="grid" aria-label="Sprite Creator 16 by 16 pixel canvas" data-sprites-pixel-grid></div>
                                 </div>
                                 <p class="status" role="status" data-sprites-grid-status>Canvas display mode: 16x16. No pixel data is saved.</p>
+                                <p class="status" role="status" data-sprites-zoom-status>Canvas zoom display: 100%.</p>
                                 <p class="status" role="status" data-sprites-draft-status>Unsaved editor state: empty draft.</p>
                                 <p class="status" role="status" data-sprites-history-status>Undo history is empty.</p>
                             </div>

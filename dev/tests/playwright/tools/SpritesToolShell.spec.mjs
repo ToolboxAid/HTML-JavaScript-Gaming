@@ -13,9 +13,7 @@ const SPRITE_TOOLBAR_PLACEHOLDERS = [
   "Line",
   "Rectangle",
   "Circle",
-  "Picker",
   "Move",
-  "Zoom",
 ];
 
 function contentTypeForPath(filePath) {
@@ -230,6 +228,8 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status 
     await expect(page.getByRole("button", { name: "Pencil tool" })).toBeEnabled();
     await expect(page.getByRole("button", { name: "Eraser tool" })).toBeEnabled();
     await expect(page.getByRole("button", { name: "Fill tool" })).toBeEnabled();
+    await expect(page.getByRole("button", { name: "Picker tool" })).toBeEnabled();
+    await expect(page.getByRole("button", { name: "Zoom tool" })).toBeEnabled();
     for (const toolName of SPRITE_TOOLBAR_PLACEHOLDERS) {
       await expect(page.getByRole("button", { name: `${toolName} tool placeholder` })).toBeDisabled();
     }
@@ -239,6 +239,7 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status 
     await expect(page.locator("[data-sprites-pixel-grid]")).toBeVisible();
     await expect(page.locator("[data-sprites-pixel-grid] [role='gridcell']")).toHaveCount(256);
     await expect(page.locator("[data-sprites-grid-status]")).toContainText("Canvas display mode: 16x16");
+    await expect(page.locator("[data-sprites-zoom-status]")).toContainText("100%");
     await page.getByRole("button", { name: "32x32" }).click();
     await expect(page.locator("[data-sprites-pixel-grid]")).toHaveAttribute("aria-label", "Sprite Creator 32 by 32 pixel canvas");
     await expect(page.locator("[data-sprites-pixel-grid] [role='gridcell']")).toHaveCount(1024);
@@ -268,6 +269,11 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status 
     await page.getByRole("button", { name: "Pencil tool" }).click();
     await firstPixel.click();
     await expect(firstPixel).toHaveClass(/sprite-canvas-cell--gold/);
+    await page.getByRole("button", { name: "Blue editor color" }).click();
+    await page.getByRole("button", { name: "Picker tool" }).click();
+    await firstPixel.click();
+    await expect(page.locator("[data-sprites-palette-status]")).toContainText("Active editor color: Gold");
+    await expect(page.locator("[data-sprites-tool-status]")).toContainText("Picker selected Gold");
     await page.getByRole("button", { name: "Blue editor color" }).click();
     await page.getByRole("button", { name: "Fill tool" }).click();
     await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(1024);
@@ -300,6 +306,15 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status 
     await page.getByRole("button", { name: "Blue editor color" }).click();
     await page.getByRole("button", { name: "Fill tool" }).click();
     await expect(page.locator("[data-sprites-pixel-grid] .is-painted")).toHaveCount(256);
+    await page.getByRole("button", { name: "Zoom tool" }).click();
+    await page.getByRole("button", { name: "200%" }).click();
+    await expect(page.locator("[data-sprites-grid-shell]")).toHaveAttribute("data-sprites-zoom-level", "2");
+    await expect(page.locator("[data-sprites-zoom-status]")).toContainText("200%");
+    await page.getByRole("button", { name: "400%" }).click();
+    await expect(page.locator("[data-sprites-grid-shell]")).toHaveAttribute("data-sprites-zoom-level", "4");
+    await expect(page.locator("[data-sprites-zoom-status]")).toContainText("400%");
+    await page.getByRole("button", { name: "100%" }).click();
+    await expect(page.locator("[data-sprites-grid-shell]")).toHaveAttribute("data-sprites-zoom-level", "1");
     await expect(page.locator("[data-sprites-preview-canvas]")).toBeVisible();
     const previewHasPaint = await page.locator("[data-sprites-preview-canvas]").evaluate((canvas) => {
       const context = canvas.getContext("2d");
