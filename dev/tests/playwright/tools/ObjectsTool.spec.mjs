@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
-import { SEED_DB_KEYS } from "../../../../src/dev-runtime/seed/seed-db-keys.mjs";
+import { SEED_DB_KEYS } from "../../../../api/seed/seed-db-keys.mjs";
 
 const TYPE_OPTIONS = ["Collectible", "Custom", "Decoration", "Enemy", "Goal", "Hazard", "Hero", "Platform", "Projectile", "Spawn Point", "Wall"];
 const OLD_SAMPLE_PATH_PATTERN = new RegExp(["M" + "VP", "Padd" + "le", "Ba" + "ll"].join("|"), "i");

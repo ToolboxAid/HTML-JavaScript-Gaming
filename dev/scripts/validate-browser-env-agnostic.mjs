@@ -4,14 +4,15 @@ import path from "node:path";
 const repoRoot = process.cwd();
 const reportPath = path.join(repoRoot, "dev", "reports", "environment_agnostic_browser_gate_report.md");
 const browserScanRoots = [
-  "account",
-  "admin",
+  "www/account",
+  "www/admin",
   "www/assets/theme-v2/js",
-  "toolbox",
+  "www/toolbox",
   "src/engine",
 ];
 const environmentScanRoots = [
   ...browserScanRoots,
+  "api",
   "src",
   "dev/scripts",
   "dev/build/database",
@@ -112,7 +113,7 @@ function isExcluded(absolutePath) {
 function isValidationOrTestException(filePath) {
   const normalizedPath = repoPath(filePath);
   return normalizedPath.startsWith("dev/tests/") ||
-    normalizedPath.startsWith("src/dev-runtime/testing/") ||
+    normalizedPath.startsWith("api/testing/") ||
     /^dev\/scripts\/validate-[^/]+\.mjs$/.test(normalizedPath) ||
     /^dev\/scripts\/cleanup-supabase-dev-auth-test-users\.mjs$/.test(normalizedPath) ||
     /^dev\/scripts\/sync-supabase-dev-creator-identities\.mjs$/.test(normalizedPath);
@@ -328,15 +329,15 @@ async function validateProductServiceContract() {
     rejectPattern(contents, filePath, providerLeakPattern, findings, "Product API client must not expose provider/environment implementation details.");
   }
 
-  const router = await readRequiredRepoFile("src/dev-runtime/server/local-api-router.mjs", findings, "Local API router is missing");
-  requireSnippet(router, "src/dev-runtime/server/local-api-router.mjs", "async toolRegistrySnapshotForRoute() {\n    this.supabaseDatabaseAdapter(\"Reading Toolbox registry\");", findings, "Toolbox registry route must require the configured server product-data adapter.");
-  requireSnippet(router, "src/dev-runtime/server/local-api-router.mjs", "async toolboxVoteSnapshotForRoute() {\n    this.supabaseDatabaseAdapter(\"Reading Supabase Toolbox vote snapshot\");", findings, "Toolbox vote route must require the configured server product-data adapter.");
-  requireSnippet(router, "src/dev-runtime/server/local-api-router.mjs", "async snapshotForRoute() {\n    const adapter = this.supabaseDatabaseAdapter(\"Reading Supabase product database state\");", findings, "DB snapshot route must read the configured server product-data adapter.");
-  requireSnippet(router, "src/dev-runtime/server/local-api-router.mjs", "if (parts[1] === \"product-data\" && request.method === \"GET\" && parts[2] === \"snapshot\")", findings, "Product data snapshots must use the service-contract route name.");
-  requireSnippet(router, "src/dev-runtime/server/local-api-router.mjs", "this.assertProductDatabaseProvider(`Creating ${toolId} repository`);", findings, "Repository creation must assert the server-owned product-data contract.");
-  requireSnippet(router, "src/dev-runtime/server/local-api-router.mjs", "this.assertProductDatabaseProvider(`Calling repository method ${methodName}`);", findings, "Repository method calls must assert the server-owned product-data contract.");
-  rejectPattern(router, "src/dev-runtime/server/local-api-router.mjs", /selectedDatabaseProviderId|selectedAuthProvider|selectedProvidersCanServeRuntime/, findings, "Runtime router must not contain active provider-selection helpers.");
-  rejectPattern(router, "src/dev-runtime/server/local-api-router.mjs", routerRetiredStoragePattern, findings, "Runtime router must not contain retired file-DB startup/opening code, provider-selection environment variables, or retired local-db/mock-db routes.");
+  const router = await readRequiredRepoFile("api/server/local-api-router.mjs", findings, "Local API router is missing");
+  requireSnippet(router, "api/server/local-api-router.mjs", "async toolRegistrySnapshotForRoute() {\n    this.supabaseDatabaseAdapter(\"Reading Toolbox registry\");", findings, "Toolbox registry route must require the configured server product-data adapter.");
+  requireSnippet(router, "api/server/local-api-router.mjs", "async toolboxVoteSnapshotForRoute() {\n    this.supabaseDatabaseAdapter(\"Reading Supabase Toolbox vote snapshot\");", findings, "Toolbox vote route must require the configured server product-data adapter.");
+  requireSnippet(router, "api/server/local-api-router.mjs", "async snapshotForRoute() {\n    const adapter = this.supabaseDatabaseAdapter(\"Reading Supabase product database state\");", findings, "DB snapshot route must read the configured server product-data adapter.");
+  requireSnippet(router, "api/server/local-api-router.mjs", "if (parts[1] === \"product-data\" && request.method === \"GET\" && parts[2] === \"snapshot\")", findings, "Product data snapshots must use the service-contract route name.");
+  requireSnippet(router, "api/server/local-api-router.mjs", "this.assertProductDatabaseProvider(`Creating ${toolId} repository`);", findings, "Repository creation must assert the server-owned product-data contract.");
+  requireSnippet(router, "api/server/local-api-router.mjs", "this.assertProductDatabaseProvider(`Calling repository method ${methodName}`);", findings, "Repository method calls must assert the server-owned product-data contract.");
+  rejectPattern(router, "api/server/local-api-router.mjs", /selectedDatabaseProviderId|selectedAuthProvider|selectedProvidersCanServeRuntime/, findings, "Runtime router must not contain active provider-selection helpers.");
+  rejectPattern(router, "api/server/local-api-router.mjs", routerRetiredStoragePattern, findings, "Runtime router must not contain retired file-DB startup/opening code, provider-selection environment variables, or retired local-db/mock-db routes.");
 
   const startup = await readRequiredRepoFile("dev/scripts/start-local-api-server.mjs", findings, "Local API startup script is missing");
   rejectPattern(startup, "dev/scripts/start-local-api-server.mjs", /GAMEFOUNDRY_AUTH_PROVIDER|GAMEFOUNDRY_DB_PROVIDER|auth provider|product data provider|provider selection/i, findings, "Local API startup must describe configured connections without provider-selection environment variables.");

@@ -3,11 +3,11 @@ import fs from "node:fs";
 import http from "node:http";
 import path from "node:path";
 import process from "node:process";
-import { createProviderContractSnapshot, SupabasePostgresProviderAdapter } from "../../src/dev-runtime/auth/provider-contract-stubs.mjs";
-import { createPostgresConnectionClient } from "../../src/dev-runtime/persistence/postgres-connection-client.mjs";
-import { createLocalApiRouter } from "../../src/dev-runtime/server/local-api-router.mjs";
-import { createServerSeedTables } from "../../src/dev-runtime/seed/server-seed-loader.mjs";
-import { SEED_DB_KEYS } from "../../src/dev-runtime/seed/seed-db-keys.mjs";
+import { createProviderContractSnapshot, SupabasePostgresProviderAdapter } from "../../api/auth/provider-contract-stubs.mjs";
+import { createPostgresConnectionClient } from "../../api/persistence/postgres-connection-client.mjs";
+import { createLocalApiRouter } from "../../api/server/local-api-router.mjs";
+import { createServerSeedTables } from "../../api/seed/server-seed-loader.mjs";
+import { SEED_DB_KEYS } from "../../api/seed/seed-db-keys.mjs";
 
 const RUNTIME_ENV_FILE = ".env";
 const DDL_FILES = Object.freeze([

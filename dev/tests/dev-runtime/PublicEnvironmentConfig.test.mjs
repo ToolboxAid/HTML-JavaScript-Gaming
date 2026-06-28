@@ -1,7 +1,7 @@
 import http from "node:http";
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createLocalApiRouter } from "../../../src/dev-runtime/server/local-api-router.mjs";
+import { createLocalApiRouter } from "../../../api/server/local-api-router.mjs";
 
 const PUBLIC_CONFIG_ENV_KEYS = Object.freeze([
   "GAMEFOUNDRY_API_URL",

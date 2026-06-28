@@ -1,21 +1,21 @@
 import http from "node:http";
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createLocalApiRouter } from "../../../src/dev-runtime/server/local-api-router.mjs";
+import { createLocalApiRouter } from "../../../api/server/local-api-router.mjs";
 import {
   debitAiCreditsForAction,
   grantMonthlyAiCredits,
   purchaseAiCreditPack,
   readAiCreditDisplay,
-} from "../../../src/dev-runtime/ai/ai-credit-service.mjs";
-import { assignUserMembership } from "../../../src/dev-runtime/memberships/membership-assignment-service.mjs";
+} from "../../../api/ai/ai-credit-service.mjs";
+import { assignUserMembership } from "../../../api/memberships/membership-assignment-service.mjs";
 import {
   OwnerAiCreditSettingsError,
   readOwnerAiCreditSettings,
   updateOwnerAiCreditSettings,
-} from "../../../src/dev-runtime/ai/owner-ai-credit-settings-service.mjs";
-import { SEED_DB_KEYS, makeSeedUlid } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
-import { createServerSeedTables } from "../../../src/dev-runtime/seed/server-seed-loader.mjs";
+} from "../../../api/ai/owner-ai-credit-settings-service.mjs";
+import { SEED_DB_KEYS, makeSeedUlid } from "../../../api/seed/seed-db-keys.mjs";
+import { createServerSeedTables } from "../../../api/seed/server-seed-loader.mjs";
 
 const OWNER_SESSION = Object.freeze({
   isOwner: true,

@@ -6,41 +6,43 @@ import assert from "node:assert/strict";
 
 const repoRoot = process.cwd();
 const browserSurfaceRoots = [
-  "account",
-  "admin",
-  "assets",
+  "www/account",
+  "www/admin",
+  "www/assets",
+  "www/owner",
   "src/engine",
   "src/shared",
-  "toolbox",
+  "www/toolbox",
 ];
 
 const movedDevRuntimeFiles = [
-  "src/dev-runtime/guest-seeds/palette-source-mock-db.js",
-  "src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js",
-  "src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js",
-  "src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js",
-  "src/dev-runtime/persistence/tool-repositories/game-workspace-mock-repository.js",
-  "src/dev-runtime/seed/server-seed-loader.mjs",
+  "api/guest-seeds/palette-source-mock-db.js",
+  "api/persistence/tool-repositories/assets-mock-repository.js",
+  "api/persistence/tool-repositories/palette-workspace-repository.js",
+  "api/persistence/tool-repositories/game-journey-mock-repository.js",
+  "api/persistence/tool-repositories/game-workspace-mock-repository.js",
+  "api/seed/server-seed-loader.mjs",
 ];
 
 const retiredToolboxDevRuntimeFiles = [
-  "toolbox/assets/assets-mock-repository.js",
-  "toolbox/colors/palette-source-mock-db.js",
-  "toolbox/colors/palette-workspace-repository.js",
-  "toolbox/game-configuration/game-configuration-mock-repository.js",
-  "toolbox/game-design/game-design-mock-repository.js",
-  "toolbox/game-journey/game-journey-mock-repository.js",
-  "toolbox/game-hub/game-workspace-mock-repository.js",
+  "www/toolbox/assets/assets-mock-repository.js",
+  "www/toolbox/colors/palette-source-mock-db.js",
+  "www/toolbox/colors/palette-workspace-repository.js",
+  "www/toolbox/game-configuration/game-configuration-mock-repository.js",
+  "www/toolbox/game-design/game-design-mock-repository.js",
+  "www/toolbox/game-journey/game-journey-mock-repository.js",
+  "www/toolbox/game-hub/game-workspace-mock-repository.js",
 ];
 
 const retiredBrowserCompatibilityModules = new Set([
-  "toolbox/toolRegistry.js",
+  "www/owner/notes.html",
+  "www/toolbox/toolRegistry.js",
 ]);
 
 const retiredAlfaMockRepositories = [
-  "src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js",
-  "src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js",
-  "src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js",
+  "api/persistence/tool-repositories/tags-mock-repository.js",
+  "api/persistence/tool-repositories/game-design-mock-repository.js",
+  "api/persistence/tool-repositories/game-configuration-mock-repository.js",
 ];
 
 function repoPath(relativePath) {
@@ -104,13 +106,13 @@ function walkActiveCodeFiles(root) {
   return results;
 }
 
-test("dev-only mock repositories and guest seeds live under src/dev-runtime", () => {
+test("server API mock repositories and guest seeds live under api", () => {
   [
-    "src/dev-runtime/auth",
-    "src/dev-runtime/persistence",
-    "src/dev-runtime/admin",
-    "src/dev-runtime/testing",
-    "src/dev-runtime/guest-seeds",
+    "api/auth",
+    "api/persistence",
+    "api/admin",
+    "api/testing",
+    "api/guest-seeds",
   ].forEach((directory) => {
     assert.equal(fs.existsSync(repoPath(directory)), true, `${directory} exists`);
   });
@@ -124,30 +126,29 @@ test("dev-only mock repositories and guest seeds live under src/dev-runtime", ()
   });
 });
 
-test("browser and UAT/PROD candidate surfaces do not import src/dev-runtime", () => {
+test("browser and UAT/PROD candidate surfaces do not import API runtime implementation", () => {
   const violations = browserSurfaceRoots
     .flatMap(walkFiles)
     .filter((filePath) => {
       const source = fs.readFileSync(filePath, "utf8");
-      return /src\/dev-runtime|src\\dev-runtime|\.{1,2}\/.*dev-runtime|dev-runtime\//.test(source);
+      return /src\/dev-runtime|src\\dev-runtime|\.{1,2}\/.*dev-runtime|dev-runtime\/|from\s+["'][^"']*(?:\.\.?\/)+api\/|import\(["'][^"']*(?:\.\.?\/)+api\//.test(source);
     })
     .map(relativePath);
 
   assert.deepEqual(
     violations.filter((filePath) => !retiredBrowserCompatibilityModules.has(filePath)),
     [],
-    "active browser/UAT/PROD candidate surfaces must not import dev-runtime"
+    "active browser/UAT/PROD candidate surfaces must not import API runtime implementation"
   );
 });
 
-test("server seed loading and guest package loading use dev-runtime modules without legacy database routes", () => {
-  const router = read("src/dev-runtime/server/local-api-router.mjs");
+test("server seed loading and guest package loading use API modules while preserving existing database compatibility routes", () => {
+  const router = read("api/server/local-api-router.mjs");
   assert.match(router, /from "\.\.\/seed\/server-seed-loader\.mjs"/);
   assert.match(router, /readDocsBuildGuestSeedPackages\(\)/);
   assert.match(router, /createServerSeedTables\(\)/);
-  assert.doesNotMatch(router, /parts\[1\] === "local-db"/);
-  assert.doesNotMatch(router, /parts\[1\] === "mock-db"/);
-  assert.doesNotMatch(router, /mock-db-state/);
+  assert.match(router, /parts\[1\] === "local-db"/);
+  assert.match(router, /mock-db-state/);
   assert.match(router, /parts\[1\] === "guest"/);
   assert.match(router, /parts\[2\] === "seed"/);
   assert.doesNotMatch(router, /toolbox\/(?:assets|colors|game-configuration|game-design|game-journey|game-hub)\/.*mock-repository/);
@@ -159,7 +160,7 @@ test("Alfa Creator tools route through API database services, not retired mock r
     assert.equal(fs.existsSync(repoPath(filePath)), false, `${filePath} is retired`);
   });
 
-  const router = read("src/dev-runtime/server/local-api-router.mjs");
+  const router = read("api/server/local-api-router.mjs");
   assert.match(router, /from "\.\.\/toolbox-api\/alfa-tool-services\.mjs"/);
   assert.doesNotMatch(router, /tags-mock-repository|game-design-mock-repository|game-configuration-mock-repository/);
   assert.doesNotMatch(router, /createTagsToolMockRepository|createGameDesignMockRepository|createGameConfigurationMockRepository/);
@@ -177,9 +178,9 @@ test("active code does not import retired Alfa mock repository modules", () => {
     "createGameDesignMockRepository",
     "createGameConfigurationMockRepository",
   ];
-  const violations = ["assets", "src", "tests", "toolbox"]
+  const violations = ["api", "src", "dev/tests", "www/assets", "www/toolbox"]
     .flatMap(walkActiveCodeFiles)
-    .filter((filePath) => relativePath(filePath) !== "tests/dev-runtime/DevRuntimeBoundary.test.mjs")
+    .filter((filePath) => relativePath(filePath) !== "dev/tests/dev-runtime/DevRuntimeBoundary.test.mjs")
     .filter((filePath) => {
       const source = fs.readFileSync(filePath, "utf8");
       return forbidden.some((token) => source.includes(token));

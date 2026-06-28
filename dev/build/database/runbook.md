@@ -170,8 +170,8 @@ are stable. It may show validation, apply, backup, restore, and migration
 history status, but it must not execute database operations from the browser.
 
 The status surface currently routes through
-`src/dev-runtime/server/local-api-router.mjs`. That filename is retained as a
-legacy runtime filename for now; do not infer local database behavior from it.
+`api/server/local-api-router.mjs`. That local API filename is retained for now;
+do not infer local database behavior from it.
 
 ## Rollback Guidance
 

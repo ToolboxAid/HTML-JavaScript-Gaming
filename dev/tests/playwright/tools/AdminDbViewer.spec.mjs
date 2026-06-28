@@ -3,15 +3,15 @@ import http from "node:http";
 import path from "node:path";
 import process from "node:process";
 import { expect, test } from "@playwright/test";
-import { createAssetToolMockRepository } from "../../../../src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js";
-import { createGameWorkspacePaletteRepository } from "../../../../src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js";
+import { createAssetToolMockRepository } from "../../../../api/persistence/tool-repositories/assets-mock-repository.js";
+import { createGameWorkspacePaletteRepository } from "../../../../api/persistence/tool-repositories/palette-workspace-repository.js";
 import {
   MOCK_DB_KEYS,
   getMockDbTableSchemas,
   getStandaloneMockDbSeedTables,
   normalizeMockDbTables,
-} from "../../../../src/dev-runtime/persistence/mock-db-store.js";
-import { getActiveToolRegistry } from "../../../../src/dev-runtime/guest-seeds/tool-metadata-inventory.js";
+} from "../../../../api/persistence/mock-db-store.js";
+import { getActiveToolRegistry } from "../../../../api/guest-seeds/tool-metadata-inventory.js";
 import { isBrowserExtensionNoise } from "../../helpers/browserExtensionNoise.mjs";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";

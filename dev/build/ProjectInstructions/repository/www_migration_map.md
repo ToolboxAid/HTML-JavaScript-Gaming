@@ -107,19 +107,19 @@ These references can be preserved temporarily by serving compatibility paths fro
 
 ## Current Local Web Server Root Behavior
 
-Three active server/helper surfaces currently resolve static browser paths from the repository root:
+Three active server/helper surfaces currently resolve static browser paths through the shared static route resolver:
 
 | File | Current behavior |
 | --- | --- |
-| `dev/scripts/start-dev.mjs` | Team-aware bootstrap static server resolves requests with `path.resolve(repoRoot, \`.\${normalizedPath}\`)`. `/` maps to `/index.html`; `/tools/*` maps to `/toolbox/*`; `/admin/admin-notes.html` maps to `/src/dev-runtime/admin/notes.html`. |
-| `src/dev-runtime/server/local-api-server.mjs` | Legacy local API alias serves API routes and falls back to static files from `repoRoot`. `/tools/*` maps to `/toolbox/*`; `/admin/admin-notes.html` maps to `/src/dev-runtime/admin/notes.html`. |
-| `dev/tests/helpers/playwrightRepoServer.mjs` | Playwright test server mirrors repo-root static serving and the `/tools/*` and admin-notes compatibility routes. |
+| `dev/scripts/start-dev.mjs` | Team-aware bootstrap static server resolves requests with `resolveStaticRouteTarget()`, preferring `www/` while preserving public route URLs and compatibility routes. |
+| `api/server/local-api-server.mjs` | Legacy local API alias serves API routes and falls back to `resolveStaticRouteTarget()`, preferring `www/` while preserving public route URLs and compatibility routes. |
+| `dev/tests/helpers/playwrightRepoServer.mjs` | Playwright test server mirrors the shared static route resolver and compatibility routes. |
 
-The actual `www/` move must update these filesystem lookup roots or introduce a shared route resolver that can resolve public routes to `www/` while preserving API route ownership.
+The actual `www/` move introduced the shared route resolver so public URLs continue to resolve while filesystem ownership lives under `www/`.
 
 ## Current Test Assumptions
 
-Playwright and runtime tests currently assume root-based public routes and root-relative filesystem paths:
+At the time of the migration map, Playwright and runtime tests assumed root-based public routes and root-relative filesystem paths:
 
 - 96 Playwright/helper/runtime files reference public routes such as `/toolbox`, `/account`, `/admin`, `/games`, `/learn`, `/legal`, `/marketplace`, `/memberships`, or `/index.html`.
 - `dev/tests/playwright/tools/ToolNavigationPrevNext.spec.mjs` opens `/toolbox/index.html` and `/toolbox/game-design/index.html`.
@@ -128,7 +128,7 @@ Playwright and runtime tests currently assume root-based public routes and root-
 - `dev/tests/runtime/V2*` tests frequently assert `toolbox/{tool}/index.html` filesystem or URL behavior.
 - `dev/scripts/run-node-tests.mjs` and `dev/scripts/run-node-test-files.mjs` register root aliases for `/src/` and `/toolbox/`.
 
-The move PR must update test helpers and route expectations in the same PR that changes the filesystem root. Browser-visible URLs should remain stable unless Owner explicitly approves a public URL change.
+The `www/` move PR updated test helpers and route expectations for the filesystem root change. Browser-visible URLs must remain stable unless Owner explicitly approves a public URL change.
 
 ## Preserve Versus Rewrite
 
@@ -151,7 +151,6 @@ The move PR must update test helpers and route expectations in the same PR that 
 
 ### Defer
 
-- Moving server/API code into `api/`.
 - Moving developer bootstrap into `dev/local-runtime/`.
 - Removing legacy root compatibility routes.
 - Changing package commands.

@@ -3,13 +3,13 @@ import { test } from "node:test";
 import {
   SupabaseAuthProviderAdapter,
   SupabasePostgresProviderAdapter,
-} from "../../../src/dev-runtime/auth/provider-contract-stubs.mjs";
+} from "../../../api/auth/provider-contract-stubs.mjs";
 import {
   assertDevOnlyAuthTestCleanupEnvironment,
   cleanupSupabaseDevAuthTestUsers,
   isSupabaseDevAuthTestUser,
-} from "../../../src/dev-runtime/testing/supabase-dev-auth-test-user-cleanup.mjs";
-import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store.js";
+} from "../../../api/testing/supabase-dev-auth-test-user-cleanup.mjs";
+import { MOCK_DB_KEYS } from "../../../api/persistence/mock-db-store.js";
 
 const cleanupEnv = Object.freeze({
   GAMEFOUNDRY_ENV: "dev",

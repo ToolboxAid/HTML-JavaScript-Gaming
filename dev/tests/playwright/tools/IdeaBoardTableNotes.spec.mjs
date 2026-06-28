@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
-import { GAME_JOURNEY_BOOTSTRAP_BUCKETS } from "../../../../src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js";
-import { MOCK_DB_KEYS } from "../../../../src/dev-runtime/persistence/mock-db-store.js";
+import { GAME_JOURNEY_BOOTSTRAP_BUCKETS } from "../../../../api/persistence/tool-repositories/game-journey-mock-repository.js";
+import { MOCK_DB_KEYS } from "../../../../api/persistence/mock-db-store.js";
 import { isBrowserExtensionNoise } from "../../helpers/browserExtensionNoise.mjs";
 import { createGameJourneyCompletionMetricsPostgresClientStub } from "../../helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";

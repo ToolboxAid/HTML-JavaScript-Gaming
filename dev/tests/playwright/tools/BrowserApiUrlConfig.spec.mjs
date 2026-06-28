@@ -3,8 +3,9 @@ import http from "node:http";
 import path from "node:path";
 import process from "node:process";
 import { expect, test } from "@playwright/test";
-import { startLocalApiServer } from "../../../../src/dev-runtime/server/local-api-server.mjs";
-import { SEED_DB_KEYS } from "../../../../src/dev-runtime/seed/seed-db-keys.mjs";
+import { startLocalApiServer } from "../../../../api/server/local-api-server.mjs";
+import { SEED_DB_KEYS } from "../../../../api/seed/seed-db-keys.mjs";
+import { resolveStaticRouteTarget } from "../../../../api/server/static-web-root.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
 const LIVE_SERVER_ORIGIN = "http://127.0.0.1:5500";
@@ -21,7 +22,7 @@ let localDbRunId = 0;
 
 function nextLocalDbStoragePath() {
   localDbRunId += 1;
-  return path.join(process.cwd(), "tmp", "local-db", `browser-api-url-config-${process.pid}-${localDbRunId}.local-db-state`);
+  return path.join(process.cwd(), "dev", "workspace", "tmp", "local-db", `browser-api-url-config-${process.pid}-${localDbRunId}.local-db-state`);
 }
 
 function contentTypeForPath(filePath) {
@@ -35,11 +36,6 @@ function contentTypeForPath(filePath) {
   if (extension === ".jpg" || extension === ".jpeg") return "image/jpeg";
   if (extension === ".webp") return "image/webp";
   return "application/octet-stream";
-}
-
-function isInsideRepoRoot(repoRoot, absolutePath) {
-  const relativePath = path.relative(repoRoot, absolutePath);
-  return relativePath === "" || (!relativePath.startsWith("..") && !path.isAbsolute(relativePath));
 }
 
 async function withEnv(nextEnv, callback) {
@@ -72,19 +68,8 @@ async function startStaticLiveServer() {
       return;
     }
     const decodedPath = decodeURIComponent(requestUrl.pathname);
-    const normalizedPath = path.normalize(decodedPath).replace(/^(\.\.[/\\])+/, "");
-    const absolutePath = path.resolve(repoRoot, `.${normalizedPath}`);
-    if (!isInsideRepoRoot(repoRoot, absolutePath)) {
-      response.statusCode = 403;
-      response.end("Forbidden");
-      return;
-    }
-    let targetPath = absolutePath;
-    const stat = await fs.stat(targetPath).catch(() => null);
-    if (stat?.isDirectory()) {
-      targetPath = path.join(targetPath, "index.html");
-    }
-    const contents = await fs.readFile(targetPath).catch(() => null);
+    const { targetPath } = await resolveStaticRouteTarget({ decodedPath, repoRoot });
+    const contents = targetPath ? await fs.readFile(targetPath).catch(() => null) : null;
     if (!contents) {
       response.statusCode = 404;
       response.end("Not Found");

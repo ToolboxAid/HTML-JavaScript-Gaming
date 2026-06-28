@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { SupabasePostgresProviderAdapter } from "../../../src/dev-runtime/auth/provider-contract-stubs.mjs";
+import { SupabasePostgresProviderAdapter } from "../../../api/auth/provider-contract-stubs.mjs";
 
 test("platform_settings product data uses the configured database connection client", async () => {
   const calls = [];

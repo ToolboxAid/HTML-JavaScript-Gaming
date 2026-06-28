@@ -1,10 +1,10 @@
 import http from "node:http";
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createLocalApiRouter } from "../../../src/dev-runtime/server/local-api-router.mjs";
-import { assignUserMembership, resolveActiveUserMembership, MembershipAssignmentError } from "../../../src/dev-runtime/memberships/membership-assignment-service.mjs";
-import { SEED_DB_KEYS, makeSeedUlid } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
-import { createServerSeedTables } from "../../../src/dev-runtime/seed/server-seed-loader.mjs";
+import { createLocalApiRouter } from "../../../api/server/local-api-router.mjs";
+import { assignUserMembership, resolveActiveUserMembership, MembershipAssignmentError } from "../../../api/memberships/membership-assignment-service.mjs";
+import { SEED_DB_KEYS, makeSeedUlid } from "../../../api/seed/seed-db-keys.mjs";
+import { createServerSeedTables } from "../../../api/seed/server-seed-loader.mjs";
 
 function createKeyFactory(start = 500) {
   let sequence = start;

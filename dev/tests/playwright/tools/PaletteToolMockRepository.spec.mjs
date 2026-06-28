@@ -1,11 +1,11 @@
 import { expect, test } from "@playwright/test";
-import { MOCK_DB_KEYS } from "../../../../src/dev-runtime/persistence/mock-db-store.js";
+import { MOCK_DB_KEYS } from "../../../../api/persistence/mock-db-store.js";
 import {
   PALETTE_WORKSPACE_PATH,
   PALETTE_TOOL_TABLES,
   createGameWorkspacePaletteRepository,
   validatePaletteWorkspacePayload
-} from "../../../../src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js";
+} from "../../../../api/persistence/tool-repositories/palette-workspace-repository.js";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { expectCompactToolFormControls } from "../../helpers/toolFormControlAssertions.mjs";

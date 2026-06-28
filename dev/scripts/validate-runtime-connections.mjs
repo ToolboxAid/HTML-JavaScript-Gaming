@@ -6,7 +6,7 @@ import path from "node:path";
 import process from "node:process";
 import tls from "node:tls";
 import { URL } from "node:url";
-import { createPostgresConnectionClient, databaseSslMode } from "../../src/dev-runtime/persistence/postgres-connection-client.mjs";
+import { createPostgresConnectionClient, databaseSslMode } from "../../api/persistence/postgres-connection-client.mjs";
 
 const ENV_FILE = ".env";
 const REQUIRED_ENV = Object.freeze([

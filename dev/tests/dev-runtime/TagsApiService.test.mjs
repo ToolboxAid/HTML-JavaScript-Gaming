@@ -3,8 +3,8 @@ import test from "node:test";
 import {
   createTagsApiService,
   gameWorkspaceGameKeyForApi,
-} from "../../../src/dev-runtime/toolbox-api/alfa-tool-services.mjs";
-import { SEED_DB_KEYS, makeSeedUlid } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
+} from "../../../api/toolbox-api/alfa-tool-services.mjs";
+import { SEED_DB_KEYS, makeSeedUlid } from "../../../api/seed/seed-db-keys.mjs";
 
 function cloneRows(rows) {
   return rows.map((row) => ({ ...row }));

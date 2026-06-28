@@ -13,9 +13,9 @@ import {
   GAME_JOURNEY_STATUSES,
   GAME_JOURNEY_TOOL_OWNERSHIP_AREAS,
   createGameJourneyMockRepository,
-} from "../../../../src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js";
-import { createGameJourneyCompletionMetricsStore } from "../../../../src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs";
-import { MOCK_DB_KEYS, getStandaloneMockDbSeedTables } from "../../../../src/dev-runtime/persistence/mock-db-store.js";
+} from "../../../../api/persistence/tool-repositories/game-journey-mock-repository.js";
+import { createGameJourneyCompletionMetricsStore } from "../../../../api/persistence/game-journey-completion-metrics-store.mjs";
+import { MOCK_DB_KEYS, getStandaloneMockDbSeedTables } from "../../../../api/persistence/mock-db-store.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, "../../../..");
@@ -1689,7 +1689,7 @@ test("Game Journey source stays separate from notes files and browser persistenc
   const sourcePaths = [
     "toolbox/game-journey/index.html",
     "assets/toolbox/game-journey/js/index.js",
-    "src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js"
+    "api/persistence/tool-repositories/game-journey-mock-repository.js"
   ];
   const banned = [
     "admin" + "-notes",

@@ -2,7 +2,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
-import { syncSupabaseDevCreatorIdentities } from "../../src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs";
+import { syncSupabaseDevCreatorIdentities } from "../../api/testing/supabase-dev-creator-identity-seed-sync.mjs";
 
 function parseEnvValue(value) {
   const trimmed = value.trim();

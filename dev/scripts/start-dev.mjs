@@ -5,9 +5,9 @@ import http from "node:http";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { localAdminNotesHeaderPartialPath } from "../../src/dev-runtime/admin/admin-notes-menu.mjs";
-import { startLocalApiServer } from "../../src/dev-runtime/server/local-api-server.mjs";
-import { resolveStaticRouteTarget } from "../../src/dev-runtime/server/static-web-root.mjs";
+import { localAdminNotesHeaderPartialPath } from "../../api/admin/admin-notes-menu.mjs";
+import { startLocalApiServer } from "../../api/server/local-api-server.mjs";
+import { resolveStaticRouteTarget } from "../../api/server/static-web-root.mjs";
 import {
   parseRoleArgument,
   parseTeamArgument,

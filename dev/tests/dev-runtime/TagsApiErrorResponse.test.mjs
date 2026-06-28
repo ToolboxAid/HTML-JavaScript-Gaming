@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 import http from "node:http";
 import test from "node:test";
-import { SupabasePostgresProviderAdapter } from "../../../src/dev-runtime/auth/provider-contract-stubs.mjs";
-import { createLocalApiRouter } from "../../../src/dev-runtime/server/local-api-router.mjs";
-import { SEED_DB_KEYS } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
+import { SupabasePostgresProviderAdapter } from "../../../api/auth/provider-contract-stubs.mjs";
+import { createLocalApiRouter } from "../../../api/server/local-api-router.mjs";
+import { SEED_DB_KEYS } from "../../../api/seed/seed-db-keys.mjs";
 
 const RAW_TAGS_SCHEMA_ERROR = "Configured database project_tags request failed: relation \"project_tags\" does not exist at postgres://tags_owner:secret-password@db.internal.example:5432/gamefoundry";
 

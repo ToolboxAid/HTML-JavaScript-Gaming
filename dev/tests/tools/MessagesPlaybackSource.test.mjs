@@ -33,7 +33,7 @@ test("Messages wires profile dropdowns through the Text To Speech profile contra
 });
 
 test("Messages dev runtime does not import browser Text To Speech UI modules", async () => {
-  const source = await readFile(new URL("../../../src/dev-runtime/messages/messages-postgres-service.mjs", import.meta.url), "utf8");
+  const source = await readFile(new URL("../../../api/messages/messages-postgres-service.mjs", import.meta.url), "utf8");
 
   assert.equal(source.includes("toolbox/text-to-speech/text2speech.js"), false);
   assert.equal(source.includes("createMessageStudioDefaultTtsProfiles"), false);

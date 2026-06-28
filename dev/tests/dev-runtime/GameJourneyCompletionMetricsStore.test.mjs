@@ -5,7 +5,7 @@ import test from "node:test";
 import {
   GAME_JOURNEY_COMPLETION_METRICS_TABLE,
   createGameJourneyCompletionMetricsStore,
-} from "../../../src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs";
+} from "../../../api/persistence/game-journey-completion-metrics-store.mjs";
 import { createGameJourneyCompletionMetricsPostgresClientStub } from "../helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs";
 
 const IMPLEMENTATION_ROOTS = Object.freeze(["src", "assets", "toolbox", "scripts", "tests"]);

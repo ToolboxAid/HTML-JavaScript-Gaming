@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { assignUserMembership } from "../../../src/dev-runtime/memberships/membership-assignment-service.mjs";
+import { assignUserMembership } from "../../../api/memberships/membership-assignment-service.mjs";
 import {
   addProjectMember,
   assertProjectMemberAccess,
@@ -10,9 +10,9 @@ import {
   joinProjectMember,
   readProjectTeamState,
   removeProjectMember,
-} from "../../../src/dev-runtime/teams/project-team-service.mjs";
-import { SEED_DB_KEYS, makeSeedUlid } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
-import { createServerSeedTables } from "../../../src/dev-runtime/seed/server-seed-loader.mjs";
+} from "../../../api/teams/project-team-service.mjs";
+import { SEED_DB_KEYS, makeSeedUlid } from "../../../api/seed/seed-db-keys.mjs";
+import { createServerSeedTables } from "../../../api/seed/server-seed-loader.mjs";
 
 function createKeyFactory(start = 3200) {
   let sequence = start;

@@ -1,15 +1,15 @@
 import http from "node:http";
 import test from "node:test";
 import assert from "node:assert/strict";
-import { SUPABASE_POSTGRES_PRODUCT_TABLES } from "../../../src/dev-runtime/auth/provider-contract-stubs.mjs";
+import { SUPABASE_POSTGRES_PRODUCT_TABLES } from "../../../api/auth/provider-contract-stubs.mjs";
 import {
   readMarketplaceCategories,
   validateMarketplaceCategoryCode,
-} from "../../../src/dev-runtime/marketplace/marketplace-category-service.mjs";
-import { getMockDbTableSchemas } from "../../../src/dev-runtime/persistence/mock-db-store.js";
-import { createLocalApiRouter } from "../../../src/dev-runtime/server/local-api-router.mjs";
-import { SEED_DB_KEYS, makeSeedUlid } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
-import { createServerSeedTables } from "../../../src/dev-runtime/seed/server-seed-loader.mjs";
+} from "../../../api/marketplace/marketplace-category-service.mjs";
+import { getMockDbTableSchemas } from "../../../api/persistence/mock-db-store.js";
+import { createLocalApiRouter } from "../../../api/server/local-api-router.mjs";
+import { SEED_DB_KEYS, makeSeedUlid } from "../../../api/seed/seed-db-keys.mjs";
+import { createServerSeedTables } from "../../../api/seed/server-seed-loader.mjs";
 
 const APPROVED_CODES = Object.freeze(["games", "assets", "audio", "music", "worlds", "templates", "tutorials"]);
 const ALPHABETICAL_CODES = Object.freeze(["assets", "audio", "games", "music", "templates", "tutorials", "worlds"]);

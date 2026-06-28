@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { MOCK_DB_KEYS } from "../../../../src/dev-runtime/persistence/mock-db-store.js";
+import { MOCK_DB_KEYS } from "../../../../api/persistence/mock-db-store.js";
 import { isBrowserExtensionNoise } from "../../helpers/browserExtensionNoise.mjs";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";

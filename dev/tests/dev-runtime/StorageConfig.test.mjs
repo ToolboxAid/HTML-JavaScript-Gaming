@@ -4,7 +4,7 @@ import {
   STORAGE_PROJECTS_ALLOWED_PREFIXES,
   loadStorageConfig,
   normalizeStorageProjectsPrefix,
-} from "../../../src/dev-runtime/storage/storage-config.mjs";
+} from "../../../api/storage/storage-config.mjs";
 
 function validStorageEnv(projectsPrefix = "/dev/projects/") {
   return {
