@@ -249,6 +249,52 @@ async function expectCenterAndPreviewEmpty(page, row, column) {
   expect(await previewCellHasPaint(page, row, column)).toBe(false);
 }
 
+async function gridDimensionMetrics(page) {
+  return page.locator("[data-sprites-pixel-grid]").evaluate((grid) => {
+    const cells = Array.from(grid.querySelectorAll("[role='gridcell']"));
+    const gridRect = grid.getBoundingClientRect();
+    let maxRight = 0;
+    let maxBottom = 0;
+    const styles = getComputedStyle(grid);
+    const templateTrackCount = (value) => value.split(" ").filter(Boolean).length;
+
+    for (const cell of cells) {
+      const rect = cell.getBoundingClientRect();
+      maxRight = Math.max(maxRight, rect.right);
+      maxBottom = Math.max(maxBottom, rect.bottom);
+    }
+
+    const lastRowCells = cells.slice(-Number(grid.dataset.spritesGridSize || 0));
+    return {
+      cellCount: cells.length,
+      columnCount: templateTrackCount(styles.gridTemplateColumns),
+      heightDelta: Math.abs(maxBottom - gridRect.bottom),
+      lastCellColumn: cells.at(-1)?.dataset.spritePixelColumn || "",
+      lastCellRow: cells.at(-1)?.dataset.spritePixelRow || "",
+      lastRowCellCount: lastRowCells.length,
+      lastRowColumns: lastRowCells.map((cell) => cell.dataset.spritePixelColumn),
+      lastRowRows: lastRowCells.map((cell) => cell.dataset.spritePixelRow),
+      rowCount: templateTrackCount(styles.gridTemplateRows),
+      widthDelta: Math.abs(maxRight - gridRect.right),
+    };
+  });
+}
+
+async function expectExactGridDimensions(page, expectedSize) {
+  await expect(page.locator("[data-sprites-pixel-grid] [role='gridcell']")).toHaveCount(expectedSize * expectedSize);
+  const metrics = await gridDimensionMetrics(page);
+  expect(metrics.cellCount).toBe(expectedSize * expectedSize);
+  expect(metrics.columnCount).toBe(expectedSize);
+  expect(metrics.rowCount).toBe(expectedSize);
+  expect(metrics.lastRowCellCount).toBe(expectedSize);
+  expect(metrics.lastCellRow).toBe(String(expectedSize));
+  expect(metrics.lastCellColumn).toBe(String(expectedSize));
+  expect(metrics.lastRowRows.every((row) => row === String(expectedSize))).toBe(true);
+  expect(metrics.lastRowColumns).toEqual(Array.from({ length: expectedSize }, (_, index) => String(index + 1)));
+  expect(metrics.widthDelta).toBeLessThanOrEqual(1);
+  expect(metrics.heightDelta).toBeLessThanOrEqual(1);
+}
+
 test("Sprite Creator shell loads with visible tool, canvas, details, and status regions", async ({ page }) => {
   const server = await startSpriteShellTestServer();
   const failures = collectPageFailures(page);
@@ -409,6 +455,34 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status 
     await expect(page.locator("main")).toContainText("Palette/Colors remains the reusable color source");
     await expect(page.locator("main")).not.toContainText(/Not implemented yet|future rebuild work|Static wireframe only|Plan sprite creation|later editor slice/i);
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+
+    expect(failures.failedRequests).toEqual([]);
+    expect(failures.pageErrors).toEqual([]);
+    expect(failures.consoleErrors).toEqual([]);
+  } finally {
+    await server.close();
+  }
+});
+
+test("Sprite Creator canvas grid dimensions stay exact across modes and zoom", async ({ page }) => {
+  const server = await startSpriteShellTestServer();
+  const failures = collectPageFailures(page);
+
+  try {
+    await page.goto(`${server.baseUrl}/toolbox/sprites/index.html`, { waitUntil: "networkidle" });
+
+    await expectExactGridDimensions(page, 16);
+    for (const zoomLabel of ["200%", "400%", "100%"]) {
+      await page.getByRole("button", { name: zoomLabel }).click();
+      await expectExactGridDimensions(page, 16);
+    }
+
+    await page.getByRole("button", { name: "32x32" }).click();
+    await expectExactGridDimensions(page, 32);
+    for (const zoomLabel of ["200%", "400%", "100%"]) {
+      await page.getByRole("button", { name: zoomLabel }).click();
+      await expectExactGridDimensions(page, 32);
+    }
 
     expect(failures.failedRequests).toEqual([]);
     expect(failures.pageErrors).toEqual([]);

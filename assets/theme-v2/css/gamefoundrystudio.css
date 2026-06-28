@@ -1164,21 +1164,24 @@ body.tool-focus-mode .tool-column:last-of-type {
 }
 
 .sprite-canvas-grid {
-  --sprite-grid-size: 16;
+  box-sizing: border-box;
   display: grid;
-  grid-template-columns: repeat(var(--sprite-grid-size), minmax(0, 1fr));
+  gap: 0;
   width: min(100%, 520px);
   aspect-ratio: 1;
+  overflow: hidden;
   border: 1px solid var(--line);
   background: var(--panel)
 }
 
 .sprite-canvas-grid[data-sprites-grid-size="16"] {
-  --sprite-grid-size: 16
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  grid-template-rows: repeat(16, minmax(0, 1fr))
 }
 
 .sprite-canvas-grid[data-sprites-grid-size="32"] {
-  --sprite-grid-size: 32
+  grid-template-columns: repeat(32, minmax(0, 1fr));
+  grid-template-rows: repeat(32, minmax(0, 1fr))
 }
 
 .sprite-canvas-shell[data-sprites-zoom-level="2"] .sprite-canvas-grid {
@@ -1190,6 +1193,7 @@ body.tool-focus-mode .tool-column:last-of-type {
 }
 
 .sprite-canvas-cell {
+  box-sizing: border-box;
   min-width: 0;
   min-height: 0;
   padding: 0;

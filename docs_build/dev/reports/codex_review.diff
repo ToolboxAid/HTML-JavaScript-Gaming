@@ -1,162 +1,192 @@
-diff --git a/assets/toolbox/sprites/js/index.js b/assets/toolbox/sprites/js/index.js
-index 333a7d6ad..e6d249c52 100644
---- a/assets/toolbox/sprites/js/index.js
-+++ b/assets/toolbox/sprites/js/index.js
-@@ -457,8 +457,12 @@ function renderPixelsToCanvas(canvas, paintedPixels, gridSize) {
-     return;
-   }
-   const size = gridSize || DEFAULT_GRID_SIZE;
--  const cellSize = canvas.width / size;
-   context.clearRect(0, 0, canvas.width, canvas.height);
-+  drawPixelsToContext(context, paintedPixels, size, 0, 0, canvas.width);
-+}
-+
-+function drawPixelsToContext(context, paintedPixels, gridSize, offsetX, offsetY, outputSize) {
-+  const cellSize = outputSize / gridSize;
-   for (const [key, colorKey] of paintedPixels.entries()) {
-     const [rowText, columnText] = key.split(":");
-     const row = Number(rowText);
-@@ -467,7 +471,7 @@ function renderPixelsToCanvas(canvas, paintedPixels, gridSize) {
-       continue;
-     }
-     context.fillStyle = editorColorValue(colorKey);
--    context.fillRect((column - 1) * cellSize, (row - 1) * cellSize, cellSize, cellSize);
-+    context.fillRect(offsetX + (column - 1) * cellSize, offsetY + (row - 1) * cellSize, cellSize, cellSize);
-   }
+diff --git a/assets/theme-v2/css/gamefoundrystudio.css b/assets/theme-v2/css/gamefoundrystudio.css
+index 83a48ff98..5786394a2 100644
+--- a/assets/theme-v2/css/gamefoundrystudio.css
++++ b/assets/theme-v2/css/gamefoundrystudio.css
+@@ -1164,21 +1164,24 @@ body.tool-focus-mode .tool-column:last-of-type {
  }
 
-@@ -647,6 +651,52 @@ function exportPreviewPng() {
-   }, "image/png");
+ .sprite-canvas-grid {
+-  --sprite-grid-size: 16;
++  box-sizing: border-box;
+   display: grid;
+-  grid-template-columns: repeat(var(--sprite-grid-size), minmax(0, 1fr));
++  gap: 0;
+   width: min(100%, 520px);
+   aspect-ratio: 1;
++  overflow: hidden;
+   border: 1px solid var(--line);
+   background: var(--panel)
  }
 
-+function exportAnimationStripPng() {
-+  const status = document.querySelector("[data-sprites-export-status]");
-+  if (editorState.frames.length < 2) {
-+    if (status) {
-+      status.textContent = "Animation strip export needs at least two unsaved frames.";
-+    }
-+    return;
-+  }
-+  stopAnimationPreview("Animation preview stopped before export.");
-+  const frameSize = 160;
-+  const canvas = document.createElement("canvas");
-+  canvas.width = frameSize * editorState.frames.length;
-+  canvas.height = frameSize;
-+  const context = canvas.getContext("2d");
-+  if (!context) {
-+    if (status) {
-+      status.textContent = "Animation strip export is unavailable in this browser session.";
-+    }
-+    return;
-+  }
-+  context.clearRect(0, 0, canvas.width, canvas.height);
-+  editorState.frames.forEach((frame, index) => {
-+    drawPixelsToContext(context, frame.paintedPixels, editorState.gridSize, index * frameSize, 0, frameSize);
-+  });
-+  canvas.toBlob((blob) => {
-+    if (!blob) {
-+      if (status) {
-+        status.textContent = "Animation strip export is unavailable in this browser session.";
-+      }
-+      return;
-+    }
-+    const objectUrl = URL.createObjectURL(blob);
-+    const link = document.createElement("a");
-+    link.href = objectUrl;
-+    link.download = "sprite-creator-animation-strip.png";
-+    link.rel = "noopener";
-+    document.body.append(link);
-+    link.click();
-+    link.remove();
-+    URL.revokeObjectURL(objectUrl);
-+    if (status) {
-+      status.textContent = `Animation strip PNG downloaded from ${editorState.frames.length} unsaved frames.`;
-+    }
-+  }, "image/png");
-+}
-+
- function setGridSize(size, options = {}) {
-   const grid = document.querySelector("[data-sprites-pixel-grid]");
-   const status = document.querySelector("[data-sprites-grid-status]");
-@@ -807,6 +857,10 @@ function wireExportButton() {
-   if (button) {
-     button.addEventListener("click", exportPreviewPng);
-   }
-+  const animationButton = document.querySelector("[data-sprites-export-animation]");
-+  if (animationButton) {
-+    animationButton.addEventListener("click", exportAnimationStripPng);
-+  }
+ .sprite-canvas-grid[data-sprites-grid-size="16"] {
+-  --sprite-grid-size: 16
++  grid-template-columns: repeat(16, minmax(0, 1fr));
++  grid-template-rows: repeat(16, minmax(0, 1fr))
  }
 
- wireGridControls();
+ .sprite-canvas-grid[data-sprites-grid-size="32"] {
+-  --sprite-grid-size: 32
++  grid-template-columns: repeat(32, minmax(0, 1fr));
++  grid-template-rows: repeat(32, minmax(0, 1fr))
+ }
+
+ .sprite-canvas-shell[data-sprites-zoom-level="2"] .sprite-canvas-grid {
+@@ -1190,6 +1193,7 @@ body.tool-focus-mode .tool-column:last-of-type {
+ }
+
+ .sprite-canvas-cell {
++  box-sizing: border-box;
+   min-width: 0;
+   min-height: 0;
+   padding: 0;
 diff --git a/dev/tests/playwright/tools/SpritesToolShell.spec.mjs b/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-index d30722123..5a803eb54 100644
+index 5a803eb54..b04cb375d 100644
 --- a/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
 +++ b/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-@@ -558,6 +558,11 @@ test("Sprite Creator previews unsaved animation frames", async ({ page }) => {
-     await page.getByRole("button", { name: "Stop Preview" }).click();
-     await expect(page.locator("[data-sprites-animation-status]")).toContainText("Selected Frame 2 is shown");
-     await expectCenterAndPreviewPainted(page, 1, 1, "sprite-canvas-cell--blue");
-+    const stripDownloadPromise = page.waitForEvent("download");
-+    await page.getByRole("button", { name: "Download Animation Strip" }).click();
-+    const stripDownload = await stripDownloadPromise;
-+    expect(stripDownload.suggestedFilename()).toBe("sprite-creator-animation-strip.png");
-+    await expect(page.locator("[data-sprites-export-status]")).toContainText("Animation strip PNG downloaded from 2 unsaved frames");
+@@ -249,6 +249,52 @@ async function expectCenterAndPreviewEmpty(page, row, column) {
+   expect(await previewCellHasPaint(page, row, column)).toBe(false);
+ }
 
-     expect(failures.failedRequests).toEqual([]);
-     expect(failures.pageErrors).toEqual([]);
-diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_037-sprites-animation-export.md b/docs_build/dev/reports/PR_26179_CHARLIE_037-sprites-animation-export.md
++async function gridDimensionMetrics(page) {
++  return page.locator("[data-sprites-pixel-grid]").evaluate((grid) => {
++    const cells = Array.from(grid.querySelectorAll("[role='gridcell']"));
++    const gridRect = grid.getBoundingClientRect();
++    let maxRight = 0;
++    let maxBottom = 0;
++    const styles = getComputedStyle(grid);
++    const templateTrackCount = (value) => value.split(" ").filter(Boolean).length;
++
++    for (const cell of cells) {
++      const rect = cell.getBoundingClientRect();
++      maxRight = Math.max(maxRight, rect.right);
++      maxBottom = Math.max(maxBottom, rect.bottom);
++    }
++
++    const lastRowCells = cells.slice(-Number(grid.dataset.spritesGridSize || 0));
++    return {
++      cellCount: cells.length,
++      columnCount: templateTrackCount(styles.gridTemplateColumns),
++      heightDelta: Math.abs(maxBottom - gridRect.bottom),
++      lastCellColumn: cells.at(-1)?.dataset.spritePixelColumn || "",
++      lastCellRow: cells.at(-1)?.dataset.spritePixelRow || "",
++      lastRowCellCount: lastRowCells.length,
++      lastRowColumns: lastRowCells.map((cell) => cell.dataset.spritePixelColumn),
++      lastRowRows: lastRowCells.map((cell) => cell.dataset.spritePixelRow),
++      rowCount: templateTrackCount(styles.gridTemplateRows),
++      widthDelta: Math.abs(maxRight - gridRect.right),
++    };
++  });
++}
++
++async function expectExactGridDimensions(page, expectedSize) {
++  await expect(page.locator("[data-sprites-pixel-grid] [role='gridcell']")).toHaveCount(expectedSize * expectedSize);
++  const metrics = await gridDimensionMetrics(page);
++  expect(metrics.cellCount).toBe(expectedSize * expectedSize);
++  expect(metrics.columnCount).toBe(expectedSize);
++  expect(metrics.rowCount).toBe(expectedSize);
++  expect(metrics.lastRowCellCount).toBe(expectedSize);
++  expect(metrics.lastCellRow).toBe(String(expectedSize));
++  expect(metrics.lastCellColumn).toBe(String(expectedSize));
++  expect(metrics.lastRowRows.every((row) => row === String(expectedSize))).toBe(true);
++  expect(metrics.lastRowColumns).toEqual(Array.from({ length: expectedSize }, (_, index) => String(index + 1)));
++  expect(metrics.widthDelta).toBeLessThanOrEqual(1);
++  expect(metrics.heightDelta).toBeLessThanOrEqual(1);
++}
++
+ test("Sprite Creator shell loads with visible tool, canvas, details, and status regions", async ({ page }) => {
+   const server = await startSpriteShellTestServer();
+   const failures = collectPageFailures(page);
+@@ -418,6 +464,34 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status
+   }
+ });
+
++test("Sprite Creator canvas grid dimensions stay exact across modes and zoom", async ({ page }) => {
++  const server = await startSpriteShellTestServer();
++  const failures = collectPageFailures(page);
++
++  try {
++    await page.goto(`${server.baseUrl}/toolbox/sprites/index.html`, { waitUntil: "networkidle" });
++
++    await expectExactGridDimensions(page, 16);
++    for (const zoomLabel of ["200%", "400%", "100%"]) {
++      await page.getByRole("button", { name: zoomLabel }).click();
++      await expectExactGridDimensions(page, 16);
++    }
++
++    await page.getByRole("button", { name: "32x32" }).click();
++    await expectExactGridDimensions(page, 32);
++    for (const zoomLabel of ["200%", "400%", "100%"]) {
++      await page.getByRole("button", { name: zoomLabel }).click();
++      await expectExactGridDimensions(page, 32);
++    }
++
++    expect(failures.failedRequests).toEqual([]);
++    expect(failures.pageErrors).toEqual([]);
++    expect(failures.consoleErrors).toEqual([]);
++  } finally {
++    await server.close();
++  }
++});
++
+ test("Sprite Creator keeps center canvas and right preview in sync", async ({ page }) => {
+   const server = await startSpriteShellTestServer();
+   const failures = collectPageFailures(page);
+diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_038-sprites-grid-dimension-fix.md b/docs_build/dev/reports/PR_26179_CHARLIE_038-sprites-grid-dimension-fix.md
 new file mode 100644
-index 000000000..1f32a2978
+index 000000000..4d8010eb4
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26179_CHARLIE_037-sprites-animation-export.md
-@@ -0,0 +1,64 @@
-+# PR_26179_CHARLIE_037-sprites-animation-export
++++ b/docs_build/dev/reports/PR_26179_CHARLIE_038-sprites-grid-dimension-fix.md
+@@ -0,0 +1,66 @@
++# PR_26179_CHARLIE_038-sprites-grid-dimension-fix
 +
 +Team: CHARLIE
 +
-+Mode: Batch governance stacked feature workflow
++Mode: Batch governance stacked bug-fix workflow
 +
-+Base branch: PR_26179_CHARLIE_036-sprites-animation-preview
++Base branch: PR_26179_CHARLIE_037-sprites-animation-export
 +
-+Branch: PR_26179_CHARLIE_037-sprites-animation-export
++Branch: PR_26179_CHARLIE_038-sprites-grid-dimension-fix
 +
 +## Summary
 +
-+Added local animation strip export for Sprite Creator. Download Animation Strip generates a PNG strip from unsaved page-session frames only. The export does not save to the sprite library, publish an asset, call an API, create database records, or introduce authoritative browser-owned product data.
++Fixed Sprite Creator center canvas grid dimensions. The Sprite Creator page now loads the shared `gamefoundrystudio.css` stylesheet that owns the canvas styles, and the canvas grid uses explicit 16x16 and 32x32 CSS row/column templates instead of an invalid custom-property repeat count. This prevents orphan or partial rows/columns and keeps zoom display controls from changing logical grid dimensions.
 +
 +## Branch Validation
 +
 +PASS
 +
-+- Built from `PR_26179_CHARLIE_036-sprites-animation-preview`.
-+- Scope stayed limited to unsaved animation export.
++- Built from `PR_26179_CHARLIE_037-sprites-animation-export`.
++- Scope stayed limited to Sprite Creator grid dimensions and regression coverage.
 +- No DB/API/schema changes.
-+- No saved product data or browser-owned authoritative product data added.
++- No browser-owned authoritative product data added.
 +- No start_of_day files changed.
 +- ZIP package created at the requested path.
 +
 +## Requirement Checklist
 +
-+PASS - Animation strip export button added.
++PASS - 16x16 mode renders exactly 16 columns and 16 rows.
 +
-+PASS - Export requires at least two unsaved frames.
++PASS - 32x32 mode renders exactly 32 columns and 32 rows.
 +
-+PASS - Export creates a local PNG strip download.
++PASS - Prevents orphan or extra cells at bottom/right edge.
 +
-+PASS - Export stops animation preview before generating the strip.
++PASS - Zoom levels 100%, 200%, and 400% do not change row/column count.
 +
-+PASS - No persistence, publishing, API, database, or storage behavior added.
++PASS - Preview/export behavior unchanged.
 +
-+PASS - Targeted Playwright coverage updated.
++PASS - No DB/API/schema changes.
++
++PASS - No browser-owned authoritative product data.
++
++PASS - No start_of_day changes.
++
++PASS - Targeted Playwright coverage added.
 +
 +## Validation Lane
 +
-+PASS - `node --check assets/toolbox/sprites/js/index.js`
-+
 +PASS - `node --check dev/tests/playwright/tools/SpritesToolShell.spec.mjs`
 +
-+PASS - `git diff --check -- toolbox/sprites/index.html assets/toolbox/sprites/js/index.js dev/tests/playwright/tools/SpritesToolShell.spec.mjs`
++PASS - `git diff --check -- toolbox/sprites/index.html assets/theme-v2/css/gamefoundrystudio.css dev/tests/playwright/tools/SpritesToolShell.spec.mjs`
 +
 +PASS - Runtime guard scan found no prohibited inline style/script/event-handler or stale placeholder text in touched runtime files.
 +
@@ -165,37 +195,36 @@ index 000000000..1f32a2978
 +## Manual Validation Notes
 +
 +1. Open `toolbox/sprites/index.html`.
-+2. Draw Frame 1.
-+3. Add Frame 2 and draw a different draft.
-+4. Click Download Animation Strip.
-+5. Confirm `sprite-creator-animation-strip.png` downloads.
-+6. Confirm the export status says the PNG came from unsaved frames.
-+7. Confirm no save, publish, API, database, or library workflow is introduced.
++2. Confirm the 16x16 canvas shows a complete square with 16 rows and 16 columns.
++3. Switch to 32x32 and confirm a complete 32-row, 32-column grid.
++4. Switch through 100%, 200%, and 400% zoom and confirm the cell count and rows/columns do not change.
++5. Confirm no partial trailing row or right-edge orphan cells are visible.
 +
 +## ZIP
 +
-+`dev/workspace/zip/PR_26179_CHARLIE_037-sprites-animation-export_delta.zip`
++`dev/workspace/zip/PR_26179_CHARLIE_038-sprites-grid-dimension-fix_delta.zip`
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 3799d936c..736fb51d1 100644
+index 736fb51d1..52e5e47e7 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
 @@ -1,6 +1,6 @@
- assets/toolbox/sprites/js/index.js
+-assets/toolbox/sprites/js/index.js
++assets/theme-v2/css/gamefoundrystudio.css
  dev/tests/playwright/tools/SpritesToolShell.spec.mjs
--docs_build/dev/reports/PR_26179_CHARLIE_036-sprites-animation-preview.md
-+docs_build/dev/reports/PR_26179_CHARLIE_037-sprites-animation-export.md
+-docs_build/dev/reports/PR_26179_CHARLIE_037-sprites-animation-export.md
++docs_build/dev/reports/PR_26179_CHARLIE_038-sprites-grid-dimension-fix.md
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
  toolbox/sprites/index.html
 diff --git a/toolbox/sprites/index.html b/toolbox/sprites/index.html
-index 58879b294..8e934f9b4 100644
+index 8e934f9b4..78d0e76c4 100644
 --- a/toolbox/sprites/index.html
 +++ b/toolbox/sprites/index.html
-@@ -194,6 +194,7 @@
-                                         <canvas class="sprite-preview-canvas" width="160" height="160" aria-label="Sprite Creator live preview" data-sprites-preview-canvas></canvas>
-                                     </div>
-                                     <button class="btn btn--compact primary" type="button" data-sprites-export-png>Download PNG</button>
-+                                    <button class="btn btn--compact" type="button" data-sprites-export-animation>Download Animation Strip</button>
-                                     <p class="status" role="status" data-sprites-export-status>PNG export is ready for the unsaved editor draft.</p>
-                                 </div>
-                             </details>
+@@ -9,6 +9,7 @@
+     <meta name="description" content="Create and review pixel sprites for games with a Creator-focused workspace shell.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
++    <link rel="stylesheet" href="assets/theme-v2/css/gamefoundrystudio.css">
+ </head>
+
+ <body class="meaning-molten-orange">
