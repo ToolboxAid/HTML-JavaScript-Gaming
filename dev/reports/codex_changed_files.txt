@@ -1,26 +1,52 @@
 # git status --short
-M dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs
- M dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
- M src/dev-runtime/server/local-api-router.mjs
+M dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_branch_validation.md
+ M dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_manual_validation_notes.md
+ M dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_report.md
+ M dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_requirement_checklist.md
+ M dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_lane_report.md
+ M dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_report.md
+ M dev/reports/codex_changed_files.txt
+ M dev/reports/codex_review.diff
+ M dev/scripts/sync-supabase-dev-creator-identities.mjs
+ M dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs
+ M dev/tests/dev-runtime/TagsApiService.test.mjs
  M src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs
-?? dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_branch_validation.md
-?? dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_manual_validation_notes.md
-?? dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_report.md
-?? dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_requirement_checklist.md
-?? dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_lane_report.md
-?? dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_report.md
+ M src/dev-runtime/toolbox-api/alfa-tool-services.mjs
+
+# git diff --name-status main
+A	dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_branch_validation.md
+A	dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_manual_validation_notes.md
+A	dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_report.md
+A	dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_requirement_checklist.md
+A	dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_lane_report.md
+A	dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_report.md
+M	dev/reports/codex_changed_files.txt
+M	dev/reports/codex_review.diff
+M	dev/scripts/sync-supabase-dev-creator-identities.mjs
+M	dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs
+M	dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
+M	dev/tests/dev-runtime/TagsApiService.test.mjs
+M	src/dev-runtime/server/local-api-router.mjs
+M	src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs
+M	src/dev-runtime/toolbox-api/alfa-tool-services.mjs
 
 # git ls-files --others --exclude-standard
-dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_branch_validation.md
-dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_manual_validation_notes.md
-dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_report.md
-dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_requirement_checklist.md
-dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_lane_report.md
-dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_report.md
+(no output)
 
-# git diff --stat
-.../SupabaseDevCreatorIdentitySeedSync.test.mjs    | 188 ++++++++++++++-------
- .../SupabaseProviderContractStub.test.mjs          | 138 ++++++++++++++-
- src/dev-runtime/server/local-api-router.mjs        |  24 ++-
- .../supabase-dev-creator-identity-seed-sync.mjs    | 155 +++++++++++------
- 4 files changed, 391 insertions(+), 114 deletions(-)
+# git diff --stat main
+...auth-user-key-db-authority_branch_validation.md |  34 ++
+ ...ser-key-db-authority_manual_validation_notes.md |  16 +
+ ...ER_035-dev-auth-user-key-db-authority_report.md |  93 +++++
+ ...-user-key-db-authority_requirement_checklist.md |  25 ++
+ ...user-key-db-authority_validation_lane_report.md |  21 +
+ ...auth-user-key-db-authority_validation_report.md |  36 ++
+ dev/reports/codex_changed_files.txt                |  33 +-
+ dev/reports/codex_review.diff                      | 448 ++++++++++++++++-----
+ .../sync-supabase-dev-creator-identities.mjs       |   5 +-
+ .../SupabaseDevCreatorIdentitySeedSync.test.mjs    | 192 ++++++---
+ .../SupabaseProviderContractStub.test.mjs          | 138 ++++++-
+ dev/tests/dev-runtime/TagsApiService.test.mjs      |   1 +
+ src/dev-runtime/server/local-api-router.mjs        |  24 +-
+ .../supabase-dev-creator-identity-seed-sync.mjs    | 167 +++++---
+ src/dev-runtime/toolbox-api/alfa-tool-services.mjs |  31 --
+ 15 files changed, 996 insertions(+), 268 deletions(-)

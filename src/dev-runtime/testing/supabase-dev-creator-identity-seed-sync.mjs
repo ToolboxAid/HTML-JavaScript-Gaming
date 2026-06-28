@@ -330,20 +330,21 @@ async function deleteDeprecatedRoleArtifacts({ databaseProvider, dryRun, roles, 
   };
 }
 
-async function upsertAuthIdentity(authProvider, identity, existingByEmail, dryRun) {
+async function upsertAuthIdentity(authProvider, identity, existingByEmail, dryRun, { updatePasswords = false } = {}) {
   const existingUser = existingByEmail.get(identity.email.toLowerCase());
   if (dryRun) {
     return {
       action: existingUser ? "would-update" : "would-create",
       authProviderUserId: maskId(authUserId(existingUser)),
       email: identity.email,
+      passwordUpdated: false,
     };
   }
   if (existingUser) {
     const payload = await authProvider.updateAccount({
       authProviderUserId: authUserId(existingUser),
       email: identity.email,
-      password: requestedDevPassword(identity),
+      password: updatePasswords ? requestedDevPassword(identity) : "",
       userMetadata: {
         display_name: identity.displayName,
         name: identity.displayName,
@@ -353,6 +354,7 @@ async function upsertAuthIdentity(authProvider, identity, existingByEmail, dryRu
       action: "updated",
       authProviderUserId: maskId(authUserId(payload) || authUserId(existingUser)),
       email: identity.email,
+      passwordUpdated: updatePasswords,
     };
   }
   const created = await authProvider.createAccount({
@@ -363,7 +365,7 @@ async function upsertAuthIdentity(authProvider, identity, existingByEmail, dryRu
   const updated = await authProvider.updateAccount({
     authProviderUserId: createdUserId,
     email: identity.email,
-    password: requestedDevPassword(identity),
+    password: updatePasswords ? requestedDevPassword(identity) : "",
     userMetadata: {
       display_name: identity.displayName,
       name: identity.displayName,
@@ -373,6 +375,7 @@ async function upsertAuthIdentity(authProvider, identity, existingByEmail, dryRu
     action: "created",
     authProviderUserId: maskId(authUserId(updated) || createdUserId),
     email: identity.email,
+    passwordUpdated: true,
   };
 }
 
@@ -682,6 +685,7 @@ export async function syncSupabaseDevCreatorIdentities({
   databaseProvider = new SupabasePostgresProviderAdapter(),
   dryRun = false,
   env = process.env,
+  updatePasswords = false,
 } = {}) {
   assertDevOnlyAuthTestCleanupEnvironment(env);
   const beforeAuthUsers = await authProvider.listAllAdminUsers();
@@ -697,7 +701,7 @@ export async function syncSupabaseDevCreatorIdentities({
   const existingByEmail = authUsersByEmail(beforeAuthUsers);
   const authUpsertRecords = [];
   for (const identity of DEV_CREATOR_IDENTITIES) {
-    authUpsertRecords.push(await upsertAuthIdentity(authProvider, identity, existingByEmail, dryRun));
+    authUpsertRecords.push(await upsertAuthIdentity(authProvider, identity, existingByEmail, dryRun, { updatePasswords }));
   }
 
   const authUsersForIdentity = dryRun ? beforeAuthUsers : await authProvider.listAllAdminUsers();

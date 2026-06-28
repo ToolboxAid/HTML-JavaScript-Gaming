@@ -1,10 +1,811 @@
+diff --git a/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_branch_validation.md b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_branch_validation.md
+new file mode 100644
+index 000000000..50c821aaa
+--- /dev/null
++++ b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_branch_validation.md
+@@ -0,0 +1,34 @@
++# Branch Validation: PR_26179_OWNER_035-dev-auth-user-key-db-authority
++
++## Status
++
++PASS
++
++## Branch
++
++- Current branch: `PR_26179_OWNER_035-dev-auth-user-key-db-authority`
++- Source branch: `main`
++- Worktree at report time: modified files only for this PR plus generated report artifacts
++
++## Validation Commands
++
++- PASS `node --check src/dev-runtime/server/local-api-router.mjs`
++- PASS `node --check src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs`
++- PASS `node --check dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
++- PASS `node --check dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`
++- PASS `node --check src/dev-runtime/toolbox-api/alfa-tool-services.mjs`
++- PASS `node --check dev/scripts/sync-supabase-dev-creator-identities.mjs`
++- PASS `node --check dev/tests/dev-runtime/TagsApiService.test.mjs`
++- PASS `node --test dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`
++- PASS `node --test --test-name-pattern "Supabase sign-in resolves|Supabase sign-in does not" dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
++- PASS `node --test dev/tests/dev-runtime/TagsApiService.test.mjs`
++- PASS `git diff --check`
++- PASS `npm run validate:canonical-structure`
++
++## DEV Identity Verification
++
++- PASS `qbytes.dq@gmail.com` exists in Supabase Auth.
++- PASS `qbytes.dq@gmail.com` exists in product `users`.
++- PASS `users.authProviderUserId` matches Supabase Auth id.
++- PASS DEV identity sync ran with password updates disabled.
++- PASS `/api/auth/sign-in` resolves qbytes to the database `users.key`.
+diff --git a/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_manual_validation_notes.md b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_manual_validation_notes.md
+new file mode 100644
+index 000000000..363e4ccda
+--- /dev/null
++++ b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_manual_validation_notes.md
+@@ -0,0 +1,16 @@
++# Manual Validation Notes: PR_26179_OWNER_035-dev-auth-user-key-db-authority
++
++Manual browser validation was not run because this PR changes server-side auth/session resolution and DEV identity sync behavior. The targeted API-level tests and live API sign-in smoke cover the affected user-visible outcomes:
++
++- A valid Supabase Auth id linked to `users.authProviderUserId` signs in and returns the database-owned `users.key`.
++- A matching email with stale `users.authProviderUserId` does not sign in and returns the existing Creator-safe identity setup message.
++- The browser response does not expose raw Auth ids or database user keys on the failure path.
++
++Live DEV notes:
++
++- Initial audit found Supabase Auth present but product `users` missing for `qbytes.dq@gmail.com`.
++- The missing database row was caused by a toolbox helper upserting seed users over the reserved account keys.
++- The helper was fixed so toolbox seeding no longer upserts `users`.
++- The approved DEV account DML restored the missing rows.
++- DEV identity sync ran with password updates disabled.
++- Final `/api/auth/sign-in` smoke for `qbytes.dq@gmail.com` passed and resolved to the database `users.key`.
+diff --git a/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_report.md b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_report.md
+new file mode 100644
+index 000000000..fb83e9015
+--- /dev/null
++++ b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_report.md
+@@ -0,0 +1,93 @@
++# PR_26179_OWNER_035-dev-auth-user-key-db-authority
++
++## Summary
++
++This PR makes DEV account session resolution treat the database `users` row as authoritative.
++
++Runtime sign-in now resolves a session only when the Supabase Auth user id matches `users.authProviderUserId`. Matching by email alone is no longer accepted for login/session resolution. Email remains valid only for the DEV identity sync step that locates the existing database `users` row before writing the real Supabase Auth id back to `users.authProviderUserId`.
++
++## Diagnostic Findings
++
++### Where `users.key` currently comes from
++
++- DEV seed setup defines static user keys in `src/dev-runtime/seed/seed-db-keys.mjs`.
++- Current database seed DML also contains DEV account rows under `dev/build/database/dml/account.sql`.
++- Before this PR, `src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs` imported those seed keys and used them as the canonical keys during DEV Supabase identity sync.
++- After this PR, DEV sync locates existing `users` rows by email and reads `users.key` from the database row. The sync no longer imports `SEED_DB_KEYS`.
++
++### Where `authProviderUserId` is populated
++
++- Account creation provisioning still writes `authProviderUserId` in `src/dev-runtime/server/local-api-router.mjs` through `provisionSupabaseIdentityForAuthPayload()`.
++- DEV identity sync now reads `auth.users.id` from Supabase Auth, reads `users.key` from the database row found by email, and sends that database-owned key plus the real Auth id through `databaseProvider.initializeIdentity()`.
++
++### Seed constant use
++
++- Seed constants remain valid for DEV seed setup, seed fixtures, and existing test/demo data.
++- They are no longer used by the DEV identity sync helper as the authoritative app user key source.
++- Runtime sign-in/session resolution does not hardcode DavidQ or other user keys. It reads identity tables and resolves `matchingUser.key` after matching Supabase Auth id to `users.authProviderUserId`.
++
++## Exact Fix
++
++- Removed email fallback from Supabase sign-in session resolution.
++- Added a Creator-safe setup failure when Auth succeeds but the matching email row has not been linked to the Auth id.
++- Added a narrow server-side Postgres client injection hook for tests, with default runtime behavior unchanged.
++- Refactored DEV creator identity sync so canonical identity definitions are email-based and database `users.key` is read from existing rows.
++- Changed role assignment and cleanup repair logic to derive canonical user keys from database rows.
++- Removed the Alfa toolbox tag/design/configuration helper behavior that upserted seed `users` rows over the static DEV account keys.
++- Changed the DEV identity sync default so existing Supabase Auth users are updated without sending a password. Password updates now require an explicit `--update-passwords` flag.
++- Added regression tests proving:
++  - Sign-in uses the database-owned `users.key` matched by `authProviderUserId`.
++  - Sign-in does not create a session from matching email when `authProviderUserId` is stale.
++  - DEV sync preserves non-seed database user keys.
++  - DEV sync fails if an expected database `users` row is missing.
++  - Tags API seeding does not upsert rows into `users`.
++  - Existing Auth user sync does not send a password by default.
++
++## DEV Database Verification
++
++Performed against the current `.env` DEV database target.
++
++Initial audit:
++
++- `qbytes.dq@gmail.com` existed in Supabase Auth.
++- `qbytes.dq@gmail.com` was missing from the product `users` table.
++- The reserved static DEV account keys for User 1 and DavidQ had been overwritten by seed `Creator` / `Forge Bot` rows.
++
++Repair and sync:
++
++- Re-applied the approved DEV account DML to restore the missing database identity rows.
++- Ran the DEV identity sync with `updatePasswords: false`.
++- qbytes sync action: `updated`.
++- qbytes password update: `false`.
++
++Final audit:
++
++- Supabase Auth match count: `1`.
++- Product `users` match count: `1`.
++- `users.authProviderUserId` equals Supabase Auth `auth.users.id`: PASS.
++- Sign-in smoke through `/api/auth/sign-in`: PASS.
++- Session resolved to the database `users.key`: PASS.
++
++## Files Changed
++
++- `src/dev-runtime/server/local-api-router.mjs`
++- `src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs`
++- `dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
++- `dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`
++
++## Validation
++
++PASS:
++
++- `node --check src/dev-runtime/server/local-api-router.mjs`
++- `node --check src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs`
++- `node --check dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
++- `node --check dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`
++- `node --check src/dev-runtime/toolbox-api/alfa-tool-services.mjs`
++- `node --check dev/scripts/sync-supabase-dev-creator-identities.mjs`
++- `node --check dev/tests/dev-runtime/TagsApiService.test.mjs`
++- `node --test dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`
++- `node --test --test-name-pattern "Supabase sign-in resolves|Supabase sign-in does not" dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
++- `node --test dev/tests/dev-runtime/TagsApiService.test.mjs`
++- `git diff --check`
++- `npm run validate:canonical-structure`
+diff --git a/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_requirement_checklist.md b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_requirement_checklist.md
+new file mode 100644
+index 000000000..0b53b8e3a
+--- /dev/null
++++ b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_requirement_checklist.md
+@@ -0,0 +1,25 @@
++# Requirement Checklist: PR_26179_OWNER_035-dev-auth-user-key-db-authority
++
++- PASS Do not use hardcoded user keys as runtime identity source.
++- PASS Use email only to locate the existing DEV `users` row during DEV identity sync.
++- PASS Read `users.key` from the database row during DEV sync.
++- PASS Read `auth.users.id` from Supabase Auth during DEV sync.
++- PASS Write `auth.users.id` into `users.authProviderUserId`.
++- PASS Login/session resolution matches Supabase Auth id to `users.authProviderUserId`.
++- PASS Do not create browser-owned auth.
++- PASS Do not create fake login.
++- PASS Do not add password tables.
++- PASS Do not use `displayName` as an identity key.
++- PASS Do not hardcode DavidQ/user keys in runtime login resolution.
++- PASS Verify qbytes exists in Supabase Auth.
++- PASS Verify qbytes exists in the product `users` table.
++- PASS Verify `users.authProviderUserId` equals Supabase Auth id.
++- PASS If the database row/link is stale, run DEV identity sync.
++- PASS Do not change password during existing Auth user sync.
++- PASS Do not recreate qbytes Auth user because it already exists.
++- PASS Do not use email fallback for session resolution.
++- PASS Re-test sign-in after sync.
++- PASS Report where `users.key` currently comes from.
++- PASS Report where `authProviderUserId` is populated.
++- PASS Report whether seed constants are setup-only or runtime identity authority.
++- PASS Report exact fix.
+diff --git a/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_lane_report.md b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_lane_report.md
+new file mode 100644
+index 000000000..d3aa670c1
+--- /dev/null
++++ b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_lane_report.md
+@@ -0,0 +1,21 @@
++# Validation Lane Report: PR_26179_OWNER_035-dev-auth-user-key-db-authority
++
++## Lane
++
++Targeted auth and DEV identity sync validation.
++
++## Commands
++
++- PASS `node --test dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`
++- PASS `node --test --test-name-pattern "Supabase sign-in resolves|Supabase sign-in does not" dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
++- PASS `node --test dev/tests/dev-runtime/TagsApiService.test.mjs`
++- PASS live DEV identity audit and sign-in smoke for `qbytes.dq@gmail.com`
++
++## Coverage
++
++- DEV identity sync reads existing database `users.key` values by email.
++- DEV identity sync writes real Supabase Auth ids to `users.authProviderUserId`.
++- Existing Auth user sync does not update passwords by default.
++- Session resolution accepts only `auth.users.id` matched to `users.authProviderUserId`.
++- Email-only session resolution is rejected with the existing Creator-safe setup message.
++- Tags API setup no longer writes seed rows to the account `users` table.
+diff --git a/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_report.md b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_report.md
+new file mode 100644
+index 000000000..bc901b4c1
+--- /dev/null
++++ b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_report.md
+@@ -0,0 +1,36 @@
++# Validation Report: PR_26179_OWNER_035-dev-auth-user-key-db-authority
++
++## Result
++
++PASS
++
++## Targeted Validation
++
++- `node --check src/dev-runtime/server/local-api-router.mjs`: PASS
++- `node --check src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs`: PASS
++- `node --check dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs`: PASS
++- `node --check dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`: PASS
++- `node --check src/dev-runtime/toolbox-api/alfa-tool-services.mjs`: PASS
++- `node --check dev/scripts/sync-supabase-dev-creator-identities.mjs`: PASS
++- `node --check dev/tests/dev-runtime/TagsApiService.test.mjs`: PASS
++- `node --test dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`: PASS, 2 tests
++- `node --test --test-name-pattern "Supabase sign-in resolves|Supabase sign-in does not" dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs`: PASS, 2 tests
++- `node --test dev/tests/dev-runtime/TagsApiService.test.mjs`: PASS, 3 tests
++
++## Live DEV Validation
++
++- PASS Initial audit detected Supabase Auth user for `qbytes.dq@gmail.com`.
++- PASS Initial audit detected missing/stale product `users` row and halted sign-in retest.
++- PASS Approved DEV account DML restored the missing identity rows.
++- PASS DEV identity sync completed with `updatePasswords: false`.
++- PASS Final audit verified `users.authProviderUserId` equals Supabase Auth id.
++- PASS `/api/auth/sign-in` returned HTTP 200 and resolved the session to the database `users.key`.
++
++## Repository Guardrails
++
++- `git diff --check`: PASS
++- `npm run validate:canonical-structure`: PASS
++
++## Notes
++
++The targeted tests use a server-side Postgres client fixture to exercise the Local API route without opening a real database connection. Default runtime behavior remains unchanged because the injected client defaults to `null`.
+diff --git a/dev/reports/codex_changed_files.txt b/dev/reports/codex_changed_files.txt
+index e893c3f03..d406f0575 100644
+--- a/dev/reports/codex_changed_files.txt
++++ b/dev/reports/codex_changed_files.txt
+@@ -1,16 +1,29 @@
+ # git status --short
+-A  dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-branch-validation.md
+-A  dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-closeout-report.md
+-A  dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-manual-validation-notes.md
+-A  dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-requirement-checklist.md
+-A  dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-validation-report.md
+- M dev/reports/codex_changed_files.txt
+- M dev/reports/codex_review.diff
++M dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_branch_validation.md
++ M dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_manual_validation_notes.md
++ M dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_report.md
++ M dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_requirement_checklist.md
++ M dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_lane_report.md
++ M dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_report.md
++ M dev/scripts/sync-supabase-dev-creator-identities.mjs
++ M dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs
++ M dev/tests/dev-runtime/TagsApiService.test.mjs
++ M src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs
++ M src/dev-runtime/toolbox-api/alfa-tool-services.mjs
+
+ # git ls-files --others --exclude-standard
+ (no output)
+
+ # git diff --stat
+-dev/reports/codex_changed_files.txt |   55 +-
+- dev/reports/codex_review.diff       | 2819 +----------------------------------
+- 2 files changed, 88 insertions(+), 2786 deletions(-)
+\ No newline at end of file
++...auth-user-key-db-authority_branch_validation.md | 11 +++++++
++ ...ser-key-db-authority_manual_validation_notes.md | 14 +++++----
++ ...ER_035-dev-auth-user-key-db-authority_report.md | 34 +++++++++++++++++++++-
++ ...-user-key-db-authority_requirement_checklist.md |  9 +++++-
++ ...user-key-db-authority_validation_lane_report.md |  5 +++-
++ ...auth-user-key-db-authority_validation_report.md | 14 ++++++++-
++ .../sync-supabase-dev-creator-identities.mjs       |  5 +++-
++ .../SupabaseDevCreatorIdentitySeedSync.test.mjs    |  4 +++
++ dev/tests/dev-runtime/TagsApiService.test.mjs      |  1 +
++ .../supabase-dev-creator-identity-seed-sync.mjs    | 12 +++++---
++ src/dev-runtime/toolbox-api/alfa-tool-services.mjs | 31 --------------------
++ 11 files changed, 94 insertions(+), 46 deletions(-)
+\ No newline at end of file
+diff --git a/dev/reports/codex_review.diff b/dev/reports/codex_review.diff
+index 2d6bfa64b..91ce989af 100644
+--- a/dev/reports/codex_review.diff
++++ b/dev/reports/codex_review.diff
+@@ -1,119 +1,351 @@
+-diff --git a/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-branch-validation.md b/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-branch-validation.md
+-new file mode 100644
+-index 000000000..16f7682d6
+---- /dev/null
+-+++ b/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-branch-validation.md
+-@@ -0,0 +1,16 @@
+-+# PR_26179_ALFA_010-tool-display-single-line-summary EOD Branch Validation
++diff --git a/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_branch_validation.md b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_branch_validation.md
++index c807ea892..50c821aaa 100644
++--- a/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_branch_validation.md
+++++ b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_branch_validation.md
++@@ -16,8 +16,19 @@ PASS
++ - PASS `node --check src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs`
++ - PASS `node --check dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
++ - PASS `node --check dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`
+++- PASS `node --check src/dev-runtime/toolbox-api/alfa-tool-services.mjs`
+++- PASS `node --check dev/scripts/sync-supabase-dev-creator-identities.mjs`
+++- PASS `node --check dev/tests/dev-runtime/TagsApiService.test.mjs`
++ - PASS `node --test dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`
++ - PASS `node --test --test-name-pattern "Supabase sign-in resolves|Supabase sign-in does not" dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
+++- PASS `node --test dev/tests/dev-runtime/TagsApiService.test.mjs`
++ - PASS `git diff --check`
++ - PASS `npm run validate:canonical-structure`
++
+++## DEV Identity Verification
+ +
+-+## Result
+++- PASS `qbytes.dq@gmail.com` exists in Supabase Auth.
+++- PASS `qbytes.dq@gmail.com` exists in product `users`.
+++- PASS `users.authProviderUserId` matches Supabase Auth id.
+++- PASS DEV identity sync ran with password updates disabled.
+++- PASS `/api/auth/sign-in` resolves qbytes to the database `users.key`.
++diff --git a/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_manual_validation_notes.md b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_manual_validation_notes.md
++index 005ca851f..363e4ccda 100644
++--- a/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_manual_validation_notes.md
+++++ b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_manual_validation_notes.md
++@@ -1,14 +1,16 @@
++ # Manual Validation Notes: PR_26179_OWNER_035-dev-auth-user-key-db-authority
++
++-Manual browser validation was not run because this PR changes server-side auth/session resolution and DEV identity sync behavior. The targeted API-level tests cover the affected user-visible outcomes:
+++Manual browser validation was not run because this PR changes server-side auth/session resolution and DEV identity sync behavior. The targeted API-level tests and live API sign-in smoke cover the affected user-visible outcomes:
++
++ - A valid Supabase Auth id linked to `users.authProviderUserId` signs in and returns the database-owned `users.key`.
++ - A matching email with stale `users.authProviderUserId` does not sign in and returns the existing Creator-safe identity setup message.
++ - The browser response does not expose raw Auth ids or database user keys on the failure path.
++
++-Recommended manual follow-up in DEV after merge:
++-
++-- Run the approved DEV identity sync.
++-- Sign in as `qbytes.dq@gmail.com`.
++-- Confirm the session resolves to the existing database `users.key` row whose `authProviderUserId` equals the Supabase Auth user id.
+++Live DEV notes:
++
+++- Initial audit found Supabase Auth present but product `users` missing for `qbytes.dq@gmail.com`.
+++- The missing database row was caused by a toolbox helper upserting seed users over the reserved account keys.
+++- The helper was fixed so toolbox seeding no longer upserts `users`.
+++- The approved DEV account DML restored the missing rows.
+++- DEV identity sync ran with password updates disabled.
+++- Final `/api/auth/sign-in` smoke for `qbytes.dq@gmail.com` passed and resolved to the database `users.key`.
++diff --git a/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_report.md b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_report.md
++index 94dfcbd73..fb83e9015 100644
++--- a/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_report.md
+++++ b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_report.md
++@@ -33,11 +33,40 @@ Runtime sign-in now resolves a session only when the Supabase Auth user id match
++ - Added a narrow server-side Postgres client injection hook for tests, with default runtime behavior unchanged.
++ - Refactored DEV creator identity sync so canonical identity definitions are email-based and database `users.key` is read from existing rows.
++ - Changed role assignment and cleanup repair logic to derive canonical user keys from database rows.
+++- Removed the Alfa toolbox tag/design/configuration helper behavior that upserted seed `users` rows over the static DEV account keys.
+++- Changed the DEV identity sync default so existing Supabase Auth users are updated without sending a password. Password updates now require an explicit `--update-passwords` flag.
++ - Added regression tests proving:
++   - Sign-in uses the database-owned `users.key` matched by `authProviderUserId`.
++   - Sign-in does not create a session from matching email when `authProviderUserId` is stale.
++   - DEV sync preserves non-seed database user keys.
++   - DEV sync fails if an expected database `users` row is missing.
+++  - Tags API seeding does not upsert rows into `users`.
+++  - Existing Auth user sync does not send a password by default.
+ +
+-+PASS
+++## DEV Database Verification
+ +
+-+## Checks
+++Performed against the current `.env` DEV database target.
+ +
+-+| Check | Result | Notes |
+-+| --- | --- | --- |
+-+| Started EOD from `main` | PASS | Worktree was clean before merge. |
+-+| PR #254 merged into `main` | PASS | Merge commit `283e2247625fea0916b55119e4072342b207c317`. |
+-+| Local `main` synced after merge | PASS | `main...origin/main` was `0 0` after fast-forward. |
+-+| Stale PR #196 closed | PASS | Closed as replaced by PR #254. |
+-+| Stale PR #198 closed | PASS | Closed as replaced by PR #254. |
+-+| Feature branch cleanup | PASS | Remote branch deletion was requested during merge; local branch deletion handled after syncing `main`. |
+-diff --git a/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-closeout-report.md b/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-closeout-report.md
+-new file mode 100644
+-index 000000000..43d16f559
+---- /dev/null
+-+++ b/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-closeout-report.md
+-@@ -0,0 +1,31 @@
+-+# PR_26179_ALFA_010-tool-display-single-line-summary EOD Closeout Report
+++Initial audit:
+ +
+-+## Summary
+++- `qbytes.dq@gmail.com` existed in Supabase Auth.
+++- `qbytes.dq@gmail.com` was missing from the product `users` table.
+++- The reserved static DEV account keys for User 1 and DavidQ had been overwritten by seed `Creator` / `Forge Bot` rows.
+ +
+-+PR #254 `PR_26179_ALFA_010-tool-display-single-line-summary` was merged into `main`.
+++Repair and sync:
+ +
+-+## Merge
+++- Re-applied the approved DEV account DML to restore the missing database identity rows.
+++- Ran the DEV identity sync with `updatePasswords: false`.
+++- qbytes sync action: `updated`.
+++- qbytes password update: `false`.
+ +
+-+- PR: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/254
+-+- Merge commit: `283e2247625fea0916b55119e4072342b207c317`
+-+- Merged at: `2026-06-28T14:28:04Z`
+-+- Base branch: `main`
+-+- Source branch: `PR_26179_ALFA_010-tool-display-single-line-summary`
+++Final audit:
+ +
+-+## Replaced Stale PRs
+++- Supabase Auth match count: `1`.
+++- Product `users` match count: `1`.
+++- `users.authProviderUserId` equals Supabase Auth `auth.users.id`: PASS.
+++- Sign-in smoke through `/api/auth/sign-in`: PASS.
+++- Session resolved to the database `users.key`: PASS.
++
++ ## Files Changed
++
++@@ -54,8 +83,11 @@ PASS:
++ - `node --check src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs`
++ - `node --check dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
++ - `node --check dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`
+++- `node --check src/dev-runtime/toolbox-api/alfa-tool-services.mjs`
+++- `node --check dev/scripts/sync-supabase-dev-creator-identities.mjs`
+++- `node --check dev/tests/dev-runtime/TagsApiService.test.mjs`
++ - `node --test dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`
++ - `node --test --test-name-pattern "Supabase sign-in resolves|Supabase sign-in does not" dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
+++- `node --test dev/tests/dev-runtime/TagsApiService.test.mjs`
++ - `git diff --check`
++ - `npm run validate:canonical-structure`
++-
++diff --git a/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_requirement_checklist.md b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_requirement_checklist.md
++index 180e988c1..0b53b8e3a 100644
++--- a/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_requirement_checklist.md
+++++ b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_requirement_checklist.md
++@@ -11,8 +11,15 @@
++ - PASS Do not add password tables.
++ - PASS Do not use `displayName` as an identity key.
++ - PASS Do not hardcode DavidQ/user keys in runtime login resolution.
+++- PASS Verify qbytes exists in Supabase Auth.
+++- PASS Verify qbytes exists in the product `users` table.
+++- PASS Verify `users.authProviderUserId` equals Supabase Auth id.
+++- PASS If the database row/link is stale, run DEV identity sync.
+++- PASS Do not change password during existing Auth user sync.
+++- PASS Do not recreate qbytes Auth user because it already exists.
+++- PASS Do not use email fallback for session resolution.
+++- PASS Re-test sign-in after sync.
++ - PASS Report where `users.key` currently comes from.
++ - PASS Report where `authProviderUserId` is populated.
++ - PASS Report whether seed constants are setup-only or runtime identity authority.
++ - PASS Report exact fix.
++-
++diff --git a/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_lane_report.md b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_lane_report.md
++index 634164f94..d3aa670c1 100644
++--- a/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_lane_report.md
+++++ b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_lane_report.md
++@@ -8,11 +8,14 @@ Targeted auth and DEV identity sync validation.
++
++ - PASS `node --test dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`
++ - PASS `node --test --test-name-pattern "Supabase sign-in resolves|Supabase sign-in does not" dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
+++- PASS `node --test dev/tests/dev-runtime/TagsApiService.test.mjs`
+++- PASS live DEV identity audit and sign-in smoke for `qbytes.dq@gmail.com`
++
++ ## Coverage
++
++ - DEV identity sync reads existing database `users.key` values by email.
++ - DEV identity sync writes real Supabase Auth ids to `users.authProviderUserId`.
+++- Existing Auth user sync does not update passwords by default.
++ - Session resolution accepts only `auth.users.id` matched to `users.authProviderUserId`.
++ - Email-only session resolution is rejected with the existing Creator-safe setup message.
++-
+++- Tags API setup no longer writes seed rows to the account `users` table.
++diff --git a/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_report.md b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_report.md
++index 5d5f107cc..bc901b4c1 100644
++--- a/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_report.md
+++++ b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_report.md
++@@ -10,8 +10,21 @@ PASS
++ - `node --check src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs`: PASS
++ - `node --check dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs`: PASS
++ - `node --check dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`: PASS
+++- `node --check src/dev-runtime/toolbox-api/alfa-tool-services.mjs`: PASS
+++- `node --check dev/scripts/sync-supabase-dev-creator-identities.mjs`: PASS
+++- `node --check dev/tests/dev-runtime/TagsApiService.test.mjs`: PASS
++ - `node --test dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`: PASS, 2 tests
++ - `node --test --test-name-pattern "Supabase sign-in resolves|Supabase sign-in does not" dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs`: PASS, 2 tests
+++- `node --test dev/tests/dev-runtime/TagsApiService.test.mjs`: PASS, 3 tests
+ +
+-+- PR #196 closed: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/196
+-+- PR #198 closed: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/198
+++## Live DEV Validation
+ +
+-+Both stale PRs were replaced by PR #254. PR #196 provided the obsolete Tool Display Mode single-line layout attempt, and PR #198 provided historical validation intent that was folded into PR #254.
+-+
+-+## Validation
+-+
+-+- GitHub platform-validation for PR #254: PASS
+-+- Local `git diff --check`: PASS
+-+- Local `npm run validate:canonical-structure`: PASS
+-+- Local targeted Tool Display Mode Playwright lane: PASS, 3/3
+-+
+-+## Artifact
+-+
+-+- EOD ZIP: `dev/workspace/zips/PR_26179_ALFA_010-tool-display-single-line-summary_eod-closeout_delta.zip`
+-diff --git a/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-manual-validation-notes.md b/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-manual-validation-notes.md
+-new file mode 100644
+-index 000000000..fd3ca1ffb
+---- /dev/null
+-+++ b/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-manual-validation-notes.md
+-@@ -0,0 +1,8 @@
+-+# PR_26179_ALFA_010-tool-display-single-line-summary EOD Manual Validation Notes
+-+
+-+## Notes
+-+
+-+- Confirmed PR #254 was non-draft, mergeable, and had passing GitHub platform validation before merge.
+-+- Confirmed PR #196 and PR #198 were stale drafts replaced by PR #254 before closing them.
+-+- No additional runtime or UI edits were made during EOD closeout beyond tracked governance/report artifacts.
+-+- The repo-structured EOD ZIP is generated under `dev/workspace/zips/`.
+-diff --git a/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-requirement-checklist.md b/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-requirement-checklist.md
+-new file mode 100644
+-index 000000000..aaad0e510
+---- /dev/null
+-+++ b/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-requirement-checklist.md
+-@@ -0,0 +1,16 @@
+-+# PR_26179_ALFA_010-tool-display-single-line-summary EOD Requirement Checklist
+-+
+-+| Requirement | Result | Notes |
+-+| --- | --- | --- |
+-+| Verify current branch is `main` before beginning | PASS | Switched to clean synced `main` before merge operations. |
+-+| Verify worktree is clean | PASS | Clean before merge and before EOD report generation. |
+-+| Verify required validation passed | PASS | PR CI and local required validation passed. |
+-+| Merge PR #254 | PASS | Merged into `main`. |
+-+| Push/sync `main` to origin | PASS | Merge landed on origin and local `main` fast-forwarded. |
+-+| Verify clean status and `main...origin/main` is `0 0` | PASS | Confirmed after merge sync. |
+-+| Close stale PR #196 | PASS | Closed as replaced by #254. |
+-+| Close stale PR #198 | PASS | Closed as replaced by #254. |
+-+| Return repository to `main` | PASS | EOD closeout remains on `main`. |
+-+| Delete local feature branch if appropriate | PASS | Local branch deletion handled after merge and sync. |
+-+| Delete remote feature branch if policy allows | PASS | Remote branch deletion was requested through GitHub merge flow. |
+-+| Produce EOD reports and ZIP | PASS | Reports under `dev/reports/`; ZIP under `dev/workspace/zips/`. |
+-diff --git a/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-validation-report.md b/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-validation-report.md
+-new file mode 100644
+-index 000000000..8a78dd606
+---- /dev/null
+-+++ b/dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_eod-validation-report.md
+-@@ -0,0 +1,18 @@
+-+# PR_26179_ALFA_010-tool-display-single-line-summary EOD Validation Report
+-+
+-+## GitHub Validation
+-+
+-+- PR #254 platform-validation: PASS
+-+- PR #254 mergeability before merge: MERGEABLE
+-+- PR #254 draft status before merge: false
+-+
+-+## Local Validation
+-+
+-+- `git diff --check`: PASS
+-+- `npm run validate:canonical-structure`: PASS
+-+- `npm run test:lane:tool-display-mode`: PASS, 3/3
+-+
+-+## Stale PR Closure
+-+
+-+- PR #196: CLOSED
+-+- PR #198: CLOSED
+++- PASS Initial audit detected Supabase Auth user for `qbytes.dq@gmail.com`.
+++- PASS Initial audit detected missing/stale product `users` row and halted sign-in retest.
+++- PASS Approved DEV account DML restored the missing identity rows.
+++- PASS DEV identity sync completed with `updatePasswords: false`.
+++- PASS Final audit verified `users.authProviderUserId` equals Supabase Auth id.
+++- PASS `/api/auth/sign-in` returned HTTP 200 and resolved the session to the database `users.key`.
++
++ ## Repository Guardrails
++
++@@ -21,4 +34,3 @@ PASS
++ ## Notes
++
++ The targeted tests use a server-side Postgres client fixture to exercise the Local API route without opening a real database connection. Default runtime behavior remains unchanged because the injected client defaults to `null`.
++-
++diff --git a/dev/scripts/sync-supabase-dev-creator-identities.mjs b/dev/scripts/sync-supabase-dev-creator-identities.mjs
++index 0363e1483..31bcc5f08 100644
++--- a/dev/scripts/sync-supabase-dev-creator-identities.mjs
+++++ b/dev/scripts/sync-supabase-dev-creator-identities.mjs
++@@ -66,14 +66,16 @@ function formatRecordList(label, records, selector) {
++ const args = new Set(process.argv.slice(2));
++ const json = args.has("--json");
++ const dryRun = args.has("--dry-run");
+++const updatePasswords = args.has("--update-passwords");
++ const envLoad = loadEnvLocal();
++
++ try {
++-  const result = await syncSupabaseDevCreatorIdentities({ dryRun });
+++  const result = await syncSupabaseDevCreatorIdentities({ dryRun, updatePasswords });
++   if (json) {
++     console.log(JSON.stringify({
++       envLocalLoaded: envLoad.loaded,
++       envLocalLoadedKeys: envLoad.loadedKeys,
+++      updatePasswords,
++       ...result,
++     }, null, 2));
++   } else {
++@@ -81,6 +83,7 @@ try {
++     console.log(envLoad.loaded
++       ? `.env.local loaded (${envLoad.loadedKeys} key(s) applied).`
++       : ".env.local was not found.");
+++    console.log(`Password updates for existing Auth users: ${updatePasswords ? "enabled" : "disabled"}.`);
++     formatCounts("Before", result.beforeCounts);
++     formatCounts("After", result.afterCounts);
++     formatRecordList("Auth upserts", result.authUpsertRecords, (record) => `${record.email}: ${record.action}`);
++diff --git a/dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs b/dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs
++index f3411521d..c3176b89c 100644
++--- a/dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs
+++++ b/dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs
++@@ -301,6 +301,10 @@ test("Supabase DEV creator identity sync upserts canonical users and deletes ext
++   const davidq = fake.state.users.find((user) => user.email === "qbytes.dq@gmail.com");
++   assert.equal(fake.state.user_roles.some((row) => row.userKey === davidq.key && row.roleKey === ownerRole.key), true);
++   assert.equal(fake.calls.some((call) => call.path === "/auth/v1/admin/users?page=1&per_page=100" && call.method === "GET"), true);
+++  const existingUserUpdate = fake.calls.find((call) => call.method === "PUT" && call.path === "/auth/v1/admin/users/auth-user-1");
+++  assert.equal(Boolean(existingUserUpdate), true);
+++  assert.equal(Object.hasOwn(existingUserUpdate.body, "password"), false);
+++  assert.equal(result.authUpsertRecords.find((record) => record.email === "user1@example.invalid").passwordUpdated, false);
++ });
++
++ test("Supabase DEV creator identity sync requires existing database users rows by email", async () => {
++diff --git a/dev/tests/dev-runtime/TagsApiService.test.mjs b/dev/tests/dev-runtime/TagsApiService.test.mjs
++index bf9a6512a..8a9a3f6ef 100644
++--- a/dev/tests/dev-runtime/TagsApiService.test.mjs
+++++ b/dev/tests/dev-runtime/TagsApiService.test.mjs
++@@ -115,6 +115,7 @@ test("Tags list reads and seeds through the API database adapter", async () => {
++   assert.equal(adapter.calls.some(([action, table]) => action === "requestTable" && table === "project_tags"), true);
++   assert.equal(adapter.calls.some(([action, table]) => action === "upsertProductTable" && table === "project_tags"), true);
++   assert.equal(adapter.calls.some(([action, table]) => action === "upsertProductTable" && table === "project_tag_assignments"), true);
+++  assert.equal(adapter.calls.some(([action, table]) => action === "upsertTable" && table === "users"), false);
++ });
++
++ test("Tags list reports an actionable setup error when readTables cannot read the schema", async () => {
++diff --git a/src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs b/src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs
++index 0eeb0cd0b..9da3e7a87 100644
++--- a/src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs
+++++ b/src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs
++@@ -330,20 +330,21 @@ async function deleteDeprecatedRoleArtifacts({ databaseProvider, dryRun, roles,
++   };
++ }
++
++-async function upsertAuthIdentity(authProvider, identity, existingByEmail, dryRun) {
+++async function upsertAuthIdentity(authProvider, identity, existingByEmail, dryRun, { updatePasswords = false } = {}) {
++   const existingUser = existingByEmail.get(identity.email.toLowerCase());
++   if (dryRun) {
++     return {
++       action: existingUser ? "would-update" : "would-create",
++       authProviderUserId: maskId(authUserId(existingUser)),
++       email: identity.email,
+++      passwordUpdated: false,
++     };
++   }
++   if (existingUser) {
++     const payload = await authProvider.updateAccount({
++       authProviderUserId: authUserId(existingUser),
++       email: identity.email,
++-      password: requestedDevPassword(identity),
+++      password: updatePasswords ? requestedDevPassword(identity) : "",
++       userMetadata: {
++         display_name: identity.displayName,
++         name: identity.displayName,
++@@ -353,6 +354,7 @@ async function upsertAuthIdentity(authProvider, identity, existingByEmail, dryRu
++       action: "updated",
++       authProviderUserId: maskId(authUserId(payload) || authUserId(existingUser)),
++       email: identity.email,
+++      passwordUpdated: updatePasswords,
++     };
++   }
++   const created = await authProvider.createAccount({
++@@ -363,7 +365,7 @@ async function upsertAuthIdentity(authProvider, identity, existingByEmail, dryRu
++   const updated = await authProvider.updateAccount({
++     authProviderUserId: createdUserId,
++     email: identity.email,
++-    password: requestedDevPassword(identity),
+++    password: updatePasswords ? requestedDevPassword(identity) : "",
++     userMetadata: {
++       display_name: identity.displayName,
++       name: identity.displayName,
++@@ -373,6 +375,7 @@ async function upsertAuthIdentity(authProvider, identity, existingByEmail, dryRu
++     action: "created",
++     authProviderUserId: maskId(authUserId(updated) || createdUserId),
++     email: identity.email,
+++    passwordUpdated: true,
++   };
++ }
++
++@@ -682,6 +685,7 @@ export async function syncSupabaseDevCreatorIdentities({
++   databaseProvider = new SupabasePostgresProviderAdapter(),
++   dryRun = false,
++   env = process.env,
+++  updatePasswords = false,
++ } = {}) {
++   assertDevOnlyAuthTestCleanupEnvironment(env);
++   const beforeAuthUsers = await authProvider.listAllAdminUsers();
++@@ -697,7 +701,7 @@ export async function syncSupabaseDevCreatorIdentities({
++   const existingByEmail = authUsersByEmail(beforeAuthUsers);
++   const authUpsertRecords = [];
++   for (const identity of DEV_CREATOR_IDENTITIES) {
++-    authUpsertRecords.push(await upsertAuthIdentity(authProvider, identity, existingByEmail, dryRun));
+++    authUpsertRecords.push(await upsertAuthIdentity(authProvider, identity, existingByEmail, dryRun, { updatePasswords }));
++   }
++
++   const authUsersForIdentity = dryRun ? beforeAuthUsers : await authProvider.listAllAdminUsers();
++diff --git a/src/dev-runtime/toolbox-api/alfa-tool-services.mjs b/src/dev-runtime/toolbox-api/alfa-tool-services.mjs
++index 239c22a4d..6dc033e83 100644
++--- a/src/dev-runtime/toolbox-api/alfa-tool-services.mjs
+++++ b/src/dev-runtime/toolbox-api/alfa-tool-services.mjs
++@@ -295,38 +295,7 @@ function activeGameFromWorkspace(repository, overrideId = "") {
++   };
++ }
++
++-async function ensureUsers(adapter) {
++-  const now = timestamp();
++-  await adapter.upsertTable("users", [
++-    {
++-      key: SYSTEM_USER_KEY,
++-      displayName: "Forge Bot",
++-      email: null,
++-      authProvider: "seed",
++-      authProviderUserId: "forge-bot",
++-      isActive: true,
++-      createdAt: now,
++-      updatedAt: now,
++-      createdBy: null,
++-      updatedBy: null,
++-    },
++-    {
++-      key: DEFAULT_USER_KEY,
++-      displayName: "Creator",
++-      email: "creator@example.test",
++-      authProvider: "seed",
++-      authProviderUserId: "creator",
++-      isActive: true,
++-      createdAt: now,
++-      updatedAt: now,
++-      createdBy: SYSTEM_USER_KEY,
++-      updatedBy: SYSTEM_USER_KEY,
++-    },
++-  ]);
++-}
++-
++ async function ensureGameRecord(adapter, game, userKey = DEFAULT_USER_KEY) {
++-  await ensureUsers(adapter);
++   await adapter.upsertProductTable("game_workspace_games", [{
++     key: game.key,
++     name: game.name,
+diff --git a/dev/scripts/sync-supabase-dev-creator-identities.mjs b/dev/scripts/sync-supabase-dev-creator-identities.mjs
+index 0363e1483..31bcc5f08 100644
+--- a/dev/scripts/sync-supabase-dev-creator-identities.mjs
++++ b/dev/scripts/sync-supabase-dev-creator-identities.mjs
+@@ -66,14 +66,16 @@ function formatRecordList(label, records, selector) {
+ const args = new Set(process.argv.slice(2));
+ const json = args.has("--json");
+ const dryRun = args.has("--dry-run");
++const updatePasswords = args.has("--update-passwords");
+ const envLoad = loadEnvLocal();
+
+ try {
+-  const result = await syncSupabaseDevCreatorIdentities({ dryRun });
++  const result = await syncSupabaseDevCreatorIdentities({ dryRun, updatePasswords });
+   if (json) {
+     console.log(JSON.stringify({
+       envLocalLoaded: envLoad.loaded,
+       envLocalLoadedKeys: envLoad.loadedKeys,
++      updatePasswords,
+       ...result,
+     }, null, 2));
+   } else {
+@@ -81,6 +83,7 @@ try {
+     console.log(envLoad.loaded
+       ? `.env.local loaded (${envLoad.loadedKeys} key(s) applied).`
+       : ".env.local was not found.");
++    console.log(`Password updates for existing Auth users: ${updatePasswords ? "enabled" : "disabled"}.`);
+     formatCounts("Before", result.beforeCounts);
+     formatCounts("After", result.afterCounts);
+     formatRecordList("Auth upserts", result.authUpsertRecords, (record) => `${record.email}: ${record.action}`);
 diff --git a/dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs b/dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs
-index 39ba2d5c7..f3411521d 100644
+index 39ba2d5c7..c3176b89c 100644
 --- a/dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs
 +++ b/dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs
 @@ -11,11 +11,19 @@ import {
  } from "../../../src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs";
- 
+
  const syncEnv = Object.freeze({
 +  GAMEFOUNDRY_DATABASE_SSL: "disable",
 +  GAMEFOUNDRY_DATABASE_URL: "postgres://sync_user:sync_password@dev-sync.example.test/gamefoundry",
@@ -19,7 +820,7 @@ index 39ba2d5c7..f3411521d 100644
 +  user2: "01J00000000000000000000012",
 +  user3: "01J00000000000000000000013",
 +});
- 
+
  function decodeEqFilter(searchParams, key) {
    const value = searchParams.get(key) || "";
 @@ -43,10 +51,10 @@ function createFakeSupabaseSyncState() {
@@ -75,7 +876,7 @@ index 39ba2d5c7..f3411521d 100644
 @@ -72,6 +107,65 @@ function createFakeSupabaseSyncState() {
    const calls = [];
    let generatedKey = 1;
- 
+
 +  function mutateTableRequest(tableName, { body = {}, method = "GET", query = "select=*" } = {}) {
 +    calls.push({
 +      body,
@@ -141,7 +942,7 @@ index 39ba2d5c7..f3411521d 100644
 @@ -130,57 +224,6 @@ function createFakeSupabaseSyncState() {
        };
      }
- 
+
 -    if (requestUrl.pathname.startsWith("/rest/v1/")) {
 -      const tableName = decodeURIComponent(requestUrl.pathname.split("/").pop() || "");
 -      state[tableName] = state[tableName] || [];
@@ -199,7 +1000,7 @@ index 39ba2d5c7..f3411521d 100644
 @@ -188,7 +231,14 @@ function createFakeSupabaseSyncState() {
      };
    }
- 
+
 -  return { calls, fetchImpl, state };
 +  return {
 +    calls,
@@ -210,7 +1011,7 @@ index 39ba2d5c7..f3411521d 100644
 +    state,
 +  };
  }
- 
+
  test("Supabase DEV creator identity sync upserts canonical users and deletes extra managed accounts", async () => {
 @@ -201,8 +251,8 @@ test("Supabase DEV creator identity sync upserts canonical users and deletes ext
      }),
@@ -234,10 +1035,15 @@ index 39ba2d5c7..f3411521d 100644
    assert.equal(fake.state.users.every((user) => user.authProvider === "supabase-auth"), true);
    assert.equal(fake.state.roles.some((role) => role.roleSlug === "user"), false);
    assert.equal(fake.state.roles.find((role) => role.roleSlug === "owner").isActive, true);
-@@ -247,3 +302,22 @@ test("Supabase DEV creator identity sync upserts canonical users and deletes ext
+@@ -246,4 +301,27 @@ test("Supabase DEV creator identity sync upserts canonical users and deletes ext
+   const davidq = fake.state.users.find((user) => user.email === "qbytes.dq@gmail.com");
    assert.equal(fake.state.user_roles.some((row) => row.userKey === davidq.key && row.roleKey === ownerRole.key), true);
    assert.equal(fake.calls.some((call) => call.path === "/auth/v1/admin/users?page=1&per_page=100" && call.method === "GET"), true);
- });
++  const existingUserUpdate = fake.calls.find((call) => call.method === "PUT" && call.path === "/auth/v1/admin/users/auth-user-1");
++  assert.equal(Boolean(existingUserUpdate), true);
++  assert.equal(Object.hasOwn(existingUserUpdate.body, "password"), false);
++  assert.equal(result.authUpsertRecords.find((record) => record.email === "user1@example.invalid").passwordUpdated, false);
++});
 +
 +test("Supabase DEV creator identity sync requires existing database users rows by email", async () => {
 +  const fake = createFakeSupabaseSyncState();
@@ -256,7 +1062,7 @@ index 39ba2d5c7..f3411521d 100644
 +    }),
 +    /requires existing database users rows for: qbytes\.dq@gmail\.com/,
 +  );
-+});
+ });
 diff --git a/dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs b/dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
 index 3f5d81a00..b86a95014 100644
 --- a/dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
@@ -264,7 +1070,7 @@ index 3f5d81a00..b86a95014 100644
 @@ -38,8 +38,8 @@ function withEnv(nextEnv, callback) {
      });
  }
- 
+
 -function startApiServer() {
 -  const handleRequest = createLocalApiRouter();
 +function startApiServer(routerOptions = {}) {
@@ -275,7 +1081,7 @@ index 3f5d81a00..b86a95014 100644
 @@ -313,6 +313,12 @@ function fakeSupabaseIdentityTables(overrides = {}) {
    };
  }
- 
+
 +function fakePostgresIdentityClient(identityTables = {}) {
 +  return {
 +    requestTable: async (tableName) => (identityTables[tableName] || []).map((row) => ({ ...row })),
@@ -288,7 +1094,7 @@ index 3f5d81a00..b86a95014 100644
 @@ -881,6 +887,134 @@ test("Create account provisions Supabase identity user default role and user_rol
    await fakeSupabase.close();
  });
- 
+
 +test("Supabase sign-in resolves the session from database users.key matched by Auth id", async () => {
 +  const databaseOwnedUserKey = "01J00000000000000000000001";
 +  const timestamp = "2026-06-15T00:00:00.000Z";
@@ -420,6 +1226,18 @@ index 3f5d81a00..b86a95014 100644
  test("Create account provider failure returns generic browser error and logs safe operator diagnostics", async () => {
    const fakeSupabase = await startFakeSupabaseAuthServer({
      failAdminCreateAccount: {
+diff --git a/dev/tests/dev-runtime/TagsApiService.test.mjs b/dev/tests/dev-runtime/TagsApiService.test.mjs
+index bf9a6512a..8a9a3f6ef 100644
+--- a/dev/tests/dev-runtime/TagsApiService.test.mjs
++++ b/dev/tests/dev-runtime/TagsApiService.test.mjs
+@@ -115,6 +115,7 @@ test("Tags list reads and seeds through the API database adapter", async () => {
+   assert.equal(adapter.calls.some(([action, table]) => action === "requestTable" && table === "project_tags"), true);
+   assert.equal(adapter.calls.some(([action, table]) => action === "upsertProductTable" && table === "project_tags"), true);
+   assert.equal(adapter.calls.some(([action, table]) => action === "upsertProductTable" && table === "project_tag_assignments"), true);
++  assert.equal(adapter.calls.some(([action, table]) => action === "upsertTable" && table === "users"), false);
+ });
+
+ test("Tags list reports an actionable setup error when readTables cannot read the schema", async () => {
 diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
 index bb54b12b7..7d204e6fd 100644
 --- a/src/dev-runtime/server/local-api-router.mjs
@@ -437,7 +1255,7 @@ index bb54b12b7..7d204e6fd 100644
      this.repositoryById = new Map();
      this.sessionModeId = FIXED_ACCOUNT_SESSION_MODE.id;
 @@ -3826,7 +3828,7 @@ class ApiRuntimeDataSource {
- 
+
    supabaseDatabaseAdapter(action) {
      this.assertSupabaseDatabaseProvider(action);
 -    const adapter = new SupabasePostgresProviderAdapter();
@@ -447,7 +1265,7 @@ index bb54b12b7..7d204e6fd 100644
    }
 @@ -3837,8 +3839,7 @@ class ApiRuntimeDataSource {
    }
- 
+
    async readSupabaseIdentityTablesUnchecked(action) {
 -    this.assertSupabaseDatabaseProvider(action);
 -    const adapter = new SupabasePostgresProviderAdapter();
@@ -483,7 +1301,7 @@ index bb54b12b7..7d204e6fd 100644
 @@ -6230,7 +6236,7 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
        throw authIdentitySetupError(action, "Supabase Auth did not return the user id and email required for identity provisioning.");
      }
- 
+
 -    const adapter = new SupabasePostgresProviderAdapter();
 +    const adapter = this.supabaseDatabaseAdapter(`${action} identity provisioning`);
      const tables = await this.readSupabaseIdentityTablesUnchecked(`${action} identity provisioning`);
@@ -502,10 +1320,10 @@ index bb54b12b7..7d204e6fd 100644
      repoRoot,
 +    supabasePostgresClient,
    });
- 
+
    async function handleApiRuntimeRequest(request, response, requestUrl) {
 diff --git a/src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs b/src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs
-index 6f214f7a2..0eeb0cd0b 100644
+index 6f214f7a2..9da3e7a87 100644
 --- a/src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs
 +++ b/src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs
 @@ -1,4 +1,3 @@
@@ -539,7 +1357,7 @@ index 6f214f7a2..0eeb0cd0b 100644
      passwordSuffix: "$2026",
    }),
  ]);
- 
+
  const CANONICAL_EMAILS = new Set(DEV_CREATOR_IDENTITIES.map((identity) => identity.email.toLowerCase()));
 -const CANONICAL_KEYS = new Set(DEV_CREATOR_IDENTITIES.map((identity) => identity.key));
 +const DAVIDQ_DEV_EMAIL = "qbytes.dq@gmail.com";
@@ -547,7 +1365,7 @@ index 6f214f7a2..0eeb0cd0b 100644
  const LEGACY_DEV_AUTH_USER_IDS = new Set(["user-1", "user-2", "user-3", "davidq", "davidq-admin"]);
  const KNOWN_STALE_ROLE_KEYS = Object.freeze(["01KV6FVP0ASR2RRR9WXCBKTV6C"]);
 @@ -125,8 +120,7 @@ export function isManagedExtraDevIdentityEmail(email) {
- 
+
  function isManagedExtraPublicUser(user = {}) {
    const email = normalizedEmail(user.email);
 -  const key = normalizedId(user.key);
@@ -559,7 +1377,7 @@ index 6f214f7a2..0eeb0cd0b 100644
 @@ -191,25 +185,55 @@ function roleBySlug(roles, roleSlug) {
    return roles.find((role) => normalizedId(role.roleSlug) === roleSlug && role.isActive !== false) || null;
  }
- 
+
 -function canonicalDesiredUserRolePairs(roles) {
 +function canonicalUserKeys(canonicalUsers = []) {
 +  return new Set(canonicalUsers.map((user) => normalizedId(user.key)).filter(Boolean));
@@ -606,7 +1424,7 @@ index 6f214f7a2..0eeb0cd0b 100644
 +    ownerRole && davidq ? `${normalizedId(davidq.key)}\u0000${ownerRole.key}` : "",
    ].filter(Boolean));
  }
- 
+
 -function staleCanonicalUserRoleRecords({ roles, userRoles }) {
 +function staleCanonicalUserRoleRecords({ canonicalUsers, roles, userRoles }) {
    const validRoleKeys = new Set(roles.map((role) => normalizedId(role.key)).filter(Boolean));
@@ -623,7 +1441,7 @@ index 6f214f7a2..0eeb0cd0b 100644
 @@ -229,8 +253,8 @@ function staleCanonicalUserRoleRecords({ roles, userRoles }) {
      .filter((row) => row.key);
  }
- 
+
 -async function repairCanonicalUserRoles({ databaseProvider, dryRun, roles, userRoles }) {
 -  const staleRecords = staleCanonicalUserRoleRecords({ roles, userRoles });
 +async function repairCanonicalUserRoles({ canonicalUsers, databaseProvider, dryRun, roles, userRoles }) {
@@ -631,10 +1449,55 @@ index 6f214f7a2..0eeb0cd0b 100644
    const deletedRecords = [];
    for (const record of staleRecords) {
      if (dryRun) {
-@@ -352,20 +376,57 @@ async function upsertAuthIdentity(authProvider, identity, existingByEmail, dryRu
+@@ -306,20 +330,21 @@ async function deleteDeprecatedRoleArtifacts({ databaseProvider, dryRun, roles,
    };
  }
- 
+
+-async function upsertAuthIdentity(authProvider, identity, existingByEmail, dryRun) {
++async function upsertAuthIdentity(authProvider, identity, existingByEmail, dryRun, { updatePasswords = false } = {}) {
+   const existingUser = existingByEmail.get(identity.email.toLowerCase());
+   if (dryRun) {
+     return {
+       action: existingUser ? "would-update" : "would-create",
+       authProviderUserId: maskId(authUserId(existingUser)),
+       email: identity.email,
++      passwordUpdated: false,
+     };
+   }
+   if (existingUser) {
+     const payload = await authProvider.updateAccount({
+       authProviderUserId: authUserId(existingUser),
+       email: identity.email,
+-      password: requestedDevPassword(identity),
++      password: updatePasswords ? requestedDevPassword(identity) : "",
+       userMetadata: {
+         display_name: identity.displayName,
+         name: identity.displayName,
+@@ -329,6 +354,7 @@ async function upsertAuthIdentity(authProvider, identity, existingByEmail, dryRu
+       action: "updated",
+       authProviderUserId: maskId(authUserId(payload) || authUserId(existingUser)),
+       email: identity.email,
++      passwordUpdated: updatePasswords,
+     };
+   }
+   const created = await authProvider.createAccount({
+@@ -339,7 +365,7 @@ async function upsertAuthIdentity(authProvider, identity, existingByEmail, dryRu
+   const updated = await authProvider.updateAccount({
+     authProviderUserId: createdUserId,
+     email: identity.email,
+-    password: requestedDevPassword(identity),
++    password: updatePasswords ? requestedDevPassword(identity) : "",
+     userMetadata: {
+       display_name: identity.displayName,
+       name: identity.displayName,
+@@ -349,23 +375,61 @@ async function upsertAuthIdentity(authProvider, identity, existingByEmail, dryRu
+     action: "created",
+     authProviderUserId: maskId(authUserId(updated) || createdUserId),
+     email: identity.email,
++    passwordUpdated: true,
+   };
+ }
+
 -function canonicalUserRows(authUsers) {
 +function canonicalPublicUsersByEmail(publicUsers = []) {
 +  const byEmail = new Map();
@@ -695,7 +1558,7 @@ index 6f214f7a2..0eeb0cd0b 100644
      };
    });
  }
-@@ -479,7 +540,6 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
+@@ -479,7 +543,6 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
      .filter((role) => String(role.roleSlug || "") === "user")
      .map((role) => normalizedId(role.key))
      .filter(Boolean));
@@ -703,7 +1566,7 @@ index 6f214f7a2..0eeb0cd0b 100644
    const identityEvidence = DEV_CREATOR_IDENTITIES.map((identity) => {
      const auth = authByEmail.get(identity.email.toLowerCase());
      const appUser = publicByEmail.get(identity.email.toLowerCase());
-@@ -496,6 +556,11 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
+@@ -496,6 +559,11 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
          appUser.authProviderUserId === authUserId(auth),
      };
    });
@@ -715,7 +1578,7 @@ index 6f214f7a2..0eeb0cd0b 100644
    const creatorAssignments = DEV_CREATOR_IDENTITIES.map((identity) => {
      const appUser = publicByEmail.get(identity.email.toLowerCase());
      return {
-@@ -504,12 +569,12 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
+@@ -504,12 +572,12 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
        roleSlug: "creator",
      };
    });
@@ -730,7 +1593,7 @@ index 6f214f7a2..0eeb0cd0b 100644
      davidqOwner: davidqOwnerAssignment,
      user1Creator: creatorAssignments.find((record) => record.email === "user1@example.invalid")?.assigned === true,
      user2Creator: creatorAssignments.find((record) => record.email === "user2@example.invalid")?.assigned === true,
-@@ -539,7 +604,7 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
+@@ -539,7 +607,7 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
        userRoleKey: normalizedId(row.key),
      }));
    const unexpectedCanonicalAssignments = afterUserRoles
@@ -739,7 +1602,12 @@ index 6f214f7a2..0eeb0cd0b 100644
      .filter((row) => !desiredPairs.has(`${normalizedId(row.userKey)}\u0000${normalizedId(row.roleKey)}`))
      .map((row) => ({
        roleKey: normalizedId(row.roleKey),
-@@ -621,6 +686,12 @@ export async function syncSupabaseDevCreatorIdentities({
+@@ -617,26 +685,35 @@ export async function syncSupabaseDevCreatorIdentities({
+   databaseProvider = new SupabasePostgresProviderAdapter(),
+   dryRun = false,
+   env = process.env,
++  updatePasswords = false,
+ } = {}) {
    assertDevOnlyAuthTestCleanupEnvironment(env);
    const beforeAuthUsers = await authProvider.listAllAdminUsers();
    const beforePublicUsers = await databaseProvider.getUsers();
@@ -750,11 +1618,14 @@ index 6f214f7a2..0eeb0cd0b 100644
 +    throw new Error(`Supabase DEV identity sync requires existing database users row for ${DAVIDQ_DEV_EMAIL}.`);
 +  }
    const beforeCounts = identityCounts({ authUsers: beforeAuthUsers, publicUsers: beforePublicUsers });
- 
+
    const existingByEmail = authUsersByEmail(beforeAuthUsers);
-@@ -630,13 +701,15 @@ export async function syncSupabaseDevCreatorIdentities({
+   const authUpsertRecords = [];
+   for (const identity of DEV_CREATOR_IDENTITIES) {
+-    authUpsertRecords.push(await upsertAuthIdentity(authProvider, identity, existingByEmail, dryRun));
++    authUpsertRecords.push(await upsertAuthIdentity(authProvider, identity, existingByEmail, dryRun, { updatePasswords }));
    }
- 
+
    const authUsersForIdentity = dryRun ? beforeAuthUsers : await authProvider.listAllAdminUsers();
 +  const canonicalUsers = canonicalUserRows(authUsersForIdentity, publicUsersByEmail);
 +  const userRoleRequests = canonicalUserRoleRequests(canonicalUsers);
@@ -770,7 +1641,7 @@ index 6f214f7a2..0eeb0cd0b 100644
        },
        written: {
          roles: 0,
-@@ -645,29 +718,17 @@ export async function syncSupabaseDevCreatorIdentities({
+@@ -645,29 +722,17 @@ export async function syncSupabaseDevCreatorIdentities({
        },
      }
      : await databaseProvider.initializeIdentity({
@@ -795,7 +1666,7 @@ index 6f214f7a2..0eeb0cd0b 100644
 +      userRoles: userRoleRequests,
 +      users: canonicalUsers,
      });
- 
+
    const usersForCleanup = await databaseProvider.getUsers();
    const rolesForCleanup = await databaseProvider.getRoles();
    const userRolesForCleanup = await databaseProvider.getUserRoles();
@@ -804,7 +1675,7 @@ index 6f214f7a2..0eeb0cd0b 100644
      databaseProvider,
      dryRun,
      roles: rolesForCleanup,
-@@ -685,7 +746,7 @@ export async function syncSupabaseDevCreatorIdentities({
+@@ -685,7 +750,7 @@ export async function syncSupabaseDevCreatorIdentities({
    const userRolesForPublicCleanup = dryRun ? userRolesForCleanup : await databaseProvider.getUserRoles();
    const publicCleanupCandidates = usersForCleanup.filter(isManagedExtraPublicUser);
    const publicCleanup = await deleteManagedPublicUsers({
@@ -813,197 +1684,46 @@ index 6f214f7a2..0eeb0cd0b 100644
      authProvider,
      candidates: publicCleanupCandidates,
      databaseProvider,
-diff --git a/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_branch_validation.md b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_branch_validation.md
-new file mode 100644
-index 000000000..c807ea892
---- /dev/null
-+++ b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_branch_validation.md
-@@ -0,0 +1,23 @@
-+# Branch Validation: PR_26179_OWNER_035-dev-auth-user-key-db-authority
-+
-+## Status
-+
-+PASS
-+
-+## Branch
-+
-+- Current branch: `PR_26179_OWNER_035-dev-auth-user-key-db-authority`
-+- Source branch: `main`
-+- Worktree at report time: modified files only for this PR plus generated report artifacts
-+
-+## Validation Commands
-+
-+- PASS `node --check src/dev-runtime/server/local-api-router.mjs`
-+- PASS `node --check src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs`
-+- PASS `node --check dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
-+- PASS `node --check dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`
-+- PASS `node --test dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`
-+- PASS `node --test --test-name-pattern "Supabase sign-in resolves|Supabase sign-in does not" dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
-+- PASS `git diff --check`
-+- PASS `npm run validate:canonical-structure`
-+
-diff --git a/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_manual_validation_notes.md b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_manual_validation_notes.md
-new file mode 100644
-index 000000000..005ca851f
---- /dev/null
-+++ b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_manual_validation_notes.md
-@@ -0,0 +1,14 @@
-+# Manual Validation Notes: PR_26179_OWNER_035-dev-auth-user-key-db-authority
-+
-+Manual browser validation was not run because this PR changes server-side auth/session resolution and DEV identity sync behavior. The targeted API-level tests cover the affected user-visible outcomes:
-+
-+- A valid Supabase Auth id linked to `users.authProviderUserId` signs in and returns the database-owned `users.key`.
-+- A matching email with stale `users.authProviderUserId` does not sign in and returns the existing Creator-safe identity setup message.
-+- The browser response does not expose raw Auth ids or database user keys on the failure path.
-+
-+Recommended manual follow-up in DEV after merge:
-+
-+- Run the approved DEV identity sync.
-+- Sign in as `qbytes.dq@gmail.com`.
-+- Confirm the session resolves to the existing database `users.key` row whose `authProviderUserId` equals the Supabase Auth user id.
-+
-diff --git a/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_report.md b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_report.md
-new file mode 100644
-index 000000000..94dfcbd73
---- /dev/null
-+++ b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_report.md
-@@ -0,0 +1,61 @@
-+# PR_26179_OWNER_035-dev-auth-user-key-db-authority
-+
-+## Summary
-+
-+This PR makes DEV account session resolution treat the database `users` row as authoritative.
-+
-+Runtime sign-in now resolves a session only when the Supabase Auth user id matches `users.authProviderUserId`. Matching by email alone is no longer accepted for login/session resolution. Email remains valid only for the DEV identity sync step that locates the existing database `users` row before writing the real Supabase Auth id back to `users.authProviderUserId`.
-+
-+## Diagnostic Findings
-+
-+### Where `users.key` currently comes from
-+
-+- DEV seed setup defines static user keys in `src/dev-runtime/seed/seed-db-keys.mjs`.
-+- Current database seed DML also contains DEV account rows under `dev/build/database/dml/account.sql`.
-+- Before this PR, `src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs` imported those seed keys and used them as the canonical keys during DEV Supabase identity sync.
-+- After this PR, DEV sync locates existing `users` rows by email and reads `users.key` from the database row. The sync no longer imports `SEED_DB_KEYS`.
-+
-+### Where `authProviderUserId` is populated
-+
-+- Account creation provisioning still writes `authProviderUserId` in `src/dev-runtime/server/local-api-router.mjs` through `provisionSupabaseIdentityForAuthPayload()`.
-+- DEV identity sync now reads `auth.users.id` from Supabase Auth, reads `users.key` from the database row found by email, and sends that database-owned key plus the real Auth id through `databaseProvider.initializeIdentity()`.
-+
-+### Seed constant use
-+
-+- Seed constants remain valid for DEV seed setup, seed fixtures, and existing test/demo data.
-+- They are no longer used by the DEV identity sync helper as the authoritative app user key source.
-+- Runtime sign-in/session resolution does not hardcode DavidQ or other user keys. It reads identity tables and resolves `matchingUser.key` after matching Supabase Auth id to `users.authProviderUserId`.
-+
-+## Exact Fix
-+
-+- Removed email fallback from Supabase sign-in session resolution.
-+- Added a Creator-safe setup failure when Auth succeeds but the matching email row has not been linked to the Auth id.
-+- Added a narrow server-side Postgres client injection hook for tests, with default runtime behavior unchanged.
-+- Refactored DEV creator identity sync so canonical identity definitions are email-based and database `users.key` is read from existing rows.
-+- Changed role assignment and cleanup repair logic to derive canonical user keys from database rows.
-+- Added regression tests proving:
-+  - Sign-in uses the database-owned `users.key` matched by `authProviderUserId`.
-+  - Sign-in does not create a session from matching email when `authProviderUserId` is stale.
-+  - DEV sync preserves non-seed database user keys.
-+  - DEV sync fails if an expected database `users` row is missing.
-+
-+## Files Changed
-+
-+- `src/dev-runtime/server/local-api-router.mjs`
-+- `src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs`
-+- `dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
-+- `dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`
-+
-+## Validation
-+
-+PASS:
-+
-+- `node --check src/dev-runtime/server/local-api-router.mjs`
-+- `node --check src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs`
-+- `node --check dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
-+- `node --check dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`
-+- `node --test dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`
-+- `node --test --test-name-pattern "Supabase sign-in resolves|Supabase sign-in does not" dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
-+- `git diff --check`
-+- `npm run validate:canonical-structure`
-+
-diff --git a/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_requirement_checklist.md b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_requirement_checklist.md
-new file mode 100644
-index 000000000..180e988c1
---- /dev/null
-+++ b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_requirement_checklist.md
-@@ -0,0 +1,18 @@
-+# Requirement Checklist: PR_26179_OWNER_035-dev-auth-user-key-db-authority
-+
-+- PASS Do not use hardcoded user keys as runtime identity source.
-+- PASS Use email only to locate the existing DEV `users` row during DEV identity sync.
-+- PASS Read `users.key` from the database row during DEV sync.
-+- PASS Read `auth.users.id` from Supabase Auth during DEV sync.
-+- PASS Write `auth.users.id` into `users.authProviderUserId`.
-+- PASS Login/session resolution matches Supabase Auth id to `users.authProviderUserId`.
-+- PASS Do not create browser-owned auth.
-+- PASS Do not create fake login.
-+- PASS Do not add password tables.
-+- PASS Do not use `displayName` as an identity key.
-+- PASS Do not hardcode DavidQ/user keys in runtime login resolution.
-+- PASS Report where `users.key` currently comes from.
-+- PASS Report where `authProviderUserId` is populated.
-+- PASS Report whether seed constants are setup-only or runtime identity authority.
-+- PASS Report exact fix.
-+
-diff --git a/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_lane_report.md b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_lane_report.md
-new file mode 100644
-index 000000000..634164f94
---- /dev/null
-+++ b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_lane_report.md
-@@ -0,0 +1,18 @@
-+# Validation Lane Report: PR_26179_OWNER_035-dev-auth-user-key-db-authority
-+
-+## Lane
-+
-+Targeted auth and DEV identity sync validation.
-+
-+## Commands
-+
-+- PASS `node --test dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`
-+- PASS `node --test --test-name-pattern "Supabase sign-in resolves|Supabase sign-in does not" dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
-+
-+## Coverage
-+
-+- DEV identity sync reads existing database `users.key` values by email.
-+- DEV identity sync writes real Supabase Auth ids to `users.authProviderUserId`.
-+- Session resolution accepts only `auth.users.id` matched to `users.authProviderUserId`.
-+- Email-only session resolution is rejected with the existing Creator-safe setup message.
-+
-diff --git a/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_report.md b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_report.md
-new file mode 100644
-index 000000000..5d5f107cc
---- /dev/null
-+++ b/dev/reports/PR_26179_OWNER_035-dev-auth-user-key-db-authority_validation_report.md
-@@ -0,0 +1,24 @@
-+# Validation Report: PR_26179_OWNER_035-dev-auth-user-key-db-authority
-+
-+## Result
-+
-+PASS
-+
-+## Targeted Validation
-+
-+- `node --check src/dev-runtime/server/local-api-router.mjs`: PASS
-+- `node --check src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs`: PASS
-+- `node --check dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs`: PASS
-+- `node --check dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`: PASS
-+- `node --test dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`: PASS, 2 tests
-+- `node --test --test-name-pattern "Supabase sign-in resolves|Supabase sign-in does not" dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs`: PASS, 2 tests
-+
-+## Repository Guardrails
-+
-+- `git diff --check`: PASS
-+- `npm run validate:canonical-structure`: PASS
-+
-+## Notes
-+
-+The targeted tests use a server-side Postgres client fixture to exercise the Local API route without opening a real database connection. Default runtime behavior remains unchanged because the injected client defaults to `null`.
-+
+diff --git a/src/dev-runtime/toolbox-api/alfa-tool-services.mjs b/src/dev-runtime/toolbox-api/alfa-tool-services.mjs
+index 239c22a4d..6dc033e83 100644
+--- a/src/dev-runtime/toolbox-api/alfa-tool-services.mjs
++++ b/src/dev-runtime/toolbox-api/alfa-tool-services.mjs
+@@ -295,38 +295,7 @@ function activeGameFromWorkspace(repository, overrideId = "") {
+   };
+ }
+
+-async function ensureUsers(adapter) {
+-  const now = timestamp();
+-  await adapter.upsertTable("users", [
+-    {
+-      key: SYSTEM_USER_KEY,
+-      displayName: "Forge Bot",
+-      email: null,
+-      authProvider: "seed",
+-      authProviderUserId: "forge-bot",
+-      isActive: true,
+-      createdAt: now,
+-      updatedAt: now,
+-      createdBy: null,
+-      updatedBy: null,
+-    },
+-    {
+-      key: DEFAULT_USER_KEY,
+-      displayName: "Creator",
+-      email: "creator@example.test",
+-      authProvider: "seed",
+-      authProviderUserId: "creator",
+-      isActive: true,
+-      createdAt: now,
+-      updatedAt: now,
+-      createdBy: SYSTEM_USER_KEY,
+-      updatedBy: SYSTEM_USER_KEY,
+-    },
+-  ]);
+-}
+-
+ async function ensureGameRecord(adapter, game, userKey = DEFAULT_USER_KEY) {
+-  await ensureUsers(adapter);
+   await adapter.upsertProductTable("game_workspace_games", [{
+     key: game.key,
+     name: game.name,

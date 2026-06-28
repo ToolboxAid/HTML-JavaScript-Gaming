@@ -301,6 +301,10 @@ test("Supabase DEV creator identity sync upserts canonical users and deletes ext
   const davidq = fake.state.users.find((user) => user.email === "qbytes.dq@gmail.com");
   assert.equal(fake.state.user_roles.some((row) => row.userKey === davidq.key && row.roleKey === ownerRole.key), true);
   assert.equal(fake.calls.some((call) => call.path === "/auth/v1/admin/users?page=1&per_page=100" && call.method === "GET"), true);
+  const existingUserUpdate = fake.calls.find((call) => call.method === "PUT" && call.path === "/auth/v1/admin/users/auth-user-1");
+  assert.equal(Boolean(existingUserUpdate), true);
+  assert.equal(Object.hasOwn(existingUserUpdate.body, "password"), false);
+  assert.equal(result.authUpsertRecords.find((record) => record.email === "user1@example.invalid").passwordUpdated, false);
 });
 
 test("Supabase DEV creator identity sync requires existing database users rows by email", async () => {

@@ -11,8 +11,15 @@
 - PASS Do not add password tables.
 - PASS Do not use `displayName` as an identity key.
 - PASS Do not hardcode DavidQ/user keys in runtime login resolution.
+- PASS Verify qbytes exists in Supabase Auth.
+- PASS Verify qbytes exists in the product `users` table.
+- PASS Verify `users.authProviderUserId` equals Supabase Auth id.
+- PASS If the database row/link is stale, run DEV identity sync.
+- PASS Do not change password during existing Auth user sync.
+- PASS Do not recreate qbytes Auth user because it already exists.
+- PASS Do not use email fallback for session resolution.
+- PASS Re-test sign-in after sync.
 - PASS Report where `users.key` currently comes from.
 - PASS Report where `authProviderUserId` is populated.
 - PASS Report whether seed constants are setup-only or runtime identity authority.
 - PASS Report exact fix.
-

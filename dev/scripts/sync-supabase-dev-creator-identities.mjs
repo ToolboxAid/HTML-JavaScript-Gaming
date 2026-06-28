@@ -66,14 +66,16 @@ function formatRecordList(label, records, selector) {
 const args = new Set(process.argv.slice(2));
 const json = args.has("--json");
 const dryRun = args.has("--dry-run");
+const updatePasswords = args.has("--update-passwords");
 const envLoad = loadEnvLocal();
 
 try {
-  const result = await syncSupabaseDevCreatorIdentities({ dryRun });
+  const result = await syncSupabaseDevCreatorIdentities({ dryRun, updatePasswords });
   if (json) {
     console.log(JSON.stringify({
       envLocalLoaded: envLoad.loaded,
       envLocalLoadedKeys: envLoad.loadedKeys,
+      updatePasswords,
       ...result,
     }, null, 2));
   } else {
@@ -81,6 +83,7 @@ try {
     console.log(envLoad.loaded
       ? `.env.local loaded (${envLoad.loadedKeys} key(s) applied).`
       : ".env.local was not found.");
+    console.log(`Password updates for existing Auth users: ${updatePasswords ? "enabled" : "disabled"}.`);
     formatCounts("Before", result.beforeCounts);
     formatCounts("After", result.afterCounts);
     formatRecordList("Auth upserts", result.authUpsertRecords, (record) => `${record.email}: ${record.action}`);

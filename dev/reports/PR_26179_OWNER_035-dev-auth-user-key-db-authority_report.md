@@ -33,11 +33,40 @@ Runtime sign-in now resolves a session only when the Supabase Auth user id match
 - Added a narrow server-side Postgres client injection hook for tests, with default runtime behavior unchanged.
 - Refactored DEV creator identity sync so canonical identity definitions are email-based and database `users.key` is read from existing rows.
 - Changed role assignment and cleanup repair logic to derive canonical user keys from database rows.
+- Removed the Alfa toolbox tag/design/configuration helper behavior that upserted seed `users` rows over the static DEV account keys.
+- Changed the DEV identity sync default so existing Supabase Auth users are updated without sending a password. Password updates now require an explicit `--update-passwords` flag.
 - Added regression tests proving:
   - Sign-in uses the database-owned `users.key` matched by `authProviderUserId`.
   - Sign-in does not create a session from matching email when `authProviderUserId` is stale.
   - DEV sync preserves non-seed database user keys.
   - DEV sync fails if an expected database `users` row is missing.
+  - Tags API seeding does not upsert rows into `users`.
+  - Existing Auth user sync does not send a password by default.
+
+## DEV Database Verification
+
+Performed against the current `.env` DEV database target.
+
+Initial audit:
+
+- `qbytes.dq@gmail.com` existed in Supabase Auth.
+- `qbytes.dq@gmail.com` was missing from the product `users` table.
+- The reserved static DEV account keys for User 1 and DavidQ had been overwritten by seed `Creator` / `Forge Bot` rows.
+
+Repair and sync:
+
+- Re-applied the approved DEV account DML to restore the missing database identity rows.
+- Ran the DEV identity sync with `updatePasswords: false`.
+- qbytes sync action: `updated`.
+- qbytes password update: `false`.
+
+Final audit:
+
+- Supabase Auth match count: `1`.
+- Product `users` match count: `1`.
+- `users.authProviderUserId` equals Supabase Auth `auth.users.id`: PASS.
+- Sign-in smoke through `/api/auth/sign-in`: PASS.
+- Session resolved to the database `users.key`: PASS.
 
 ## Files Changed
 
@@ -54,8 +83,11 @@ PASS:
 - `node --check src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs`
 - `node --check dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
 - `node --check dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`
+- `node --check src/dev-runtime/toolbox-api/alfa-tool-services.mjs`
+- `node --check dev/scripts/sync-supabase-dev-creator-identities.mjs`
+- `node --check dev/tests/dev-runtime/TagsApiService.test.mjs`
 - `node --test dev/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`
 - `node --test --test-name-pattern "Supabase sign-in resolves|Supabase sign-in does not" dev/tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
+- `node --test dev/tests/dev-runtime/TagsApiService.test.mjs`
 - `git diff --check`
 - `npm run validate:canonical-structure`
-
