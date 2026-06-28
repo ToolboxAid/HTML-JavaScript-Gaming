@@ -4,6 +4,7 @@ Status: PASS
 
 - Source branch: `PR_26179_OWNER_036-reports-are-tracked-source`
 - Base branch: `main`
-- Branch created from synchronized `main`: PASS
+- Branch rebased onto latest `origin/main`: PASS
 - Existing generated report artifacts preserved: PASS
 - Scope limited to governance docs and reports: PASS
+- Merge conflict resolved: PASS

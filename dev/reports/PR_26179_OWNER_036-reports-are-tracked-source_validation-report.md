@@ -2,6 +2,12 @@
 
 Status: PASS
 
+Conflict resolution:
+
+- Rebasing onto latest `origin/main` produced conflicts in generated report files only: `dev/reports/codex_changed_files.txt` and `dev/reports/codex_review.diff`.
+- The approved Codex Reports governance wording was preserved.
+- Generated report files were regenerated from the final post-rebase diff.
+
 Commands run:
 
 ```text
