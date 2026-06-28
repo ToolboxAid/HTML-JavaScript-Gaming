@@ -1,13 +1,20 @@
 # git status --short
+A  dev/build/ProjectInstructions/PROJECT_BRANCHING_POLICY.md
 M  dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 M  dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
-M  dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_manual-validation-notes.md
-M  dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_report.md
-M  dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_requirement-checklist.md
-M  dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_validation-report.md
+M  dev/build/ProjectInstructions/addendums/pr_workflow.md
+A  dev/reports/PR_26179_OWNER_013-project-branching-policy-document_branch-validation.md
+A  dev/reports/PR_26179_OWNER_013-project-branching-policy-document_manual-validation-notes.md
+A  dev/reports/PR_26179_OWNER_013-project-branching-policy-document_report.md
+A  dev/reports/PR_26179_OWNER_013-project-branching-policy-document_requirement-checklist.md
+A  dev/reports/PR_26179_OWNER_013-project-branching-policy-document_validation-report.md
+ M dev/reports/codex_changed_files.txt
+ M dev/reports/codex_review.diff
 
 # git ls-files --others --exclude-standard
 (no output)
 
 # git diff --stat
-(no output)
+dev/reports/codex_changed_files.txt |  11 +-
+ dev/reports/codex_review.diff       | 523 +++++++++++++++++++++++++++++-------
+ 2 files changed, 434 insertions(+), 100 deletions(-)

@@ -1,122 +1,452 @@
+diff --git a/dev/build/ProjectInstructions/PROJECT_BRANCHING_POLICY.md b/dev/build/ProjectInstructions/PROJECT_BRANCHING_POLICY.md
+new file mode 100644
+index 000000000..06a4f0e54
+--- /dev/null
++++ b/dev/build/ProjectInstructions/PROJECT_BRANCHING_POLICY.md
+@@ -0,0 +1,151 @@
++# Project Branching Policy
++
++Version: 2026.06.28.002
++Last Updated: 2026-06-28
++Owner: OWNER
++
++## Purpose
++
++Define the repository branching policy for Independent PRs and Stacked PRs.
++
++This document owns PR branching model decisions. Other Project Instructions documents may point here, but must not duplicate the full policy.
++
++## Independent PR
++
++An Independent PR is a PR with no direct dependency on another open PR.
++
++Rules:
++- Independent PRs start from synchronized `main`.
++- Independent PRs target `main`.
++- Independent PRs must not reuse another feature branch as their starting point.
++- Independent PR work must return to synchronized `main` before another unrelated Independent PR begins.
++
++## Stacked PR
++
++A Stacked PR is a PR with a direct dependency on a previous PR branch or active team workstream branch.
++
++Rules:
++- Stacked PRs may start from the previous PR branch when there is a direct dependency.
++- Stacked PRs belong under the documented active workstream.
++- Stacked PRs must document dependency order before BUILD begins.
++- A later stacked PR must not merge before every prior dependency PR is merged.
++
++## Owner Branching Rules
++
++OWNER may create Independent PRs from synchronized `main` when the work has no direct dependency.
++
++OWNER may also create Stacked PRs when dependency order, reviewability, or workstream continuity requires it.
++
++OWNER stacked PRs must document the same dependency, review, and merge order required for all stacked work.
++
++## Non-Owner Team Branching Rules
++
++Non-Owner teams use Stacked PR workstreams by default.
++
++Non-Owner teams include Alfa, Bravo, Charlie, Delta, Golf, and any future non-Owner canonical team.
++
++Non-Owner team PRs must start from the active team workstream branch or the documented previous PR branch unless OWNER explicitly grants a standalone/no-dependency exception.
++
++## Explicit Owner Exception Process For Team Independent PRs
++
++A non-Owner team may create an Independent PR from `main` only when OWNER explicitly marks the task:
++
++```text
++standalone/no-dependency
++```
++
++The exception must be documented before branch creation and must name:
++- team
++- PR name
++- reason the PR has no dependency
++- confirmation that the branch starts from synchronized `main`
++- confirmation that the PR targets `main`
++
++Without that explicit exception, Codex must treat the non-Owner team PR as Stacked.
++
++## Dependency Documentation Requirements
++
++Every Stacked PR report must name:
++- stack order
++- previous PR dependency
++- next PR dependency, if known
++- starting branch
++- intended merge order
++- base branch
++- source branch
++
++## Review Order
++
++Stacked PRs must be reviewed in dependency order.
++
++A later stacked PR may be reviewed for context, but OWNER approval must respect dependency order unless OWNER explicitly grants an exception.
++
++## Merge Order
++
++Stacked PRs must be merged in dependency order.
++
++A later stacked PR must not merge before all prior dependency PRs are merged and the stack base has been updated as required by GitHub.
++
++## Hard-Stop Validation Rules
++
++Codex must HARD STOP before changing files when:
++- the requested Independent PR does not start from `main`
++- a non-Owner team PR starts from `main` without OWNER `standalone/no-dependency` approval
++- the requested Stacked PR does not start from the documented previous PR branch or active workstream branch
++- the Stacked PR lacks dependency order documentation
++- the current branch changes unexpectedly
++- the requested branch model conflicts with OWNER instructions
++
++The hard-stop report must include:
++- current branch
++- expected branch
++- requested PR model
++- missing dependency or exception details
++- worktree status
++
++## Examples
++
++### Owner Independent PR
++
++```text
++PR: PR_26179_OWNER_020-doc-cleanup
++Model: Independent PR
++Start: main
++Base: main
++Reason: no direct dependency
++```
++
++### Owner Stacked PR
++
++```text
++PR #1: PR_26179_OWNER_021-policy-foundation
++Base: main
++
++PR #2: PR_26179_OWNER_022-policy-followup
++Base: PR_26179_OWNER_021-policy-foundation
++Model: Stacked PR
++Merge order: #1, then #2
++```
++
++### Non-Owner Team Stacked PR
++
++```text
++PR #1: PR_26179_ALFA_030-tool-flow-foundation
++Base: main
++
++PR #2: PR_26179_ALFA_031-tool-flow-validation
++Base: PR_26179_ALFA_030-tool-flow-foundation
++Model: Stacked PR
++Merge order: #1, then #2
++```
++
++### Non-Owner Team Independent Exception
++
++```text
++OWNER exception: standalone/no-dependency
++Team: Bravo
++PR: PR_26179_BRAVO_040-small-doc-fix
++Start: main
++Base: main
++Reason: isolated documentation fix with no branch dependency
++```
 diff --git a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-index 58f6a709f..65d36157c 100644
+index 65d36157c..126e7c69c 100644
 --- a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 +++ b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-@@ -4,8 +4,9 @@ Before performing ANY task, Codex must:
-
- - Read `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md`.
- - Read the latest `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md` from the repository.
--- Treat the repository copy as authoritative.
--- Discard previously remembered Project Instructions.
-+- Treat repository Project Instructions as the only authoritative source.
-+- Discard previously remembered Project Instructions before every Codex task.
-+- Never allow conversation memory to override repository instructions.
+@@ -9,7 +9,7 @@ Before performing ANY task, Codex must:
+ - Never allow conversation memory to override repository instructions.
  - Load all referenced instruction documents required by this file and the task.
  - Validate canonical paths.
- - Validate branching model.
-@@ -19,6 +20,11 @@ Startup Validation
+-- Validate branching model.
++- Load and validate `dev/build/ProjectInstructions/PROJECT_BRANCHING_POLICY.md`.
+ - Validate ZIP and report locations.
 
- Reading latest (v<version>) Project Instructions... PASS
-
-+Instruction Source
-+------------------
-+Repository ........ PASS
-+Cached Memory ..... DISCARDED
-+
- Canonical paths
- ---------------
+ Every Codex response must begin with:
+@@ -30,10 +30,11 @@ Canonical paths
  Reports .......... dev/reports
-@@ -109,7 +115,7 @@ Rules:
+ ZIPs ............. dev/workspace/zips
+
+-Branching model
+----------------
+-Owner ............ Independent PRs allowed
+-Teams ............ Stacked PRs by default
++Branching Policy
++----------------
++Source ............ PROJECT_BRANCHING_POLICY.md
++Version ........... <version>
++Status ............ PASS
+
+ Legacy path check
+ -----------------
+@@ -115,7 +116,7 @@ Rules:
 
  ## Current Version/Date
 
--- Project Instructions Version: 2026-06-28.PR_26179_OWNER_012
-+- Project Instructions Version: 2026.06.28.001
+-- Project Instructions Version: 2026.06.28.001
++- Project Instructions Version: 2026.06.28.002
  - Date: 2026-06-28
  - Owner: OWNER
 
+@@ -123,17 +124,19 @@ Rules:
+
+ 1. Always read `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md`.
+ 2. Always read `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md`.
+-3. Always read `dev/build/ProjectInstructions/PROJECT_STATE.md`.
+-4. Always read `dev/build/ProjectInstructions/repository/canonical_repository_structure.md`.
+-5. For Codex workflow command interpretation, read `dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`.
+-6. For Start of Day, read `dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md`.
+-7. Load team, backlog, database, runtime, theme, or other specialist documents only when the current task requires them.
++3. Always read `dev/build/ProjectInstructions/PROJECT_BRANCHING_POLICY.md`.
++4. Always read `dev/build/ProjectInstructions/PROJECT_STATE.md`.
++5. Always read `dev/build/ProjectInstructions/repository/canonical_repository_structure.md`.
++6. For Codex workflow command interpretation, read `dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`.
++7. For Start of Day, read `dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md`.
++8. Load team, backlog, database, runtime, theme, or other specialist documents only when the current task requires them.
+
+ ## Load Graph
+
+ ```text
+ PROJECT_INSTRUCTIONS.md
+ |-- PROJECT_INSTRUCTIONS_VERSION.md
++|-- PROJECT_BRANCHING_POLICY.md
+ |-- PROJECT_STATE.md
+ |-- repository/canonical_repository_structure.md
+ |-- standards/CODEX_WORKFLOW_COMMANDS.md
+@@ -154,6 +157,7 @@ PROJECT_INSTRUCTIONS.md
+
+ - `PROJECT_INSTRUCTIONS_VERSION.md`: always.
+ - `PROJECT_INSTRUCTIONS.md`: always.
++- `PROJECT_BRANCHING_POLICY.md`: always.
+ - `PROJECT_STATE.md`: always.
+ - `repository/canonical_repository_structure.md`: always.
+ - `standards/CODEX_WORKFLOW_COMMANDS.md`: Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, invalid command, or command interpretation tasks.
+@@ -187,6 +191,7 @@ That file owns Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, and invalid command be
+ ## Referenced Documents
+
+ - Project Instructions version: `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md`
++- Project branching policy: `dev/build/ProjectInstructions/PROJECT_BRANCHING_POLICY.md`
+ - Project state: `dev/build/ProjectInstructions/PROJECT_STATE.md`
+ - Repository folder placement SSoT: `dev/build/ProjectInstructions/repository/canonical_repository_structure.md`
+ - Codex workflow commands: `dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`
+@@ -210,6 +215,7 @@ That file owns Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, and invalid command be
+
+ - `PROJECT_INSTRUCTIONS_VERSION.md` owns the current Project Instructions version and startup version proof.
+ - `PROJECT_INSTRUCTIONS.md` owns the manual entry point, startup contract, required read order, load graph, stop gates, execution modes, and pointers.
++- `PROJECT_BRANCHING_POLICY.md` owns Independent PR, Stacked PR, Owner branching, non-Owner team branching, exception, dependency, review, merge, and hard-stop rules.
+ - `PROJECT_STATE.md` owns machine-friendly project state metadata.
+ - `repository/canonical_repository_structure.md` owns all folder placement and file-placement rules.
+ - `standards/CODEX_WORKFLOW_COMMANDS.md` owns Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, and invalid command behavior.
 diff --git a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
-index 415f3675b..c5dc06241 100644
+index c5dc06241..1fda3a7a5 100644
 --- a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
 +++ b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
-@@ -1,12 +1,13 @@
+@@ -1,6 +1,6 @@
  # Project Instructions Version
 
--Current Project Instructions Version: 2026-06-28.PR_26179_OWNER_012
-+Current Project Instructions Version: 2026.06.28.001
+-Current Project Instructions Version: 2026.06.28.001
++Current Project Instructions Version: 2026.06.28.002
 
  Last Updated: 2026-06-28
 
- ## Breaking Changes Summary
+@@ -8,6 +8,8 @@ Last Updated: 2026-06-28
 
  - Codex startup validation is mandatory before every task outcome.
-+- Project Instructions versions are repository-owned and increment independently of PR numbers.
+ - Project Instructions versions are repository-owned and increment independently of PR numbers.
++- Added dedicated branching policy document.
++- Startup validation now verifies the branching policy document was loaded instead of duplicating policy text.
  - Codex must read this version file and the latest repository copy of `PROJECT_INSTRUCTIONS.md` before performing work.
  - Codex must discard previously remembered Project Instructions and treat the repository copy as authoritative.
  - Codex must validate canonical report and ZIP paths, branching model, and legacy path avoidance before work proceeds.
-diff --git a/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_manual-validation-notes.md b/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_manual-validation-notes.md
-index e9c040ca1..4b1e8ec61 100644
---- a/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_manual-validation-notes.md
-+++ b/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_manual-validation-notes.md
-@@ -4,6 +4,9 @@
+diff --git a/dev/build/ProjectInstructions/addendums/pr_workflow.md b/dev/build/ProjectInstructions/addendums/pr_workflow.md
+index ee5eb9520..f0eb69351 100644
+--- a/dev/build/ProjectInstructions/addendums/pr_workflow.md
++++ b/dev/build/ProjectInstructions/addendums/pr_workflow.md
+@@ -39,63 +39,13 @@ This file owns PR lifecycle governance. It must not duplicate command phase rule
 
- - Confirmed the Startup Contract is the first section in `PROJECT_INSTRUCTIONS.md`.
- - Confirmed `PROJECT_INSTRUCTIONS_VERSION.md` exists in the active Project Instructions folder.
-+- Confirmed Project Instructions version uses repository-owned `2026.06.28.001` format rather than PR-number format.
-+- Confirmed the startup response block includes `Instruction Source`, `Repository ........ PASS`, and `Cached Memory ..... DISCARDED`.
-+- Confirmed the Startup Contract says conversation memory must never override repository instructions.
- - Confirmed the startup response block uses `dev/reports` and `dev/workspace/zips`.
- - Confirmed the legacy path check calls out `tmp/` and `docs_build/` as not used.
- - Confirmed no runtime or product files were modified.
-diff --git a/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_report.md b/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_report.md
-index 6209b506c..24e485007 100644
---- a/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_report.md
-+++ b/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_report.md
-@@ -14,9 +14,12 @@ Strengthen the Project Instructions startup contract so every Codex task proves
- ## Governance Outcome
+ ## PR Branching Models
 
- - Added `dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md`.
-+- Replaced PR-shaped Project Instructions versioning with repository-owned version `2026.06.28.001`.
- - Added a mandatory Startup Contract at the top of `PROJECT_INSTRUCTIONS.md`.
- - Required Codex to read the version file and latest repository Project Instructions before every task.
- - Required Codex to discard remembered Project Instructions in favor of the repository copy.
-+- Added explicit startup output for `Instruction Source`, proving repository instructions are used and cached memory is discarded.
-+- Documented that conversation memory must never override repository instructions.
- - Required startup validation for canonical paths, branching model, ZIP/report locations, and legacy path avoidance.
- - Added failure behavior when the version or canonical paths cannot be determined.
- - Documented that the startup validation applies to PLAN, BUILD, APPLY, Review, Audit, Governance, Validation, Read-only, Hard stop, No-op, and Partial completion outcomes.
-diff --git a/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_requirement-checklist.md b/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_requirement-checklist.md
-index 876a803d7..8a8502fcc 100644
---- a/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_requirement-checklist.md
-+++ b/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_requirement-checklist.md
-@@ -3,15 +3,17 @@
- | Requirement | Result | Notes |
- | --- | --- | --- |
- | Create `PROJECT_INSTRUCTIONS_VERSION.md` | PASS | Added under `dev/build/ProjectInstructions/`. |
--| Version file contains current version | PASS | `2026-06-28.PR_26179_OWNER_012`. |
-+| Version file contains current version | PASS | `2026.06.28.001`. |
-+| Version format is repository-owned, not PR-owned | PASS | Version increments independently of PR numbers. |
- | Version file contains last updated | PASS | `2026-06-28`. |
- | Version file contains breaking changes summary | PASS | Added concise startup validation summary. |
- | Add mandatory Startup Contract at top of `PROJECT_INSTRUCTIONS.md` | PASS | Added before the main Project Instructions heading. |
- | Require reading version file and latest Project Instructions | PASS | Included in Startup Contract. |
- | Require repository copy as authoritative and discard memory | PASS | Included in Startup Contract. |
-+| Conversation memory must never override repository instructions | PASS | Included in Startup Contract. |
- | Require loading referenced instruction documents | PASS | Included in Startup Contract. |
- | Require canonical path, branching model, ZIP/report validation | PASS | Included in Startup Contract. |
--| Add mandatory response block | PASS | Added exact startup validation response format. |
-+| Add mandatory response block | PASS | Added exact startup validation response format with Instruction Source section. |
- | Add failure behavior | PASS | Added STOP example and pre-work stop rule. |
- | Apply to every Codex task type | PASS | Listed all requested task/outcome types. |
- | Do not modify implementation code | PASS | Documentation/governance only. |
-diff --git a/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_validation-report.md b/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_validation-report.md
-index 1f916c634..2c5582950 100644
---- a/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_validation-report.md
-+++ b/dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_validation-report.md
-@@ -5,6 +5,7 @@
- - `git diff --check`: PASS
- - `npm run validate:canonical-structure`: PASS
- - Project Instructions grep for startup validation contract: PASS
-+- Project Instructions grep for repository-owned version format and Instruction Source output: PASS
+-Every PR must declare one branching model before branch creation or branch continuation.
++Canonical PR branching policy lives in:
 
- ## Playwright
+-### Ownership Defaults
++`dev/build/ProjectInstructions/PROJECT_BRANCHING_POLICY.md`
+
+-OWNER may create an Independent PR from synchronized `main` when the PR has no direct dependency.
++That document owns Independent PR, Stacked PR, Owner branching, non-Owner team branching, explicit Owner standalone/no-dependency exceptions, dependency documentation, review order, merge order, hard-stop validation rules, and examples.
+
+-Non-Owner team PRs use Stacked PR workstreams by default. A non-Owner team PR may start from `main` only when OWNER explicitly marks that PR as `standalone/no-dependency` before branch creation.
+-
+-If a non-Owner team PR is not explicitly marked `standalone/no-dependency`, Codex must treat it as Stacked and verify the active team workstream branch or documented previous PR branch before changing files.
+-
+-### Independent PR
+-
+-Use an Independent PR when the change has no direct dependency on another open PR.
+-
+-Rules:
+-- Independent PRs must start from synchronized `main`.
+-- Independent PRs must target `main`.
+-- Independent PRs must not reuse another feature branch as their starting point.
+-- OWNER PRs may use the Independent PR model when the PR has no direct dependency.
+-- Non-Owner team PRs may use the Independent PR model only when OWNER explicitly marks the PR as `standalone/no-dependency`.
+-- Codex must HARD STOP if the requested Independent PR starts from any branch other than `main`.
+-- Codex must HARD STOP if a non-Owner team PR starts from `main` without an explicit OWNER `standalone/no-dependency` marker.
+-- Codex must return to synchronized `main` before starting the next unrelated Independent PR.
+-
+-### Stacked PR
+-
+-Use a Stacked PR only when the PR has a direct dependency on the previous PR branch.
+-
+-Rules:
+-- Stacked PRs may start from the previous PR branch when there is a direct dependency.
+-- Non-Owner team PRs should use Stacked PR workstreams by default.
+-- A Stacked PR belongs under the active team workstream and must use the documented previous PR branch or active workstream branch as its starting point.
+-- Stacked PRs must document the dependency order before BUILD begins.
+-- Stacked PR reports must name:
+-  - the stack order
+-  - the previous PR dependency
+-  - the next PR dependency, if known
+-  - the starting branch
+-  - the intended merge order
+-- Stacked PRs must be reviewed in dependency order.
+-- Stacked PRs must be merged in dependency order.
+-- A later stacked PR must not merge before every prior dependency PR is merged.
+-- Codex must HARD STOP if the requested Stacked PR starts from a branch that is not the documented previous PR branch.
+-- Codex must HARD STOP if a Stacked PR lacks a documented dependency order.
+-
+-### Model Mismatch Hard Stop
+-
+-Codex must verify the requested PR model before changing files.
+-
+-HARD STOP when:
+-- an Independent PR is requested but the current/start branch is not `main`
+-- a non-Owner team PR starts from `main` without explicit OWNER `standalone/no-dependency` approval
+-- a Stacked PR is requested but the current/start branch is not the documented previous PR branch
+-- the request does not say whether the PR is Independent or Stacked and the start branch is not clearly valid
+-- a PR is described as stacked but no direct dependency or merge order is documented
+-
+-When the model is unclear, Codex must report the current branch, expected starting branch, and the missing model/dependency information before making changes.
++This PR workflow document must load and follow that policy, but it must not duplicate the full policy text.
+
+ All PR branching models remain subject to the Codex Completion Contract. Missing required ZIP output means the Codex run is incomplete.
+
+diff --git a/dev/reports/PR_26179_OWNER_013-project-branching-policy-document_branch-validation.md b/dev/reports/PR_26179_OWNER_013-project-branching-policy-document_branch-validation.md
+new file mode 100644
+index 000000000..09a849320
+--- /dev/null
++++ b/dev/reports/PR_26179_OWNER_013-project-branching-policy-document_branch-validation.md
+@@ -0,0 +1,16 @@
++# PR_26179_OWNER_013-project-branching-policy-document Branch Validation
++
++## Result
++
++PASS
++
++## Checks
++
++| Check | Result | Notes |
++| --- | --- | --- |
++| Stacked PR model identified | PASS | This PR depends on PR #257. |
++| Started from documented previous PR branch | PASS | Started from `PR_26179_OWNER_012-project-instructions-startup-validation`. |
++| Worktree clean before branch creation | PASS | Verified before branch creation. |
++| PR branch created | PASS | `PR_26179_OWNER_013-project-branching-policy-document`. |
++| Work stayed on PR branch | PASS | No direct commit to `main`. |
++| Documentation/governance scope | PASS | Only Project Instructions and reports changed. |
+diff --git a/dev/reports/PR_26179_OWNER_013-project-branching-policy-document_manual-validation-notes.md b/dev/reports/PR_26179_OWNER_013-project-branching-policy-document_manual-validation-notes.md
+new file mode 100644
+index 000000000..115f6ca35
+--- /dev/null
++++ b/dev/reports/PR_26179_OWNER_013-project-branching-policy-document_manual-validation-notes.md
+@@ -0,0 +1,9 @@
++# PR_26179_OWNER_013-project-branching-policy-document Manual Validation Notes
++
++## Notes
++
++- Confirmed `PROJECT_BRANCHING_POLICY.md` owns the full branching policy.
++- Confirmed startup validation now checks the branching policy source/version/status instead of duplicating Owner/team branch policy details.
++- Confirmed `pr_workflow.md` points to `PROJECT_BRANCHING_POLICY.md` and no longer carries the full policy text.
++- Confirmed Project Instructions version is `2026.06.28.002`.
++- Confirmed no runtime or product files were modified.
+diff --git a/dev/reports/PR_26179_OWNER_013-project-branching-policy-document_report.md b/dev/reports/PR_26179_OWNER_013-project-branching-policy-document_report.md
+new file mode 100644
+index 000000000..93e79c563
+--- /dev/null
++++ b/dev/reports/PR_26179_OWNER_013-project-branching-policy-document_report.md
+@@ -0,0 +1,29 @@
++# PR_26179_OWNER_013-project-branching-policy-document Report
++
++## Purpose
++
++Separate branching policy from startup validation mechanics.
++
++## Branching Model
++
++- Model: Stacked PR
++- Previous PR dependency: `PR_26179_OWNER_012-project-instructions-startup-validation` / PR #257
++- Starting branch: `PR_26179_OWNER_012-project-instructions-startup-validation`
++- Merge order: PR #255, then PR #256, then PR #257, then this PR
++
++## Governance Outcome
++
++- Added `dev/build/ProjectInstructions/PROJECT_BRANCHING_POLICY.md`.
++- Moved full Independent PR and Stacked PR policy ownership into the dedicated branching policy document.
++- Updated startup validation to verify the branching policy document was loaded instead of duplicating branch policy details.
++- Incremented Project Instructions version to `2026.06.28.002`.
++- Updated `PROJECT_INSTRUCTIONS_VERSION.md` with change notes for the branching policy document and startup validation change.
++- Updated `pr_workflow.md` to point to the dedicated branching policy instead of duplicating full policy text.
++
++## Runtime Impact
++
++None. This PR changes documentation/governance only.
++
++## ZIP
++
++- `dev/workspace/zips/PR_26179_OWNER_013-project-branching-policy-document_delta.zip`
+diff --git a/dev/reports/PR_26179_OWNER_013-project-branching-policy-document_requirement-checklist.md b/dev/reports/PR_26179_OWNER_013-project-branching-policy-document_requirement-checklist.md
+new file mode 100644
+index 000000000..30182d8b0
+--- /dev/null
++++ b/dev/reports/PR_26179_OWNER_013-project-branching-policy-document_requirement-checklist.md
+@@ -0,0 +1,20 @@
++# PR_26179_OWNER_013-project-branching-policy-document Requirement Checklist
++
++| Requirement | Result | Notes |
++| --- | --- | --- |
++| Create `PROJECT_BRANCHING_POLICY.md` | PASS | Added under `dev/build/ProjectInstructions/`. |
++| Define purpose | PASS | Included in policy document. |
++| Define Independent PR | PASS | Included in policy document. |
++| Define Stacked PR | PASS | Included in policy document. |
++| Define Owner branching rules | PASS | Included in policy document. |
++| Define non-Owner team branching rules | PASS | Included in policy document. |
++| Define Owner exception process for team independent PRs | PASS | Included `standalone/no-dependency` process. |
++| Define dependency documentation requirements | PASS | Included required report fields. |
++| Define review order | PASS | Included dependency-order review rule. |
++| Define merge order | PASS | Included dependency-order merge rule. |
++| Define hard-stop validation rules | PASS | Included branch/model mismatch hard stops. |
++| Include examples | PASS | Added Owner independent, Owner stacked, team stacked, and team exception examples. |
++| Update startup validation to load branching policy | PASS | Startup block now includes Branching Policy source/version/status. |
++| Increment version to `2026.06.28.002` | PASS | Updated version file and `PROJECT_INSTRUCTIONS.md`. |
++| Preserve ZIP/report completion contract | PASS | Existing contract remains referenced and unchanged. |
++| Do not modify implementation code | PASS | Documentation/governance only. |
+diff --git a/dev/reports/PR_26179_OWNER_013-project-branching-policy-document_validation-report.md b/dev/reports/PR_26179_OWNER_013-project-branching-policy-document_validation-report.md
+new file mode 100644
+index 000000000..346248537
+--- /dev/null
++++ b/dev/reports/PR_26179_OWNER_013-project-branching-policy-document_validation-report.md
+@@ -0,0 +1,11 @@
++# PR_26179_OWNER_013-project-branching-policy-document Validation Report
++
++## Validation
++
++- `git diff --check`: PASS
++- `npm run validate:canonical-structure`: PASS
++- Project Instructions grep for branching policy document and startup policy-load check: PASS
++
++## Playwright
++
++Not impacted. No runtime, UI, API, database, or product page files changed.
