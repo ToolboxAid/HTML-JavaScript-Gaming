@@ -117,7 +117,7 @@ Rules:
 
 ## Current Version/Date
 
-- Project Instructions Version: 2026.06.28.005
+- Project Instructions Version: 2026.06.28.006
 - Date: 2026-06-28
 - Owner: OWNER
 
@@ -196,6 +196,7 @@ That file owns Start of Day, PLAN_PR, BUILD_PR, APPLY_PR, and invalid command be
 - Project state: `dev/build/ProjectInstructions/PROJECT_STATE.md`
 - Repository folder placement SSoT: `dev/build/ProjectInstructions/repository/canonical_repository_structure.md`
 - Proposed repository layout architecture plan: `dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md`
+- `www/` migration map: `dev/build/ProjectInstructions/repository/www_migration_map.md`
 - Codex workflow commands: `dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md`
 - Codex Start-of-Day bootstrap: `dev/build/ProjectInstructions/bootstrap/codex_start_of_day_bootstrap.md`
 - Branch lifecycle: `dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`
