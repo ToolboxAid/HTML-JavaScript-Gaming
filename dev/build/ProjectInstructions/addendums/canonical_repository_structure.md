@@ -26,6 +26,7 @@ Development workspace:
 - dev/tests/
 - dev/scripts/
 - dev/config/
+- dev/deploy/
 - dev/archive/
 - dev/workspace/
 

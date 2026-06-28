@@ -40,6 +40,7 @@ Transition rule:
 - `dev/tests/` owns non-deployable test suites.
 - `dev/scripts/` owns development-only scripts and runners.
 - `dev/config/` owns development-only runner and tooling configuration.
+- `dev/deploy/` owns development-only deployment assets and local deployment configuration.
 - `dev/workspace/` owns generated non-report artifacts and ignored local temporary workspace output.
 - `dev/archive/` owns historical development reference material that is not active governance.
 - `dev/build/ProjectInstructions/` is the only active Project Instructions source.

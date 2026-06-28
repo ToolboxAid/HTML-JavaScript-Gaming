@@ -117,6 +117,7 @@ PLAN_PR → BUILD_PR → APPLY_PR
 - [docs/architecture/](docs/architecture/) → durable architecture and boundary contracts
 - [dev/build/pr/](dev/build/pr/) → preserved PR history and architecture evolution
 - [dev/build/ProjectInstructions/](dev/build/ProjectInstructions/) → active governance and workflow controls
+- [dev/deploy/](dev/deploy/) → development-only deployment assets and local deployment configuration
 - [dev/reports/](dev/reports/) → active report artifacts
 - [dev/archive/](dev/archive/) → archived dev-ops notes and generated reports
 
