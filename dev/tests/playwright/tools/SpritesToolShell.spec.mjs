@@ -233,6 +233,13 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status 
     }
     await expect(page.locator("main")).toContainText("Toolbar placeholders only");
     await expect(page.locator("[data-sprites-pixel-grid]")).toBeVisible();
+    await expect(page.locator("[data-sprites-pixel-grid] [role='gridcell']")).toHaveCount(256);
+    await expect(page.locator("[data-sprites-grid-status]")).toContainText("Canvas display mode: 16x16");
+    await page.getByRole("button", { name: "32x32" }).click();
+    await expect(page.locator("[data-sprites-pixel-grid]")).toHaveAttribute("aria-label", "Sprite Creator 32 by 32 pixel canvas");
+    await expect(page.locator("[data-sprites-pixel-grid] [role='gridcell']")).toHaveCount(1024);
+    await expect(page.locator("[data-sprites-grid-status]")).toContainText("Canvas display mode: 32x32");
+    await expect(page.getByRole("button", { name: "32x32" })).toHaveAttribute("aria-pressed", "true");
     await expect(page.locator("[data-sprites-shell-status]")).toContainText("Shell ready");
     await expect(page.locator("main")).toContainText("Palette/Colors keys only");
     await expect(page.locator("main")).not.toContainText(/Not implemented yet|future rebuild work|Static wireframe only|Plan sprite creation/i);
