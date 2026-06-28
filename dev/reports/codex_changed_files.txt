@@ -1,16 +1,10 @@
 # git status --short
-M  dev/build/ProjectInstructions/TEAM_START_COMMANDS.md
-M  dev/build/ProjectInstructions/addendums/branch_context_governance.md
-M  dev/build/ProjectInstructions/addendums/branch_lock_governance.md
-M  dev/build/ProjectInstructions/addendums/codex_artifact_and_reporting_standard.md
-M  dev/build/ProjectInstructions/addendums/pr_workflow.md
-M  dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
-M  dev/build/ProjectInstructions/standards/CODEX_WORKFLOW_COMMANDS.md
-A  dev/reports/PR_26179_OWNER_011-team-stacked-pr-policy_branch-validation.md
-A  dev/reports/PR_26179_OWNER_011-team-stacked-pr-policy_manual-validation-notes.md
-A  dev/reports/PR_26179_OWNER_011-team-stacked-pr-policy_report.md
-A  dev/reports/PR_26179_OWNER_011-team-stacked-pr-policy_requirement-checklist.md
-A  dev/reports/PR_26179_OWNER_011-team-stacked-pr-policy_validation-report.md
+M  dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+M  dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
+M  dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_manual-validation-notes.md
+M  dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_report.md
+M  dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_requirement-checklist.md
+M  dev/reports/PR_26179_OWNER_012-project-instructions-startup-validation_validation-report.md
 
 # git ls-files --others --exclude-standard
 (no output)
