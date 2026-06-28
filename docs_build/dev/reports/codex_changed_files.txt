@@ -1,6 +1,6 @@
 assets/toolbox/sprites/js/index.js
 dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-docs_build/dev/reports/PR_26179_CHARLIE_036-sprites-animation-preview.md
+docs_build/dev/reports/PR_26179_CHARLIE_037-sprites-animation-export.md
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
 toolbox/sprites/index.html

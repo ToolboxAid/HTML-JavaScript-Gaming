@@ -1,201 +1,136 @@
 diff --git a/assets/toolbox/sprites/js/index.js b/assets/toolbox/sprites/js/index.js
-index 15626ff2b..333a7d6ad 100644
+index 333a7d6ad..e6d249c52 100644
 --- a/assets/toolbox/sprites/js/index.js
 +++ b/assets/toolbox/sprites/js/index.js
-@@ -36,6 +36,10 @@ const editorHistory = {
-   redoStack: [],
-   undoStack: [],
- };
-+const animationPreview = {
-+  frameIndex: 0,
-+  timerId: null,
-+};
-
- function gridLabel(size) {
-   return `Sprite Creator ${size} by ${size} pixel canvas`;
-@@ -467,12 +471,12 @@ function renderPixelsToCanvas(canvas, paintedPixels, gridSize) {
-   }
- }
-
--function renderPreview() {
-+function renderPreview(frame = currentFrame()) {
-   const canvas = document.querySelector("[data-sprites-preview-canvas]");
-   if (!canvas) {
+@@ -457,8 +457,12 @@ function renderPixelsToCanvas(canvas, paintedPixels, gridSize) {
      return;
    }
--  renderPixelsToCanvas(canvas, editorState.paintedPixels, editorState.gridSize);
-+  renderPixelsToCanvas(canvas, frame.paintedPixels, editorState.gridSize);
+   const size = gridSize || DEFAULT_GRID_SIZE;
+-  const cellSize = canvas.width / size;
+   context.clearRect(0, 0, canvas.width, canvas.height);
++  drawPixelsToContext(context, paintedPixels, size, 0, 0, canvas.width);
++}
++
++function drawPixelsToContext(context, paintedPixels, gridSize, offsetX, offsetY, outputSize) {
++  const cellSize = outputSize / gridSize;
+   for (const [key, colorKey] of paintedPixels.entries()) {
+     const [rowText, columnText] = key.split(":");
+     const row = Number(rowText);
+@@ -467,7 +471,7 @@ function renderPixelsToCanvas(canvas, paintedPixels, gridSize) {
+       continue;
+     }
+     context.fillStyle = editorColorValue(colorKey);
+-    context.fillRect((column - 1) * cellSize, (row - 1) * cellSize, cellSize, cellSize);
++    context.fillRect(offsetX + (column - 1) * cellSize, offsetY + (row - 1) * cellSize, cellSize, cellSize);
+   }
  }
 
- function renderFrameStrip() {
-@@ -558,6 +562,63 @@ function deleteFrame() {
-   updateHistoryControls();
+@@ -647,6 +651,52 @@ function exportPreviewPng() {
+   }, "image/png");
  }
 
-+function updateAnimationControls(isPlaying) {
-+  const playButton = document.querySelector("[data-sprites-play-animation]");
-+  const stopButton = document.querySelector("[data-sprites-stop-animation]");
-+  if (playButton) {
-+    playButton.disabled = isPlaying;
-+  }
-+  if (stopButton) {
-+    stopButton.disabled = !isPlaying;
-+  }
-+}
-+
-+function animationStatusText(prefix, frameIndex = editorState.activeFrameIndex) {
-+  return `${prefix} Frame ${frameIndex + 1} of ${editorState.frames.length}. Unsaved preview only.`;
-+}
-+
-+function showAnimationFrame(frameIndex) {
-+  const normalizedIndex = frameIndex % editorState.frames.length;
-+  animationPreview.frameIndex = normalizedIndex;
-+  renderPreview(editorState.frames[normalizedIndex]);
-+  const status = document.querySelector("[data-sprites-animation-status]");
-+  if (status) {
-+    status.textContent = animationStatusText("Playing", normalizedIndex);
-+  }
-+}
-+
-+function stopAnimationPreview(message = "Animation preview stopped.") {
-+  if (animationPreview.timerId) {
-+    clearInterval(animationPreview.timerId);
-+    animationPreview.timerId = null;
-+  }
-+  renderPreview(currentFrame());
-+  updateAnimationControls(false);
-+  const status = document.querySelector("[data-sprites-animation-status]");
-+  if (status) {
-+    status.textContent = `${message} Selected Frame ${currentFrame().frameNumber} is shown.`;
-+  }
-+}
-+
-+function playAnimationPreview() {
-+  const status = document.querySelector("[data-sprites-animation-status]");
++function exportAnimationStripPng() {
++  const status = document.querySelector("[data-sprites-export-status]");
 +  if (editorState.frames.length < 2) {
 +    if (status) {
-+      status.textContent = "Animation preview needs at least two unsaved frames.";
++      status.textContent = "Animation strip export needs at least two unsaved frames.";
 +    }
 +    return;
 +  }
-+  if (animationPreview.timerId) {
-+    clearInterval(animationPreview.timerId);
++  stopAnimationPreview("Animation preview stopped before export.");
++  const frameSize = 160;
++  const canvas = document.createElement("canvas");
++  canvas.width = frameSize * editorState.frames.length;
++  canvas.height = frameSize;
++  const context = canvas.getContext("2d");
++  if (!context) {
++    if (status) {
++      status.textContent = "Animation strip export is unavailable in this browser session.";
++    }
++    return;
 +  }
-+  animationPreview.frameIndex = 0;
-+  updateAnimationControls(true);
-+  showAnimationFrame(animationPreview.frameIndex);
-+  animationPreview.timerId = setInterval(() => {
-+    showAnimationFrame((animationPreview.frameIndex + 1) % editorState.frames.length);
-+  }, DEFAULT_FRAME_DURATION_MS);
++  context.clearRect(0, 0, canvas.width, canvas.height);
++  editorState.frames.forEach((frame, index) => {
++    drawPixelsToContext(context, frame.paintedPixels, editorState.gridSize, index * frameSize, 0, frameSize);
++  });
++  canvas.toBlob((blob) => {
++    if (!blob) {
++      if (status) {
++        status.textContent = "Animation strip export is unavailable in this browser session.";
++      }
++      return;
++    }
++    const objectUrl = URL.createObjectURL(blob);
++    const link = document.createElement("a");
++    link.href = objectUrl;
++    link.download = "sprite-creator-animation-strip.png";
++    link.rel = "noopener";
++    document.body.append(link);
++    link.click();
++    link.remove();
++    URL.revokeObjectURL(objectUrl);
++    if (status) {
++      status.textContent = `Animation strip PNG downloaded from ${editorState.frames.length} unsaved frames.`;
++    }
++  }, "image/png");
 +}
 +
- function exportPreviewPng() {
-   const canvas = document.querySelector("[data-sprites-preview-canvas]");
-   const status = document.querySelector("[data-sprites-export-status]");
-@@ -701,6 +762,18 @@ function wireFrameActions() {
+ function setGridSize(size, options = {}) {
+   const grid = document.querySelector("[data-sprites-pixel-grid]");
+   const status = document.querySelector("[data-sprites-grid-status]");
+@@ -807,6 +857,10 @@ function wireExportButton() {
+   if (button) {
+     button.addEventListener("click", exportPreviewPng);
    }
++  const animationButton = document.querySelector("[data-sprites-export-animation]");
++  if (animationButton) {
++    animationButton.addEventListener("click", exportAnimationStripPng);
++  }
  }
 
-+function wireAnimationActions() {
-+  const playButton = document.querySelector("[data-sprites-play-animation]");
-+  if (playButton) {
-+    playButton.addEventListener("click", playAnimationPreview);
-+  }
-+
-+  const stopButton = document.querySelector("[data-sprites-stop-animation]");
-+  if (stopButton) {
-+    stopButton.addEventListener("click", () => stopAnimationPreview());
-+  }
-+}
-+
- function wireHistoryActions() {
-   const undoButton = document.querySelector("[data-sprites-undo]");
-   if (undoButton) {
-@@ -741,6 +814,7 @@ wireDrawingTools();
- wirePaletteButtons();
- wireCanvasActions();
- wireFrameActions();
-+wireAnimationActions();
- wireHistoryActions();
- wireZoomControls();
- wireExportButton();
-@@ -751,3 +825,4 @@ setZoomLevel(editorState.zoomLevel);
- updateHistoryControls();
- renderPreview();
- renderFrameStrip();
-+updateAnimationControls(false);
+ wireGridControls();
 diff --git a/dev/tests/playwright/tools/SpritesToolShell.spec.mjs b/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-index 73cbd2f00..d30722123 100644
+index d30722123..5a803eb54 100644
 --- a/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
 +++ b/dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-@@ -271,6 +271,7 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status
-     await expect(page.getByRole("heading", { level: 2, name: "Sprite Details" })).toBeVisible();
-     await expect(page.locator("[data-sprites-frame-strip]")).toBeVisible();
-     await expect(page.locator("[data-sprites-frame-status]")).toContainText("1 unsaved frame");
-+    await expect(page.locator("[data-sprites-animation-status]")).toContainText("Animation preview is stopped");
-     await expect(page.locator("[data-sprites-toolbar]")).toBeVisible();
-     await expect(page.getByRole("button", { name: "Pencil tool" })).toBeEnabled();
-     await expect(page.getByRole("button", { name: "Eraser tool" })).toBeEnabled();
-@@ -535,3 +536,33 @@ test("Sprite Creator edits unsaved frame strip frames", async ({ page }) => {
-     await server.close();
-   }
- });
-+
-+test("Sprite Creator previews unsaved animation frames", async ({ page }) => {
-+  const server = await startSpriteShellTestServer();
-+  const failures = collectPageFailures(page);
-+
-+  try {
-+    await page.goto(`${server.baseUrl}/toolbox/sprites/index.html`, { waitUntil: "networkidle" });
-+
-+    await page.getByRole("button", { name: "Gold editor color" }).click();
-+    await spriteCell(page, 1, 1).click();
-+    await page.getByRole("button", { name: "Add Frame" }).click();
-+    await page.getByRole("button", { name: "Blue editor color" }).click();
-+    await spriteCell(page, 1, 1).click();
-+
-+    await page.getByRole("button", { name: "Play Preview" }).click();
-+    await expect(page.getByRole("button", { name: "Stop Preview" })).toBeEnabled();
-+    await expect(page.locator("[data-sprites-animation-status]")).toContainText("Playing Frame 1");
-+    await expect(page.locator("[data-sprites-animation-status]")).toContainText("Playing Frame 2", { timeout: 1500 });
-+
-+    await page.getByRole("button", { name: "Stop Preview" }).click();
-+    await expect(page.locator("[data-sprites-animation-status]")).toContainText("Selected Frame 2 is shown");
-+    await expectCenterAndPreviewPainted(page, 1, 1, "sprite-canvas-cell--blue");
-+
-+    expect(failures.failedRequests).toEqual([]);
-+    expect(failures.pageErrors).toEqual([]);
-+    expect(failures.consoleErrors).toEqual([]);
-+  } finally {
-+    await server.close();
-+  }
-+});
-diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_036-sprites-animation-preview.md b/docs_build/dev/reports/PR_26179_CHARLIE_036-sprites-animation-preview.md
+@@ -558,6 +558,11 @@ test("Sprite Creator previews unsaved animation frames", async ({ page }) => {
+     await page.getByRole("button", { name: "Stop Preview" }).click();
+     await expect(page.locator("[data-sprites-animation-status]")).toContainText("Selected Frame 2 is shown");
+     await expectCenterAndPreviewPainted(page, 1, 1, "sprite-canvas-cell--blue");
++    const stripDownloadPromise = page.waitForEvent("download");
++    await page.getByRole("button", { name: "Download Animation Strip" }).click();
++    const stripDownload = await stripDownloadPromise;
++    expect(stripDownload.suggestedFilename()).toBe("sprite-creator-animation-strip.png");
++    await expect(page.locator("[data-sprites-export-status]")).toContainText("Animation strip PNG downloaded from 2 unsaved frames");
+
+     expect(failures.failedRequests).toEqual([]);
+     expect(failures.pageErrors).toEqual([]);
+diff --git a/docs_build/dev/reports/PR_26179_CHARLIE_037-sprites-animation-export.md b/docs_build/dev/reports/PR_26179_CHARLIE_037-sprites-animation-export.md
 new file mode 100644
-index 000000000..772128525
+index 000000000..1f32a2978
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26179_CHARLIE_036-sprites-animation-preview.md
-@@ -0,0 +1,63 @@
-+# PR_26179_CHARLIE_036-sprites-animation-preview
++++ b/docs_build/dev/reports/PR_26179_CHARLIE_037-sprites-animation-export.md
+@@ -0,0 +1,64 @@
++# PR_26179_CHARLIE_037-sprites-animation-export
 +
 +Team: CHARLIE
 +
 +Mode: Batch governance stacked feature workflow
 +
-+Base branch: PR_26179_CHARLIE_035-sprites-frame-editing
++Base branch: PR_26179_CHARLIE_036-sprites-animation-preview
 +
-+Branch: PR_26179_CHARLIE_036-sprites-animation-preview
++Branch: PR_26179_CHARLIE_037-sprites-animation-export
 +
 +## Summary
 +
-+Added unsaved animation preview playback for Sprite Creator. Play Preview cycles the right preview canvas through unsaved page-session frames, and Stop Preview returns the preview to the selected frame. No persistence, database, API, schema, save-to-library, or publishing behavior was introduced.
++Added local animation strip export for Sprite Creator. Download Animation Strip generates a PNG strip from unsaved page-session frames only. The export does not save to the sprite library, publish an asset, call an API, create database records, or introduce authoritative browser-owned product data.
 +
 +## Branch Validation
 +
 +PASS
 +
-+- Built from `PR_26179_CHARLIE_035-sprites-frame-editing`.
-+- Scope stayed limited to unsaved animation preview.
++- Built from `PR_26179_CHARLIE_036-sprites-animation-preview`.
++- Scope stayed limited to unsaved animation export.
 +- No DB/API/schema changes.
 +- No saved product data or browser-owned authoritative product data added.
 +- No start_of_day files changed.
@@ -203,15 +138,15 @@ index 000000000..772128525
 +
 +## Requirement Checklist
 +
-+PASS - Animation preview controls added.
++PASS - Animation strip export button added.
 +
-+PASS - Preview requires unsaved frame strip frames only.
++PASS - Export requires at least two unsaved frames.
 +
-+PASS - Play cycles through unsaved frames in the right preview canvas.
++PASS - Export creates a local PNG strip download.
 +
-+PASS - Stop returns the preview to the selected frame.
++PASS - Export stops animation preview before generating the strip.
 +
-+PASS - No persistence added.
++PASS - No persistence, publishing, API, database, or storage behavior added.
 +
 +PASS - Targeted Playwright coverage updated.
 +
@@ -232,45 +167,35 @@ index 000000000..772128525
 +1. Open `toolbox/sprites/index.html`.
 +2. Draw Frame 1.
 +3. Add Frame 2 and draw a different draft.
-+4. Click Play Preview and confirm the right preview cycles frames.
-+5. Click Stop Preview and confirm the selected frame is shown.
-+6. Confirm no save, publish, API, database, or library behavior is introduced.
++4. Click Download Animation Strip.
++5. Confirm `sprite-creator-animation-strip.png` downloads.
++6. Confirm the export status says the PNG came from unsaved frames.
++7. Confirm no save, publish, API, database, or library workflow is introduced.
 +
 +## ZIP
 +
-+`dev/workspace/zip/PR_26179_CHARLIE_036-sprites-animation-preview_delta.zip`
++`dev/workspace/zip/PR_26179_CHARLIE_037-sprites-animation-export_delta.zip`
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 1f7fb9b97..3799d936c 100644
+index 3799d936c..736fb51d1 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
 @@ -1,6 +1,6 @@
  assets/toolbox/sprites/js/index.js
  dev/tests/playwright/tools/SpritesToolShell.spec.mjs
--docs_build/dev/reports/PR_26179_CHARLIE_035-sprites-frame-editing.md
-+docs_build/dev/reports/PR_26179_CHARLIE_036-sprites-animation-preview.md
+-docs_build/dev/reports/PR_26179_CHARLIE_036-sprites-animation-preview.md
++docs_build/dev/reports/PR_26179_CHARLIE_037-sprites-animation-export.md
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
  toolbox/sprites/index.html
 diff --git a/toolbox/sprites/index.html b/toolbox/sprites/index.html
-index c5ea5697b..58879b294 100644
+index 58879b294..8e934f9b4 100644
 --- a/toolbox/sprites/index.html
 +++ b/toolbox/sprites/index.html
-@@ -171,6 +171,10 @@
-                                         <button class="btn btn--compact" type="button" data-sprites-duplicate-frame>Duplicate Frame</button>
-                                         <button class="btn btn--compact" type="button" data-sprites-delete-frame disabled>Delete Frame</button>
+@@ -194,6 +194,7 @@
+                                         <canvas class="sprite-preview-canvas" width="160" height="160" aria-label="Sprite Creator live preview" data-sprites-preview-canvas></canvas>
                                      </div>
-+                                    <div class="action-group action-group--tight" aria-label="Sprite animation preview controls" data-sprites-animation-controls>
-+                                        <button class="btn btn--compact primary" type="button" data-sprites-play-animation>Play Preview</button>
-+                                        <button class="btn btn--compact" type="button" data-sprites-stop-animation disabled>Stop Preview</button>
-+                                    </div>
-                                     <div class="sprite-frame-strip" role="group" aria-label="Sprite Creator frame strip" data-sprites-frame-strip>
-                                         <button class="sprite-frame-card is-active" type="button" data-sprites-frame-card="0" aria-pressed="true">
-                                             <span class="sprite-frame-card-title">Frame 1</span>
-@@ -179,6 +183,7 @@
-                                         </button>
-                                     </div>
-                                     <p class="status" role="status" data-sprites-frame-status>Frame strip: 1 unsaved frame. Current editor draft is selected.</p>
-+                                    <p class="status" role="status" data-sprites-animation-status>Animation preview is stopped. Add at least two unsaved frames to preview motion.</p>
+                                     <button class="btn btn--compact primary" type="button" data-sprites-export-png>Download PNG</button>
++                                    <button class="btn btn--compact" type="button" data-sprites-export-animation>Download Animation Strip</button>
+                                     <p class="status" role="status" data-sprites-export-status>PNG export is ready for the unsaved editor draft.</p>
                                  </div>
                              </details>
-                             <details class="vertical-accordion" open>
