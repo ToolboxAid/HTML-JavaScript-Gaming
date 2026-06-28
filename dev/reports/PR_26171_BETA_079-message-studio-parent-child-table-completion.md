@@ -1,9 +1,9 @@
 # PR_26171_BETA_079-message-studio-parent-child-table-completion
 
 ## Team Ownership
-- TEAM: BETA
+- TEAM: Bravo
 - Ownership source: docs_build/dev/PROJECT_MULTI_PC.txt
-- Scope confirmed: Message Studio, Messages, and TTS selection integration are owned by Team BETA.
+- Scope confirmed: Message Studio, Messages, and TTS selection integration are owned by Team Bravo.
 
 ## Summary
 - Completed Message Studio row-click behavior for the Messages parent table.

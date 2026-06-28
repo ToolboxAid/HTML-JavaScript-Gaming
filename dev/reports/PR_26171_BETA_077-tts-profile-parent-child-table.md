@@ -1,9 +1,9 @@
 # PR_26171_BETA_077-tts-profile-parent-child-table
 
 ## Team Ownership
-- TEAM: BETA
+- TEAM: Bravo
 - Ownership source: docs_build/dev/PROJECT_MULTI_PC.txt
-- Scope confirmed: Text To Speech / TTS Studio work is owned by Team BETA.
+- Scope confirmed: Text To Speech / TTS Studio work is owned by Team Bravo.
 
 ## Summary
 - Converted the TTS Profile add action into an inline parent-table action row.

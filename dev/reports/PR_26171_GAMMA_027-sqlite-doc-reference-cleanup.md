@@ -1,6 +1,6 @@
 # PR_26171_GAMMA_027-sqlite-doc-reference-cleanup
 
-TEAM ownership: GAMMA.
+TEAM ownership: Golf.
 
 ## Scope
 

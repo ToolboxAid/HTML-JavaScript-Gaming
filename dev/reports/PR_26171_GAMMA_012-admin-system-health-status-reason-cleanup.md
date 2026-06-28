@@ -29,7 +29,7 @@ This queued scope cleans up Admin System Health foundation status semantics with
 - Current branch: `team/GAMMA/admin`
 - Clean status before edits: PASS
 - Local/remote sync before edits: PASS (`0 0`)
-- TEAM token: `GAMMA`
+- Current canonical team: Golf (historical PR token: `GAMMA`)
 - TEAM ownership: PASS by explicit Master Control/user assignment for diagnostics/admin workstream
 - Implementation path: `admin/system-health.html`
 - Existing draft PR target: PR #36

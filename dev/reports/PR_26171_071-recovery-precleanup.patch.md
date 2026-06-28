@@ -2727,7 +2727,7 @@ index 5ed010f9d,cffbc3823..000000000
  ++
  ++Rules:
  ++- Codex may prepare scoped changes, reports, validation evidence, ZIP artifacts, branches, and PRs.
- ++- Codex must not merge a PR or mark a workstream stable without explicit approval from the assigned Team Alpha or Team Beta owner.
+ ++- Codex must not merge a PR or mark a workstream stable without explicit approval from the assigned Team Alpha or Team Bravo owner.
  ++- Master Control may recommend sequencing or assignment, but affected workstream owners control stable and merge approval.
  ++- This targeted section supersedes older automatic-merge wording when approval ownership is in question.
  ++
@@ -2739,7 +2739,7 @@ index 5ed010f9d,cffbc3823..000000000
  + - Read `docs_build/dev/PROJECT_MULTI_PC.txt`.
  + - Treat the newest applicable section in `PROJECT_INSTRUCTIONS.md` as authoritative when rules overlap.
  +-- Treat the current owner/parity section in `PROJECT_MULTI_PC.txt` as authoritative for PC/Laptop routing.
- ++- Treat the current owner/parity section in `PROJECT_MULTI_PC.txt` as authoritative for Team Alpha / Team Beta routing.
+ ++- Treat the current owner/parity section in `PROJECT_MULTI_PC.txt` as authoritative for Team Alpha / Team Bravo routing.
  +
  + Required pre-change report:
  + - Codex must report instruction compliance as `PASS` or `FAIL` before making file changes.
@@ -2748,7 +2748,7 @@ index 5ed010f9d,cffbc3823..000000000
  + - If the current branch is not `main`, HARD STOP.
  + - If the repository is not clean before the PR branch is created, HARD STOP.
  +-- If the PR owner does not match the PC/Laptop ownership map in `PROJECT_MULTI_PC.txt`, HARD STOP.
- ++- If the PR owner does not match the Team Alpha / Team Beta ownership map in `PROJECT_MULTI_PC.txt`, HARD STOP.
+ ++- If the PR owner does not match the Team Alpha / Team Bravo ownership map in `PROJECT_MULTI_PC.txt`, HARD STOP.
  + - If the PR number parity does not match the assigned machine in `PROJECT_MULTI_PC.txt`, HARD STOP.
  + - If the PR asks for implementation and the implementation path is wrong, HARD STOP.
  + - If a PR asks for functional parity and only placeholder-only work is possible, HARD STOP and report the missing source or blocker.
@@ -2770,7 +2770,7 @@ index 5ed010f9d,cffbc3823..000000000
  + Dependencies
  + Priority
  +-Owner (PC/Laptop)
- ++Owner (Team Alpha / Team Beta)
+ ++Owner (Team Alpha / Team Bravo)
  + Recommended Workstream Split
  +
  + Instead of arbitrary splits, split by Creator journey.
@@ -2785,7 +2785,7 @@ index 5ed010f9d,cffbc3823..000000000
  + These tools are heavily connected.
  +
  +-Laptop — Content Creation
- ++Team Beta — Content Creation
+ ++Team Bravo — Content Creation
  +
  + Owns:
  +
@@ -2794,7 +2794,7 @@ index 5ed010f9d,cffbc3823..000000000
  + Messages Tool Placement
  +
  +-I would move Messages to Laptop ownership.
- ++I would move Messages to Team Beta ownership.
+ ++I would move Messages to Team Bravo ownership.
  +
  + Reason:
  +
@@ -2812,7 +2812,7 @@ index 5ed010f9d,cffbc3823..000000000
  + This solves the "xxx%" problem.
  +
  +-Laptop
- ++Team Beta
+ ++Team Bravo
  + PR_26171_002-messages-tool-foundation
  +
  + Scope:
@@ -2830,7 +2830,7 @@ index 5ed010f9d,cffbc3823..000000000
  + ---
  +
  +-## Laptop Chat
- ++## Team Beta Chat
+ ++## Team Bravo Chat
  +
  + Give it a different workstream.
  +
@@ -2846,7 +2846,7 @@ index 5ed010f9d,cffbc3823..000000000
  +   Share
  +
  +-Laptop
- ++Team Beta
+ ++Team Bravo
  +   Audio
  +   MIDI
  +   Events
@@ -2866,7 +2866,7 @@ index 5ed010f9d,cffbc3823..000000000
  +-What should PC build next?
  +-What should Laptop build next?
  ++What should Team Alpha build next?
- ++What should Team Beta build next?
+ ++What should Team Bravo build next?
  +
  + Generate the next PR for each.
  + ```
@@ -2879,7 +2879,7 @@ index 5ed010f9d,cffbc3823..000000000
  + PR_26171_002-game-hub-progress
  +
  +-Laptop:
- ++Team Beta:
+ ++Team Bravo:
  + PR_26171_003-messages-tool-mvp
  + ```
  +
@@ -2893,7 +2893,7 @@ index 5ed010f9d,cffbc3823..000000000
  + - Example: `PR_26171_064-*`.
  +
  +-Laptop / Environment 2:
- ++Team Beta / Environment 2:
+ ++Team Bravo / Environment 2:
  + - Uses odd-numbered PR sequence values.
  + - Example: `PR_26171_063-*`.
  +
@@ -2909,7 +2909,7 @@ index 5ed010f9d,cffbc3823..000000000
  + - Game Crew
  +
  +-Laptop / Environment 2 owns Content Creation and asset/publishing work:
- ++Team Beta / Environment 2 owns Content Creation and asset/publishing work:
+ ++Team Bravo / Environment 2 owns Content Creation and asset/publishing work:
  + - Graphics
  + - Toolbox images
  + - Audio
@@ -2918,14 +2918,14 @@ index 5ed010f9d,cffbc3823..000000000
  + - Must document owner/parity compliance in the PR report.
  +
  ++Stable and merge approval:
- ++- Stable promotion and merge approval are controlled by the assigned Team Alpha or Team Beta owner.
+ ++- Stable promotion and merge approval are controlled by the assigned Team Alpha or Team Bravo owner.
  ++- Master Control may recommend sequencing, but Codex must not merge or mark stable without explicit owner approval for the affected workstream.
  ++
  + Hard stop rules:
  + - If the PR number parity does not match the current machine, stop before changes.
  + - If the PR scope belongs to the other machine owner, stop before changes.
  +-- If the PR crosses PC and Laptop ownership, stop and require Master Control to split or assign the work.
- ++- If the PR crosses Team Alpha and Team Beta ownership, stop and require Master Control to split or assign the work.
+ ++- If the PR crosses Team Alpha and Team Bravo ownership, stop and require Master Control to split or assign the work.
  + - If the requested implementation path conflicts with the active owner path, stop before changes.
 ++=======
 + diff --git a/docs_build/pr/PR_26171_044-idea-board-game-hub-project-flow/APPLY_PR.md b/docs_build/pr/PR_26171_044-idea-board-game-hub-project-flow/APPLY_PR.md
@@ -4230,7 +4230,7 @@ index 5ed010f9d,cffbc3823..000000000
  ++
  ++Rules:
  ++- Codex may prepare scoped changes, reports, validation evidence, ZIP artifacts, branches, and PRs.
- ++- Codex must not merge a PR or mark a workstream stable without explicit approval from the assigned Team Alpha or Team Beta owner.
+ ++- Codex must not merge a PR or mark a workstream stable without explicit approval from the assigned Team Alpha or Team Bravo owner.
  ++- Master Control may recommend sequencing or assignment, but affected workstream owners control stable and merge approval.
  ++- This targeted section supersedes older automatic-merge wording when approval ownership is in question.
  ++
@@ -4242,7 +4242,7 @@ index 5ed010f9d,cffbc3823..000000000
  + - Read `docs_build/dev/PROJECT_MULTI_PC.txt`.
  + - Treat the newest applicable section in `PROJECT_INSTRUCTIONS.md` as authoritative when rules overlap.
  +-- Treat the current owner/parity section in `PROJECT_MULTI_PC.txt` as authoritative for PC/Laptop routing.
- ++- Treat the current owner/parity section in `PROJECT_MULTI_PC.txt` as authoritative for Team Alpha / Team Beta routing.
+ ++- Treat the current owner/parity section in `PROJECT_MULTI_PC.txt` as authoritative for Team Alpha / Team Bravo routing.
  +
  + Required pre-change report:
  + - Codex must report instruction compliance as `PASS` or `FAIL` before making file changes.
@@ -4251,7 +4251,7 @@ index 5ed010f9d,cffbc3823..000000000
  + - If the current branch is not `main`, HARD STOP.
  + - If the repository is not clean before the PR branch is created, HARD STOP.
  +-- If the PR owner does not match the PC/Laptop ownership map in `PROJECT_MULTI_PC.txt`, HARD STOP.
- ++- If the PR owner does not match the Team Alpha / Team Beta ownership map in `PROJECT_MULTI_PC.txt`, HARD STOP.
+ ++- If the PR owner does not match the Team Alpha / Team Bravo ownership map in `PROJECT_MULTI_PC.txt`, HARD STOP.
  + - If the PR number parity does not match the assigned machine in `PROJECT_MULTI_PC.txt`, HARD STOP.
  + - If the PR asks for implementation and the implementation path is wrong, HARD STOP.
  + - If a PR asks for functional parity and only placeholder-only work is possible, HARD STOP and report the missing source or blocker.
@@ -4273,7 +4273,7 @@ index 5ed010f9d,cffbc3823..000000000
  + Dependencies
  + Priority
  +-Owner (PC/Laptop)
- ++Owner (Team Alpha / Team Beta)
+ ++Owner (Team Alpha / Team Bravo)
  + Recommended Workstream Split
  +
  + Instead of arbitrary splits, split by Creator journey.
@@ -4288,7 +4288,7 @@ index 5ed010f9d,cffbc3823..000000000
  + These tools are heavily connected.
  +
  +-Laptop — Content Creation
- ++Team Beta — Content Creation
+ ++Team Bravo — Content Creation
  +
  + Owns:
  +
@@ -4297,7 +4297,7 @@ index 5ed010f9d,cffbc3823..000000000
  + Messages Tool Placement
  +
  +-I would move Messages to Laptop ownership.
- ++I would move Messages to Team Beta ownership.
+ ++I would move Messages to Team Bravo ownership.
  +
  + Reason:
  +
@@ -4315,7 +4315,7 @@ index 5ed010f9d,cffbc3823..000000000
  + This solves the "xxx%" problem.
  +
  +-Laptop
- ++Team Beta
+ ++Team Bravo
  + PR_26171_002-messages-tool-foundation
  +
  + Scope:
@@ -4333,7 +4333,7 @@ index 5ed010f9d,cffbc3823..000000000
  + ---
  +
  +-## Laptop Chat
- ++## Team Beta Chat
+ ++## Team Bravo Chat
  +
  + Give it a different workstream.
  +
@@ -4349,7 +4349,7 @@ index 5ed010f9d,cffbc3823..000000000
  +   Share
  +
  +-Laptop
- ++Team Beta
+ ++Team Bravo
  +   Audio
  +   MIDI
  +   Events
@@ -4369,7 +4369,7 @@ index 5ed010f9d,cffbc3823..000000000
  +-What should PC build next?
  +-What should Laptop build next?
  ++What should Team Alpha build next?
- ++What should Team Beta build next?
+ ++What should Team Bravo build next?
  +
  + Generate the next PR for each.
  + ```
@@ -4382,7 +4382,7 @@ index 5ed010f9d,cffbc3823..000000000
  + PR_26171_002-game-hub-progress
  +
  +-Laptop:
- ++Team Beta:
+ ++Team Bravo:
  + PR_26171_003-messages-tool-mvp
  + ```
  +
@@ -4396,7 +4396,7 @@ index 5ed010f9d,cffbc3823..000000000
  + - Example: `PR_26171_064-*`.
  +
  +-Laptop / Environment 2:
- ++Team Beta / Environment 2:
+ ++Team Bravo / Environment 2:
  + - Uses odd-numbered PR sequence values.
  + - Example: `PR_26171_063-*`.
  +
@@ -4412,7 +4412,7 @@ index 5ed010f9d,cffbc3823..000000000
  + - Game Crew
  +
  +-Laptop / Environment 2 owns Content Creation and asset/publishing work:
- ++Team Beta / Environment 2 owns Content Creation and asset/publishing work:
+ ++Team Bravo / Environment 2 owns Content Creation and asset/publishing work:
  + - Graphics
  + - Toolbox images
  + - Audio
@@ -4421,14 +4421,14 @@ index 5ed010f9d,cffbc3823..000000000
  + - Must document owner/parity compliance in the PR report.
  +
  ++Stable and merge approval:
- ++- Stable promotion and merge approval are controlled by the assigned Team Alpha or Team Beta owner.
+ ++- Stable promotion and merge approval are controlled by the assigned Team Alpha or Team Bravo owner.
  ++- Master Control may recommend sequencing, but Codex must not merge or mark stable without explicit owner approval for the affected workstream.
  ++
  + Hard stop rules:
  + - If the PR number parity does not match the current machine, stop before changes.
  + - If the PR scope belongs to the other machine owner, stop before changes.
  +-- If the PR crosses PC and Laptop ownership, stop and require Master Control to split or assign the work.
- ++- If the PR crosses Team Alpha and Team Beta ownership, stop and require Master Control to split or assign the work.
+ ++- If the PR crosses Team Alpha and Team Bravo ownership, stop and require Master Control to split or assign the work.
  + - If the requested implementation path conflicts with the active owner path, stop before changes.
 ++=======
 + diff --git a/docs_build/pr/PR_26171_044-idea-board-game-hub-project-flow/APPLY_PR.md b/docs_build/pr/PR_26171_044-idea-board-game-hub-project-flow/APPLY_PR.md

@@ -1,14 +1,14 @@
 # PR_26171_BETA_083-message-tts-polish-and-dead-code
 
 ## Summary
-- Team: BETA
+- Team: Bravo
 - Scope: Message Studio and TTS Studio polish after parent/child table and playback integration.
 - Branch: pr/26171-BETA-083-message-tts-polish-and-dead-code
 - Instruction compliance: PASS
 
 ## Ownership Confirmation
-- BETA owns Message Studio work.
-- BETA owns TTS Studio and TextToSpeechEngine integration work.
+- Bravo owns Message Studio work.
+- Bravo owns TTS Studio and TextToSpeechEngine integration work.
 - Message Studio owns message text, ordered message parts, Emotion selection, and TTS Profile selection.
 - TTS Studio owns profiles, voices, language, per-profile emotion settings, Delivery, and Presets.
 - src/engine/audio owns playback.

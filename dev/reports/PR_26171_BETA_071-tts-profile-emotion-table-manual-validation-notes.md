@@ -1,7 +1,7 @@
 # PR_26171_BETA_071-tts-profile-emotion-table Manual Validation Notes
 
 Generated: 2026-06-20T22:26:42.301Z
-Team ownership: BETA
+Team ownership: Bravo
 Branch: pr/26171-BETA-071-tts-profile-emotion-table
 
 ## Manual Review

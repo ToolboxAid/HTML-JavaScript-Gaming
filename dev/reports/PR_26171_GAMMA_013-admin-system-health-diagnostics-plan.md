@@ -40,7 +40,7 @@ This queued scope adds a diagnostics plan/foundation section to Admin System Hea
 - `docs_build/dev/PROJECT_INSTRUCTIONS.md`: read before edits
 - `docs_build/dev/PROJECT_MULTI_PC.txt`: read before edits
 - Current branch: `team/GAMMA/admin`
-- TEAM token: `GAMMA`
+- Current canonical team: Golf (historical PR token: `GAMMA`)
 - TEAM ownership: PASS by explicit Master Control/user assignment for diagnostics/admin workstream
 - Implementation path: `admin/system-health.html`
 - Existing draft PR target: PR #36

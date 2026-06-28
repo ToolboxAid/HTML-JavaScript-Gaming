@@ -1,7 +1,7 @@
 # PR_26171_BETA_073-message-tts-table-ui-correction TTS Summary Layout Checklist
 
 Generated: 2026-06-20T23:06:25.711Z
-Team ownership: BETA
+Team ownership: Bravo
 
 - PASS: TTS summary uses existing Theme V2 `content-cluster content-cluster--nowrap` classes.
 - PASS: TTS summary uses existing `pill`, `mini-stat`, and `mini-stat--inline` classes.

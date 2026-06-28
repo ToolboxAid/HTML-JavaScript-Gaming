@@ -11,7 +11,7 @@
 
 ## Ownership And Branch
 
-- PASS: Queued PR name includes TEAM token `GAMMA`.
+- PASS: Queued PR uses historical token `GAMMA`; current canonical team is Golf.
 - PASS: TEAM ownership was verified against `PROJECT_MULTI_PC.txt`.
 - PASS: User explicitly directed continuation on `team/GAMMA/admin`.
 - PASS: Verified clean status and local/origin sync `0 0` after PR015 before PR016 edits.

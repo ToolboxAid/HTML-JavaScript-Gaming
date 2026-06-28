@@ -1,6 +1,6 @@
 # PR_26171_BETA_075 Validation Report
 
-Team: BETA
+Team: Bravo
 
 ## Commands
 

@@ -1,7 +1,7 @@
 # PR_26171_BETA_073-message-tts-table-ui-correction
 
 Generated: 2026-06-20T23:06:25.711Z
-Team ownership: BETA
+Team ownership: Bravo
 Branch: pr/26171-BETA-073-message-tts-table-ui-correction
 Base HEAD: eaee83f9327b336ec5679ebd591d94e50fab0523
 origin/main at branch start: eaee83f9327b336ec5679ebd591d94e50fab0523

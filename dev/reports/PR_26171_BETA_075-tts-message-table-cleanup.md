@@ -1,6 +1,6 @@
 # PR_26171_BETA_075 TTS Message Table Cleanup
 
-Team: BETA
+Team: Bravo
 
 ## Summary
 

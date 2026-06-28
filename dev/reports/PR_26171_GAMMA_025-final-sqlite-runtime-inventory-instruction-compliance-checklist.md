@@ -4,9 +4,9 @@
 
 - PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
 - PASS: Read `docs_build/dev/PROJECT_MULTI_PC.txt`.
-- PASS: PR name includes TEAM token `GAMMA`.
-- PASS: Branch name mirrors TEAM token: `pr/26171-GAMMA-025-final-sqlite-runtime-inventory`.
-- PASS: Scope is diagnostics/inventory and belongs to Team Gamma.
+- PASS: Current canonical team is Golf; historical PR token remains `GAMMA`.
+- PASS: Branch name preserves historical PR token: `pr/26171-GAMMA-025-final-sqlite-runtime-inventory`.
+- PASS: Scope is diagnostics/inventory and belongs to Team Golf.
 - PASS: PR #46 dependency was merged before starting the inventory branch.
 - PASS: Started PR 025 from fresh `main`.
 - PASS: Repository was clean before branch creation.

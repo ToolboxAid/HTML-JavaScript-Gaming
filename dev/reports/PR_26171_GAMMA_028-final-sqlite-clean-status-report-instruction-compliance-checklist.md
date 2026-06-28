@@ -3,8 +3,8 @@
 - PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
 - PASS: Read `docs_build/dev/PROJECT_MULTI_PC.txt`.
 - PASS: Instruction enforcement start gate was applied.
-- PASS: TEAM ownership verified as GAMMA.
-- PASS: Branch name mirrors TEAM token: `pr/26171-GAMMA-028-final-sqlite-clean-status-report`.
+- PASS: TEAM ownership verified as Golf.
+- PASS: Branch name preserves historical PR token: `pr/26171-GAMMA-028-final-sqlite-clean-status-report`.
 - PASS: Started from fresh `main` after PR026 and PR027 merged.
 - PASS: Scope stayed report-only and did not change runtime code.
 - PASS: Inventory classified remaining SQLite references.
