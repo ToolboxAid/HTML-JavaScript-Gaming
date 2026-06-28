@@ -1,4 +1,5 @@
 const DEFAULT_GRID_SIZE = 16;
+const DEFAULT_FRAME_DURATION_MS = 120;
 const SUPPORTED_GRID_SIZES = Object.freeze([16, 32]);
 const SUPPORTED_ZOOM_LEVELS = Object.freeze([1, 2, 4]);
 const SHAPE_TOOLS = Object.freeze(["line", "rectangle", "circle"]);
@@ -12,11 +13,22 @@ const EDITOR_COLOR_CSS_VARIABLES = Object.freeze({
   orange: "--molten-orange",
 });
 
+function createEditorFrame(frameNumber, paintedPixels = new Map()) {
+  return {
+    durationMs: DEFAULT_FRAME_DURATION_MS,
+    frameNumber,
+    paintedPixels: new Map(paintedPixels),
+  };
+}
+
+const initialFrame = createEditorFrame(1);
 const editorState = {
   activeTool: "pencil",
   activeColor: "ink",
+  activeFrameIndex: 0,
+  frames: [initialFrame],
   gridSize: DEFAULT_GRID_SIZE,
-  paintedPixels: new Map(),
+  paintedPixels: initialFrame.paintedPixels,
   shapeAnchor: null,
   zoomLevel: 1,
 };
@@ -48,8 +60,23 @@ function isInsideGrid(row, column) {
   return row >= 1 && row <= editorState.gridSize && column >= 1 && column <= editorState.gridSize;
 }
 
+function currentFrame() {
+  return editorState.frames[editorState.activeFrameIndex] || editorState.frames[0];
+}
+
+function syncActiveFramePixels() {
+  editorState.paintedPixels = currentFrame().paintedPixels;
+}
+
+function renumberFrames() {
+  editorState.frames.forEach((frame, index) => {
+    frame.frameNumber = index + 1;
+  });
+}
+
 function stateSnapshot() {
   return {
+    activeFrameIndex: editorState.activeFrameIndex,
     gridSize: editorState.gridSize,
     paintedPixels: Array.from(editorState.paintedPixels.entries()),
   };
@@ -144,7 +171,10 @@ function applyPaintedPixelsToGrid() {
 
 function applySnapshot(snapshot) {
   setGridSize(snapshot.gridSize, { recordHistory: false });
-  editorState.paintedPixels = new Map(snapshot.paintedPixels);
+  const targetIndex = Math.min(snapshot.activeFrameIndex ?? editorState.activeFrameIndex, editorState.frames.length - 1);
+  editorState.activeFrameIndex = Math.max(0, targetIndex);
+  currentFrame().paintedPixels = new Map(snapshot.paintedPixels);
+  syncActiveFramePixels();
   editorState.shapeAnchor = null;
   applyPaintedPixelsToGrid();
   updateDraftStatus();
@@ -446,14 +476,86 @@ function renderPreview() {
 }
 
 function renderFrameStrip() {
-  const thumbnail = document.querySelector("[data-sprites-frame-thumbnail='0']");
+  const strip = document.querySelector("[data-sprites-frame-strip]");
   const status = document.querySelector("[data-sprites-frame-status]");
-  if (thumbnail) {
-    renderPixelsToCanvas(thumbnail, editorState.paintedPixels, editorState.gridSize);
+  if (strip) {
+    strip.replaceChildren();
+    editorState.frames.forEach((frame, index) => {
+      const button = document.createElement("button");
+      button.className = `sprite-frame-card${index === editorState.activeFrameIndex ? " is-active" : ""}`;
+      button.type = "button";
+      button.dataset.spritesFrameCard = String(index);
+      button.setAttribute("aria-pressed", String(index === editorState.activeFrameIndex));
+      const title = document.createElement("span");
+      title.className = "sprite-frame-card-title";
+      title.textContent = `Frame ${frame.frameNumber}`;
+      const thumbnail = document.createElement("canvas");
+      thumbnail.className = "sprite-frame-thumbnail";
+      thumbnail.width = 48;
+      thumbnail.height = 48;
+      thumbnail.setAttribute("aria-label", `Frame ${frame.frameNumber} thumbnail`);
+      thumbnail.dataset.spritesFrameThumbnail = String(index);
+      const meta = document.createElement("span");
+      meta.className = "sprite-frame-card-meta";
+      meta.textContent = `${frame.paintedPixels.size} pixel${frame.paintedPixels.size === 1 ? "" : "s"}`;
+      button.append(title, thumbnail, meta);
+      button.addEventListener("click", () => selectFrame(index));
+      strip.append(button);
+      renderPixelsToCanvas(thumbnail, frame.paintedPixels, editorState.gridSize);
+    });
   }
   if (status) {
-    status.textContent = `Frame strip: 1 unsaved frame. Current editor draft has ${editorState.paintedPixels.size} painted pixel${editorState.paintedPixels.size === 1 ? "" : "s"}.`;
+    status.textContent = `Frame strip: ${editorState.frames.length} unsaved frame${editorState.frames.length === 1 ? "" : "s"}. Frame ${currentFrame().frameNumber} is selected with ${editorState.paintedPixels.size} painted pixel${editorState.paintedPixels.size === 1 ? "" : "s"}.`;
   }
+  const deleteButton = document.querySelector("[data-sprites-delete-frame]");
+  if (deleteButton) {
+    deleteButton.disabled = editorState.frames.length <= 1;
+  }
+}
+
+function selectFrame(index) {
+  if (index < 0 || index >= editorState.frames.length) {
+    return;
+  }
+  editorState.activeFrameIndex = index;
+  syncActiveFramePixels();
+  editorState.shapeAnchor = null;
+  applyPaintedPixelsToGrid();
+  updateDraftStatus();
+  updateHistoryControls();
+}
+
+function addFrame() {
+  editorState.frames.push(createEditorFrame(editorState.frames.length + 1));
+  editorState.activeFrameIndex = editorState.frames.length - 1;
+  syncActiveFramePixels();
+  editorState.shapeAnchor = null;
+  updateDraftStatus();
+  updateHistoryControls();
+}
+
+function duplicateFrame() {
+  const duplicate = createEditorFrame(editorState.frames.length + 1, editorState.paintedPixels);
+  editorState.frames.push(duplicate);
+  editorState.activeFrameIndex = editorState.frames.length - 1;
+  syncActiveFramePixels();
+  editorState.shapeAnchor = null;
+  updateDraftStatus();
+  updateHistoryControls();
+}
+
+function deleteFrame() {
+  if (editorState.frames.length <= 1) {
+    return;
+  }
+  editorState.frames.splice(editorState.activeFrameIndex, 1);
+  renumberFrames();
+  editorState.activeFrameIndex = Math.max(0, Math.min(editorState.activeFrameIndex, editorState.frames.length - 1));
+  syncActiveFramePixels();
+  editorState.shapeAnchor = null;
+  applyPaintedPixelsToGrid();
+  updateDraftStatus();
+  updateHistoryControls();
 }
 
 function exportPreviewPng() {
@@ -497,7 +599,10 @@ function setGridSize(size, options = {}) {
 
   grid.replaceChildren();
   editorState.gridSize = size;
-  editorState.paintedPixels.clear();
+  editorState.frames.forEach((frame) => {
+    frame.paintedPixels.clear();
+  });
+  syncActiveFramePixels();
   editorState.shapeAnchor = null;
   grid.dataset.spritesGridSize = String(size);
   grid.setAttribute("aria-label", gridLabel(size));
@@ -579,6 +684,23 @@ function wireCanvasActions() {
   }
 }
 
+function wireFrameActions() {
+  const addButton = document.querySelector("[data-sprites-add-frame]");
+  if (addButton) {
+    addButton.addEventListener("click", addFrame);
+  }
+
+  const duplicateButton = document.querySelector("[data-sprites-duplicate-frame]");
+  if (duplicateButton) {
+    duplicateButton.addEventListener("click", duplicateFrame);
+  }
+
+  const deleteButton = document.querySelector("[data-sprites-delete-frame]");
+  if (deleteButton) {
+    deleteButton.addEventListener("click", deleteFrame);
+  }
+}
+
 function wireHistoryActions() {
   const undoButton = document.querySelector("[data-sprites-undo]");
   if (undoButton) {
@@ -618,6 +740,7 @@ wireGridControls();
 wireDrawingTools();
 wirePaletteButtons();
 wireCanvasActions();
+wireFrameActions();
 wireHistoryActions();
 wireZoomControls();
 wireExportButton();

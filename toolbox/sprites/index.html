@@ -165,7 +165,12 @@
                             <details class="vertical-accordion" open>
                                 <summary>Animation</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>The frame strip mirrors the current unsaved editor draft. Frame editing remains deferred to the next scoped Sprite Creator PR.</p>
+                                    <p>The frame strip manages unsaved page-session frames only. Frames are not saved to the sprite library.</p>
+                                    <div class="action-group action-group--tight" aria-label="Sprite frame editing controls" data-sprites-frame-actions>
+                                        <button class="btn btn--compact primary" type="button" data-sprites-add-frame>Add Frame</button>
+                                        <button class="btn btn--compact" type="button" data-sprites-duplicate-frame>Duplicate Frame</button>
+                                        <button class="btn btn--compact" type="button" data-sprites-delete-frame disabled>Delete Frame</button>
+                                    </div>
                                     <div class="sprite-frame-strip" role="group" aria-label="Sprite Creator frame strip" data-sprites-frame-strip>
                                         <button class="sprite-frame-card is-active" type="button" data-sprites-frame-card="0" aria-pressed="true">
                                             <span class="sprite-frame-card-title">Frame 1</span>

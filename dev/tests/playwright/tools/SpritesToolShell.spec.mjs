@@ -487,3 +487,51 @@ test("Sprite Creator keeps center canvas and right preview in sync", async ({ pa
     await server.close();
   }
 });
+
+test("Sprite Creator edits unsaved frame strip frames", async ({ page }) => {
+  const server = await startSpriteShellTestServer();
+  const failures = collectPageFailures(page);
+
+  try {
+    await page.goto(`${server.baseUrl}/toolbox/sprites/index.html`, { waitUntil: "networkidle" });
+
+    await page.getByRole("button", { name: "Gold editor color" }).click();
+    await spriteCell(page, 1, 1).click();
+    await expectCenterAndPreviewPainted(page, 1, 1, "sprite-canvas-cell--gold");
+
+    await page.getByRole("button", { name: "Add Frame" }).click();
+    await expect(page.locator("[data-sprites-frame-card]")).toHaveCount(2);
+    await expect(page.locator("[data-sprites-frame-status]")).toContainText("Frame 2 is selected");
+    await expectCenterAndPreviewEmpty(page, 1, 1);
+
+    await page.getByRole("button", { name: "Blue editor color" }).click();
+    await page.getByRole("button", { name: "Pencil tool" }).click();
+    await spriteCell(page, 2, 2).click();
+    await expectCenterAndPreviewPainted(page, 2, 2, "sprite-canvas-cell--blue");
+
+    await page.locator("[data-sprites-frame-card='0']").click();
+    await expect(page.locator("[data-sprites-frame-status]")).toContainText("Frame 1 is selected");
+    await expectCenterAndPreviewPainted(page, 1, 1, "sprite-canvas-cell--gold");
+    await expectCenterAndPreviewEmpty(page, 2, 2);
+
+    await page.locator("[data-sprites-frame-card='1']").click();
+    await expect(page.locator("[data-sprites-frame-status]")).toContainText("Frame 2 is selected");
+    await expectCenterAndPreviewPainted(page, 2, 2, "sprite-canvas-cell--blue");
+
+    await page.getByRole("button", { name: "Duplicate Frame" }).click();
+    await expect(page.locator("[data-sprites-frame-card]")).toHaveCount(3);
+    await expect(page.locator("[data-sprites-frame-status]")).toContainText("Frame 3 is selected");
+    await expectCenterAndPreviewPainted(page, 2, 2, "sprite-canvas-cell--blue");
+
+    await page.getByRole("button", { name: "Delete Frame" }).click();
+    await expect(page.locator("[data-sprites-frame-card]")).toHaveCount(2);
+    await expect(page.locator("[data-sprites-frame-status]")).toContainText("Frame 2 is selected");
+    await expectCenterAndPreviewPainted(page, 2, 2, "sprite-canvas-cell--blue");
+
+    expect(failures.failedRequests).toEqual([]);
+    expect(failures.pageErrors).toEqual([]);
+    expect(failures.consoleErrors).toEqual([]);
+  } finally {
+    await server.close();
+  }
+});
