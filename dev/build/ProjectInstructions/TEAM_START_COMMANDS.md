@@ -17,9 +17,11 @@ Branch Lifecycle (Canonical):
 
 ## Team Migration Note
 
-Team Alfa, Team Bravo, Team Charlie, and historical Team Gamma lanes must update from current `main` before starting work and use the canonical folders documented in `dev/build/ProjectInstructions/addendums/canonical_repository_structure.md`.
+Team Alfa, Team Bravo, Team Charlie, and historical Team Gamma lanes must update from current `main` before starting work and use the folder-placement SSoT:
 
-Do not create or reuse legacy folders such as `docs_build/`, `tmp/`, `projects/`, `scripts/`, `tests/`, `archive/`, `project-instructions/`, `dev/docs_build/`, `dev/project-instructions/`, `dev/workspace/artifacts/`, or `dev/build/dev/`.
+`dev/build/ProjectInstructions/addendums/canonical_repository_structure.md`
+
+Do not create or reuse invalid legacy folders. Use the SSoT invalid legacy path list.
 
 If a proposed file does not clearly belong in a canonical folder, HARD STOP and report the proposed path.
 

@@ -1,228 +1,224 @@
+diff --git a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+index 540303d34..076cbb499 100644
+--- a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
++++ b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+@@ -66,7 +66,7 @@ When active guidance overlaps, use these canonical owner documents:
+
+ - Workflow and Product Owner testable completion: `dev/build/ProjectInstructions/addendums/pr_workflow.md`
+ - START / WORK / END lifecycle, branch gates, mandatory hard stops, and EOD main lock: `dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md`
+-- Repository directory ownership, final root standard, final `src/` layer standard, final `dev/` workspace standard, and restructure boundaries: `dev/build/ProjectInstructions/addendums/repository_directory_standard.md`
++- Repository folder placement, directory ownership, final root standard, final `src/` layer standard, final `dev/` workspace standard, and restructure boundaries: `dev/build/ProjectInstructions/addendums/canonical_repository_structure.md`
+ - Page-level Playwright organization and completion coverage: `dev/build/ProjectInstructions/addendums/test_structure_standardization.md`
+ - API/environment model and `Browser -> API -> Database` rule: `dev/build/ProjectInstructions/addendums/environment_governance_model.md`
+ - Environment variable, URL, R2 prefix, and feature flag configuration: `dev/build/ProjectInstructions/addendums/environment_configuration_standards.md`
+diff --git a/dev/build/ProjectInstructions/README.txt b/dev/build/ProjectInstructions/README.txt
+index b77e90252..9f842adfd 100644
+--- a/dev/build/ProjectInstructions/README.txt
++++ b/dev/build/ProjectInstructions/README.txt
+@@ -47,10 +47,10 @@ READ THIS FIRST
+
+ Addendum index:
+ - Documentation Ownership: dev/build/ProjectInstructions/addendums/documentation_ownership.md
+-- Repository Directory Standard: dev/build/ProjectInstructions/addendums/repository_directory_standard.md
++- Canonical Repository Structure: dev/build/ProjectInstructions/addendums/canonical_repository_structure.md
++- Repository Directory Standard (superseded pointer): dev/build/ProjectInstructions/addendums/repository_directory_standard.md
+ - Team Backlog, SOD, And EOD Standard: dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
+ - Single Source and EOD Main Lock: dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
+-- Canonical Repository Structure: dev/build/ProjectInstructions/addendums/canonical_repository_structure.md
+ - Test Structure Standardization: dev/build/ProjectInstructions/addendums/test_structure_standardization.md
+ - Legacy Migration Policy: dev/build/ProjectInstructions/addendums/legacy_migration_policy.md
+ - Assistant Execution Modes: dev/build/ProjectInstructions/addendums/assistant_execution_modes.md
 diff --git a/dev/build/ProjectInstructions/TEAM_START_COMMANDS.md b/dev/build/ProjectInstructions/TEAM_START_COMMANDS.md
-index 8d854a396..23b5cf9c2 100644
+index 23b5cf9c2..ce205726c 100644
 --- a/dev/build/ProjectInstructions/TEAM_START_COMMANDS.md
 +++ b/dev/build/ProjectInstructions/TEAM_START_COMMANDS.md
-@@ -15,6 +15,14 @@ Read `dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md`
- Branch Lifecycle (Canonical):
- - Follow `dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md` for START / WORK / END lifecycle, branch gates, mandatory hard stops, and EOD main lock.
+@@ -17,9 +17,11 @@ Branch Lifecycle (Canonical):
 
-+## Team Migration Note
-+
-+Team Alfa, Team Bravo, Team Charlie, and historical Team Gamma lanes must update from current `main` before starting work and use the canonical folders documented in `dev/build/ProjectInstructions/addendums/canonical_repository_structure.md`.
-+
-+Do not create or reuse legacy folders such as `docs_build/`, `tmp/`, `projects/`, `scripts/`, `tests/`, `archive/`, `project-instructions/`, `dev/docs_build/`, `dev/project-instructions/`, `dev/workspace/artifacts/`, or `dev/build/dev/`.
-+
-+If a proposed file does not clearly belong in a canonical folder, HARD STOP and report the proposed path.
-+
- ## Start Team Alfa
+ ## Team Migration Note
 
- Ready-to-copy command:
+-Team Alfa, Team Bravo, Team Charlie, and historical Team Gamma lanes must update from current `main` before starting work and use the canonical folders documented in `dev/build/ProjectInstructions/addendums/canonical_repository_structure.md`.
++Team Alfa, Team Bravo, Team Charlie, and historical Team Gamma lanes must update from current `main` before starting work and use the folder-placement SSoT:
+
+-Do not create or reuse legacy folders such as `docs_build/`, `tmp/`, `projects/`, `scripts/`, `tests/`, `archive/`, `project-instructions/`, `dev/docs_build/`, `dev/project-instructions/`, `dev/workspace/artifacts/`, or `dev/build/dev/`.
++`dev/build/ProjectInstructions/addendums/canonical_repository_structure.md`
++
++Do not create or reuse invalid legacy folders. Use the SSoT invalid legacy path list.
+
+ If a proposed file does not clearly belong in a canonical folder, HARD STOP and report the proposed path.
+
 diff --git a/dev/build/ProjectInstructions/addendums/canonical_repository_structure.md b/dev/build/ProjectInstructions/addendums/canonical_repository_structure.md
-index c8b7d8584..040d938fb 100644
+index 040d938fb..7cf74694e 100644
 --- a/dev/build/ProjectInstructions/addendums/canonical_repository_structure.md
 +++ b/dev/build/ProjectInstructions/addendums/canonical_repository_structure.md
-@@ -6,30 +6,61 @@ Establish the canonical repository structure for future development and reduce t
-
- ## Canonical Structure
-
--Root product sections:
--- docs/
--- games/
--- toolbox/
-+Valid top-level folders:
- - account/
- - admin/
--- legal/
- - assets/
-+- community/
-+- company/
-+- deploy/
-+- dev/
-+- docs/
-+- games/
-+- learn/
-+- legal/
-+- marketplace/
-+- memberships/
-+- owner/
-+- src/
-+- toolbox/
-+
-+Root product and repo sections:
-+- account/, admin/, community/, company/, learn/, legal/, marketplace/, memberships/, and owner/ are production website sections.
-+- assets/ contains production website and tool assets.
-+- docs/ is production Docs & Help content.
-+- games/ is public game discovery.
-+- toolbox/ is the Creator toolbox/workspace.
-+- deploy/ contains deployment configuration.
-+- dev/ contains the development workspace.
-+- src/ contains deployable application/runtime/API source.
-
- Deployable application source:
- - src/web/{feature-name}/
+@@ -39,6 +39,14 @@ Deployable application source:
  - src/api-runtime/{feature-name}/
  - src/runtime/{feature-name}/
 
--Development workspace:
-+Valid dev workspace folders:
-+- dev/archive/
- - dev/build/
-+- dev/config/
- - dev/reports/
--- dev/tests/
- - dev/scripts/
--- dev/config/
--- dev/deploy/
--- dev/archive/
-+- dev/templates/
-+- dev/tests/
-+- dev/tools/
- - dev/workspace/
-
-+Dev workspace ownership:
-+- dev/archive/ owns historical reference material only.
-+- dev/build/ owns active Project Instructions, architecture, database DDL/DML/seed docs, standards, backlog, PR planning, and governance.
-+- dev/config/ owns development-only runner and tooling configuration.
-+- dev/reports/ owns active and historical generated reports.
-+- dev/scripts/ owns development-only scripts and runners.
-+- dev/templates/ owns reusable development templates.
-+- dev/tests/ owns non-deployable test suites.
-+- dev/tools/ owns development-only tooling.
-+- dev/workspace/ owns generated output: tmp, zips, logs, generated files, and test-results.
++Final src layer ownership:
++- src/web/ owns browser-facing deployable application modules used by public pages, account/admin surfaces, and Creator tools.
++- src/api-runtime/ owns deployable API/runtime service modules that back the shared Browser -> API -> Postgres/R2 contract.
++- src/runtime/ owns deployable game, tool, engine, and shared runtime capabilities.
++- Existing top-level src/advanced/, src/api/, src/dev-runtime/, src/engine/, src/shared/, and src/tools/ directories are legacy transition buckets until explicit migration PRs move them.
++- Do not add new top-level src/ layer names outside src/web/, src/api-runtime/, or src/runtime/ without OWNER approval.
++- Do not use team names in runtime source filenames.
 +
- Tools:
- - toolbox/{tool-name}/index.html
-
-@@ -56,13 +87,38 @@ These legacy transition buckets may remain until explicit migration PRs move the
-
- ## Rules
-
-+- Root is production website and standard repository configuration only.
-+- src/ is deployable application/runtime/API code.
-+- dev/ is development workspace only.
-+- deploy/ is deployment configuration.
-+- docs/ is production Docs & Help content.
- - Theme first.
- - Tool CSS second.
- - Shared functionality belongs in assets/js/shared/.
- - No new scattered JS folders.
- - No new scattered CSS folders.
-+- Do not create new folders unless they fit the documented canonical structure.
-+- If a requested or generated path does not clearly fit the canonical structure, Codex must HARD STOP and report the proposed path.
- - New development follows the canonical structure.
- - New deployable `src/` work follows `src/web/`, `src/api-runtime/`, or `src/runtime/`.
- - New non-deployable work belongs under `dev/`.
+ Valid dev workspace folders:
+ - dev/archive/
+ - dev/build/
+@@ -105,6 +113,26 @@ These legacy transition buckets may remain until explicit migration PRs move the
  - Required reports belong under flat `dev/reports/`.
  - Required ZIPs belong under `dev/workspace/zips/`; generated temporary artifacts belong under `dev/workspace/tmp/`.
+
++## Creator Data Boundary
 +
-+## Invalid Legacy Paths
++- Creator data must not write to repository folders.
++- Creator metadata must go through the API to Postgres.
++- Creator assets must go through the API to Cloudflare R2.
++- Repo folders may contain fixtures, templates, governance, and development artifacts only when they are not Creator-owned production data.
 +
-+These paths are not active repository ownership locations:
++## Environment And Runtime Rules
 +
-+- docs_build/
-+- tmp/
-+- projects/
-+- scripts/
-+- tests/
-+- archive/
-+- project-instructions/
-+- dev/docs_build/
-+- dev/project-instructions/
-+- dev/workspace/artifacts/
-+- dev/build/dev/
++- Postgres is the only active runtime database.
++- The same application code path must run across LOCAL, DEV, IST, UAT, and PROD.
++- Environment differences must come from `.env` values or environment-managed secrets.
++- Runtime source filenames must not use team names.
 +
-+References to invalid legacy paths are allowed only as historical/reference notes, explicit migration notes, ignore rules, or audit evidence. Active commands, active templates, Project Instructions, validation scripts, and new Codex output must use the canonical folders above.
++## PR Chain Boundary
++
++The development workspace restructure must proceed through sequential scoped PRs. A PR may only move or update the paths named in its purpose.
++
++Final path-governance PRs may document target paths and legacy exceptions, but they must not move deployable application code unless explicitly scoped.
++
+ ## Invalid Legacy Paths
+
+ These paths are not active repository ownership locations:
 diff --git a/dev/build/ProjectInstructions/addendums/repository_directory_standard.md b/dev/build/ProjectInstructions/addendums/repository_directory_standard.md
-index 7d10eac68..a6527fd23 100644
+index a6527fd23..7a1cffa06 100644
 --- a/dev/build/ProjectInstructions/addendums/repository_directory_standard.md
 +++ b/dev/build/ProjectInstructions/addendums/repository_directory_standard.md
-@@ -14,10 +14,30 @@ This document is governance only. It does not move runtime, UI, API, tests, or p
- - Repository root contains production/public product sections and standard repository configuration only.
- - `src/` contains deployable application code.
- - `dev/` contains non-deployable build, test, bootstrap, governance, report, and local workspace items.
-+- `deploy/` contains deployment configuration.
- - `docs/` remains at root because it is production Docs & Help.
- - `games/` remains at root because it is public game discovery.
- - `toolbox/` remains at root because it is the Creator toolbox/workspace.
--- Other public product roots such as `account/`, `admin/`, `legal/`, and `assets/` remain root-level product sections when present.
-+- Other public product roots such as `account/`, `admin/`, `assets/`, `community/`, `company/`, `learn/`, `legal/`, `marketplace/`, `memberships/`, and `owner/` remain root-level product sections when present.
-+
-+Valid top-level folders are:
-+
-+- account/
-+- admin/
-+- assets/
-+- community/
-+- company/
-+- deploy/
-+- dev/
-+- docs/
-+- games/
-+- learn/
-+- legal/
-+- marketplace/
-+- memberships/
-+- owner/
-+- src/
-+- toolbox/
+@@ -1,122 +1,7 @@
+ # Repository Directory Standard
 
- ## Final Src Layer Standard
+-Status: Approved
+-Owner: OWNER
++Status: Superseded
 
-@@ -35,21 +55,38 @@ Transition rule:
+-## Purpose
++SSoT: `dev/build/ProjectInstructions/addendums/canonical_repository_structure.md`
 
- ## Development Workspace Paths
-
-+- `dev/archive/` owns historical development reference material that is not active governance.
- - `dev/build/` owns active development governance, Project Instructions, and PR workflow material.
-+- `dev/build/` also owns architecture, database DDL/DML/seed docs, standards, backlog, PR planning, and governance.
-+- `dev/config/` owns development-only runner and tooling configuration.
- - `dev/reports/` owns generated reports using flat filenames.
--- `dev/tests/` owns non-deployable test suites.
- - `dev/scripts/` owns development-only scripts and runners.
--- `dev/config/` owns development-only runner and tooling configuration.
--- `dev/deploy/` owns development-only deployment assets and local deployment configuration.
-+- `dev/templates/` owns reusable development templates.
-+- `dev/tests/` owns non-deployable test suites.
-+- `dev/tools/` owns development-only tooling.
- - `dev/workspace/` owns generated non-report artifacts and ignored local temporary workspace output.
+-Define the target repository directory ownership model for the post-restructure repository.
+-
+-This document is governance only. It does not move runtime, UI, API, tests, or production files by itself.
+-
+-## Directory Ownership
+-
+-- Repository root contains production/public product sections and standard repository configuration only.
+-- `src/` contains deployable application code.
+-- `dev/` contains non-deployable build, test, bootstrap, governance, report, and local workspace items.
+-- `deploy/` contains deployment configuration.
+-- `docs/` remains at root because it is production Docs & Help.
+-- `games/` remains at root because it is public game discovery.
+-- `toolbox/` remains at root because it is the Creator toolbox/workspace.
+-- Other public product roots such as `account/`, `admin/`, `assets/`, `community/`, `company/`, `learn/`, `legal/`, `marketplace/`, `memberships/`, and `owner/` remain root-level product sections when present.
+-
+-Valid top-level folders are:
+-
+-- account/
+-- admin/
+-- assets/
+-- community/
+-- company/
+-- deploy/
+-- dev/
+-- docs/
+-- games/
+-- learn/
+-- legal/
+-- marketplace/
+-- memberships/
+-- owner/
+-- src/
+-- toolbox/
+-
+-## Final Src Layer Standard
+-
+-The final `src/` ownership model is:
+-
+-- `src/web/` for browser-facing deployable application modules used by public pages, account/admin surfaces, and Creator tools.
+-- `src/api-runtime/` for deployable API/runtime service modules that back the shared Browser -> API -> Postgres/R2 contract.
+-- `src/runtime/` for deployable game, tool, engine, and shared runtime capabilities.
+-
+-Transition rule:
+-
+-- Existing top-level `src/advanced/`, `src/api/`, `src/dev-runtime/`, `src/engine/`, `src/shared/`, and `src/tools/` directories are legacy transition buckets until explicit migration PRs move them.
+-- Do not add new top-level `src/` layer names outside `src/web/`, `src/api-runtime/`, or `src/runtime/` without OWNER approval.
+-- Do not use team names in runtime source filenames.
+-
+-## Development Workspace Paths
+-
 -- `dev/archive/` owns historical development reference material that is not active governance.
-+- `dev/workspace/` generated output includes tmp, zips, logs, generated files, and test-results.
- - `dev/build/ProjectInstructions/` is the only active Project Instructions source.
--- Root `docs_build/`, root `tests/`, root `archive/`, root `tmp/`, and root `project-instructions/` are not active workspace locations after the restructure.
-+- Root `docs_build/`, root `tests/`, root `archive/`, root `tmp/`, root `projects/`, root `scripts/`, and root `project-instructions/` are not active workspace locations after the restructure.
- - Root `tmp/` may remain ignored as legacy local scratch only; required Codex ZIPs belong under `dev/workspace/zips/`, and generated temporary artifacts belong under `dev/workspace/tmp/`.
-
- ## Legacy Reference Exceptions
-
--Path references to old root `docs_build/`, `tests/`, `archive/`, or `tmp/` locations are allowed only when they are:
-+Invalid legacy paths:
-+
-+- docs_build/
-+- tmp/
-+- projects/
-+- scripts/
-+- tests/
-+- archive/
-+- project-instructions/
-+- dev/docs_build/
-+- dev/project-instructions/
-+- dev/workspace/artifacts/
-+- dev/build/dev/
-+
-+Path references to invalid legacy locations are allowed only when they are:
-
- - historical/reference content under `dev/archive/` or `dev/build/pr/reference/`
- - explicit legacy exception notes in active governance
-@@ -58,6 +95,12 @@ Path references to old root `docs_build/`, `tests/`, `archive/`, or `tmp/` locat
-
- Active commands, templates, and Project Instructions must use the final `dev/`, `dev/reports/`, and `dev/workspace/` paths.
-
-+## Codex Folder Creation Rule
-+
-+Codex must not create new folders unless they fit the documented canonical structure.
-+
-+If a requested or generated path does not clearly fit the canonical structure, Codex must HARD STOP and report the proposed path before writing files.
-+
- ## Creator Data Boundary
-
- - Creator data must not write to repository folders.
+-- `dev/build/` owns active development governance, Project Instructions, and PR workflow material.
+-- `dev/build/` also owns architecture, database DDL/DML/seed docs, standards, backlog, PR planning, and governance.
+-- `dev/config/` owns development-only runner and tooling configuration.
+-- `dev/reports/` owns generated reports using flat filenames.
+-- `dev/scripts/` owns development-only scripts and runners.
+-- `dev/templates/` owns reusable development templates.
+-- `dev/tests/` owns non-deployable test suites.
+-- `dev/tools/` owns development-only tooling.
+-- `dev/workspace/` owns generated non-report artifacts and ignored local temporary workspace output.
+-- `dev/workspace/` generated output includes tmp, zips, logs, generated files, and test-results.
+-- `dev/build/ProjectInstructions/` is the only active Project Instructions source.
+-- Root `docs_build/`, root `tests/`, root `archive/`, root `tmp/`, root `projects/`, root `scripts/`, and root `project-instructions/` are not active workspace locations after the restructure.
+-- Root `tmp/` may remain ignored as legacy local scratch only; required Codex ZIPs belong under `dev/workspace/zips/`, and generated temporary artifacts belong under `dev/workspace/tmp/`.
+-
+-## Legacy Reference Exceptions
+-
+-Invalid legacy paths:
+-
+-- docs_build/
+-- tmp/
+-- projects/
+-- scripts/
+-- tests/
+-- archive/
+-- project-instructions/
+-- dev/docs_build/
+-- dev/project-instructions/
+-- dev/workspace/artifacts/
+-- dev/build/dev/
+-
+-Path references to invalid legacy locations are allowed only when they are:
+-
+-- historical/reference content under `dev/archive/` or `dev/build/pr/reference/`
+-- explicit legacy exception notes in active governance
+-- ignore rules that keep obsolete local scratch from entering commits
+-- migration reports documenting the old path and its replacement
+-
+-Active commands, templates, and Project Instructions must use the final `dev/`, `dev/reports/`, and `dev/workspace/` paths.
+-
+-## Codex Folder Creation Rule
+-
+-Codex must not create new folders unless they fit the documented canonical structure.
+-
+-If a requested or generated path does not clearly fit the canonical structure, Codex must HARD STOP and report the proposed path before writing files.
+-
+-## Creator Data Boundary
+-
+-- Creator data must not write to repository folders.
+-- Creator metadata must go through the API to Postgres.
+-- Creator assets must go through the API to Cloudflare R2.
+-- Repo folders may contain fixtures, templates, governance, and development artifacts only when they are not Creator-owned production data.
+-
+-## Environment And Runtime Rules
+-
+-- Postgres is the only active runtime database.
+-- The same application code path must run across LOCAL, DEV, IST, UAT, and PROD.
+-- Environment differences must come from `.env` values or environment-managed secrets.
+-- Runtime source filenames must not use team names.
+-
+-## PR Chain Boundary
+-
+-The development workspace restructure must proceed through sequential scoped PRs. A PR may only move or update the paths named in its purpose.
+-
+-Final path-governance PRs may document target paths and legacy exceptions, but they must not move deployable application code unless explicitly scoped.
++Do not duplicate folder rules here.

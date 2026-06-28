@@ -47,10 +47,10 @@ READ THIS FIRST
 
 Addendum index:
 - Documentation Ownership: dev/build/ProjectInstructions/addendums/documentation_ownership.md
-- Repository Directory Standard: dev/build/ProjectInstructions/addendums/repository_directory_standard.md
+- Canonical Repository Structure: dev/build/ProjectInstructions/addendums/canonical_repository_structure.md
+- Repository Directory Standard (superseded pointer): dev/build/ProjectInstructions/addendums/repository_directory_standard.md
 - Team Backlog, SOD, And EOD Standard: dev/build/ProjectInstructions/addendums/team_backlog_sod_eod_standard.md
 - Single Source and EOD Main Lock: dev/build/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md
-- Canonical Repository Structure: dev/build/ProjectInstructions/addendums/canonical_repository_structure.md
 - Test Structure Standardization: dev/build/ProjectInstructions/addendums/test_structure_standardization.md
 - Legacy Migration Policy: dev/build/ProjectInstructions/addendums/legacy_migration_policy.md
 - Assistant Execution Modes: dev/build/ProjectInstructions/addendums/assistant_execution_modes.md

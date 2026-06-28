@@ -3,13 +3,11 @@
 - [x] Documentation/governance only.
 - [x] No files moved.
 - [x] No runtime behavior changed.
-- [x] No production pages changed.
-- [x] Canonical repository structure documented under dev/build/ProjectInstructions/.
-- [x] Valid top-level folders documented.
-- [x] Valid dev folders documented.
-- [x] Root/src/dev/deploy/docs/dev-build/dev-workspace ownership documented.
-- [x] Invalid legacy paths explicitly marked.
-- [x] Codex folder-creation HARD STOP rule added.
-- [x] Existing Project Instructions old-path references reviewed and intentional mentions documented.
-- [x] Team migration note added for Alfa, Bravo, Charlie, and historical Gamma lanes.
+- [x] Treat canonical_repository_structure.md as the folder-placement SSoT.
+- [x] Move unique rules from repository_directory_standard.md into canonical_repository_structure.md.
+- [x] Replace repository_directory_standard.md with a superseded pointer.
+- [x] Update Project Instructions index/README references to the SSoT.
+- [x] TEAM_START_COMMANDS.md references the SSoT and keeps only a short invalid-path warning.
+- [x] Search Project Instructions for duplicate folder ownership tables/lists.
+- [x] Replace active duplicates with SSoT pointers.
 - [x] Required validation passed.

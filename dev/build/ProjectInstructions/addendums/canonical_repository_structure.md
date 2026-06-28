@@ -39,6 +39,14 @@ Deployable application source:
 - src/api-runtime/{feature-name}/
 - src/runtime/{feature-name}/
 
+Final src layer ownership:
+- src/web/ owns browser-facing deployable application modules used by public pages, account/admin surfaces, and Creator tools.
+- src/api-runtime/ owns deployable API/runtime service modules that back the shared Browser -> API -> Postgres/R2 contract.
+- src/runtime/ owns deployable game, tool, engine, and shared runtime capabilities.
+- Existing top-level src/advanced/, src/api/, src/dev-runtime/, src/engine/, src/shared/, and src/tools/ directories are legacy transition buckets until explicit migration PRs move them.
+- Do not add new top-level src/ layer names outside src/web/, src/api-runtime/, or src/runtime/ without OWNER approval.
+- Do not use team names in runtime source filenames.
+
 Valid dev workspace folders:
 - dev/archive/
 - dev/build/
@@ -104,6 +112,26 @@ These legacy transition buckets may remain until explicit migration PRs move the
 - New non-deployable work belongs under `dev/`.
 - Required reports belong under flat `dev/reports/`.
 - Required ZIPs belong under `dev/workspace/zips/`; generated temporary artifacts belong under `dev/workspace/tmp/`.
+
+## Creator Data Boundary
+
+- Creator data must not write to repository folders.
+- Creator metadata must go through the API to Postgres.
+- Creator assets must go through the API to Cloudflare R2.
+- Repo folders may contain fixtures, templates, governance, and development artifacts only when they are not Creator-owned production data.
+
+## Environment And Runtime Rules
+
+- Postgres is the only active runtime database.
+- The same application code path must run across LOCAL, DEV, IST, UAT, and PROD.
+- Environment differences must come from `.env` values or environment-managed secrets.
+- Runtime source filenames must not use team names.
+
+## PR Chain Boundary
+
+The development workspace restructure must proceed through sequential scoped PRs. A PR may only move or update the paths named in its purpose.
+
+Final path-governance PRs may document target paths and legacy exceptions, but they must not move deployable application code unless explicitly scoped.
 
 ## Invalid Legacy Paths
 

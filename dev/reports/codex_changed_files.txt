@@ -1,3 +1,5 @@
+dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+dev/build/ProjectInstructions/README.txt
 dev/build/ProjectInstructions/TEAM_START_COMMANDS.md
 dev/build/ProjectInstructions/addendums/canonical_repository_structure.md
 dev/build/ProjectInstructions/addendums/repository_directory_standard.md
