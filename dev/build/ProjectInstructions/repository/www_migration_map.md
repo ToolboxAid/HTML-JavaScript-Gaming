@@ -170,6 +170,22 @@ Recommended approach for the actual move PR:
 5. Do not introduce browser redirects unless a static route cannot be served directly.
 6. Document every temporary shim with removal criteria for the legacy-layout cleanup PR.
 
+## Route Root Compatibility Toggle
+
+`PR_26180_OWNER_007-www-route-root-compatibility` installs the local compatibility switch without moving browser files.
+
+The future activation toggle is:
+
+```text
+GAMEFOUNDRY_LOCAL_WEB_ROOT=www
+```
+
+Default behavior remains current repository-root static serving when `GAMEFOUNDRY_LOCAL_WEB_ROOT` is unset, empty, `.`, `root`, or `repo-root`.
+
+When `GAMEFOUNDRY_LOCAL_WEB_ROOT=www`, local static serving prefers `www/` for public browser URLs while retaining repository-root fallback for compatibility during migration.
+
+This toggle is for local runtime and test helpers only. It does not change production deployment, public URLs, API routes, or package commands.
+
 ## Required Sequence For Safe www Move
 
 1. Freeze the public route contract.
