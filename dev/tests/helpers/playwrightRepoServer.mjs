@@ -8,7 +8,7 @@ import { createLocalApiRouter } from "../../../src/dev-runtime/server/local-api-
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const repoRoot = path.resolve(__dirname, "..", "..");
+const repoRoot = path.resolve(__dirname, "..", "..", "..");
 let runtimeEnvLoaded = false;
 
 function parseEnvValue(value) {

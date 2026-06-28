@@ -1,24 +1,24 @@
 # Incremental Validation Report
 
-Generated: 2026-06-23T16:38:48.296Z
+Generated: 2026-06-28T14:20:34.629Z
 Status: PASS
 
 ## Reuse Summary
 
-Reused manifests: 0
-Invalidated manifests: 1
+Reused manifests: 1
+Invalidated manifests: 0
 Generated manifests: 0
 Skipped manifests: 0
-Prevented lane regeneration: 0
-Prevented discovery scans: 0
-Prevented helper resolution passes: 0
+Prevented lane regeneration: 1
+Prevented discovery scans: 1
+Prevented helper resolution passes: 4
 Prevented fixture resolution passes: 0
 
 ## Incremental Decisions
 
 | Lane | Decision | Invalidated By | Runtime Savings Observation |
 | --- | --- | --- | --- |
-| workspace-contract | INVALIDATED | Persistent manifest lane definition hash changed for workspace-contract. | Manifest was regenerated or skipped; no reuse savings for this lane. |
+| tool-display-mode | REUSED | unchanged inputs | Reused 1 test input(s), 4 helper(s), and 0 fixture(s). |
 
 ## Invalidation Rules
 
@@ -33,4 +33,4 @@ Prevented fixture resolution passes: 0
 - Fresh persisted manifests avoid repeated lane graph generation.
 - Fresh persisted manifests avoid repeated helper and fixture resolution.
 - Fresh persisted manifests avoid repeated ownership scans outside explicit manifest inputs.
-- Incremental validation remains deterministic and does not use project JSON, toolState, localStorage, sessionStorage, or repo tmp/.
+- Incremental validation remains deterministic and does not use project JSON, toolState, localStorage, sessionStorage, or repo artifact tmp/.

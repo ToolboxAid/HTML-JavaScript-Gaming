@@ -251,7 +251,7 @@ const laneDefinitions = Object.freeze({
     reason: "Tools Progress validates that Admin platform progress hydrates every planned/active Toolbox registry entry in build order, the restored semantic group colors render in Toolbox Group view, and Game Build Path stays workflow-order and project-specific."
   },
   "tool-navigation": {
-    affectedSurface: "Admin Tools Progress tool route links, Tool Display Mode build-order previous/next controls, and Toolbox group fallback routing",
+    affectedSurface: "Toolbox route links, Tool Display Mode deprecated previous/next removal, and Toolbox group fallback routing",
     commands: [
       playwrightCommand("dev/tests/playwright/tools/ToolNavigationPrevNext.spec.mjs")
     ],
@@ -260,37 +260,36 @@ const laneDefinitions = Object.freeze({
       "dev/tests/playwright/tools/ToolNavigationPrevNext.spec.mjs"
     ],
     fixtures: [
-      "repo-served Admin Tools Progress page",
-      "repo-served Game Hub, Game Design, and Game Configuration tool pages",
+      "repo-served Toolbox page",
+      "repo-served Game Design tool page",
       "repo-served Toolbox Group view with URL-selected accordion",
-      "Toolbox registry build sequence and route metadata"
+      "Toolbox registry route metadata"
     ],
     fixturePaths: [],
     ownership: "tools",
     playwrightDir: "dev/tests/playwright/tools",
     requiresPreflight: true,
-    reason: "Tool navigation validates registry-owned tool routes, disabled rendering for route-less tools, build-order previous/next controls, multi-path fallback to Toolbox Group view, and role query preservation without exercising unrelated toolbox routes."
+    reason: "Tool navigation validates registry-owned tool routes, removal of deprecated Tool Display Mode previous/next controls, and direct Toolbox Group fallback routing without exercising unrelated toolbox routes."
   },
   "tool-display-mode": {
-    affectedSurface: "Tool Display Mode identity row, registry-owned previous/next links, disabled text fallback, and multi-path group routing",
+    affectedSurface: "Tool Display Mode single-line summary, registry-owned badge/tool images, and fullscreen icon swap",
     commands: [
-      playwrightCommand("dev/tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs")
+      playwrightCommand("dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs")
     ],
     dependencies: [],
     discoveryTargets: [
-      "dev/tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs"
+      "dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs"
     ],
     fixtures: [
-      "repo-served Game Hub, Game Design, Game Configuration, and AI Assistant tool pages",
-      "repo-served Toolbox Group view with URL-selected accordion",
-      "Toolbox registry build sequence and route metadata",
+      "repo-served Game Hub, Game Design, Game Configuration, and Build Game tool pages",
+      "Toolbox registry image metadata",
       "shared Theme V2 Tool Display Mode script"
     ],
     fixturePaths: [],
     ownership: "tools",
     playwrightDir: "dev/tests/playwright/tools",
     requiresPreflight: true,
-    reason: "Tool Display Mode validates the two-row identity/navigation layout, anchors for previous/next targets, disabled text for missing targets, registry build-order labels, role preservation, and multi-path fallback without exercising unrelated toolbox routes."
+    reason: "Tool Display Mode validates the single-line summary contract, direct summary children, registry-owned badge/tool art, fullscreen/exit icon swap, and removal of the deprecated body/navigation row without exercising unrelated toolbox routes."
   },
   "tool-images": {
     affectedSurface: "Toolbox registry image contract, Toolbox card image rendering, and Tool Display Mode image fallback",

@@ -1,17 +1,17 @@
 # Playwright Structure Audit
 
-Generated: 2026-06-27T19:31:16.106Z
+Generated: 2026-06-28T14:20:34.576Z
 Status: PASS
 
 ## Lane Directories
 
 | Directory | Status | Reason |
 | --- | --- | --- |
-| dev/tests/playwright/account | PASS | Directory is an allowed Playwright lane ownership bucket. |
-| dev/tests/playwright/games | PASS | Directory is an allowed Playwright lane ownership bucket. |
-| dev/tests/playwright/tools | PASS | Directory is an allowed Playwright lane ownership bucket. |
-| dev/tests/playwright/engine | SKIP | No Playwright specs are currently present; this lane may be empty. |
-| dev/tests/playwright/integration | SKIP | No Playwright specs are currently present; this lane may be empty. |
+| dev/tests/playwright/account | SKIP | Lane was not selected, so targeted discovery did not enumerate this directory. |
+| dev/tests/playwright/engine | SKIP | Lane was not selected, so targeted discovery did not enumerate this directory. |
+| dev/tests/playwright/games | SKIP | Lane was not selected, so targeted discovery did not enumerate this directory. |
+| dev/tests/playwright/integration | SKIP | Lane was not selected, so targeted discovery did not enumerate this directory. |
+| dev/tests/playwright/tools | SKIP | Lane was not selected, so targeted discovery did not enumerate this directory. |
 
 ## Blocking Findings
 
@@ -36,62 +36,10 @@ No blocking structural findings.
 
 | File | Status | Missing Relative Imports |
 | --- | --- | --- |
-| dev/tests/playwright/tools/AdminDbViewer.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/AdminInvitationsNavPage.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/AdminNotesLocalViewer.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/ApiStaticRouteRecovery.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/AssetToolMockRepository.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/BrowserApiUrlConfig.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/BuildPathProgressSimplification.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/EnvironmentBannerCoverage.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/EventsTool.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/GameCrewFoundation.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/GameDesignApiBehavior.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/GameHubMockRepository.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/GameJourneyTool.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/HitboxesTool.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/InputMappingV2Tool.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/LoginSessionMode.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/MessagesTool.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/ObjectsTool.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/OwnerAiCreditsPage.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/OwnerMembershipsPage.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/PaletteToolMockRepository.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/PublicMarketplacePage.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/PublicMembershipsPage.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/RemainingLegalPages.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/RootToolsFutureState.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/StaticOnlyLoginApiRequired.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/TagsTool.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/TermsOfServicePage.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/TextToSpeechFunctional.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/ToolboxRoutePages.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/ToolCenterFullscreenAccordion.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/ToolImageRegistry.spec.mjs | PASS | none |
-| dev/tests/playwright/tools/ToolNavigationPrevNext.spec.mjs | PASS | none |
-| dev/tests/playwright/games/AsteroidsBackgroundAssetResolution.spec.mjs | PASS | none |
-| dev/tests/playwright/games/AsteroidsBeatTiming.spec.mjs | PASS | none |
-| dev/tests/playwright/games/AsteroidsGameSceneCleanup.spec.mjs | PASS | none |
-| dev/tests/playwright/games/AsteroidsShipStateVisuals.spec.mjs | PASS | none |
-| dev/tests/helpers/browserExtensionNoise.mjs | PASS | none |
-| dev/tests/helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs | PASS | none |
-| dev/tests/helpers/messagesPostgresClientStub.mjs | PASS | none |
-| dev/tests/helpers/playwrightCtrlTapClick.mjs | PASS | none |
+| dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs | PASS | none |
 | dev/tests/helpers/playwrightRepoServer.mjs | PASS | none |
 | dev/tests/helpers/playwrightStorageIsolation.mjs | PASS | none |
 | dev/tests/helpers/playwrightV8CoverageReporter.mjs | PASS | none |
-| dev/tests/helpers/runtimeSceneLoaderHotReload.helpers.mjs | PASS | none |
-| dev/tests/helpers/testCoverageCatalog.mjs | PASS | none |
-| dev/tests/helpers/toolFormControlAssertions.mjs | PASS | none |
 | dev/tests/helpers/workspaceV2CoverageReporter.mjs | PASS | none |
 
 ## Intentionally Shared Helpers

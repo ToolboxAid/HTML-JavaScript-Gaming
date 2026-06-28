@@ -1,7 +1,55 @@
-dev/reports/PR_26179_OWNER_009-pr-stack-realignment_branch-validation.md
-dev/reports/PR_26179_OWNER_009-pr-stack-realignment_manual-validation-notes.md
-dev/reports/PR_26179_OWNER_009-pr-stack-realignment_report.md
-dev/reports/PR_26179_OWNER_009-pr-stack-realignment_requirement-checklist.md
-dev/reports/PR_26179_OWNER_009-pr-stack-realignment_validation-report.md
-dev/reports/codex_changed_files.txt
-dev/reports/codex_review.diff
+# git status --short
+M  assets/theme-v2/css/accordion.css
+M  assets/theme-v2/css/panels.css
+M  assets/theme-v2/js/tool-display-mode.js
+A  dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_branch-validation.md
+A  dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_manual-validation-notes.md
+A  dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_report.md
+A  dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_requirement-checklist.md
+A  dev/reports/PR_26179_ALFA_010-tool-display-single-line-summary_validation-report.md
+ M dev/reports/codex_changed_files.txt
+ M dev/reports/codex_review.diff
+M  dev/reports/coverage_changed_js_guardrail.txt
+M  dev/reports/dependency_gating_report.md
+M  dev/reports/dependency_hydration_reuse_report.md
+M  dev/reports/execution_graph_reuse_report.md
+M  dev/reports/failure_fingerprint_report.md
+M  dev/reports/filesystem_scan_reduction_report.md
+M  dev/reports/incremental_validation_report.md
+M  dev/reports/lane_compilation_report.md
+M  dev/reports/lane_deduplication_report.md
+M  dev/reports/lane_input_validation_report.md
+M  dev/reports/lane_runtime_optimization_report.md
+M  dev/reports/lane_snapshot_report.md
+M  dev/reports/lane_warm_start_report.md
+M  dev/reports/monolith_trigger_removal_report.md
+M  dev/reports/persistent_lane_manifest_report.md
+M  dev/reports/playwright_discovery_ownership_report.md
+M  dev/reports/playwright_discovery_scope_report.md
+M  dev/reports/playwright_structure_audit.md
+M  dev/reports/playwright_v8_coverage_report.txt
+M  dev/reports/retry_suppression_report.md
+M  dev/reports/slow_path_pruning_report.md
+M  dev/reports/static_validation_report.md
+M  dev/reports/targeted_file_manifest_report.md
+M  dev/reports/test_cleanup_performance_report.md
+M  dev/reports/test_cleanup_routing_report.md
+M  dev/reports/testing_lane_execution_report.md
+M  dev/reports/validation_cache_report.md
+M  dev/reports/zero_browser_preflight_report.md
+M  dev/scripts/run-targeted-test-lanes.mjs
+M  dev/tests/helpers/playwrightRepoServer.mjs
+M  dev/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+D  dev/tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs
+A  dev/tests/playwright/tools/ToolDisplayModeSingleLineSummary.spec.mjs
+M  dev/tests/playwright/tools/ToolImageRegistry.spec.mjs
+M  dev/tests/playwright/tools/ToolNavigationPrevNext.spec.mjs
+M  dev/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
+
+# git ls-files --others --exclude-standard
+(no output)
+
+# git diff --stat
+dev/reports/codex_changed_files.txt |   62 +-
+ dev/reports/codex_review.diff       | 2666 ++++++++++++++++++++++++++++++++++-
+ 2 files changed, 2704 insertions(+), 24 deletions(-)

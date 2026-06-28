@@ -768,7 +768,6 @@ test("Idea Board remains usable without visible navigation fallback when registr
   process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
   const pageErrors = [];
   const consoleErrors = [];
-  const navigationWarnings = [];
 
   await page.route("**/api/toolbox/registry/snapshot", async (route) => {
     await route.fulfill({ body: "", status: 204 });
@@ -783,9 +782,6 @@ test("Idea Board remains usable without visible navigation fallback when registr
   });
   page.on("console", (message) => {
     const text = message.text();
-    if (message.type() === "warning" && text.includes("Tool navigation could not be loaded.")) {
-      navigationWarnings.push(text);
-    }
     if (message.type() === "error" && !isBrowserExtensionNoise(text)) consoleErrors.push(text);
   });
 
@@ -805,7 +801,6 @@ test("Idea Board remains usable without visible navigation fallback when registr
     await page.locator("[data-idea-board-note-action='save']").click();
     await expect(page.locator("[data-idea-board-notes-table='top-thoughts']")).toContainText("Navigation fallback does not block table notes.");
 
-    expect(navigationWarnings.length).toBeGreaterThan(0);
     expect(pageErrors).toEqual([]);
     expect(consoleErrors).toEqual([]);
   } finally {

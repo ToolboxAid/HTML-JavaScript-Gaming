@@ -232,8 +232,8 @@ test("shared toolbox status bar shows selected Game Hub game above the footer", 
     await expect(statusBar).toBeVisible();
     const displayMode = page.locator("#toolDisplayMode");
     await expect(displayMode.locator("summary [data-theme-icon='fullscreen']")).toHaveAttribute("data-theme-icon-file", "gfs-fullscreen.svg");
-    await expect(displayMode.locator("[data-tool-nav-previous] [data-theme-icon='chevron-left']")).toHaveAttribute("data-theme-icon-file", "gfs-chevron-left.svg");
-    await expect(displayMode.locator("[data-tool-nav-next] [data-theme-icon='chevron-right']")).toHaveAttribute("data-theme-icon-file", "gfs-chevron-right.svg");
+    await expect(displayMode.locator("[data-tool-nav-previous]")).toHaveCount(0);
+    await expect(displayMode.locator("[data-tool-nav-next]")).toHaveCount(0);
     await expect(page.locator(".horizontal-accordion-toggle").first().locator("[data-theme-icon]")).toHaveAttribute("data-theme-icon-file", /gfs-chevron-(left|right)\.svg/);
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     await expect(statusBar).not.toContainText("Environment");
