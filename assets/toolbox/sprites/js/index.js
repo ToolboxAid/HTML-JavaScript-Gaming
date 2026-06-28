@@ -158,6 +158,7 @@ function updateDraftStatus() {
     status.textContent = draftStatusText();
   }
   renderPreview();
+  renderFrameStrip();
 }
 
 function updatePaletteStatus() {
@@ -220,6 +221,7 @@ function setZoomLevel(zoomLevel) {
   }
   applyPaintedPixelsToGrid();
   renderPreview();
+  renderFrameStrip();
 }
 
 function pickCellColor(cell) {
@@ -237,6 +239,7 @@ function pickCellColor(cell) {
   }
   applyPaintedPixelsToGrid();
   renderPreview();
+  renderFrameStrip();
 }
 
 function setPixel(row, column, colorKey) {
@@ -414,19 +417,15 @@ function editorColorValue(colorKey) {
   return value || "#111111";
 }
 
-function renderPreview() {
-  const canvas = document.querySelector("[data-sprites-preview-canvas]");
-  if (!canvas) {
-    return;
-  }
+function renderPixelsToCanvas(canvas, paintedPixels, gridSize) {
   const context = canvas.getContext("2d");
   if (!context) {
     return;
   }
-  const size = editorState.gridSize;
+  const size = gridSize || DEFAULT_GRID_SIZE;
   const cellSize = canvas.width / size;
   context.clearRect(0, 0, canvas.width, canvas.height);
-  for (const [key, colorKey] of editorState.paintedPixels.entries()) {
+  for (const [key, colorKey] of paintedPixels.entries()) {
     const [rowText, columnText] = key.split(":");
     const row = Number(rowText);
     const column = Number(columnText);
@@ -435,6 +434,25 @@ function renderPreview() {
     }
     context.fillStyle = editorColorValue(colorKey);
     context.fillRect((column - 1) * cellSize, (row - 1) * cellSize, cellSize, cellSize);
+  }
+}
+
+function renderPreview() {
+  const canvas = document.querySelector("[data-sprites-preview-canvas]");
+  if (!canvas) {
+    return;
+  }
+  renderPixelsToCanvas(canvas, editorState.paintedPixels, editorState.gridSize);
+}
+
+function renderFrameStrip() {
+  const thumbnail = document.querySelector("[data-sprites-frame-thumbnail='0']");
+  const status = document.querySelector("[data-sprites-frame-status]");
+  if (thumbnail) {
+    renderPixelsToCanvas(thumbnail, editorState.paintedPixels, editorState.gridSize);
+  }
+  if (status) {
+    status.textContent = `Frame strip: 1 unsaved frame. Current editor draft has ${editorState.paintedPixels.size} painted pixel${editorState.paintedPixels.size === 1 ? "" : "s"}.`;
   }
 }
 
@@ -609,3 +627,4 @@ setActiveColor(editorState.activeColor);
 setZoomLevel(editorState.zoomLevel);
 updateHistoryControls();
 renderPreview();
+renderFrameStrip();

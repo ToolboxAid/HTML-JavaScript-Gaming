@@ -1248,6 +1248,46 @@ body.tool-focus-mode .tool-column:last-of-type {
   box-shadow: 0 1px 4px var(--swatch-shadow-color)
 }
 
+.sprite-frame-strip {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto
+}
+
+.sprite-frame-card {
+  display: grid;
+  gap: 6px;
+  min-width: 96px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  color: var(--text);
+  text-align: left
+}
+
+.sprite-frame-card.is-active {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-soft)
+}
+
+.sprite-frame-thumbnail {
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--line);
+  background: var(--card-background);
+  image-rendering: pixelated
+}
+
+.sprite-frame-card-title {
+  font-weight: 700
+}
+
+.sprite-frame-card-meta {
+  color: var(--muted);
+  font-size: .875rem
+}
+
 .sprite-preview-shell {
   display: flex;
   justify-content: center;

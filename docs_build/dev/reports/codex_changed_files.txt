@@ -1,5 +1,7 @@
+assets/theme-v2/css/gamefoundrystudio.css
 assets/toolbox/sprites/js/index.js
 dev/tests/playwright/tools/SpritesToolShell.spec.mjs
-docs_build/dev/reports/PR_26179_CHARLIE_033-sprites-canvas-preview-sync.md
+docs_build/dev/reports/PR_26179_CHARLIE_034-sprites-frame-strip.md
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
+toolbox/sprites/index.html

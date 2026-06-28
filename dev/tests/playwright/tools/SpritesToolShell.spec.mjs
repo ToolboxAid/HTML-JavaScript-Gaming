@@ -219,6 +219,22 @@ async function previewCellHasPaint(page, row, column) {
   }, { column, gridSize, row });
 }
 
+async function canvasHasAnyPaint(locator) {
+  return locator.evaluate((canvas) => {
+    const context = canvas.getContext("2d");
+    if (!context) {
+      return false;
+    }
+    const imageData = context.getImageData(0, 0, canvas.width, canvas.height).data;
+    for (let index = 3; index < imageData.length; index += 4) {
+      if (imageData[index] > 0) {
+        return true;
+      }
+    }
+    return false;
+  });
+}
+
 async function expectCenterAndPreviewPainted(page, row, column, colorClass = null) {
   const cell = spriteCell(page, row, column);
   await expect(cell).toHaveClass(/is-painted/);
@@ -253,6 +269,8 @@ test("Sprite Creator shell loads with visible tool, canvas, details, and status 
     await expect(page.getByText("Canvas Setup", { exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { level: 2, name: "Pixel Work Area" })).toBeVisible();
     await expect(page.getByRole("heading", { level: 2, name: "Sprite Details" })).toBeVisible();
+    await expect(page.locator("[data-sprites-frame-strip]")).toBeVisible();
+    await expect(page.locator("[data-sprites-frame-status]")).toContainText("1 unsaved frame");
     await expect(page.locator("[data-sprites-toolbar]")).toBeVisible();
     await expect(page.getByRole("button", { name: "Pencil tool" })).toBeEnabled();
     await expect(page.getByRole("button", { name: "Eraser tool" })).toBeEnabled();
@@ -408,6 +426,8 @@ test("Sprite Creator keeps center canvas and right preview in sync", async ({ pa
 
     await spriteCell(page, 1, 1).click();
     await expectCenterAndPreviewPainted(page, 1, 1, "sprite-canvas-cell--ink");
+    await expect(page.locator("[data-sprites-frame-status]")).toContainText("1 painted pixel");
+    expect(await canvasHasAnyPaint(page.locator("[data-sprites-frame-thumbnail='0']"))).toBe(true);
 
     await page.getByRole("button", { name: "Eraser tool" }).click();
     await spriteCell(page, 1, 1).click();
