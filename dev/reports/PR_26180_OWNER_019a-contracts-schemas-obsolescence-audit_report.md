@@ -1,0 +1,1113 @@
+# PR_26180_OWNER_019a-contracts-schemas-obsolescence-audit Report
+
+## Executive Summary
+
+Reviewed 89 tracked files under `src/shared/contracts/**` and `src/shared/schemas/**` without moving or deleting any source file.
+
+The audit found active browser/runtime dependencies, active test/validation dependencies, and README/reference files needing Owner disposition. The current repository does not support a simple bulk move of these files to `api/`.
+
+A dynamic browser schema loader in `www/src/shared/toolbox/schemaOnlyToolPresetValidation.js` builds `/src/shared/schemas/tools/<tool>.schema.json`, so tool schema files must be treated as browser/runtime dependencies unless a follow-up PR replaces that runtime contract.
+
+## Classification Totals
+
+| Classification | Count |
+| --- | ---: |
+| Active browser/runtime dependency | 23 |
+| Active test/validation dependency | 64 |
+| Unknown / needs Owner decision | 2 |
+
+## Recommendation Totals
+
+| Recommendation | Count |
+| --- | ---: |
+| keep temporarily | 64 |
+| move to dev/ | 2 |
+| move to www/ | 23 |
+
+## Owner Recommendation
+
+- Do not bulk-move `src/shared/contracts/**` and `src/shared/schemas/**` to `api/`.
+- Move browser/runtime-consumed contracts and tool schemas to `www/src/shared/...` or split browser-safe public contracts before API-only migration.
+- Move API/server-only dependencies to `api/src/...` only after browser imports are separated. This audit found no direct `api/` references from the requested active surfaces.
+- Keep test/validation-only files temporarily until their validation ownership is moved to `dev/` or replaced.
+- Move README/reference docs to `dev/` or archive them after Owner review.
+- Archive reference-free manifest-era artifacts only in a dedicated follow-up PR after Owner approval.
+
+## Protected Developer Workspace Confirmation
+
+No files under `dev/workspace/generated/**`, `dev/workspace/generated/tool-images/**`, `dev/workspace/zips/**`, or `dev/workspace/tmp/**` were moved or modified by this audit.
+
+## File-by-File Audit
+
+| File | Classification | www refs | api refs | dev/tests refs | dev/scripts refs | package refs | DB/API superseded? | Recommendation |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | --- | --- |
+| `src/shared/contracts/auditEventContract.js` | Active test/validation dependency | 0 | 0 | 2 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/backupSnapshotContract.js` | Active test/validation dependency | 0 | 0 | 2 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/collaborationRoleContract.js` | Active test/validation dependency | 0 | 0 | 2 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/creatorProfileContract.js` | Active test/validation dependency | 0 | 0 | 2 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/downloadGrantContract.js` | Active test/validation dependency | 0 | 0 | 2 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/entitlementContract.js` | Active test/validation dependency | 0 | 0 | 9 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/gameManifestContract.js` | Active test/validation dependency | 0 | 0 | 6 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/identityPermissionsContract.js` | Active test/validation dependency | 0 | 0 | 25 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/installReceiptContract.js` | Active test/validation dependency | 0 | 0 | 5 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/libraryItemContract.js` | Active test/validation dependency | 0 | 0 | 6 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/marketplaceListingContract.js` | Active test/validation dependency | 0 | 0 | 10 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/marketplaceTransactionBoundaryContract.js` | Active test/validation dependency | 0 | 0 | 2 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/migrationPlanContract.js` | Active test/validation dependency | 0 | 0 | 2 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/moderationQueueContract.js` | Active test/validation dependency | 0 | 0 | 2 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/notificationContract.js` | Active test/validation dependency | 0 | 0 | 2 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/organizationContract.js` | Active test/validation dependency | 0 | 0 | 2 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/projectContract.js` | Active test/validation dependency | 0 | 0 | 16 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/projectDataStoreContract.js` | Active test/validation dependency | 0 | 0 | 2 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/projectWorkspaceRuntimeContract.js` | Active test/validation dependency | 0 | 0 | 9 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/publishContract.js` | Active test/validation dependency | 0 | 0 | 11 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/releaseContract.js` | Active test/validation dependency | 0 | 0 | 12 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/replayContracts.js` | Active browser/runtime dependency | 2 | 0 | 0 | 0 | 0 | No. Browser/runtime still references it; DB/API migration cannot silently replace it. | move to www/ |
+| `src/shared/contracts/restoreSnapshotContract.js` | Active test/validation dependency | 0 | 0 | 2 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/reviewRatingContract.js` | Active test/validation dependency | 0 | 0 | 2 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/sharedStateContracts.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/toolStateContract.js` | Active test/validation dependency | 0 | 0 | 9 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/aiAssistantContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/animationStudioContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/assetManagerContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/assetPipelineContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/assetStudioContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/audioSfxPlaygroundContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/codeStudioContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/collisionInspectorContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/gameDesignStudioContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/inputMappingContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/inputStudioContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/localizationStudioContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/midiStudioContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/objectVectorStudioContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/paletteManagerContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/parallaxEditorContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/particleStudioContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/performanceProfilerContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/physicsSandboxContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/previewGeneratorContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/publishStudioContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/replayVisualizerContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/soundStudioContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/spriteEditorContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/stateInspectorContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/storageInspectorContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/textToSpeechContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/threeDAssetViewerContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/threeDCameraPathEditorContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/threeDJsonPayloadContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/tileMapEditorContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/toolContract.js` | Active test/validation dependency | 0 | 0 | 9 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/toolContractsIndex.js` | Active test/validation dependency | 0 | 0 | 7 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/workspaceManagerContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/tools/worldVectorStudioContract.js` | Active test/validation dependency | 0 | 0 | 1 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/updateChannelContract.js` | Active test/validation dependency | 0 | 0 | 4 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/contracts/versionCompatibilityContract.js` | Active test/validation dependency | 0 | 0 | 3 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/schemas/README.md` | Unknown / needs Owner decision | 0 | 0 | 0 | 0 | 0 | Unknown; Owner decision required. | move to dev/ |
+| `src/shared/schemas/game.manifest.schema.json` | Active test/validation dependency | 0 | 0 | 1 | 2 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/schemas/samples/sample.tool-payload.schema.json` | Active test/validation dependency | 0 | 0 | 4 | 0 | 0 | Not yet. It remains a validation contract until replacement tests/docs are updated. | keep temporarily |
+| `src/shared/schemas/tools/3d-asset-viewer.schema.json` | Active browser/runtime dependency | 1 | 0 | 0 | 1 | 0 | No. Browser/runtime still references it; DB/API migration cannot silently replace it. | move to www/ |
+| `src/shared/schemas/tools/3d-camera-path-editor.schema.json` | Active browser/runtime dependency | 1 | 0 | 0 | 1 | 0 | No. Browser/runtime still references it; DB/API migration cannot silently replace it. | move to www/ |
+| `src/shared/schemas/tools/3d-json-payload.schema.json` | Active browser/runtime dependency | 1 | 0 | 0 | 1 | 0 | No. Browser/runtime still references it; DB/API migration cannot silently replace it. | move to www/ |
+| `src/shared/schemas/tools/README.md` | Unknown / needs Owner decision | 0 | 0 | 0 | 0 | 0 | Unknown; Owner decision required. | move to dev/ |
+| `src/shared/schemas/tools/asset-manager-v2.schema.json` | Active browser/runtime dependency | 1 | 0 | 1 | 1 | 0 | No. Browser/runtime still references it; DB/API migration cannot silently replace it. | move to www/ |
+| `src/shared/schemas/tools/asset-pipeline.schema.json` | Active browser/runtime dependency | 1 | 0 | 0 | 1 | 0 | No. Browser/runtime still references it; DB/API migration cannot silently replace it. | move to www/ |
+| `src/shared/schemas/tools/audio-sfx-playground-v2.schema.json` | Active browser/runtime dependency | 1 | 0 | 0 | 1 | 0 | No. Browser/runtime still references it; DB/API migration cannot silently replace it. | move to www/ |
+| `src/shared/schemas/tools/collision-inspector-v2.schema.json` | Active browser/runtime dependency | 1 | 0 | 0 | 1 | 0 | No. Browser/runtime still references it; DB/API migration cannot silently replace it. | move to www/ |
+| `src/shared/schemas/tools/input-mapping-v2.schema.json` | Active browser/runtime dependency | 1 | 0 | 0 | 1 | 0 | No. Browser/runtime still references it; DB/API migration cannot silently replace it. | move to www/ |
+| `src/shared/schemas/tools/midi-studio-v2.schema.json` | Active browser/runtime dependency | 1 | 0 | 0 | 1 | 0 | No. Browser/runtime still references it; DB/API migration cannot silently replace it. | move to www/ |
+| `src/shared/schemas/tools/object-vector-studio-v2.schema.json` | Active browser/runtime dependency | 2 | 0 | 1 | 1 | 0 | No. Browser/runtime still references it; DB/API migration cannot silently replace it. | move to www/ |
+| `src/shared/schemas/tools/palette-browser.schema.json` | Active browser/runtime dependency | 1 | 0 | 1 | 1 | 0 | No. Browser/runtime still references it; DB/API migration cannot silently replace it. | move to www/ |
+| `src/shared/schemas/tools/palette-manager-v2.schema.json` | Active browser/runtime dependency | 1 | 0 | 1 | 1 | 0 | No. Browser/runtime still references it; DB/API migration cannot silently replace it. | move to www/ |
+| `src/shared/schemas/tools/parallax-editor.schema.json` | Active browser/runtime dependency | 1 | 0 | 0 | 1 | 0 | No. Browser/runtime still references it; DB/API migration cannot silently replace it. | move to www/ |
+| `src/shared/schemas/tools/performance-profiler.schema.json` | Active browser/runtime dependency | 1 | 0 | 0 | 1 | 0 | No. Browser/runtime still references it; DB/API migration cannot silently replace it. | move to www/ |
+| `src/shared/schemas/tools/physics-sandbox.schema.json` | Active browser/runtime dependency | 1 | 0 | 0 | 1 | 0 | No. Browser/runtime still references it; DB/API migration cannot silently replace it. | move to www/ |
+| `src/shared/schemas/tools/replay-visualizer.schema.json` | Active browser/runtime dependency | 1 | 0 | 0 | 1 | 0 | No. Browser/runtime still references it; DB/API migration cannot silently replace it. | move to www/ |
+| `src/shared/schemas/tools/sprite-editor.schema.json` | Active browser/runtime dependency | 1 | 0 | 1 | 1 | 0 | No. Browser/runtime still references it; DB/API migration cannot silently replace it. | move to www/ |
+| `src/shared/schemas/tools/state-inspector.schema.json` | Active browser/runtime dependency | 1 | 0 | 0 | 1 | 0 | No. Browser/runtime still references it; DB/API migration cannot silently replace it. | move to www/ |
+| `src/shared/schemas/tools/svg-asset-studio.schema.json` | Active browser/runtime dependency | 1 | 0 | 1 | 1 | 0 | No. Browser/runtime still references it; DB/API migration cannot silently replace it. | move to www/ |
+| `src/shared/schemas/tools/text2speech-V2.schema.json` | Active browser/runtime dependency | 2 | 0 | 0 | 1 | 0 | No. Browser/runtime still references it; DB/API migration cannot silently replace it. | move to www/ |
+| `src/shared/schemas/tools/tile-map-editor.schema.json` | Active browser/runtime dependency | 1 | 0 | 0 | 1 | 0 | No. Browser/runtime still references it; DB/API migration cannot silently replace it. | move to www/ |
+| `src/shared/schemas/tools/vector-map-editor.schema.json` | Active browser/runtime dependency | 1 | 0 | 0 | 1 | 0 | No. Browser/runtime still references it; DB/API migration cannot silently replace it. | move to www/ |
+
+## Reference Detail
+
+### src/shared/contracts/auditEventContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/AuditEventContract.test.mjs:28<br>dev/tests/shared/ContractChainValidation.test.mjs:11
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/backupSnapshotContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/BackupSnapshotContract.test.mjs:32<br>dev/tests/shared/ContractChainValidation.test.mjs:14
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/collaborationRoleContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/CollaborationRoleContract.test.mjs:29<br>dev/tests/shared/ContractChainValidation.test.mjs:17
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/creatorProfileContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/ContractChainValidation.test.mjs:20<br>dev/tests/shared/CreatorProfileContract.test.mjs:27
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/downloadGrantContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/ContractChainValidation.test.mjs:23<br>dev/tests/shared/DownloadGrantContract.test.mjs:42
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/entitlementContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/ContractChainValidation.test.mjs:26<br>dev/tests/shared/DownloadGrantContract.test.mjs:18<br>dev/tests/shared/EntitlementContract.test.mjs:39<br>dev/tests/shared/InstallReceiptContract.test.mjs:18<br>dev/tests/shared/LibraryItemContract.test.mjs:18<br>dev/tests/shared/MarketplaceTransactionBoundaryContract.test.mjs:12<br>dev/tests/shared/MigrationPlanContract.test.mjs:18<br>dev/tests/shared/UpdateChannelContract.test.mjs:18<br>dev/tests/shared/VersionCompatibilityContract.test.mjs:18
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/gameManifestContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/GameManifestContract.test.mjs:41<br>dev/tests/shared/ProjectWorkspaceManifestHandoffBoundaryValidation.test.mjs:12<br>dev/tests/shared/ReleaseContract.test.mjs:18<br>dev/tests/shared/Wave1ToolContractBaselineValidation.test.mjs:12<br>dev/tests/shared/Wave2ToolContractBaselineValidation.test.mjs:12<br>dev/tests/shared/Wave3ToolContractBaselineValidation.test.mjs:12
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/identityPermissionsContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/AuditEventContract.test.mjs:13<br>dev/tests/shared/BackupSnapshotContract.test.mjs:14<br>dev/tests/shared/CollaborationRoleContract.test.mjs:13<br>dev/tests/shared/CreatorProfileContract.test.mjs:13<br>dev/tests/shared/DownloadGrantContract.test.mjs:14<br>dev/tests/shared/EntitlementContract.test.mjs:14<br>dev/tests/shared/GameManifestContract.test.mjs:13<br>dev/tests/shared/IdentityPermissionsContract.test.mjs:30<br>dev/tests/shared/InstallReceiptContract.test.mjs:14<br>dev/tests/shared/LibraryItemContract.test.mjs:14<br>dev/tests/shared/MarketplaceListingContract.test.mjs:14<br>dev/tests/shared/MarketplaceTransactionBoundaryContract.test.mjs:16<br>dev/tests/shared/MigrationPlanContract.test.mjs:14<br>dev/tests/shared/ModerationQueueContract.test.mjs:13<br>dev/tests/shared/NotificationContract.test.mjs:13<br>dev/tests/shared/OrganizationContract.test.mjs:13<br>dev/tests/shared/ProjectContract.test.mjs:14<br>dev/tests/shared/PublishContract.test.mjs:13<br>dev/tests/shared/ReleaseContract.test.mjs:13<br>dev/tests/shared/RestoreSnapshotContract.test.mjs:14<br>dev/tests/shared/ReviewRatingContract.test.mjs:13<br>dev/tests/shared/ToolStateContract.test.mjs:13<br>dev/tests/shared/UpdateChannelContract.test.mjs:14<br>dev/tests/shared/VersionCompatibilityContract.test.mjs:14<br>dev/tests/shared/tools/ToolContractCoverage.test.mjs:13
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/installReceiptContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/ContractChainValidation.test.mjs:29<br>dev/tests/shared/InstallReceiptContract.test.mjs:42<br>dev/tests/shared/MigrationPlanContract.test.mjs:22<br>dev/tests/shared/UpdateChannelContract.test.mjs:22<br>dev/tests/shared/VersionCompatibilityContract.test.mjs:22
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/libraryItemContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/ContractChainValidation.test.mjs:32<br>dev/tests/shared/InstallReceiptContract.test.mjs:46<br>dev/tests/shared/LibraryItemContract.test.mjs:41<br>dev/tests/shared/MigrationPlanContract.test.mjs:26<br>dev/tests/shared/UpdateChannelContract.test.mjs:26<br>dev/tests/shared/VersionCompatibilityContract.test.mjs:26
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/marketplaceListingContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/ContractChainValidation.test.mjs:35<br>dev/tests/shared/DownloadGrantContract.test.mjs:46<br>dev/tests/shared/EntitlementContract.test.mjs:43<br>dev/tests/shared/InstallReceiptContract.test.mjs:50<br>dev/tests/shared/LibraryItemContract.test.mjs:45<br>dev/tests/shared/MarketplaceListingContract.test.mjs:42<br>dev/tests/shared/MarketplaceTransactionBoundaryContract.test.mjs:19<br>dev/tests/shared/MigrationPlanContract.test.mjs:30<br>dev/tests/shared/UpdateChannelContract.test.mjs:30<br>dev/tests/shared/VersionCompatibilityContract.test.mjs:30
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/marketplaceTransactionBoundaryContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/ContractChainValidation.test.mjs:38<br>dev/tests/shared/MarketplaceTransactionBoundaryContract.test.mjs:37
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/migrationPlanContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/ContractChainValidation.test.mjs:41<br>dev/tests/shared/MigrationPlanContract.test.mjs:76
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/moderationQueueContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/ContractChainValidation.test.mjs:44<br>dev/tests/shared/ModerationQueueContract.test.mjs:27
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/notificationContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/ContractChainValidation.test.mjs:47<br>dev/tests/shared/NotificationContract.test.mjs:29
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/organizationContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/ContractChainValidation.test.mjs:50<br>dev/tests/shared/OrganizationContract.test.mjs:27
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/projectContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/ContractChainValidation.test.mjs:53<br>dev/tests/shared/DownloadGrantContract.test.mjs:55<br>dev/tests/shared/EntitlementContract.test.mjs:19<br>dev/tests/shared/GameManifestContract.test.mjs:47<br>dev/tests/shared/InstallReceiptContract.test.mjs:59<br>dev/tests/shared/LibraryItemContract.test.mjs:54<br>dev/tests/shared/MarketplaceListingContract.test.mjs:20<br>dev/tests/shared/MigrationPlanContract.test.mjs:39<br>dev/tests/shared/ProjectContract.test.mjs:44<br>dev/tests/shared/ProjectWorkspaceRuntimeContract.test.mjs:12<br>dev/tests/shared/PublishContract.test.mjs:19<br>dev/tests/shared/ReleaseContract.test.mjs:24<br>dev/tests/shared/ToolStateContract.test.mjs:19<br>dev/tests/shared/UpdateChannelContract.test.mjs:39<br>dev/tests/shared/VersionCompatibilityContract.test.mjs:39<br>dev/tests/shared/tools/ToolContractCoverage.test.mjs:18
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/projectDataStoreContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/InMemoryProjectDataStore.test.mjs:14<br>dev/tests/shared/ProjectDataStoreContract.test.mjs:34
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/projectWorkspaceRuntimeContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/ProjectWorkspaceLaunchBoundaryValidation.test.mjs:12<br>dev/tests/shared/ProjectWorkspaceLifecycleValidation.test.mjs:13<br>dev/tests/shared/ProjectWorkspaceManifestHandoffBoundaryValidation.test.mjs:15<br>dev/tests/shared/ProjectWorkspaceRuntimeContract.test.mjs:40<br>dev/tests/shared/ProjectWorkspaceStateBoundaryValidation.test.mjs:17<br>dev/tests/shared/ProjectWorkspaceToolComplianceValidation.test.mjs:12<br>dev/tests/shared/Wave1ToolContractBaselineValidation.test.mjs:15<br>dev/tests/shared/Wave2ToolContractBaselineValidation.test.mjs:15<br>dev/tests/shared/Wave3ToolContractBaselineValidation.test.mjs:15
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/publishContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/ContractChainValidation.test.mjs:56<br>dev/tests/shared/DownloadGrantContract.test.mjs:50<br>dev/tests/shared/EntitlementContract.test.mjs:47<br>dev/tests/shared/InstallReceiptContract.test.mjs:54<br>dev/tests/shared/LibraryItemContract.test.mjs:49<br>dev/tests/shared/MarketplaceListingContract.test.mjs:46<br>dev/tests/shared/MarketplaceTransactionBoundaryContract.test.mjs:40<br>dev/tests/shared/MigrationPlanContract.test.mjs:34<br>dev/tests/shared/PublishContract.test.mjs:38<br>dev/tests/shared/UpdateChannelContract.test.mjs:34<br>dev/tests/shared/VersionCompatibilityContract.test.mjs:34
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/releaseContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/ContractChainValidation.test.mjs:59<br>dev/tests/shared/DownloadGrantContract.test.mjs:59<br>dev/tests/shared/EntitlementContract.test.mjs:51<br>dev/tests/shared/InstallReceiptContract.test.mjs:63<br>dev/tests/shared/LibraryItemContract.test.mjs:58<br>dev/tests/shared/MarketplaceListingContract.test.mjs:50<br>dev/tests/shared/MarketplaceTransactionBoundaryContract.test.mjs:43<br>dev/tests/shared/MigrationPlanContract.test.mjs:43<br>dev/tests/shared/PublishContract.test.mjs:42<br>dev/tests/shared/ReleaseContract.test.mjs:46<br>dev/tests/shared/UpdateChannelContract.test.mjs:43<br>dev/tests/shared/VersionCompatibilityContract.test.mjs:43
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/replayContracts.js
+
+- Classification: Active browser/runtime dependency
+- Recommendation: move to www/
+- DB/API migration supersedes: No. Browser/runtime still references it; DB/API migration cannot silently replace it.
+- www refs: www/src/engine/replay/ReplayModel.js:9<br>www/src/engine/replay/ReplayTimeline.js:10
+- api refs: None
+- dev/tests refs: None
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/restoreSnapshotContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/ContractChainValidation.test.mjs:62<br>dev/tests/shared/RestoreSnapshotContract.test.mjs:31
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/reviewRatingContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/ContractChainValidation.test.mjs:65<br>dev/tests/shared/ReviewRatingContract.test.mjs:28
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/sharedStateContracts.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/SharedFoundationCombinedPass.test.mjs:45
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/toolStateContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/GameManifestContract.test.mjs:51<br>dev/tests/shared/ProjectWorkspaceRuntimeContract.test.mjs:18<br>dev/tests/shared/ProjectWorkspaceStateBoundaryValidation.test.mjs:20<br>dev/tests/shared/ProjectWorkspaceToolComplianceValidation.test.mjs:15<br>dev/tests/shared/ToolStateContract.test.mjs:54<br>dev/tests/shared/Wave1ToolStateBoundaryValidation.test.mjs:12<br>dev/tests/shared/Wave2ToolStateBoundaryValidation.test.mjs:12<br>dev/tests/shared/Wave3ToolStateBoundaryValidation.test.mjs:12<br>dev/tests/shared/tools/ToolContractCoverage.test.mjs:23
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/aiAssistantContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/AiAssistantToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/animationStudioContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/AnimationStudioToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/assetManagerContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/AssetManagerV2ToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/assetPipelineContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/AssetPipelineToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/assetStudioContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/AssetStudioToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/audioSfxPlaygroundContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/AudioSfxPlaygroundV2ToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/codeStudioContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/CodeStudioToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/collisionInspectorContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/CollisionInspectorV2ToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/gameDesignStudioContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/GameDesignStudioToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/inputMappingContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/InputMappingV2ToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/inputStudioContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/InputStudioToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/localizationStudioContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/LocalizationStudioToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/midiStudioContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/MidiStudioV2ToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/objectVectorStudioContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/ObjectVectorStudioV2ToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/paletteManagerContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/PaletteManagerV2ToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/parallaxEditorContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/ParallaxEditorToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/particleStudioContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/ParticleStudioToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/performanceProfilerContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/PerformanceProfilerToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/physicsSandboxContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/PhysicsSandboxToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/previewGeneratorContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/PreviewGeneratorV2ToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/publishStudioContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/PublishStudioToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/replayVisualizerContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/ReplayVisualizerToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/soundStudioContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/SoundStudioToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/spriteEditorContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/SpriteEditorToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/stateInspectorContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/StateInspectorToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/storageInspectorContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/StorageInspectorV2ToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/textToSpeechContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/Text2SpeechV2ToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/threeDAssetViewerContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/ThreeDAssetViewerToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/threeDCameraPathEditorContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/ThreeDCameraPathEditorToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/threeDJsonPayloadContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/ThreeDJsonPayloadToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/tileMapEditorContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/TileMapEditorToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/toolContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/ProjectWorkspaceToolComplianceValidation.test.mjs:22<br>dev/tests/shared/Wave1ToolContractBaselineValidation.test.mjs:25<br>dev/tests/shared/Wave1ToolStateBoundaryValidation.test.mjs:15<br>dev/tests/shared/Wave2ToolContractBaselineValidation.test.mjs:25<br>dev/tests/shared/Wave2ToolStateBoundaryValidation.test.mjs:15<br>dev/tests/shared/Wave3ToolContractBaselineValidation.test.mjs:25<br>dev/tests/shared/Wave3ToolStateBoundaryValidation.test.mjs:15<br>dev/tests/shared/tools/ToolContractCoverage.test.mjs:55<br>dev/tests/shared/tools/ToolOutputDeclarationContract.test.mjs:17
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/toolContractsIndex.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/ProjectWorkspaceToolComplianceValidation.test.mjs:18<br>dev/tests/shared/ProjectWorkspaceToolRegistrationValidation.test.mjs:10<br>dev/tests/shared/Wave1ToolContractBaselineValidation.test.mjs:18<br>dev/tests/shared/Wave2ToolContractBaselineValidation.test.mjs:18<br>dev/tests/shared/Wave3ToolContractBaselineValidation.test.mjs:18<br>dev/tests/shared/tools/ToolContractCoverage.test.mjs:60<br>dev/tests/shared/tools/ToolOutputDeclarationContract.test.mjs:21
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/workspaceManagerContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/WorkspaceManagerV2ToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/tools/worldVectorStudioContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/tools/WorldVectorStudioV2ToolContract.test.mjs:9
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/updateChannelContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/ContractChainValidation.test.mjs:68<br>dev/tests/shared/MigrationPlanContract.test.mjs:47<br>dev/tests/shared/UpdateChannelContract.test.mjs:64<br>dev/tests/shared/VersionCompatibilityContract.test.mjs:47
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/contracts/versionCompatibilityContract.js
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/shared/ContractChainValidation.test.mjs:71<br>dev/tests/shared/MigrationPlanContract.test.mjs:51<br>dev/tests/shared/VersionCompatibilityContract.test.mjs:73
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/schemas/README.md
+
+- Classification: Unknown / needs Owner decision
+- Recommendation: move to dev/
+- DB/API migration supersedes: Unknown; Owner decision required.
+- www refs: None
+- api refs: None
+- dev/tests refs: None
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/schemas/game.manifest.schema.json
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/fixtures/workspace-v2/uat.manifest.json:2
+- dev/scripts refs: dev/scripts/validate-json-contracts.mjs:650<br>dev/scripts/validate-json-contracts.mjs:662
+- package refs: None
+
+### src/shared/schemas/samples/sample.tool-payload.schema.json
+
+- Classification: Active test/validation dependency
+- Recommendation: keep temporarily
+- DB/API migration supersedes: Not yet. It remains a validation contract until replacement tests/docs are updated.
+- www refs: None
+- api refs: None
+- dev/tests refs: dev/tests/tools/ToolManifestBoundary.test.mjs:12<br>dev/tests/validation/samples.curriculum.validation.json:2<br>dev/tests/validation/samples.runtime.validation.report.json:2<br>dev/tests/validation/samples.shared.boundaries.report.json:2
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/schemas/tools/3d-asset-viewer.schema.json
+
+- Classification: Active browser/runtime dependency
+- Recommendation: move to www/
+- DB/API migration supersedes: No. Browser/runtime still references it; DB/API migration cannot silently replace it.
+- www refs: www/src/shared/toolbox/schemaOnlyToolPresetValidation.js:264 (dynamic)
+- api refs: None
+- dev/tests refs: None
+- dev/scripts refs: dev/scripts/validate-json-contracts.mjs:496 (dynamic)
+- package refs: None
+
+### src/shared/schemas/tools/3d-camera-path-editor.schema.json
+
+- Classification: Active browser/runtime dependency
+- Recommendation: move to www/
+- DB/API migration supersedes: No. Browser/runtime still references it; DB/API migration cannot silently replace it.
+- www refs: www/src/shared/toolbox/schemaOnlyToolPresetValidation.js:264 (dynamic)
+- api refs: None
+- dev/tests refs: None
+- dev/scripts refs: dev/scripts/validate-json-contracts.mjs:496 (dynamic)
+- package refs: None
+
+### src/shared/schemas/tools/3d-json-payload.schema.json
+
+- Classification: Active browser/runtime dependency
+- Recommendation: move to www/
+- DB/API migration supersedes: No. Browser/runtime still references it; DB/API migration cannot silently replace it.
+- www refs: www/src/shared/toolbox/schemaOnlyToolPresetValidation.js:264 (dynamic)
+- api refs: None
+- dev/tests refs: None
+- dev/scripts refs: dev/scripts/validate-json-contracts.mjs:496 (dynamic)
+- package refs: None
+
+### src/shared/schemas/tools/README.md
+
+- Classification: Unknown / needs Owner decision
+- Recommendation: move to dev/
+- DB/API migration supersedes: Unknown; Owner decision required.
+- www refs: None
+- api refs: None
+- dev/tests refs: None
+- dev/scripts refs: None
+- package refs: None
+
+### src/shared/schemas/tools/asset-manager-v2.schema.json
+
+- Classification: Active browser/runtime dependency
+- Recommendation: move to www/
+- DB/API migration supersedes: No. Browser/runtime still references it; DB/API migration cannot silently replace it.
+- www refs: www/src/shared/toolbox/schemaOnlyToolPresetValidation.js:264 (dynamic)
+- api refs: None
+- dev/tests refs: dev/tests/fixtures/workspace-v2/uat.manifest.json:59
+- dev/scripts refs: dev/scripts/validate-json-contracts.mjs:496 (dynamic)
+- package refs: None
+
+### src/shared/schemas/tools/asset-pipeline.schema.json
+
+- Classification: Active browser/runtime dependency
+- Recommendation: move to www/
+- DB/API migration supersedes: No. Browser/runtime still references it; DB/API migration cannot silently replace it.
+- www refs: www/src/shared/toolbox/schemaOnlyToolPresetValidation.js:264 (dynamic)
+- api refs: None
+- dev/tests refs: None
+- dev/scripts refs: dev/scripts/validate-json-contracts.mjs:496 (dynamic)
+- package refs: None
+
+### src/shared/schemas/tools/audio-sfx-playground-v2.schema.json
+
+- Classification: Active browser/runtime dependency
+- Recommendation: move to www/
+- DB/API migration supersedes: No. Browser/runtime still references it; DB/API migration cannot silently replace it.
+- www refs: www/src/shared/toolbox/schemaOnlyToolPresetValidation.js:264 (dynamic)
+- api refs: None
+- dev/tests refs: None
+- dev/scripts refs: dev/scripts/validate-json-contracts.mjs:496 (dynamic)
+- package refs: None
+
+### src/shared/schemas/tools/collision-inspector-v2.schema.json
+
+- Classification: Active browser/runtime dependency
+- Recommendation: move to www/
+- DB/API migration supersedes: No. Browser/runtime still references it; DB/API migration cannot silently replace it.
+- www refs: www/src/shared/toolbox/schemaOnlyToolPresetValidation.js:264 (dynamic)
+- api refs: None
+- dev/tests refs: None
+- dev/scripts refs: dev/scripts/validate-json-contracts.mjs:496 (dynamic)
+- package refs: None
+
+### src/shared/schemas/tools/input-mapping-v2.schema.json
+
+- Classification: Active browser/runtime dependency
+- Recommendation: move to www/
+- DB/API migration supersedes: No. Browser/runtime still references it; DB/API migration cannot silently replace it.
+- www refs: www/src/shared/toolbox/schemaOnlyToolPresetValidation.js:264 (dynamic)
+- api refs: None
+- dev/tests refs: None
+- dev/scripts refs: dev/scripts/validate-json-contracts.mjs:496 (dynamic)
+- package refs: None
+
+### src/shared/schemas/tools/midi-studio-v2.schema.json
+
+- Classification: Active browser/runtime dependency
+- Recommendation: move to www/
+- DB/API migration supersedes: No. Browser/runtime still references it; DB/API migration cannot silently replace it.
+- www refs: www/src/shared/toolbox/schemaOnlyToolPresetValidation.js:264 (dynamic)
+- api refs: None
+- dev/tests refs: None
+- dev/scripts refs: dev/scripts/validate-json-contracts.mjs:496 (dynamic)
+- package refs: None
+
+### src/shared/schemas/tools/object-vector-studio-v2.schema.json
+
+- Classification: Active browser/runtime dependency
+- Recommendation: move to www/
+- DB/API migration supersedes: No. Browser/runtime still references it; DB/API migration cannot silently replace it.
+- www refs: www/src/engine/rendering/ObjectVectorRuntimeAssetService.js:14<br>www/src/shared/toolbox/schemaOnlyToolPresetValidation.js:264 (dynamic)
+- api refs: None
+- dev/tests refs: dev/tests/tools/ObjectVectorStudioV2DeleteCleanup.test.mjs:60
+- dev/scripts refs: dev/scripts/validate-json-contracts.mjs:496 (dynamic)
+- package refs: None
+
+### src/shared/schemas/tools/palette-browser.schema.json
+
+- Classification: Active browser/runtime dependency
+- Recommendation: move to www/
+- DB/API migration supersedes: No. Browser/runtime still references it; DB/API migration cannot silently replace it.
+- www refs: www/src/shared/toolbox/schemaOnlyToolPresetValidation.js:264 (dynamic)
+- api refs: None
+- dev/tests refs: dev/tests/tools/ToolManifestBoundary.test.mjs:11
+- dev/scripts refs: dev/scripts/validate-json-contracts.mjs:496 (dynamic)
+- package refs: None
+
+### src/shared/schemas/tools/palette-manager-v2.schema.json
+
+- Classification: Active browser/runtime dependency
+- Recommendation: move to www/
+- DB/API migration supersedes: No. Browser/runtime still references it; DB/API migration cannot silently replace it.
+- www refs: www/src/shared/toolbox/schemaOnlyToolPresetValidation.js:264 (dynamic)
+- api refs: None
+- dev/tests refs: dev/tests/fixtures/workspace-v2/uat.manifest.json:17
+- dev/scripts refs: dev/scripts/validate-json-contracts.mjs:496 (dynamic)
+- package refs: None
+
+### src/shared/schemas/tools/parallax-editor.schema.json
+
+- Classification: Active browser/runtime dependency
+- Recommendation: move to www/
+- DB/API migration supersedes: No. Browser/runtime still references it; DB/API migration cannot silently replace it.
+- www refs: www/src/shared/toolbox/schemaOnlyToolPresetValidation.js:264 (dynamic)
+- api refs: None
+- dev/tests refs: None
+- dev/scripts refs: dev/scripts/validate-json-contracts.mjs:496 (dynamic)
+- package refs: None
+
+### src/shared/schemas/tools/performance-profiler.schema.json
+
+- Classification: Active browser/runtime dependency
+- Recommendation: move to www/
+- DB/API migration supersedes: No. Browser/runtime still references it; DB/API migration cannot silently replace it.
+- www refs: www/src/shared/toolbox/schemaOnlyToolPresetValidation.js:264 (dynamic)
+- api refs: None
+- dev/tests refs: None
+- dev/scripts refs: dev/scripts/validate-json-contracts.mjs:496 (dynamic)
+- package refs: None
+
+### src/shared/schemas/tools/physics-sandbox.schema.json
+
+- Classification: Active browser/runtime dependency
+- Recommendation: move to www/
+- DB/API migration supersedes: No. Browser/runtime still references it; DB/API migration cannot silently replace it.
+- www refs: www/src/shared/toolbox/schemaOnlyToolPresetValidation.js:264 (dynamic)
+- api refs: None
+- dev/tests refs: None
+- dev/scripts refs: dev/scripts/validate-json-contracts.mjs:496 (dynamic)
+- package refs: None
+
+### src/shared/schemas/tools/replay-visualizer.schema.json
+
+- Classification: Active browser/runtime dependency
+- Recommendation: move to www/
+- DB/API migration supersedes: No. Browser/runtime still references it; DB/API migration cannot silently replace it.
+- www refs: www/src/shared/toolbox/schemaOnlyToolPresetValidation.js:264 (dynamic)
+- api refs: None
+- dev/tests refs: None
+- dev/scripts refs: dev/scripts/validate-json-contracts.mjs:496 (dynamic)
+- package refs: None
+
+### src/shared/schemas/tools/sprite-editor.schema.json
+
+- Classification: Active browser/runtime dependency
+- Recommendation: move to www/
+- DB/API migration supersedes: No. Browser/runtime still references it; DB/API migration cannot silently replace it.
+- www refs: www/src/shared/toolbox/schemaOnlyToolPresetValidation.js:264 (dynamic)
+- api refs: None
+- dev/tests refs: dev/tests/tools/ToolManifestBoundary.test.mjs:14
+- dev/scripts refs: dev/scripts/validate-json-contracts.mjs:496 (dynamic)
+- package refs: None
+
+### src/shared/schemas/tools/state-inspector.schema.json
+
+- Classification: Active browser/runtime dependency
+- Recommendation: move to www/
+- DB/API migration supersedes: No. Browser/runtime still references it; DB/API migration cannot silently replace it.
+- www refs: www/src/shared/toolbox/schemaOnlyToolPresetValidation.js:264 (dynamic)
+- api refs: None
+- dev/tests refs: None
+- dev/scripts refs: dev/scripts/validate-json-contracts.mjs:496 (dynamic)
+- package refs: None
+
+### src/shared/schemas/tools/svg-asset-studio.schema.json
+
+- Classification: Active browser/runtime dependency
+- Recommendation: move to www/
+- DB/API migration supersedes: No. Browser/runtime still references it; DB/API migration cannot silently replace it.
+- www refs: www/src/shared/toolbox/schemaOnlyToolPresetValidation.js:264 (dynamic)
+- api refs: None
+- dev/tests refs: dev/tests/tools/ToolManifestBoundary.test.mjs:13
+- dev/scripts refs: dev/scripts/validate-json-contracts.mjs:496 (dynamic)
+- package refs: None
+
+### src/shared/schemas/tools/text2speech-V2.schema.json
+
+- Classification: Active browser/runtime dependency
+- Recommendation: move to www/
+- DB/API migration supersedes: No. Browser/runtime still references it; DB/API migration cannot silently replace it.
+- www refs: www/src/engine/audio/TextToSpeechDefaults.js:2<br>www/src/shared/toolbox/schemaOnlyToolPresetValidation.js:264 (dynamic)
+- api refs: None
+- dev/tests refs: None
+- dev/scripts refs: dev/scripts/validate-json-contracts.mjs:496 (dynamic)
+- package refs: None
+
+### src/shared/schemas/tools/tile-map-editor.schema.json
+
+- Classification: Active browser/runtime dependency
+- Recommendation: move to www/
+- DB/API migration supersedes: No. Browser/runtime still references it; DB/API migration cannot silently replace it.
+- www refs: www/src/shared/toolbox/schemaOnlyToolPresetValidation.js:264 (dynamic)
+- api refs: None
+- dev/tests refs: None
+- dev/scripts refs: dev/scripts/validate-json-contracts.mjs:496 (dynamic)
+- package refs: None
+
+### src/shared/schemas/tools/vector-map-editor.schema.json
+
+- Classification: Active browser/runtime dependency
+- Recommendation: move to www/
+- DB/API migration supersedes: No. Browser/runtime still references it; DB/API migration cannot silently replace it.
+- www refs: www/src/shared/toolbox/schemaOnlyToolPresetValidation.js:264 (dynamic)
+- api refs: None
+- dev/tests refs: None
+- dev/scripts refs: dev/scripts/validate-json-contracts.mjs:496 (dynamic)
+- package refs: None
