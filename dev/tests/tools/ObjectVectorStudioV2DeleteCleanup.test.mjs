@@ -57,7 +57,7 @@ function createPayload() {
 async function createSchemaService() {
   const service = new ObjectVectorStudioV2SchemaService({
     fetchRef: createLocalFetch(),
-    schemaUrl: new URL("../../../src/shared/schemas/tools/object-vector-studio-v2.schema.json", import.meta.url)
+    schemaUrl: new URL("../../../www/src/shared/schemas/tools/object-vector-studio-v2.schema.json", import.meta.url)
   });
   await service.loadSchema();
   return service;

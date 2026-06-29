@@ -28,9 +28,10 @@ Deployable application source:
 
 Final source ownership after the repository layout simplification:
 - `www/src/` owns browser-facing deployable application modules used by public pages, account/admin surfaces, Creator tools, game runtime, shared browser utilities, and browser API clients.
+- `www/src/shared/contracts/` and `www/src/shared/schemas/tools/` own browser/runtime-consumed contracts and tool schemas that must remain available through the public `/src/shared/...` route shape.
 - `api/` owns deployable API/runtime service modules that back the shared Browser -> API -> Postgres/R2 contract.
 - `dev/` owns developer-only source, scripts, tests, reports, local runtime orchestration, and reference material.
-- Existing root `src/shared/contracts/`, `src/shared/schemas/`, `src/shared/projectDataStore/`, and source-reference files are legacy transition buckets until explicit migration PRs move them.
+- Remaining root `src/shared/contracts/`, `src/shared/schemas/`, `src/shared/projectDataStore/`, and source-reference files are legacy transition buckets until explicit migration PRs move them.
 - Browser API clients remain outside `api/`; browser-served code must use API/service contracts instead of importing top-level `api/` files directly.
 - `www/src/dev-runtime/admin/` preserves the public `/src/dev-runtime/admin/...` Admin Notes browser-viewer compatibility route under the `www` web root.
 - Do not add new root `src/` layer names or new root `src/` work without OWNER approval.
@@ -82,6 +83,8 @@ Legacy transition buckets:
 - www/src/api/
 - www/src/engine/
 - www/src/shared/
+- www/src/shared/contracts/
+- www/src/shared/schemas/
 - www/src/tools/
 - www/src/dev-runtime/admin/
 - src/shared/contracts/
