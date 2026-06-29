@@ -1,72 +1,8 @@
-D	dev/archive/v1-v2/tools/old_Parallax Scene Studio/README.md
-D	dev/archive/v1-v2/tools/old_Parallax Scene Studio/how_to_use.html
-D	dev/archive/v1-v2/tools/old_Parallax Scene Studio/index.html
-D	dev/archive/v1-v2/tools/old_Parallax Scene Studio/main.js
-D	dev/archive/v1-v2/tools/old_Parallax Scene Studio/parallaxEditor.css
-D	dev/archive/v1-v2/tools/old_Parallax Scene Studio/samples/images/cloud-bands.svg
-D	dev/archive/v1-v2/tools/old_Parallax Scene Studio/samples/images/foreground-occluder.svg
-D	dev/archive/v1-v2/tools/old_Parallax Scene Studio/samples/images/hero-proxy.svg
-D	dev/archive/v1-v2/tools/old_Parallax Scene Studio/samples/images/mountain-ridge-short.svg
-D	dev/archive/v1-v2/tools/old_Parallax Scene Studio/samples/images/mountain-ridge-tall.svg
-D	dev/archive/v1-v2/tools/old_Parallax Scene Studio/samples/images/mountain-ridge.svg
-D	dev/archive/v1-v2/tools/old_Parallax Scene Studio/samples/images/sky-gradient.svg
-D	dev/archive/v1-v2/tools/old_Parallax Scene Studio/samples/mario_style_bushes_foreground.svg
-D	dev/archive/v1-v2/tools/old_Parallax Scene Studio/samples/mario_style_clouds.svg
-D	dev/archive/v1-v2/tools/old_Parallax Scene Studio/samples/mario_style_hills.svg
-D	dev/archive/v1-v2/tools/old_Parallax Scene Studio/samples/mario_style_leaf_overlay.svg
-D	dev/archive/v1-v2/tools/old_Parallax Scene Studio/samples/mario_style_learning_level_parallax.json
-D	dev/archive/v1-v2/tools/old_Parallax Scene Studio/samples/mario_style_mountains.svg
-D	dev/archive/v1-v2/tools/old_Parallax Scene Studio/samples/mario_style_sky.svg
-D	dev/archive/v1-v2/tools/old_Parallax Scene Studio/samples/parallax_sample.json
-D	dev/archive/v1-v2/tools/old_Parallax Scene Studio/samples/sample-manifest.json
-D	dev/archive/v1-v2/tools/old_Parallax Scene Studio/samples/tilemap_parallax_sample.json
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/README.md
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/docs/BATCH_GUARDRAIL_CONTRACT.md
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/docs/CONTROL_SERVICE_CONTRACTS.md
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/docs/OBJECT_VECTOR_STUDIO_V2_REQUIREMENTS.md
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/how_to_use.html
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/index.html
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/js/ToolStarterApp.js
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/js/bootstrap.js
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/js/controls/AccordionSection.js
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/js/controls/ActionNavControl.js
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/js/controls/InspectorControl.js
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/js/controls/PreviewPanelControl.js
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/js/controls/SourceInputControl.js
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/js/controls/StatusLogControl.js
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/js/controls/ToolStarterShellControl.js
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/js/services/ToolStateSerializer.js
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/playwright.config.mjs
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/possible.future.adds.txt
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/styles/toolStarter.css
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/vector-native-arcade/README.md
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/vector-native-arcade/assets/data/palettes/vector-native-primary.palette.json
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/vector-native-arcade/assets/data/parallax/template-backdrop.parallax.json
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/vector-native-arcade/assets/data/parallax/template-backdrop.svg
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/vector-native-arcade/assets/data/tilemaps/template-arena.tilemap.json
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/vector-native-arcade/assets/data/tilemaps/template-ui.tileset.json
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/vector-native-arcade/assets/data/vectors/template-hud.vector.json
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/vector-native-arcade/assets/data/vectors/template-obstacle-large.vector.json
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/vector-native-arcade/assets/data/vectors/template-obstacle-small.vector.json
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/vector-native-arcade/assets/data/vectors/template-player.vector.json
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/vector-native-arcade/assets/data/vectors/template-title.vector.json
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/vector-native-arcade/config/template.project.json
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/vector-native-arcade/docs/ROLLBACK_NOTES.md
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/vector-native-arcade/docs/STARTER_GUIDE.md
-D	dev/archive/v1-v2/tools/old_object-vector-studio-v2/vector-native-arcade/runtime/bootstrap.runtime.json
-M	dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-M	dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
-M	dev/build/ProjectInstructions/PROJECT_STATE.md
-M	dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
-M	dev/build/ProjectInstructions/repository/canonical_repository_structure.md
-A	dev/reports/PR_26180_OWNER_021-archive-legacy-games-samples-teardown_branch-validation.md
-A	dev/reports/PR_26180_OWNER_021-archive-legacy-games-samples-teardown_manual-validation-notes.md
-A	dev/reports/PR_26180_OWNER_021-archive-legacy-games-samples-teardown_report.md
-A	dev/reports/PR_26180_OWNER_021-archive-legacy-games-samples-teardown_requirement-checklist.md
-A	dev/reports/PR_26180_OWNER_021-archive-legacy-games-samples-teardown_validation-report.md
-M	dev/tools/toolbox-dev/checkSharedExtractionGuard.baseline.json
-D	www/src/tools/common/GameManifestLoader.js
-D	www/src/tools/common/WorkspaceDirtyNotifier.js
-M	dev/reports/codex_review.diff
-M	dev/reports/codex_changed_files.txt
+dev/reports/PR_26180_OWNER_022-delete-remaining-root-src-files_branch-validation.md
+dev/reports/PR_26180_OWNER_022-delete-remaining-root-src-files_manual-validation-notes.md
+dev/reports/PR_26180_OWNER_022-delete-remaining-root-src-files_report.md
+dev/reports/PR_26180_OWNER_022-delete-remaining-root-src-files_requirement-checklist.md
+dev/reports/PR_26180_OWNER_022-delete-remaining-root-src-files_validation-report.md
+dev/reports/codex_changed_files.txt
+dev/reports/codex_review.diff
+dev/workspace/zips/PR_26180_OWNER_022-delete-remaining-root-src-files_HARD_STOP.zip
