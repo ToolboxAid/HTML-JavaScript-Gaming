@@ -1,46 +1,46 @@
 ﻿diff --git a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-index 08e569f74..b232a5124 100644
+index b232a5124..76a4ca47c 100644
 --- a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 +++ b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 @@ -117,7 +117,7 @@ Rules:
 
  ## Current Version/Date
 
--- Project Instructions Version: 2026.06.28.015
-+- Project Instructions Version: 2026.06.28.016
+-- Project Instructions Version: 2026.06.28.016
++- Project Instructions Version: 2026.06.28.017
  - Date: 2026-06-28
  - Owner: OWNER
 
 diff --git a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
-index a9f50409e..5fefe8969 100644
+index 5fefe8969..e0fb5fb57 100644
 --- a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
 +++ b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
 @@ -1,6 +1,6 @@
  # Project Instructions Version
 
--Current Project Instructions Version: 2026.06.28.015
-+Current Project Instructions Version: 2026.06.28.016
+-Current Project Instructions Version: 2026.06.28.016
++Current Project Instructions Version: 2026.06.28.017
 
  Last Updated: 2026-06-28
 
-@@ -23,6 +23,7 @@ Last Updated: 2026-06-28
- - Removed active references to obsolete legacy layout paths after the `www/`, `api/`, and `dev/` migration steps.
+@@ -24,6 +24,7 @@ Last Updated: 2026-06-28
  - Moved the tracked browser-served favicon under `www/`, added remaining root/src audit governance, and documented root `.env` placement policy.
  - Added root leftover audit and `src/` transition plan for the final repository layout cleanup stage.
-+- Removed safe empty local root directory shells and documented blocked local-only `assets/` cleanup.
+ - Removed safe empty local root directory shells and documented blocked local-only `assets/` cleanup.
++- Removed the local demo `.gfsp` artifact and recorded a file-by-file `src/` destination audit for future scoped migrations.
  - Codex must read this version file and the latest repository copy of `PROJECT_INSTRUCTIONS.md` before performing work.
  - Codex must discard previously remembered Project Instructions and treat the repository copy as authoritative.
  - Codex must validate canonical report and ZIP paths, branching model, and legacy path avoidance before work proceeds.
 diff --git a/dev/build/ProjectInstructions/PROJECT_STATE.md b/dev/build/ProjectInstructions/PROJECT_STATE.md
-index 01abe3bf4..12753b41a 100644
+index 12753b41a..d768977a8 100644
 --- a/dev/build/ProjectInstructions/PROJECT_STATE.md
 +++ b/dev/build/ProjectInstructions/PROJECT_STATE.md
 @@ -1,7 +1,7 @@
  # Project State
 
  ```yaml
--project_state_version: "2026.06.28.015"
-+project_state_version: "2026.06.28.016"
+-project_state_version: "2026.06.28.016"
++project_state_version: "2026.06.28.017"
  last_updated: "2026-06-28"
  current_main_commit: "40de767476d70cadfd1292c916844c2f31b6f185"
  repository_status:
@@ -48,12 +48,12 @@ index 01abe3bf4..12753b41a 100644
    runtime_database: "Postgres"
    creator_metadata: "API to Postgres"
    creator_assets: "API to R2"
--project_instructions_version: "2026.06.28.015"
--repository_structure_version: "2026.06.28.015"
--canonical_layout_version: "2026.06.28.015"
-+project_instructions_version: "2026.06.28.016"
-+repository_structure_version: "2026.06.28.016"
-+canonical_layout_version: "2026.06.28.016"
+-project_instructions_version: "2026.06.28.016"
+-repository_structure_version: "2026.06.28.016"
+-canonical_layout_version: "2026.06.28.016"
++project_instructions_version: "2026.06.28.017"
++repository_structure_version: "2026.06.28.017"
++canonical_layout_version: "2026.06.28.017"
  active_teams:
    - "Owner"
    - "Alfa"
@@ -61,184 +61,815 @@ index 01abe3bf4..12753b41a 100644
    - "Charlie"
    - "Delta"
    - "Golf"
--latest_owner_pr: "PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit"
--latest_structure_pr: "PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit"
-+latest_owner_pr: "PR_26180_OWNER_016-remove-empty-root-shells"
-+latest_structure_pr: "PR_26180_OWNER_016-remove-empty-root-shells"
+-latest_owner_pr: "PR_26180_OWNER_016-remove-empty-root-shells"
+-latest_structure_pr: "PR_26180_OWNER_016-remove-empty-root-shells"
++latest_owner_pr: "PR_26180_OWNER_017-src-dissection-and-demo-cleanup"
++latest_structure_pr: "PR_26180_OWNER_017-src-dissection-and-demo-cleanup"
  valid_top_level_folders:
    - "api/"
    - "deploy/"
 diff --git a/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md b/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
-index bb5b6c565..788219bd3 100644
+index 788219bd3..980ac2308 100644
 --- a/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
 +++ b/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
 @@ -39,8 +39,8 @@ The backlog is the authoritative source for determining the next logical PRs.
  - Team: Owner
  - Product Area: Repository Architecture Simplification
  - Status: Active
--- Percent Complete: 95%
--- Active PR: PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit
-+- Percent Complete: 98%
-+- Active PR: PR_26180_OWNER_016-remove-empty-root-shells
+-- Percent Complete: 98%
+-- Active PR: PR_26180_OWNER_016-remove-empty-root-shells
++- Percent Complete: 99%
++- Active PR: PR_26180_OWNER_017-src-dissection-and-demo-cleanup
  - Next Milestone: Final layout validation and completion report
  - Source / Reference: `dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md`; `dev/build/ProjectInstructions/repository/www_migration_map.md`
 
 diff --git a/dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md b/dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
-index e459e8393..b604ddb1c 100644
+index b604ddb1c..94566e33b 100644
 --- a/dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
 +++ b/dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
-@@ -40,6 +40,8 @@ No browser, API, server, test, script, or runtime files move in the scaffold or
+@@ -42,6 +42,8 @@ No browser, API, server, test, script, or runtime files move in the scaffold or
 
- `PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit` audits named root leftovers and records the `src/` transition plan without moving application source or changing product behavior.
+ `PR_26180_OWNER_016-remove-empty-root-shells` removes safe empty local root directory shells left behind after the migration and documents the blocked local-only `assets/` shell that contains ignored user data.
 
-+`PR_26180_OWNER_016-remove-empty-root-shells` removes safe empty local root directory shells left behind after the migration and documents the blocked local-only `assets/` shell that contains ignored user data.
++`PR_26180_OWNER_017-src-dissection-and-demo-cleanup` removes the local ignored demo `.gfsp` artifact, removes the now-empty `assets/` shell, and records a file-by-file `src/` destination audit without moving source files.
 +
  ## Proposed Future Layout
 
  ```text
-@@ -181,7 +183,13 @@ Rules:
-    - Produce the `src/` transition plan for the follow-up final validation stage.
-    - Preserve product behavior.
+@@ -189,7 +191,13 @@ Rules:
+    - Do not delete ignored local-only data.
+    - Document any folder that cannot be removed.
 
--12. `PR_26180_OWNER_016-final-layout-validation`
-+12. `PR_26180_OWNER_016-remove-empty-root-shells`
-+   - Remove safe empty local root directory shells after the named root leftover audit.
-+   - Do not remove `src/`.
-+   - Do not delete ignored local-only data.
-+   - Document any folder that cannot be removed.
+-13. `PR_26180_OWNER_017-final-layout-validation`
++13. `PR_26180_OWNER_017-src-dissection-and-demo-cleanup`
++   - Delete the local ignored demo `.gfsp` artifact and remove `assets/` if empty.
++   - Audit every tracked `src/` file and assign a proposed destination.
++   - Do not bulk-move `src/`.
++   - Preserve runtime behavior.
 +
-+13. `PR_26180_OWNER_017-final-layout-validation`
++14. `PR_26180_OWNER_018-final-layout-validation`
     - Validate final repository layout.
     - Confirm `www/` owns the browser-served app, `api/` owns the server app, and `dev/` owns the developer workspace.
     - Confirm runtime does not depend on `dev/`, browser code does not import `api/`, and legacy references are removed or documented.
-diff --git a/dev/reports/PR_26180_OWNER_016-remove-empty-root-shells_branch-validation.md b/dev/reports/PR_26180_OWNER_016-remove-empty-root-shells_branch-validation.md
+diff --git a/dev/reports/PR_26180_OWNER_017-src-dissection-and-demo-cleanup_branch-validation.md b/dev/reports/PR_26180_OWNER_017-src-dissection-and-demo-cleanup_branch-validation.md
 new file mode 100644
-index 000000000..51856926e
+index 000000000..c36f2f15b
 --- /dev/null
-+++ b/dev/reports/PR_26180_OWNER_016-remove-empty-root-shells_branch-validation.md
++++ b/dev/reports/PR_26180_OWNER_017-src-dissection-and-demo-cleanup_branch-validation.md
 @@ -0,0 +1,12 @@
-+# PR_26180_OWNER_016 Branch Validation
++# PR_26180_OWNER_017 Branch Validation
 +
 +| Check | Result | Evidence |
 +|---|---:|---|
-+| Current branch | PASS | `PR_26180_OWNER_016-remove-empty-root-shells` |
-+| Expected stacked base | PASS | Created from `PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit` |
-+| Base branch for PR | PASS | `PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit` |
-+| Project Instructions loaded | PASS | Repository Project Instructions version `2026.06.28.016` |
++| Current branch | PASS | `PR_26180_OWNER_017-src-dissection-and-demo-cleanup` |
++| Expected stacked base | PASS | Created from `PR_26180_OWNER_016-remove-empty-root-shells` |
++| Base branch for PR | PASS | `PR_26180_OWNER_016-remove-empty-root-shells` |
++| Project Instructions loaded | PASS | Repository Project Instructions version `2026.06.28.017` |
 +| Branching policy loaded | PASS | `PROJECT_BRANCHING_POLICY.md` version `2026.06.28.002` |
-+| Scope | PASS | Empty root-shell cleanup and governance reports only |
++| Scope | PASS | Local demo artifact cleanup, `src/` file audit, governance reports only |
 +| Runtime/API/database implementation changes | PASS | None |
 +
-diff --git a/dev/reports/PR_26180_OWNER_016-remove-empty-root-shells_manual-validation-notes.md b/dev/reports/PR_26180_OWNER_016-remove-empty-root-shells_manual-validation-notes.md
+diff --git a/dev/reports/PR_26180_OWNER_017-src-dissection-and-demo-cleanup_manual-validation-notes.md b/dev/reports/PR_26180_OWNER_017-src-dissection-and-demo-cleanup_manual-validation-notes.md
 new file mode 100644
-index 000000000..127942b3f
+index 000000000..986e3187b
 --- /dev/null
-+++ b/dev/reports/PR_26180_OWNER_016-remove-empty-root-shells_manual-validation-notes.md
-@@ -0,0 +1,10 @@
-+# PR_26180_OWNER_016 Manual Validation Notes
++++ b/dev/reports/PR_26180_OWNER_017-src-dissection-and-demo-cleanup_manual-validation-notes.md
+@@ -0,0 +1,11 @@
++# PR_26180_OWNER_017 Manual Validation Notes
 +
-+- Removed local empty shells: `games/`, `learn/`, `toolbox/`, and `tmp/`.
-+- `test-results/` was already absent.
-+- `assets/` remains because `assets/DemoGame-26168-001.gfsp` is ignored local data.
-+- No tracked files were deleted.
-+- `src/` remains untouched.
-+- `www/favicon.svg` remains tracked and browser-served.
-+- Canonical Codex ZIP output remains under `dev/workspace/zips/`.
++- Deleted the ignored local demo artifact `assets/DemoGame-26168-001.gfsp`.
++- Removed `assets/` after it became empty.
++- Confirmed `games/`, `learn/`, `toolbox/`, `tmp/`, and `test-results/` remain absent.
++- Confirmed no tracked legacy root files remain in the target set.
++- Confirmed all 596 tracked `src/` files are audited.
++- No `src/` files moved in this PR.
++- Runtime behavior is preserved.
++- ZIP output remains under `dev/workspace/zips/`.
 +
-diff --git a/dev/reports/PR_26180_OWNER_016-remove-empty-root-shells_report.md b/dev/reports/PR_26180_OWNER_016-remove-empty-root-shells_report.md
+diff --git a/dev/reports/PR_26180_OWNER_017-src-dissection-and-demo-cleanup_report.md b/dev/reports/PR_26180_OWNER_017-src-dissection-and-demo-cleanup_report.md
 new file mode 100644
-index 000000000..81f9fb9ad
+index 000000000..6733578b3
 --- /dev/null
-+++ b/dev/reports/PR_26180_OWNER_016-remove-empty-root-shells_report.md
-@@ -0,0 +1,40 @@
-+# PR_26180_OWNER_016 Remove Empty Root Shells Report
++++ b/dev/reports/PR_26180_OWNER_017-src-dissection-and-demo-cleanup_report.md
+@@ -0,0 +1,48 @@
++# PR_26180_OWNER_017 src Dissection and Demo Cleanup Report
 +
 +## Executive Summary
 +
-+PR_26180_OWNER_016 removes safe empty local root directory shells left behind after the `www/`, `api/`, and `dev/` migration. The removed shells were not tracked by Git and contained no files.
++PR_26180_OWNER_017 removes the local ignored demo artifact `assets/DemoGame-26168-001.gfsp`, removes the now-empty `assets/` shell, and audits every tracked file under `src/`.
 +
-+`assets/` was not removed because it contains ignored local data: `assets/DemoGame-26168-001.gfsp`. This is intentionally documented instead of deleted.
++No tracked `src/` files are moved in this PR. The file-by-file audit assigns proposed destinations, but most files require scoped reference migrations to preserve runtime behavior.
 +
-+## Folder Cleanup Result
++## Demo Artifact Cleanup
 +
-+| Folder | Pre-Cleanup Status | Action | Post-Cleanup Status |
-+|---|---|---|---|
-+| `assets/` | 0 tracked files; 1 ignored file; 47 local empty subdirectories | Not removed | Still exists because `assets/DemoGame-26168-001.gfsp` is local ignored data |
-+| `games/` | 0 tracked files; 0 files; local empty directory shell | Removed locally | Absent |
-+| `learn/` | 0 tracked files; 0 files; local empty directory shell | Removed locally | Absent |
-+| `toolbox/` | 0 tracked files; 0 files; local empty directory shell | Removed locally | Absent |
-+| `tmp/` | 0 tracked files; 0 files; local empty directory shell | Removed locally | Absent |
-+| `test-results/` | Absent | No action | Absent |
++- Deleted local ignored artifact: `assets/DemoGame-26168-001.gfsp`.
++- Removed `assets/` after the artifact deletion left the folder empty.
++- No tracked files were deleted.
++- No active `assets/DemoGame-26168-001.gfsp` path references remain outside reports/workspace.
 +
-+## Required Confirmations
++Filename-only `DemoGame-26168-001.gfsp` references remain in Playwright tests as generated-download assertions. Those are not references to the deleted root file path.
 +
-+- Root approved tracked application/workspace structure remains `www/`, `api/`, `dev/`, and `src/`.
-+- `www/` contains browser-served content and `www/favicon.svg`.
-+- `api/` contains server/API content.
-+- `dev/` contains the developer workspace.
-+- `.env` remains root/local-only and ignored.
-+- `.env.example` remains tracked.
-+- `src/` was not removed.
-+- No tracked `src/` files were moved.
-+- No runtime behavior changed.
-+- No product code changed.
++## src Audit Summary
 +
-+## Folders Not Removed
++Tracked `src/` files audited: 596.
 +
-+`assets/` could not be removed because it contains ignored local-only content. The file was not deleted because the request prohibited deleting non-empty content and required documenting folders that could not be removed.
++The detailed file-by-file audit lives at:
 +
-+## Notes
++`dev/reports/PR_26180_OWNER_017-src-dissection-and-demo-cleanup_src-file-destination-audit.md`
 +
-+The removed empty shells were local filesystem cleanup only because Git does not track empty directories. The committed PR evidence is the governance report, validation evidence, and updated active workstream metadata.
++## src Move Decision
 +
-diff --git a/dev/reports/PR_26180_OWNER_016-remove-empty-root-shells_requirement-checklist.md b/dev/reports/PR_26180_OWNER_016-remove-empty-root-shells_requirement-checklist.md
++No `src/` files moved.
++
++Reason:
++
++- `src/` content is actively referenced by `www/`, `api/`, `dev/tests/`, and `dev/tools/`.
++- Moving `src/` files requires scoped import/reference updates.
++- The PR request requires preserving runtime behavior.
++- Uncertain or mixed-ownership files must be documented before movement.
++
++## Proposed Follow-Up PRs
++
++1. Browser API client migration: move `src/api/` browser clients to a browser-owned location.
++2. Engine runtime migration: move `src/engine/` to the final browser/runtime source layer.
++3. Shared contract/schema migration: split `src/shared/contracts/` and `src/shared/schemas/` into the API contract surface.
++4. Shared utility migration: split `src/shared/` browser/runtime utilities by actual import ownership.
++5. Legacy Admin Notes retirement: migrate or retire `src/dev-runtime/admin/`.
++
++## Runtime/Product Impact
++
++No runtime behavior changed. No product code changed. No API/database behavior changed.
++
+diff --git a/dev/reports/PR_26180_OWNER_017-src-dissection-and-demo-cleanup_requirement-checklist.md b/dev/reports/PR_26180_OWNER_017-src-dissection-and-demo-cleanup_requirement-checklist.md
 new file mode 100644
-index 000000000..e6de4d292
+index 000000000..a8a6c9d61
 --- /dev/null
-+++ b/dev/reports/PR_26180_OWNER_016-remove-empty-root-shells_requirement-checklist.md
-@@ -0,0 +1,24 @@
-+# PR_26180_OWNER_016 Requirement Checklist
++++ b/dev/reports/PR_26180_OWNER_017-src-dissection-and-demo-cleanup_requirement-checklist.md
+@@ -0,0 +1,18 @@
++# PR_26180_OWNER_017 Requirement Checklist
 +
 +| Requirement | Result | Notes |
 +|---|---:|---|
-+| Base on `PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit` | PASS | Branch created from PR015. |
-+| Remove safe empty root shells | PASS | Removed `games/`, `learn/`, `toolbox/`, and `tmp/` locally after confirming no files/tracked content. |
-+| Inspect `assets/` | PASS | Not removed because it contains ignored local `assets/DemoGame-26168-001.gfsp`. |
-+| Inspect `games/` | PASS | Removed; no tracked files or local files. |
-+| Inspect `learn/` | PASS | Removed; no tracked files or local files. |
-+| Inspect `toolbox/` | PASS | Removed; no tracked files or local files. |
-+| Inspect `tmp/` | PASS | Removed; no tracked files or local files. |
-+| Inspect `test-results/` | PASS | Already absent. |
-+| Do not remove `src/` | PASS | `src/` remains. |
-+| Do not move tracked `src/` files | PASS | No `src/` files moved. |
-+| Do not modify runtime behavior | PASS | Governance/reporting only. |
-+| Do not modify product code | PASS | No product code changed. |
-+| Do not delete tracked files unless obsolete empty-shell related | PASS | No tracked files deleted. |
-+| Confirm root approved structure after cleanup | PASS | Tracked application/workspace roots remain `www/`, `api/`, `dev/`, and `src/`. |
-+| Confirm `www/` contains browser-served content | PASS | `www/` has tracked content including `www/favicon.svg`. |
-+| Confirm `api/` contains server/API content | PASS | `api/` has tracked server/API content. |
-+| Confirm `dev/` contains developer workspace | PASS | `dev/` has tracked developer workspace content. |
-+| Confirm `.env` remains root/local-only | PASS | `.env` is ignored; `.env.example` is tracked. |
-+| Document folders that could not be removed | PASS | `assets/` documented as blocked by ignored local data. |
++| Base on `PR_26180_OWNER_016-remove-empty-root-shells` | PASS | Branch created from PR016. |
++| Delete `assets/DemoGame-26168-001.gfsp` | PASS | Local ignored file deleted. |
++| Remove `assets/` if empty after deletion | PASS | `assets/` removed after the demo file deletion. |
++| Audit every tracked file under `src/` | PASS | 596 tracked `src/` files audited in the detailed audit report. |
++| Decide destination for each `src/` file | PASS | Each audited file has proposed destination: `www/`, `api/`, `dev/`, or `archive/delete`. |
++| Do not bulk-move `src/` blindly | PASS | No `src/` files moved. |
++| Move only files with clear ownership | PASS | No source movement attempted because scoped reference updates are required. |
++| If uncertain, document and hard stop before moving | PASS | Uncertain/mixed ownership documented; movement deferred. |
++| Preserve runtime behavior | PASS | No runtime/product code moved or changed. |
++| `git diff --check` | PASS | Whitespace validation passed. |
++| `npm run validate:canonical-structure` | PASS | Canonical guardrail passed. |
++| Targeted path/reference scan | PASS | No active `assets/DemoGame...` path references remain. |
++| Targeted bootstrap check if paths move | PASS | Bootstrap check passed; no tracked startup paths moved. |
 +
-diff --git a/dev/reports/PR_26180_OWNER_016-remove-empty-root-shells_validation-report.md b/dev/reports/PR_26180_OWNER_016-remove-empty-root-shells_validation-report.md
+diff --git a/dev/reports/PR_26180_OWNER_017-src-dissection-and-demo-cleanup_src-file-destination-audit.md b/dev/reports/PR_26180_OWNER_017-src-dissection-and-demo-cleanup_src-file-destination-audit.md
 new file mode 100644
-index 000000000..984ae0ecb
+index 000000000..317575619
 --- /dev/null
-+++ b/dev/reports/PR_26180_OWNER_016-remove-empty-root-shells_validation-report.md
++++ b/dev/reports/PR_26180_OWNER_017-src-dissection-and-demo-cleanup_src-file-destination-audit.md
+@@ -0,0 +1,622 @@
++# PR_26180_OWNER_017 src File Destination Audit
++
++This audit covers every tracked file currently under `src/`. No `src/` file is moved by PR017 because source movement requires scoped reference updates and validation lanes to preserve runtime behavior.
++
++## Summary Counts
++
++| Destination | Confidence | Files |
++|---|---:|---:|
++| api/ | low | 1 |
++| api/ | medium | 87 |
++| archive/delete | medium | 1 |
++| dev/ | high | 3 |
++| dev/ | medium | 3 |
++| www/ | low | 40 |
++| www/ | medium | 461 |
++
++Total tracked src files audited: 596
++
++## Movement Decision
++
++No `src/` files are moved in this PR. Files with medium or low confidence need focused follow-up migration PRs because active imports span `www/`, `api/`, `dev/tests/`, and `dev/tools/`.
++
++## File-by-File Destination Decisions
++
++| File | Proposed Destination | Confidence | Reason |
++|---|---|---:|---|
++| `src/advanced/promotion/createPromotionGate.js` | www/ | medium | Browser/game runtime advanced state capability; migrate with runtime reference updates. |
++| `src/advanced/state/constants.js` | www/ | medium | Browser/game runtime advanced state capability; migrate with runtime reference updates. |
++| `src/advanced/state/consumers/createObjectiveProgressMirrorConsumer.js` | www/ | medium | Browser/game runtime advanced state capability; migrate with runtime reference updates. |
++| `src/advanced/state/createWorldGameStateSystem.js` | www/ | medium | Browser/game runtime advanced state capability; migrate with runtime reference updates. |
++| `src/advanced/state/events.js` | www/ | medium | Browser/game runtime advanced state capability; migrate with runtime reference updates. |
++| `src/advanced/state/initialState.js` | www/ | medium | Browser/game runtime advanced state capability; migrate with runtime reference updates. |
++| `src/advanced/state/integration/registerWorldGameStateSystem.js` | www/ | medium | Browser/game runtime advanced state capability; migrate with runtime reference updates. |
++| `src/advanced/state/selectors.js` | www/ | medium | Browser/game runtime advanced state capability; migrate with runtime reference updates. |
++| `src/advanced/state/transitions.js` | www/ | medium | Browser/game runtime advanced state capability; migrate with runtime reference updates. |
++| `src/advanced/state/utils.js` | www/ | medium | Browser/game runtime advanced state capability; migrate with runtime reference updates. |
++| `src/api/admin-infrastructure-api-client.js` | www/ | medium | Browser-facing API client or UI helper; keep outside top-level api/server application. |
++| `src/api/admin-invitations-api-client.js` | www/ | medium | Browser-facing API client or UI helper; keep outside top-level api/server application. |
++| `src/api/admin-operations-api-client.js` | www/ | medium | Browser-facing API client or UI helper; keep outside top-level api/server application. |
++| `src/api/admin-owner-navigation.js` | www/ | medium | Browser-facing API client or UI helper; keep outside top-level api/server application. |
++| `src/api/admin-setup-api-client.js` | www/ | medium | Browser-facing API client or UI helper; keep outside top-level api/server application. |
++| `src/api/admin-system-health-api-client.js` | www/ | medium | Browser-facing API client or UI helper; keep outside top-level api/server application. |
++| `src/api/ai-credits-api-client.js` | www/ | medium | Browser-facing API client or UI helper; keep outside top-level api/server application. |
++| `src/api/db-viewer-api-client.js` | www/ | medium | Browser-facing API client or UI helper; keep outside top-level api/server application. |
++| `src/api/db-viewer-ui.js` | www/ | medium | Browser-facing API client or UI helper; keep outside top-level api/server application. |
++| `src/api/game-journey-completion-api-client.js` | www/ | medium | Browser-facing API client or UI helper; keep outside top-level api/server application. |
++| `src/api/legal-api-client.js` | www/ | medium | Browser-facing API client or UI helper; keep outside top-level api/server application. |
++| `src/api/marketplace-api-client.js` | www/ | medium | Browser-facing API client or UI helper; keep outside top-level api/server application. |
++| `src/api/memberships-api-client.js` | www/ | medium | Browser-facing API client or UI helper; keep outside top-level api/server application. |
++| `src/api/owner-ai-credits-api-client.js` | www/ | medium | Browser-facing API client or UI helper; keep outside top-level api/server application. |
++| `src/api/owner-memberships-api-client.js` | www/ | medium | Browser-facing API client or UI helper; keep outside top-level api/server application. |
++| `src/api/platform-settings-api-client.js` | www/ | medium | Browser-facing API client or UI helper; keep outside top-level api/server application. |
++| `src/api/public-config-client.js` | www/ | medium | Browser-facing API client or UI helper; keep outside top-level api/server application. |
++| `src/api/server-api-client.js` | www/ | medium | Browser-facing API client or UI helper; keep outside top-level api/server application. |
++| `src/api/session-api-client.js` | www/ | medium | Browser-facing API client or UI helper; keep outside top-level api/server application. |
++| `src/api/toolbox-votes-api-client.js` | www/ | medium | Browser-facing API client or UI helper; keep outside top-level api/server application. |
++| `src/dev-runtime/admin/.gitkeep` | archive/delete | medium | Tracked placeholder; remove only after the owning compatibility folder is retired. |
++| `src/dev-runtime/admin/admin-notes-viewer.js` | www/ | medium | Legacy Admin Notes browser-viewer compatibility surface; migrate or retire in a scoped Admin Notes PR. |
++| `src/dev-runtime/admin/header-nav.local.html` | www/ | medium | Legacy Admin Notes browser-viewer compatibility surface; migrate or retire in a scoped Admin Notes PR. |
++| `src/dev-runtime/admin/notes.html` | www/ | medium | Legacy Admin Notes browser-viewer compatibility surface; migrate or retire in a scoped Admin Notes PR. |
++| `src/engine/README.md` | dev/ | high | Developer/source documentation belongs in the dev workspace when source layers migrate. |
++| `src/engine/ai/AIStateController.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/ai/GridPathfinding.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/ai/GroupBehaviors.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/ai/PatrolSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/ai/SteeringBehaviors.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/animation/AnimationController.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/assets/AssetLoaderSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/assets/AssetOptimizer.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/assets/AssetRegistry.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/assets/ImageAssetLoader.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/assets/SpriteAtlas.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/audio/AudioService.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/audio/FrequencyPlayer.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/audio/GaplessLoopPlayer.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/audio/HtmlAudioMediaBackend.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/audio/InstrumentGridParser.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/audio/MediaTrackService.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/audio/MidiPlayer.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/audio/MidiSourceMetadataParser.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/audio/PlaylistManager.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/audio/PreviewInstrumentPacks.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/audio/PreviewSynthEngine.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/audio/SongSheetParser.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/audio/SoundFontPreviewEngine.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/audio/Synthesizer.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/audio/TextToSpeechDefaults.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/audio/TextToSpeechEngine.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/audio/WebAudioToneBackend.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/automation/AutomatedTestRunner.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/automation/BenchmarkRunner.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/automation/CIValidationFlow.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/automation/RegressionPlaybackHarness.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/camera/Camera2D.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/camera/Camera3D.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/camera/CameraSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/camera/ZoneCameraSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/collision/aabb.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/collision/combat/Combat.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/collision/hitboxCollision.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/collision/hybrid.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/collision/objectVector.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/collision/polygon.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/collision/raster.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/components/Components.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/config/ConfigStore.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/core/Engine.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/core/FixedTicker.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/core/FrameClock.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/core/RuntimeMetrics.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/CombatDebugOverlay.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/DebugOverlayLayout.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/DebugPanel.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/DebugTools.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/Minimap.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/PerformanceMetricsPanel.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/StatsTracker.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/Validation.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/inspectors/bootstrap/createInspectorSurfaceIntegration.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/inspectors/commands/registerInspectorCommands.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/inspectors/host/debugInspectorHost.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/inspectors/presets/registerAdvancedInspectorDebugPresets.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/inspectors/registry/debugInspectorRegistry.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/inspectors/shared/inspectorUtils.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/inspectors/viewModels/componentInspectorViewModel.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/inspectors/viewModels/entityInspectorViewModel.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/inspectors/viewModels/eventStreamInspectorViewModel.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/inspectors/viewModels/stateDiffInspectorViewModel.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/inspectors/viewModels/timelineInspectorViewModel.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/network/bootstrap/createNetworkDebugSurfaceIntegration.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/network/commands/networkDebugCommandPackBridge.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/network/dashboard/registerDashboardCommands.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/network/dashboard/serverDashboardHost.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/network/dashboard/serverDashboardMetrics.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/network/dashboard/serverDashboardProviders.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/network/dashboard/serverDashboardRefreshModes.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/network/dashboard/serverDashboardRegistry.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/network/dashboard/serverDashboardRenderer.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/network/dashboard/serverDashboardViewModel.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/network/diagnostics/divergenceDiagnosticsModel.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/network/diagnostics/latencyDiagnosticsModel.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/network/diagnostics/networkPromotionRecommendation.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/network/diagnostics/replicationDiagnosticsModel.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/network/panels/networkDebugPanelRegistry.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/network/panels/networkObservabilityPanels.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/network/providers/networkDebugProviderRegistry.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/network/shared/hostReadUtils.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/network/shared/networkDebugUtils.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/panels/PromotionGatePanel.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/shared/debugCommandResultUtils.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/standard/threeD/bootstrap/createStandard3dDebugSurfaceIntegration.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/standard/threeD/panels/panel3dCamera.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/standard/threeD/panels/panel3dCollision.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/standard/threeD/panels/panel3dCollisionOverlays.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/standard/threeD/panels/panel3dRenderPipelineStages.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/standard/threeD/panels/panel3dRenderStages.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/standard/threeD/panels/panel3dSceneGraph.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/standard/threeD/panels/panel3dSceneGraphInspector.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/standard/threeD/panels/panel3dTransform.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/standard/threeD/panels/panel3dTransformInspector.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/standard/threeD/panels/registerStandard3dPanels.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/standard/threeD/presets/registerStandard3dDebugPresets.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/standard/threeD/providers/cameraSummaryProvider.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/standard/threeD/providers/collisionOverlaysProvider.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/standard/threeD/providers/collisionSummaryProvider.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/standard/threeD/providers/registerStandard3dProviders.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/standard/threeD/providers/renderPipelineStagesProvider.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/standard/threeD/providers/renderStageSummaryProvider.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/standard/threeD/providers/sceneGraphInspectorProvider.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/standard/threeD/providers/sceneGraphSummaryProvider.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/standard/threeD/providers/transformInspectorProvider.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/standard/threeD/providers/transformSummaryProvider.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/debug/standard/threeD/shared/threeDDebugUtils.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/ecs/World.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/entity/Bounds.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/entity/Entity.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/entity/Transform.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/entity/Velocity.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/events/EventBus.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/fx/ParticleSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/game/GameModeState.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/game/gameplayHooks.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/input/ActionInputDebugOverlay.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/input/ActionInputMap.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/input/ActionInputService.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/input/GamepadHapticsService.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/input/GamepadInputAdapter.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/input/GamepadInputClassifier.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/input/GamepadState.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/input/InputCapabilityDescriptors.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/input/InputCaptureService.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/input/InputCaptureSession.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/input/InputComboState.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/input/InputContextService.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/input/InputMap.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/input/InputMappingManifest.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/input/InputService.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/input/KeyboardState.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/input/MouseState.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/input/NormalizedInputRegistry.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/input/PointerDragState.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/interaction/InteractionSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/level/LevelLoader.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/localization/LocalizationService.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/logging/ErrorBoundary.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/logging/Logger.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/memory/DisposableStore.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/memory/ObjectPool.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/network/bootstrap/HostServerBootstrap.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/network/bootstrap/NetworkingLayer.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/network/client/ClientReconciliationStrategy.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/network/client/ClientReplicationApplicationLayer.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/network/client/PredictionReconciler.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/network/client/RemoteInterpolationBuffer.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/network/debug/NetworkDebugOverlay.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/network/replication/ReplicationMessageContract.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/network/replication/StateReplication.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/network/server/AuthoritativeInputIngestionContract.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/network/server/AuthoritativeServerRuntime.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/network/server/InterestManager.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/network/server/RollbackDiagnostics.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/network/session/ChatPresenceLayer.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/network/session/HandshakeSimulator.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/network/session/LobbySessionManager.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/network/session/SessionLifecycleContract.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/network/transport/LoopbackTransport.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/network/transport/NetworkConditionSimulator.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/network/transport/Serializer.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/network/transport/TransportContract.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/object-model/index.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/object-model/objectDefinitionSchema.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/object-model/objectDefinitionValidator.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/object-model/objectModelRegistry.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/paletteList.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/persistence/BrowserStorageService.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/persistence/CompressionService.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/persistence/CookieStorageService.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/persistence/FilePersistenceService.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/persistence/LocalStorageService.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/persistence/SaveSlotManager.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/persistence/SessionStorageService.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/persistence/StorageService.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/persistence/WorldSerializer.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/physics/arcadeBody.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/physics/collision3d.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/physics/drag.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/physics/integration.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/physics/integration3d.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/physics/scene3d.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/prefabs/PrefabFactory.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/release/AccessibilityOptions.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/release/CrashRecoveryManager.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/release/DeploymentProfiles.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/release/DistributionPackager.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/release/ReleaseValidationChecklist.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/release/SettingsSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/rendering/CanvasRenderer.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/rendering/LayeredRenderSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/rendering/ObjectVectorRuntimeAssetService.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/rendering/ObjectVectorTransformService.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/rendering/OrientationTransform.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/rendering/Renderer.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/rendering/ResolutionScaler.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/rendering/SpriteRenderSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/rendering/VectorDrawing.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/rendering/WorldScreenTransform.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/rendering/WorldScreenTransformService.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/replay/ReplayModel.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/replay/ReplaySystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/replay/ReplayTimeline.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/BrowserDownloadService.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/FullscreenService.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/MobileRuntimeTweaks.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/RuntimeMonitoringHooks.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/backgroundColor.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/backgroundImage.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2AbilitySystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2AnimationRuntime.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2AudioRuntime.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2CameraRuntime.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2ChaseFleeBehavior.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2CheckpointSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2ConfigDrivenProofScene.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2ContainerSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2CraftingFoundation.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2CustomExtensionsHookRuntime.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2DialogueSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2EconomyAndCurrency.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2EffectRuntime.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2EquipmentSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2InteractionSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2InventorySystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2ItemAndLootSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2ModifierStack.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2ObjectiveSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2PathfindingBaseline.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2PatrolBehavior.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2PersistenceRuntime.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2ProfileStateSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2ProjectileSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2QuestSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2SaveLoadValidation.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2SaveStateModel.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2StateMachineRuntime.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2StatusEffectSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2UiRuntime.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2VendorSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/engineV2WeaponSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/firstManifestDrivenPlayableScene.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/fullscreenBezel.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/gameImageConvention.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/manifestRuntimeParser.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/objectDefinitionReader.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/ruleDefinitionReader.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/runtimeActionSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/runtimeBehaviorComposition.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/runtimeCollisionProcessing.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/runtimeConditionSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/runtimeCooldownProcessing.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/runtimeDamageProcessing.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/runtimeEnvironmentEffects.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/runtimeEnvironmentForceInstantiation.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/runtimeErrorReporting.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/runtimeEventSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/runtimeHealthModel.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/runtimeInputPipeline.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/runtimeLivesAndRespawn.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/runtimeMovementProcessing.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/runtimeMultiSceneLoading.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/runtimeObjectInstantiation.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/runtimeObjectRecordFactory.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/runtimeOutcomeProcessing.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/runtimePlayableLoop.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/runtimeRenderPipeline.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/runtimeRenderingBootstrap.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/runtimeRuleAttachment.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/runtimeSceneDefinitionSupport.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/runtimeScoringAndStateProcessing.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/runtimeSpawnDespawnProcessing.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/runtimeTerrainEffects.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/runtimeTerrainMaterialInstantiation.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/runtimeTickLoop.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/runtime/runtimeTriggerProcessing.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/scene/AttractModeController.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/scene/Scene.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/scene/SceneManager.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/scene/SceneTransition.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/scene/SceneTransitionController.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/scene/TransitionScene.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/security/DataIntegrityService.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/security/PacketValidator.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/security/PermissionGate.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/security/SessionTrustValidator.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/state/StateMachine.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/systems/BounceSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/systems/BoundsSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/systems/CollectSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/systems/CollisionResolutionSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/systems/CollisionSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/systems/InputControlSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/systems/LifecycleSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/systems/MovementSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/systems/PhysicsSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/systems/ProjectileSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/systems/RenderSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/systems/SystemUtils.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/tilemap/TileMetadata.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/tilemap/Tilemap.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/tilemap/TilemapCollision.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/tilemap/TilemapRenderSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/ui/CanvasDialogPrimitives.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/ui/CanvasPopupInteractions.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/ui/CanvasPopupState.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/ui/UIFramework.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/ui/assets/icons/pin-monocolor-filled.svg` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/ui/assets/icons/pin-monocolor.svg` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/ui/baseLayout.css` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/ui/hubCommon.css` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/ui/spriteEditor.css` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/world/AchievementSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/world/CutsceneSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/world/DayNightCycle.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/world/EventScriptSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/world/QuestSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/world/SpawnSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/world/WeatherSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/engine/world/WorldStreamingSystem.js` | www/ | medium | Browser/game runtime engine module; migrate with engine import/reference updates. |
++| `src/shared/array/arrays.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/array/recordArrays.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/color/color.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/contracts/auditEventContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/backupSnapshotContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/collaborationRoleContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/creatorProfileContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/downloadGrantContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/entitlementContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/gameManifestContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/identityPermissionsContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/installReceiptContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/libraryItemContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/marketplaceListingContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/marketplaceTransactionBoundaryContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/migrationPlanContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/moderationQueueContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/notificationContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/organizationContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/projectContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/projectDataStoreContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/projectWorkspaceRuntimeContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/publishContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/releaseContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/replayContracts.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/restoreSnapshotContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/reviewRatingContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/sharedStateContracts.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/toolStateContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/aiAssistantContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/animationStudioContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/assetManagerContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/assetPipelineContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/assetStudioContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/audioSfxPlaygroundContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/codeStudioContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/collisionInspectorContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/gameDesignStudioContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/inputMappingContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/inputStudioContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/localizationStudioContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/midiStudioContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/objectVectorStudioContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/paletteManagerContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/parallaxEditorContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/particleStudioContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/performanceProfilerContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/physicsSandboxContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/previewGeneratorContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/publishStudioContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/replayVisualizerContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/soundStudioContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/spriteEditorContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/stateInspectorContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/storageInspectorContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/textToSpeechContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/threeDAssetViewerContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/threeDCameraPathEditorContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/threeDJsonPayloadContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/tileMapEditorContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/toolContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/toolContractsIndex.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/workspaceManagerContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/tools/worldVectorStudioContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/updateChannelContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/contracts/versionCompatibilityContract.js` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/debug/config.js` | dev/ | medium | Debug/dev-console support should be reviewed for dev-tooling ownership before movement. |
++| `src/shared/debug/network.js` | dev/ | medium | Debug/dev-console support should be reviewed for dev-tooling ownership before movement. |
++| `src/shared/debug/noopDevConsoleIntegration.js` | dev/ | medium | Debug/dev-console support should be reviewed for dev-tooling ownership before movement. |
++| `src/shared/game/highScores.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/game/initialsEntry.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/geometry/geometry.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/hash/hash.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/id/ids.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/json/clone.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/json/jsonIO.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/math/Random.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/math/RandomSeed.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/math/directions.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/math/geometry.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/math/numberNormalization.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/math/randomHelpers.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/math/scalars.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/math/vectorMath.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/math/vectorNormalize.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/noise/noise.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/number/numbers.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/object/objects.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/projectDataStore/inMemoryProjectDataStore.js` | api/ | low | Product data-store helper needs API/runtime ownership review before movement. |
++| `src/shared/runtime/registry.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/runtime/snapshotClone.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/schemas/README.md` | dev/ | high | Developer/source documentation belongs in the dev workspace when source layers migrate. |
++| `src/shared/schemas/game.manifest.schema.json` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/schemas/samples/sample.tool-payload.schema.json` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/schemas/tools/3d-asset-viewer.schema.json` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/schemas/tools/3d-camera-path-editor.schema.json` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/schemas/tools/3d-json-payload.schema.json` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/schemas/tools/README.md` | dev/ | high | Developer/source documentation belongs in the dev workspace when source layers migrate. |
++| `src/shared/schemas/tools/asset-manager-v2.schema.json` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/schemas/tools/asset-pipeline.schema.json` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/schemas/tools/audio-sfx-playground-v2.schema.json` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/schemas/tools/collision-inspector-v2.schema.json` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/schemas/tools/input-mapping-v2.schema.json` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/schemas/tools/midi-studio-v2.schema.json` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/schemas/tools/object-vector-studio-v2.schema.json` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/schemas/tools/palette-browser.schema.json` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/schemas/tools/palette-manager-v2.schema.json` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/schemas/tools/parallax-editor.schema.json` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/schemas/tools/performance-profiler.schema.json` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/schemas/tools/physics-sandbox.schema.json` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/schemas/tools/replay-visualizer.schema.json` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/schemas/tools/sprite-editor.schema.json` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/schemas/tools/state-inspector.schema.json` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/schemas/tools/svg-asset-studio.schema.json` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/schemas/tools/text2speech-V2.schema.json` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/schemas/tools/tile-map-editor.schema.json` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/schemas/tools/vector-map-editor.schema.json` | api/ | medium | Shared data/API contract or schema; should be owned with the API contract surface after usage split. |
++| `src/shared/state/createPromotionStateSnapshot.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/state/getState.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/state/getStateVariantClassification.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/state/guards.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/state/normalization.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/state/selectors.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/string/commandText.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/string/fuzzyMatchScore.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/string/stringifyValue.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/string/strings.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/string/textWrap.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/text/text.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/time/time.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/toolbox/aiAuthoringAssistant.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/assetMarketplace.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/assetPipelineConverters.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/assetPipelineFoundation.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/assetPipelineValidationOutput.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/assetUsageIntegration.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/ciValidationPipeline.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/cloudRuntime.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/collaborationSystem.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/contractVersioning.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/debugInspectorData.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/debugInspectorTools.css` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/debugToolInteractionFlow.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/debugVisualizationLayer.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/devConsoleDebugOverlay.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/documentModeGuards.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/editor/EntityPlacementEditor.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/editor/LevelEditor.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/editor/TileMapEditor.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/editor/TimelineEditor.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/editorExperienceLayer.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/eventCommandUtils.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/gameTemplates.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/gameplaySystemLayer.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/hotReloadSystem.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/livePreviewSyncChannel.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/multiTargetExport.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/paletteDocumentContract.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/performanceBenchmarks.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/performanceProfiler.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/pipeline/AssetImportPipeline.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/pipeline/AudioPreprocessPipeline.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/pipeline/BuildAssetManifestSystem.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/pipeline/ContentMigrationSystem.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/pipeline/ContentValidationPipeline.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/pipeline/TexturePreprocessPipeline.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/pipeline/assetErrorHandling.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/pipeline/assetManifestLoader.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/pipeline/assetPipelineTooling.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/pipeline/gameAssetManifestCoordinator.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/pipeline/gameAssetManifestDiscovery.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/pipeline/runtimeAssetBinding.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/pipeline/runtimeAssetLookup.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/pipeline/runtimeAssetValidation.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/platformShell.css` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/platformShell.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/platformValidationSuite.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/pluginArchitecture.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/powerShell/find_dupes_called.ps1` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/projectAssetRegistry.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/projectAssetRemediation.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/projectAssetValidation.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/projectManifestContract.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/projectPackaging.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/projectSystem.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/projectSystemAdapters.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/projectSystemValueUtils.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/projectToolIntegration.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/projectVersioning.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/publishingPipeline.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/renderPipelineContract.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/runtimeAssetLoader.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/runtimeAssetSharedUtils.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/runtimeAssetValidationUtils.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/runtimeSceneLoaderHotReload.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/runtimeStreaming.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/samples/project-asset-registry-demo/assets/images/clouds-layer.svg` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/samples/project-asset-registry-demo/assets/parallax/overworld-main.parallax.json` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/samples/project-asset-registry-demo/assets/sprites/hero-idle.sprite.json` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/samples/project-asset-registry-demo/assets/tilemaps/overworld-main.tilemap.json` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/samples/project-asset-registry-demo/assets/tiles/overworld-main.png` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/samples/project-asset-registry-demo/project.assets.json` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/schemaOnlyToolPresetValidation.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/tool-metadata-inventory.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/toolBootContract.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/toolHostManifest.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/toolHostRuntime.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/toolHostSharedContext.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/toolLaunchSSoT.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/toolLaunchSSoTData.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/toolLoadDiagnostics.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/toolSampleCatalog.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/tooling/AssetBrowser.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/tooling/DeveloperConsole.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/tooling/LiveTuningService.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/tooling/PropertyEditor.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/tooling/RuntimeInspector.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/tooling/SceneGraphViewer.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/uiSafeUtils.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/unifiedToolUxContract.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/vector/vectorAssetBridge.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/vector/vectorAssetContract.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/vector/vectorGeometryMath.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/vector/vectorRenderPrep.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/vector/vectorSafeValueUtils.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/vectorAssetSystem.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/vectorGeometryRuntime.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/vectorNativeTemplate.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/vectorTemplateSampleGame.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/toolbox/workspaceShell.js` | www/ | medium | Creator toolbox/shared pipeline module; migrate with toolbox import updates. |
++| `src/shared/types/typeGuards.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/validation/assert.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/shared/validation/invariant.js` | www/ | low | Shared runtime/browser utility; requires usage split before movement to preserve behavior. |
++| `src/tools/common/GameManifestLoader.js` | www/ | medium | Browser/tool helper module; migrate with toolbox/runtime import updates. |
++| `src/tools/common/WorkspaceDirtyNotifier.js` | www/ | medium | Browser/tool helper module; migrate with toolbox/runtime import updates. |
+diff --git a/dev/reports/PR_26180_OWNER_017-src-dissection-and-demo-cleanup_validation-report.md b/dev/reports/PR_26180_OWNER_017-src-dissection-and-demo-cleanup_validation-report.md
+new file mode 100644
+index 000000000..69115430a
+--- /dev/null
++++ b/dev/reports/PR_26180_OWNER_017-src-dissection-and-demo-cleanup_validation-report.md
 @@ -0,0 +1,15 @@
-+# PR_26180_OWNER_016 Validation Report
++# PR_26180_OWNER_017 Validation Report
 +
 +| Validation | Result | Notes |
 +|---|---:|---|
-+| Targeted root directory scan | PASS | `games/`, `learn/`, `toolbox/`, `tmp/`, and `test-results/` absent; `assets/` blocked by ignored local data. |
-+| Tracked legacy root scan | PASS | No tracked `assets/`, `games/`, `learn/`, `toolbox/`, `tmp/`, or `test-results/` files. |
-+| Approved structure confirmation | PASS | `www/`, `api/`, `dev/`, and `src/` remain tracked active roots. |
-+| `.env` confirmation | PASS | `.env` remains ignored/root-local; `.env.example` remains tracked. |
 +| `git diff --check` | PASS | Whitespace check passed. |
 +| `npm run validate:canonical-structure` | PASS | Blocking violations: 0. |
++| Targeted path/reference scan | PASS | No active `assets/DemoGame-26168-001.gfsp` path references remain outside reports/workspace. |
++| Tracked legacy root scan | PASS | No tracked `assets/`, `games/`, `learn/`, `toolbox/`, `tmp/`, or `test-results/` files remain. |
++| `src/` audit count | PASS | 596 tracked `src/` files audited. |
++| `node --test dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs` | PASS | 12 tests passed. |
 +
-+## Bootstrap Check
++## Notes
 +
-+No bootstrap/startup files were changed, so a bootstrap test lane was not required for this PR.
++A broad scan found filename-only `DemoGame-26168-001.gfsp` references in Playwright tests. Those references are generated-download assertions and do not point to the deleted root artifact path.
 +
