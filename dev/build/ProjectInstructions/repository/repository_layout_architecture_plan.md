@@ -42,6 +42,8 @@ No browser, API, server, test, script, or runtime files move in the scaffold or 
 
 `PR_26180_OWNER_016-remove-empty-root-shells` removes safe empty local root directory shells left behind after the migration and documents the blocked local-only `assets/` shell that contains ignored user data.
 
+`PR_26180_OWNER_017-src-dissection-and-demo-cleanup` removes the local ignored demo `.gfsp` artifact, removes the now-empty `assets/` shell, and records a file-by-file `src/` destination audit without moving source files.
+
 ## Proposed Future Layout
 
 ```text
@@ -189,7 +191,13 @@ Rules:
    - Do not delete ignored local-only data.
    - Document any folder that cannot be removed.
 
-13. `PR_26180_OWNER_017-final-layout-validation`
+13. `PR_26180_OWNER_017-src-dissection-and-demo-cleanup`
+   - Delete the local ignored demo `.gfsp` artifact and remove `assets/` if empty.
+   - Audit every tracked `src/` file and assign a proposed destination.
+   - Do not bulk-move `src/`.
+   - Preserve runtime behavior.
+
+14. `PR_26180_OWNER_018-final-layout-validation`
    - Validate final repository layout.
    - Confirm `www/` owns the browser-served app, `api/` owns the server app, and `dev/` owns the developer workspace.
    - Confirm runtime does not depend on `dev/`, browser code does not import `api/`, and legacy references are removed or documented.
