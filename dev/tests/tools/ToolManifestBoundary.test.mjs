@@ -8,10 +8,10 @@ function readJson(relativePath) {
 export async function run() {
   const schemaFiles = [
     "dev/tests/schemas/tool.manifest.schema.json",
-    "src/shared/schemas/tools/palette-browser.schema.json",
+    "www/src/shared/schemas/tools/palette-browser.schema.json",
     "src/shared/schemas/samples/sample.tool-payload.schema.json",
-    "src/shared/schemas/tools/svg-asset-studio.schema.json",
-    "src/shared/schemas/tools/sprite-editor.schema.json"
+    "www/src/shared/schemas/tools/svg-asset-studio.schema.json",
+    "www/src/shared/schemas/tools/sprite-editor.schema.json"
   ];
   schemaFiles.forEach((relativePath) => {
     const schema = readJson(relativePath);

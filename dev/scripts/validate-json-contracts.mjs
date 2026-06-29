@@ -4,7 +4,10 @@ import path from "node:path";
 
 const ROOT = process.cwd();
 const REPORT_DIR = path.join(ROOT, "docs", "dev", "reports");
-const SCHEMA_ROOT = path.join(ROOT, "tools", "schemas");
+const SCHEMA_ROOTS = [
+  path.join(ROOT, "www", "src", "shared", "schemas"),
+  path.join(ROOT, "src", "shared", "schemas")
+];
 const DEPRECATED_GAME_TOOL_IDS = new Set(["asset-browser", "palette-browser", "vector-map-editor"]);
 
 function parseArgs(argv) {
@@ -110,7 +113,7 @@ function writeCsv(filePath, columns, rows) {
 }
 
 function buildSchemaIndex() {
-  const schemaFiles = walkFiles(SCHEMA_ROOT, (filePath) => filePath.endsWith(".json"));
+  const schemaFiles = SCHEMA_ROOTS.flatMap((schemaRoot) => walkFiles(schemaRoot, (filePath) => filePath.endsWith(".json")));
   const schemaIndex = new Map();
   schemaFiles.forEach((filePath) => {
     const rel = normalizeRel(filePath);
@@ -493,7 +496,7 @@ function schemaPathForToolId(toolId) {
   if (!normalized) {
     return "";
   }
-  return `src/shared/schemas/tools/${normalized}.schema.json`;
+  return `www/src/shared/schemas/tools/${normalized}.schema.json`;
 }
 
 function validateToolPayloadShallow(toolId, payload, schema, pointer) {
@@ -700,7 +703,7 @@ function validateGames(schemaIndex, validate) {
 function validateToolSchemas(schemaIndex, validate) {
   const rows = [];
   for (const [schemaPath, schema] of schemaIndex.entries()) {
-    if (!schemaPath.startsWith("src/shared/schemas/tools/") || !schemaPath.endsWith(".schema.json")) {
+    if (!schemaPath.startsWith("www/src/shared/schemas/tools/") || !schemaPath.endsWith(".schema.json")) {
       continue;
     }
     const errors = [];
