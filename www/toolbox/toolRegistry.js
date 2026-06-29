@@ -25,7 +25,7 @@ import {
   getVisibleActiveToolRegistry,
   isApprovedToolImagePath,
   toolRegistryMetadataDiagnostic,
-} from "../../src/shared/toolbox/tool-metadata-inventory.js";
+} from "../src/shared/toolbox/tool-metadata-inventory.js";
 
 export {
   TOOL_IMAGE_BADGE_ROOT,
