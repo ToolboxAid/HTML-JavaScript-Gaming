@@ -3217,11 +3217,6 @@
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/debug/network.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
       "file": "www/src/shared/game/highScores.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"

@@ -40,7 +40,7 @@ The backlog is the authoritative source for determining the next logical PRs.
 - Product Area: Repository Architecture Simplification
 - Status: Active
 - Percent Complete: 99%
-- Active PR: PR_26180_OWNER_019b-move-browser-shared-schemas-to-www
+- Active PR: PR_26180_OWNER_020-src-legacy-teardown
 - Next Milestone: Move remaining API/server-owned source to api/
 - Source / Reference: `dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md`; `dev/build/ProjectInstructions/repository/www_migration_map.md`
 
