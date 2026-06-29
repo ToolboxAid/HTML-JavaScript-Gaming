@@ -40,6 +40,8 @@ No browser, API, server, test, script, or runtime files move in the scaffold or 
 
 `PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit` audits named root leftovers and records the `src/` transition plan without moving application source or changing product behavior.
 
+`PR_26180_OWNER_016-remove-empty-root-shells` removes safe empty local root directory shells left behind after the migration and documents the blocked local-only `assets/` shell that contains ignored user data.
+
 ## Proposed Future Layout
 
 ```text
@@ -181,7 +183,13 @@ Rules:
    - Produce the `src/` transition plan for the follow-up final validation stage.
    - Preserve product behavior.
 
-12. `PR_26180_OWNER_016-final-layout-validation`
+12. `PR_26180_OWNER_016-remove-empty-root-shells`
+   - Remove safe empty local root directory shells after the named root leftover audit.
+   - Do not remove `src/`.
+   - Do not delete ignored local-only data.
+   - Document any folder that cannot be removed.
+
+13. `PR_26180_OWNER_017-final-layout-validation`
    - Validate final repository layout.
    - Confirm `www/` owns the browser-served app, `api/` owns the server app, and `dev/` owns the developer workspace.
    - Confirm runtime does not depend on `dev/`, browser code does not import `api/`, and legacy references are removed or documented.

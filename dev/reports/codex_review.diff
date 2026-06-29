@@ -1,46 +1,46 @@
 ﻿diff --git a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-index 1043124e0..08e569f74 100644
+index 08e569f74..b232a5124 100644
 --- a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 +++ b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 @@ -117,7 +117,7 @@ Rules:
 
  ## Current Version/Date
 
--- Project Instructions Version: 2026.06.28.014
-+- Project Instructions Version: 2026.06.28.015
+-- Project Instructions Version: 2026.06.28.015
++- Project Instructions Version: 2026.06.28.016
  - Date: 2026-06-28
  - Owner: OWNER
 
 diff --git a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
-index 9fdf174e2..a9f50409e 100644
+index a9f50409e..5fefe8969 100644
 --- a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
 +++ b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
 @@ -1,6 +1,6 @@
  # Project Instructions Version
 
--Current Project Instructions Version: 2026.06.28.014
-+Current Project Instructions Version: 2026.06.28.015
+-Current Project Instructions Version: 2026.06.28.015
++Current Project Instructions Version: 2026.06.28.016
 
  Last Updated: 2026-06-28
 
-@@ -22,6 +22,7 @@ Last Updated: 2026-06-28
- - Updated CI, package scripts, and developer utilities for the `www/`, `api/`, and `dev/` layout.
+@@ -23,6 +23,7 @@ Last Updated: 2026-06-28
  - Removed active references to obsolete legacy layout paths after the `www/`, `api/`, and `dev/` migration steps.
  - Moved the tracked browser-served favicon under `www/`, added remaining root/src audit governance, and documented root `.env` placement policy.
-+- Added root leftover audit and `src/` transition plan for the final repository layout cleanup stage.
+ - Added root leftover audit and `src/` transition plan for the final repository layout cleanup stage.
++- Removed safe empty local root directory shells and documented blocked local-only `assets/` cleanup.
  - Codex must read this version file and the latest repository copy of `PROJECT_INSTRUCTIONS.md` before performing work.
  - Codex must discard previously remembered Project Instructions and treat the repository copy as authoritative.
  - Codex must validate canonical report and ZIP paths, branching model, and legacy path avoidance before work proceeds.
 diff --git a/dev/build/ProjectInstructions/PROJECT_STATE.md b/dev/build/ProjectInstructions/PROJECT_STATE.md
-index 716598321..01abe3bf4 100644
+index 01abe3bf4..12753b41a 100644
 --- a/dev/build/ProjectInstructions/PROJECT_STATE.md
 +++ b/dev/build/ProjectInstructions/PROJECT_STATE.md
 @@ -1,7 +1,7 @@
  # Project State
 
  ```yaml
--project_state_version: "2026.06.28.014"
-+project_state_version: "2026.06.28.015"
+-project_state_version: "2026.06.28.015"
++project_state_version: "2026.06.28.016"
  last_updated: "2026-06-28"
  current_main_commit: "40de767476d70cadfd1292c916844c2f31b6f185"
  repository_status:
@@ -48,12 +48,12 @@ index 716598321..01abe3bf4 100644
    runtime_database: "Postgres"
    creator_metadata: "API to Postgres"
    creator_assets: "API to R2"
--project_instructions_version: "2026.06.28.014"
--repository_structure_version: "2026.06.28.014"
--canonical_layout_version: "2026.06.28.014"
-+project_instructions_version: "2026.06.28.015"
-+repository_structure_version: "2026.06.28.015"
-+canonical_layout_version: "2026.06.28.015"
+-project_instructions_version: "2026.06.28.015"
+-repository_structure_version: "2026.06.28.015"
+-canonical_layout_version: "2026.06.28.015"
++project_instructions_version: "2026.06.28.016"
++repository_structure_version: "2026.06.28.016"
++canonical_layout_version: "2026.06.28.016"
  active_teams:
    - "Owner"
    - "Alfa"
@@ -61,194 +61,184 @@ index 716598321..01abe3bf4 100644
    - "Charlie"
    - "Delta"
    - "Golf"
--latest_owner_pr: "PR_26180_OWNER_014-remaining-legacy-layout-cleanup"
--latest_structure_pr: "PR_26180_OWNER_014-remaining-legacy-layout-cleanup"
-+latest_owner_pr: "PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit"
-+latest_structure_pr: "PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit"
+-latest_owner_pr: "PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit"
+-latest_structure_pr: "PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit"
++latest_owner_pr: "PR_26180_OWNER_016-remove-empty-root-shells"
++latest_structure_pr: "PR_26180_OWNER_016-remove-empty-root-shells"
  valid_top_level_folders:
    - "api/"
    - "deploy/"
 diff --git a/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md b/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
-index 535d71a1d..bb5b6c565 100644
+index bb5b6c565..788219bd3 100644
 --- a/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
 +++ b/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
 @@ -39,8 +39,8 @@ The backlog is the authoritative source for determining the next logical PRs.
  - Team: Owner
  - Product Area: Repository Architecture Simplification
  - Status: Active
--- Percent Complete: 90%
--- Active PR: PR_26180_OWNER_014-remaining-legacy-layout-cleanup
-+- Percent Complete: 95%
-+- Active PR: PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit
+-- Percent Complete: 95%
+-- Active PR: PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit
++- Percent Complete: 98%
++- Active PR: PR_26180_OWNER_016-remove-empty-root-shells
  - Next Milestone: Final layout validation and completion report
  - Source / Reference: `dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md`; `dev/build/ProjectInstructions/repository/www_migration_map.md`
 
 diff --git a/dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md b/dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
-index aea15aa1e..e459e8393 100644
+index e459e8393..b604ddb1c 100644
 --- a/dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
 +++ b/dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
-@@ -38,6 +38,8 @@ No browser, API, server, test, script, or runtime files move in the scaffold or
+@@ -40,6 +40,8 @@ No browser, API, server, test, script, or runtime files move in the scaffold or
 
- `PR_26180_OWNER_014-remaining-legacy-layout-cleanup` audits remaining tracked root and `src/` layout items, moves the browser-served favicon into `www/`, and records root `.env` placement policy before final validation.
+ `PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit` audits named root leftovers and records the `src/` transition plan without moving application source or changing product behavior.
 
-+`PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit` audits named root leftovers and records the `src/` transition plan without moving application source or changing product behavior.
++`PR_26180_OWNER_016-remove-empty-root-shells` removes safe empty local root directory shells left behind after the migration and documents the blocked local-only `assets/` shell that contains ignored user data.
 +
  ## Proposed Future Layout
 
  ```text
-@@ -173,7 +175,13 @@ Rules:
-    - Document `.env` placement policy for local and deployed environments.
-    - Preserve product behavior and public routes.
+@@ -181,7 +183,13 @@ Rules:
+    - Produce the `src/` transition plan for the follow-up final validation stage.
+    - Preserve product behavior.
 
--11. `PR_26180_OWNER_015-final-layout-validation`
-+11. `PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit`
-+   - Audit root leftovers after the `www/`, `api/`, and `dev/` migration.
-+   - Classify local-only legacy folder shells, ignored/generated leftovers, and tracked `src/` transition content.
-+   - Produce the `src/` transition plan for the follow-up final validation stage.
-+   - Preserve product behavior.
+-12. `PR_26180_OWNER_016-final-layout-validation`
++12. `PR_26180_OWNER_016-remove-empty-root-shells`
++   - Remove safe empty local root directory shells after the named root leftover audit.
++   - Do not remove `src/`.
++   - Do not delete ignored local-only data.
++   - Document any folder that cannot be removed.
 +
-+12. `PR_26180_OWNER_016-final-layout-validation`
++13. `PR_26180_OWNER_017-final-layout-validation`
     - Validate final repository layout.
     - Confirm `www/` owns the browser-served app, `api/` owns the server app, and `dev/` owns the developer workspace.
     - Confirm runtime does not depend on `dev/`, browser code does not import `api/`, and legacy references are removed or documented.
-diff --git a/dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_branch-validation.md b/dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_branch-validation.md
+diff --git a/dev/reports/PR_26180_OWNER_016-remove-empty-root-shells_branch-validation.md b/dev/reports/PR_26180_OWNER_016-remove-empty-root-shells_branch-validation.md
 new file mode 100644
-index 000000000..529aa44f3
+index 000000000..51856926e
 --- /dev/null
-+++ b/dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_branch-validation.md
++++ b/dev/reports/PR_26180_OWNER_016-remove-empty-root-shells_branch-validation.md
 @@ -0,0 +1,12 @@
-+# PR_26180_OWNER_015 Branch Validation
++# PR_26180_OWNER_016 Branch Validation
 +
 +| Check | Result | Evidence |
 +|---|---:|---|
-+| Current branch | PASS | `PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit` |
-+| Expected stacked base | PASS | Created from `PR_26180_OWNER_014-remaining-legacy-layout-cleanup` |
-+| Base branch for PR | PASS | `PR_26180_OWNER_014-remaining-legacy-layout-cleanup` |
-+| Project Instructions loaded | PASS | Repository Project Instructions version `2026.06.28.015` |
++| Current branch | PASS | `PR_26180_OWNER_016-remove-empty-root-shells` |
++| Expected stacked base | PASS | Created from `PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit` |
++| Base branch for PR | PASS | `PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit` |
++| Project Instructions loaded | PASS | Repository Project Instructions version `2026.06.28.016` |
 +| Branching policy loaded | PASS | `PROJECT_BRANCHING_POLICY.md` version `2026.06.28.002` |
-+| Scope | PASS | Root leftover audit, `src/` transition plan, governance reports only |
++| Scope | PASS | Empty root-shell cleanup and governance reports only |
 +| Runtime/API/database implementation changes | PASS | None |
 +
-diff --git a/dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_manual-validation-notes.md b/dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_manual-validation-notes.md
+diff --git a/dev/reports/PR_26180_OWNER_016-remove-empty-root-shells_manual-validation-notes.md b/dev/reports/PR_26180_OWNER_016-remove-empty-root-shells_manual-validation-notes.md
 new file mode 100644
-index 000000000..8381cadd4
+index 000000000..127942b3f
 --- /dev/null
-+++ b/dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_manual-validation-notes.md
-@@ -0,0 +1,9 @@
-+# PR_26180_OWNER_015 Manual Validation Notes
++++ b/dev/reports/PR_26180_OWNER_016-remove-empty-root-shells_manual-validation-notes.md
+@@ -0,0 +1,10 @@
++# PR_26180_OWNER_016 Manual Validation Notes
 +
-+- No named local-only root folder was deleted in this PR.
-+- `assets/DemoGame-26168-001.gfsp` is ignored local data and remains untouched.
-+- Empty local directory shells under `games/`, `learn/`, `tmp/`, and `toolbox/` are not tracked and do not affect the PR diff.
-+- `src/` is intentionally retained pending explicit source-layer migration PRs.
-+- Codex output ZIP is generated under `dev/workspace/zips/`, not root `tmp/`.
-+- Public favicon ownership remains `www/favicon.svg`.
++- Removed local empty shells: `games/`, `learn/`, `toolbox/`, and `tmp/`.
++- `test-results/` was already absent.
++- `assets/` remains because `assets/DemoGame-26168-001.gfsp` is ignored local data.
++- No tracked files were deleted.
++- `src/` remains untouched.
++- `www/favicon.svg` remains tracked and browser-served.
++- Canonical Codex ZIP output remains under `dev/workspace/zips/`.
 +
-diff --git a/dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_report.md b/dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_report.md
+diff --git a/dev/reports/PR_26180_OWNER_016-remove-empty-root-shells_report.md b/dev/reports/PR_26180_OWNER_016-remove-empty-root-shells_report.md
 new file mode 100644
-index 000000000..e119925d6
+index 000000000..81f9fb9ad
 --- /dev/null
-+++ b/dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_report.md
-@@ -0,0 +1,53 @@
-+# PR_26180_OWNER_015 Root Empty Folder and src Transition Audit
++++ b/dev/reports/PR_26180_OWNER_016-remove-empty-root-shells_report.md
+@@ -0,0 +1,40 @@
++# PR_26180_OWNER_016 Remove Empty Root Shells Report
 +
 +## Executive Summary
 +
-+PR_26180_OWNER_015 completes a no-runtime-change audit of named root leftovers after the `www/`, `api/`, and `dev/` migration. No tracked placeholder folders were removed because Git has no tracked content in the named root leftovers except `src/`.
++PR_26180_OWNER_016 removes safe empty local root directory shells left behind after the `www/`, `api/`, and `dev/` migration. The removed shells were not tracked by Git and contained no files.
 +
-+`src/` remains active and tracked. It should not move in this PR because it contains deployable engine/runtime/shared modules and browser API clients still referenced by `www/`, `api/`, `dev/tests/`, and `dev/tools/`.
++`assets/` was not removed because it contains ignored local data: `assets/DemoGame-26168-001.gfsp`. This is intentionally documented instead of deleted.
 +
-+## Root Folder Audit
++## Folder Cleanup Result
 +
-+| Folder | Exists Locally | Tracked Content | Local/Generated Status | Decision |
-+|---|---:|---:|---|---|
-+| `assets/` | Yes | 0 tracked files | Contains ignored local `assets/DemoGame-26168-001.gfsp`; remaining entries are local directory shells. | Do not delete in PR. User/local cleanup only unless Owner explicitly approves moving/removing the ignored file. |
-+| `games/` | Yes | 0 tracked files | Empty local directory shell. | Do not delete in PR because it is untracked/local-only; safe local cleanup may remove it outside a commit. |
-+| `learn/` | Yes | 0 tracked files | Empty local directory shell. | Do not delete in PR because it is untracked/local-only; safe local cleanup may remove it outside a commit. |
-+| `src/` | Yes | 596 tracked files | Active transition namespace. | Keep. Requires explicit follow-up migration PRs. |
-+| `test-results/` | No | 0 tracked files | Absent. | No action. |
-+| `tmp/` | Yes | 0 tracked files | Empty local directory shell. | Do not use for Codex output; canonical ZIPs remain under `dev/workspace/zips/`. |
-+| `toolbox/` | Yes | 0 tracked files | Empty local directory shell. | Do not delete in PR because it is untracked/local-only; safe local cleanup may remove it outside a commit. |
++| Folder | Pre-Cleanup Status | Action | Post-Cleanup Status |
++|---|---|---|---|
++| `assets/` | 0 tracked files; 1 ignored file; 47 local empty subdirectories | Not removed | Still exists because `assets/DemoGame-26168-001.gfsp` is local ignored data |
++| `games/` | 0 tracked files; 0 files; local empty directory shell | Removed locally | Absent |
++| `learn/` | 0 tracked files; 0 files; local empty directory shell | Removed locally | Absent |
++| `toolbox/` | 0 tracked files; 0 files; local empty directory shell | Removed locally | Absent |
++| `tmp/` | 0 tracked files; 0 files; local empty directory shell | Removed locally | Absent |
++| `test-results/` | Absent | No action | Absent |
 +
 +## Required Confirmations
 +
-+- `.env` remains root/local-only and ignored by `.gitignore`.
-+- `.env.example` remains tracked as the repository template.
-+- `www/favicon.svg` remains the browser-served favicon.
-+- No runtime behavior changes were made.
-+- No product feature changes were made.
++- Root approved tracked application/workspace structure remains `www/`, `api/`, `dev/`, and `src/`.
++- `www/` contains browser-served content and `www/favicon.svg`.
++- `api/` contains server/API content.
++- `dev/` contains the developer workspace.
++- `.env` remains root/local-only and ignored.
++- `.env.example` remains tracked.
++- `src/` was not removed.
++- No tracked `src/` files were moved.
++- No runtime behavior changed.
++- No product code changed.
 +
-+## src Transition Plan
++## Folders Not Removed
 +
-+| Current Area | Tracked Files | Why It Remains | Destination | Proposed Follow-Up |
-+|---|---:|---|---|---|
-+| `src/advanced/` | 10 | Advanced state and promotion logic remains actively tested/referenced. | `src/runtime/advanced/` or another Owner-approved runtime bucket. | Runtime transition PR for advanced state modules. |
-+| `src/api/` | 20 | Browser API clients and browser admin/client helpers remain used by `www/` and tests. Browser clients must stay outside top-level `api/`. | `src/web/api-clients/` or `src/runtime/api-clients/`, depending on final source-layer naming. | Browser API client source-layer migration PR. |
-+| `src/dev-runtime/admin/` | 4 | Legacy Admin Notes browser-viewer compatibility path is documented in Project Instructions. | `www/admin/` if browser-served, or retire after replacement. | Scoped Admin Notes compatibility retirement PR. |
-+| `src/engine/` | 327 | Core game/runtime engine remains heavily referenced by tests and dev tooling. | `src/runtime/engine/`. | Engine source-layer migration PR. |
-+| `src/shared/` | 233 | Shared contracts, utilities, random/hash/noise/geometry/color/text/time helpers, and toolbox pipeline logic remain actively referenced. | Split by usage: `src/runtime/shared/`, `src/web/shared/`, and/or `src/api-runtime/shared/`. | Shared source-layer classification and migration PR. |
-+| `src/tools/` | 2 | Tool helper modules remain referenced by current tooling/tests. | `src/web/tools/` or `src/runtime/tools/` after ownership review. | Tool helper source-layer migration PR. |
-+
-+## Follow-Up Recommendation
-+
-+Do not move `src/` wholesale. Create focused source-layer migration PRs after the layout stack is merged:
-+
-+1. Browser API clients and browser helper modules.
-+2. Engine/runtime modules.
-+3. Shared contracts/utilities classification.
-+4. Legacy Admin Notes compatibility retirement.
-+5. Tool helper modules.
-+
-+## Scope Boundary
-+
-+This PR is audit/governance/reporting only. It does not move `src/`, delete local-only root folders, change runtime behavior, change product features, or alter API/database behavior.
-+
-diff --git a/dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_requirement-checklist.md b/dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_requirement-checklist.md
-new file mode 100644
-index 000000000..33f875e1a
---- /dev/null
-+++ b/dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_requirement-checklist.md
-@@ -0,0 +1,21 @@
-+# PR_26180_OWNER_015 Requirement Checklist
-+
-+| Requirement | Result | Notes |
-+|---|---:|---|
-+| Base on `PR_26180_OWNER_014-remaining-legacy-layout-cleanup` | PASS | Branch created from PR014. |
-+| Inspect `assets/` | PASS | 0 tracked files; local ignored `DemoGame-26168-001.gfsp` remains untouched. |
-+| Inspect `games/` | PASS | 0 tracked files; empty local-only directory shell. |
-+| Inspect `learn/` | PASS | 0 tracked files; empty local-only directory shell. |
-+| Inspect `src/` | PASS | 596 tracked files; active transition namespace retained. |
-+| Inspect `test-results/` | PASS | Folder absent; 0 tracked files. |
-+| Inspect `tmp/` | PASS | 0 tracked files; empty local-only directory shell; not used for Codex output. |
-+| Inspect `toolbox/` | PASS | 0 tracked files; empty local-only directory shell. |
-+| Remove empty tracked placeholder folders only if safe | PASS | No tracked placeholder folders found in the named root leftovers. |
-+| Do not delete untracked local-only folders unless explicitly safe and documented | PASS | No untracked local-only folders were deleted. |
-+| Do not move `src/` in this PR unless clearly misplaced and low-risk | PASS | `src/` was not moved. |
-+| Produce a clear `src/` transition plan | PASS | Included in PR report. |
-+| Confirm `.env` remains root/local-only | PASS | `.env` is ignored; `.env.example` is tracked. |
-+| Confirm `www/favicon.svg` remains browser-served favicon | PASS | `www/favicon.svg` is tracked. |
-+| No runtime behavior changes | PASS | Reports/governance only. |
-+| No product feature changes | PASS | Reports/governance only. |
-+
-diff --git a/dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_validation-report.md b/dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_validation-report.md
-new file mode 100644
-index 000000000..c9836be31
---- /dev/null
-+++ b/dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_validation-report.md
-@@ -0,0 +1,16 @@
-+# PR_26180_OWNER_015 Validation Report
-+
-+| Validation | Result | Notes |
-+|---|---:|---|
-+| Root folder audit | PASS | Named folders classified by local existence, tracked content, ignored/generated status, and follow-up need. |
-+| `.env` policy confirmation | PASS | `.env` is ignored by `.gitignore`; `.env.example` is tracked. |
-+| `www/favicon.svg` confirmation | PASS | `www/favicon.svg` is tracked. |
-+| Targeted root legacy path scan | PASS | No tracked `assets/`, `games/`, `learn/`, `test-results/`, `tmp/`, or `toolbox/` files remain. |
-+| `node --test dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs` | PASS | Bootstrap command surface remains valid. |
-+| `git diff --check` | PASS | Whitespace check passed. |
-+| `npm run validate:canonical-structure` | PASS | Blocking violations: 0. |
++`assets/` could not be removed because it contains ignored local-only content. The file was not deleted because the request prohibited deleting non-empty content and required documenting folders that could not be removed.
 +
 +## Notes
 +
-+The bootstrap test was run as a targeted safety check even though this PR does not touch startup/runtime files.
++The removed empty shells were local filesystem cleanup only because Git does not track empty directories. The committed PR evidence is the governance report, validation evidence, and updated active workstream metadata.
++
+diff --git a/dev/reports/PR_26180_OWNER_016-remove-empty-root-shells_requirement-checklist.md b/dev/reports/PR_26180_OWNER_016-remove-empty-root-shells_requirement-checklist.md
+new file mode 100644
+index 000000000..e6de4d292
+--- /dev/null
++++ b/dev/reports/PR_26180_OWNER_016-remove-empty-root-shells_requirement-checklist.md
+@@ -0,0 +1,24 @@
++# PR_26180_OWNER_016 Requirement Checklist
++
++| Requirement | Result | Notes |
++|---|---:|---|
++| Base on `PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit` | PASS | Branch created from PR015. |
++| Remove safe empty root shells | PASS | Removed `games/`, `learn/`, `toolbox/`, and `tmp/` locally after confirming no files/tracked content. |
++| Inspect `assets/` | PASS | Not removed because it contains ignored local `assets/DemoGame-26168-001.gfsp`. |
++| Inspect `games/` | PASS | Removed; no tracked files or local files. |
++| Inspect `learn/` | PASS | Removed; no tracked files or local files. |
++| Inspect `toolbox/` | PASS | Removed; no tracked files or local files. |
++| Inspect `tmp/` | PASS | Removed; no tracked files or local files. |
++| Inspect `test-results/` | PASS | Already absent. |
++| Do not remove `src/` | PASS | `src/` remains. |
++| Do not move tracked `src/` files | PASS | No `src/` files moved. |
++| Do not modify runtime behavior | PASS | Governance/reporting only. |
++| Do not modify product code | PASS | No product code changed. |
++| Do not delete tracked files unless obsolete empty-shell related | PASS | No tracked files deleted. |
++| Confirm root approved structure after cleanup | PASS | Tracked application/workspace roots remain `www/`, `api/`, `dev/`, and `src/`. |
++| Confirm `www/` contains browser-served content | PASS | `www/` has tracked content including `www/favicon.svg`. |
++| Confirm `api/` contains server/API content | PASS | `api/` has tracked server/API content. |
++| Confirm `dev/` contains developer workspace | PASS | `dev/` has tracked developer workspace content. |
++| Confirm `.env` remains root/local-only | PASS | `.env` is ignored; `.env.example` is tracked. |
++| Document folders that could not be removed | PASS | `assets/` documented as blocked by ignored local data. |
++
+diff --git a/dev/reports/PR_26180_OWNER_016-remove-empty-root-shells_validation-report.md b/dev/reports/PR_26180_OWNER_016-remove-empty-root-shells_validation-report.md
+new file mode 100644
+index 000000000..984ae0ecb
+--- /dev/null
++++ b/dev/reports/PR_26180_OWNER_016-remove-empty-root-shells_validation-report.md
+@@ -0,0 +1,15 @@
++# PR_26180_OWNER_016 Validation Report
++
++| Validation | Result | Notes |
++|---|---:|---|
++| Targeted root directory scan | PASS | `games/`, `learn/`, `toolbox/`, `tmp/`, and `test-results/` absent; `assets/` blocked by ignored local data. |
++| Tracked legacy root scan | PASS | No tracked `assets/`, `games/`, `learn/`, `toolbox/`, `tmp/`, or `test-results/` files. |
++| Approved structure confirmation | PASS | `www/`, `api/`, `dev/`, and `src/` remain tracked active roots. |
++| `.env` confirmation | PASS | `.env` remains ignored/root-local; `.env.example` remains tracked. |
++| `git diff --check` | PASS | Whitespace check passed. |
++| `npm run validate:canonical-structure` | PASS | Blocking violations: 0. |
++
++## Bootstrap Check
++
++No bootstrap/startup files were changed, so a bootstrap test lane was not required for this PR.
 +
