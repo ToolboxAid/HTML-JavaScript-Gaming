@@ -11,7 +11,7 @@ import {
   perlinNoise2D,
   simplexNoise2D,
   valueNoise2D,
-} from "../../../src/shared/noise/noise.js";
+} from "../../../www/src/shared/noise/noise.js";
 
 function assertInRange(value, min, max) {
   assert.equal(Number.isFinite(value), true);

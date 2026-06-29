@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import {
   ENGINE_V2_INVENTORY_ERRORS,
   resolveEngineV2Inventory,
-} from "../../../src/engine/runtime/engineV2InventorySystem.js";
+} from "../../../www/src/engine/runtime/engineV2InventorySystem.js";
 import { createEngineV2PossessionRuntimeFixture } from "./EngineV2PossessionRuntimeFixture.mjs";
 
 export function run() {

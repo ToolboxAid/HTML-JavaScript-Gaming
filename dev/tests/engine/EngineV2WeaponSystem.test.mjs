@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import {
   ENGINE_V2_WEAPON_ERRORS,
   resolveEngineV2Weapons,
-} from "../../../src/engine/runtime/engineV2WeaponSystem.js";
+} from "../../../www/src/engine/runtime/engineV2WeaponSystem.js";
 import { createEngineV2CombatRuntimeFixture } from "./EngineV2CombatRuntimeFixture.mjs";
 
 export function run() {

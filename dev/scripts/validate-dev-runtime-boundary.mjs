@@ -13,8 +13,8 @@ const roots = [
   "www/marketplace",
   "www/memberships",
   "www/owner",
-  "src/api",
-  "src/engine",
+  "www/src/api",
+  "www/src/engine",
   "www/toolbox",
 ];
 const filePattern = /\.(html|js|mjs)$/;

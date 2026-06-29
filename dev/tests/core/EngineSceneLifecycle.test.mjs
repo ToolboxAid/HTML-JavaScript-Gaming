@@ -5,10 +5,10 @@
  EngineSceneLifecycle.test.mjs
 */
 import assert from 'node:assert/strict';
-import Engine from '../../../src/engine/core/Engine.js';
-import SceneTransition from '../../../src/engine/scene/SceneTransition.js';
-import TransitionScene from '../../../src/engine/scene/TransitionScene.js';
-import Camera3D from '../../../src/engine/camera/Camera3D.js';
+import Engine from '../../../www/src/engine/core/Engine.js';
+import SceneTransition from '../../../www/src/engine/scene/SceneTransition.js';
+import TransitionScene from '../../../www/src/engine/scene/TransitionScene.js';
+import Camera3D from '../../../www/src/engine/camera/Camera3D.js';
 
 function createCanvas() {
   const canvas = {

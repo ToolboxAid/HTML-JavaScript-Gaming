@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import {
   ENGINE_V2_ECONOMY_ERRORS,
   resolveEngineV2EconomyAndCurrency,
-} from "../../../src/engine/runtime/engineV2EconomyAndCurrency.js";
+} from "../../../www/src/engine/runtime/engineV2EconomyAndCurrency.js";
 import { createEngineV2PossessionRuntimeFixture } from "./EngineV2PossessionRuntimeFixture.mjs";
 
 export function run() {

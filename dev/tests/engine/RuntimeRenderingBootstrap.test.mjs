@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
 import {
   RUNTIME_RENDERING_BOOTSTRAP_ERRORS,
   createRuntimeRenderingBootstrap,
-} from "../../../src/engine/runtime/runtimeRenderingBootstrap.js";
+} from "../../../www/src/engine/runtime/runtimeRenderingBootstrap.js";
 import { createManifestDrivenRuntimeFixture } from "./RuntimeManifestDrivenFixture.mjs";
 
 export function run() {

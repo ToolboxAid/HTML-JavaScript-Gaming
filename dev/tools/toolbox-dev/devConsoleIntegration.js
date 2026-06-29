@@ -22,13 +22,13 @@ import { createToggleCommandPack } from "./commandPacks/toggleCommandPack.js";
 import { createValidationCommandPack } from "./commandPacks/validationCommandPack.js";
 import { createInspectorStore } from "./inspectors/inspectorStore.js";
 import { createDebugPluginRegistry } from "./plugins/debugPluginSystem.js";
-import { ensureArray } from "../../../src/shared/array/arrays.js";
-import { cloneJson } from "../../../src/shared/json/clone.js";
+import { ensureArray } from "../../../www/src/shared/array/arrays.js";
+import { cloneJson } from "../../../www/src/shared/json/clone.js";
 
 import {
   createDiagnosticsCollector,
   createDevConsoleDebugOverlayRuntime
-} from "../../../src/shared/toolbox/devConsoleDebugOverlay.js";
+} from "../../../www/src/shared/toolbox/devConsoleDebugOverlay.js";
 
 const DEFAULT_WORLD_STAGES = Object.freeze([
   "parallax",
@@ -58,8 +58,8 @@ const DEFAULT_PLUGIN_CAPABILITIES = Object.freeze([
   Object.freeze({ capabilityId: "debug.diagnostics.snapshot", version: "1.0.0" })
 ]);
 
-import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
-import { isObject } from "../../../src/shared/object/objects.js";
+import { sanitizeText } from "../../../www/src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { isObject } from "../../../www/src/shared/object/objects.js";
 
 function toContextSection(context, field) {
   return isObject(context?.[field]) ? context[field] : {};

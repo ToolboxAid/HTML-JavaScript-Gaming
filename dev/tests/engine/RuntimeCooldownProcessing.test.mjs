@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import {
   RUNTIME_COOLDOWN_ERRORS,
   processRuntimeCooldowns,
-} from "../../../src/engine/runtime/runtimeCooldownProcessing.js";
+} from "../../../www/src/engine/runtime/runtimeCooldownProcessing.js";
 import { createRuntimeHealthOutcomeFixture } from "./RuntimeHealthOutcomeFixture.mjs";
 
 export function run() {

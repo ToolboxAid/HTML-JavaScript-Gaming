@@ -5,28 +5,28 @@ David Quesenberry
 EngineCoreBoundaryBaseline.test.mjs
 */
 import assert from 'node:assert/strict';
-import Engine from '../../../src/engine/core/Engine.js';
-import FrameClock from '../../../src/engine/core/FrameClock.js';
-import FixedTicker from '../../../src/engine/core/FixedTicker.js';
-import RuntimeMetrics from '../../../src/engine/core/RuntimeMetrics.js';
-import EventBus from '../../../src/engine/events/EventBus.js';
-import Camera2D from '../../../src/engine/camera/Camera2D.js';
-import Camera3D from '../../../src/engine/camera/Camera3D.js';
-import { followCameraTarget, worldRectToScreen } from '../../../src/engine/camera/CameraSystem.js';
-import Scene from '../../../src/engine/scene/Scene.js';
-import SceneManager from '../../../src/engine/scene/SceneManager.js';
-import CanvasRenderer from '../../../src/engine/rendering/CanvasRenderer.js';
-import { renderByLayers } from '../../../src/engine/rendering/LayeredRenderSystem.js';
-import InputService from '../../../src/engine/input/InputService.js';
-import ActionInputService from '../../../src/engine/input/ActionInputService.js';
-import { stepArcadeBody } from '../../../src/engine/physics/arcadeBody.js';
-import { applyDrag } from '../../../src/engine/physics/drag.js';
-import { integrateVelocity3D } from '../../../src/engine/physics/integration3d.js';
-import { isAabbColliding3D, resolveAabbCollision3D } from '../../../src/engine/physics/collision3d.js';
-import { stepSceneBodies3D } from '../../../src/engine/physics/scene3d.js';
-import AudioService from '../../../src/engine/audio/AudioService.js';
-import { moveEntities, moveEntities3D } from '../../../src/engine/systems/MovementSystem.js';
-import { stepWorldPhysics3D } from '../../../src/engine/systems/PhysicsSystem.js';
+import Engine from '../../../www/src/engine/core/Engine.js';
+import FrameClock from '../../../www/src/engine/core/FrameClock.js';
+import FixedTicker from '../../../www/src/engine/core/FixedTicker.js';
+import RuntimeMetrics from '../../../www/src/engine/core/RuntimeMetrics.js';
+import EventBus from '../../../www/src/engine/events/EventBus.js';
+import Camera2D from '../../../www/src/engine/camera/Camera2D.js';
+import Camera3D from '../../../www/src/engine/camera/Camera3D.js';
+import { followCameraTarget, worldRectToScreen } from '../../../www/src/engine/camera/CameraSystem.js';
+import Scene from '../../../www/src/engine/scene/Scene.js';
+import SceneManager from '../../../www/src/engine/scene/SceneManager.js';
+import CanvasRenderer from '../../../www/src/engine/rendering/CanvasRenderer.js';
+import { renderByLayers } from '../../../www/src/engine/rendering/LayeredRenderSystem.js';
+import InputService from '../../../www/src/engine/input/InputService.js';
+import ActionInputService from '../../../www/src/engine/input/ActionInputService.js';
+import { stepArcadeBody } from '../../../www/src/engine/physics/arcadeBody.js';
+import { applyDrag } from '../../../www/src/engine/physics/drag.js';
+import { integrateVelocity3D } from '../../../www/src/engine/physics/integration3d.js';
+import { isAabbColliding3D, resolveAabbCollision3D } from '../../../www/src/engine/physics/collision3d.js';
+import { stepSceneBodies3D } from '../../../www/src/engine/physics/scene3d.js';
+import AudioService from '../../../www/src/engine/audio/AudioService.js';
+import { moveEntities, moveEntities3D } from '../../../www/src/engine/systems/MovementSystem.js';
+import { stepWorldPhysics3D } from '../../../www/src/engine/systems/PhysicsSystem.js';
 
 export function run() {
   // Core boot/timing boundaries.

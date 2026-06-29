@@ -1,9 +1,9 @@
 # www Migration Map
 
-Status: Implemented migration map
+Status: Implemented migration map and browser source migration
 Owner: Owner
 Workstream: Repository Architecture Simplification
-PR: PR_26180_OWNER_006-www-migration-map; PR_26180_OWNER_008-move-www-application
+PR: PR_26180_OWNER_006-www-migration-map; PR_26180_OWNER_008-move-www-application; PR_26180_OWNER_018-move-src-browser-to-www
 
 ## Purpose
 
@@ -15,9 +15,11 @@ This map began as a no-runtime-change governance artifact. `PR_26180_OWNER_008-m
 
 The browser-served application now lives under `www/`.
 
+PR_26180_OWNER_018 moved the PR017-audited browser/www-owned legacy `src/` files into `www/src/`.
+
 Current local runtime, test helpers, and browser pages keep URLs such as `/index.html`, `/toolbox/index.html`, `/assets/theme-v2/css/theme.css`, `/account/sign-in.html`, `/admin/system-health.html`, and `/games/index.html` while resolving browser-served files from `www/`.
 
-The move preserved public route URLs while changing the filesystem lookup root. Repository-root fallback remains available for transition-only compatibility, including browser imports that still reference root-level `src/`.
+The move preserved public route URLs while changing the filesystem lookup root. Browser imports that use `/src/...` or relative paths resolving to `/src/...` now resolve under `www/src/` when `www/` is the served web root.
 
 ## Current Browser-Served Surface
 
@@ -54,7 +56,7 @@ Broad active-reference search across browser roots, `src/`, `dev/scripts/`, and 
 | `legal/` | 13 | Footer/navigation route references and page links. |
 | `learn/` | 9 | Learn route links and navigation. |
 | `play/` | 7 | No root folder exists; review references manually before introducing a route. |
-| `src/` | 451 | Browser imports, server imports, tests, validation aliases, and current runtime/source modules. |
+| `src/` | 451 | Browser imports, server imports, tests, validation aliases, and legacy runtime/source modules before the browser-owned subset moved to `www/src/`. |
 
 The high `src/` count means the browser migration cannot be treated as static files only. Several browser-facing pages import modules from root-level `src/`, including account/admin/toolbox flows.
 
@@ -103,7 +105,7 @@ Examples of current references that depend on root-level path relationships:
 - `toolbox/toolRegistry.js` imports from `../src/shared/toolbox/tool-metadata-inventory.js`.
 - `assets/toolbox/*/js/index.js` imports from `../../../../src/` or `../../../../toolbox/` in several tool flows.
 
-These references can be preserved temporarily by serving compatibility paths from the repository root, but the final architecture should move browser-facing runtime modules into `www/` or an approved deployable browser module surface.
+These references are preserved by serving the browser-owned source modules from `www/src/` while keeping public `/src/...` URL compatibility.
 
 ## Current Local Web Server Root Behavior
 

@@ -5,7 +5,7 @@ David Quesenberry
 FullscreenService.test.mjs
 */
 import assert from 'node:assert/strict';
-import FullscreenService from '../../../src/engine/runtime/FullscreenService.js';
+import FullscreenService from '../../../www/src/engine/runtime/FullscreenService.js';
 
 export async function run() {
   let fullscreenElement = null;

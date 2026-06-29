@@ -11,7 +11,7 @@ import {
   RUNTIME_OBJECT_TYPES,
   isRuntimeObjectType,
   readManifestObjectDefinitions,
-} from "../../../src/engine/runtime/objectDefinitionReader.js";
+} from "../../../www/src/engine/runtime/objectDefinitionReader.js";
 
 export function createObjectDefinitionManifest() {
   return {

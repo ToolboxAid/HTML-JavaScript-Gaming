@@ -5,7 +5,7 @@
  ParticleSystem.test.mjs
 */
 import assert from 'node:assert/strict';
-import ParticleSystem from '../../../src/engine/fx/ParticleSystem.js';
+import ParticleSystem from '../../../www/src/engine/fx/ParticleSystem.js';
 
 function createSequenceRandom(values) {
   let index = 0;

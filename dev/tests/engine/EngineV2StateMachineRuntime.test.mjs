@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import {
   ENGINE_V2_STATE_MACHINE_ERRORS,
   processEngineV2StateMachineRuntime,
-} from "../../../src/engine/runtime/engineV2StateMachineRuntime.js";
+} from "../../../www/src/engine/runtime/engineV2StateMachineRuntime.js";
 import { createEngineV2FeatureCompleteFixture } from "./EngineV2FeatureCompleteFixture.mjs";
 
 export function run() {

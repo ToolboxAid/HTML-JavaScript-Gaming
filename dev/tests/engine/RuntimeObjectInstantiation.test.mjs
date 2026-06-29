@@ -8,9 +8,9 @@ import assert from "node:assert/strict";
 import {
   RUNTIME_OBJECT_INSTANTIATION_ERRORS,
   instantiateRuntimeObjects,
-} from "../../../src/engine/runtime/runtimeObjectInstantiation.js";
-import { readManifestObjectDefinitions } from "../../../src/engine/runtime/objectDefinitionReader.js";
-import { createRuntimeObjectRecords } from "../../../src/engine/runtime/runtimeObjectRecordFactory.js";
+} from "../../../www/src/engine/runtime/runtimeObjectInstantiation.js";
+import { readManifestObjectDefinitions } from "../../../www/src/engine/runtime/objectDefinitionReader.js";
+import { createRuntimeObjectRecords } from "../../../www/src/engine/runtime/runtimeObjectRecordFactory.js";
 import { createManifestDrivenRuntimeFixture } from "./RuntimeManifestDrivenFixture.mjs";
 
 export function run() {

@@ -12,7 +12,7 @@ import {
   pick,
   shuffle,
   weightedPick,
-} from "../../../src/shared/math/randomHelpers.js";
+} from "../../../www/src/shared/math/randomHelpers.js";
 
 function sequence(values) {
   let index = 0;

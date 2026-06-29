@@ -6,7 +6,7 @@ import { createLocalApiRouter } from "../../../api/server/local-api-router.mjs";
 import {
   getAdminNavigationItems,
   getOwnerNavigationItems,
-} from "../../../src/api/admin-owner-navigation.js";
+} from "../../../www/src/api/admin-owner-navigation.js";
 import { SEED_DB_KEYS } from "../../../api/seed/seed-db-keys.mjs";
 
 const MOVED_API_CLIENTS = Object.freeze([
@@ -80,11 +80,11 @@ async function apiJson(baseUrl, pathName, request = {}) {
   return payload.data;
 }
 
-test("product and web API clients live under src/api while engine API keeps only shared server plumbing", () => {
+test("product and web API clients live under www/src/api while engine API keeps only shared server plumbing", () => {
   assert.equal(fs.existsSync("src/engine/api"), false);
-  assert.equal(fs.existsSync("src/api/server-api-client.js"), true);
+  assert.equal(fs.existsSync("www/src/api/server-api-client.js"), true);
   MOVED_API_CLIENTS.forEach((fileName) => {
-    assert.equal(fs.existsSync(`src/api/${fileName}`), true, `${fileName} should live under src/api`);
+    assert.equal(fs.existsSync(`www/src/api/${fileName}`), true, `${fileName} should live under www/src/api`);
     assert.equal(fs.existsSync(`src/engine/api/${fileName}`), false, `${fileName} should not remain under src/engine/api`);
   });
 });
@@ -111,8 +111,8 @@ test("Admin and Owner navigation are shared and include present operational/busi
     const payload = await apiJson(server.baseUrl, "/api/navigation/admin-menu");
     assert.deepEqual(payload.adminMainItems.map((item) => item.label), adminLabels);
     assert.deepEqual(payload.ownerMenuItems.map((item) => item.label), ownerLabels);
-    assert.equal(payload.ownership.adminMainItems, "src/api/admin-owner-navigation.js");
-    assert.equal(payload.ownership.ownerMenuItems, "src/api/admin-owner-navigation.js");
+    assert.equal(payload.ownership.adminMainItems, "www/src/api/admin-owner-navigation.js");
+    assert.equal(payload.ownership.ownerMenuItems, "www/src/api/admin-owner-navigation.js");
   } finally {
     await server.close();
   }
@@ -153,7 +153,7 @@ test("API runtime boundary is documented for runtime implementation and not test
   const source = fs.readFileSync("api/API_RUNTIME_BOUNDARY.md", "utf8");
   assert.match(source, /server\/API application runtime implementation/i);
   assert.match(source, /not `dev\/tests\/dev-runtime`/);
-  assert.match(source, /Browser pages, Theme V2 scripts, toolbox pages, and `src\/engine` runtime code must use declared API\/service contracts instead of importing `api\/` directly/);
+  assert.match(source, /Browser pages, Theme V2 scripts, toolbox pages, and `www\/src\/engine` runtime code must use declared API\/service contracts instead of importing `api\/` directly/);
 });
 
 test("Toolbox registry consumes shared metadata without importing dev-runtime", () => {
@@ -161,6 +161,6 @@ test("Toolbox registry consumes shared metadata without importing dev-runtime", 
   const devRuntimeShim = fs.readFileSync("api/guest-seeds/tool-metadata-inventory.js", "utf8");
   assert.match(registrySource, /src\/shared\/toolbox\/tool-metadata-inventory\.js/);
   assert.doesNotMatch(registrySource, /src\/dev-runtime|src\\dev-runtime|dev-runtime\/guest-seeds/);
-  assert.match(devRuntimeShim, /\.\.\/\.\.\/src\/shared\/toolbox\/tool-metadata-inventory\.js/);
-  assert.equal(fs.existsSync("src/shared/toolbox/tool-metadata-inventory.js"), true);
+  assert.match(devRuntimeShim, /\.\.\/\.\.\/www\/src\/shared\/toolbox\/tool-metadata-inventory\.js/);
+  assert.equal(fs.existsSync("www/src/shared/toolbox/tool-metadata-inventory.js"), true);
 });

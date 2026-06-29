@@ -5,7 +5,7 @@ David Quesenberry
 GamepadHapticsService.test.mjs
 */
 
-import GamepadHapticsService from '../../../src/engine/input/GamepadHapticsService.js';
+import GamepadHapticsService from '../../../www/src/engine/input/GamepadHapticsService.js';
 
 function assert(condition, message) {
     if (!condition) {

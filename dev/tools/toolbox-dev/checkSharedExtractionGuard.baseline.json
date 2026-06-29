@@ -842,167 +842,167 @@
       "match": "rule:helper-fn-isPlainObject"
     },
     {
-      "file": "src/advanced/promotion/createPromotionGate.js",
+      "file": "www/src/advanced/promotion/createPromotionGate.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/advanced/promotion/createPromotionGate.js",
+      "file": "www/src/advanced/promotion/createPromotionGate.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/advanced/promotion/createPromotionGate.js",
+      "file": "www/src/advanced/promotion/createPromotionGate.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/advanced/promotion/createPromotionGate.js",
+      "file": "www/src/advanced/promotion/createPromotionGate.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/advanced/promotion/createPromotionGate.js",
+      "file": "www/src/advanced/promotion/createPromotionGate.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/advanced/promotion/createPromotionGate.js",
+      "file": "www/src/advanced/promotion/createPromotionGate.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/advanced/state/createWorldGameStateSystem.js",
+      "file": "www/src/advanced/state/createWorldGameStateSystem.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/advanced/state/createWorldGameStateSystem.js",
+      "file": "www/src/advanced/state/createWorldGameStateSystem.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/advanced/state/createWorldGameStateSystem.js",
+      "file": "www/src/advanced/state/createWorldGameStateSystem.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/advanced/state/createWorldGameStateSystem.js",
+      "file": "www/src/advanced/state/createWorldGameStateSystem.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/advanced/state/createWorldGameStateSystem.js",
+      "file": "www/src/advanced/state/createWorldGameStateSystem.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/advanced/state/createWorldGameStateSystem.js",
+      "file": "www/src/advanced/state/createWorldGameStateSystem.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/advanced/state/createWorldGameStateSystem.js",
+      "file": "www/src/advanced/state/createWorldGameStateSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/advanced/state/createWorldGameStateSystem.js",
+      "file": "www/src/advanced/state/createWorldGameStateSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/advanced/state/createWorldGameStateSystem.js",
+      "file": "www/src/advanced/state/createWorldGameStateSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/advanced/state/events.js",
+      "file": "www/src/advanced/state/events.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/advanced/state/events.js",
+      "file": "www/src/advanced/state/events.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/advanced/state/events.js",
+      "file": "www/src/advanced/state/events.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/advanced/state/initialState.js",
+      "file": "www/src/advanced/state/initialState.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/advanced/state/initialState.js",
+      "file": "www/src/advanced/state/initialState.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/advanced/state/transitions.js",
+      "file": "www/src/advanced/state/transitions.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/advanced/state/transitions.js",
+      "file": "www/src/advanced/state/transitions.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/advanced/state/transitions.js",
+      "file": "www/src/advanced/state/transitions.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/advanced/state/transitions.js",
+      "file": "www/src/advanced/state/transitions.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/advanced/state/transitions.js",
+      "file": "www/src/advanced/state/transitions.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/advanced/state/transitions.js",
+      "file": "www/src/advanced/state/transitions.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/advanced/state/transitions.js",
+      "file": "www/src/advanced/state/transitions.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/advanced/state/transitions.js",
+      "file": "www/src/advanced/state/transitions.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/advanced/state/transitions.js",
+      "file": "www/src/advanced/state/transitions.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/advanced/state/utils.js",
+      "file": "www/src/advanced/state/utils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/advanced/state/utils.js",
+      "file": "www/src/advanced/state/utils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/advanced/state/utils.js",
+      "file": "www/src/advanced/state/utils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/advanced/state/utils.js",
+      "file": "www/src/advanced/state/utils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
@@ -1137,1967 +1137,1967 @@
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/ai/GroupBehaviors.js",
+      "file": "www/src/engine/ai/GroupBehaviors.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/ai/GroupBehaviors.js",
+      "file": "www/src/engine/ai/GroupBehaviors.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/audio/MediaTrackService.js",
+      "file": "www/src/engine/audio/MediaTrackService.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/audio/PreviewSynthEngine.js",
+      "file": "www/src/engine/audio/PreviewSynthEngine.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/audio/PreviewSynthEngine.js",
+      "file": "www/src/engine/audio/PreviewSynthEngine.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/audio/PreviewSynthEngine.js",
+      "file": "www/src/engine/audio/PreviewSynthEngine.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/audio/PreviewSynthEngine.js",
+      "file": "www/src/engine/audio/PreviewSynthEngine.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/audio/PreviewSynthEngine.js",
+      "file": "www/src/engine/audio/PreviewSynthEngine.js",
       "type": "renamed-helper-clone",
       "match": "rule:renamed-helper-finiteNumber"
     },
     {
-      "file": "src/engine/audio/SongSheetParser.js",
+      "file": "www/src/engine/audio/SongSheetParser.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/audio/SoundFontPreviewEngine.js",
+      "file": "www/src/engine/audio/SoundFontPreviewEngine.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/audio/SoundFontPreviewEngine.js",
+      "file": "www/src/engine/audio/SoundFontPreviewEngine.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/audio/SoundFontPreviewEngine.js",
+      "file": "www/src/engine/audio/SoundFontPreviewEngine.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/audio/SoundFontPreviewEngine.js",
+      "file": "www/src/engine/audio/SoundFontPreviewEngine.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/audio/SoundFontPreviewEngine.js",
+      "file": "www/src/engine/audio/SoundFontPreviewEngine.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/audio/SoundFontPreviewEngine.js",
+      "file": "www/src/engine/audio/SoundFontPreviewEngine.js",
       "type": "renamed-helper-clone",
       "match": "rule:renamed-helper-finiteNumber"
     },
     {
-      "file": "src/engine/audio/TextToSpeechEngine.js",
+      "file": "www/src/engine/audio/TextToSpeechEngine.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/audio/TextToSpeechEngine.js",
+      "file": "www/src/engine/audio/TextToSpeechEngine.js",
       "type": "renamed-helper-clone",
       "match": "rule:renamed-helper-finiteNumber"
     },
     {
-      "file": "src/engine/camera/Camera2D.js",
+      "file": "www/src/engine/camera/Camera2D.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/camera/Camera2D.js",
+      "file": "www/src/engine/camera/Camera2D.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/camera/Camera3D.js",
+      "file": "www/src/engine/camera/Camera3D.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/camera/Camera3D.js",
+      "file": "www/src/engine/camera/Camera3D.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/camera/Camera3D.js",
+      "file": "www/src/engine/camera/Camera3D.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/camera/Camera3D.js",
+      "file": "www/src/engine/camera/Camera3D.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/camera/Camera3D.js",
+      "file": "www/src/engine/camera/Camera3D.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/camera/Camera3D.js",
+      "file": "www/src/engine/camera/Camera3D.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/camera/Camera3D.js",
+      "file": "www/src/engine/camera/Camera3D.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/camera/Camera3D.js",
+      "file": "www/src/engine/camera/Camera3D.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/camera/Camera3D.js",
+      "file": "www/src/engine/camera/Camera3D.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/camera/ZoneCameraSystem.js",
+      "file": "www/src/engine/camera/ZoneCameraSystem.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/camera/ZoneCameraSystem.js",
+      "file": "www/src/engine/camera/ZoneCameraSystem.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/collision/combat/Combat.js",
+      "file": "www/src/engine/collision/combat/Combat.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/collision/combat/Combat.js",
+      "file": "www/src/engine/collision/combat/Combat.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/collision/hitboxCollision.js",
+      "file": "www/src/engine/collision/hitboxCollision.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/collision/hitboxCollision.js",
+      "file": "www/src/engine/collision/hitboxCollision.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/collision/hitboxCollision.js",
+      "file": "www/src/engine/collision/hitboxCollision.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/collision/hitboxCollision.js",
+      "file": "www/src/engine/collision/hitboxCollision.js",
       "type": "renamed-helper-clone",
       "match": "rule:renamed-helper-finiteNumber"
     },
     {
-      "file": "src/engine/collision/objectVector.js",
+      "file": "www/src/engine/collision/objectVector.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/collision/objectVector.js",
+      "file": "www/src/engine/collision/objectVector.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/collision/objectVector.js",
+      "file": "www/src/engine/collision/objectVector.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/collision/objectVector.js",
+      "file": "www/src/engine/collision/objectVector.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/collision/objectVector.js",
+      "file": "www/src/engine/collision/objectVector.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/collision/objectVector.js",
+      "file": "www/src/engine/collision/objectVector.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/collision/polygon.js",
+      "file": "www/src/engine/collision/polygon.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/collision/polygon.js",
+      "file": "www/src/engine/collision/polygon.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/core/FixedTicker.js",
+      "file": "www/src/engine/core/FixedTicker.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/core/FixedTicker.js",
+      "file": "www/src/engine/core/FixedTicker.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/core/FrameClock.js",
+      "file": "www/src/engine/core/FrameClock.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/core/FrameClock.js",
+      "file": "www/src/engine/core/FrameClock.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/debug/DebugOverlayLayout.js",
+      "file": "www/src/engine/debug/DebugOverlayLayout.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/debug/inspectors/bootstrap/createInspectorSurfaceIntegration.js",
+      "file": "www/src/engine/debug/inspectors/bootstrap/createInspectorSurfaceIntegration.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/inspectors/bootstrap/createInspectorSurfaceIntegration.js",
+      "file": "www/src/engine/debug/inspectors/bootstrap/createInspectorSurfaceIntegration.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/debug/inspectors/commands/registerInspectorCommands.js",
+      "file": "www/src/engine/debug/inspectors/commands/registerInspectorCommands.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/inspectors/commands/registerInspectorCommands.js",
+      "file": "www/src/engine/debug/inspectors/commands/registerInspectorCommands.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/inspectors/commands/registerInspectorCommands.js",
+      "file": "www/src/engine/debug/inspectors/commands/registerInspectorCommands.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/debug/inspectors/host/debugInspectorHost.js",
+      "file": "www/src/engine/debug/inspectors/host/debugInspectorHost.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/inspectors/host/debugInspectorHost.js",
+      "file": "www/src/engine/debug/inspectors/host/debugInspectorHost.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/debug/inspectors/host/debugInspectorHost.js",
+      "file": "www/src/engine/debug/inspectors/host/debugInspectorHost.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/debug/inspectors/host/debugInspectorHost.js",
+      "file": "www/src/engine/debug/inspectors/host/debugInspectorHost.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/debug/inspectors/registry/debugInspectorRegistry.js",
+      "file": "www/src/engine/debug/inspectors/registry/debugInspectorRegistry.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/inspectors/shared/inspectorUtils.js",
+      "file": "www/src/engine/debug/inspectors/shared/inspectorUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/inspectors/shared/inspectorUtils.js",
+      "file": "www/src/engine/debug/inspectors/shared/inspectorUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/inspectors/shared/inspectorUtils.js",
+      "file": "www/src/engine/debug/inspectors/shared/inspectorUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/inspectors/shared/inspectorUtils.js",
+      "file": "www/src/engine/debug/inspectors/shared/inspectorUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/inspectors/shared/inspectorUtils.js",
+      "file": "www/src/engine/debug/inspectors/shared/inspectorUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/debug/inspectors/shared/inspectorUtils.js",
+      "file": "www/src/engine/debug/inspectors/shared/inspectorUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/debug/inspectors/shared/inspectorUtils.js",
+      "file": "www/src/engine/debug/inspectors/shared/inspectorUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/debug/inspectors/shared/inspectorUtils.js",
+      "file": "www/src/engine/debug/inspectors/shared/inspectorUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/debug/inspectors/shared/inspectorUtils.js",
+      "file": "www/src/engine/debug/inspectors/shared/inspectorUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-4"
     },
     {
-      "file": "src/engine/debug/inspectors/shared/inspectorUtils.js",
+      "file": "www/src/engine/debug/inspectors/shared/inspectorUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-4"
     },
     {
-      "file": "src/engine/debug/inspectors/shared/inspectorUtils.js",
+      "file": "www/src/engine/debug/inspectors/shared/inspectorUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-4"
     },
     {
-      "file": "src/engine/debug/inspectors/shared/inspectorUtils.js",
+      "file": "www/src/engine/debug/inspectors/shared/inspectorUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-4"
     },
     {
-      "file": "src/engine/debug/inspectors/viewModels/componentInspectorViewModel.js",
+      "file": "www/src/engine/debug/inspectors/viewModels/componentInspectorViewModel.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/inspectors/viewModels/entityInspectorViewModel.js",
+      "file": "www/src/engine/debug/inspectors/viewModels/entityInspectorViewModel.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/inspectors/viewModels/entityInspectorViewModel.js",
+      "file": "www/src/engine/debug/inspectors/viewModels/entityInspectorViewModel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/debug/inspectors/viewModels/eventStreamInspectorViewModel.js",
+      "file": "www/src/engine/debug/inspectors/viewModels/eventStreamInspectorViewModel.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/inspectors/viewModels/eventStreamInspectorViewModel.js",
+      "file": "www/src/engine/debug/inspectors/viewModels/eventStreamInspectorViewModel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/debug/inspectors/viewModels/stateDiffInspectorViewModel.js",
+      "file": "www/src/engine/debug/inspectors/viewModels/stateDiffInspectorViewModel.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/inspectors/viewModels/stateDiffInspectorViewModel.js",
+      "file": "www/src/engine/debug/inspectors/viewModels/stateDiffInspectorViewModel.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/inspectors/viewModels/stateDiffInspectorViewModel.js",
+      "file": "www/src/engine/debug/inspectors/viewModels/stateDiffInspectorViewModel.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/debug/inspectors/viewModels/stateDiffInspectorViewModel.js",
+      "file": "www/src/engine/debug/inspectors/viewModels/stateDiffInspectorViewModel.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-4"
     },
     {
-      "file": "src/engine/debug/inspectors/viewModels/timelineInspectorViewModel.js",
+      "file": "www/src/engine/debug/inspectors/viewModels/timelineInspectorViewModel.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/inspectors/viewModels/timelineInspectorViewModel.js",
+      "file": "www/src/engine/debug/inspectors/viewModels/timelineInspectorViewModel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/debug/inspectors/viewModels/timelineInspectorViewModel.js",
+      "file": "www/src/engine/debug/inspectors/viewModels/timelineInspectorViewModel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/debug/network/bootstrap/createNetworkDebugSurfaceIntegration.js",
+      "file": "www/src/engine/debug/network/bootstrap/createNetworkDebugSurfaceIntegration.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/network/commands/networkDebugCommandPackBridge.js",
+      "file": "www/src/engine/debug/network/commands/networkDebugCommandPackBridge.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/network/dashboard/registerDashboardCommands.js",
+      "file": "www/src/engine/debug/network/dashboard/registerDashboardCommands.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/network/dashboard/registerDashboardCommands.js",
+      "file": "www/src/engine/debug/network/dashboard/registerDashboardCommands.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/network/dashboard/serverDashboardHost.js",
+      "file": "www/src/engine/debug/network/dashboard/serverDashboardHost.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/network/dashboard/serverDashboardMetrics.js",
+      "file": "www/src/engine/debug/network/dashboard/serverDashboardMetrics.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/network/dashboard/serverDashboardMetrics.js",
+      "file": "www/src/engine/debug/network/dashboard/serverDashboardMetrics.js",
       "type": "inline-helper-clone",
       "match": "rule:inline-arrow-number-is-finite"
     },
     {
-      "file": "src/engine/debug/network/dashboard/serverDashboardMetrics.js",
+      "file": "www/src/engine/debug/network/dashboard/serverDashboardMetrics.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/debug/network/dashboard/serverDashboardProviders.js",
+      "file": "www/src/engine/debug/network/dashboard/serverDashboardProviders.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/network/dashboard/serverDashboardRefreshModes.js",
+      "file": "www/src/engine/debug/network/dashboard/serverDashboardRefreshModes.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/network/dashboard/serverDashboardRegistry.js",
+      "file": "www/src/engine/debug/network/dashboard/serverDashboardRegistry.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/network/dashboard/serverDashboardRenderer.js",
+      "file": "www/src/engine/debug/network/dashboard/serverDashboardRenderer.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/network/dashboard/serverDashboardViewModel.js",
+      "file": "www/src/engine/debug/network/dashboard/serverDashboardViewModel.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/network/diagnostics/divergenceDiagnosticsModel.js",
+      "file": "www/src/engine/debug/network/diagnostics/divergenceDiagnosticsModel.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/network/diagnostics/latencyDiagnosticsModel.js",
+      "file": "www/src/engine/debug/network/diagnostics/latencyDiagnosticsModel.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/network/diagnostics/networkPromotionRecommendation.js",
+      "file": "www/src/engine/debug/network/diagnostics/networkPromotionRecommendation.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/network/diagnostics/replicationDiagnosticsModel.js",
+      "file": "www/src/engine/debug/network/diagnostics/replicationDiagnosticsModel.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/network/panels/networkDebugPanelRegistry.js",
+      "file": "www/src/engine/debug/network/panels/networkDebugPanelRegistry.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/network/panels/networkObservabilityPanels.js",
+      "file": "www/src/engine/debug/network/panels/networkObservabilityPanels.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/network/providers/networkDebugProviderRegistry.js",
+      "file": "www/src/engine/debug/network/providers/networkDebugProviderRegistry.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/network/shared/hostReadUtils.js",
+      "file": "www/src/engine/debug/network/shared/hostReadUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/network/shared/hostReadUtils.js",
+      "file": "www/src/engine/debug/network/shared/hostReadUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/debug/network/shared/hostReadUtils.js",
+      "file": "www/src/engine/debug/network/shared/hostReadUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-4"
     },
     {
-      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "file": "www/src/engine/debug/network/shared/networkDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "file": "www/src/engine/debug/network/shared/networkDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "file": "www/src/engine/debug/network/shared/networkDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "file": "www/src/engine/debug/network/shared/networkDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "file": "www/src/engine/debug/network/shared/networkDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "file": "www/src/engine/debug/network/shared/networkDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "file": "www/src/engine/debug/network/shared/networkDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "file": "www/src/engine/debug/network/shared/networkDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "file": "www/src/engine/debug/network/shared/networkDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "file": "www/src/engine/debug/network/shared/networkDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "file": "www/src/engine/debug/network/shared/networkDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "file": "www/src/engine/debug/network/shared/networkDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "file": "www/src/engine/debug/network/shared/networkDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-4"
     },
     {
-      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "file": "www/src/engine/debug/network/shared/networkDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-4"
     },
     {
-      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "file": "www/src/engine/debug/network/shared/networkDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-4"
     },
     {
-      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "file": "www/src/engine/debug/network/shared/networkDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-4"
     },
     {
-      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "file": "www/src/engine/debug/network/shared/networkDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-4"
     },
     {
-      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "file": "www/src/engine/debug/network/shared/networkDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-4"
     },
     {
-      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "file": "www/src/engine/debug/network/shared/networkDebugUtils.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/debug/panels/PromotionGatePanel.js",
+      "file": "www/src/engine/debug/panels/PromotionGatePanel.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/panels/PromotionGatePanel.js",
+      "file": "www/src/engine/debug/panels/PromotionGatePanel.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/debug/standard/threeD/bootstrap/createStandard3dDebugSurfaceIntegration.js",
+      "file": "www/src/engine/debug/standard/threeD/bootstrap/createStandard3dDebugSurfaceIntegration.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/standard/threeD/panels/panel3dCamera.js",
+      "file": "www/src/engine/debug/standard/threeD/panels/panel3dCamera.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/standard/threeD/panels/panel3dCamera.js",
+      "file": "www/src/engine/debug/standard/threeD/panels/panel3dCamera.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/debug/standard/threeD/panels/panel3dCamera.js",
+      "file": "www/src/engine/debug/standard/threeD/panels/panel3dCamera.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/debug/standard/threeD/panels/panel3dCamera.js",
+      "file": "www/src/engine/debug/standard/threeD/panels/panel3dCamera.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/debug/standard/threeD/panels/panel3dCollision.js",
+      "file": "www/src/engine/debug/standard/threeD/panels/panel3dCollision.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/standard/threeD/panels/panel3dCollisionOverlays.js",
+      "file": "www/src/engine/debug/standard/threeD/panels/panel3dCollisionOverlays.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/standard/threeD/panels/panel3dRenderPipelineStages.js",
+      "file": "www/src/engine/debug/standard/threeD/panels/panel3dRenderPipelineStages.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/standard/threeD/panels/panel3dRenderStages.js",
+      "file": "www/src/engine/debug/standard/threeD/panels/panel3dRenderStages.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/standard/threeD/panels/panel3dSceneGraph.js",
+      "file": "www/src/engine/debug/standard/threeD/panels/panel3dSceneGraph.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/standard/threeD/panels/panel3dSceneGraphInspector.js",
+      "file": "www/src/engine/debug/standard/threeD/panels/panel3dSceneGraphInspector.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/standard/threeD/panels/panel3dTransform.js",
+      "file": "www/src/engine/debug/standard/threeD/panels/panel3dTransform.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/standard/threeD/panels/panel3dTransformInspector.js",
+      "file": "www/src/engine/debug/standard/threeD/panels/panel3dTransformInspector.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/standard/threeD/panels/panel3dTransformInspector.js",
+      "file": "www/src/engine/debug/standard/threeD/panels/panel3dTransformInspector.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/debug/standard/threeD/panels/panel3dTransformInspector.js",
+      "file": "www/src/engine/debug/standard/threeD/panels/panel3dTransformInspector.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/debug/standard/threeD/panels/panel3dTransformInspector.js",
+      "file": "www/src/engine/debug/standard/threeD/panels/panel3dTransformInspector.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/debug/standard/threeD/providers/cameraSummaryProvider.js",
+      "file": "www/src/engine/debug/standard/threeD/providers/cameraSummaryProvider.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/standard/threeD/providers/collisionOverlaysProvider.js",
+      "file": "www/src/engine/debug/standard/threeD/providers/collisionOverlaysProvider.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/standard/threeD/providers/collisionSummaryProvider.js",
+      "file": "www/src/engine/debug/standard/threeD/providers/collisionSummaryProvider.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/standard/threeD/providers/renderPipelineStagesProvider.js",
+      "file": "www/src/engine/debug/standard/threeD/providers/renderPipelineStagesProvider.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/standard/threeD/providers/renderStageSummaryProvider.js",
+      "file": "www/src/engine/debug/standard/threeD/providers/renderStageSummaryProvider.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/standard/threeD/providers/sceneGraphInspectorProvider.js",
+      "file": "www/src/engine/debug/standard/threeD/providers/sceneGraphInspectorProvider.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/standard/threeD/providers/sceneGraphSummaryProvider.js",
+      "file": "www/src/engine/debug/standard/threeD/providers/sceneGraphSummaryProvider.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/standard/threeD/providers/transformInspectorProvider.js",
+      "file": "www/src/engine/debug/standard/threeD/providers/transformInspectorProvider.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/standard/threeD/providers/transformInspectorProvider.js",
+      "file": "www/src/engine/debug/standard/threeD/providers/transformInspectorProvider.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/debug/standard/threeD/providers/transformSummaryProvider.js",
+      "file": "www/src/engine/debug/standard/threeD/providers/transformSummaryProvider.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
+      "file": "www/src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
+      "file": "www/src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
+      "file": "www/src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
+      "file": "www/src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
+      "file": "www/src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
+      "file": "www/src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
+      "file": "www/src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
+      "file": "www/src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
+      "file": "www/src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-4"
     },
     {
-      "file": "src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
+      "file": "www/src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-4"
     },
     {
-      "file": "src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
+      "file": "www/src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-4"
     },
     {
-      "file": "src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
+      "file": "www/src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-4"
     },
     {
-      "file": "src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
+      "file": "www/src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/input/GamepadHapticsService.js",
+      "file": "www/src/engine/input/GamepadHapticsService.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/input/InputCaptureSession.js",
+      "file": "www/src/engine/input/InputCaptureSession.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/input/NormalizedInputRegistry.js",
+      "file": "www/src/engine/input/NormalizedInputRegistry.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/input/NormalizedInputRegistry.js",
+      "file": "www/src/engine/input/NormalizedInputRegistry.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/input/NormalizedInputRegistry.js",
+      "file": "www/src/engine/input/NormalizedInputRegistry.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/input/PointerDragState.js",
+      "file": "www/src/engine/input/PointerDragState.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/input/PointerDragState.js",
+      "file": "www/src/engine/input/PointerDragState.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/input/PointerDragState.js",
+      "file": "www/src/engine/input/PointerDragState.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/input/PointerDragState.js",
+      "file": "www/src/engine/input/PointerDragState.js",
       "type": "renamed-helper-clone",
       "match": "rule:renamed-helper-finiteNumber"
     },
     {
-      "file": "src/engine/network/bootstrap/NetworkingLayer.js",
+      "file": "www/src/engine/network/bootstrap/NetworkingLayer.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/network/bootstrap/NetworkingLayer.js",
+      "file": "www/src/engine/network/bootstrap/NetworkingLayer.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/network/client/ClientReplicationApplicationLayer.js",
+      "file": "www/src/engine/network/client/ClientReplicationApplicationLayer.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/network/client/ClientReplicationApplicationLayer.js",
+      "file": "www/src/engine/network/client/ClientReplicationApplicationLayer.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/network/client/PredictionReconciler.js",
+      "file": "www/src/engine/network/client/PredictionReconciler.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/network/client/PredictionReconciler.js",
+      "file": "www/src/engine/network/client/PredictionReconciler.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/network/replication/ReplicationMessageContract.js",
+      "file": "www/src/engine/network/replication/ReplicationMessageContract.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/network/replication/ReplicationMessageContract.js",
+      "file": "www/src/engine/network/replication/ReplicationMessageContract.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/network/replication/ReplicationMessageContract.js",
+      "file": "www/src/engine/network/replication/ReplicationMessageContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/network/replication/ReplicationMessageContract.js",
+      "file": "www/src/engine/network/replication/ReplicationMessageContract.js",
       "type": "local-helper-definition",
       "match": "rule:helper-fn-isPlainObject"
     },
     {
-      "file": "src/engine/network/replication/StateReplication.js",
+      "file": "www/src/engine/network/replication/StateReplication.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/network/replication/StateReplication.js",
+      "file": "www/src/engine/network/replication/StateReplication.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/network/server/AuthoritativeInputIngestionContract.js",
+      "file": "www/src/engine/network/server/AuthoritativeInputIngestionContract.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/network/server/AuthoritativeInputIngestionContract.js",
+      "file": "www/src/engine/network/server/AuthoritativeInputIngestionContract.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/network/server/AuthoritativeInputIngestionContract.js",
+      "file": "www/src/engine/network/server/AuthoritativeInputIngestionContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/network/server/AuthoritativeInputIngestionContract.js",
+      "file": "www/src/engine/network/server/AuthoritativeInputIngestionContract.js",
       "type": "local-helper-definition",
       "match": "rule:helper-fn-isPlainObject"
     },
     {
-      "file": "src/engine/network/server/AuthoritativeServerRuntime.js",
+      "file": "www/src/engine/network/server/AuthoritativeServerRuntime.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/network/server/AuthoritativeServerRuntime.js",
+      "file": "www/src/engine/network/server/AuthoritativeServerRuntime.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/network/server/AuthoritativeServerRuntime.js",
+      "file": "www/src/engine/network/server/AuthoritativeServerRuntime.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/network/server/AuthoritativeServerRuntime.js",
+      "file": "www/src/engine/network/server/AuthoritativeServerRuntime.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/network/session/ChatPresenceLayer.js",
+      "file": "www/src/engine/network/session/ChatPresenceLayer.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/network/session/ChatPresenceLayer.js",
+      "file": "www/src/engine/network/session/ChatPresenceLayer.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/network/session/HandshakeSimulator.js",
+      "file": "www/src/engine/network/session/HandshakeSimulator.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/network/session/HandshakeSimulator.js",
+      "file": "www/src/engine/network/session/HandshakeSimulator.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/network/session/LobbySessionManager.js",
+      "file": "www/src/engine/network/session/LobbySessionManager.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/network/session/LobbySessionManager.js",
+      "file": "www/src/engine/network/session/LobbySessionManager.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/network/transport/LoopbackTransport.js",
+      "file": "www/src/engine/network/transport/LoopbackTransport.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/network/transport/LoopbackTransport.js",
+      "file": "www/src/engine/network/transport/LoopbackTransport.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/network/transport/Serializer.js",
+      "file": "www/src/engine/network/transport/Serializer.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/network/transport/Serializer.js",
+      "file": "www/src/engine/network/transport/Serializer.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/physics/arcadeBody.js",
+      "file": "www/src/engine/physics/arcadeBody.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/physics/arcadeBody.js",
+      "file": "www/src/engine/physics/arcadeBody.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/physics/collision3d.js",
+      "file": "www/src/engine/physics/collision3d.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/physics/collision3d.js",
+      "file": "www/src/engine/physics/collision3d.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/physics/integration3d.js",
+      "file": "www/src/engine/physics/integration3d.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/physics/integration3d.js",
+      "file": "www/src/engine/physics/integration3d.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/release/SettingsSystem.js",
+      "file": "www/src/engine/release/SettingsSystem.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/release/SettingsSystem.js",
+      "file": "www/src/engine/release/SettingsSystem.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/rendering/ObjectVectorRuntimeAssetService.js",
+      "file": "www/src/engine/rendering/ObjectVectorRuntimeAssetService.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/rendering/ObjectVectorRuntimeAssetService.js",
+      "file": "www/src/engine/rendering/ObjectVectorRuntimeAssetService.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/rendering/ObjectVectorRuntimeAssetService.js",
+      "file": "www/src/engine/rendering/ObjectVectorRuntimeAssetService.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/rendering/ObjectVectorRuntimeAssetService.js",
+      "file": "www/src/engine/rendering/ObjectVectorRuntimeAssetService.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/rendering/ObjectVectorRuntimeAssetService.js",
+      "file": "www/src/engine/rendering/ObjectVectorRuntimeAssetService.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/rendering/ObjectVectorRuntimeAssetService.js",
+      "file": "www/src/engine/rendering/ObjectVectorRuntimeAssetService.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/rendering/ObjectVectorRuntimeAssetService.js",
+      "file": "www/src/engine/rendering/ObjectVectorRuntimeAssetService.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/rendering/ObjectVectorRuntimeAssetService.js",
+      "file": "www/src/engine/rendering/ObjectVectorRuntimeAssetService.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/rendering/ObjectVectorRuntimeAssetService.js",
+      "file": "www/src/engine/rendering/ObjectVectorRuntimeAssetService.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/rendering/ObjectVectorRuntimeAssetService.js",
+      "file": "www/src/engine/rendering/ObjectVectorRuntimeAssetService.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/rendering/ObjectVectorRuntimeAssetService.js",
+      "file": "www/src/engine/rendering/ObjectVectorRuntimeAssetService.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/rendering/ObjectVectorRuntimeAssetService.js",
+      "file": "www/src/engine/rendering/ObjectVectorRuntimeAssetService.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/rendering/ObjectVectorTransformService.js",
+      "file": "www/src/engine/rendering/ObjectVectorTransformService.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/rendering/ObjectVectorTransformService.js",
+      "file": "www/src/engine/rendering/ObjectVectorTransformService.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/rendering/ObjectVectorTransformService.js",
+      "file": "www/src/engine/rendering/ObjectVectorTransformService.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/rendering/ObjectVectorTransformService.js",
+      "file": "www/src/engine/rendering/ObjectVectorTransformService.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/rendering/ObjectVectorTransformService.js",
+      "file": "www/src/engine/rendering/ObjectVectorTransformService.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/rendering/ObjectVectorTransformService.js",
+      "file": "www/src/engine/rendering/ObjectVectorTransformService.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/rendering/ObjectVectorTransformService.js",
+      "file": "www/src/engine/rendering/ObjectVectorTransformService.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/rendering/ObjectVectorTransformService.js",
+      "file": "www/src/engine/rendering/ObjectVectorTransformService.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/rendering/ObjectVectorTransformService.js",
+      "file": "www/src/engine/rendering/ObjectVectorTransformService.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/rendering/ObjectVectorTransformService.js",
+      "file": "www/src/engine/rendering/ObjectVectorTransformService.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/rendering/WorldScreenTransformService.js",
+      "file": "www/src/engine/rendering/WorldScreenTransformService.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/rendering/WorldScreenTransformService.js",
+      "file": "www/src/engine/rendering/WorldScreenTransformService.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/rendering/WorldScreenTransformService.js",
+      "file": "www/src/engine/rendering/WorldScreenTransformService.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/rendering/WorldScreenTransformService.js",
+      "file": "www/src/engine/rendering/WorldScreenTransformService.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/rendering/WorldScreenTransformService.js",
+      "file": "www/src/engine/rendering/WorldScreenTransformService.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/rendering/WorldScreenTransformService.js",
+      "file": "www/src/engine/rendering/WorldScreenTransformService.js",
       "type": "renamed-helper-clone",
       "match": "rule:renamed-helper-finiteNumber"
     },
     {
-      "file": "src/engine/replay/ReplayModel.js",
+      "file": "www/src/engine/replay/ReplayModel.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/replay/ReplayModel.js",
+      "file": "www/src/engine/replay/ReplayModel.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/replay/ReplayModel.js",
+      "file": "www/src/engine/replay/ReplayModel.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/replay/ReplayModel.js",
+      "file": "www/src/engine/replay/ReplayModel.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/replay/ReplayModel.js",
+      "file": "www/src/engine/replay/ReplayModel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/replay/ReplaySystem.js",
+      "file": "www/src/engine/replay/ReplaySystem.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/replay/ReplaySystem.js",
+      "file": "www/src/engine/replay/ReplaySystem.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/replay/ReplaySystem.js",
+      "file": "www/src/engine/replay/ReplaySystem.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/replay/ReplaySystem.js",
+      "file": "www/src/engine/replay/ReplaySystem.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/replay/ReplayTimeline.js",
+      "file": "www/src/engine/replay/ReplayTimeline.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/replay/ReplayTimeline.js",
+      "file": "www/src/engine/replay/ReplayTimeline.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/replay/ReplayTimeline.js",
+      "file": "www/src/engine/replay/ReplayTimeline.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/replay/ReplayTimeline.js",
+      "file": "www/src/engine/replay/ReplayTimeline.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/replay/ReplayTimeline.js",
+      "file": "www/src/engine/replay/ReplayTimeline.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/replay/ReplayTimeline.js",
+      "file": "www/src/engine/replay/ReplayTimeline.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/runtime/engineV2AnimationRuntime.js",
+      "file": "www/src/engine/runtime/engineV2AnimationRuntime.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2AnimationRuntime.js",
+      "file": "www/src/engine/runtime/engineV2AnimationRuntime.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2AnimationRuntime.js",
+      "file": "www/src/engine/runtime/engineV2AnimationRuntime.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2AudioRuntime.js",
+      "file": "www/src/engine/runtime/engineV2AudioRuntime.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2CameraRuntime.js",
+      "file": "www/src/engine/runtime/engineV2CameraRuntime.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/runtime/engineV2CameraRuntime.js",
+      "file": "www/src/engine/runtime/engineV2CameraRuntime.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/runtime/engineV2CameraRuntime.js",
+      "file": "www/src/engine/runtime/engineV2CameraRuntime.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2CameraRuntime.js",
+      "file": "www/src/engine/runtime/engineV2CameraRuntime.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2CameraRuntime.js",
+      "file": "www/src/engine/runtime/engineV2CameraRuntime.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2CameraRuntime.js",
+      "file": "www/src/engine/runtime/engineV2CameraRuntime.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2CameraRuntime.js",
+      "file": "www/src/engine/runtime/engineV2CameraRuntime.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2CameraRuntime.js",
+      "file": "www/src/engine/runtime/engineV2CameraRuntime.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2CameraRuntime.js",
+      "file": "www/src/engine/runtime/engineV2CameraRuntime.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2CameraRuntime.js",
+      "file": "www/src/engine/runtime/engineV2CameraRuntime.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2CameraRuntime.js",
+      "file": "www/src/engine/runtime/engineV2CameraRuntime.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2ChaseFleeBehavior.js",
+      "file": "www/src/engine/runtime/engineV2ChaseFleeBehavior.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2ChaseFleeBehavior.js",
+      "file": "www/src/engine/runtime/engineV2ChaseFleeBehavior.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2ChaseFleeBehavior.js",
+      "file": "www/src/engine/runtime/engineV2ChaseFleeBehavior.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2ChaseFleeBehavior.js",
+      "file": "www/src/engine/runtime/engineV2ChaseFleeBehavior.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2CheckpointSystem.js",
+      "file": "www/src/engine/runtime/engineV2CheckpointSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2CheckpointSystem.js",
+      "file": "www/src/engine/runtime/engineV2CheckpointSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2EconomyAndCurrency.js",
+      "file": "www/src/engine/runtime/engineV2EconomyAndCurrency.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2EconomyAndCurrency.js",
+      "file": "www/src/engine/runtime/engineV2EconomyAndCurrency.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2EconomyAndCurrency.js",
+      "file": "www/src/engine/runtime/engineV2EconomyAndCurrency.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2EffectRuntime.js",
+      "file": "www/src/engine/runtime/engineV2EffectRuntime.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2EffectRuntime.js",
+      "file": "www/src/engine/runtime/engineV2EffectRuntime.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2EffectRuntime.js",
+      "file": "www/src/engine/runtime/engineV2EffectRuntime.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2EffectRuntime.js",
+      "file": "www/src/engine/runtime/engineV2EffectRuntime.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2EffectRuntime.js",
+      "file": "www/src/engine/runtime/engineV2EffectRuntime.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2EffectRuntime.js",
+      "file": "www/src/engine/runtime/engineV2EffectRuntime.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2ModifierStack.js",
+      "file": "www/src/engine/runtime/engineV2ModifierStack.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2ModifierStack.js",
+      "file": "www/src/engine/runtime/engineV2ModifierStack.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2ModifierStack.js",
+      "file": "www/src/engine/runtime/engineV2ModifierStack.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2ObjectiveSystem.js",
+      "file": "www/src/engine/runtime/engineV2ObjectiveSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2ObjectiveSystem.js",
+      "file": "www/src/engine/runtime/engineV2ObjectiveSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2ObjectiveSystem.js",
+      "file": "www/src/engine/runtime/engineV2ObjectiveSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2ObjectiveSystem.js",
+      "file": "www/src/engine/runtime/engineV2ObjectiveSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2ObjectiveSystem.js",
+      "file": "www/src/engine/runtime/engineV2ObjectiveSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2PatrolBehavior.js",
+      "file": "www/src/engine/runtime/engineV2PatrolBehavior.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2PatrolBehavior.js",
+      "file": "www/src/engine/runtime/engineV2PatrolBehavior.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2PatrolBehavior.js",
+      "file": "www/src/engine/runtime/engineV2PatrolBehavior.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2PatrolBehavior.js",
+      "file": "www/src/engine/runtime/engineV2PatrolBehavior.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2PatrolBehavior.js",
+      "file": "www/src/engine/runtime/engineV2PatrolBehavior.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2PatrolBehavior.js",
+      "file": "www/src/engine/runtime/engineV2PatrolBehavior.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2PatrolBehavior.js",
+      "file": "www/src/engine/runtime/engineV2PatrolBehavior.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2ProfileStateSystem.js",
+      "file": "www/src/engine/runtime/engineV2ProfileStateSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2ProfileStateSystem.js",
+      "file": "www/src/engine/runtime/engineV2ProfileStateSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2ProjectileSystem.js",
+      "file": "www/src/engine/runtime/engineV2ProjectileSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2ProjectileSystem.js",
+      "file": "www/src/engine/runtime/engineV2ProjectileSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2ProjectileSystem.js",
+      "file": "www/src/engine/runtime/engineV2ProjectileSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2ProjectileSystem.js",
+      "file": "www/src/engine/runtime/engineV2ProjectileSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2ProjectileSystem.js",
+      "file": "www/src/engine/runtime/engineV2ProjectileSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2ProjectileSystem.js",
+      "file": "www/src/engine/runtime/engineV2ProjectileSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2ProjectileSystem.js",
+      "file": "www/src/engine/runtime/engineV2ProjectileSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2ProjectileSystem.js",
+      "file": "www/src/engine/runtime/engineV2ProjectileSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2ProjectileSystem.js",
+      "file": "www/src/engine/runtime/engineV2ProjectileSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2StatusEffectSystem.js",
+      "file": "www/src/engine/runtime/engineV2StatusEffectSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2StatusEffectSystem.js",
+      "file": "www/src/engine/runtime/engineV2StatusEffectSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2StatusEffectSystem.js",
+      "file": "www/src/engine/runtime/engineV2StatusEffectSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2StatusEffectSystem.js",
+      "file": "www/src/engine/runtime/engineV2StatusEffectSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2StatusEffectSystem.js",
+      "file": "www/src/engine/runtime/engineV2StatusEffectSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2StatusEffectSystem.js",
+      "file": "www/src/engine/runtime/engineV2StatusEffectSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2StatusEffectSystem.js",
+      "file": "www/src/engine/runtime/engineV2StatusEffectSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2StatusEffectSystem.js",
+      "file": "www/src/engine/runtime/engineV2StatusEffectSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2VendorSystem.js",
+      "file": "www/src/engine/runtime/engineV2VendorSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/engineV2WeaponSystem.js",
+      "file": "www/src/engine/runtime/engineV2WeaponSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/fullscreenBezel.js",
+      "file": "www/src/engine/runtime/fullscreenBezel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/fullscreenBezel.js",
+      "file": "www/src/engine/runtime/fullscreenBezel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/fullscreenBezel.js",
+      "file": "www/src/engine/runtime/fullscreenBezel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/gameImageConvention.js",
+      "file": "www/src/engine/runtime/gameImageConvention.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/runtime/gameImageConvention.js",
+      "file": "www/src/engine/runtime/gameImageConvention.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/runtime/gameImageConvention.js",
+      "file": "www/src/engine/runtime/gameImageConvention.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/runtime/gameImageConvention.js",
+      "file": "www/src/engine/runtime/gameImageConvention.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/runtime/runtimeActionSystem.js",
+      "file": "www/src/engine/runtime/runtimeActionSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeActionSystem.js",
+      "file": "www/src/engine/runtime/runtimeActionSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeActionSystem.js",
+      "file": "www/src/engine/runtime/runtimeActionSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeConditionSystem.js",
+      "file": "www/src/engine/runtime/runtimeConditionSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeConditionSystem.js",
+      "file": "www/src/engine/runtime/runtimeConditionSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeConditionSystem.js",
+      "file": "www/src/engine/runtime/runtimeConditionSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeConditionSystem.js",
+      "file": "www/src/engine/runtime/runtimeConditionSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeCooldownProcessing.js",
+      "file": "www/src/engine/runtime/runtimeCooldownProcessing.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeCooldownProcessing.js",
+      "file": "www/src/engine/runtime/runtimeCooldownProcessing.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeCooldownProcessing.js",
+      "file": "www/src/engine/runtime/runtimeCooldownProcessing.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeDamageProcessing.js",
+      "file": "www/src/engine/runtime/runtimeDamageProcessing.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeDamageProcessing.js",
+      "file": "www/src/engine/runtime/runtimeDamageProcessing.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeDamageProcessing.js",
+      "file": "www/src/engine/runtime/runtimeDamageProcessing.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeDamageProcessing.js",
+      "file": "www/src/engine/runtime/runtimeDamageProcessing.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeDamageProcessing.js",
+      "file": "www/src/engine/runtime/runtimeDamageProcessing.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeEnvironmentEffects.js",
+      "file": "www/src/engine/runtime/runtimeEnvironmentEffects.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeEnvironmentEffects.js",
+      "file": "www/src/engine/runtime/runtimeEnvironmentEffects.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeEnvironmentForceInstantiation.js",
+      "file": "www/src/engine/runtime/runtimeEnvironmentForceInstantiation.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeEnvironmentForceInstantiation.js",
+      "file": "www/src/engine/runtime/runtimeEnvironmentForceInstantiation.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeEnvironmentForceInstantiation.js",
+      "file": "www/src/engine/runtime/runtimeEnvironmentForceInstantiation.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeEventSystem.js",
+      "file": "www/src/engine/runtime/runtimeEventSystem.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/runtime/runtimeEventSystem.js",
+      "file": "www/src/engine/runtime/runtimeEventSystem.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/runtime/runtimeHealthModel.js",
+      "file": "www/src/engine/runtime/runtimeHealthModel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeHealthModel.js",
+      "file": "www/src/engine/runtime/runtimeHealthModel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeHealthModel.js",
+      "file": "www/src/engine/runtime/runtimeHealthModel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeHealthModel.js",
+      "file": "www/src/engine/runtime/runtimeHealthModel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeHealthModel.js",
+      "file": "www/src/engine/runtime/runtimeHealthModel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeHealthModel.js",
+      "file": "www/src/engine/runtime/runtimeHealthModel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeHealthModel.js",
+      "file": "www/src/engine/runtime/runtimeHealthModel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeInputPipeline.js",
+      "file": "www/src/engine/runtime/runtimeInputPipeline.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeInputPipeline.js",
+      "file": "www/src/engine/runtime/runtimeInputPipeline.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeLivesAndRespawn.js",
+      "file": "www/src/engine/runtime/runtimeLivesAndRespawn.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeLivesAndRespawn.js",
+      "file": "www/src/engine/runtime/runtimeLivesAndRespawn.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeMovementProcessing.js",
+      "file": "www/src/engine/runtime/runtimeMovementProcessing.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeMovementProcessing.js",
+      "file": "www/src/engine/runtime/runtimeMovementProcessing.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeMovementProcessing.js",
+      "file": "www/src/engine/runtime/runtimeMovementProcessing.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeObjectInstantiation.js",
+      "file": "www/src/engine/runtime/runtimeObjectInstantiation.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeObjectInstantiation.js",
+      "file": "www/src/engine/runtime/runtimeObjectInstantiation.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeObjectInstantiation.js",
+      "file": "www/src/engine/runtime/runtimeObjectInstantiation.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeObjectInstantiation.js",
+      "file": "www/src/engine/runtime/runtimeObjectInstantiation.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeObjectInstantiation.js",
+      "file": "www/src/engine/runtime/runtimeObjectInstantiation.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeOutcomeProcessing.js",
+      "file": "www/src/engine/runtime/runtimeOutcomeProcessing.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeOutcomeProcessing.js",
+      "file": "www/src/engine/runtime/runtimeOutcomeProcessing.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeOutcomeProcessing.js",
+      "file": "www/src/engine/runtime/runtimeOutcomeProcessing.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeOutcomeProcessing.js",
+      "file": "www/src/engine/runtime/runtimeOutcomeProcessing.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeOutcomeProcessing.js",
+      "file": "www/src/engine/runtime/runtimeOutcomeProcessing.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeScoringAndStateProcessing.js",
+      "file": "www/src/engine/runtime/runtimeScoringAndStateProcessing.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeScoringAndStateProcessing.js",
+      "file": "www/src/engine/runtime/runtimeScoringAndStateProcessing.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeTerrainEffects.js",
+      "file": "www/src/engine/runtime/runtimeTerrainEffects.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeTerrainEffects.js",
+      "file": "www/src/engine/runtime/runtimeTerrainEffects.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeTerrainEffects.js",
+      "file": "www/src/engine/runtime/runtimeTerrainEffects.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeTerrainMaterialInstantiation.js",
+      "file": "www/src/engine/runtime/runtimeTerrainMaterialInstantiation.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeTerrainMaterialInstantiation.js",
+      "file": "www/src/engine/runtime/runtimeTerrainMaterialInstantiation.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeTerrainMaterialInstantiation.js",
+      "file": "www/src/engine/runtime/runtimeTerrainMaterialInstantiation.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeTickLoop.js",
+      "file": "www/src/engine/runtime/runtimeTickLoop.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeTickLoop.js",
+      "file": "www/src/engine/runtime/runtimeTickLoop.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/runtime/runtimeTickLoop.js",
+      "file": "www/src/engine/runtime/runtimeTickLoop.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/engine/scene/SceneManager.js",
+      "file": "www/src/engine/scene/SceneManager.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/scene/SceneManager.js",
+      "file": "www/src/engine/scene/SceneManager.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/systems/BoundsSystem.js",
+      "file": "www/src/engine/systems/BoundsSystem.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/systems/BoundsSystem.js",
+      "file": "www/src/engine/systems/BoundsSystem.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/systems/MovementSystem.js",
+      "file": "www/src/engine/systems/MovementSystem.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/systems/MovementSystem.js",
+      "file": "www/src/engine/systems/MovementSystem.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/shared/color/color.js",
+      "file": "www/src/shared/color/color.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
@@ -3222,582 +3222,582 @@
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/game/highScores.js",
+      "file": "www/src/shared/game/highScores.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/geometry/geometry.js",
+      "file": "www/src/shared/geometry/geometry.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/math/geometry.js",
+      "file": "www/src/shared/math/geometry.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/math/geometry.js",
+      "file": "www/src/shared/math/geometry.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/math/numberNormalization.js",
+      "file": "www/src/shared/math/numberNormalization.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/math/numberNormalization.js",
+      "file": "www/src/shared/math/numberNormalization.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/math/numberNormalization.js",
+      "file": "www/src/shared/math/numberNormalization.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/math/numberNormalization.js",
+      "file": "www/src/shared/math/numberNormalization.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/math/numberNormalization.js",
+      "file": "www/src/shared/math/numberNormalization.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/math/numberNormalization.js",
+      "file": "www/src/shared/math/numberNormalization.js",
       "type": "local-helper-definition",
       "match": "rule:helper-fn-asFiniteNumber"
     },
     {
-      "file": "src/shared/math/numberNormalization.js",
+      "file": "www/src/shared/math/numberNormalization.js",
       "type": "local-helper-definition",
       "match": "rule:helper-fn-asPositiveInteger"
     },
     {
-      "file": "src/shared/math/randomHelpers.js",
+      "file": "www/src/shared/math/randomHelpers.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/math/randomHelpers.js",
+      "file": "www/src/shared/math/randomHelpers.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/noise/noise.js",
+      "file": "www/src/shared/noise/noise.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/noise/noise.js",
+      "file": "www/src/shared/noise/noise.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/noise/noise.js",
+      "file": "www/src/shared/noise/noise.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/number/numbers.js",
+      "file": "www/src/shared/number/numbers.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/object/objects.js",
+      "file": "www/src/shared/object/objects.js",
       "type": "local-helper-definition",
       "match": "rule:helper-fn-isPlainObject"
     },
     {
-      "file": "src/shared/state/normalization.js",
+      "file": "www/src/shared/state/normalization.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/state/normalization.js",
+      "file": "www/src/shared/state/normalization.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/time/time.js",
+      "file": "www/src/shared/time/time.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/assetMarketplace.js",
+      "file": "www/src/shared/toolbox/assetMarketplace.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/assetMarketplace.js",
+      "file": "www/src/shared/toolbox/assetMarketplace.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/collaborationSystem.js",
+      "file": "www/src/shared/toolbox/collaborationSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/collaborationSystem.js",
+      "file": "www/src/shared/toolbox/collaborationSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/collaborationSystem.js",
+      "file": "www/src/shared/toolbox/collaborationSystem.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/debugVisualizationLayer.js",
+      "file": "www/src/shared/toolbox/debugVisualizationLayer.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/debugVisualizationLayer.js",
+      "file": "www/src/shared/toolbox/debugVisualizationLayer.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/debugVisualizationLayer.js",
+      "file": "www/src/shared/toolbox/debugVisualizationLayer.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/devConsoleDebugOverlay.js",
+      "file": "www/src/shared/toolbox/devConsoleDebugOverlay.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/devConsoleDebugOverlay.js",
+      "file": "www/src/shared/toolbox/devConsoleDebugOverlay.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/devConsoleDebugOverlay.js",
+      "file": "www/src/shared/toolbox/devConsoleDebugOverlay.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/devConsoleDebugOverlay.js",
+      "file": "www/src/shared/toolbox/devConsoleDebugOverlay.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/devConsoleDebugOverlay.js",
+      "file": "www/src/shared/toolbox/devConsoleDebugOverlay.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/devConsoleDebugOverlay.js",
+      "file": "www/src/shared/toolbox/devConsoleDebugOverlay.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/devConsoleDebugOverlay.js",
+      "file": "www/src/shared/toolbox/devConsoleDebugOverlay.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/devConsoleDebugOverlay.js",
+      "file": "www/src/shared/toolbox/devConsoleDebugOverlay.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/devConsoleDebugOverlay.js",
+      "file": "www/src/shared/toolbox/devConsoleDebugOverlay.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/documentModeGuards.js",
+      "file": "www/src/shared/toolbox/documentModeGuards.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/documentModeGuards.js",
+      "file": "www/src/shared/toolbox/documentModeGuards.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/livePreviewSyncChannel.js",
+      "file": "www/src/shared/toolbox/livePreviewSyncChannel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/livePreviewSyncChannel.js",
+      "file": "www/src/shared/toolbox/livePreviewSyncChannel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/livePreviewSyncChannel.js",
+      "file": "www/src/shared/toolbox/livePreviewSyncChannel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/livePreviewSyncChannel.js",
+      "file": "www/src/shared/toolbox/livePreviewSyncChannel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/paletteDocumentContract.js",
+      "file": "www/src/shared/toolbox/paletteDocumentContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/paletteDocumentContract.js",
+      "file": "www/src/shared/toolbox/paletteDocumentContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/paletteDocumentContract.js",
+      "file": "www/src/shared/toolbox/paletteDocumentContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/performanceBenchmarks.js",
+      "file": "www/src/shared/toolbox/performanceBenchmarks.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/performanceBenchmarks.js",
+      "file": "www/src/shared/toolbox/performanceBenchmarks.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/performanceBenchmarks.js",
+      "file": "www/src/shared/toolbox/performanceBenchmarks.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/performanceProfiler.js",
+      "file": "www/src/shared/toolbox/performanceProfiler.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/pluginArchitecture.js",
+      "file": "www/src/shared/toolbox/pluginArchitecture.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/projectAssetRegistry.js",
+      "file": "www/src/shared/toolbox/projectAssetRegistry.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/projectAssetRegistry.js",
+      "file": "www/src/shared/toolbox/projectAssetRegistry.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/projectAssetRegistry.js",
+      "file": "www/src/shared/toolbox/projectAssetRegistry.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/projectAssetValidation.js",
+      "file": "www/src/shared/toolbox/projectAssetValidation.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/projectPackaging.js",
+      "file": "www/src/shared/toolbox/projectPackaging.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/projectPackaging.js",
+      "file": "www/src/shared/toolbox/projectPackaging.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/projectPackaging.js",
+      "file": "www/src/shared/toolbox/projectPackaging.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/projectPackaging.js",
+      "file": "www/src/shared/toolbox/projectPackaging.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/projectSystemAdapters.js",
+      "file": "www/src/shared/toolbox/projectSystemAdapters.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/projectSystemAdapters.js",
+      "file": "www/src/shared/toolbox/projectSystemAdapters.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/projectSystemAdapters.js",
+      "file": "www/src/shared/toolbox/projectSystemAdapters.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/projectSystemAdapters.js",
+      "file": "www/src/shared/toolbox/projectSystemAdapters.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/projectVersioning.js",
+      "file": "www/src/shared/toolbox/projectVersioning.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/projectVersioning.js",
+      "file": "www/src/shared/toolbox/projectVersioning.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/projectVersioning.js",
+      "file": "www/src/shared/toolbox/projectVersioning.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/projectVersioning.js",
+      "file": "www/src/shared/toolbox/projectVersioning.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/projectVersioning.js",
+      "file": "www/src/shared/toolbox/projectVersioning.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/projectVersioning.js",
+      "file": "www/src/shared/toolbox/projectVersioning.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/projectVersioning.js",
+      "file": "www/src/shared/toolbox/projectVersioning.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/renderPipelineContract.js",
+      "file": "www/src/shared/toolbox/renderPipelineContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/renderPipelineContract.js",
+      "file": "www/src/shared/toolbox/renderPipelineContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/renderPipelineContract.js",
+      "file": "www/src/shared/toolbox/renderPipelineContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/renderPipelineContract.js",
+      "file": "www/src/shared/toolbox/renderPipelineContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/renderPipelineContract.js",
+      "file": "www/src/shared/toolbox/renderPipelineContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/renderPipelineContract.js",
+      "file": "www/src/shared/toolbox/renderPipelineContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/renderPipelineContract.js",
+      "file": "www/src/shared/toolbox/renderPipelineContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/renderPipelineContract.js",
+      "file": "www/src/shared/toolbox/renderPipelineContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/renderPipelineContract.js",
+      "file": "www/src/shared/toolbox/renderPipelineContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/renderPipelineContract.js",
+      "file": "www/src/shared/toolbox/renderPipelineContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/renderPipelineContract.js",
+      "file": "www/src/shared/toolbox/renderPipelineContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/renderPipelineContract.js",
+      "file": "www/src/shared/toolbox/renderPipelineContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/renderPipelineContract.js",
+      "file": "www/src/shared/toolbox/renderPipelineContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/runtimeAssetValidationUtils.js",
+      "file": "www/src/shared/toolbox/runtimeAssetValidationUtils.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/runtimeSceneLoaderHotReload.js",
+      "file": "www/src/shared/toolbox/runtimeSceneLoaderHotReload.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/toolLoadDiagnostics.js",
+      "file": "www/src/shared/toolbox/toolLoadDiagnostics.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/toolLoadDiagnostics.js",
+      "file": "www/src/shared/toolbox/toolLoadDiagnostics.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/toolLoadDiagnostics.js",
+      "file": "www/src/shared/toolbox/toolLoadDiagnostics.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/toolLoadDiagnostics.js",
+      "file": "www/src/shared/toolbox/toolLoadDiagnostics.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/toolLoadDiagnostics.js",
+      "file": "www/src/shared/toolbox/toolLoadDiagnostics.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/vector/vectorAssetContract.js",
+      "file": "www/src/shared/toolbox/vector/vectorAssetContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/vector/vectorAssetContract.js",
+      "file": "www/src/shared/toolbox/vector/vectorAssetContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/vector/vectorAssetContract.js",
+      "file": "www/src/shared/toolbox/vector/vectorAssetContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/vector/vectorAssetContract.js",
+      "file": "www/src/shared/toolbox/vector/vectorAssetContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/vector/vectorAssetContract.js",
+      "file": "www/src/shared/toolbox/vector/vectorAssetContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/vector/vectorAssetContract.js",
+      "file": "www/src/shared/toolbox/vector/vectorAssetContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/vector/vectorAssetContract.js",
+      "file": "www/src/shared/toolbox/vector/vectorAssetContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/vector/vectorAssetContract.js",
+      "file": "www/src/shared/toolbox/vector/vectorAssetContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/vector/vectorAssetContract.js",
+      "file": "www/src/shared/toolbox/vector/vectorAssetContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/vector/vectorAssetContract.js",
+      "file": "www/src/shared/toolbox/vector/vectorAssetContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/vector/vectorAssetContract.js",
+      "file": "www/src/shared/toolbox/vector/vectorAssetContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/vector/vectorAssetContract.js",
+      "file": "www/src/shared/toolbox/vector/vectorAssetContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/vector/vectorAssetContract.js",
+      "file": "www/src/shared/toolbox/vector/vectorAssetContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/vector/vectorAssetContract.js",
+      "file": "www/src/shared/toolbox/vector/vectorAssetContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/vector/vectorAssetContract.js",
+      "file": "www/src/shared/toolbox/vector/vectorAssetContract.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/toolbox/vector/vectorGeometryMath.js",
+      "file": "www/src/shared/toolbox/vector/vectorGeometryMath.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/validation/assert.js",
+      "file": "www/src/shared/validation/assert.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/tools/common/GameManifestLoader.js",
+      "file": "www/src/tools/common/GameManifestLoader.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/tools/common/GameManifestLoader.js",
+      "file": "www/src/tools/common/GameManifestLoader.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/tools/common/GameManifestLoader.js",
+      "file": "www/src/tools/common/GameManifestLoader.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/tools/common/GameManifestLoader.js",
+      "file": "www/src/tools/common/GameManifestLoader.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/tools/common/WorkspaceDirtyNotifier.js",
+      "file": "www/src/tools/common/WorkspaceDirtyNotifier.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/tools/common/WorkspaceDirtyNotifier.js",
+      "file": "www/src/tools/common/WorkspaceDirtyNotifier.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/tools/common/WorkspaceDirtyNotifier.js",
+      "file": "www/src/tools/common/WorkspaceDirtyNotifier.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/tools/common/WorkspaceDirtyNotifier.js",
+      "file": "www/src/tools/common/WorkspaceDirtyNotifier.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },

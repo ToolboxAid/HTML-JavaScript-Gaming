@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
 import {
   FIRST_MANIFEST_DRIVEN_SCENE_ERRORS,
   createFirstManifestDrivenPlayableScene,
-} from "../../../src/engine/runtime/firstManifestDrivenPlayableScene.js";
+} from "../../../www/src/engine/runtime/firstManifestDrivenPlayableScene.js";
 import { createManifestDrivenRuntimeFixture } from "./RuntimeManifestDrivenFixture.mjs";
 
 export function run() {

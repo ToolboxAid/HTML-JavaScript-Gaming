@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { coordinateGameAssetManifest } from "../../../src/shared/toolbox/pipeline/gameAssetManifestCoordinator.js";
+import { coordinateGameAssetManifest } from "../../../www/src/shared/toolbox/pipeline/gameAssetManifestCoordinator.js";
 
 export async function run() {
   const coordinated = coordinateGameAssetManifest({

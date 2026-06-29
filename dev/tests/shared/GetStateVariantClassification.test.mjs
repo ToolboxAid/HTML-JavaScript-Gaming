@@ -13,7 +13,7 @@ import {
   classifyGetStateVariantLayer,
   extractGetStateVariantNames,
   bucketGetStateVariants,
-} from "../../../src/shared/state/getStateVariantClassification.js";
+} from "../../../www/src/shared/state/getStateVariantClassification.js";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 const TARGET_ROOTS = ["src", "games", "samples", "tools"];

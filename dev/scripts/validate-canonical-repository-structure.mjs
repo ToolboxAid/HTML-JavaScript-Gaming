@@ -14,13 +14,13 @@ export const APPROVED_LEGACY_JS_PATHS = Object.freeze(new Set([
   "www/toolbox/tool-registry-api-client.js",
   "www/toolbox/toolRegistry.js",
   "www/toolbox/tools-page-accordions.js",
-  "src/engine/paletteList.js",
+  "www/src/engine/paletteList.js",
 ]));
 
 export const APPROVED_LEGACY_CSS_PATHS = Object.freeze(new Set([
-  "src/engine/ui/baseLayout.css",
-  "src/engine/ui/hubCommon.css",
-  "src/engine/ui/spriteEditor.css",
+  "www/src/engine/ui/baseLayout.css",
+  "www/src/engine/ui/hubCommon.css",
+  "www/src/engine/ui/spriteEditor.css",
 ]));
 
 export const APPROVED_LEGACY_TEST_SEGMENTS = Object.freeze(new Set([

@@ -5,15 +5,15 @@ David Quesenberry
 NetworkDebugAndServerDashboardCloseout.test.mjs
 */
 import assert from "node:assert/strict";
-import { createLatencyDiagnosticsModel } from '../../../src/engine/debug/network/diagnostics/latencyDiagnosticsModel.js';
-import { createReplicationDiagnosticsModel } from '../../../src/engine/debug/network/diagnostics/replicationDiagnosticsModel.js';
-import { createLatencyRttPanel, createReplicationStatePanel, createNetworkObservabilityPanels } from '../../../src/engine/debug/network/panels/networkObservabilityPanels.js';
-import { createNetworkHelpCommand, createNetworkReplicationCommand, createNetworkStatusCommand, createNetworkCommandPack } from '../../../src/engine/debug/network/commands/networkDebugCommandPackBridge.js';
-import { createReadOnlyNetworkProviders } from '../../../src/engine/debug/network/providers/networkDebugProviderRegistry.js';
-import { createServerDashboardRegistry } from '../../../src/engine/debug/network/dashboard/serverDashboardRegistry.js';
-import { createServerDashboardHost } from '../../../src/engine/debug/network/dashboard/serverDashboardHost.js';
-import { createServerDashboardCommandPack } from '../../../src/engine/debug/network/dashboard/registerDashboardCommands.js';
-import { createNetworkPromotionRecommendation } from '../../../src/engine/debug/network/diagnostics/networkPromotionRecommendation.js';
+import { createLatencyDiagnosticsModel } from '../../../www/src/engine/debug/network/diagnostics/latencyDiagnosticsModel.js';
+import { createReplicationDiagnosticsModel } from '../../../www/src/engine/debug/network/diagnostics/replicationDiagnosticsModel.js';
+import { createLatencyRttPanel, createReplicationStatePanel, createNetworkObservabilityPanels } from '../../../www/src/engine/debug/network/panels/networkObservabilityPanels.js';
+import { createNetworkHelpCommand, createNetworkReplicationCommand, createNetworkStatusCommand, createNetworkCommandPack } from '../../../www/src/engine/debug/network/commands/networkDebugCommandPackBridge.js';
+import { createReadOnlyNetworkProviders } from '../../../www/src/engine/debug/network/providers/networkDebugProviderRegistry.js';
+import { createServerDashboardRegistry } from '../../../www/src/engine/debug/network/dashboard/serverDashboardRegistry.js';
+import { createServerDashboardHost } from '../../../www/src/engine/debug/network/dashboard/serverDashboardHost.js';
+import { createServerDashboardCommandPack } from '../../../www/src/engine/debug/network/dashboard/registerDashboardCommands.js';
+import { createNetworkPromotionRecommendation } from '../../../www/src/engine/debug/network/diagnostics/networkPromotionRecommendation.js';
 
 function createSampleSnapshot() {
   return {

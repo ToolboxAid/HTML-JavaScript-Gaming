@@ -5,17 +5,17 @@ David Quesenberry
 Engine2DCapabilityCombinedFoundation.test.mjs
 */
 import assert from 'node:assert/strict';
-import Engine from '../../../src/engine/core/Engine.js';
-import Scene from '../../../src/engine/scene/Scene.js';
-import Camera2D from '../../../src/engine/camera/Camera2D.js';
-import { followCameraTarget, worldRectToScreen } from '../../../src/engine/camera/CameraSystem.js';
-import Tilemap from '../../../src/engine/tilemap/Tilemap.js';
-import { renderTilemap } from '../../../src/engine/tilemap/TilemapRenderSystem.js';
-import { isColliding } from '../../../src/engine/collision/aabb.js';
-import { runHybridCollision } from '../../../src/engine/collision/hybrid.js';
-import { moveRectWithTilemapCollision } from '../../../src/engine/systems/CollisionResolutionSystem.js';
-import GameModeState from '../../../src/engine/game/GameModeState.js';
-import { runIfGameplayMode } from '../../../src/engine/game/gameplayHooks.js';
+import Engine from '../../../www/src/engine/core/Engine.js';
+import Scene from '../../../www/src/engine/scene/Scene.js';
+import Camera2D from '../../../www/src/engine/camera/Camera2D.js';
+import { followCameraTarget, worldRectToScreen } from '../../../www/src/engine/camera/CameraSystem.js';
+import Tilemap from '../../../www/src/engine/tilemap/Tilemap.js';
+import { renderTilemap } from '../../../www/src/engine/tilemap/TilemapRenderSystem.js';
+import { isColliding } from '../../../www/src/engine/collision/aabb.js';
+import { runHybridCollision } from '../../../www/src/engine/collision/hybrid.js';
+import { moveRectWithTilemapCollision } from '../../../www/src/engine/systems/CollisionResolutionSystem.js';
+import GameModeState from '../../../www/src/engine/game/GameModeState.js';
+import { runIfGameplayMode } from '../../../www/src/engine/game/gameplayHooks.js';
 
 function createCanvasHarness() {
   const calls = [];

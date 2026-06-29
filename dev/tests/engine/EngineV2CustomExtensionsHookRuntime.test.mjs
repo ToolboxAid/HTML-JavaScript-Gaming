@@ -15,7 +15,7 @@ import {
   dispatchEngineV2CustomExtensionHook,
   registerEngineV2CustomExtensionHooks,
   resolveEngineV2AdminCustomExtensionApprovalBoundary,
-} from "../../../src/engine/runtime/engineV2CustomExtensionsHookRuntime.js";
+} from "../../../www/src/engine/runtime/engineV2CustomExtensionsHookRuntime.js";
 
 function createExtensionDefinition(overrides = {}) {
   return {
@@ -214,7 +214,7 @@ export function run() {
   assert.equal(sourceFieldResult.valid, false);
   assert.deepEqual(sourceFieldResult.errors.map((error) => error.code), [ENGINE_V2_CUSTOM_EXTENSION_ERRORS.FIELD_FORBIDDEN]);
 
-  const runtimeSource = fs.readFileSync("src/engine/runtime/engineV2CustomExtensionsHookRuntime.js", "utf8");
+  const runtimeSource = fs.readFileSync("www/src/engine/runtime/engineV2CustomExtensionsHookRuntime.js", "utf8");
   assert.equal(/\beval\s*\(/.test(runtimeSource), false);
   assert.equal(/\bnew\s+Function\b/.test(runtimeSource), false);
 }

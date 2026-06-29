@@ -9,7 +9,7 @@ import {
   RUNTIME_OBJECT_RECORD_FACTORY_ERRORS,
   createRuntimeObjectRecord,
   validateRuntimeObjectRecord,
-} from "../../../src/engine/runtime/runtimeObjectRecordFactory.js";
+} from "../../../www/src/engine/runtime/runtimeObjectRecordFactory.js";
 
 export function run() {
   const manifestDefinition = Object.freeze({

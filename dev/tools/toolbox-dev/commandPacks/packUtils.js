@@ -5,8 +5,8 @@ David Quesenberry
 packUtils.js
 */
 
-import { sanitizeText } from "../../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
-import { isObject } from "../../../../src/shared/object/objects.js";
+import { sanitizeText } from "../../../../www/src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { isObject } from "../../../../www/src/shared/object/objects.js";
 
 export function requireNoArgs({ args = [], commandName = "" } = {}) {
   if (Array.isArray(args) && args.length > 0) {

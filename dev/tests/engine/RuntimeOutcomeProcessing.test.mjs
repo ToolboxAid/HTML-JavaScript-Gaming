@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import {
   RUNTIME_OUTCOME_ERRORS,
   evaluateRuntimeOutcomes,
-} from "../../../src/engine/runtime/runtimeOutcomeProcessing.js";
+} from "../../../www/src/engine/runtime/runtimeOutcomeProcessing.js";
 import { createRuntimeHealthOutcomeFixture } from "./RuntimeHealthOutcomeFixture.mjs";
 
 export function run() {

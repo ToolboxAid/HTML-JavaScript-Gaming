@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import {
   ENGINE_V2_EQUIPMENT_ERRORS,
   resolveEngineV2Equipment,
-} from "../../../src/engine/runtime/engineV2EquipmentSystem.js";
+} from "../../../www/src/engine/runtime/engineV2EquipmentSystem.js";
 import { createEngineV2PossessionRuntimeFixture } from "./EngineV2PossessionRuntimeFixture.mjs";
 
 export function run() {

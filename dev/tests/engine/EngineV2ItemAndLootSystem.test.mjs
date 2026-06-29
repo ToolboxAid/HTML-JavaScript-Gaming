@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import {
   ENGINE_V2_ITEM_LOOT_ERRORS,
   resolveEngineV2ItemAndLoot,
-} from "../../../src/engine/runtime/engineV2ItemAndLootSystem.js";
+} from "../../../www/src/engine/runtime/engineV2ItemAndLootSystem.js";
 import { createEngineV2PossessionRuntimeFixture } from "./EngineV2PossessionRuntimeFixture.mjs";
 
 export function run() {

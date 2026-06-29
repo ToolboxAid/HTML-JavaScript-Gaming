@@ -12,7 +12,7 @@ import {
   createPerformanceBenchmarkSuite,
   runPerformanceBenchmarkSuite,
   summarizePerformanceBenchmarkSuite
-} from "../../../src/shared/toolbox/performanceBenchmarks.js";
+} from "../../../www/src/shared/toolbox/performanceBenchmarks.js";
 
 export async function run() {
   const suite = createPerformanceBenchmarkSuite({

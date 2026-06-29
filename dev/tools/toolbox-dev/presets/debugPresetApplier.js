@@ -5,10 +5,10 @@ David Quesenberry
 debugPresetApplier.js
 */
 
-import { sanitizeText } from "../../../../src/shared/string/strings.js";
-import { cloneJson } from "../../../../src/shared/json/clone.js";
-import { getRuntimeAndRegistry } from "../../../../src/shared/runtime/registry.js";
-import { toResult } from "../../../../src/engine/debug/shared/debugCommandResultUtils.js";
+import { sanitizeText } from "../../../../www/src/shared/string/strings.js";
+import { cloneJson } from "../../../../www/src/shared/json/clone.js";
+import { getRuntimeAndRegistry } from "../../../../www/src/shared/runtime/registry.js";
+import { toResult } from "../../../../www/src/engine/debug/shared/debugCommandResultUtils.js";
 
 function getAllPanels(panelRegistry) {
   const panels = panelRegistry.getOrderedPanels(true);

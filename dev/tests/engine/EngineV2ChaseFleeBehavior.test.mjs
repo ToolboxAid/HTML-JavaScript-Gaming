@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import {
   ENGINE_V2_CHASE_FLEE_ERRORS,
   resolveEngineV2ChaseFleeBehaviors,
-} from "../../../src/engine/runtime/engineV2ChaseFleeBehavior.js";
+} from "../../../www/src/engine/runtime/engineV2ChaseFleeBehavior.js";
 import { createEngineV2AiBehaviorFixture } from "./EngineV2AiBehaviorFixture.mjs";
 
 export function run() {

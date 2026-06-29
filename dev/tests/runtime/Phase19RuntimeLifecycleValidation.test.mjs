@@ -5,8 +5,8 @@ David Quesenberry
 Phase19RuntimeLifecycleValidation.test.mjs
 */
 import assert from 'node:assert/strict';
-import Engine from '../../../src/engine/core/Engine.js';
-import Logger from '../../../src/engine/logging/Logger.js';
+import Engine from '../../../www/src/engine/core/Engine.js';
+import Logger from '../../../www/src/engine/logging/Logger.js';
 
 function createCanvas() {
   const canvas = {

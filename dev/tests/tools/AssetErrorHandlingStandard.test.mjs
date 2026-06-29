@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { createAssetError, appendAssetError, appendAssetErrors } from "../../../src/shared/toolbox/pipeline/assetErrorHandling.js";
+import { createAssetError, appendAssetError, appendAssetErrors } from "../../../www/src/shared/toolbox/pipeline/assetErrorHandling.js";
 
 export async function run() {
   const normalized = createAssetError({

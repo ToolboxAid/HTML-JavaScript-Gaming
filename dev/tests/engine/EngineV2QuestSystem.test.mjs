@@ -6,11 +6,11 @@ EngineV2QuestSystem.test.mjs
 */
 
 import assert from "node:assert/strict";
-import { processEngineV2Objectives } from "../../../src/engine/runtime/engineV2ObjectiveSystem.js";
+import { processEngineV2Objectives } from "../../../www/src/engine/runtime/engineV2ObjectiveSystem.js";
 import {
   ENGINE_V2_QUEST_ERRORS,
   processEngineV2Quests,
-} from "../../../src/engine/runtime/engineV2QuestSystem.js";
+} from "../../../www/src/engine/runtime/engineV2QuestSystem.js";
 import { createEngineV2PlayerRuntimeFixture } from "./EngineV2PlayerRuntimeFixture.mjs";
 
 export function run() {

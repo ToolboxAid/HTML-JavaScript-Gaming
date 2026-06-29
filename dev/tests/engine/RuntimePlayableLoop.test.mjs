@@ -5,7 +5,7 @@ David Quesenberry
 RuntimePlayableLoop.test.mjs
 */
 import assert from "node:assert/strict";
-import { runRuntimePlayableFrame } from "../../../src/engine/runtime/runtimePlayableLoop.js";
+import { runRuntimePlayableFrame } from "../../../www/src/engine/runtime/runtimePlayableLoop.js";
 
 export function run() {
   const world = Object.freeze({

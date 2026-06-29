@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import {
   ENGINE_V2_OBJECTIVE_ERRORS,
   processEngineV2Objectives,
-} from "../../../src/engine/runtime/engineV2ObjectiveSystem.js";
+} from "../../../www/src/engine/runtime/engineV2ObjectiveSystem.js";
 import { createEngineV2PlayerRuntimeFixture } from "./EngineV2PlayerRuntimeFixture.mjs";
 
 export function run() {

@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import {
   RUNTIME_LIVES_RESPAWN_ERRORS,
   processRuntimeLivesAndRespawn,
-} from "../../../src/engine/runtime/runtimeLivesAndRespawn.js";
+} from "../../../www/src/engine/runtime/runtimeLivesAndRespawn.js";
 import { createRuntimeHealthOutcomeFixture } from "./RuntimeHealthOutcomeFixture.mjs";
 
 export function run() {

@@ -12,7 +12,7 @@ import {
   hashToUnitInterval,
   hashValue32,
   toStableHashString,
-} from "../../../src/shared/hash/hash.js";
+} from "../../../www/src/shared/hash/hash.js";
 
 export function run() {
   assert.equal(hashString32("Game Foundry"), hashString32("Game Foundry"));

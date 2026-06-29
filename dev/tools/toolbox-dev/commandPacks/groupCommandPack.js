@@ -12,9 +12,9 @@ import {
   requireNoArgs
 } from "./packUtils.js";
 import { createResult } from "./commandPackResultUtils.js";
-import { getRuntimeAndRegistry } from "../../../../src/shared/runtime/registry.js";
+import { getRuntimeAndRegistry } from "../../../../www/src/shared/runtime/registry.js";
 
-import { sanitizeText } from "../../../../src/shared/string/strings.js";
+import { sanitizeText } from "../../../../www/src/shared/string/strings.js";
 
 function buildSnapshot(panelRegistry) {
   const panels = panelRegistry.getOrderedPanels(true);

@@ -6,11 +6,11 @@ RuntimeTriggerProcessing.test.mjs
 */
 
 import assert from "node:assert/strict";
-import { RUNTIME_CONDITION_ERRORS } from "../../../src/engine/runtime/runtimeConditionSystem.js";
+import { RUNTIME_CONDITION_ERRORS } from "../../../www/src/engine/runtime/runtimeConditionSystem.js";
 import {
   RUNTIME_TRIGGER_PROCESSING_ERRORS,
   processRuntimeTriggers,
-} from "../../../src/engine/runtime/runtimeTriggerProcessing.js";
+} from "../../../www/src/engine/runtime/runtimeTriggerProcessing.js";
 import { createRuntimeGameRuleFixture } from "./RuntimeGameRuleFixture.mjs";
 
 export function run() {

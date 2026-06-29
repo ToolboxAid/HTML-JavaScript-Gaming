@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import {
   ENGINE_V2_CAMERA_ERRORS,
   resolveEngineV2Camera,
-} from "../../../src/engine/runtime/engineV2CameraRuntime.js";
+} from "../../../www/src/engine/runtime/engineV2CameraRuntime.js";
 import { createEngineV2MediaRuntimeFixture } from "./EngineV2MediaRuntimeFixture.mjs";
 
 export function run() {

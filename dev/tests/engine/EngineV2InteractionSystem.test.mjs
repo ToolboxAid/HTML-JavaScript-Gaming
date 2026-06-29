@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import {
   ENGINE_V2_INTERACTION_ERRORS,
   resolveEngineV2Interactions,
-} from "../../../src/engine/runtime/engineV2InteractionSystem.js";
+} from "../../../www/src/engine/runtime/engineV2InteractionSystem.js";
 import { createEngineV2InteractionRuntimeFixture } from "./EngineV2InteractionRuntimeFixture.mjs";
 
 export function run() {

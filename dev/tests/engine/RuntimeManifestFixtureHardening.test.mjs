@@ -5,11 +5,11 @@ David Quesenberry
 RuntimeManifestFixtureHardening.test.mjs
 */
 import assert from "node:assert/strict";
-import { createFirstManifestDrivenPlayableScene } from "../../../src/engine/runtime/firstManifestDrivenPlayableScene.js";
-import { parseManifestRuntimePayload } from "../../../src/engine/runtime/manifestRuntimeParser.js";
-import { createRuntimeInputPipeline } from "../../../src/engine/runtime/runtimeInputPipeline.js";
-import { instantiateEnvironmentForces } from "../../../src/engine/runtime/runtimeEnvironmentForceInstantiation.js";
-import { instantiateTerrainMaterials } from "../../../src/engine/runtime/runtimeTerrainMaterialInstantiation.js";
+import { createFirstManifestDrivenPlayableScene } from "../../../www/src/engine/runtime/firstManifestDrivenPlayableScene.js";
+import { parseManifestRuntimePayload } from "../../../www/src/engine/runtime/manifestRuntimeParser.js";
+import { createRuntimeInputPipeline } from "../../../www/src/engine/runtime/runtimeInputPipeline.js";
+import { instantiateEnvironmentForces } from "../../../www/src/engine/runtime/runtimeEnvironmentForceInstantiation.js";
+import { instantiateTerrainMaterials } from "../../../www/src/engine/runtime/runtimeTerrainMaterialInstantiation.js";
 import {
   createInvalidEngineFixtures,
   createValidEngineFixture,

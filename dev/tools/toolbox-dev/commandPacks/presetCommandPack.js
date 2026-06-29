@@ -7,10 +7,10 @@ presetCommandPack.js
 
 import { DebugPresetApplier } from "../presets/debugPresetApplier.js";
 import { DebugPresetRegistry } from "../presets/debugPresetRegistry.js";
-import { registerAdvancedInspectorDebugPresets } from '../../../../src/engine/debug/inspectors/presets/registerAdvancedInspectorDebugPresets.js';
+import { registerAdvancedInspectorDebugPresets } from '../../../../www/src/engine/debug/inspectors/presets/registerAdvancedInspectorDebugPresets.js';
 import { registerPresetCommands } from "../presets/registerPresetCommands.js";
 import { registerStandardDebugPresets } from "../presets/registerStandardDebugPresets.js";
-import { registerStandard3dDebugPresets } from '../../../../src/engine/debug/standard/threeD/presets/registerStandard3dDebugPresets.js';
+import { registerStandard3dDebugPresets } from '../../../../www/src/engine/debug/standard/threeD/presets/registerStandard3dDebugPresets.js';
 
 export function createPresetCommandPack() {
   const presetRegistry = new DebugPresetRegistry();

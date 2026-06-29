@@ -1477,14 +1477,14 @@ test("Controls split keeps shared engine input contracts in the account surface"
       ]);
       return { accountControls, controls };
     });
-    expect(sources.controls).toContain("../../src/engine/input/NormalizedInputRegistry.js");
-    expect(sources.controls).not.toContain("../../src/engine/input/InputService.js");
+    expect(sources.controls).toContain("../../www/src/engine/input/NormalizedInputRegistry.js");
+    expect(sources.controls).not.toContain("../../www/src/engine/input/InputService.js");
     expect(sources.controls).not.toContain("DEVICE_POLL_INTERVAL_MS");
     expect(sources.controls).not.toContain("GAME_CONTROL_PRESETS");
     expect(sources.controls).not.toContain("applyGameControlPreset");
-    expect(sources.accountControls).toContain("../src/engine/input/InputService.js");
-    expect(sources.accountControls).toContain("../src/engine/input/NormalizedInputRegistry.js");
-    expect(sources.accountControls).toContain("../src/engine/input/GamepadInputClassifier.js");
+    expect(sources.accountControls).toContain("../www/src/engine/input/InputService.js");
+    expect(sources.accountControls).toContain("../www/src/engine/input/NormalizedInputRegistry.js");
+    expect(sources.accountControls).toContain("../www/src/engine/input/GamepadInputClassifier.js");
     expect(sources.accountControls).toContain("DEVICE_POLL_INTERVAL_MS");
     for (const source of [sources.controls, sources.accountControls]) {
       expect(source).not.toMatch(/addEventListener\(\s*["']keydown/);

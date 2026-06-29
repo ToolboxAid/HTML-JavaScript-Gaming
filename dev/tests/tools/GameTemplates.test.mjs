@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { buildGameTemplates, summarizeGameTemplates } from "../../../src/shared/toolbox/gameTemplates.js";
+import { buildGameTemplates, summarizeGameTemplates } from "../../../www/src/shared/toolbox/gameTemplates.js";
 
 export async function run() {
   const result = buildGameTemplates({

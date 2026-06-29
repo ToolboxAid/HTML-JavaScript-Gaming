@@ -168,7 +168,7 @@ test("Owner Notes route reads the shared admin-notes source", async ({ page }) =
     ]);
 
     await page.getByRole("link", { name: "sample.txt" }).click();
-    await expect(page).toHaveURL(/\/owner\/notes\.html\?file=legacy-docs-build%2Fadmin-notes%2Fsample\.txt$/);
+    await expect(page).toHaveURL(/\/owner\/notes\.html\?file=dev%2Farchive%2Flegacy-docs-build%2Fadmin-notes%2Fsample\.txt$/);
     await expect(page.locator("[data-admin-notes-title]")).toHaveText("sample.txt");
     await expect(page.locator("[data-admin-notes-content]")).toContainText("Capture admin-only project ideas here.");
     await expect(page.locator("nav[aria-label='Admin tool pages'] a", { hasText: "Notes" })).toHaveCount(0);
@@ -203,7 +203,7 @@ test("Admin Notes viewer shows a visible missing-directory diagnostic", async ({
     expect(failures.consoleErrors).toHaveLength(1);
     expect(failures.consoleErrors[0]).toContain("404");
     expect(failures.failedRequests).toEqual([
-      `404 ${failures.server.baseUrl}/api/dev/admin-notes/directory?folder=legacy-docs-build%2Fadmin-notes`,
+      `404 ${failures.server.baseUrl}/api/dev/admin-notes/directory?folder=dev%2Farchive%2Flegacy-docs-build%2Fadmin-notes`,
     ]);
   } finally {
     await closeWithCoverage(page, failures);

@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { createRuntimeManifestAssetLookup, getRuntimeBindingDomain } from "../../../src/shared/toolbox/pipeline/runtimeAssetLookup.js";
+import { createRuntimeManifestAssetLookup, getRuntimeBindingDomain } from "../../../www/src/shared/toolbox/pipeline/runtimeAssetLookup.js";
 
 export async function run() {
   assert.equal(getRuntimeBindingDomain("vector.ship"), "vectors");

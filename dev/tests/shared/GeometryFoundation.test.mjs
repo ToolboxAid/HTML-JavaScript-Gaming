@@ -17,7 +17,7 @@ import {
   scaleVector,
   subtractVectors,
   vector2,
-} from "../../../src/shared/geometry/geometry.js";
+} from "../../../www/src/shared/geometry/geometry.js";
 
 export function run() {
   assert.equal(clamp(12, 0, 10), 10);

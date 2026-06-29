@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import {
   ENGINE_V2_CRAFTING_ERRORS,
   resolveEngineV2Crafting,
-} from "../../../src/engine/runtime/engineV2CraftingFoundation.js";
+} from "../../../www/src/engine/runtime/engineV2CraftingFoundation.js";
 import { createEngineV2InteractionRuntimeFixture } from "./EngineV2InteractionRuntimeFixture.mjs";
 
 export function run() {

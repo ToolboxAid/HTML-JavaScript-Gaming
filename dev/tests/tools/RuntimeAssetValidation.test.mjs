@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { validateRuntimeResolvedAsset } from "../../../src/shared/toolbox/pipeline/runtimeAssetValidation.js";
+import { validateRuntimeResolvedAsset } from "../../../www/src/shared/toolbox/pipeline/runtimeAssetValidation.js";
 
 export async function run() {
   const validVector = validateRuntimeResolvedAsset({

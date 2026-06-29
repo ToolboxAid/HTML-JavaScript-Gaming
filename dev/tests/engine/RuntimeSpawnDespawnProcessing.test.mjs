@@ -5,14 +5,14 @@ David Quesenberry
 RuntimeSpawnDespawnProcessing.test.mjs
 */
 import assert from "node:assert/strict";
-import { readManifestObjectDefinitions } from "../../../src/engine/runtime/objectDefinitionReader.js";
-import { createRuntimeObjectRecords } from "../../../src/engine/runtime/runtimeObjectRecordFactory.js";
-import { instantiateRuntimeObjects } from "../../../src/engine/runtime/runtimeObjectInstantiation.js";
+import { readManifestObjectDefinitions } from "../../../www/src/engine/runtime/objectDefinitionReader.js";
+import { createRuntimeObjectRecords } from "../../../www/src/engine/runtime/runtimeObjectRecordFactory.js";
+import { instantiateRuntimeObjects } from "../../../www/src/engine/runtime/runtimeObjectInstantiation.js";
 import {
   RUNTIME_SPAWN_DESPAWN_ERRORS,
   processRuntimeSpawnDespawn,
-} from "../../../src/engine/runtime/runtimeSpawnDespawnProcessing.js";
-import { readManifestSceneDefinitions } from "../../../src/engine/runtime/runtimeSceneDefinitionSupport.js";
+} from "../../../www/src/engine/runtime/runtimeSpawnDespawnProcessing.js";
+import { readManifestSceneDefinitions } from "../../../www/src/engine/runtime/runtimeSceneDefinitionSupport.js";
 import { createRuntimeGameplayLoopManifest } from "./RuntimeGameplayLoopFixture.mjs";
 
 export function run() {

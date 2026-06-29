@@ -5,12 +5,12 @@ David Quesenberry
 DeveloperToolingSystems.test.mjs
 */
 import assert from 'node:assert/strict';
-import AssetBrowser from '../../../src/shared/toolbox/tooling/AssetBrowser.js';
-import DeveloperConsole from '../../../src/shared/toolbox/tooling/DeveloperConsole.js';
-import LiveTuningService from '../../../src/shared/toolbox/tooling/LiveTuningService.js';
-import PropertyEditor from '../../../src/shared/toolbox/tooling/PropertyEditor.js';
-import RuntimeInspector from '../../../src/shared/toolbox/tooling/RuntimeInspector.js';
-import SceneGraphViewer from '../../../src/shared/toolbox/tooling/SceneGraphViewer.js';
+import AssetBrowser from '../../../www/src/shared/toolbox/tooling/AssetBrowser.js';
+import DeveloperConsole from '../../../www/src/shared/toolbox/tooling/DeveloperConsole.js';
+import LiveTuningService from '../../../www/src/shared/toolbox/tooling/LiveTuningService.js';
+import PropertyEditor from '../../../www/src/shared/toolbox/tooling/PropertyEditor.js';
+import RuntimeInspector from '../../../www/src/shared/toolbox/tooling/RuntimeInspector.js';
+import SceneGraphViewer from '../../../www/src/shared/toolbox/tooling/SceneGraphViewer.js';
 
 export async function run() {
   const consoleTool = new DeveloperConsole();

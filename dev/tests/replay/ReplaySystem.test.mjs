@@ -5,7 +5,7 @@
  ReplaySystem.test.mjs
 */
 import assert from 'node:assert/strict';
-import ReplaySystem from '../../../src/engine/replay/ReplaySystem.js';
+import ReplaySystem from '../../../www/src/engine/replay/ReplaySystem.js';
 
 export function run() {
   const replay = new ReplaySystem();

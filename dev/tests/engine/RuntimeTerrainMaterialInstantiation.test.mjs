@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
 import {
   RUNTIME_TERRAIN_MATERIAL_ERRORS,
   instantiateTerrainMaterials,
-} from "../../../src/engine/runtime/runtimeTerrainMaterialInstantiation.js";
+} from "../../../www/src/engine/runtime/runtimeTerrainMaterialInstantiation.js";
 import { createManifestDrivenRuntimeFixture } from "./RuntimeManifestDrivenFixture.mjs";
 
 export function run() {

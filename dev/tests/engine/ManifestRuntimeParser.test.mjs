@@ -9,7 +9,7 @@ import {
   MANIFEST_RUNTIME_PARSER_ERRORS,
   MANIFEST_RUNTIME_SCHEMA,
   parseManifestRuntimePayload,
-} from "../../../src/engine/runtime/manifestRuntimeParser.js";
+} from "../../../www/src/engine/runtime/manifestRuntimeParser.js";
 
 export function createValidManifestRuntimePayload() {
   return {

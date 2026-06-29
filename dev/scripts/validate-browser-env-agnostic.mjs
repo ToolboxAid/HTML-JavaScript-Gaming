@@ -317,10 +317,10 @@ async function validateProductServiceContract() {
   requireSnippet(registryClient, "www/toolbox/tool-registry-api-client.js", "safeRequestServerApi(\"/toolbox/registry/snapshot\")", findings, "Toolbox registry must read through the server API service contract.");
   rejectPattern(registryClient, "www/toolbox/tool-registry-api-client.js", providerLeakPattern, findings, "Toolbox registry client must not expose provider/environment implementation details.");
 
-  const votesClient = await readRequiredRepoFile("src/api/toolbox-votes-api-client.js", findings, "Toolbox votes API client is missing");
-  requireSnippet(votesClient, "src/api/toolbox-votes-api-client.js", "safeRequestServerApi(\"/toolbox/votes/snapshot\")", findings, "Toolbox votes must read through the server API service contract.");
-  requireSnippet(votesClient, "src/api/toolbox-votes-api-client.js", "safeRequestServerApi(\"/toolbox/votes/cast\"", findings, "Toolbox votes must write through the server API service contract.");
-  rejectPattern(votesClient, "src/api/toolbox-votes-api-client.js", providerLeakPattern, findings, "Toolbox votes client must not expose provider/environment implementation details.");
+  const votesClient = await readRequiredRepoFile("www/src/api/toolbox-votes-api-client.js", findings, "Toolbox votes API client is missing");
+  requireSnippet(votesClient, "www/src/api/toolbox-votes-api-client.js", "safeRequestServerApi(\"/toolbox/votes/snapshot\")", findings, "Toolbox votes must read through the server API service contract.");
+  requireSnippet(votesClient, "www/src/api/toolbox-votes-api-client.js", "safeRequestServerApi(\"/toolbox/votes/cast\"", findings, "Toolbox votes must write through the server API service contract.");
+  rejectPattern(votesClient, "www/src/api/toolbox-votes-api-client.js", providerLeakPattern, findings, "Toolbox votes client must not expose provider/environment implementation details.");
 
   for (const filePath of productApiClientFiles) {
     const contents = await readRequiredRepoFile(filePath, findings, "Product API client is missing");

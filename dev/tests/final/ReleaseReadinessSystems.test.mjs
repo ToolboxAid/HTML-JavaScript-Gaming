@@ -5,14 +5,14 @@ David Quesenberry
 ReleaseReadinessSystems.test.mjs
 */
 import assert from 'node:assert/strict';
-import AccessibilityOptions from '../../../src/engine/release/AccessibilityOptions.js';
-import CrashRecoveryManager from '../../../src/engine/release/CrashRecoveryManager.js';
-import DeploymentProfiles from '../../../src/engine/release/DeploymentProfiles.js';
-import DistributionPackager from '../../../src/engine/release/DistributionPackager.js';
-import ReleaseValidationChecklist from '../../../src/engine/release/ReleaseValidationChecklist.js';
-import SettingsSystem from '../../../src/engine/release/SettingsSystem.js';
-import Logger from '../../../src/engine/logging/Logger.js';
-import StorageService from '../../../src/engine/persistence/StorageService.js';
+import AccessibilityOptions from '../../../www/src/engine/release/AccessibilityOptions.js';
+import CrashRecoveryManager from '../../../www/src/engine/release/CrashRecoveryManager.js';
+import DeploymentProfiles from '../../../www/src/engine/release/DeploymentProfiles.js';
+import DistributionPackager from '../../../www/src/engine/release/DistributionPackager.js';
+import ReleaseValidationChecklist from '../../../www/src/engine/release/ReleaseValidationChecklist.js';
+import SettingsSystem from '../../../www/src/engine/release/SettingsSystem.js';
+import Logger from '../../../www/src/engine/logging/Logger.js';
+import StorageService from '../../../www/src/engine/persistence/StorageService.js';
 
 class MemoryStorage {
   constructor() {

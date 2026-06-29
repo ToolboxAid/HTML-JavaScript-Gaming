@@ -8,9 +8,9 @@ import assert from 'node:assert/strict';
 import {
   WORLD_GAME_STATE_EVENT_TYPES,
   WORLD_GAME_STATE_FEATURE_GATES
-} from '../../../src/advanced/state/constants.js';
-import { createWorldGameStateSystem } from '../../../src/advanced/state/createWorldGameStateSystem.js';
-import { registerWorldGameStateSystem } from '../../../src/advanced/state/integration/registerWorldGameStateSystem.js';
+} from '../../../www/src/advanced/state/constants.js';
+import { createWorldGameStateSystem } from '../../../www/src/advanced/state/createWorldGameStateSystem.js';
+import { registerWorldGameStateSystem } from '../../../www/src/advanced/state/integration/registerWorldGameStateSystem.js';
 
 function createEventPipeline() {
   const listenersByType = new Map();

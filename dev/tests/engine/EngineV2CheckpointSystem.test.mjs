@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import {
   ENGINE_V2_CHECKPOINT_ERRORS,
   processEngineV2Checkpoints,
-} from "../../../src/engine/runtime/engineV2CheckpointSystem.js";
+} from "../../../www/src/engine/runtime/engineV2CheckpointSystem.js";
 import { createEngineV2PersistenceRuntimeFixture } from "./EngineV2PersistenceRuntimeFixture.mjs";
 
 export function run() {

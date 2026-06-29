@@ -8,14 +8,14 @@ import assert from 'node:assert/strict';
 import {
   WORLD_GAME_STATE_EVENT_TYPES,
   WORLD_GAME_STATE_SYSTEM_ID
-} from '../../../src/advanced/state/constants.js';
-import { createInitialWorldGameState } from '../../../src/advanced/state/initialState.js';
-import { createObjectiveProgressMirrorConsumer } from '../../../src/advanced/state/consumers/createObjectiveProgressMirrorConsumer.js';
+} from '../../../www/src/advanced/state/constants.js';
+import { createInitialWorldGameState } from '../../../www/src/advanced/state/initialState.js';
+import { createObjectiveProgressMirrorConsumer } from '../../../www/src/advanced/state/consumers/createObjectiveProgressMirrorConsumer.js';
 import {
   createStateEventEnvelope as createStateContractEventEnvelope,
-} from '../../../src/advanced/state/events.js';
-import { createWorldGameStateSystem } from '../../../src/advanced/state/createWorldGameStateSystem.js';
-import { registerWorldGameStateSystem } from '../../../src/advanced/state/integration/registerWorldGameStateSystem.js';
+} from '../../../www/src/advanced/state/events.js';
+import { createWorldGameStateSystem } from '../../../www/src/advanced/state/createWorldGameStateSystem.js';
+import { registerWorldGameStateSystem } from '../../../www/src/advanced/state/integration/registerWorldGameStateSystem.js';
 
 function createLocalEventPipeline() {
   const listenersByType = new Map();

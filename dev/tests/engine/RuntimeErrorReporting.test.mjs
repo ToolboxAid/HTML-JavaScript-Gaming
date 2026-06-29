@@ -9,7 +9,7 @@ import {
   RUNTIME_ERROR_REPORTING_ERRORS,
   RUNTIME_ERROR_REPORT_STAGE_LIST,
   createRuntimeErrorReport,
-} from "../../../src/engine/runtime/runtimeErrorReporting.js";
+} from "../../../www/src/engine/runtime/runtimeErrorReporting.js";
 
 export function run() {
   RUNTIME_ERROR_REPORT_STAGE_LIST.forEach((stage) => {

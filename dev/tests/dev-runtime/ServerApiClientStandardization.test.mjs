@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { clearPublicConfigCache } from "../../../src/api/public-config-client.js";
+import { clearPublicConfigCache } from "../../../www/src/api/public-config-client.js";
 import {
   callServerToolFunction,
   clearServerApiDiagnostics,
@@ -10,8 +10,8 @@ import {
   requireServerApiData,
   SERVER_DATA_BOUNDARY_RULE,
   safeRequestServerApi,
-} from "../../../src/api/server-api-client.js";
-import { logoutSessionUser } from "../../../src/api/session-api-client.js";
+} from "../../../www/src/api/server-api-client.js";
+import { logoutSessionUser } from "../../../www/src/api/session-api-client.js";
 
 function installMockServerApi(routes) {
   const calls = [];

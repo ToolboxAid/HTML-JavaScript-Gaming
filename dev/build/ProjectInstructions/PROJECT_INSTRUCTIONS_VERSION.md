@@ -1,6 +1,6 @@
 # Project Instructions Version
 
-Current Project Instructions Version: 2026.06.28.017
+Current Project Instructions Version: 2026.06.28.018
 
 Last Updated: 2026-06-28
 
@@ -25,6 +25,7 @@ Last Updated: 2026-06-28
 - Added root leftover audit and `src/` transition plan for the final repository layout cleanup stage.
 - Removed safe empty local root directory shells and documented blocked local-only `assets/` cleanup.
 - Removed the local demo `.gfsp` artifact and recorded a file-by-file `src/` destination audit for future scoped migrations.
+- Moved PR017-audited browser/www-owned legacy `src/` files into `www/src/` while preserving public `/src/...` browser route compatibility under the `www` web root.
 - Codex must read this version file and the latest repository copy of `PROJECT_INSTRUCTIONS.md` before performing work.
 - Codex must discard previously remembered Project Instructions and treat the repository copy as authoritative.
 - Codex must validate canonical report and ZIP paths, branching model, and legacy path avoidance before work proceeds.

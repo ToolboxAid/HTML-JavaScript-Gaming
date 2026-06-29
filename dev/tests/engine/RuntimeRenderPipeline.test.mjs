@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
 import {
   RUNTIME_RENDER_PIPELINE_ERRORS,
   renderRuntimeFrame,
-} from "../../../src/engine/runtime/runtimeRenderPipeline.js";
+} from "../../../www/src/engine/runtime/runtimeRenderPipeline.js";
 
 export function run() {
   const renderState = Object.freeze({

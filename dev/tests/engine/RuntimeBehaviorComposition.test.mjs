@@ -8,12 +8,12 @@ import assert from "node:assert/strict";
 import {
   RUNTIME_BEHAVIOR_COMPOSITION_ERRORS,
   composeRuntimeBehavior,
-} from "../../../src/engine/runtime/runtimeBehaviorComposition.js";
-import { readManifestObjectDefinitions } from "../../../src/engine/runtime/objectDefinitionReader.js";
-import { createRuntimeObjectRecords } from "../../../src/engine/runtime/runtimeObjectRecordFactory.js";
-import { instantiateEnvironmentForces } from "../../../src/engine/runtime/runtimeEnvironmentForceInstantiation.js";
-import { instantiateRuntimeObjects } from "../../../src/engine/runtime/runtimeObjectInstantiation.js";
-import { instantiateTerrainMaterials } from "../../../src/engine/runtime/runtimeTerrainMaterialInstantiation.js";
+} from "../../../www/src/engine/runtime/runtimeBehaviorComposition.js";
+import { readManifestObjectDefinitions } from "../../../www/src/engine/runtime/objectDefinitionReader.js";
+import { createRuntimeObjectRecords } from "../../../www/src/engine/runtime/runtimeObjectRecordFactory.js";
+import { instantiateEnvironmentForces } from "../../../www/src/engine/runtime/runtimeEnvironmentForceInstantiation.js";
+import { instantiateRuntimeObjects } from "../../../www/src/engine/runtime/runtimeObjectInstantiation.js";
+import { instantiateTerrainMaterials } from "../../../www/src/engine/runtime/runtimeTerrainMaterialInstantiation.js";
 import { createManifestDrivenRuntimeFixture } from "./RuntimeManifestDrivenFixture.mjs";
 
 export function run() {

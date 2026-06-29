@@ -5,11 +5,12 @@ import assert from "node:assert/strict";
 import {
   getAdminNavigationItems,
   getOwnerNavigationItems,
-} from "../../../src/api/admin-owner-navigation.js";
+} from "../../../www/src/api/admin-owner-navigation.js";
 
 const ACTIVE_SCAN_ROOTS = Object.freeze([
   "api",
   "src",
+  "www/src",
   "www/account",
   "www/admin",
   "www/assets",
@@ -82,8 +83,8 @@ function assertActivePathExists(item) {
   assert.equal(fs.existsSync(browserFilePath), true, `${item.label} active menu path should exist: ${browserFilePath}`);
 }
 
-test("server API client lives under src/api and active code does not reference src/engine/api", () => {
-  assert.equal(fs.existsSync("src/api/server-api-client.js"), true);
+test("server API client lives under www/src/api and active code does not reference src/engine/api", () => {
+  assert.equal(fs.existsSync("www/src/api/server-api-client.js"), true);
   assert.deepEqual(fs.existsSync("src/engine/api") ? fs.readdirSync("src/engine/api").sort() : [], []);
   const offenders = activeTextSources()
     .filter(({ source }) => /src\/engine\/api\/server-api-client|src\\engine\\api\\server-api-client|engine\/api\/server-api-client/.test(source))

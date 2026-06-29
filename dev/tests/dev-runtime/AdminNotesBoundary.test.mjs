@@ -18,8 +18,8 @@ const productionRoots = [
   "www/admin",
   "www/assets",
   "www/owner",
-  "src/engine",
-  "src/shared",
+  "www/src/engine",
+  "www/src/shared",
   "www/toolbox",
 ];
 
@@ -32,7 +32,7 @@ const expectedDevNotes = [
   "dev/archive/legacy-docs-build/admin-notes/roadmap2MVP.txt",
   "dev/archive/legacy-docs-build/admin-notes/sample.txt",
   "dev/archive/legacy-docs-build/admin-notes/tools/index.txt",
-  "src/dev-runtime/admin/notes.html",
+  "www/src/dev-runtime/admin/notes.html",
 ];
 
 const retiredProductionFiles = [
@@ -149,9 +149,9 @@ test("Admin Notes dev files and local viewer entrypoint exist", () => {
   });
 });
 
-test("Admin Notes browser viewer stays under src/dev-runtime/admin while server helpers live under api/admin", () => {
+test("Admin Notes browser viewer stays under www/src/dev-runtime/admin while server helpers live under api/admin", () => {
   assert.equal(
-    fs.existsSync(repoPath("src/dev-runtime/admin/admin-notes-viewer.js")),
+    fs.existsSync(repoPath("www/src/dev-runtime/admin/admin-notes-viewer.js")),
     true,
     "legacy Admin Notes viewer exists",
   );
@@ -166,14 +166,14 @@ test("Admin Notes browser viewer stays under src/dev-runtime/admin while server 
     "API Admin Notes local menu route helper exists",
   );
   assert.equal(
-    fs.existsSync(repoPath("src/dev-runtime/admin/header-nav.local.html")),
+    fs.existsSync(repoPath("www/src/dev-runtime/admin/header-nav.local.html")),
     true,
     "dev-runtime local header partial exists",
   );
 });
 
 test("Admin Notes local viewer page uses external dev-runtime JavaScript only", () => {
-  const viewerSource = fs.readFileSync(repoPath("src/dev-runtime/admin/notes.html"), "utf8");
+  const viewerSource = fs.readFileSync(repoPath("www/src/dev-runtime/admin/notes.html"), "utf8");
   assert.doesNotMatch(viewerSource, /<script(?![^>]*\bsrc=)/i, "viewer page must not contain inline scripts");
   assert.doesNotMatch(viewerSource, /<style\b/i, "viewer page must not contain style blocks");
   assert.doesNotMatch(viewerSource, /\son[a-z]+\s*=/i, "viewer page must not contain inline event handlers");
@@ -282,7 +282,7 @@ test("local header partial does not create a competing Admin Notes menu", () => 
   const localHeaderPath = localAdminNotesHeaderPartialPath(repoRoot, headerPath);
   const servedHeader = fs.readFileSync(localHeaderPath, "utf8");
 
-  assert.equal(relativePath(localHeaderPath), "src/dev-runtime/admin/header-nav.local.html");
+  assert.equal(relativePath(localHeaderPath), "www/src/dev-runtime/admin/header-nav.local.html");
   assert.doesNotMatch(servedHeader, /data-admin-notes-local-menu|data-admin-my-stuff-menu|data-admin-my-stuff-separator|Admin Notes/);
   assert.doesNotMatch(servedHeader, new RegExp(ADMIN_NOTES_LOCAL_SOURCE_PATH.replace(/\//g, "\\/")));
   assert.doesNotMatch(servedHeader, new RegExp(ADMIN_NOTES_LOCAL_VIEWER_PATH.replace(/\//g, "\\/")));

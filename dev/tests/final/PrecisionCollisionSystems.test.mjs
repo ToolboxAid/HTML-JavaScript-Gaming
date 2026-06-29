@@ -5,11 +5,11 @@ David Quesenberry
 PrecisionCollisionSystems.test.mjs
 */
 import assert from 'node:assert/strict';
-import { transformPoints } from '../../../src/engine/rendering/VectorDrawing.js';
-import { arePolygonsColliding, isPointInPolygon, getPolygonBounds } from '../../../src/engine/collision/polygon.js';
-import { createRasterMask, areMasksColliding } from '../../../src/engine/collision/raster.js';
-import { evaluateObjectVectorCollisionPair, getObjectVectorCollisionOutlinePoints, transformCollisionPoints } from '../../../src/engine/collision/objectVector.js';
-import { runHybridCollision } from '../../../src/engine/collision/hybrid.js';
+import { transformPoints } from '../../../www/src/engine/rendering/VectorDrawing.js';
+import { arePolygonsColliding, isPointInPolygon, getPolygonBounds } from '../../../www/src/engine/collision/polygon.js';
+import { createRasterMask, areMasksColliding } from '../../../www/src/engine/collision/raster.js';
+import { evaluateObjectVectorCollisionPair, getObjectVectorCollisionOutlinePoints, transformCollisionPoints } from '../../../www/src/engine/collision/objectVector.js';
+import { runHybridCollision } from '../../../www/src/engine/collision/hybrid.js';
 
 export function run() {
   const transformed = transformPoints(
@@ -130,7 +130,7 @@ export function run() {
   });
   assert.equal(objectVectorHit.mode, 'vector');
   assert.equal(objectVectorHit.collided, true);
-  assert.equal(objectVectorHit.enginePath, 'src/engine/collision/objectVector.js');
+  assert.equal(objectVectorHit.enginePath, 'www/src/engine/collision/objectVector.js');
   assert.equal(getObjectVectorCollisionOutlinePoints(objectA).length, polyA.length);
   const collisionTransform = transformCollisionPoints([{ x: 10, y: 0 }], { x: 4, y: 5, rotation: Math.PI / 2 });
   assert.equal(Math.abs(collisionTransform[0].x - 4) < 1e-9, true);

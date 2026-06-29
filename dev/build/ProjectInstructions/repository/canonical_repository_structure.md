@@ -14,7 +14,7 @@ Valid top-level folders:
 - www/
 
 Root product and repo sections:
-- www/ owns browser-served production website sections, Creator toolbox pages, public game discovery, production Docs & Help, and browser assets.
+- www/ owns browser-served production website sections, Creator toolbox pages, public game discovery, production Docs & Help, browser assets, and browser-owned runtime/client modules under `www/src/`.
 - api/ is the Node/API/server application surface for server entry points, API routing, API services, database access, storage access, auth, setup, publishing, and admin server logic.
 - deploy/ contains deployment configuration.
 - dev/ contains the development workspace.
@@ -26,14 +26,14 @@ Deployable application source:
 - src/api-runtime/{feature-name}/
 - src/runtime/{feature-name}/
 
-Final src layer ownership:
-- src/web/ owns browser-facing deployable application modules used by public pages, account/admin surfaces, and Creator tools.
-- src/api-runtime/ owns deployable API/runtime service modules that back the shared Browser -> API -> Postgres/R2 contract.
-- src/runtime/ owns deployable game, tool, engine, and shared runtime capabilities.
-- Existing top-level src/advanced/, src/api/, src/engine/, src/shared/, and src/tools/ directories are legacy transition buckets until explicit migration PRs move them.
+Final source ownership after the repository layout simplification:
+- `www/src/` owns browser-facing deployable application modules used by public pages, account/admin surfaces, Creator tools, game runtime, shared browser utilities, and browser API clients.
+- `api/` owns deployable API/runtime service modules that back the shared Browser -> API -> Postgres/R2 contract.
+- `dev/` owns developer-only source, scripts, tests, reports, local runtime orchestration, and reference material.
+- Existing root `src/shared/contracts/`, `src/shared/schemas/`, `src/shared/projectDataStore/`, and source-reference files are legacy transition buckets until explicit migration PRs move them.
 - Browser API clients remain outside `api/`; browser-served code must use API/service contracts instead of importing top-level `api/` files directly.
-- `src/dev-runtime/admin/` remains only as a legacy Admin Notes browser-viewer compatibility path until a scoped browser admin migration retires it.
-- Do not add new top-level src/ layer names outside src/web/, src/api-runtime/, or src/runtime/ without OWNER approval.
+- `www/src/dev-runtime/admin/` preserves the public `/src/dev-runtime/admin/...` Admin Notes browser-viewer compatibility route under the `www` web root.
+- Do not add new root `src/` layer names or new root `src/` work without OWNER approval.
 - Do not use team names in runtime source filenames.
 
 Valid dev workspace folders:
@@ -60,6 +60,9 @@ Dev workspace ownership:
 - dev/tools/ owns development-only tooling.
 - dev/workspace/ owns generated output: tmp, zips, logs, generated files, and test-results.
 
+Browser-served runtime/client source:
+- www/src/
+
 Browser-served tools:
 - www/toolbox/{tool-name}/index.html
 
@@ -75,14 +78,18 @@ Shared JavaScript:
 - www/assets/js/shared/
 
 Legacy transition buckets:
-- src/advanced/
-- src/api/
-- src/engine/
-- src/shared/
-- src/tools/
-- src/dev-runtime/admin/
+- www/src/advanced/
+- www/src/api/
+- www/src/engine/
+- www/src/shared/
+- www/src/tools/
+- www/src/dev-runtime/admin/
+- src/shared/contracts/
+- src/shared/schemas/
+- src/shared/projectDataStore/
+- src/dev-runtime/admin/.gitkeep
 
-These legacy transition buckets may remain until explicit migration PRs move them into `src/web/`, `src/api-runtime/`, or `src/runtime/`.
+The `www/src/` legacy transition buckets preserve public `/src/...` browser import compatibility during source retirement. Remaining root `src/` buckets may remain only until explicit stacked migration PRs move them to `api/` or `dev/`.
 
 ## Rules
 
@@ -102,7 +109,8 @@ These legacy transition buckets may remain until explicit migration PRs move the
 - Do not create new folders unless they fit the documented canonical structure.
 - If a requested or generated path does not clearly fit the canonical structure, Codex must HARD STOP and report the proposed path.
 - New development follows the canonical structure.
-- New deployable `src/` work follows `src/web/`, `src/api-runtime/`, or `src/runtime/`.
+- New browser-owned source belongs under `www/` according to the browser source and asset rules above.
+- New API/server source belongs under `api/`.
 - New non-deployable work belongs under `dev/`.
 - Required reports belong under flat `dev/reports/`.
 - Required ZIPs belong under `dev/workspace/zips/`; generated temporary artifacts belong under `dev/workspace/tmp/`.

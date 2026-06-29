@@ -5,8 +5,8 @@ David Quesenberry
 AttractModeController.test.mjs
 */
 import assert from 'node:assert/strict';
-import AttractModeController from '../../../src/engine/scene/AttractModeController.js';
-import { DEFAULT_ATTRACT_CONFIG } from '../../../src/engine/scene/AttractModeController.js';
+import AttractModeController from '../../../www/src/engine/scene/AttractModeController.js';
+import { DEFAULT_ATTRACT_CONFIG } from '../../../www/src/engine/scene/AttractModeController.js';
 
 function testIdleEnterAndPhaseCycle() {
   const phases = [];

@@ -5,8 +5,8 @@
  StorageService.test.mjs
 */
 import assert from 'node:assert/strict';
-import StorageService from '../../../src/engine/persistence/StorageService.js';
-import SettingsSystem from '../../../src/engine/release/SettingsSystem.js';
+import StorageService from '../../../www/src/engine/persistence/StorageService.js';
+import SettingsSystem from '../../../www/src/engine/release/SettingsSystem.js';
 
 function withBlockedLocalStorage(run) {
   const originalDescriptor = Object.getOwnPropertyDescriptor(globalThis, 'localStorage');

@@ -10,7 +10,7 @@ import {
   createRuntimeSceneRegistry,
   loadRuntimeScene,
   validateRuntimeSceneTransition,
-} from "../../../src/engine/runtime/runtimeMultiSceneLoading.js";
+} from "../../../www/src/engine/runtime/runtimeMultiSceneLoading.js";
 import { createRuntimeGameplayLoopManifest } from "./RuntimeGameplayLoopFixture.mjs";
 
 export function run() {

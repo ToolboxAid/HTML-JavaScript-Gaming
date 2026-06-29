@@ -5,7 +5,7 @@ David Quesenberry
 RandomSeed.test.mjs
 */
 import assert from "node:assert/strict";
-import { RandomSeed } from "../../../src/shared/math/RandomSeed.js";
+import { RandomSeed } from "../../../www/src/shared/math/RandomSeed.js";
 
 function takeSequence(generator, count) {
   return Array.from({ length: count }, () => generator.next());
