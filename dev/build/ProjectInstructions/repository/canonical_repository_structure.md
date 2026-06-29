@@ -90,7 +90,6 @@ Legacy transition buckets:
 - src/shared/contracts/
 - src/shared/schemas/
 - src/shared/projectDataStore/
-- src/dev-runtime/admin/.gitkeep
 
 The `www/src/` legacy transition buckets preserve public `/src/...` browser import compatibility during source retirement. Remaining root `src/` buckets may remain only until explicit stacked migration PRs move them to `api/` or `dev/`.
 
