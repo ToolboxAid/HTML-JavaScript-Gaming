@@ -1,6 +1,0 @@
-{
-  "templateId": "vector-native-arcade",
-  "schema": "toolbox.template/1",
-  "visualContract": "vector-only",
-  "runtimeEntry": "games/Asteroids/main.js#bootAsteroids"
-}

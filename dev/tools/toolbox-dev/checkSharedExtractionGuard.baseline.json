@@ -3757,46 +3757,6 @@
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "www/src/tools/common/GameManifestLoader.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-1"
-    },
-    {
-      "file": "www/src/tools/common/GameManifestLoader.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-1"
-    },
-    {
-      "file": "www/src/tools/common/GameManifestLoader.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-2"
-    },
-    {
-      "file": "www/src/tools/common/GameManifestLoader.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-2"
-    },
-    {
-      "file": "www/src/tools/common/WorkspaceDirtyNotifier.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-1"
-    },
-    {
-      "file": "www/src/tools/common/WorkspaceDirtyNotifier.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-1"
-    },
-    {
-      "file": "www/src/tools/common/WorkspaceDirtyNotifier.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-2"
-    },
-    {
-      "file": "www/src/tools/common/WorkspaceDirtyNotifier.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-2"
-    },
-    {
       "file": "toolbox/tools-page-accordions.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"

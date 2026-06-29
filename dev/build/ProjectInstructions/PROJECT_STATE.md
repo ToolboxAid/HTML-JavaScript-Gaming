@@ -1,7 +1,7 @@
 # Project State
 
 ```yaml
-project_state_version: "2026.06.28.020"
+project_state_version: "2026.06.28.021"
 last_updated: "2026-06-28"
 current_main_commit: "40de767476d70cadfd1292c916844c2f31b6f185"
 repository_status:
@@ -10,9 +10,9 @@ repository_status:
   runtime_database: "Postgres"
   creator_metadata: "API to Postgres"
   creator_assets: "API to R2"
-project_instructions_version: "2026.06.28.020"
-repository_structure_version: "2026.06.28.020"
-canonical_layout_version: "2026.06.28.020"
+project_instructions_version: "2026.06.28.021"
+repository_structure_version: "2026.06.28.021"
+canonical_layout_version: "2026.06.28.021"
 active_teams:
   - "Owner"
   - "Alfa"
@@ -20,8 +20,8 @@ active_teams:
   - "Charlie"
   - "Delta"
   - "Golf"
-latest_owner_pr: "PR_26180_OWNER_020-src-legacy-teardown"
-latest_structure_pr: "PR_26180_OWNER_020-src-legacy-teardown"
+latest_owner_pr: "PR_26180_OWNER_021-archive-legacy-games-samples-teardown"
+latest_structure_pr: "PR_26180_OWNER_021-archive-legacy-games-samples-teardown"
 valid_top_level_folders:
   - "api/"
   - "deploy/"
@@ -42,5 +42,6 @@ valid_dev_folders:
 known_technical_debt:
   - "Remaining API/server-owned contracts, validation-only schemas, and project data store modules remain under src/shared/ until scoped follow-up PRs move them to api/ or dev/."
   - "Remaining actively validated contracts, validation schemas, and project data store modules remain under src/shared/ until scoped follow-up PRs move them to api/ or dev/."
+  - "Archived games and samples under dev/archive/v1-v2 remain until active runtime/test/script references are migrated away."
   - "repository_directory_standard.md and codex_project_instructions_startup.md are superseded pointers retained for compatibility."
 ```
