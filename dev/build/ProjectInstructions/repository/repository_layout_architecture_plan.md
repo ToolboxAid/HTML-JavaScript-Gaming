@@ -38,6 +38,8 @@ No browser, API, server, test, script, or runtime files move in the scaffold or 
 
 `PR_26180_OWNER_014-remaining-legacy-layout-cleanup` audits remaining tracked root and `src/` layout items, moves the browser-served favicon into `www/`, and records root `.env` placement policy before final validation.
 
+`PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit` audits named root leftovers and records the `src/` transition plan without moving application source or changing product behavior.
+
 ## Proposed Future Layout
 
 ```text
@@ -173,7 +175,13 @@ Rules:
    - Document `.env` placement policy for local and deployed environments.
    - Preserve product behavior and public routes.
 
-11. `PR_26180_OWNER_015-final-layout-validation`
+11. `PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit`
+   - Audit root leftovers after the `www/`, `api/`, and `dev/` migration.
+   - Classify local-only legacy folder shells, ignored/generated leftovers, and tracked `src/` transition content.
+   - Produce the `src/` transition plan for the follow-up final validation stage.
+   - Preserve product behavior.
+
+12. `PR_26180_OWNER_016-final-layout-validation`
    - Validate final repository layout.
    - Confirm `www/` owns the browser-served app, `api/` owns the server app, and `dev/` owns the developer workspace.
    - Confirm runtime does not depend on `dev/`, browser code does not import `api/`, and legacy references are removed or documented.
