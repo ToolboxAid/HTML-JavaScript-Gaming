@@ -1,46 +1,46 @@
 ﻿diff --git a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-index 765f465fc..1043124e0 100644
+index 1043124e0..08e569f74 100644
 --- a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 +++ b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 @@ -117,7 +117,7 @@ Rules:
 
  ## Current Version/Date
 
--- Project Instructions Version: 2026.06.28.013
-+- Project Instructions Version: 2026.06.28.014
+-- Project Instructions Version: 2026.06.28.014
++- Project Instructions Version: 2026.06.28.015
  - Date: 2026-06-28
  - Owner: OWNER
 
 diff --git a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
-index a46ee7657..9fdf174e2 100644
+index 9fdf174e2..a9f50409e 100644
 --- a/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
 +++ b/dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
 @@ -1,6 +1,6 @@
  # Project Instructions Version
 
--Current Project Instructions Version: 2026.06.28.013
-+Current Project Instructions Version: 2026.06.28.014
+-Current Project Instructions Version: 2026.06.28.014
++Current Project Instructions Version: 2026.06.28.015
 
  Last Updated: 2026-06-28
 
-@@ -21,6 +21,7 @@ Last Updated: 2026-06-28
- - Finalized moved test and validation path assumptions for the `www/`, `api/`, and `dev/local-runtime/` layout.
+@@ -22,6 +22,7 @@ Last Updated: 2026-06-28
  - Updated CI, package scripts, and developer utilities for the `www/`, `api/`, and `dev/` layout.
  - Removed active references to obsolete legacy layout paths after the `www/`, `api/`, and `dev/` migration steps.
-+- Moved the tracked browser-served favicon under `www/`, added remaining root/src audit governance, and documented root `.env` placement policy.
+ - Moved the tracked browser-served favicon under `www/`, added remaining root/src audit governance, and documented root `.env` placement policy.
++- Added root leftover audit and `src/` transition plan for the final repository layout cleanup stage.
  - Codex must read this version file and the latest repository copy of `PROJECT_INSTRUCTIONS.md` before performing work.
  - Codex must discard previously remembered Project Instructions and treat the repository copy as authoritative.
  - Codex must validate canonical report and ZIP paths, branching model, and legacy path avoidance before work proceeds.
 diff --git a/dev/build/ProjectInstructions/PROJECT_STATE.md b/dev/build/ProjectInstructions/PROJECT_STATE.md
-index 0e5fac9bd..716598321 100644
+index 716598321..01abe3bf4 100644
 --- a/dev/build/ProjectInstructions/PROJECT_STATE.md
 +++ b/dev/build/ProjectInstructions/PROJECT_STATE.md
 @@ -1,7 +1,7 @@
  # Project State
 
  ```yaml
--project_state_version: "2026.06.28.013"
-+project_state_version: "2026.06.28.014"
+-project_state_version: "2026.06.28.014"
++project_state_version: "2026.06.28.015"
  last_updated: "2026-06-28"
  current_main_commit: "40de767476d70cadfd1292c916844c2f31b6f185"
  repository_status:
@@ -48,12 +48,12 @@ index 0e5fac9bd..716598321 100644
    runtime_database: "Postgres"
    creator_metadata: "API to Postgres"
    creator_assets: "API to R2"
--project_instructions_version: "2026.06.28.013"
--repository_structure_version: "2026.06.28.013"
--canonical_layout_version: "2026.06.28.013"
-+project_instructions_version: "2026.06.28.014"
-+repository_structure_version: "2026.06.28.014"
-+canonical_layout_version: "2026.06.28.014"
+-project_instructions_version: "2026.06.28.014"
+-repository_structure_version: "2026.06.28.014"
+-canonical_layout_version: "2026.06.28.014"
++project_instructions_version: "2026.06.28.015"
++repository_structure_version: "2026.06.28.015"
++canonical_layout_version: "2026.06.28.015"
  active_teams:
    - "Owner"
    - "Alfa"
@@ -61,322 +61,194 @@ index 0e5fac9bd..716598321 100644
    - "Charlie"
    - "Delta"
    - "Golf"
--latest_owner_pr: "PR_26180_OWNER_013-remove-legacy-layout"
--latest_structure_pr: "PR_26180_OWNER_013-remove-legacy-layout"
-+latest_owner_pr: "PR_26180_OWNER_014-remaining-legacy-layout-cleanup"
-+latest_structure_pr: "PR_26180_OWNER_014-remaining-legacy-layout-cleanup"
+-latest_owner_pr: "PR_26180_OWNER_014-remaining-legacy-layout-cleanup"
+-latest_structure_pr: "PR_26180_OWNER_014-remaining-legacy-layout-cleanup"
++latest_owner_pr: "PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit"
++latest_structure_pr: "PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit"
  valid_top_level_folders:
    - "api/"
    - "deploy/"
-diff --git a/dev/build/ProjectInstructions/addendums/environment_configuration_standards.md b/dev/build/ProjectInstructions/addendums/environment_configuration_standards.md
-index f01811895..e78c2ca98 100644
---- a/dev/build/ProjectInstructions/addendums/environment_configuration_standards.md
-+++ b/dev/build/ProjectInstructions/addendums/environment_configuration_standards.md
-@@ -56,6 +56,18 @@ Runtime startup still reads `.env` values only. The official flow is for each en
-
- `.env.prd` is legacy technical debt only. Do not introduce new references to `.env.prd` except when documenting migration or historical compatibility.
-
-+## Runtime Placement Policy
-+
-+Local `.env` may exist at repository root for developer startup only.
-+
-+Root `.env` is user/environment-owned, ignored, and never deployed as part of `www/` or `api/`.
-+
-+Production uses deployment environment variables and environment-managed secrets instead of committed `.env` files.
-+
-+`www/` must never contain secrets or environment-owned `.env` files.
-+
-+`api/` reads environment values from `process.env` and the deployment environment.
-+
- ## Environment Identity
-
- Allowed `GAMEFOUNDRY_ENVIRONMENT` values:
 diff --git a/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md b/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
-index 047761f31..535d71a1d 100644
+index 535d71a1d..bb5b6c565 100644
 --- a/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
 +++ b/dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
 @@ -39,8 +39,8 @@ The backlog is the authoritative source for determining the next logical PRs.
  - Team: Owner
  - Product Area: Repository Architecture Simplification
  - Status: Active
--- Percent Complete: 80%
--- Active PR: PR_26180_OWNER_013-remove-legacy-layout
-+- Percent Complete: 90%
-+- Active PR: PR_26180_OWNER_014-remaining-legacy-layout-cleanup
+-- Percent Complete: 90%
+-- Active PR: PR_26180_OWNER_014-remaining-legacy-layout-cleanup
++- Percent Complete: 95%
++- Active PR: PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit
  - Next Milestone: Final layout validation and completion report
  - Source / Reference: `dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md`; `dev/build/ProjectInstructions/repository/www_migration_map.md`
 
-diff --git a/dev/build/ProjectInstructions/repository/canonical_repository_structure.md b/dev/build/ProjectInstructions/repository/canonical_repository_structure.md
-index 3220aea3b..f1561c28e 100644
---- a/dev/build/ProjectInstructions/repository/canonical_repository_structure.md
-+++ b/dev/build/ProjectInstructions/repository/canonical_repository_structure.md
-@@ -121,6 +121,15 @@ These legacy transition buckets may remain until explicit migration PRs move the
- - Environment differences must come from `.env` values or environment-managed secrets.
- - Runtime source filenames must not use team names.
-
-+## Environment File Placement
-+
-+- Local `.env` may exist at repository root for developer startup only.
-+- Root `.env` is user/environment-owned, ignored, and never deployed as part of `www/` or `api/`.
-+- Production uses deployment environment variables and environment-managed secrets instead of committed `.env` files.
-+- `www/` must never contain secrets or environment-owned `.env` files.
-+- `api/` reads environment values from `process.env` and the deployment environment.
-+- Only `.env.example` is tracked as a repository template.
-+
- ## PR Chain Boundary
-
- The development workspace restructure must proceed through sequential scoped PRs. A PR may only move or update the paths named in its purpose.
 diff --git a/dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md b/dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
-index fadb42722..aea15aa1e 100644
+index aea15aa1e..e459e8393 100644
 --- a/dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
 +++ b/dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
-@@ -36,6 +36,8 @@ No browser, API, server, test, script, or runtime files move in the scaffold or
+@@ -38,6 +38,8 @@ No browser, API, server, test, script, or runtime files move in the scaffold or
 
- `PR_26180_OWNER_013-remove-legacy-layout` removes active stale references to obsolete legacy paths after the tracked `www/`, `api/`, and `dev/` migration steps.
+ `PR_26180_OWNER_014-remaining-legacy-layout-cleanup` audits remaining tracked root and `src/` layout items, moves the browser-served favicon into `www/`, and records root `.env` placement policy before final validation.
 
-+`PR_26180_OWNER_014-remaining-legacy-layout-cleanup` audits remaining tracked root and `src/` layout items, moves the browser-served favicon into `www/`, and records root `.env` placement policy before final validation.
++`PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit` audits named root leftovers and records the `src/` transition plan without moving application source or changing product behavior.
 +
  ## Proposed Future Layout
 
  ```text
-@@ -165,7 +167,13 @@ Rules:
-    - Remove or retire obsolete legacy paths after all references are updated.
-    - Hard stop if any runtime, test, or CI reference still points to old locations.
+@@ -173,7 +175,13 @@ Rules:
+    - Document `.env` placement policy for local and deployed environments.
+    - Preserve product behavior and public routes.
 
--10. `PR_26180_OWNER_014-final-layout-validation`
-+10. `PR_26180_OWNER_014-remaining-legacy-layout-cleanup`
-+   - Audit remaining tracked root and `src/` layout items after the `www/`, `api/`, and `dev/` migrations.
-+   - Move browser-served root assets that now belong under `www/`.
-+   - Document `.env` placement policy for local and deployed environments.
-+   - Preserve product behavior and public routes.
+-11. `PR_26180_OWNER_015-final-layout-validation`
++11. `PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit`
++   - Audit root leftovers after the `www/`, `api/`, and `dev/` migration.
++   - Classify local-only legacy folder shells, ignored/generated leftovers, and tracked `src/` transition content.
++   - Produce the `src/` transition plan for the follow-up final validation stage.
++   - Preserve product behavior.
 +
-+11. `PR_26180_OWNER_015-final-layout-validation`
++12. `PR_26180_OWNER_016-final-layout-validation`
     - Validate final repository layout.
     - Confirm `www/` owns the browser-served app, `api/` owns the server app, and `dev/` owns the developer workspace.
     - Confirm runtime does not depend on `dev/`, browser code does not import `api/`, and legacy references are removed or documented.
-diff --git a/dev/reports/PR_26180_OWNER_014-remaining-legacy-layout-cleanup_branch-validation.md b/dev/reports/PR_26180_OWNER_014-remaining-legacy-layout-cleanup_branch-validation.md
+diff --git a/dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_branch-validation.md b/dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_branch-validation.md
 new file mode 100644
-index 000000000..2a325d6f5
+index 000000000..529aa44f3
 --- /dev/null
-+++ b/dev/reports/PR_26180_OWNER_014-remaining-legacy-layout-cleanup_branch-validation.md
-@@ -0,0 +1,11 @@
-+# PR_26180_OWNER_014 Branch Validation
++++ b/dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_branch-validation.md
+@@ -0,0 +1,12 @@
++# PR_26180_OWNER_015 Branch Validation
 +
 +| Check | Result | Evidence |
 +|---|---:|---|
-+| Current branch | PASS | `PR_26180_OWNER_014-remaining-legacy-layout-cleanup` |
-+| Expected stacked base | PASS | Created from `PR_26180_OWNER_013-remove-legacy-layout` |
-+| Project Instructions loaded | PASS | Repository Project Instructions version `2026.06.28.014` |
++| Current branch | PASS | `PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit` |
++| Expected stacked base | PASS | Created from `PR_26180_OWNER_014-remaining-legacy-layout-cleanup` |
++| Base branch for PR | PASS | `PR_26180_OWNER_014-remaining-legacy-layout-cleanup` |
++| Project Instructions loaded | PASS | Repository Project Instructions version `2026.06.28.015` |
 +| Branching policy loaded | PASS | `PROJECT_BRANCHING_POLICY.md` version `2026.06.28.002` |
-+| Scope | PASS | Remaining layout cleanup, favicon move, environment policy documentation, tests/references only |
++| Scope | PASS | Root leftover audit, `src/` transition plan, governance reports only |
 +| Runtime/API/database implementation changes | PASS | None |
 +
-diff --git a/dev/reports/PR_26180_OWNER_014-remaining-legacy-layout-cleanup_manual-validation-notes.md b/dev/reports/PR_26180_OWNER_014-remaining-legacy-layout-cleanup_manual-validation-notes.md
+diff --git a/dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_manual-validation-notes.md b/dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_manual-validation-notes.md
 new file mode 100644
-index 000000000..ca0138110
+index 000000000..8381cadd4
 --- /dev/null
-+++ b/dev/reports/PR_26180_OWNER_014-remaining-legacy-layout-cleanup_manual-validation-notes.md
++++ b/dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_manual-validation-notes.md
 @@ -0,0 +1,9 @@
-+# PR_26180_OWNER_014 Manual Validation Notes
++# PR_26180_OWNER_015 Manual Validation Notes
 +
-+- Public favicon URL remains `/favicon.svg`.
-+- Static route compatibility now verifies that `/favicon.svg` resolves to the browser-served `www/favicon.svg` file.
-+- No `.env` files were moved into `www/` or `api/`.
-+- `src/` remains in place because current application, API client, shared runtime, dev tooling, and tests still reference it.
-+- Root ignored/generated artifacts were not staged.
-+- Playwright coverage output generated by the local run was not included as a PR change.
++- No named local-only root folder was deleted in this PR.
++- `assets/DemoGame-26168-001.gfsp` is ignored local data and remains untouched.
++- Empty local directory shells under `games/`, `learn/`, `tmp/`, and `toolbox/` are not tracked and do not affect the PR diff.
++- `src/` is intentionally retained pending explicit source-layer migration PRs.
++- Codex output ZIP is generated under `dev/workspace/zips/`, not root `tmp/`.
++- Public favicon ownership remains `www/favicon.svg`.
 +
-diff --git a/dev/reports/PR_26180_OWNER_014-remaining-legacy-layout-cleanup_report.md b/dev/reports/PR_26180_OWNER_014-remaining-legacy-layout-cleanup_report.md
+diff --git a/dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_report.md b/dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_report.md
 new file mode 100644
-index 000000000..bdcb8e9ab
+index 000000000..e119925d6
 --- /dev/null
-+++ b/dev/reports/PR_26180_OWNER_014-remaining-legacy-layout-cleanup_report.md
-@@ -0,0 +1,49 @@
-+# PR_26180_OWNER_014 Remaining Legacy Layout Cleanup Report
++++ b/dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_report.md
+@@ -0,0 +1,53 @@
++# PR_26180_OWNER_015 Root Empty Folder and src Transition Audit
 +
 +## Executive Summary
 +
-+PR_26180_OWNER_014 audits the remaining tracked repository layout after the `www/`, `api/`, and `dev/` migration stack. The only tracked browser-served root file found in scope was `favicon.svg`, which is now under `www/favicon.svg` while public references remain `/favicon.svg`.
++PR_26180_OWNER_015 completes a no-runtime-change audit of named root leftovers after the `www/`, `api/`, and `dev/` migration. No tracked placeholder folders were removed because Git has no tracked content in the named root leftovers except `src/`.
 +
-+The PR also documents environment file placement policy: local `.env` files remain user/environment-owned at the repository root and are never deployed; production uses deployment-managed environment variables/secrets; `www/` must not contain secrets; `api/` reads environment values from `process.env` and the deployment environment.
++`src/` remains active and tracked. It should not move in this PR because it contains deployable engine/runtime/shared modules and browser API clients still referenced by `www/`, `api/`, `dev/tests/`, and `dev/tools/`.
 +
-+## Scope Decision
++## Root Folder Audit
 +
-+- Browser-served favicon moved from repository root to `www/`.
-+- Public favicon URL `/favicon.svg` preserved.
-+- `src/` retained as an active transition namespace because tracked browser, API, dev tooling, and tests still import from it.
-+- No `.env` files moved into `www/` or `api/`.
-+- No runtime/API/UI/database behavior changed.
++| Folder | Exists Locally | Tracked Content | Local/Generated Status | Decision |
++|---|---:|---:|---|---|
++| `assets/` | Yes | 0 tracked files | Contains ignored local `assets/DemoGame-26168-001.gfsp`; remaining entries are local directory shells. | Do not delete in PR. User/local cleanup only unless Owner explicitly approves moving/removing the ignored file. |
++| `games/` | Yes | 0 tracked files | Empty local directory shell. | Do not delete in PR because it is untracked/local-only; safe local cleanup may remove it outside a commit. |
++| `learn/` | Yes | 0 tracked files | Empty local directory shell. | Do not delete in PR because it is untracked/local-only; safe local cleanup may remove it outside a commit. |
++| `src/` | Yes | 596 tracked files | Active transition namespace. | Keep. Requires explicit follow-up migration PRs. |
++| `test-results/` | No | 0 tracked files | Absent. | No action. |
++| `tmp/` | Yes | 0 tracked files | Empty local directory shell. | Do not use for Codex output; canonical ZIPs remain under `dev/workspace/zips/`. |
++| `toolbox/` | Yes | 0 tracked files | Empty local directory shell. | Do not delete in PR because it is untracked/local-only; safe local cleanup may remove it outside a commit. |
 +
-+## Root Audit
++## Required Confirmations
 +
-+Tracked root entries are limited to standard repository metadata/config plus `api/`, `dev/`, `src/`, and `www/`. Ignored local folders/files such as local `.env*`, generated workspace outputs, and dependency folders are not part of this PR and were not staged.
++- `.env` remains root/local-only and ignored by `.gitignore`.
++- `.env.example` remains tracked as the repository template.
++- `www/favicon.svg` remains the browser-served favicon.
++- No runtime behavior changes were made.
++- No product feature changes were made.
 +
-+Additional standard root files retained as repository configuration/history:
++## src Transition Plan
 +
-+- `.codex/`
-+- `.gitattributes`
-+- `.githooks/`
-+- `.gitignore`
-+- `AGENTS.md`
-+- `LICENSE`
++| Current Area | Tracked Files | Why It Remains | Destination | Proposed Follow-Up |
++|---|---:|---|---|---|
++| `src/advanced/` | 10 | Advanced state and promotion logic remains actively tested/referenced. | `src/runtime/advanced/` or another Owner-approved runtime bucket. | Runtime transition PR for advanced state modules. |
++| `src/api/` | 20 | Browser API clients and browser admin/client helpers remain used by `www/` and tests. Browser clients must stay outside top-level `api/`. | `src/web/api-clients/` or `src/runtime/api-clients/`, depending on final source-layer naming. | Browser API client source-layer migration PR. |
++| `src/dev-runtime/admin/` | 4 | Legacy Admin Notes browser-viewer compatibility path is documented in Project Instructions. | `www/admin/` if browser-served, or retire after replacement. | Scoped Admin Notes compatibility retirement PR. |
++| `src/engine/` | 327 | Core game/runtime engine remains heavily referenced by tests and dev tooling. | `src/runtime/engine/`. | Engine source-layer migration PR. |
++| `src/shared/` | 233 | Shared contracts, utilities, random/hash/noise/geometry/color/text/time helpers, and toolbox pipeline logic remain actively referenced. | Split by usage: `src/runtime/shared/`, `src/web/shared/`, and/or `src/api-runtime/shared/`. | Shared source-layer classification and migration PR. |
++| `src/tools/` | 2 | Tool helper modules remain referenced by current tooling/tests. | `src/web/tools/` or `src/runtime/tools/` after ownership review. | Tool helper source-layer migration PR. |
 +
-+## src/ Audit
++## Follow-Up Recommendation
 +
-+`src/` is not empty and remains referenced by current `www/`, `api/`, `dev/tests/`, and `dev/tools/` surfaces. Current Project Instructions document `src/advanced`, `src/api`, `src/engine`, `src/shared`, `src/tools`, and `src/dev-runtime/admin` as legacy transition buckets pending explicit follow-up migration. This PR does not move or delete `src/`.
++Do not move `src/` wholesale. Create focused source-layer migration PRs after the layout stack is merged:
 +
-+## File Evidence
++1. Browser API clients and browser helper modules.
++2. Engine/runtime modules.
++3. Shared contracts/utilities classification.
++4. Legacy Admin Notes compatibility retirement.
++5. Tool helper modules.
 +
-+- `www/favicon.svg`: browser-served favicon location after the move.
-+- `dev/tests/dev-runtime/StaticWebRootCompatibility.test.mjs`: verifies `/favicon.svg` resolves to `www/favicon.svg`.
-+- `dev/scripts/PS/deploy/WebsiteRepoDeploymentCommon.ps1`: deployment include list now references `www/favicon.svg`.
-+- `dev/build/ProjectInstructions/repository/canonical_repository_structure.md`: documents root `.env`, `www/`, and `api/` environment ownership.
-+- `dev/build/ProjectInstructions/addendums/environment_configuration_standards.md`: adds the runtime placement policy for environment values.
++## Scope Boundary
 +
-+## Remaining Technical Debt
++This PR is audit/governance/reporting only. It does not move `src/`, delete local-only root folders, change runtime behavior, change product features, or alter API/database behavior.
 +
-+The PowerShell deployment helper still contains broader legacy include defaults such as root `index.html`, `games`, `samples`, `src`, and `tools`. This PR updates only the tracked favicon path because changing the broader deploy staging semantics would be a separate deployment-layout PR.
-+
-+## Owner Recommendation
-+
-+Keep this PR focused as the remaining legacy layout cleanup pass. Follow with the final layout validation PR after stacked dependencies land.
-+
-diff --git a/dev/reports/PR_26180_OWNER_014-remaining-legacy-layout-cleanup_requirement-checklist.md b/dev/reports/PR_26180_OWNER_014-remaining-legacy-layout-cleanup_requirement-checklist.md
+diff --git a/dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_requirement-checklist.md b/dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_requirement-checklist.md
 new file mode 100644
-index 000000000..9dfc5a54b
+index 000000000..33f875e1a
 --- /dev/null
-+++ b/dev/reports/PR_26180_OWNER_014-remaining-legacy-layout-cleanup_requirement-checklist.md
-@@ -0,0 +1,16 @@
-+# PR_26180_OWNER_014 Requirement Checklist
++++ b/dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_requirement-checklist.md
+@@ -0,0 +1,21 @@
++# PR_26180_OWNER_015 Requirement Checklist
 +
 +| Requirement | Result | Notes |
 +|---|---:|---|
-+| Base on `PR_26180_OWNER_013-remove-legacy-layout` | PASS | Stacked branch created from PR013 branch. |
-+| Identify remaining old folders/files outside `www/`, `api/`, and `dev/` | PASS | Tracked root scan found no tracked legacy browser/dev folders; standard repo config files remain. |
-+| Determine whether each remaining root item is allowed, should move, or should be removed | PASS | Standard repo config retained; `favicon.svg` moved; `src/` retained as documented transition namespace. |
-+| Move `favicon.svg` into `www/` if browser-served | PASS | `favicon.svg` moved to `www/favicon.svg`. |
-+| Update references to `favicon.svg` after move | PASS | Deployment include list and route-root test updated; public `/favicon.svg` references intentionally preserved. |
-+| Audit remaining `src/` contents | PASS | `src/` remains actively referenced and is documented as a transition namespace. |
-+| Do not move `.env` into `www/` or `api/` | PASS | No `.env` files moved. |
-+| Document `.env` policy | PASS | Policy added to canonical repository structure and environment configuration standards. |
-+| Do not change product behavior | PASS | Public URLs and route behavior preserved. |
-+| Required reports under `dev/reports/` | PASS | PR-specific reports generated. |
-+| Required ZIP under `dev/workspace/zips/` | PASS | ZIP generated during closeout. |
++| Base on `PR_26180_OWNER_014-remaining-legacy-layout-cleanup` | PASS | Branch created from PR014. |
++| Inspect `assets/` | PASS | 0 tracked files; local ignored `DemoGame-26168-001.gfsp` remains untouched. |
++| Inspect `games/` | PASS | 0 tracked files; empty local-only directory shell. |
++| Inspect `learn/` | PASS | 0 tracked files; empty local-only directory shell. |
++| Inspect `src/` | PASS | 596 tracked files; active transition namespace retained. |
++| Inspect `test-results/` | PASS | Folder absent; 0 tracked files. |
++| Inspect `tmp/` | PASS | 0 tracked files; empty local-only directory shell; not used for Codex output. |
++| Inspect `toolbox/` | PASS | 0 tracked files; empty local-only directory shell. |
++| Remove empty tracked placeholder folders only if safe | PASS | No tracked placeholder folders found in the named root leftovers. |
++| Do not delete untracked local-only folders unless explicitly safe and documented | PASS | No untracked local-only folders were deleted. |
++| Do not move `src/` in this PR unless clearly misplaced and low-risk | PASS | `src/` was not moved. |
++| Produce a clear `src/` transition plan | PASS | Included in PR report. |
++| Confirm `.env` remains root/local-only | PASS | `.env` is ignored; `.env.example` is tracked. |
++| Confirm `www/favicon.svg` remains browser-served favicon | PASS | `www/favicon.svg` is tracked. |
++| No runtime behavior changes | PASS | Reports/governance only. |
++| No product feature changes | PASS | Reports/governance only. |
 +
-diff --git a/dev/reports/PR_26180_OWNER_014-remaining-legacy-layout-cleanup_validation-report.md b/dev/reports/PR_26180_OWNER_014-remaining-legacy-layout-cleanup_validation-report.md
+diff --git a/dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_validation-report.md b/dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_validation-report.md
 new file mode 100644
-index 000000000..906822fb1
+index 000000000..c9836be31
 --- /dev/null
-+++ b/dev/reports/PR_26180_OWNER_014-remaining-legacy-layout-cleanup_validation-report.md
++++ b/dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_validation-report.md
 @@ -0,0 +1,16 @@
-+# PR_26180_OWNER_014 Validation Report
++# PR_26180_OWNER_015 Validation Report
 +
 +| Validation | Result | Notes |
 +|---|---:|---|
-+| `node --test dev/tests/dev-runtime/StaticWebRootCompatibility.test.mjs dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs dev/tests/tools/GameAssetManifestDiscovery.test.mjs` | PASS | 18 tests passed. |
-+| `npx playwright test dev/tests/playwright/tools/StaticWebRootCompatibility.spec.mjs dev/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs dev/tests/playwright/tools/AdminInvitationsNavPage.spec.mjs` | PASS | 8 Playwright tests passed. |
-+| Targeted legacy layout scan | PASS | No tracked root legacy browser/dev folders remain; active scripts/tests only reference dev-owned script paths. |
-+| `node --test dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs` | PASS | 12 tests passed. |
-+| Package script command surface check | PASS | `dev:bootstrap`, `dev:api`, `dev:web`, and `dev:local-api` are present. |
-+| `git diff --check` | PASS | Whitespace check passed; Git reported line-ending conversion warnings only. |
-+| `npm run validate:canonical-structure` | PASS | Blocking violations: 0; approved legacy exceptions: 503. |
++| Root folder audit | PASS | Named folders classified by local existence, tracked content, ignored/generated status, and follow-up need. |
++| `.env` policy confirmation | PASS | `.env` is ignored by `.gitignore`; `.env.example` is tracked. |
++| `www/favicon.svg` confirmation | PASS | `www/favicon.svg` is tracked. |
++| Targeted root legacy path scan | PASS | No tracked `assets/`, `games/`, `learn/`, `test-results/`, `tmp/`, or `toolbox/` files remain. |
++| `node --test dev/tests/dev-runtime/TeamAwareBootstrap.test.mjs` | PASS | Bootstrap command surface remains valid. |
++| `git diff --check` | PASS | Whitespace check passed. |
++| `npm run validate:canonical-structure` | PASS | Blocking violations: 0. |
 +
 +## Notes
 +
-+The targeted Playwright run updated a shared coverage artifact during execution. That generated churn was not retained in this PR; validation evidence is captured in the PR-specific reports instead.
++The bootstrap test was run as a targeted safety check even though this PR does not touch startup/runtime files.
 +
-diff --git a/dev/scripts/PS/deploy/WebsiteRepoDeploymentCommon.ps1 b/dev/scripts/PS/deploy/WebsiteRepoDeploymentCommon.ps1
-index 99942faab..8003e5b70 100644
---- a/dev/scripts/PS/deploy/WebsiteRepoDeploymentCommon.ps1
-+++ b/dev/scripts/PS/deploy/WebsiteRepoDeploymentCommon.ps1
-@@ -702,7 +702,7 @@ function New-WebsiteDeploymentPlan {
- function Get-DefaultWebsiteIncludePaths {
-     return @(
-         "index.html",
--        "favicon.svg",
-+        "www/favicon.svg",
-         "games",
-         "samples",
-         "src",
-diff --git a/dev/tests/dev-runtime/StaticWebRootCompatibility.test.mjs b/dev/tests/dev-runtime/StaticWebRootCompatibility.test.mjs
-index 3510f2af6..884f7aec8 100644
---- a/dev/tests/dev-runtime/StaticWebRootCompatibility.test.mjs
-+++ b/dev/tests/dev-runtime/StaticWebRootCompatibility.test.mjs
-@@ -55,6 +55,17 @@ test("static route target can prefer a configured www root before repo-root fall
-   assert.equal(routeTarget.webRoot.relativePath, "www");
- });
-
-+test("favicon resolves from the browser-served www root", async () => {
-+  const routeTarget = await resolveStaticRouteTarget({
-+    decodedPath: "/favicon.svg",
-+    repoRoot,
-+    webRoot: WWW_LOCAL_WEB_ROOT,
-+  });
-+  assert.equal(routeTarget.routePath, "/favicon.svg");
-+  assert.equal(routeTarget.targetPath, path.join(repoRoot, "www", "favicon.svg"));
-+  assert.equal(routeTarget.webRoot.relativePath, "www");
-+});
-+
- test("local static web server can serve from a configurable web root", async () => {
-   const fixtureRoot = path.join(repoRoot, "dev", "workspace", "tmp", "static-web-root-compatibility");
-   await fs.rm(fixtureRoot, { force: true, recursive: true });
-diff --git a/dev/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs b/dev/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-index d75e47cb0..a4e17660c 100644
---- a/dev/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-+++ b/dev/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-@@ -345,7 +345,7 @@ test("Creator sessions cannot access Admin System Health operations", async ({ p
-
- test("Admin System Health operations page keeps scripts and styles external", async () => {
-   const retiredFileDbToken = "SQL" + "ite";
--  const pageSource = await fs.readFile(path.resolve("admin/system-health.html"), "utf8");
-+  const pageSource = await fs.readFile(path.resolve("www/admin/system-health.html"), "utf8");
-   expect(pageSource).not.toMatch(/<style\b/i);
-   expect(pageSource).not.toMatch(/<script\b(?![^>]+src=)/i);
-   expect(pageSource).not.toMatch(/\son[a-z]+\s*=/i);
-@@ -374,7 +374,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
-   expect(pageSource).toContain("Server-owned Cloudflare R2 storage diagnostic");
-   expect(pageSource).toContain("assets/theme-v2/js/admin-system-health.js");
-   expect(pageSource).toContain("assets/theme-v2/js/admin-owner-navigation.js");
--  const runtimeSource = await fs.readFile(path.resolve("assets/theme-v2/js/admin-system-health.js"), "utf8");
-+  const runtimeSource = await fs.readFile(path.resolve("www/assets/theme-v2/js/admin-system-health.js"), "utf8");
-   expect(runtimeSource).not.toContain(retiredFileDbToken);
-   expect(runtimeSource).not.toContain("localStorage");
-   expect(runtimeSource).not.toContain("sessionStorage");
-diff --git a/dev/tests/playwright/tools/AdminInvitationsNavPage.spec.mjs b/dev/tests/playwright/tools/AdminInvitationsNavPage.spec.mjs
-index 782a813a2..e93cca610 100644
---- a/dev/tests/playwright/tools/AdminInvitationsNavPage.spec.mjs
-+++ b/dev/tests/playwright/tools/AdminInvitationsNavPage.spec.mjs
-@@ -138,7 +138,7 @@ test("non-Admin users cannot access Admin Invites", async ({ page }) => {
- });
-
- test("Admin Invites page keeps scripts and styles external", async () => {
--  const pageSource = await fs.readFile(path.resolve("admin/invitations.html"), "utf8");
-+  const pageSource = await fs.readFile(path.resolve("www/admin/invitations.html"), "utf8");
-   expect(pageSource).not.toMatch(/<style\b/i);
-   expect(pageSource).not.toMatch(/<script\b(?![^>]+src=)/i);
-   expect(pageSource).not.toMatch(/\son[a-z]+\s*=/i);
-diff --git a/dev/tests/tools/GameAssetManifestDiscovery.test.mjs b/dev/tests/tools/GameAssetManifestDiscovery.test.mjs
-index d499e9249..be4b55705 100644
---- a/dev/tests/tools/GameAssetManifestDiscovery.test.mjs
-+++ b/dev/tests/tools/GameAssetManifestDiscovery.test.mjs
-@@ -1,6 +1,6 @@
- import assert from "node:assert/strict";
- import { existsSync } from "node:fs";
--import asteroidsGameManifest from "../../../games/Asteroids/game.manifest.json" with { type: "json" };
-+import asteroidsGameManifest from "../../../dev/archive/v1-v2/games/Asteroids/game.manifest.json" with { type: "json" };
- import {
-   discoverRuntimeAssetSourcesFromManifest,
-   validateGameAssetManifestStructure
-@@ -35,7 +35,7 @@ export async function run() {
-   Object.values(asteroidsManifest.domains).flat().forEach((record) => {
-     assert.equal(record.runtimePath.startsWith("games/Asteroids/game.manifest.json#"), true);
-     assert.equal(record.toolDataPath.startsWith("games/Asteroids/game.manifest.json#"), true);
--    assert.equal(existsSync("games/Asteroids/game.manifest.json"), true);
-+    assert.equal(existsSync("dev/archive/v1-v2/games/Asteroids/game.manifest.json"), true);
-   });
-
-   const lookup = createRuntimeManifestAssetLookup({
-diff --git a/favicon.svg b/www/favicon.svg
-similarity index 100%
-rename from favicon.svg
-rename to www/favicon.svg

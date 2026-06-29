@@ -39,8 +39,8 @@ The backlog is the authoritative source for determining the next logical PRs.
 - Team: Owner
 - Product Area: Repository Architecture Simplification
 - Status: Active
-- Percent Complete: 90%
-- Active PR: PR_26180_OWNER_014-remaining-legacy-layout-cleanup
+- Percent Complete: 95%
+- Active PR: PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit
 - Next Milestone: Final layout validation and completion report
 - Source / Reference: `dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md`; `dev/build/ProjectInstructions/repository/www_migration_map.md`
 

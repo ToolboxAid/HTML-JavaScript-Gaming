@@ -3,18 +3,10 @@ M	dev/reports/codex_review.diff
 M	dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 M	dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
 M	dev/build/ProjectInstructions/PROJECT_STATE.md
-M	dev/build/ProjectInstructions/addendums/environment_configuration_standards.md
 M	dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
-M	dev/build/ProjectInstructions/repository/canonical_repository_structure.md
 M	dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
-A	dev/reports/PR_26180_OWNER_014-remaining-legacy-layout-cleanup_branch-validation.md
-A	dev/reports/PR_26180_OWNER_014-remaining-legacy-layout-cleanup_manual-validation-notes.md
-A	dev/reports/PR_26180_OWNER_014-remaining-legacy-layout-cleanup_report.md
-A	dev/reports/PR_26180_OWNER_014-remaining-legacy-layout-cleanup_requirement-checklist.md
-A	dev/reports/PR_26180_OWNER_014-remaining-legacy-layout-cleanup_validation-report.md
-M	dev/scripts/PS/deploy/WebsiteRepoDeploymentCommon.ps1
-M	dev/tests/dev-runtime/StaticWebRootCompatibility.test.mjs
-M	dev/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-M	dev/tests/playwright/tools/AdminInvitationsNavPage.spec.mjs
-M	dev/tests/tools/GameAssetManifestDiscovery.test.mjs
-R100	favicon.svg	www/favicon.svg
+A	dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_branch-validation.md
+A	dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_manual-validation-notes.md
+A	dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_report.md
+A	dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_requirement-checklist.md
+A	dev/reports/PR_26180_OWNER_015-root-empty-folder-and-src-transition-audit_validation-report.md

@@ -1,6 +1,6 @@
 # Project Instructions Version
 
-Current Project Instructions Version: 2026.06.28.014
+Current Project Instructions Version: 2026.06.28.015
 
 Last Updated: 2026-06-28
 
@@ -22,6 +22,7 @@ Last Updated: 2026-06-28
 - Updated CI, package scripts, and developer utilities for the `www/`, `api/`, and `dev/` layout.
 - Removed active references to obsolete legacy layout paths after the `www/`, `api/`, and `dev/` migration steps.
 - Moved the tracked browser-served favicon under `www/`, added remaining root/src audit governance, and documented root `.env` placement policy.
+- Added root leftover audit and `src/` transition plan for the final repository layout cleanup stage.
 - Codex must read this version file and the latest repository copy of `PROJECT_INSTRUCTIONS.md` before performing work.
 - Codex must discard previously remembered Project Instructions and treat the repository copy as authoritative.
 - Codex must validate canonical report and ZIP paths, branching model, and legacy path avoidance before work proceeds.
