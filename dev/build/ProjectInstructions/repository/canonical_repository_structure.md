@@ -85,7 +85,6 @@ Legacy transition buckets:
 - www/src/shared/
 - www/src/shared/contracts/
 - www/src/shared/schemas/
-- www/src/tools/
 - www/src/dev-runtime/admin/
 - src/shared/contracts/
 - src/shared/schemas/

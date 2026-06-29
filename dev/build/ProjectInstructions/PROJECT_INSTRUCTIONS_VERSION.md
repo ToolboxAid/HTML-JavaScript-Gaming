@@ -1,6 +1,6 @@
 # Project Instructions Version
 
-Current Project Instructions Version: 2026.06.28.020
+Current Project Instructions Version: 2026.06.28.021
 
 Last Updated: 2026-06-28
 
@@ -28,6 +28,7 @@ Last Updated: 2026-06-28
 - Moved PR017-audited browser/www-owned legacy `src/` files into `www/src/` while preserving public `/src/...` browser route compatibility under the `www` web root.
 - Moved PR019a-audited active browser/runtime shared contracts and tool schemas into `www/src/shared/` while preserving public `/src/shared/...` browser route compatibility.
 - Removed obsolete root `src/` legacy placeholders, stale schema README files, and archived-only debug helpers while preserving active contracts and validation schemas.
+- Removed inactive manifest-era `www/src/tools/common` helpers and archived old Object Vector/Parallax tool samples while preserving currently referenced archived games/samples.
 - Codex must read this version file and the latest repository copy of `PROJECT_INSTRUCTIONS.md` before performing work.
 - Codex must discard previously remembered Project Instructions and treat the repository copy as authoritative.
 - Codex must validate canonical report and ZIP paths, branching model, and legacy path avoidance before work proceeds.
