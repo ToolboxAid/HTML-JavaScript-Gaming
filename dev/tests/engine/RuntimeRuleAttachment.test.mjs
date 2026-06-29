@@ -8,11 +8,11 @@ import assert from "node:assert/strict";
 import {
   RUNTIME_RULE_ATTACHMENT_ERRORS,
   attachRuntimeRules,
-} from "../../../src/engine/runtime/runtimeRuleAttachment.js";
-import { readManifestObjectDefinitions } from "../../../src/engine/runtime/objectDefinitionReader.js";
-import { readManifestRuleDefinitions } from "../../../src/engine/runtime/ruleDefinitionReader.js";
-import { createRuntimeObjectRecords } from "../../../src/engine/runtime/runtimeObjectRecordFactory.js";
-import { instantiateRuntimeObjects } from "../../../src/engine/runtime/runtimeObjectInstantiation.js";
+} from "../../../www/src/engine/runtime/runtimeRuleAttachment.js";
+import { readManifestObjectDefinitions } from "../../../www/src/engine/runtime/objectDefinitionReader.js";
+import { readManifestRuleDefinitions } from "../../../www/src/engine/runtime/ruleDefinitionReader.js";
+import { createRuntimeObjectRecords } from "../../../www/src/engine/runtime/runtimeObjectRecordFactory.js";
+import { instantiateRuntimeObjects } from "../../../www/src/engine/runtime/runtimeObjectInstantiation.js";
 import { createManifestDrivenRuntimeFixture } from "./RuntimeManifestDrivenFixture.mjs";
 
 export function run() {

@@ -5,8 +5,8 @@ David Quesenberry
 RuntimeMonitoringHooks.test.mjs
 */
 import assert from 'node:assert/strict';
-import { createRuntimeMonitoringHooks } from '../../../src/engine/runtime/RuntimeMonitoringHooks.js';
-import Logger from '../../../src/engine/logging/Logger.js';
+import { createRuntimeMonitoringHooks } from '../../../www/src/engine/runtime/RuntimeMonitoringHooks.js';
+import Logger from '../../../www/src/engine/logging/Logger.js';
 
 function createWindowStub() {
   const listeners = new Map();

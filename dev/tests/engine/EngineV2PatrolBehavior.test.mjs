@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import {
   ENGINE_V2_PATROL_ERRORS,
   updateEngineV2PatrolBehaviors,
-} from "../../../src/engine/runtime/engineV2PatrolBehavior.js";
+} from "../../../www/src/engine/runtime/engineV2PatrolBehavior.js";
 import { createEngineV2AiBehaviorFixture } from "./EngineV2AiBehaviorFixture.mjs";
 
 export function run() {

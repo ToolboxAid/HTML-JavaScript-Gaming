@@ -5,12 +5,12 @@ David Quesenberry
 RuntimeObjectTypeValidation.test.mjs
 */
 import assert from "node:assert/strict";
-import { RUNTIME_OBJECT_TYPE_LIST } from "../../../src/engine/runtime/objectDefinitionReader.js";
+import { RUNTIME_OBJECT_TYPE_LIST } from "../../../www/src/engine/runtime/objectDefinitionReader.js";
 import {
   RUNTIME_OBJECT_RECORD_FACTORY_ERRORS,
   createRuntimeObjectRecord,
   isRuntimeObjectRecordType,
-} from "../../../src/engine/runtime/runtimeObjectRecordFactory.js";
+} from "../../../www/src/engine/runtime/runtimeObjectRecordFactory.js";
 
 export function run() {
   RUNTIME_OBJECT_TYPE_LIST.forEach((objectType) => {

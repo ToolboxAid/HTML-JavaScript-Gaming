@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
 import {
   RUNTIME_COLLISION_ERRORS,
   processRuntimeCollisions,
-} from "../../../src/engine/runtime/runtimeCollisionProcessing.js";
+} from "../../../www/src/engine/runtime/runtimeCollisionProcessing.js";
 
 export function run() {
   const terrainTiles = [

@@ -5,13 +5,13 @@ David Quesenberry
 RuntimeObjectRecordFactory.test.mjs
 */
 import assert from "node:assert/strict";
-import { RUNTIME_OBJECT_TYPE_LIST, readManifestObjectDefinitions } from "../../../src/engine/runtime/objectDefinitionReader.js";
+import { RUNTIME_OBJECT_TYPE_LIST, readManifestObjectDefinitions } from "../../../www/src/engine/runtime/objectDefinitionReader.js";
 import {
   RUNTIME_OBJECT_RECORD_FORBIDDEN_DEFAULT_FIELDS,
   createRuntimeObjectRecord,
   createRuntimeObjectRecords,
   validateRuntimeObjectRecord,
-} from "../../../src/engine/runtime/runtimeObjectRecordFactory.js";
+} from "../../../www/src/engine/runtime/runtimeObjectRecordFactory.js";
 import { createObjectDefinitionManifest } from "./ObjectDefinitionReader.test.mjs";
 
 export function run() {

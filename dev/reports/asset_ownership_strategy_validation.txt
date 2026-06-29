@@ -9,7 +9,7 @@ Checks:
 - Validated template ownership manifest: dev/archive/v1-v2/games/_template/assets/tools.manifest.json
 - Archived sample has no inline asset path entries: dev/archive/v1-v2/samples/phase-15/1505/AssetBrowserScene.js
 - Validated sample ownership path: dev/archive/v1-v2/samples/phase-15/1505/AssetBrowserScene.js
-- Validated tool demo ownership path: src/shared/toolbox/samples/project-asset-registry-demo/project.assets.json
+- Validated tool demo ownership path: www/src/shared/toolbox/samples/project-asset-registry-demo/project.assets.json
 
 Issues:
 - none

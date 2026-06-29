@@ -9,7 +9,7 @@ import {
   RUNTIME_TICK_LOOP_ERRORS,
   advanceRuntimeTick,
   createRuntimeTickLoop,
-} from "../../../src/engine/runtime/runtimeTickLoop.js";
+} from "../../../www/src/engine/runtime/runtimeTickLoop.js";
 
 export function run() {
   const startResult = createRuntimeTickLoop({ fixedDeltaMs: 100 });

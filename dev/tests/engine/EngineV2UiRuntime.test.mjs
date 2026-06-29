@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import {
   ENGINE_V2_UI_ERRORS,
   resolveEngineV2GameUi,
-} from "../../../src/engine/runtime/engineV2UiRuntime.js";
+} from "../../../www/src/engine/runtime/engineV2UiRuntime.js";
 import { createEngineV2FeatureCompleteFixture } from "./EngineV2FeatureCompleteFixture.mjs";
 
 export function run() {

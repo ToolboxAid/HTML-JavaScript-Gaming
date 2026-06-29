@@ -133,7 +133,7 @@ import {
 import {
   getAdminNavigationItems,
   getOwnerNavigationItems,
-} from "../../src/api/admin-owner-navigation.js";
+} from "../../www/src/api/admin-owner-navigation.js";
 import { createPaletteSourceMockDbRows } from "../guest-seeds/palette-source-mock-db.js";
 import {
   SUPABASE_AUTH_PROVIDER_ID,
@@ -6929,8 +6929,8 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
       adminMainItems: getAdminNavigationItems(),
       ownerMenuItems: getOwnerNavigationItems(),
       ownership: {
-        adminMainItems: "src/api/admin-owner-navigation.js",
-        ownerMenuItems: "src/api/admin-owner-navigation.js",
+        adminMainItems: "www/src/api/admin-owner-navigation.js",
+        ownerMenuItems: "www/src/api/admin-owner-navigation.js",
         routeMap: "static shell route resolution",
       },
       source: "server-api",

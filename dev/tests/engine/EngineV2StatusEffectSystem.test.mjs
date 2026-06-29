@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import {
   ENGINE_V2_STATUS_EFFECT_ERRORS,
   processEngineV2StatusEffects,
-} from "../../../src/engine/runtime/engineV2StatusEffectSystem.js";
+} from "../../../www/src/engine/runtime/engineV2StatusEffectSystem.js";
 import { createEngineV2CombatRuntimeFixture } from "./EngineV2CombatRuntimeFixture.mjs";
 
 export function run() {

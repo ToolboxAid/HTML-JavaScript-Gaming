@@ -5,10 +5,10 @@ David Quesenberry
 FinalSystems.test.mjs
 */
 import assert from 'node:assert/strict';
-import { compressJson, decompressJson } from '../../../src/engine/persistence/CompressionService.js';
-import ReplaySystem from '../../../src/engine/replay/ReplaySystem.js';
-import AchievementSystem from '../../../src/engine/world/AchievementSystem.js';
-import LocalizationService from '../../../src/engine/localization/LocalizationService.js';
+import { compressJson, decompressJson } from '../../../www/src/engine/persistence/CompressionService.js';
+import ReplaySystem from '../../../www/src/engine/replay/ReplaySystem.js';
+import AchievementSystem from '../../../www/src/engine/world/AchievementSystem.js';
+import LocalizationService from '../../../www/src/engine/localization/LocalizationService.js';
 
 export function run() {
   const compressed = compressJson({ hp: 3, coins: 12 });

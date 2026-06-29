@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { buildAiAuthoringAssistant, summarizeAiAuthoringAssistant } from "../../../src/shared/toolbox/aiAuthoringAssistant.js";
+import { buildAiAuthoringAssistant, summarizeAiAuthoringAssistant } from "../../../www/src/shared/toolbox/aiAuthoringAssistant.js";
 
 export async function run() {
   const result = buildAiAuthoringAssistant({

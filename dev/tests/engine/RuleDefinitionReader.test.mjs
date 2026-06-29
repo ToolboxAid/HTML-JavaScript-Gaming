@@ -11,7 +11,7 @@ import {
   RUNTIME_RULE_TYPES,
   isRuntimeRuleType,
   readManifestRuleDefinitions,
-} from "../../../src/engine/runtime/ruleDefinitionReader.js";
+} from "../../../www/src/engine/runtime/ruleDefinitionReader.js";
 
 export function createRuleDefinitionManifest() {
   return {

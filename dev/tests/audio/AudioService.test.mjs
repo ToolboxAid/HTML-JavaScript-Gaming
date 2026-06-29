@@ -5,7 +5,7 @@ David Quesenberry
 AudioService.test.mjs
 */
 import assert from 'node:assert/strict';
-import AudioService from '../../../src/engine/audio/AudioService.js';
+import AudioService from '../../../www/src/engine/audio/AudioService.js';
 
 function createTarget() {
   const listeners = new Map();

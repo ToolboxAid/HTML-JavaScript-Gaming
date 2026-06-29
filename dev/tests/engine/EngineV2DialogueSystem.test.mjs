@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import {
   ENGINE_V2_DIALOGUE_ERRORS,
   processEngineV2Dialogue,
-} from "../../../src/engine/runtime/engineV2DialogueSystem.js";
+} from "../../../www/src/engine/runtime/engineV2DialogueSystem.js";
 import { createEngineV2PlayerRuntimeFixture } from "./EngineV2PlayerRuntimeFixture.mjs";
 
 export function run() {

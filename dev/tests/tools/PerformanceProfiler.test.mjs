@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { buildPerformanceProfiler, summarizePerformanceProfiler } from "../../../src/shared/toolbox/performanceProfiler.js";
+import { buildPerformanceProfiler, summarizePerformanceProfiler } from "../../../www/src/shared/toolbox/performanceProfiler.js";
 
 export async function run() {
   const result = buildPerformanceProfiler({

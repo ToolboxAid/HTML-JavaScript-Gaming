@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import {
   ENGINE_V2_PATHFINDING_ERRORS,
   resolveEngineV2PathRequests,
-} from "../../../src/engine/runtime/engineV2PathfindingBaseline.js";
+} from "../../../www/src/engine/runtime/engineV2PathfindingBaseline.js";
 import { createEngineV2AiBehaviorFixture } from "./EngineV2AiBehaviorFixture.mjs";
 
 export function run() {

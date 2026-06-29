@@ -14,7 +14,7 @@ import {
   getObjectModelType,
   validateObjectDefinition,
   validateObjectDefinitionList,
-} from "../../../src/engine/object-model/index.js";
+} from "../../../www/src/engine/object-model/index.js";
 
 export function run() {
   assert.deepEqual(OBJECT_MODEL_TYPE_LIST.map((objectType) => objectType.id), [

@@ -5,7 +5,7 @@ David Quesenberry
 RuntimePlayableSceneUat.test.mjs
 */
 import assert from "node:assert/strict";
-import { createFirstManifestDrivenPlayableScene } from "../../../src/engine/runtime/firstManifestDrivenPlayableScene.js";
+import { createFirstManifestDrivenPlayableScene } from "../../../www/src/engine/runtime/firstManifestDrivenPlayableScene.js";
 import {
   createInvalidEngineFixtures,
   createValidEngineFixture,

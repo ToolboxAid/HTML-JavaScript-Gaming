@@ -5,9 +5,9 @@ David Quesenberry
 debugPanelGroupRegistry.js
 */
 
-import { sanitizeText } from "../../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
-import { asStringArray } from "../../../../src/shared/array/arrays.js";
-import { cloneJson } from "../../../../src/shared/json/clone.js";
+import { sanitizeText } from "../../../../www/src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { asStringArray } from "../../../../www/src/shared/array/arrays.js";
+import { cloneJson } from "../../../../www/src/shared/json/clone.js";
 
 function normalizeGroupDescriptor(descriptor = {}) {
   const groupId = sanitizeText(descriptor.groupId);

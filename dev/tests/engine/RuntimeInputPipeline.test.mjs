@@ -9,7 +9,7 @@ import {
   RUNTIME_INPUT_PIPELINE_ERRORS,
   createRuntimeInputPipeline,
   resolveRuntimeInputActions,
-} from "../../../src/engine/runtime/runtimeInputPipeline.js";
+} from "../../../www/src/engine/runtime/runtimeInputPipeline.js";
 import { createManifestDrivenRuntimeFixture } from "./RuntimeManifestDrivenFixture.mjs";
 
 export function run() {

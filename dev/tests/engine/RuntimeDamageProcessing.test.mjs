@@ -6,11 +6,11 @@ RuntimeDamageProcessing.test.mjs
 */
 
 import assert from "node:assert/strict";
-import { createRuntimeHealthRecords } from "../../../src/engine/runtime/runtimeHealthModel.js";
+import { createRuntimeHealthRecords } from "../../../www/src/engine/runtime/runtimeHealthModel.js";
 import {
   RUNTIME_DAMAGE_ERRORS,
   processRuntimeDamage,
-} from "../../../src/engine/runtime/runtimeDamageProcessing.js";
+} from "../../../www/src/engine/runtime/runtimeDamageProcessing.js";
 import { createRuntimeHealthOutcomeFixture } from "./RuntimeHealthOutcomeFixture.mjs";
 
 export function run() {

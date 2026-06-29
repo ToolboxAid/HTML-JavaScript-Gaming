@@ -10,7 +10,7 @@ import {
   RUNTIME_CONDITION_ERRORS,
   evaluateRuntimeConditions,
   readManifestConditionDefinitions,
-} from "../../../src/engine/runtime/runtimeConditionSystem.js";
+} from "../../../www/src/engine/runtime/runtimeConditionSystem.js";
 import { createRuntimeGameRuleFixture } from "./RuntimeGameRuleFixture.mjs";
 
 export function run() {

@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
 import {
   RUNTIME_SCENE_DEFINITION_ERRORS,
   readManifestSceneDefinitions,
-} from "../../../src/engine/runtime/runtimeSceneDefinitionSupport.js";
+} from "../../../www/src/engine/runtime/runtimeSceneDefinitionSupport.js";
 import { createRuntimeGameplayLoopManifest } from "./RuntimeGameplayLoopFixture.mjs";
 
 export function run() {

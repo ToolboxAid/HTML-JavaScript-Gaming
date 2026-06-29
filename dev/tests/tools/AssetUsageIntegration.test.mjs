@@ -10,7 +10,7 @@ import {
   readSharedPaletteHandoff,
   writeSharedAssetHandoff,
   writeSharedPaletteHandoff
-} from "../../../src/shared/toolbox/assetUsageIntegration.js";
+} from "../../../www/src/shared/toolbox/assetUsageIntegration.js";
 
 function createLocalStorageHarness() {
   const store = new Map();

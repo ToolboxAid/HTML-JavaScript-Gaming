@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import {
   ENGINE_V2_AUDIO_ERRORS,
   resolveEngineV2AudioRuntime,
-} from "../../../src/engine/runtime/engineV2AudioRuntime.js";
+} from "../../../www/src/engine/runtime/engineV2AudioRuntime.js";
 import { createEngineV2MediaRuntimeFixture } from "./EngineV2MediaRuntimeFixture.mjs";
 
 export function run() {

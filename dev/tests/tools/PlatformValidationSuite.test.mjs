@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { runPlatformValidationSuite, summarizePlatformValidationSuite } from "../../../src/shared/toolbox/platformValidationSuite.js";
+import { runPlatformValidationSuite, summarizePlatformValidationSuite } from "../../../www/src/shared/toolbox/platformValidationSuite.js";
 
 export async function run() {
   const first = await runPlatformValidationSuite();

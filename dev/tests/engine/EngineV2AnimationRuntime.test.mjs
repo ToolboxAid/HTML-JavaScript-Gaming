@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import {
   ENGINE_V2_ANIMATION_ERRORS,
   updateEngineV2Animations,
-} from "../../../src/engine/runtime/engineV2AnimationRuntime.js";
+} from "../../../www/src/engine/runtime/engineV2AnimationRuntime.js";
 import { createEngineV2MediaRuntimeFixture } from "./EngineV2MediaRuntimeFixture.mjs";
 
 export function run() {

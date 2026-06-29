@@ -5,21 +5,21 @@ David Quesenberry
 PlatformUxSystems.test.mjs
 */
 import assert from 'node:assert/strict';
-import AudioService from '../../../src/engine/audio/AudioService.js';
-import MidiPlayer from '../../../src/engine/audio/MidiPlayer.js';
-import FrequencyPlayer from '../../../src/engine/audio/FrequencyPlayer.js';
-import Synthesizer from '../../../src/engine/audio/Synthesizer.js';
-import MediaTrackService from '../../../src/engine/audio/MediaTrackService.js';
-import PlaylistManager from '../../../src/engine/audio/PlaylistManager.js';
-import ParticleSystem from '../../../src/engine/fx/ParticleSystem.js';
-import UIFramework from '../../../src/engine/ui/UIFramework.js';
-import InputContextService from '../../../src/engine/input/InputContextService.js';
-import SceneTransitionController from '../../../src/engine/scene/SceneTransitionController.js';
-import SaveSlotManager from '../../../src/engine/persistence/SaveSlotManager.js';
-import StorageService from '../../../src/engine/persistence/StorageService.js';
-import CookieStorageService from '../../../src/engine/persistence/CookieStorageService.js';
-import Logger from '../../../src/engine/logging/Logger.js';
-import ErrorBoundary from '../../../src/engine/logging/ErrorBoundary.js';
+import AudioService from '../../../www/src/engine/audio/AudioService.js';
+import MidiPlayer from '../../../www/src/engine/audio/MidiPlayer.js';
+import FrequencyPlayer from '../../../www/src/engine/audio/FrequencyPlayer.js';
+import Synthesizer from '../../../www/src/engine/audio/Synthesizer.js';
+import MediaTrackService from '../../../www/src/engine/audio/MediaTrackService.js';
+import PlaylistManager from '../../../www/src/engine/audio/PlaylistManager.js';
+import ParticleSystem from '../../../www/src/engine/fx/ParticleSystem.js';
+import UIFramework from '../../../www/src/engine/ui/UIFramework.js';
+import InputContextService from '../../../www/src/engine/input/InputContextService.js';
+import SceneTransitionController from '../../../www/src/engine/scene/SceneTransitionController.js';
+import SaveSlotManager from '../../../www/src/engine/persistence/SaveSlotManager.js';
+import StorageService from '../../../www/src/engine/persistence/StorageService.js';
+import CookieStorageService from '../../../www/src/engine/persistence/CookieStorageService.js';
+import Logger from '../../../www/src/engine/logging/Logger.js';
+import ErrorBoundary from '../../../www/src/engine/logging/ErrorBoundary.js';
 
 class MemoryStorage {
   constructor() {

@@ -5,14 +5,14 @@ David Quesenberry
 WorldSystems.test.mjs
 */
 import assert from 'node:assert/strict';
-import EventBus from '../../../src/engine/events/EventBus.js';
-import CutsceneSystem from '../../../src/engine/world/CutsceneSystem.js';
-import DayNightCycle from '../../../src/engine/world/DayNightCycle.js';
-import EventScriptSystem from '../../../src/engine/world/EventScriptSystem.js';
-import QuestSystem from '../../../src/engine/world/QuestSystem.js';
-import SpawnSystem from '../../../src/engine/world/SpawnSystem.js';
-import WeatherSystem from '../../../src/engine/world/WeatherSystem.js';
-import WorldStreamingSystem from '../../../src/engine/world/WorldStreamingSystem.js';
+import EventBus from '../../../www/src/engine/events/EventBus.js';
+import CutsceneSystem from '../../../www/src/engine/world/CutsceneSystem.js';
+import DayNightCycle from '../../../www/src/engine/world/DayNightCycle.js';
+import EventScriptSystem from '../../../www/src/engine/world/EventScriptSystem.js';
+import QuestSystem from '../../../www/src/engine/world/QuestSystem.js';
+import SpawnSystem from '../../../www/src/engine/world/SpawnSystem.js';
+import WeatherSystem from '../../../www/src/engine/world/WeatherSystem.js';
+import WorldStreamingSystem from '../../../www/src/engine/world/WorldStreamingSystem.js';
 
 export function run() {
   const quests = new QuestSystem([{ id: 'collect', required: 2 }]);

@@ -17,7 +17,7 @@ const REGISTRY_PATH_CANDIDATES = [
 const ASTEROIDS_MANIFEST_PATH = "dev/archive/v1-v2/games/Asteroids/game.manifest.json";
 const TEMPLATE_MANIFEST_PATH = "dev/archive/v1-v2/games/_template/assets/tools.manifest.json";
 const SAMPLE_ASSET_BROWSER_SCENE_PATH = "dev/archive/v1-v2/samples/phase-15/1505/AssetBrowserScene.js";
-const TOOL_DEMO_PROJECT_ASSETS_PATH = "src/shared/toolbox/samples/project-asset-registry-demo/project.assets.json";
+const TOOL_DEMO_PROJECT_ASSETS_PATH = "www/src/shared/toolbox/samples/project-asset-registry-demo/project.assets.json";
 const REPORT_PATH = "dev/reports/asset_ownership_strategy_validation.txt";
 
 function toRepoPath(value) {
@@ -66,7 +66,7 @@ function ownerPrefixForPath(repoPath) {
   if (segments[0] === "tools" && segments.length >= 2) {
     // keep demo ownership under the tool/demo root path depth
     if (segments[1] === "shared" && segments.length >= 5 && segments[2] === "samples") {
-      return `src/shared/toolbox/samples/${segments[3]}`;
+      return `www/src/shared/toolbox/samples/${segments[3]}`;
     }
     return `toolbox/${segments[1]}`;
   }
@@ -199,7 +199,7 @@ export async function validateAssetOwnershipStrategy({ emitLogs = true } = {}) {
 
   const projectAssets = await readJson(TOOL_DEMO_PROJECT_ASSETS_PATH);
   const toolDemoEntries = collectProjectAssetEntries(projectAssets);
-  const toolDemoOwnerPrefix = "src/shared/toolbox/samples/project-asset-registry-demo";
+  const toolDemoOwnerPrefix = "www/src/shared/toolbox/samples/project-asset-registry-demo";
   const seenPaths = new Set();
   for (const entry of toolDemoEntries) {
     if (!entry.path) {

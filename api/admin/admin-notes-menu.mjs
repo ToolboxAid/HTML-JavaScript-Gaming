@@ -6,7 +6,7 @@ export const ADMIN_NOTES_LOCAL_MENU_LABEL = "Notes";
 export const ADMIN_MY_STUFF_MENU_LABEL = "My Stuff";
 
 const HEADER_PARTIAL_PATH = "www/assets/theme-v2/partials/header-nav.html";
-const LOCAL_HEADER_PARTIAL_PATH = "src/dev-runtime/admin/header-nav.local.html";
+const LOCAL_HEADER_PARTIAL_PATH = "www/src/dev-runtime/admin/header-nav.local.html";
 
 function repoRelativePath(repoRoot, targetPath) {
   return path.relative(repoRoot, targetPath).replaceAll(path.sep, "/");

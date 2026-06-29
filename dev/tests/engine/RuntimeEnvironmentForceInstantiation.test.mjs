@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
 import {
   RUNTIME_ENVIRONMENT_FORCE_ERRORS,
   instantiateEnvironmentForces,
-} from "../../../src/engine/runtime/runtimeEnvironmentForceInstantiation.js";
+} from "../../../www/src/engine/runtime/runtimeEnvironmentForceInstantiation.js";
 import { createManifestDrivenRuntimeFixture } from "./RuntimeManifestDrivenFixture.mjs";
 
 export function run() {

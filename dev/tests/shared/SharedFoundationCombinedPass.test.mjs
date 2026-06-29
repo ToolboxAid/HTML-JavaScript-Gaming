@@ -9,34 +9,34 @@ import {
   ensureArray,
   asArray,
   asStringArray
-} from "../../../src/shared/array/arrays.js";
+} from "../../../www/src/shared/array/arrays.js";
 import {
   sanitizeText,
   escapeHtml
-} from "../../../src/shared/string/strings.js";
+} from "../../../www/src/shared/string/strings.js";
 import {
   normalizeId,
   createId,
   createStableId,
   isValidId,
-} from "../../../src/shared/id/ids.js";
+} from "../../../www/src/shared/id/ids.js";
 import {
   asPositiveInteger,
   roundNumber,
-} from "../../../src/shared/math/numberNormalization.js";
+} from "../../../www/src/shared/math/numberNormalization.js";
 import {
   vectorFromAngle,
-} from "../../../src/shared/math/vectorMath.js";
+} from "../../../www/src/shared/math/vectorMath.js";
 import {
   safeNormalize,
-} from "../../../src/shared/math/vectorNormalize.js";
-import { normalizeRecord } from "../../../src/shared/object/objects.js";
-import { normalizeArray } from "../../../src/shared/array/arrays.js";
-import { normalizeRecordArray } from "../../../src/shared/array/recordArrays.js";
-import { safeJsonParse, safeJsonStringify, cloneJsonData } from "../../../src/shared/json/jsonIO.js";
-import { isRecord } from "../../../src/shared/object/objects.js";
-import { isFunction, isBoolean } from "../../../src/shared/types/typeGuards.js";
-import { isNonEmptyString } from "../../../src/shared/string/strings.js";
+} from "../../../www/src/shared/math/vectorNormalize.js";
+import { normalizeRecord } from "../../../www/src/shared/object/objects.js";
+import { normalizeArray } from "../../../www/src/shared/array/arrays.js";
+import { normalizeRecordArray } from "../../../www/src/shared/array/recordArrays.js";
+import { safeJsonParse, safeJsonStringify, cloneJsonData } from "../../../www/src/shared/json/jsonIO.js";
+import { isRecord } from "../../../www/src/shared/object/objects.js";
+import { isFunction, isBoolean } from "../../../www/src/shared/types/typeGuards.js";
+import { isNonEmptyString } from "../../../www/src/shared/string/strings.js";
 import {
   SHARED_PROMOTION_CONTRACT_ID,
   SHARED_PROMOTION_CONTRACT_VERSION,
@@ -46,16 +46,16 @@ import {
 import {
   normalizePromotionStateInput,
   createNormalizedPromotionSnapshot,
-} from "../../../src/shared/state/normalization.js";
+} from "../../../www/src/shared/state/normalization.js";
 import {
   isStateContainer,
   isPromotionStateSnapshot,
-} from "../../../src/shared/state/guards.js";
+} from "../../../www/src/shared/state/guards.js";
 import {
   getSimulationState,
   getReplayState,
   getEditorState,
-} from "../../../src/shared/state/selectors.js";
+} from "../../../www/src/shared/state/selectors.js";
 
 export function run() {
   assert.deepEqual(ensureArray(null), []);

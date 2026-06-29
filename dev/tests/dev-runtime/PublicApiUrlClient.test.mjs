@@ -4,7 +4,7 @@ import {
   clearPublicConfigCache,
   getPublicConfigDiagnostics,
   resolveServerApiUrl,
-} from "../../../src/api/public-config-client.js";
+} from "../../../www/src/api/public-config-client.js";
 
 function installMockBrowser(origin, responses) {
   const calls = [];

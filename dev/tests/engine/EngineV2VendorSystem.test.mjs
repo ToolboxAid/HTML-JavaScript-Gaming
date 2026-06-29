@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import {
   ENGINE_V2_VENDOR_ERRORS,
   resolveEngineV2Vendor,
-} from "../../../src/engine/runtime/engineV2VendorSystem.js";
+} from "../../../www/src/engine/runtime/engineV2VendorSystem.js";
 import { createEngineV2InteractionRuntimeFixture } from "./EngineV2InteractionRuntimeFixture.mjs";
 
 export function run() {

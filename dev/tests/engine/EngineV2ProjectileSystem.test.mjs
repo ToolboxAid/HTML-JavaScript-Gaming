@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import {
   ENGINE_V2_PROJECTILE_ERRORS,
   resolveEngineV2Projectiles,
-} from "../../../src/engine/runtime/engineV2ProjectileSystem.js";
+} from "../../../www/src/engine/runtime/engineV2ProjectileSystem.js";
 import { createEngineV2CombatRuntimeFixture } from "./EngineV2CombatRuntimeFixture.mjs";
 
 export function run() {

@@ -6,11 +6,11 @@ RuntimeEventSystem.test.mjs
 */
 
 import assert from "node:assert/strict";
-import { evaluateRuntimeConditions } from "../../../src/engine/runtime/runtimeConditionSystem.js";
+import { evaluateRuntimeConditions } from "../../../www/src/engine/runtime/runtimeConditionSystem.js";
 import {
   RUNTIME_EVENT_ERRORS,
   publishRuntimeEvents,
-} from "../../../src/engine/runtime/runtimeEventSystem.js";
+} from "../../../www/src/engine/runtime/runtimeEventSystem.js";
 import { createRuntimeGameRuleFixture } from "./RuntimeGameRuleFixture.mjs";
 
 export function run() {

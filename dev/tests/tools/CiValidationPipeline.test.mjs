@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { runCiValidationPipeline, summarizeCiValidationPipeline } from "../../../src/shared/toolbox/ciValidationPipeline.js";
+import { runCiValidationPipeline, summarizeCiValidationPipeline } from "../../../www/src/shared/toolbox/ciValidationPipeline.js";
 
 export async function run() {
   const result = await runCiValidationPipeline({ branch: "main", trigger: "pull_request" });

@@ -8,15 +8,15 @@ import assert from "node:assert/strict";
 import {
   MANIFEST_RUNTIME_PARSER_ERRORS,
   parseManifestRuntimePayload,
-} from "../../../src/engine/runtime/manifestRuntimeParser.js";
+} from "../../../www/src/engine/runtime/manifestRuntimeParser.js";
 import {
   OBJECT_DEFINITION_READER_ERRORS,
   readManifestObjectDefinitions,
-} from "../../../src/engine/runtime/objectDefinitionReader.js";
+} from "../../../www/src/engine/runtime/objectDefinitionReader.js";
 import {
   RULE_DEFINITION_READER_ERRORS,
   readManifestRuleDefinitions,
-} from "../../../src/engine/runtime/ruleDefinitionReader.js";
+} from "../../../www/src/engine/runtime/ruleDefinitionReader.js";
 import { createValidManifestRuntimePayload } from "./ManifestRuntimeParser.test.mjs";
 
 export function run() {

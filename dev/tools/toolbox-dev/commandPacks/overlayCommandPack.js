@@ -11,9 +11,9 @@ import {
   standardDetails,
   toLinePair
 } from "./packUtils.js";
-import { getRuntimeAndRegistry } from "../../../../src/shared/runtime/registry.js";
+import { getRuntimeAndRegistry } from "../../../../www/src/shared/runtime/registry.js";
 
-import { sanitizeText } from "../../../../src/shared/string/strings.js";
+import { sanitizeText } from "../../../../www/src/shared/string/strings.js";
 
 function createFailedResult(title, lines, code, details = {}) {
   return {

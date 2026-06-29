@@ -5,24 +5,24 @@ David Quesenberry
 EditorAutomationSecurityPipeline.test.mjs
 */
 import assert from 'node:assert/strict';
-import LevelEditor from '../../../src/shared/toolbox/editor/LevelEditor.js';
-import TileMapEditor from '../../../src/shared/toolbox/editor/TileMapEditor.js';
-import EntityPlacementEditor from '../../../src/shared/toolbox/editor/EntityPlacementEditor.js';
-import TimelineEditor from '../../../src/shared/toolbox/editor/TimelineEditor.js';
-import AutomatedTestRunner from '../../../src/engine/automation/AutomatedTestRunner.js';
-import RegressionPlaybackHarness from '../../../src/engine/automation/RegressionPlaybackHarness.js';
-import BenchmarkRunner from '../../../src/engine/automation/BenchmarkRunner.js';
-import CIValidationFlow from '../../../src/engine/automation/CIValidationFlow.js';
-import PacketValidator from '../../../src/engine/security/PacketValidator.js';
-import DataIntegrityService from '../../../src/engine/security/DataIntegrityService.js';
-import PermissionGate from '../../../src/engine/security/PermissionGate.js';
-import SessionTrustValidator from '../../../src/engine/security/SessionTrustValidator.js';
-import AssetImportPipeline from '../../../src/shared/toolbox/pipeline/AssetImportPipeline.js';
-import TexturePreprocessPipeline from '../../../src/shared/toolbox/pipeline/TexturePreprocessPipeline.js';
-import AudioPreprocessPipeline from '../../../src/shared/toolbox/pipeline/AudioPreprocessPipeline.js';
-import ContentMigrationSystem from '../../../src/shared/toolbox/pipeline/ContentMigrationSystem.js';
-import BuildAssetManifestSystem from '../../../src/shared/toolbox/pipeline/BuildAssetManifestSystem.js';
-import ContentValidationPipeline from '../../../src/shared/toolbox/pipeline/ContentValidationPipeline.js';
+import LevelEditor from '../../../www/src/shared/toolbox/editor/LevelEditor.js';
+import TileMapEditor from '../../../www/src/shared/toolbox/editor/TileMapEditor.js';
+import EntityPlacementEditor from '../../../www/src/shared/toolbox/editor/EntityPlacementEditor.js';
+import TimelineEditor from '../../../www/src/shared/toolbox/editor/TimelineEditor.js';
+import AutomatedTestRunner from '../../../www/src/engine/automation/AutomatedTestRunner.js';
+import RegressionPlaybackHarness from '../../../www/src/engine/automation/RegressionPlaybackHarness.js';
+import BenchmarkRunner from '../../../www/src/engine/automation/BenchmarkRunner.js';
+import CIValidationFlow from '../../../www/src/engine/automation/CIValidationFlow.js';
+import PacketValidator from '../../../www/src/engine/security/PacketValidator.js';
+import DataIntegrityService from '../../../www/src/engine/security/DataIntegrityService.js';
+import PermissionGate from '../../../www/src/engine/security/PermissionGate.js';
+import SessionTrustValidator from '../../../www/src/engine/security/SessionTrustValidator.js';
+import AssetImportPipeline from '../../../www/src/shared/toolbox/pipeline/AssetImportPipeline.js';
+import TexturePreprocessPipeline from '../../../www/src/shared/toolbox/pipeline/TexturePreprocessPipeline.js';
+import AudioPreprocessPipeline from '../../../www/src/shared/toolbox/pipeline/AudioPreprocessPipeline.js';
+import ContentMigrationSystem from '../../../www/src/shared/toolbox/pipeline/ContentMigrationSystem.js';
+import BuildAssetManifestSystem from '../../../www/src/shared/toolbox/pipeline/BuildAssetManifestSystem.js';
+import ContentValidationPipeline from '../../../www/src/shared/toolbox/pipeline/ContentValidationPipeline.js';
 
 export async function run() {
   const level = new LevelEditor({ width: 4, height: 3 });

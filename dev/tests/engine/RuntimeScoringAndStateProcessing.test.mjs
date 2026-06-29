@@ -8,8 +8,8 @@ import assert from "node:assert/strict";
 import {
   RUNTIME_SCORING_STATE_ERRORS,
   processRuntimeScoringAndState,
-} from "../../../src/engine/runtime/runtimeScoringAndStateProcessing.js";
-import { readManifestSceneDefinitions } from "../../../src/engine/runtime/runtimeSceneDefinitionSupport.js";
+} from "../../../www/src/engine/runtime/runtimeScoringAndStateProcessing.js";
+import { readManifestSceneDefinitions } from "../../../www/src/engine/runtime/runtimeSceneDefinitionSupport.js";
 import { createRuntimeGameplayLoopManifest } from "./RuntimeGameplayLoopFixture.mjs";
 
 export function run() {

@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
 import {
   RUNTIME_MOVEMENT_ERRORS,
   processRuntimeMovement,
-} from "../../../src/engine/runtime/runtimeMovementProcessing.js";
+} from "../../../www/src/engine/runtime/runtimeMovementProcessing.js";
 
 export function run() {
   const runtimeObjects = [

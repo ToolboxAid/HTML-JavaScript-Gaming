@@ -4,8 +4,8 @@ import asteroidsGameManifest from "../../../dev/archive/v1-v2/games/Asteroids/ga
 import {
   discoverRuntimeAssetSourcesFromManifest,
   validateGameAssetManifestStructure
-} from "../../../src/shared/toolbox/pipeline/gameAssetManifestDiscovery.js";
-import { createRuntimeManifestAssetLookup } from "../../../src/shared/toolbox/pipeline/runtimeAssetLookup.js";
+} from "../../../www/src/shared/toolbox/pipeline/gameAssetManifestDiscovery.js";
+import { createRuntimeManifestAssetLookup } from "../../../www/src/shared/toolbox/pipeline/runtimeAssetLookup.js";
 
 export async function run() {
   const asteroidsManifest = {

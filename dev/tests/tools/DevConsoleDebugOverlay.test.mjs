@@ -14,7 +14,7 @@ import {
   getDevDiagnosticsContractVersionMetadata,
   getDeterministicRenderOrder,
   summarizeDevConsoleDebugOverlay
-} from "../../../src/shared/toolbox/devConsoleDebugOverlay.js";
+} from "../../../www/src/shared/toolbox/devConsoleDebugOverlay.js";
 
 export async function run() {
   const metadata = getDevDiagnosticsContractVersionMetadata();

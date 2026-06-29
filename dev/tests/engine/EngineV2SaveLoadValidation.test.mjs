@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import {
   ENGINE_V2_SAVE_LOAD_ERRORS,
   validateEngineV2SaveLoadFlow,
-} from "../../../src/engine/runtime/engineV2SaveLoadValidation.js";
+} from "../../../www/src/engine/runtime/engineV2SaveLoadValidation.js";
 import { createEngineV2FeatureCompleteFixture } from "./EngineV2FeatureCompleteFixture.mjs";
 
 export function run() {

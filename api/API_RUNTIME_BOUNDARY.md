@@ -11,6 +11,6 @@ It is intentionally not `dev/tests/dev-runtime`:
 Deployment boundary:
 
 - DEV validation may execute `api/` through local server commands.
-- Browser pages, Theme V2 scripts, toolbox pages, and `src/engine` runtime code must use declared API/service contracts instead of importing `api/` directly.
+- Browser pages, Theme V2 scripts, toolbox pages, and `www/src/engine` runtime code must use declared API/service contracts instead of importing `api/` directly.
 - If a dev-only adapter is needed by a browser page, expose it through the Local API contract while keeping the implementation under `api/`.
 - Developer-only local bootstrap/orchestration remains outside `api/` until the scoped `dev/local-runtime/` migration PR.

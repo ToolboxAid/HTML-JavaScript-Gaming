@@ -16,7 +16,7 @@ import {
   relativeLuminance,
   rgbToHex,
   rgbToHsl,
-} from "../../../src/shared/color/color.js";
+} from "../../../www/src/shared/color/color.js";
 
 export function run() {
   assert.equal(clamp01(2), 1);

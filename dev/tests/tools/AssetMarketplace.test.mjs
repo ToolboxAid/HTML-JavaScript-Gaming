@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { buildAssetMarketplace, summarizeAssetMarketplace } from "../../../src/shared/toolbox/assetMarketplace.js";
+import { buildAssetMarketplace, summarizeAssetMarketplace } from "../../../www/src/shared/toolbox/assetMarketplace.js";
 
 export async function run() {
   const result = buildAssetMarketplace({

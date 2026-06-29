@@ -12,7 +12,7 @@ const ACTIVE_OBJECT_VECTOR_PATHS = Object.freeze([
   "games/Asteroids/flow",
   "toolbox/workspace-manager-v2/js",
   "toolbox/object-vector-studio-v2/js",
-  "src/engine/rendering/ObjectVectorRuntimeAssetService.js"
+  "www/src/engine/rendering/ObjectVectorRuntimeAssetService.js"
 ]);
 const DEPRECATED_VECTOR_MAPS_GUARD = "toolbox/object-vector-studio-v2/js/services/ObjectVectorStudioV2SchemaService.js";
 

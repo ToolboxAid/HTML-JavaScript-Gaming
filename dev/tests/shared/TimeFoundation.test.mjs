@@ -12,7 +12,7 @@ import {
   throttle,
   toIsoTimestamp,
   toUnixMilliseconds,
-} from "../../../src/shared/time/time.js";
+} from "../../../www/src/shared/time/time.js";
 
 export async function run() {
   assert.equal(formatDuration(500), "500ms");

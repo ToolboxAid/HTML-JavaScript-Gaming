@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import os from "node:os";
 import path from "node:path";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
-import Engine from "../../../src/engine/core/Engine.js";
-import backgroundImage from "../../../src/engine/runtime/backgroundImage.js";
+import Engine from "../../../www/src/engine/core/Engine.js";
+import backgroundImage from "../../../www/src/engine/runtime/backgroundImage.js";
 import fullscreenBezel, {
   chooseBestOpeningFit,
   ensureBezelStretchConfigFile,
@@ -11,13 +11,13 @@ import fullscreenBezel, {
   findTransparencyWindowFromEdges,
   fitAspectRatio,
   resolvePreferredFullscreenTarget
-} from "../../../src/engine/runtime/fullscreenBezel.js";
+} from "../../../www/src/engine/runtime/fullscreenBezel.js";
 import {
   resolveBezelStretchOverridePath,
   resolveGameImageConventionPaths,
   resolveManifestChromeAssetPaths,
   resolveRuntimeAssetUrl
-} from "../../../src/engine/runtime/gameImageConvention.js";
+} from "../../../www/src/engine/runtime/gameImageConvention.js";
 
 const ASTEROIDS_BACKGROUND_RUNTIME_PATH = "/archive/v1-v2/games/Asteroids/assets/images/deluxe.png";
 const ASTEROIDS_BEZEL_RUNTIME_PATH = "/archive/v1-v2/games/Asteroids/assets/images/bezel.png";

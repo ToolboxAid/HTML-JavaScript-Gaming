@@ -5,7 +5,7 @@ import {
   collisionTime,
   normalizeBoundingBox,
   sweptAabb,
-} from "../../../src/engine/collision/hitboxCollision.js";
+} from "../../../www/src/engine/collision/hitboxCollision.js";
 
 export function run() {
   const normalized = normalizeBoundingBox({ height: -8, width: 10, x: 5, y: 12 });

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import ObjectVectorRuntimeAssetService from '../../../src/engine/rendering/ObjectVectorRuntimeAssetService.js';
+import ObjectVectorRuntimeAssetService from '../../../www/src/engine/rendering/ObjectVectorRuntimeAssetService.js';
 import {
   createAsteroidsTestGeometryProfiles,
   loadAsteroidsManifest,

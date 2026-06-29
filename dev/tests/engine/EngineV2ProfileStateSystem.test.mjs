@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import {
   ENGINE_V2_PROFILE_ERRORS,
   processEngineV2ProfileState,
-} from "../../../src/engine/runtime/engineV2ProfileStateSystem.js";
+} from "../../../www/src/engine/runtime/engineV2ProfileStateSystem.js";
 import { createEngineV2PersistenceRuntimeFixture } from "./EngineV2PersistenceRuntimeFixture.mjs";
 
 export function run() {

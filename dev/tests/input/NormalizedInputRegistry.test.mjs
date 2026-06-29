@@ -16,7 +16,7 @@ import {
   resolveNormalizedInputProfile,
   resolvePhysicalAxisNormalizedInput,
   systemDefaultProfileForDevice,
-} from '../../../src/engine/input/NormalizedInputRegistry.js';
+} from '../../../www/src/engine/input/NormalizedInputRegistry.js';
 
 function testRegistryContainsPlayableNormalizedInputs() {
   assert.deepEqual(normalizedInputOptions().map((option) => option.value), [

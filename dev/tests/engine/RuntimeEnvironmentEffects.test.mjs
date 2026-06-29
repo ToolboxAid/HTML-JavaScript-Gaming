@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
 import {
   RUNTIME_ENVIRONMENT_EFFECT_ERRORS,
   applyRuntimeEnvironmentEffects,
-} from "../../../src/engine/runtime/runtimeEnvironmentEffects.js";
+} from "../../../www/src/engine/runtime/runtimeEnvironmentEffects.js";
 
 export function run() {
   const runtimeObjects = [

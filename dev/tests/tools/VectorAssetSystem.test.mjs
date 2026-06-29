@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
-import { validateProjectAssetState } from "../../../src/shared/toolbox/projectAssetValidation.js";
-import { buildProjectPackage } from "../../../src/shared/toolbox/projectPackaging.js";
-import { loadPackagedProjectRuntime } from "../../../src/shared/toolbox/runtimeAssetLoader.js";
-import { buildVectorAssetSystem, createVectorAssetSystemFixture } from "../../../src/shared/toolbox/vectorAssetSystem.js";
-import { normalizeSvgToVectorAsset, summarizeVectorAssetDefinition } from "../../../src/shared/toolbox/vector/vectorAssetBridge.js";
-import { VECTOR_ASSET_FORMAT } from "../../../src/shared/toolbox/vector/vectorAssetContract.js";
+import { validateProjectAssetState } from "../../../www/src/shared/toolbox/projectAssetValidation.js";
+import { buildProjectPackage } from "../../../www/src/shared/toolbox/projectPackaging.js";
+import { loadPackagedProjectRuntime } from "../../../www/src/shared/toolbox/runtimeAssetLoader.js";
+import { buildVectorAssetSystem, createVectorAssetSystemFixture } from "../../../www/src/shared/toolbox/vectorAssetSystem.js";
+import { normalizeSvgToVectorAsset, summarizeVectorAssetDefinition } from "../../../www/src/shared/toolbox/vector/vectorAssetBridge.js";
+import { VECTOR_ASSET_FORMAT } from "../../../www/src/shared/toolbox/vector/vectorAssetContract.js";
 
 export async function run() {
   const normalized = normalizeSvgToVectorAsset({

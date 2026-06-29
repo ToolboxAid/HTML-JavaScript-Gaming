@@ -9,8 +9,8 @@ import assert from "node:assert/strict";
 import {
   ENGINE_V2_PERSISTENCE_ERRORS,
   processEngineV2Persistence,
-} from "../../../src/engine/runtime/engineV2PersistenceRuntime.js";
-import { createEngineV2SaveState } from "../../../src/engine/runtime/engineV2SaveStateModel.js";
+} from "../../../www/src/engine/runtime/engineV2PersistenceRuntime.js";
+import { createEngineV2SaveState } from "../../../www/src/engine/runtime/engineV2SaveStateModel.js";
 import { createEngineV2PersistenceRuntimeFixture } from "./EngineV2PersistenceRuntimeFixture.mjs";
 
 export function run() {

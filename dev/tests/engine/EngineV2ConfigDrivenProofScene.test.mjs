@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import {
   ENGINE_V2_PROOF_SCENE_ERRORS,
   runEngineV2ConfigDrivenProofScene,
-} from "../../../src/engine/runtime/engineV2ConfigDrivenProofScene.js";
+} from "../../../www/src/engine/runtime/engineV2ConfigDrivenProofScene.js";
 import { createEngineV2FeatureCompleteFixture } from "./EngineV2FeatureCompleteFixture.mjs";
 
 export function run() {

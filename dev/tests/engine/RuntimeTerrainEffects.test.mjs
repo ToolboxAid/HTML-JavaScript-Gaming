@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
 import {
   RUNTIME_TERRAIN_EFFECT_ERRORS,
   applyRuntimeTerrainEffects,
-} from "../../../src/engine/runtime/runtimeTerrainEffects.js";
+} from "../../../www/src/engine/runtime/runtimeTerrainEffects.js";
 
 export function run() {
   const runtimeObjects = [

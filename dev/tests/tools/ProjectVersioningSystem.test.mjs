@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { buildProjectVersioning, summarizeProjectVersioning } from "../../../src/shared/toolbox/projectVersioning.js";
+import { buildProjectVersioning, summarizeProjectVersioning } from "../../../www/src/shared/toolbox/projectVersioning.js";
 
 export async function run() {
   const compatible = buildProjectVersioning({

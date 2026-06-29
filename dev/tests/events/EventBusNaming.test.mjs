@@ -6,8 +6,8 @@
 */
 import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
-import Engine from '../../../src/engine/core/Engine.js';
-import EventBus from '../../../src/engine/events/EventBus.js';
+import Engine from '../../../www/src/engine/core/Engine.js';
+import EventBus from '../../../www/src/engine/events/EventBus.js';
 
 function createCanvas() {
   const canvas = {
@@ -66,13 +66,13 @@ function createEngine(overrides = {}) {
 }
 
 export function run() {
-  const eventFiles = readdirSync(new URL('../../../src/engine/events/', import.meta.url));
+  const eventFiles = readdirSync(new URL('../../../www/src/engine/events/', import.meta.url));
   assert.equal(eventFiles.includes('EventBus.js'), true);
   assert.equal(eventFiles.includes('eventBus.js'), false);
 
   [
-    '../../../src/engine/core/Engine.js',
-    '../../../src/engine/events/index.js',
+    '../../../www/src/engine/core/Engine.js',
+    '../../../www/src/engine/events/EventBus.js',
     '../../tests/events/EventBus.test.mjs',
     '../../tests/world/WorldSystems.test.mjs',
   ].forEach((relativePath) => {

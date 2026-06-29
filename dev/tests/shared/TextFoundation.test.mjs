@@ -12,7 +12,7 @@ import {
   toCamelCase,
   toTitleCase,
   truncate,
-} from "../../../src/shared/text/text.js";
+} from "../../../www/src/shared/text/text.js";
 
 export function run() {
   assert.equal(normalizeWhitespace("  Alpha\n\tBeta   Gamma  "), "Alpha Beta Gamma");

@@ -5,21 +5,21 @@ David Quesenberry
 Section1FinalResidueStructure.test.mjs
 */
 import assert from 'node:assert/strict';
-import CanvasRenderer from '../../../src/engine/rendering/CanvasRenderer.js';
-import ResolutionScaler from '../../../src/engine/rendering/ResolutionScaler.js';
-import { renderByLayers } from '../../../src/engine/rendering/LayeredRenderSystem.js';
-import { renderSpriteReadyEntities } from '../../../src/engine/rendering/SpriteRenderSystem.js';
-import Scene from '../../../src/engine/scene/Scene.js';
-import SceneManager from '../../../src/engine/scene/SceneManager.js';
-import SceneTransition from '../../../src/engine/scene/SceneTransition.js';
-import TransitionScene from '../../../src/engine/scene/TransitionScene.js';
-import SceneTransitionController from '../../../src/engine/scene/SceneTransitionController.js';
-import AttractModeController from '../../../src/engine/scene/AttractModeController.js';
-import { DEFAULT_ATTRACT_CONFIG } from '../../../src/engine/scene/AttractModeController.js';
-import { isColliding } from '../../../src/engine/collision/aabb.js';
-import { applyDrag } from '../../../src/engine/physics/drag.js';
-import { stepArcadeBody } from '../../../src/engine/physics/arcadeBody.js';
-import { integrateVelocity2D } from '../../../src/engine/physics/integration.js';
+import CanvasRenderer from '../../../www/src/engine/rendering/CanvasRenderer.js';
+import ResolutionScaler from '../../../www/src/engine/rendering/ResolutionScaler.js';
+import { renderByLayers } from '../../../www/src/engine/rendering/LayeredRenderSystem.js';
+import { renderSpriteReadyEntities } from '../../../www/src/engine/rendering/SpriteRenderSystem.js';
+import Scene from '../../../www/src/engine/scene/Scene.js';
+import SceneManager from '../../../www/src/engine/scene/SceneManager.js';
+import SceneTransition from '../../../www/src/engine/scene/SceneTransition.js';
+import TransitionScene from '../../../www/src/engine/scene/TransitionScene.js';
+import SceneTransitionController from '../../../www/src/engine/scene/SceneTransitionController.js';
+import AttractModeController from '../../../www/src/engine/scene/AttractModeController.js';
+import { DEFAULT_ATTRACT_CONFIG } from '../../../www/src/engine/scene/AttractModeController.js';
+import { isColliding } from '../../../www/src/engine/collision/aabb.js';
+import { applyDrag } from '../../../www/src/engine/physics/drag.js';
+import { stepArcadeBody } from '../../../www/src/engine/physics/arcadeBody.js';
+import { integrateVelocity2D } from '../../../www/src/engine/physics/integration.js';
 
 assert.equal(typeof CanvasRenderer, 'function');
 assert.equal(typeof ResolutionScaler, 'function');
