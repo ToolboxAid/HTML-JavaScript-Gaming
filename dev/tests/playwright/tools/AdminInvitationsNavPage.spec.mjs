@@ -138,7 +138,7 @@ test("non-Admin users cannot access Admin Invites", async ({ page }) => {
 });
 
 test("Admin Invites page keeps scripts and styles external", async () => {
-  const pageSource = await fs.readFile(path.resolve("admin/invitations.html"), "utf8");
+  const pageSource = await fs.readFile(path.resolve("www/admin/invitations.html"), "utf8");
   expect(pageSource).not.toMatch(/<style\b/i);
   expect(pageSource).not.toMatch(/<script\b(?![^>]+src=)/i);
   expect(pageSource).not.toMatch(/\son[a-z]+\s*=/i);

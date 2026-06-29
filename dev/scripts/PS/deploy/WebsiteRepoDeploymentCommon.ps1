@@ -702,7 +702,7 @@ function New-WebsiteDeploymentPlan {
 function Get-DefaultWebsiteIncludePaths {
     return @(
         "index.html",
-        "favicon.svg",
+        "www/favicon.svg",
         "games",
         "samples",
         "src",

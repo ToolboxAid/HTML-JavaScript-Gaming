@@ -56,6 +56,18 @@ Runtime startup still reads `.env` values only. The official flow is for each en
 
 `.env.prd` is legacy technical debt only. Do not introduce new references to `.env.prd` except when documenting migration or historical compatibility.
 
+## Runtime Placement Policy
+
+Local `.env` may exist at repository root for developer startup only.
+
+Root `.env` is user/environment-owned, ignored, and never deployed as part of `www/` or `api/`.
+
+Production uses deployment environment variables and environment-managed secrets instead of committed `.env` files.
+
+`www/` must never contain secrets or environment-owned `.env` files.
+
+`api/` reads environment values from `process.env` and the deployment environment.
+
 ## Environment Identity
 
 Allowed `GAMEFOUNDRY_ENVIRONMENT` values:

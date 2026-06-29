@@ -55,6 +55,17 @@ test("static route target can prefer a configured www root before repo-root fall
   assert.equal(routeTarget.webRoot.relativePath, "www");
 });
 
+test("favicon resolves from the browser-served www root", async () => {
+  const routeTarget = await resolveStaticRouteTarget({
+    decodedPath: "/favicon.svg",
+    repoRoot,
+    webRoot: WWW_LOCAL_WEB_ROOT,
+  });
+  assert.equal(routeTarget.routePath, "/favicon.svg");
+  assert.equal(routeTarget.targetPath, path.join(repoRoot, "www", "favicon.svg"));
+  assert.equal(routeTarget.webRoot.relativePath, "www");
+});
+
 test("local static web server can serve from a configurable web root", async () => {
   const fixtureRoot = path.join(repoRoot, "dev", "workspace", "tmp", "static-web-root-compatibility");
   await fs.rm(fixtureRoot, { force: true, recursive: true });

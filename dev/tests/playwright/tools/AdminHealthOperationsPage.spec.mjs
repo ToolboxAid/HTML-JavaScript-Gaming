@@ -345,7 +345,7 @@ test("Creator sessions cannot access Admin System Health operations", async ({ p
 
 test("Admin System Health operations page keeps scripts and styles external", async () => {
   const retiredFileDbToken = "SQL" + "ite";
-  const pageSource = await fs.readFile(path.resolve("admin/system-health.html"), "utf8");
+  const pageSource = await fs.readFile(path.resolve("www/admin/system-health.html"), "utf8");
   expect(pageSource).not.toMatch(/<style\b/i);
   expect(pageSource).not.toMatch(/<script\b(?![^>]+src=)/i);
   expect(pageSource).not.toMatch(/\son[a-z]+\s*=/i);
@@ -374,7 +374,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
   expect(pageSource).toContain("Server-owned Cloudflare R2 storage diagnostic");
   expect(pageSource).toContain("assets/theme-v2/js/admin-system-health.js");
   expect(pageSource).toContain("assets/theme-v2/js/admin-owner-navigation.js");
-  const runtimeSource = await fs.readFile(path.resolve("assets/theme-v2/js/admin-system-health.js"), "utf8");
+  const runtimeSource = await fs.readFile(path.resolve("www/assets/theme-v2/js/admin-system-health.js"), "utf8");
   expect(runtimeSource).not.toContain(retiredFileDbToken);
   expect(runtimeSource).not.toContain("localStorage");
   expect(runtimeSource).not.toContain("sessionStorage");

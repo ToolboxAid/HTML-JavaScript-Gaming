@@ -121,6 +121,15 @@ These legacy transition buckets may remain until explicit migration PRs move the
 - Environment differences must come from `.env` values or environment-managed secrets.
 - Runtime source filenames must not use team names.
 
+## Environment File Placement
+
+- Local `.env` may exist at repository root for developer startup only.
+- Root `.env` is user/environment-owned, ignored, and never deployed as part of `www/` or `api/`.
+- Production uses deployment environment variables and environment-managed secrets instead of committed `.env` files.
+- `www/` must never contain secrets or environment-owned `.env` files.
+- `api/` reads environment values from `process.env` and the deployment environment.
+- Only `.env.example` is tracked as a repository template.
+
 ## PR Chain Boundary
 
 The development workspace restructure must proceed through sequential scoped PRs. A PR may only move or update the paths named in its purpose.
