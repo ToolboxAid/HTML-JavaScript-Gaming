@@ -1,61 +1,20 @@
-dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
-dev/build/ProjectInstructions/PROJECT_STATE.md
-dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
-dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
-dev/reports/PR_26180_OWNER_013-remove-legacy-layout_branch-validation.md
-dev/reports/PR_26180_OWNER_013-remove-legacy-layout_manual-validation-notes.md
-dev/reports/PR_26180_OWNER_013-remove-legacy-layout_report.md
-dev/reports/PR_26180_OWNER_013-remove-legacy-layout_requirement-checklist.md
-dev/reports/PR_26180_OWNER_013-remove-legacy-layout_validation-report.md
-dev/reports/codex_changed_files.txt
-dev/reports/codex_review.diff
-dev/tests/dev-runtime/AdminNotesBoundary.test.mjs
-dev/tests/dev-runtime/ApiMenuPathCleanup.test.mjs
-dev/tests/final/ToolchainEngineIntegrationValidation.test.mjs
-dev/tests/fixtures/games/AsteroidsValidation.test.mjs.patch
-dev/tests/fixtures/tools/VectorNativeTemplate.test.mjs.patch
-dev/tests/fixtures/workspace-v2/uat.manifest.json
-dev/tests/helpers/playwrightV8CoverageReporter.mjs
-dev/tests/helpers/testCoverageCatalog.mjs
-dev/tests/playwright_installation.txt
-dev/tests/production/TestsValidationCombinedPass.test.mjs
-dev/tests/runtime/V2BlockFakeSessionSave.test.mjs
-dev/tests/runtime/V2ClearStaleMergePreview.test.mjs
-dev/tests/runtime/V2ConfirmPreviewEnableState.test.mjs
-dev/tests/runtime/V2CrossToolFlow.test.mjs
-dev/tests/runtime/V2CrossToolMergeBlock.test.mjs
-dev/tests/runtime/V2DeterministicStateTransitions.test.mjs
-dev/tests/runtime/V2DiffViewerMessaging.test.mjs
-dev/tests/runtime/V2DiffViewerSummaryCounts.test.mjs
-dev/tests/runtime/V2EnableStateFeedback.test.mjs
-dev/tests/runtime/V2MergeConflictSummary.test.mjs
-dev/tests/runtime/V2MergeOutputPersistence.test.mjs
-dev/tests/runtime/V2MergePreviewOverlayFix.test.mjs
-dev/tests/runtime/V2MergeResultSummary.test.mjs
-dev/tests/runtime/V2MergeStateSingleSourceOfTruth.test.mjs
-dev/tests/runtime/V2MergeStateStatusReset.test.mjs
-dev/tests/runtime/V2MergedRecentSessionRegistration.test.mjs
-dev/tests/runtime/V2SaveLibraryFromRecentSession.test.mjs
-dev/tests/runtime/V2SavedSessionRowActions.test.mjs
-dev/tests/runtime/V2SelectionSyncRowActions.test.mjs
-dev/tests/runtime/V2SessionLibraryActionCleanup.test.mjs
-dev/tests/runtime/V2SessionLibraryActionLabel.test.mjs
-dev/tests/runtime/V2SessionLibraryActions.test.mjs
-dev/tests/runtime/V2SessionLibraryCardOverwrite.test.mjs
-dev/tests/runtime/V2SessionLibrarySaveGuard.test.mjs
-dev/tests/runtime/V2SessionStateModelConsolidation.test.mjs
-dev/tests/runtime/V2SessionToolsCloseoutBundle.test.mjs
-dev/tests/runtime/V2SessionUxStabilization.test.mjs
-dev/tests/runtime/V2ToolLaunch.test.mjs
-dev/tests/runtime/V2UndoButtonRender.test.mjs
-dev/tests/runtime/V2UndoEnableStateActualAvailability.test.mjs
-dev/tests/runtime/V2UndoEnableStateRefresh.test.mjs
-dev/tests/runtime/V2UndoLastMerge.test.mjs
-dev/tests/runtime/V2WorkspaceDefaultToolInitialization.test.mjs
-dev/tests/schemas/tool.manifest.schema.json
-dev/tests/shared/ContractFixtureIsolationValidation.test.mjs
-dev/tests/shared/ContractIndexValidation.test.mjs
-dev/tests/shared/ContractNegativeCaseCoverage.test.mjs
-dev/tests/tools/ToolManifestBoundary.test.mjs
-www/owner/notes.html
+﻿M	dev/reports/codex_changed_files.txt
+M	dev/reports/codex_review.diff
+M	dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+M	dev/build/ProjectInstructions/PROJECT_INSTRUCTIONS_VERSION.md
+M	dev/build/ProjectInstructions/PROJECT_STATE.md
+M	dev/build/ProjectInstructions/addendums/environment_configuration_standards.md
+M	dev/build/ProjectInstructions/backlog/BACKLOG_MASTER.md
+M	dev/build/ProjectInstructions/repository/canonical_repository_structure.md
+M	dev/build/ProjectInstructions/repository/repository_layout_architecture_plan.md
+A	dev/reports/PR_26180_OWNER_014-remaining-legacy-layout-cleanup_branch-validation.md
+A	dev/reports/PR_26180_OWNER_014-remaining-legacy-layout-cleanup_manual-validation-notes.md
+A	dev/reports/PR_26180_OWNER_014-remaining-legacy-layout-cleanup_report.md
+A	dev/reports/PR_26180_OWNER_014-remaining-legacy-layout-cleanup_requirement-checklist.md
+A	dev/reports/PR_26180_OWNER_014-remaining-legacy-layout-cleanup_validation-report.md
+M	dev/scripts/PS/deploy/WebsiteRepoDeploymentCommon.ps1
+M	dev/tests/dev-runtime/StaticWebRootCompatibility.test.mjs
+M	dev/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+M	dev/tests/playwright/tools/AdminInvitationsNavPage.spec.mjs
+M	dev/tests/tools/GameAssetManifestDiscovery.test.mjs
+R100	favicon.svg	www/favicon.svg

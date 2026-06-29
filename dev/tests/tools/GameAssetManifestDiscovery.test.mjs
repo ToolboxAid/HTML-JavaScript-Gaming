@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
-import asteroidsGameManifest from "../../../games/Asteroids/game.manifest.json" with { type: "json" };
+import asteroidsGameManifest from "../../../dev/archive/v1-v2/games/Asteroids/game.manifest.json" with { type: "json" };
 import {
   discoverRuntimeAssetSourcesFromManifest,
   validateGameAssetManifestStructure
@@ -35,7 +35,7 @@ export async function run() {
   Object.values(asteroidsManifest.domains).flat().forEach((record) => {
     assert.equal(record.runtimePath.startsWith("games/Asteroids/game.manifest.json#"), true);
     assert.equal(record.toolDataPath.startsWith("games/Asteroids/game.manifest.json#"), true);
-    assert.equal(existsSync("games/Asteroids/game.manifest.json"), true);
+    assert.equal(existsSync("dev/archive/v1-v2/games/Asteroids/game.manifest.json"), true);
   });
 
   const lookup = createRuntimeManifestAssetLookup({

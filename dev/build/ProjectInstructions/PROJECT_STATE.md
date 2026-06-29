@@ -1,7 +1,7 @@
 # Project State
 
 ```yaml
-project_state_version: "2026.06.28.013"
+project_state_version: "2026.06.28.014"
 last_updated: "2026-06-28"
 current_main_commit: "40de767476d70cadfd1292c916844c2f31b6f185"
 repository_status:
@@ -10,9 +10,9 @@ repository_status:
   runtime_database: "Postgres"
   creator_metadata: "API to Postgres"
   creator_assets: "API to R2"
-project_instructions_version: "2026.06.28.013"
-repository_structure_version: "2026.06.28.013"
-canonical_layout_version: "2026.06.28.013"
+project_instructions_version: "2026.06.28.014"
+repository_structure_version: "2026.06.28.014"
+canonical_layout_version: "2026.06.28.014"
 active_teams:
   - "Owner"
   - "Alfa"
@@ -20,8 +20,8 @@ active_teams:
   - "Charlie"
   - "Delta"
   - "Golf"
-latest_owner_pr: "PR_26180_OWNER_013-remove-legacy-layout"
-latest_structure_pr: "PR_26180_OWNER_013-remove-legacy-layout"
+latest_owner_pr: "PR_26180_OWNER_014-remaining-legacy-layout-cleanup"
+latest_structure_pr: "PR_26180_OWNER_014-remaining-legacy-layout-cleanup"
 valid_top_level_folders:
   - "api/"
   - "deploy/"
